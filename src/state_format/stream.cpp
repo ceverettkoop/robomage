@@ -64,8 +64,12 @@ Zone::Ownership rmstate_deciding_seat() {
 
 void rmstate_begin_decision() {
     if (rmstate_dump_path.empty() && !machine_format_rmstate && !selfcheck_state_enabled()) return;
-    ++cur_game.state_decisions;
+    ++(sideboard_phase ? cur_game.state_sideboard_decisions : cur_game.state_decisions);
     for (Zone::Ownership viewer : {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN}) issue_handles_canonical(viewer);
+}
+
+uint32_t rmstate_decision_number() {
+    return sideboard_phase ? cur_game.state_sideboard_decisions : cur_game.state_decisions;
 }
 
 static void stream_write(const std::string &payload) {

@@ -141,7 +141,7 @@ static const char *viewer_word(Zone::Ownership viewer) {
 
 // Where the game is, for an ERROR: line: the decision as the frame header numbers it.
 static std::string context() {
-    return "decision " + std::to_string(cur_game.state_decisions) + " (game " +
+    return "decision " + std::to_string(rmstate_decision_number()) + " (game " +
            std::to_string(match_game_number < 0 ? 0 : match_game_number) + ", turn " +
            std::to_string(cur_game.turn_state.turn) + ", step " +
            std::to_string(static_cast<int>(cur_game.turn_state.step)) + (sideboard_phase ? ", sideboarding" : "") + ")";

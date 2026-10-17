@@ -42,6 +42,8 @@ void Knowledge::on_game_start(const Event &ev) {
     game_active_ = true;
     game_ = ev.game;
     turn_ = ev.turn;
+    own_deck_.clear();
+    if (frame_own_deck_) own_deck_ = *frame_own_deck_;
     handles_.clear();
     draws_.clear();
     for (int p = 0; p < 2; ++p) {
@@ -143,12 +145,10 @@ void Knowledge::build_roots(int p, uint16_t library, uint16_t sideboard) {
 
 // ── game_end ──────────────────────────────────────────────────────────────────────────────────
 
-// The game's last events are counted into match memory; the networks stay until the next
-// game_start replaces them.
+// The game's last events are already counted into match memory (each was settled); the networks
+// stay until the next game_start replaces them.
 void Knowledge::on_game_end(const Event &ev) {
     (void)ev;
-    propagate();
-    update_seen();
     game_active_ = false;
 }
 

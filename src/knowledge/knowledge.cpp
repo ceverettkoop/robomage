@@ -21,6 +21,8 @@ static void put_seen(std::string &out, const std::map<int, uint8_t> &m);
 static bool get_seen(ByteReader &r, std::map<int, uint8_t> *m);
 static void put_entries(std::string &out, const std::vector<DeckEntry> &v);
 static bool get_entries(ByteReader &r, std::vector<DeckEntry> *v);
+static std::vector<DeckEntry> entries_of(const std::vector<DeckEntry> &v, int player);
+static bool same_entries(const std::vector<DeckEntry> &a, const std::vector<DeckEntry> &b);
 static void put_solution(std::string &out, const Solution &s);
 static bool get_solution(ByteReader &r, Solution *s);
 
@@ -124,18 +126,22 @@ void Knowledge::begin_match(int viewer, const Codes &codes, const Decklists &lis
     game_active_ = false;
 }
 
+// The model is a function of the events alone: every event is applied and then settled (settle),
+// so a frame only checks the snapshot against the model and solves the current state. The frame's
+// own_deck table is read only by a game_start event in it (the viewer's own root in games 2-3): the
+// live 75 changes only while sideboarding, before game_start, so every frame of a game shows the
+// list the game started with, and check() confirms it.
 void Knowledge::apply_frame(const Snapshot &snap) {
     frame_game_ = snap.game;
     frame_decision_ = snap.decision;
     frame_seq_ = 0;
     if (level_ == rmstate::KnowledgeLevel::OFF) return;
-    if (!snap.own_deck.empty()) own_deck_ = snap.own_deck;
+    frame_own_deck_ = &snap.own_deck;
     apply_events(snap.events);
+    frame_own_deck_ = nullptr;
     frame_seq_ = 0;
+    solve_steps_ = 0;
     if (!game_active_) return;
-    compact();
-    propagate();
-    update_seen();
     check(snap);
     solve();
 }
@@ -148,10 +154,23 @@ void Knowledge::apply_events(const std::vector<Event> &events) {
     batch_nodes_.clear();
     for (const Event &ev : events)
         if (ev.kind == rmstate::EventKind::LIBRARY_PLACE) batch_place_[ev.batch] = ev.range;
-    for (const Event &ev : events) apply_event(ev);
+    for (const Event &ev : events) {
+        apply_event(ev);
+        if (game_active_) settle();
+    }
     for (const auto &b : batch_nodes_)
         if (batch_place_.find(b.first) == batch_place_.end())
             error("batch " + std::to_string(b.first) + " has no library_place in its frame");
+}
+
+// After every event of a live game: the networks that changed are compacted (not while a batch
+// waits for its library_place: its units are named by id until then), the bounds are brought to
+// their fixpoint and the copies seen updated. Every later event's rule therefore sees the same
+// model whichever frames the events arrived in.
+void Knowledge::settle() {
+    if (batch_nodes_.empty()) compact();
+    propagate();
+    update_seen();
 }
 
 void Knowledge::apply_event(const Event &ev) {
@@ -329,6 +348,11 @@ void Knowledge::check(const Snapshot &snap) {
             error(std::string(who) + "'s sideboard holds " + std::to_string(sp.sideboard) + " card(s), the model " +
                   std::to_string(sideboard));
     }
+
+    // The viewer's own deck is the one the game started with (the root of the viewer's own model).
+    if (viewer_ != NO_SEAT && !own_deck_.empty() && !snap.own_deck.empty() &&
+        !same_entries(entries_of(own_deck_, viewer_), entries_of(snap.own_deck, viewer_)))
+        error("the viewer's own_deck differs from the one the game started with");
 
     // Every object the snapshot shows: public and face-down objects are the model's public and
     // face-down units (same handle, same card); the viewer's own hand and sideboard are exactly what
@@ -587,6 +611,20 @@ static bool get_entries(ByteReader &r, std::vector<DeckEntry> *v) {
         v->push_back(e);
     }
     return r.ok;
+}
+
+static std::vector<DeckEntry> entries_of(const std::vector<DeckEntry> &v, int player) {
+    std::vector<DeckEntry> out;
+    for (const DeckEntry &e : v)
+        if (e.player == player) out.push_back(e);
+    return out;
+}
+
+static bool same_entries(const std::vector<DeckEntry> &a, const std::vector<DeckEntry> &b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i)
+        if (a[i].card != b[i].card || a[i].main != b[i].main || a[i].side != b[i].side) return false;
+    return true;
 }
 
 static void put_solution(std::string &out, const Solution &s) {

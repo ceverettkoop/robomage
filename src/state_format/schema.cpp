@@ -207,6 +207,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_count(out.back(), "decision", Storage::U32);
     col_enum(out.back(), "knowledge", Storage::U8, "knowledge_level");
     col_bool(out.back(), "terminal");
+    col_bool(out.back(), "sideboarding");
 
     add_table(out, TableId::TURN, "turn", FrameKind::STATE);
     TableDef &t = out.back();

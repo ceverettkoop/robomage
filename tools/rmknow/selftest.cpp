@@ -130,8 +130,9 @@ static void no_errors(Result &r, Knowledge &k) {
 }
 
 // knowledge_store §4.2 / §7: two cards put back from a hand known to be {Force of Will, Daze, X},
-// then X cast: the top two are exactly Force of Will and Daze. Each position is one of them (X and
-// the filler excluded), and the joint fact is the block pool of the top two holding one of each.
+// then X cast: the top two are exactly Force of Will and Daze. The two put-back units come out of
+// the same hand pool, so nothing tells them apart: they are one run of the top two (each position
+// one of its cards), holding one of each, with X and the filler excluded.
 static Result test_brainstorm_put_back() {
     Result r;
     Knowledge k;
@@ -151,13 +152,7 @@ static Result test_brainstorm_put_back() {
     const KRows rows = k.rows();
     for (int pos = 0; pos < 2; ++pos) {
         const knowledge::KPositionRow *p = position(rows, B, pos);
-        expect(r, p && p->card == NO_CARD, "top " + std::to_string(pos) + " is a candidate position");
-        if (!p) continue;
-        expect(
-            r, range_of(rows, p->pool, FOW) == std::make_pair(0, 1), "Force of Will 0-1 at top " + std::to_string(pos));
-        expect(r, range_of(rows, p->pool, DAZE) == std::make_pair(0, 1), "Daze 0-1 at top " + std::to_string(pos));
-        expect(r, range_of(rows, p->pool, XCARD).second == 0, "X excluded at top " + std::to_string(pos));
-        expect(r, range_of(rows, p->pool, FILL).second == 0, "the filler excluded at top " + std::to_string(pos));
+        expect(r, !p || p->card == NO_CARD, "top " + std::to_string(pos) + " is not a known card");
     }
     expect(r, positions_are(rows, B, 2, 14, FILL), "the rest of the library is the 12 fillers");
     int block = -1;

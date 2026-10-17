@@ -334,9 +334,12 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   its own per seat, fed exactly the frames that writer builds for the seat (its SCHEMA, CARDS,
   DECKLISTS, then each STATE frame as encoded), and appends the instance's `k_*` tables (ids
   90-95, the last blocks of the frame) to each of the seat's STATE frames, terminal frames
-  included. The omniscient frames carry none. So a writer's `k_*` tables are a pure function of
-  the seat's frames from that writer (`rmknow --isolation` recomputes them byte for byte), and
-  one writer's bytes never depend on whether another is on.
+  included. The omniscient frames carry none. The model is a function of the seat's events (each
+  event is applied and settled on its own; the snapshot is only checked), not of the frames they
+  were drained into, so every writer's frame for one seat and decision carries the same `k_*`
+  tables; a writer's `k_*` tables are a pure function of the seat's frames from that writer
+  (`rmknow --isolation` recomputes them byte for byte); and one writer's bytes never depend on
+  whether another is on.
 - **Checks:**
   - soundness against the omniscient truth;
   - exactness against brute-force enumeration;
@@ -411,10 +414,10 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
     seat's last events (`game_end`, `match_end`). The engine then exits. `--rmstate-dump` ends
     with the same terminal frame for each of its three viewers.
   - The frames are the ones `--rmstate-dump` writes for that seat at that decision, apart from
-    the events and the knowledge tables: each writer drains its own copy of the queues and feeds
-    its own knowledge instance (section 7), so the stream's `k_*` follow from the seat's stream
-    frames (events batched since its previous decision) and the dump's from its every-decision
-    frames. At every decision, while either
+    the events: each writer drains its own copy of the queues, so the stream batches a seat's
+    events since its previous decision. The knowledge tables are the same: each writer feeds its
+    own knowledge instance (section 7), whose output depends on the events, not on how they were
+    batched. At every decision, while either
     writer is on, every viewer's handles are issued canonically before any frame is built, so
     handle numbers (and so the stream's bytes) do not depend on whether a dump is written.
 - **Versioning.** Every frame header carries the format version and schema hash; a decoder
@@ -718,9 +721,10 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | Table (id) | Column | Type | Tag | Range / notes |
 |---|---|---|---|---|
 | `header` (20) | `game` | u8 | `count` | 0-based game of the match (between games, the upcoming one); version, schema hash and viewer are in the frame header |
-| | `decision` | u32 | `count` | decision number in the game, from 1 (`Game::state_decisions`) |
+| | `decision` | u32 | `count` | decision number in the game, from 1 (`Game::state_decisions`); in a sideboarding frame, in the sideboarding phase before `game`, from 1 (`Game::state_sideboard_decisions`). (`game`, `sideboarding`, `decision`) names a decision of the match: unique per viewer among non-terminal frames (`rmstate_decision_number`, `src/state_format/stream.h`) |
 | | `knowledge` | u8 | `enum:knowledge_level` | this viewer's level (`--knowledge-a/-b`); OFF for the omniscient viewer |
 | | `terminal` | u8 | `bool` | the frame written once the match is over: no menu, no reply; it carries the last events (section 9) |
+| | `sideboarding` | u8 | `bool` | a frame of the sideboarding phase between games (`match.sideboard_phase`) |
 | `turn` (21) | `turn` | u16 | `count` | |
 | | `step` | u8 | `enum:step` | |
 | | `active`, `priority` | seat | | |

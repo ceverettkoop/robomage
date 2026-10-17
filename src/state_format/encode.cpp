@@ -44,6 +44,7 @@
 #include "handles.h"
 #include "knowledge_feed.h"
 #include "schema.h"
+#include "stream.h"
 
 using rmstate::FrameKind;
 using rmstate::FrameWriter;
@@ -531,12 +532,15 @@ static Zone::Ownership plays_first_seat() {
     return a_first ? Zone::PLAYER_A : Zone::PLAYER_B;
 }
 
+// (game, sideboarding, decision) names a decision of the match: a game's decisions count from 1,
+// and the sideboarding phase before a game (game = the upcoming one) counts its own from 1.
 static void write_header(const Ctx &c, bool terminal) {
     c.w.row(TableId::HEADER)
         .u8(u8_count(match_game_index()))
-        .u32(cur_game.state_decisions)
+        .u32(rmstate_decision_number())
         .u8(static_cast<uint64_t>(knowledge_level_of(c.viewer)))
-        .u8(terminal ? 1 : 0);
+        .u8(terminal ? 1 : 0)
+        .u8(sideboard_phase ? 1 : 0);
 }
 
 static void write_turn(const Ctx &c) {

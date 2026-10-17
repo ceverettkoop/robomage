@@ -34,6 +34,11 @@ consistent form for every kind of agent.
     library; the gate checks the includes (the `rmstate` tier's isolation part);
   - a standalone tool `rmknow` replays a recorded frame stream into the same component; its
     output must equal the in-process output byte for byte.
+- **Independent of cadence.** The model is a function of the viewer's **events** alone: every
+  event is applied and settled (compaction, propagation) on its own, and a frame only triggers the
+  output (the snapshot check and the solve). A consumer fed every decision and one fed only at its
+  own decisions report the same `k_*` tables at every frame both receive (the dump's and the
+  stream's frames for one seat and decision are byte-identical, `k_*` included; section 9.6).
 - **Deterministic.** Its outputs are part of the frame bytes, so RMLOG replay reproduces them.
   Snapshot/restore covers it: its state is serialisable and saved with the engine snapshot, so
   a restored search root resumes with the same knowledge.
@@ -118,7 +123,8 @@ consistent form for every kind of agent.
   NP-hard in general, but tiny in practice: at most 75 units per player, and only a handful
   of pools ever carry constraints, since the library bulk stays one unconstrained remainder.
 - **Algorithm** (as built, `src/knowledge/solver.h`; section 9.2).
-  1. Propagate bounds (per-card min/max per node through every junction and the cut).
+  1. Propagate bounds (per-card min/max per node through every junction and the cut), after every
+     event.
   2. Per frame and player, for every pool the tables may report: compact a copy of the network
      down to those pools' nodes, decompose it into independent components, and settle each
      pool's least and most copies of each card per component by a search over interval states
@@ -140,7 +146,7 @@ consistent form for every kind of agent.
   junctions joined by hand sub-pools: conservation of a card along the chain is what bounds the
   answers, which per-card intervals cannot see but the flow relaxation does.
 - **Compaction.** History that no longer constrains anything is eliminated from the network
-  every frame it changed, exactly (the consistent worlds projected onto the live nodes stay the
+  after every event that changed it, exactly (the consistent worlds projected onto the live nodes stay the
   same), so its size stays bounded over a long game: after a shuffle the history behind the
   merged run collapses into one junction (section 9.2).
 
@@ -176,9 +182,12 @@ enter or leave above them and converts between top and bottom.
 | mulligan (hand to library, shuffle, draw 7, London bottoming) | composed of the rules above |
 | `game_end` / `match_end` | match memory updated; networks reset at the next `game_start` |
 
-Each frame's snapshot is also a check: the model's pool sizes must equal the snapshot's zone
-counts, and every identity the snapshot shows must agree with the model. A mismatch is a
-missing event or a bug, reported loudly.
+Each frame's snapshot is only a check, never an input: the model's pool sizes must equal the
+snapshot's zone counts, and every identity the snapshot shows must agree with the model. A mismatch
+is a missing event or a bug, reported loudly. The one snapshot table the model reads is `own_deck`,
+for the viewer's own root at a `game_start` in the frame (games 2-3): the live 75 changes only while
+sideboarding, before `game_start`, so every frame of the game shows the list it started with (the
+check confirms it), whichever frame the `game_start` arrives in.
 
 ## 6. Output tables (schema fixed for both levels)
 
@@ -198,7 +207,9 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 - **`k_meta` is always one row**, at both levels: `off` writes it with level off and every other
   table empty (so omitted), so a consumer always finds the level. `exact` is 1 when the solver
   settled every reported pool (section 4.3; also between games, with no pool to report), 0 at
-  level off. `steps` counts the frame's propagation and solver steps.
+  level off. `steps` counts the exact solver's steps for the frame's state (both players; 0 between
+  games): a function of the model, so of the events, like every other column. Propagation runs per
+  event and is not counted.
 - **Rows go self first, then the opponent**, each in a fixed order: hand, library runs top to
   bottom, sideboard, face-down cards (by handle), set-aside.
 - **`k_pool`**: one row for the opponent's whole hand and one for their whole sideboard (the
@@ -240,7 +251,8 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   from a hand known to hold {Force of Will, Daze, X}, and X then cast, the top two cards are
   exactly {Force of Will, Daze}.
 - **Isolation:** `rmknow` on the recorded frame stream gives byte-identical knowledge tables
-  to the in-process run.
+  to the in-process run, per writer (the dump's seat frames, a saved stream); and the stream's
+  `k_*` tables equal the dump's at every seat and decision (section 9.6).
 - **Shadow comparison with today's engine memory:** while the old vector is still emitted, at
   every decision compare `expert`'s implied view (own exact positions 0–4; definitely-in-hand
   opponent cards; cards seen this match) with the engine's `known_top_library_*`,
@@ -305,16 +317,18 @@ rejoin (exact: nothing else constrains them).
 **Bounds.** `BoundStore::propagate` narrows intervals to a fixpoint with a worklist: a node's size
 (its classes sum to it), pins, roots, every junction (each member's interval from the other
 members' sums and the junction's fixed cards) and the cut (the roots plus every junction's in-side
-fixed cards equal the live nodes plus every out-side fixed card). Constraints only accumulate
-between compactions, so the store keeps its bounds between frames and only processes nodes,
-junctions and pins added since (a card entering the universe, or a compaction, resets it). Bounds
+fixed cards equal the live nodes plus every out-side fixed card). It runs after every event
+(`Knowledge::settle`), so each update rule that consults the bounds sees their fixpoint for the
+events before it. Constraints only accumulate between compactions, so the store keeps its bounds
+between events and only processes nodes, junctions and pins added since (a card entering the
+universe, or a compaction, resets it). Bounds
 are sound always; they are per-card intervals per node, so they miss joint facts (after a
 put-back from {Force of Will, Daze, X} and X cast, each of the top two is one of {Force of Will,
 Daze}, but "one of each" is a joint fact) and they lose strength through merges of chains. They
 seed the solver, decide which sub-pools can hold a card in the update rules, and are the fallback
 when the solver's budget runs out.
 
-**The exact solver** (`Solver::solve`, `Knowledge::solve` at the end of every frame, per player,
+**The exact solver** (`Solver::solve`, `Knowledge::solve` once per frame, after its events, per player,
 over the node sets of `pool_specs`: the tables' pools and every candidate block of runs).
 1. *Reduce.* A copy of the network is compacted (below) keeping only the pools' nodes, which is
    exact for their projections (a this-turn draw a draw link may name, which the stored network
@@ -363,8 +377,10 @@ over the node sets of `pool_specs`: the tables' pools and every candidate block 
    costs only that lookup, and a memoised result reports the steps its search took, so outputs do
    not depend on the memo (it is not serialised).
 
-**Compaction** (`compact_network`, run by `PlayerModel::compact` on every network that changed
-since its last compaction, before the frame's propagation; the stores restart). Live nodes and
+**Compaction** (`compact_network`, run by `PlayerModel::compact` after every event that changed the
+network, before that event's propagation; the stores restart. While an order-hidden batch waits for
+its `library_place`, which is in the same frame, compaction waits too: the batch's units are named
+by id until then). Live nodes and
 this turn's draw-link nodes are kept, with all their fields; the rest of the history is rewritten
 by rules that are each exact for the projection onto every node they leave, applied to a fixpoint:
 - a pinned node that is not kept (and no `EXACT`/`LOWER` root) becomes its card: a fixed card on
@@ -401,7 +417,7 @@ fuzz matches; 168 runs, 31,532 frames:
 | serialised state, largest / mean | 223 KB / 85 KB | 77 KB / 46 KB |
 
 The state is now mostly the SCHEMA payload (35 KB). Solver and propagation steps per frame
-(`k_meta.steps`): 11.5% of frames at most 100, 79% at most 1,000, 4.3% at most 10^4, 5.0% at most
+(what `k_meta.steps` counted at T10; it now counts the solver's alone, section 6): 11.5% of frames at most 100, 79% at most 1,000, 4.3% at most 10^4, 5.0% at most
 10^5 and 0.2% above (the most 162,622, against the budget of 1,000,000); `k_meta.exact` is 1 on
 every frame. Of the 32,445 component solves, 79% are memo hits, 19% a leaf at the root and 2% need
 the search. The sweep (debug build, 4 cores) takes as long as T9's bounds alone (31 s); a step
@@ -434,8 +450,8 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
   (pool contents within min/max and no unlisted universe card, block pools included, exact
   positions, known-hand counts, pool sizes, seen ≤ owned). On the 168 runs above: 0 errors.
 - **`rmknow --selftest`**: synthetic event streams (`tools/rmknow/selftest.cpp`): the section 7
-  put-back example (each of the top two is Force of Will or Daze, the block of the top two holds
-  exactly one of each, exact), cut accounting, a scry range, a batch, drawn-this-turn, a draw link,
+  put-back example (the two put-back units, which nothing tells apart, are one run of the top two
+  holding exactly one Force of Will and one Daze, exact), cut accounting, a scry range, a batch, drawn-this-turn, a draw link,
   the viewer's own rearrangement, the search rejoin, a London mulligan, closed-decklist match
   memory, serialisation round trip, and forty draw / reveal / put-back / shuffle rounds staying
   under 20 nodes.
@@ -490,23 +506,24 @@ STATE frames get the `k_meta` row alone (level off, exact 0, steps 0). The level
 the writers themselves: the RMLOG header does not record it and `--replay` honours it (a replay
 with the same level reproduces the frames).
 
-**Cadence and determinism: one instance per writer.** An instance's output at a frame depends on
-the frames it was fed before, not only on the events and the current snapshot: `k_meta.steps`
-counts propagation, which is incremental per frame, and compaction and the merging of runs nothing
-tells apart run per frame, so the pools a frame reports (which library runs stay split) can differ
-too. Fed the seat's frames at every decision (the dump) or only at the seat's own decisions (the
-stream), two instances report the same facts in different shapes: over three stream sessions, 11-38%
-of a seat's stream frames had another `k_meta` than the dump's frame for the same decision and up to
-25% other pool rows (a mulligan's bottomed card kept as a run of its own beside the rest of the
-library), each frame exact. Rather than make every output cadence-free, every writer feeds an
-instance of its own with exactly the frames it emits, so:
+**Cadence independence: one instance per writer, one output.** Every writer feeds an instance of
+its own with exactly the frames it emits, and an instance's output at a frame is a function of the
+seat's events up to that frame, not of how they were split into frames: each event is applied and
+settled at once (compaction of a network it changed, propagation, copies seen), the snapshot is only
+checked, and the frame's solve and `k_meta.steps` read the settled model alone. The event sequence
+of a seat is the same for every writer (each drains its own copy of the queue); only the drain
+times differ: the dump's at every decision, the stream's at the seat's own decisions. So:
+- the stream's frame and the dump's frame for one seat and decision carry the same `k_*` tables
+  byte for byte (`test_rmstate.check_stream`; over five stream sessions, bo1 and bo3 with
+  sideboarding, two under `--closed-decklist`, 1,858 seat frames, no frame differs);
 - a writer's `k_*` tables are a pure function of the seat's frames from that writer:
   `rmknow --isolation` on those frames (a dump's seat frames, or a saved stream) recomputes them
   byte for byte;
 - one writer's bytes never depend on another being on: the stream is byte-identical with and
-  without `--rmstate-dump` and `--selfcheck-state`, as T5 made it for the rest of the frame;
-- the dump's and the self-check's instances see the same frames (every decision, each from its own
-  queue), so their tables agree; the self-check has its own so that it runs without a dump.
+  without `--rmstate-dump` and `--selfcheck-state`, as T5 made it for the rest of the frame.
+
+Settling per event is cheap: a release `rmknow` recomputes a seat's knowledge over a 673-decision
+bo3 dump in 0.17 s and over that seat's 270-frame stream in 0.10 s (cost per engine run: below).
 
 **Snapshots.** The first instance registers sidecar hooks with the engine snapshot
 (`snapshot_set_sidecar_hooks`, `src/snapshot.h`): every `snapshot_save` stores every instance's

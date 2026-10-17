@@ -20,13 +20,19 @@
 // STATE frame (its events in order, then its snapshot). It never sees engine state; it may include
 // only the standard library and state_format/decode.h / schema.h (the rmstate gate tier checks).
 //
-// Per STATE frame (apply_frame):
-//   1. every event updates the model by its rule (knowledge_store §5; one on_* function per kind);
-//   2. a network that changed is compacted (compact.h), which restarts its bound stores;
-//   3. bound propagation brings each player's per-card bounds up to date (bounds.h);
+// The model is a function of the events alone, whichever frames they arrive in (a consumer fed at
+// every decision and one fed only at its own decisions agree at every frame both see). Per event:
+//   1. the event updates the model by its rule (knowledge_store §5; one on_* function per kind);
+//   2. a network that changed is compacted (compact.h), which restarts its bound stores (deferred
+//      while an order-hidden batch waits for its library_place, which is in the same frame);
+//   3. bound propagation brings each player's per-card bounds to their fixpoint (bounds.h), and the
+//      copies seen are updated.
+// Per STATE frame (apply_frame), after its events:
 //   4. the snapshot is checked against the model: zone sizes, and every identity the snapshot shows
 //      (the viewer's hand, reveal windows, public and face-down objects). A disagreement is a
-//      missing event or a model bug, reported as an `ERROR: knowledge …` line (take_errors);
+//      missing event or a model bug, reported as an `ERROR: knowledge …` line (take_errors). The
+//      snapshot adds nothing to the model, apart from the own_deck rows a game_start in the frame
+//      roots the viewer's own deck in (constant for the whole game);
 //   5. the exact solver (solver.h) computes every reported pool's per-card least and most copies
 //      under a per-player step budget.
 // rows() then gives the k_* tables for the current state.
@@ -88,8 +94,9 @@ class Knowledge {
         // The last STATE frame's game and decision.
         uint8_t frame_game() const { return frame_game_; }
         uint32_t frame_decision() const { return frame_decision_; }
-        // Steps the last frame's propagation and solver used.
-        uint64_t steps() const { return steps_ + solve_steps_; }
+        // Steps the last frame's exact solver used (k_meta.steps): a function of the model, so of
+        // the events; 0 for a frame with no live game.
+        uint64_t steps() const { return solve_steps_; }
         // For tools and tests: the node sets of the pools the tables may report for player `p`
         // (the solver's groups, in its order), and the solver's answers for them as of the last
         // frame.
@@ -102,6 +109,7 @@ class Knowledge {
         // ── frame flow ──
         void apply_events(const std::vector<Event> &events);
         void apply_event(const Event &ev);
+        void settle();
         void compact();
         void propagate();
         void solve();
@@ -175,7 +183,7 @@ class Knowledge {
         bool game_active_ = false;
         uint8_t game_ = 0;
         bool closed_[2] = {false, false};
-        std::vector<DeckEntry> own_deck_;
+        std::vector<DeckEntry> own_deck_;  // the viewer's own_deck rows of the frame that started the game
         PlayerModel players_[2];
         // A draw a later reveal may name (a draw link): a player's first non-opening draw of a turn,
         // kept for that turn.
@@ -199,6 +207,7 @@ class Knowledge {
         uint8_t frame_game_ = 0;
         uint32_t frame_decision_ = 0;
         uint32_t frame_seq_ = 0;
+        const std::vector<DeckEntry> *frame_own_deck_ = nullptr;  // the frame's own_deck rows, while it applies
         std::map<uint16_t, LibPos> batch_place_;  // this frame's batches: library_place range
         std::map<uint16_t, std::pair<int, std::vector<NodeId>>> batch_nodes_;  // batch → (player, units placed)
         std::vector<std::string> errors_;

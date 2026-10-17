@@ -17,7 +17,9 @@
 // tables are appended to it. An instance is a pure function of its seat's frame stream from that
 // writer, so `rmknow --isolation` run on the frames the writer emitted reproduces the appended
 // tables byte for byte, and what one writer's frames carry never depends on whether another
-// writer is on (the stream's frames are the same with or without a dump or the self-check).
+// writer is on (the stream's frames are the same with or without a dump or the self-check). The
+// model follows the seat's events, not the frames they were drained into, so every writer's
+// frame for one seat and decision carries the same k_* tables.
 //
 // Level per seat: --knowledge-a / --knowledge-b off|expert (default expert). At level off the
 // frame carries the k_meta row alone (level off) and the instance reads nothing but the match

@@ -46,6 +46,10 @@ Zone::Ownership rmstate_deciding_seat();
 // --selfcheck-state, state_format/selfcheck.h) is on.
 void rmstate_begin_decision();
 
+// The current decision's number (header.decision): within the game, from 1, or within the
+// sideboarding phase before the next game, from 1 (header.sideboarding).
+uint32_t rmstate_decision_number();
+
 // --machine-format rmstate: writes the deciding seat's frames for this decision (`actions` as
 // offered) and returns the integer read from stdin (-1 at end of input or for an unparseable line).
 int rmstate_stream_exchange(const std::vector<LegalAction> &actions);

@@ -406,7 +406,9 @@ int main(int argc, char **argv) {
                 ++errors;
                 continue;
             }
-            if (omni.game != last_snap.game || omni.decision != last_snap.decision || omni.terminal) continue;
+            if (omni.game != last_snap.game || omni.sideboard_phase != last_snap.sideboard_phase ||
+                omni.decision != last_snap.decision || omni.terminal)
+                continue;
             Truth truth;
             if (!read_truth(omni, &truth)) {
                 truth_error("the omniscient frame's library positions are not 0..n-1", omni, &truth_errors);

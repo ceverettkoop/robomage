@@ -12,11 +12,11 @@ Checks, over freshly played games (or the dumps given on the command line):
      ``-1`` confirms, a game concession past a decision cap): stdout holds only RMSTATE records;
      each seat gets its SCHEMA / CARDS / DECKLISTS frames before its first STATE frame and a
      terminal frame (``header.terminal``) at match end; every STATE frame equals the dump's frame
-     for that seat and decision apart from the event tables and the knowledge tables (``k_*``: each
-     writer feeds a knowledge instance of its own, so the stream's tables come from the seat's
-     stream frames and the dump's from its every-decision frames); each seat's events,
-     concatenated, equal the dump's; and the stream's bytes are the same with and without
-     ``--rmstate-dump``;
+     for that seat and decision apart from the event tables, knowledge tables (``k_*``) included:
+     each writer feeds a knowledge instance of its own, and the model is a function of the seat's
+     events, not of the frames they were drained into; each seat's events, concatenated, equal the
+     dump's; every STATE frame's (game, sideboarding, decision, terminal) is unique per viewer; and
+     the stream's bytes are the same with and without ``--rmstate-dump``;
   4. refusals — a STATE frame with another version, another schema hash, an unknown kind or a
      known table at another row width is refused by both decoders; an unknown table block is
      skipped by both (listed under ``"skipped"``), and the engine will not re-encode it;
@@ -284,9 +284,11 @@ def _events(frames):
 
 
 def _without_events(frame):
-    """The frame's tables apart from the event and knowledge tables (each writer drains its own
-    event queue and feeds its own knowledge instance)."""
-    return {k: v for k, v in frame.tables.items() if not k.startswith(("event", "k_"))}
+    """The frame's tables apart from the event tables (each writer drains its own event queue). The
+    knowledge tables (``k_*``) stay: each writer feeds a knowledge instance of its own, but the
+    model is a function of the seat's events, not of when they were drained, so a seat's stream
+    frame and its dump frame for the same decision carry the same ``k_*`` tables."""
+    return {k: v for k, v in frame.tables.items() if not k.startswith("event")}
 
 
 def rmknow_binary(binary=BINARY):
@@ -324,12 +326,11 @@ def write_stream(payloads, path):
 
 
 def _frame_key(frame):
-    """A STATE frame's decision: (viewer, game, decision, terminal, sideboarding). The sideboarding
-    frames before a game carry that game's number and go on with the previous game's decision
-    count, which the game itself restarts at 1, so the phase tells them apart."""
+    """A STATE frame's decision: (viewer, game, sideboarding, decision, terminal). A game's
+    decisions count from 1, and the sideboarding phase before a game (``header.game`` = that game)
+    counts its own from 1 (``docs/state_format.md`` A.5)."""
     h = frame.tables["header"][0]
-    sideboarding = bool(frame.tables.get("match", [{}])[0].get("sideboard_phase"))
-    return (frame.viewer, h["game"], h["decision"], h["terminal"], sideboarding)
+    return (frame.viewer, h["game"], h["sideboarding"], h["decision"], h["terminal"])
 
 
 def check_stream(payloads, dump_path, label):
@@ -346,12 +347,15 @@ def check_stream(payloads, dump_path, label):
     dump_by_viewer = {}
     for p, f in dump:
         if f.kind == "STATE":
+            if _frame_key(f) in dump_state:
+                fails.append(f"{label}: two dump frames are numbered {_frame_key(f)}")
             dump_state[_frame_key(f)] = f
             dump_by_viewer.setdefault(f.viewer, []).append(f)
         else:
             dump_match.setdefault((f.viewer, f.kind), p)
 
     seen_match = set()
+    stream_keys = set()
     by_seat = {}
     last_terminal = {}
     for i, (p, f) in enumerate(stream):
@@ -367,12 +371,15 @@ def check_stream(payloads, dump_path, label):
             fails.append(f"{label}: record {i + 1}: {f.viewer}'s STATE frame before its match frames")
         h = f.tables["header"][0]
         key = _frame_key(f)
+        if key in stream_keys:
+            fails.append(f"{label}: two stream frames are numbered {key}")
+        stream_keys.add(key)
         d = dump_state.get(key)
         if d is None:
             fails.append(f"{label}: no dump frame for {key}")
         elif _without_events(d) != _without_events(f):
             diff = sorted(k for k in set(d.tables) | set(f.tables)
-                          if not k.startswith(("event", "k_")) and d.tables.get(k) != f.tables.get(k))
+                          if not k.startswith("event") and d.tables.get(k) != f.tables.get(k))
             fails.append(f"{label}: frame {key} differs from the dump's in {diff}")
         by_seat.setdefault(f.viewer, []).append(f)
         if h["terminal"]:
