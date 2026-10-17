@@ -44,6 +44,8 @@ class PlayerModel {
         // The turn in which the hand's drawn-this-turn units were merged with other cards (so which
         // hand units were drawn this turn is no longer known); -1 none.
         int dtt_unknown_turn = -1;
+        // The network's node count and pin log length right after the last compaction.
+        size_t compacted_nodes = 0;
 
         size_t library_size() const;
         // The run holding top index `index` and the index's offset in it.
@@ -71,10 +73,21 @@ class PlayerModel {
         std::vector<NodeId> *zone_list(Loc loc);
         const std::vector<NodeId> *zone_list(Loc loc) const;
 
+        // Whether the network changed since the last compaction.
+        bool needs_compaction() const { return net.node_count() != compacted_nodes || !net.pin_log().empty(); }
+        // Compacts the network (compact.h), first merging live nodes nothing tells apart: adjacent
+        // library runs and sub-pools of a set zone that came out of the same junction, with no pin,
+        // handle or (in a set zone) different drawn-this-turn turn, and not in `protect` (nodes a
+        // later event may still name). Both stores restart. `remap` receives, per node of the old
+        // network, its id in the new one or NO_NODE.
+        void compact(const std::vector<NodeId> &protect, std::vector<NodeId> *remap);
+
         void serialize(std::string &out) const;
         bool deserialize(const std::string &in, size_t *at);
 
     private:
+        bool interchangeable(NodeId a, NodeId b, const std::vector<uint8_t> &protect) const;
+        void merge_set_zone(std::vector<NodeId> &zone, const std::vector<uint8_t> &protect);
         size_t cut_before(size_t index);
         void rejoin(size_t seg);
 };

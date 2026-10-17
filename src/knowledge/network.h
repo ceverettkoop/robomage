@@ -10,18 +10,21 @@
 // (docs/knowledge_store.md §3.2)
 //
 // A node is a set of that player's physical cards (units) the viewer cannot tell apart, as it was
-// at one moment: an immutable multiset of card identities whose size is known. Nodes never change;
-// an event that moves units makes new nodes and records how they relate:
-//   - a junction says the units of its `in` nodes are exactly the units of its `out` nodes (a
-//     split: one in, several out; a merge: several in, one out);
+// at one moment: an immutable multiset of card identities whose size is known. Nodes never change
+// (only compaction, compact.h, rebuilds the network without the history nothing needs); an event
+// that moves units makes new nodes and records how they relate:
+//   - a junction says the units of its `in` nodes plus its `in_fixed` cards are exactly the units of
+//     its `out` nodes plus its `out_fixed` cards (a split: one in, several out; a merge: several in,
+//     one out; after compaction, any number on either side). A fixed card is a pinned unit that
+//     compaction replaced by its card (compact.h);
 //   - a pin says a one-unit node is a known card;
 //   - a root is a node no junction produced: a registered list (its exact contents), a list with
 //     only lower bounds (a closed decklist after cards were seen), or unconstrained.
 // A world assigns a card to every unit consistently with every junction, pin and root; knowledge
 // is what holds in every world (state_format §1). Every node is produced by at most one junction
 // and consumed by at most one; a node no junction consumed is live: it is somewhere now (Loc).
-// Every unit of the player is in exactly one live node, so the live nodes sum to the roots (the
-// current cut, which the bound propagation uses as one more junction).
+// Every unit of the player is in exactly one live node, so the live nodes sum to the roots and the
+// junctions' fixed cards (the current cut, which the bound propagation uses as one more junction).
 //
 // Pins may land on a consumed node (a reveal that names the card a past draw brought in): they
 // constrain the past, and through the junctions the present.
@@ -55,9 +58,13 @@ struct Node {
         uint32_t draw_seq = 0;    // a one-unit node a draw brought in: that draw's seq
 };
 
+using CardCounts = std::vector<std::pair<int, int>>;  // (card, copies), ascending card, copies > 0
+
 struct Junction {
         std::vector<NodeId> in;
         std::vector<NodeId> out;
+        CardCounts in_fixed;
+        CardCounts out_fixed;
 };
 
 enum class RootKind : uint8_t {
@@ -69,7 +76,7 @@ enum class RootKind : uint8_t {
 struct Root {
         NodeId node = NO_NODE;
         RootKind kind = RootKind::FREE;
-        std::vector<std::pair<int, int>> counts;  // (card, copies), ascending card
+        CardCounts counts;
 };
 
 class Network {
@@ -96,8 +103,12 @@ class Network {
         void serialize(std::string &out) const;
         bool deserialize(const std::string &in, size_t *at);
 
-    private:
+        // Building blocks for compaction (compact.cpp), which assembles a new network from parts.
         NodeId add_node(uint16_t size, Loc loc);
+        uint32_t add_junction(const Junction &j);
+        void add_root_record(NodeId n, RootKind kind, const CardCounts &counts);
+
+    private:
         std::vector<Node> nodes_;
         std::vector<Junction> junctions_;
         std::vector<Root> roots_;

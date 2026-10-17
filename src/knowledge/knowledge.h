@@ -12,6 +12,7 @@
 #include "frame_view.h"
 #include "k_rows.h"
 #include "player_model.h"
+#include "solver.h"
 
 // ── The knowledge sidecar: one seat's recall and deduction (docs/knowledge_store.md) ──────────
 //
@@ -21,10 +22,13 @@
 //
 // Per STATE frame (apply_frame):
 //   1. every event updates the model by its rule (knowledge_store §5; one on_* function per kind);
-//   2. bound propagation brings each player's per-card bounds up to date (bounds.h);
-//   3. the snapshot is checked against the model: zone sizes, and every identity the snapshot shows
+//   2. a network that changed is compacted (compact.h), which restarts its bound stores;
+//   3. bound propagation brings each player's per-card bounds up to date (bounds.h);
+//   4. the snapshot is checked against the model: zone sizes, and every identity the snapshot shows
 //      (the viewer's hand, reveal windows, public and face-down objects). A disagreement is a
-//      missing event or a model bug, reported as an `ERROR: knowledge …` line (take_errors).
+//      missing event or a model bug, reported as an `ERROR: knowledge …` line (take_errors);
+//   5. the exact solver (solver.h) computes every reported pool's per-card least and most copies
+//      under a per-player step budget.
 // rows() then gives the k_* tables for the current state.
 //
 // The model per player (PlayerModel) is a network of nodes (sets of cards the viewer cannot tell
@@ -79,14 +83,23 @@ class Knowledge {
         // The last STATE frame's game and decision.
         uint8_t frame_game() const { return frame_game_; }
         uint32_t frame_decision() const { return frame_decision_; }
-        // Steps the last frame's propagation used.
-        uint64_t steps() const { return steps_; }
+        // Steps the last frame's propagation and solver used.
+        uint64_t steps() const { return steps_ + solve_steps_; }
+        // For tools and tests: the node sets of the pools the tables may report for player `p`
+        // (the solver's groups, in its order), and the solver's answers for them as of the last
+        // frame.
+        std::vector<std::vector<NodeId>> pool_groups(int p) const;
+        const Solution &solution(int p) const { return solved_[p]; }
+        // For tests: compaction on (the default) or off. Not part of the serialised state.
+        void set_compaction(bool on) { compaction_ = on; }
 
     private:
         // ── frame flow ──
         void apply_events(const std::vector<Event> &events);
         void apply_event(const Event &ev);
+        void compact();
         void propagate();
+        void solve();
         void update_seen();
         void check(const Snapshot &snap);
         void error(const std::string &what);
@@ -115,6 +128,7 @@ class Knowledge {
         void assign_revealed(
             int p, std::vector<NodeId> &zone, const std::vector<const EventCard *> &cards, uint16_t turn);
         NodeId fresh_unit(int p, Loc loc);
+        bool drew_this_turn(int p, uint16_t turn) const;
         bool can_hold(int p, NodeId n, int card) const;
         void pin_unit(int p, NodeId n, int card);
         bool remove_live(int p, NodeId n);
@@ -125,9 +139,20 @@ class Knowledge {
         bool library_range(int p, const LibPos &pos, size_t *a, size_t *b);
 
         // ── output ──
-        void pool_rows(int p, KRows &out, rmstate::PoolKind kind, const std::vector<NodeId> &nodes, const LibPos &range,
-            uint32_t obj) const;
-        int single_card(int p, NodeId n) const;
+        // A pool the tables may report: the opponent's hand, one library run or a block of runs
+        // (from run `first` to run `last`), the opponent's sideboard, a face-down card, the
+        // set-aside units.
+        struct PoolSpec {
+                rmstate::PoolKind kind = rmstate::PoolKind::HAND;
+                std::vector<NodeId> nodes;
+                LibPos range;
+                uint32_t obj = 0;
+                int first = -1, last = -1;  // a library block's runs; first == last for one run
+        };
+        std::vector<PoolSpec> pool_specs(int p) const;
+        GroupBounds pool_bounds(int p, size_t spec, const std::vector<PoolSpec> &specs) const;
+        void pool_rows(int p, KRows &out, const PoolSpec &spec, const GroupBounds &b) const;
+        void player_rows(int p, KRows &out) const;
 
         // match constants
         rmstate::KnowledgeLevel level_;
@@ -147,11 +172,24 @@ class Knowledge {
         bool closed_[2] = {false, false};
         std::vector<DeckEntry> own_deck_;
         PlayerModel players_[2];
+        // A draw a later reveal may name (a draw link): a player's first non-opening draw of a turn,
+        // kept for that turn.
+        struct DrawRef {
+                int player = NO_SEAT;
+                NodeId node = NO_NODE;
+                uint16_t turn = 0;
+        };
         std::map<uint32_t, std::pair<int, NodeId>> handles_;  // the viewer's handle → (player, node)
-        std::map<uint32_t, std::pair<int, NodeId>> draws_;    // a draw event's seq → (player, node)
+        std::map<uint32_t, DrawRef> draws_;                   // a draw event's seq → its unit
         std::map<int, uint8_t> seen_game_[2];
         bool reported_contradiction_[2][2] = {{false, false}, {false, false}};
         uint64_t steps_ = 0;
+        uint16_t turn_ = 0;  // the game's latest turn (of any event since game_start)
+        // The solver's answers for pool_specs(p), and the steps they took.
+        Solution solved_[2];
+        uint64_t solve_steps_ = 0;
+        Solver solver_;
+        bool compaction_ = true;
         // frame context
         uint8_t frame_game_ = 0;
         uint32_t frame_decision_ = 0;

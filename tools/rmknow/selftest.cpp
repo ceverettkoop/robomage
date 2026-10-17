@@ -5,12 +5,14 @@
 
 #include "selftest.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <functional>
 #include <string>
 #include <vector>
 
 #include "../../src/knowledge/knowledge.h"
+#include "test_stream.h"
 
 using knowledge::Event;
 using knowledge::EventCard;
@@ -28,109 +30,7 @@ namespace {
 constexpr int FOW = 101, DAZE = 102, XCARD = 103, FILL = 104, BOLT = 105, MIRACLE = 106, PONDER_A = 107, PONDER_B = 108,
               PONDER_C = 109;
 constexpr int A = 0, B = 1;
-
-// Writes events with consecutive seqs and builds frames from them.
-class Stream {
-    public:
-        explicit Stream(Knowledge &k, uint32_t seq = 0) : know_(k), seq_(seq) {}
-        uint32_t seq() const { return seq_; }
-        Event ev(EventKind kind, uint16_t turn = 1) {
-            Event e;
-            e.seq = ++seq_;
-            e.kind = kind;
-            e.turn = turn;
-            return e;
-        }
-        void game_start(int lib_a, int lib_b, uint8_t game = 0, int sb_a = 0, int sb_b = 0) {
-            Event e = ev(EventKind::GAME_START, 0);
-            e.game = game;
-            e.players.push_back({A, static_cast<uint16_t>(lib_a), static_cast<uint16_t>(sb_a), 0});
-            e.players.push_back({B, static_cast<uint16_t>(lib_b), static_cast<uint16_t>(sb_b), 0});
-            add(e);
-        }
-        void game_end() { add(ev(EventKind::GAME_END)); }
-        uint32_t draw(int p, int card = NO_CARD, uint32_t handle = 0, bool opening = false, uint16_t turn = 1) {
-            Event e = ev(EventKind::DRAW, turn);
-            e.player = p;
-            e.zone = Zn::LIBRARY;
-            e.to_zone = Zn::HAND;
-            e.zone_owner = e.to_owner = p;
-            e.count = 1;
-            e.opening = opening;
-            EventCard c;
-            c.card = card;
-            c.handle_after = handle;
-            c.from = top(0);
-            e.cards.push_back(c);
-            add(e);
-            return e.seq;
-        }
-        void move(EventKind kind, int p, Zn from, Zn to, EventCard c, uint16_t batch = 0, uint16_t turn = 1) {
-            Event e = ev(kind, turn);
-            e.zone = from;
-            e.to_zone = to;
-            e.zone_owner = e.to_owner = p;
-            e.count = 1;
-            e.batch = batch;
-            e.cards.push_back(c);
-            add(e);
-        }
-        void shown(EventKind kind, int p, Zn zone, const std::vector<EventCard> &cards, uint16_t turn = 1) {
-            Event e = ev(kind, turn);
-            e.zone = zone;
-            e.zone_owner = p;
-            e.count = static_cast<uint16_t>(cards.size());
-            e.cards = cards;
-            add(e);
-        }
-        void shuffle(int p) {
-            Event e = ev(EventKind::SHUFFLE);
-            e.player = e.zone_owner = p;
-            e.zone = Zn::LIBRARY;
-            add(e);
-        }
-        void library_place(int p, uint16_t batch, LibPos range) {
-            Event e = ev(EventKind::LIBRARY_PLACE);
-            e.player = e.zone_owner = p;
-            e.zone = Zn::LIBRARY;
-            e.batch = batch;
-            e.range = range;
-            e.count = range.span;
-            add(e);
-        }
-        // Applies the events written since the last frame as one STATE frame (snapshot checks off:
-        // a terminal frame).
-        void frame() {
-            Snapshot s;
-            s.terminal = true;
-            s.events.swap(pending_);
-            know_.apply_frame(s);
-        }
-        static LibPos top(int pos, int span = 1) { return pos_of(rmstate::LibAnchor::TOP, pos, span); }
-        static LibPos bottom(int pos, int span = 1) { return pos_of(rmstate::LibAnchor::BOTTOM, pos, span); }
-        static EventCard card(int id, uint32_t hb = 0, uint32_t ha = 0, LibPos from = LibPos{}, LibPos to = LibPos{}) {
-            EventCard c;
-            c.card = id;
-            c.handle_before = hb;
-            c.handle_after = ha;
-            c.from = from;
-            c.to = to;
-            return c;
-        }
-
-    private:
-        static LibPos pos_of(rmstate::LibAnchor anchor, int pos, int span) {
-            LibPos p;
-            p.anchor = static_cast<uint8_t>(anchor);
-            p.pos = static_cast<uint16_t>(pos);
-            p.span = static_cast<uint16_t>(span);
-            return p;
-        }
-        void add(const Event &e) { pending_.push_back(e); }
-        Knowledge &know_;
-        uint32_t seq_ = 0;
-        std::vector<Event> pending_;
-};
+using rmknow_test::Stream;
 
 struct Result {
         int failures = 0;
@@ -160,6 +60,7 @@ static Result test_search_rejoin();
 static Result test_mulligan();
 static Result test_closed_match_memory();
 static Result test_serialize();
+static Result test_compaction_bounded();
 
 static void expect(Result &r, bool ok, const std::string &what) {
     if (ok) return;
@@ -229,8 +130,8 @@ static void no_errors(Result &r, Knowledge &k) {
 }
 
 // knowledge_store §4.2 / §7: two cards put back from a hand known to be {Force of Will, Daze, X},
-// then X cast: the top two are Force of Will and Daze (each position one of them, X and the filler
-// excluded).
+// then X cast: the top two are exactly Force of Will and Daze. Each position is one of them (X and
+// the filler excluded), and the joint fact is the block pool of the top two holding one of each.
 static Result test_brainstorm_put_back() {
     Result r;
     Knowledge k;
@@ -259,6 +160,20 @@ static Result test_brainstorm_put_back() {
         expect(r, range_of(rows, p->pool, FILL).second == 0, "the filler excluded at top " + std::to_string(pos));
     }
     expect(r, positions_are(rows, B, 2, 14, FILL), "the rest of the library is the 12 fillers");
+    int block = -1;
+    for (size_t i = 0; i < rows.pools.size(); ++i)
+        if (rows.pools[i].owner == B && rows.pools[i].kind == rmstate::PoolKind::LIBRARY_RANGE &&
+            rows.pools[i].range.pos == 0 && rows.pools[i].size == 2)
+            block = static_cast<int>(i);
+    expect(r, block >= 0, "a pool for the top two");
+    if (block >= 0) {
+        const uint16_t b = static_cast<uint16_t>(block);
+        expect(r, range_of(rows, b, FOW) == std::make_pair(1, 1), "exactly one Force of Will in the top two");
+        expect(r, range_of(rows, b, DAZE) == std::make_pair(1, 1), "exactly one Daze in the top two");
+        expect(r, range_of(rows, b, XCARD).second == 0 && range_of(rows, b, FILL).second == 0,
+            "nothing else in the top two");
+    }
+    expect(r, rows.meta.exact, "the solver is exact");
     return r;
 }
 
@@ -520,6 +435,35 @@ static Result test_serialize() {
     return r;
 }
 
+// Forty rounds of the opponent drawing, revealing, putting a card back and shuffling: compaction
+// keeps the network a handful of nodes (it would otherwise grow by every operation), and the
+// knowledge stays exact (the shuffled-away reveals are still counted).
+static Result test_compaction_bounded() {
+    Result r;
+    Knowledge k;
+    begin(k, {{FILL, 15}}, {{FOW, 2}, {DAZE, 2}, {FILL, 11}});
+    Stream s(k);
+    s.game_start(15, 15);
+    for (int i = 0; i < 3; ++i) s.draw(B, NO_CARD, 0, true, 0);
+    s.frame();
+    size_t most = 0;
+    for (int round = 1; round <= 40; ++round) {
+        const uint16_t turn = static_cast<uint16_t>(round);
+        s.draw(B, NO_CARD, 0, false, turn);
+        s.shown(EventKind::REVEAL_START, B, Zn::LIBRARY, {Stream::card(FILL, 0, 500, Stream::top(0))}, turn);
+        s.shown(EventKind::REVEAL_END, B, Zn::LIBRARY, {Stream::card(FILL, 500)}, turn);
+        s.move(EventKind::ZONE_MOVE, B, Zn::HAND, Zn::LIBRARY, Stream::card(NO_CARD, 0, 0, LibPos{}, Stream::top(0)), 0,
+            turn);
+        s.shuffle(B);
+        s.frame();
+        most = std::max(most, k.player(B).net.node_count());
+    }
+    no_errors(r, k);
+    expect(r, most < 20, "the network stays small (" + std::to_string(most) + " nodes at most)");
+    expect(r, k.rows().meta.exact, "the solver is exact");
+    return r;
+}
+
 int run_selftest() {
     const std::vector<std::pair<const char *, std::function<Result()>>> tests = {
         {"brainstorm_put_back", test_brainstorm_put_back},
@@ -533,6 +477,7 @@ int run_selftest() {
         {"mulligan", test_mulligan},
         {"closed_match_memory", test_closed_match_memory},
         {"serialize", test_serialize},
+        {"compaction_bounded", test_compaction_bounded},
     };
     int failed = 0;
     for (const auto &t : tests) {

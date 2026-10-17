@@ -1,9 +1,10 @@
 # Knowledge store: the actor-side memory and inference sidecar (design)
 
-Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md). **T9 is implemented**
+Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md). **T9 and T10 are implemented**
 (`src/knowledge/`, `tools/rmknow/`): the model, the update rules, bound propagation, the per-frame
-consistency check, the `k_*` rows and serialisation; section 9 says how. The exact search and
-compaction (T10), the engine integration (T11) and the gate checks (T12) are not yet. It builds on
+consistency check, the `k_*` rows and serialisation (T9), the exact solver, compaction and the
+enumerator tests (T10); section 9 says how. The engine integration (T11) and the gate checks (T12)
+are not yet. It builds on
 [`state_format.md`](state_format.md): the engine
 sends only what each viewer explicitly knows right now. This component supplies everything a
 player with **perfect recall and perfect logical inference** would know on top of that, in one
@@ -114,16 +115,32 @@ consistent form for every kind of agent.
   problem: card identities are the commodities, pool sizes the shared capacities. It is
   NP-hard in general, but tiny in practice: at most 75 units per player, and only a handful
   of pools ever carry constraints, since the library bulk stays one unconstrained remainder.
-- **Algorithm.**
-  1. Propagate bounds (per-card min/max per pool through every split and merge).
-  2. Run an exact feasibility search for each (pool, card, count) query that bounds do not
-     settle, with memoisation, under a step budget per frame.
-- **Exactness flag.** If the budget runs out, the answer is the propagated bounds. These are
-  still **sound** (never exclude a possible world) but may be wider than exact. The
-  `k_meta.exact` flag says which. Exceeding the budget in practice is a finding to investigate.
-- **Compaction.** Once a pool's history no longer constrains anything (e.g. after a shuffle
-  merges a library back into one remainder pool), the network is compacted, so its size stays
-  bounded over a long game.
+- **Algorithm** (as built, `src/knowledge/solver.h`; section 9.2).
+  1. Propagate bounds (per-card min/max per node through every junction and the cut).
+  2. Per frame and player, for every pool the tables may report: compact a copy of the network
+     down to those pools' nodes, decompose it into independent components, and settle each
+     pool's least and most copies of each card per component by a search over interval states
+     whose leaves are transportation problems with closed-form projections. Each answer the
+     leaves have not reached is searched for with the state narrowed to it: a leaf reaching it
+     settles it, an empty search proves the bound one step tighter. A per-card network-flow
+     relaxation bounds every answer and prunes those searches. Components are memoised across
+     frames.
+- **Budget.** 1,000,000 steps (constraint evaluations, search nodes, flow augmentations and
+  passes) per player and frame: at most about 12 ms in a release build (80 ms in a debug one).
+  The most any frame of the corpus and fuzz games needed is 162,622 (about 2 ms release).
+- **Exactness flag.** If the budget runs out, the answers not yet settled are the propagated
+  bounds (narrowed by whatever the search proved). These are still **sound** (never exclude a
+  possible world) but may be wider than exact. `k_meta.exact` is 1 when every `k_pool_card`,
+  `k_position` and `k_known_hand` fact of the frame is the exact projection of the consistent
+  worlds. Exceeding the budget in practice is a finding to investigate: on the replay corpus and
+  the fuzz games no frame does (section 9.3). The hard cases are a hand mixed over many turns
+  (each turn's draw merged into a hand partly known, a known card cast from it), a chain of
+  junctions joined by hand sub-pools: conservation of a card along the chain is what bounds the
+  answers, which per-card intervals cannot see but the flow relaxation does.
+- **Compaction.** History that no longer constrains anything is eliminated from the network
+  every frame it changed, exactly (the consistent worlds projected onto the live nodes stay the
+  same), so its size stays bounded over a long game: after a shuffle the history behind the
+  merged run collapses into one junction (section 9.2).
 
 ## 5. Update rules per event kind
 
@@ -177,23 +194,33 @@ Columns: state_format Appendix A.6.
 
 As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 - **`k_meta` is always one row**, at both levels: `off` writes it with level off and every other
-  table empty (so omitted), so a consumer always finds the level. `exact` is 0 until T10's search.
+  table empty (so omitted), so a consumer always finds the level. `exact` is 1 when the solver
+  settled every reported pool (section 4.3; also between games, with no pool to report), 0 at
+  level off. `steps` counts the frame's propagation and solver steps.
 - **Rows go self first, then the opponent**, each in a fixed order: hand, library runs top to
   bottom, sideboard, face-down cards (by handle), set-aside.
 - **`k_pool`**: one row for the opponent's whole hand and one for their whole sideboard (the
   viewer's own hand and sideboard are snapshot objects, not pools); one per library run (a run of
   positions whose order is unknown, `range` = its positions from the top) whose card is not
-  determined; one per face-down card; one for the set-aside units while any are left.
+  determined; one per **block** of runs from the top (runs 0 to j) or from the bottom (runs i to
+  the last), short of the whole library, that says more than its parts: some card's least or most
+  copies in it is sharper than the block one run shorter (or that run alone) plus the run it
+  adds; one per face-down card; one for the set-aside units while any are left. Blocks carry the
+  joint facts per-run rows cannot: after a put-back of two cards from a hand known to be {Force of
+  Will, Daze, X} and X cast, each of the top two runs holds Force of Will 0-1 and Daze 0-1, and
+  the block of the top two holds exactly one of each (a 2-unit pool with min = max = 1 for both).
 - **`k_pool_card`**: per pool, every card of the player's universe (the registered list, or the
-  cards seen under `--closed-decklist`) with max > 0; an aggregate pool (hand, sideboard,
-  set-aside) sums its sub-pools' minima and maxima (capped at its size). Under
-  `--closed-decklist` a card never seen is possible too without a row.
+  cards seen under `--closed-decklist`) with max > 0: the solver's least and most copies of the
+  card in the pool (an aggregate pool, such as the hand, as a whole). Under `--closed-decklist` a
+  card never seen is possible too without a row.
 - **`k_position`**: every library position whose run's card is determined (`card` set, a run whose
   minimum of one card equals its size, so a run of several known copies gives a row per
   position), and every one-position run that is not (`pool` = its `k_pool` row). `at` is always
-  anchored at the top (a consumer converts with the snapshot's library count).
-- **`k_known_hand`**: per card, the sum of the opponent's hand sub-pools' minima: recall and
-  deduction alike ("definitely in hand").
+  anchored at the top (a consumer converts with the snapshot's library count). A position's
+  candidates are its run's cards with max > 0 (any order of a run is possible, so this is exact
+  for every position of a run when the solver is).
+- **`k_known_hand`**: per card, the opponent's hand pool's least copies: recall and deduction
+  alike ("definitely in hand").
 - **`k_seen`**: per (player, card) with a nonzero count, the fewest copies the observations of
   the game imply (`game`, section 9) and the most of that over the match's games (`match`).
 
@@ -205,7 +232,7 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 - **Exactness (the solver):** on small synthetic and sculpted cases (≤ 15-card decks), a
   naive enumerator over the same pool/flow model, written independently of the solver,
   lists every consistent world. With `k_meta.exact` set, the reported min/max and candidate
-  sets must equal the enumeration.
+  sets must equal the enumeration. Built as `rmknow --exactness N` (section 9.5).
 - **Sharpness (the model):** hand-written regression scenarios with the deduction a strong
   player would make, asserted on the knowledge dump. Example: after a Brainstorm put-back
   from a hand known to hold {Force of Will, Daze, X}, and X then cast, the top two cards are
@@ -237,7 +264,7 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   leak changed what the agent saw. Those games are re-recorded, each with its classification
   as the reason.
 
-## 9. Implementation (step 1 T9)
+## 9. Implementation (step 1 T9, T10)
 
 Code: `src/knowledge/` (std-only; `Knowledge` in `knowledge.h` is the entry point) and the
 standalone driver `tools/rmknow/`.
@@ -247,12 +274,14 @@ standalone driver `tools/rmknow/`.
 | Struct (file) | What it is |
 |---|---|
 | `Node` (`network.h`) | a set of one player's units the viewer cannot tell apart, at one moment: size, pin (the known card of a one-unit node), the junction that made it and the one that consumed it, root index, and while live its location (`Loc`), handle, drawn-this-turn turn and draw seq |
-| `Junction` | `in` units = `out` units (a split: one in; a merge: one out) |
+| `Junction` | `in` units plus `in_fixed` cards = `out` units plus `out_fixed` cards (a split: one in; a merge: one out; after compaction any number on either side, the fixed cards being pinned units compaction replaced by their card) |
 | `Root` | a node no junction made: `EXACT` contents (a registered list), `LOWER` bounds (a closed decklist after cards were seen this match), or `FREE` |
 | `Network` | one player's nodes, junctions, roots and the log of pins added to existing nodes; nodes never change, so the network is the flow-over-time record of section 3.2 |
 | `PlayerModel` (`player_model.h`) | the network plus where its live nodes are: the library as a sequence of runs (top first; a run is one node filling that many consecutive positions in an unknown order; a one-unit run is an exact position), the hand, sideboard and set-aside as sets of sub-pools, face-down and public units (one each, keyed by handle) |
 | `BoundStore` (`bounds.h`) | per node and per card class of the player's `Universe` (the cards tracked, plus one OTHER class), the least and most copies; two per player: `full` (roots constrain: the deductions) and `seen` (roots free: what was observed) |
-| `Knowledge` (`knowledge.h`) | the seat's sidecar: match constants (schema, decklists), match memory (copies seen per match), both players' models, the viewer's handle → unit map, draw seq → unit map |
+| `Solver` (`solver.h`) | the exact solver: per pool the tables may report, the least and most copies of each card over the consistent worlds; memoises components across frames |
+| `compact_network` (`compact.h`) | the exactly knowledge-preserving compaction of a network |
+| `Knowledge` (`knowledge.h`) | the seat's sidecar: match constants (schema, decklists), match memory (copies seen per match), both players' models, the viewer's handle → unit map, the draw links (each player's first non-opening draw of the current turn), the last frame's solutions |
 
 Every unit is in exactly one live node, so the live nodes always sum to the roots: the **current
 cut**, which propagation treats as one more junction. It is what turns "one Force of Will was cast
@@ -269,35 +298,120 @@ pick, a reorder) merges into one run, a shuffle merges the whole library, a pinn
 three-way split of its run. Two runs that become adjacent again and are unpinned parts of one split
 rejoin (exact: nothing else constrains them).
 
-### 9.2 Bound propagation (T9) and what T10 adds
+### 9.2 Bound propagation, the exact solver, compaction
 
-`BoundStore::propagate` narrows intervals to a fixpoint with a worklist: a node's size (its classes
-sum to it), pins, roots, every junction (each member's interval from the other members' sums) and
-the cut. Constraints only accumulate within a game, so the store keeps its bounds between frames
-and only processes nodes, junctions and pins added since (a card entering the universe resets
-it). Bounds are sound always; they are per-card intervals per node, so they miss joint facts
-(after a put-back from {Force of Will, Daze, X} and X cast, each of the top two is one of {Force of
-Will, Daze}, but "one of each" is a joint fact) and they lose strength through merges of chains.
+**Bounds.** `BoundStore::propagate` narrows intervals to a fixpoint with a worklist: a node's size
+(its classes sum to it), pins, roots, every junction (each member's interval from the other
+members' sums and the junction's fixed cards) and the cut (the roots plus every junction's in-side
+fixed cards equal the live nodes plus every out-side fixed card). Constraints only accumulate
+between compactions, so the store keeps its bounds between frames and only processes nodes,
+junctions and pins added since (a card entering the universe, or a compaction, resets it). Bounds
+are sound always; they are per-card intervals per node, so they miss joint facts (after a
+put-back from {Force of Will, Daze, X} and X cast, each of the top two is one of {Force of Will,
+Daze}, but "one of each" is a joint fact) and they lose strength through merges of chains. They
+seed the solver, decide which sub-pools can hold a card in the update rules, and are the fallback
+when the solver's budget runs out.
 
-T10 hooks:
-- **Exact search**: a memoised feasibility search per (node set, card, count) over the same
-  `Network`, seeded by the propagated bounds; `Knowledge::pool_rows` and `single_card` are where
-  its answers replace the interval sums (aggregates and runs), under the per-frame budget, setting
-  `k_meta.exact`.
-- **Compaction**: eliminating a node with no pin is exact when it is the only output of the
-  junction that made it or the only input of the one that consumed it (its non-negativity is then
-  implied); a node that is a split's child and a merge's input cannot be dropped that way. After a
-  shuffle the history behind the merged run is the main target. Stores reset after compaction.
+**The exact solver** (`Solver::solve`, `Knowledge::solve` at the end of every frame, per player,
+over the node sets of `pool_specs`: the tables' pools and every candidate block of runs).
+1. *Reduce.* A copy of the network is compacted (below) keeping only the pools' nodes, which is
+   exact for their projections (a this-turn draw a draw link may name, which the stored network
+   keeps, can go here). The system is then one variable per node whose bounds leave more than one
+   content, seeded with the store's bounds (for nodes compaction left unchanged) met with pins and
+   roots; a determined node is a constant folded into its junctions. A `LOWER` root becomes its
+   lower bounds (constants) plus a free variable, so no variable keeps a constraint of its own.
+2. *Decompose.* Variables joined by a junction form a component; the worlds are the product of
+   the components' worlds, so a pool's least (most) copies of a card is its determined members'
+   copies plus the sum of the components' least (most).
+3. *Leaves.* A state is a box of per-(variable, card) intervals that propagation keeps sound (the
+   search's own propagator, with each pool's sum as a virtual node so its interval is tight). It
+   is a leaf when every junction with a free variable is a transportation problem: its free
+   variables are untouched by branching and in no other such junction, and they are all on one
+   side, or the other side's free variables are each in no pool and no other junction (a slack:
+   only their sum matters, as for a `LOWER` root's free part or a closed decklist's free root).
+   With `T` the fixed cards the free side holds besides the slack, `N` its size and `s` the size
+   of a pool's part in it, the part holds between `max(0, s + T_c − N)` and `min(s, T_c)` copies of
+   card `c` (with a slack, `T_c` is `max(0, T_c)` and the upper end grows by the slack's spare
+   units, `N − Σ max(0, T)`). These ends are exact: the junction is a transportation polytope with
+   free cell bounds (every interval a free variable has is implied by its junction and size), and
+   a leaf's junctions combine freely. Most components are a leaf at the root: one junction from
+   the registered list to the live nodes.
+4. *Search.* Otherwise the search branches by halving one interval of a blocking variable (one
+   already branched on, else one in two junctions with free variables, else one on the smaller
+   side of a junction with free variables on both sides), so the children partition the worlds.
+   A first search finds any leaf (none: the component has no world, an `ERROR` line). Then every
+   answer (pool, card, least or most) not yet reached by a leaf gets a proven bound from the
+   root's interval and the card's **flow relaxation**: per card, every junction conserves copies
+   and every variable leaves at most one junction and enters at most one (the outside world is one
+   more node), so the card's cells under the current intervals are a network flow; its min-cost
+   optimum (augmenting paths for a feasible flow, then Bellman-Ford negative-cycle cancelling)
+   bounds every world's, since only the node sizes, which couple the cards, are dropped. The
+   answer is then searched for with the root's interval for that pool and card narrowed to its
+   proven bound, cutting a subtree whose flow bound falls short, branching first on the searched
+   card's interval and trying its half toward the answer first. The first leaf found that reaches
+   it settles it, and every leaf updates every answer it improves; a narrowed search that finds
+   no such leaf proves no world reaches the bound, which moves one step, and the search repeats.
+   When every answer is settled they are the exact projections (each end is reached by a world of
+   some leaf, and nothing beyond the proven bounds exists). Steps are constraint evaluations,
+   search nodes, flow augmentations and Bellman-Ford passes; past the budget (1,000,000 per player
+   and frame) the settled answers are still exact and the rest report their proven bounds, and
+   `k_meta.exact` is 0.
+5. *Memo.* A component's result is memoised by its full description (sizes, seed intervals,
+   junctions, constants, pools) together with the budget it was given; an unchanged component
+   costs only that lookup, and a memoised result reports the steps its search took, so outputs do
+   not depend on the memo (it is not serialised).
+
+**Compaction** (`compact_network`, run by `PlayerModel::compact` on every network that changed
+since its last compaction, before the frame's propagation; the stores restart). Live nodes and
+this turn's draw-link nodes are kept, with all their fields; the rest of the history is rewritten
+by rules that are each exact for the projection onto every node they leave, applied to a fixpoint:
+- a pinned node that is not kept (and no `EXACT`/`LOWER` root) becomes its card: a fixed card on
+  the out side of the junction that made it and the in side of the one that consumed it;
+- an unpinned, non-root, not-kept node between junctions P and C is removed, P and C becoming one
+  junction, when it is the only member (fixed cards included) of P's out side or of C's in side:
+  it is then the sum of the other side, so its non-negativity is implied, and contracting cannot
+  create a cycle; on both sides of one junction it cancels;
+- such nodes with the same P and C, and `FREE` roots with the same consumer, are one node (only
+  their sum appears anywhere, and any sum splits into parts of the given sizes);
+- a `FREE` root alone on its consumer's in side makes that junction vacuous: it drops, and the
+  nodes it made become `FREE` roots;
+- cards fixed on both sides of one junction cancel; a junction left empty drops.
+
+No rule touches a kept node, an `EXACT` or `LOWER` root, or the pins of the observation store
+beyond turning them into fixed cards, so both stores' systems are preserved. Before the network
+rules, `PlayerModel::compact` also merges live nodes nothing tells apart (exact the same way:
+adjacent library runs, or sub-pools of a set zone with the same drawn-this-turn turn, made by the
+same junction, unpinned, without a handle and not protected), which generalises T9's rejoin. A
+shuffle therefore folds the whole history behind the library into the junction that made the
+merged run: the opponent's model is typically one junction from the registered list to the live
+nodes, plus small junctions for hands known in part.
 
 ### 9.3 Sizes, steps, serialisation
 
-On the replay corpus and the explore fuzz a game grows to at most ~750 nodes per player and a
-frame's propagation to ~3.5k constraint evaluations (budget 4M per store per frame).
-`Knowledge::serialize` writes a self-contained little-endian blob (`RMKN`, version 1): level,
+Measured with `rmknow --stats` over both seats of the replay corpus (64 dumps), 14 explore fuzz
+games (bo1 and bo3 with sideboarding), 4 random `--closed-decklist` matches (3 bo3) and 2 long bo3
+fuzz matches; 168 runs, 31,532 frames:
+
+| | T9 (no compaction) | T10 |
+|---|---|---|
+| nodes per player network, most / mean of the runs' maxima | 845 / 310 | 87 / 61 |
+| junctions, most | 425 | 13 |
+| serialised state, largest / mean | 223 KB / 85 KB | 77 KB / 46 KB |
+
+The state is now mostly the SCHEMA payload (35 KB). Solver and propagation steps per frame
+(`k_meta.steps`): 11.5% of frames at most 100, 79% at most 1,000, 4.3% at most 10^4, 5.0% at most
+10^5 and 0.2% above (the most 162,622, against the budget of 1,000,000); `k_meta.exact` is 1 on
+every frame. Of the 32,445 component solves, 79% are memo hits, 19% a leaf at the root and 2% need
+the search. The sweep (debug build, 4 cores) takes as long as T9's bounds alone (31 s); a step
+costs about 12 ns in a release build. `rmknow --truth` finds no error in any of the
+31,532 frames.
+
+`Knowledge::serialize` writes a self-contained little-endian blob (`RMKN`, version 2): level,
 viewer, the SCHEMA payload (re-decoded on load), the decklists, match memory, both
-`PlayerModel`s (network, both stores' bounds, zone lists) and the handle and draw maps; card names
-are not included. `deserialize` refuses a malformed blob. A blob is ~150-200 KB late in a game
-(the bounds dominate; T10's compaction shrinks it).
+`PlayerModel`s (network with its fixed cards, both stores' bounds, zone lists, the node count at
+the last compaction), the handle and draw-link maps, the latest turn and the last frame's
+solutions; card names and the solver's memo are not included. `deserialize` refuses a malformed
+blob.
 
 ### 9.4 Copies seen
 
@@ -307,18 +421,47 @@ deck-list arithmetic never counts as seen). A card revealed, shuffled away and t
 once; two copies on the battlefield count twice. `match` is the maximum over the match's games;
 under `--closed-decklist` it becomes the next game's root lower bounds.
 
-### 9.5 Verification so far
+### 9.5 Verification
 
 - **Consistency** (`Knowledge::check`, every STATE frame of a live game): hand, library and
   sideboard sizes; every public and face-down object is a model unit with the same card; the
   viewer's own hand is exactly the model's pinned units; the own sideboard's counts are within
-  bounds; every reveal row's card is the model's card at that position or handle; and the
-  propagation finds no contradiction. A mismatch is an `ERROR: knowledge[...]` line.
+  bounds; every reveal row's card is the model's card at that position or handle; and neither the
+  propagation nor the solver finds a contradiction. A mismatch is an `ERROR: knowledge[...]` line.
 - **`rmknow --truth`** checks every reported fact against the same dump's omniscient frames
-  (pool contents within min/max and no unlisted universe card, exact positions, known-hand
-  counts, pool sizes, seen ≤ owned).
+  (pool contents within min/max and no unlisted universe card, block pools included, exact
+  positions, known-hand counts, pool sizes, seen ≤ owned). On the 168 runs above: 0 errors.
 - **`rmknow --selftest`**: synthetic event streams (`tools/rmknow/selftest.cpp`): the section 7
-  put-back example, cut accounting, a scry range, a batch, drawn-this-turn, a draw link, the
-  viewer's own rearrangement, the search rejoin, a London mulligan, closed-decklist match memory,
-  serialisation round trip.
+  put-back example (each of the top two is Force of Will or Daze, the block of the top two holds
+  exactly one of each, exact), cut accounting, a scry range, a batch, drawn-this-turn, a draw link,
+  the viewer's own rearrangement, the search rejoin, a London mulligan, closed-decklist match
+  memory, serialisation round trip, and forty draw / reveal / put-back / shuffle rounds staying
+  under 20 nodes.
+- **`rmknow --exactness N`** (`tools/rmknow/exactness.cpp`): the solver and compaction against
+  an enumerator of the worlds (`tools/rmknow/enumerate.h`) written independently of the solver. It
+  takes a plain description of the constraints (node sizes and pins, roots, junctions with fixed
+  cards) and sweeps the worlds forward through the junctions in dependency order, a state holding
+  the value of every frontier node something still reads; each junction divides its in nodes'
+  total among its out nodes in every way their sizes and pins allow, and interchangeable frontier
+  nodes (same size, consumer and pools) are kept sorted so equal states merge. It shares no code
+  with the solver and does no interval reasoning. Cases (≤ 15-card decks, deterministic seeds):
+  - N synthetic histories of library and hand operations on one player's model (draws, reveals,
+    casts and put-backs from a hand whose sub-pools the viewer cannot tell apart, shuffles, scries,
+    mills) under `EXACT`, `LOWER` and `FREE` roots, dealt from a hidden true deck: the raw
+    network's enumeration against the solver on the raw network, against the compacted network's
+    enumeration (same units, grouped by library position and zone) and against the solver on the
+    compacted network;
+  - N random two-player event streams through `Knowledge` (the opponent's draws, hand reveals,
+    put-backs, casts, top reveals, scries, mills, shuffles; the viewer's draws, looks and
+    put-backs), plus every fourth seed with compaction off: after each frame, both players' pools
+    against the enumeration of that instance's network and against the simulated truth;
+  - sculpted: the section 7 example from a hand also holding two unknown cards, a game 2 under a
+    closed decklist (a `LOWER` root), a game 2 with open decklists (the registered 15 split
+    between deck and sideboard).
 
+  A check passes when the solver's bounds contain the enumeration's and, when it reports exact,
+  equal them on every card. `--exactness 50`: 1,756 solver checks (all exact and equal) and 268
+  compaction checks in 8 s (debug build; 1 s release), with 164 of its 1,194 component solves
+  going beyond the closed form into the search; `--exactness 400`: 13,606 and 2,102. Deliberately broken, each of the leaf
+  formula, the series-elimination condition, the propagation, the flow bound and its cycle
+  cancelling is caught.

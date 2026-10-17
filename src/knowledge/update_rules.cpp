@@ -41,10 +41,12 @@ static uint16_t clamp_size(long v) {
 void Knowledge::on_game_start(const Event &ev) {
     game_active_ = true;
     game_ = ev.game;
+    turn_ = ev.turn;
     handles_.clear();
     draws_.clear();
     for (int p = 0; p < 2; ++p) {
         players_[p] = PlayerModel{};
+        solved_[p] = Solution{};
         seen_game_[p].clear();
         for (int s = 0; s < 2; ++s) reported_contradiction_[p][s] = false;
     }
@@ -155,7 +157,9 @@ void Knowledge::on_game_end(const Event &ev) {
 // A unit leaves the top of the drawer's library for their hand (each card drawn is its own
 // event). A card the event names is pinned (the drawer's own draw, a card in the viewer's live
 // window); a unit the model already knew stays known. Unless it is an opening-hand draw it is
-// drawn this turn (Node::drawn_turn) until it leaves the hand or the turn ends.
+// drawn this turn (Node::drawn_turn) until it leaves the hand or the turn ends. The player's first
+// such draw of the turn is the one a draw link may name later (Miracle: the first card drawn this
+// turn), so it is remembered for the turn.
 void Knowledge::on_draw(const Event &ev) {
     const int p = ev.player;
     if (p == NO_SEAT || ev.cards.empty()) {
@@ -171,9 +175,21 @@ void Knowledge::on_draw(const Event &ev) {
         node.drawn_turn = ev.opening ? -1 : static_cast<int16_t>(ev.turn);
         node.draw_seq = ev.seq;
         m.hand.push_back(n);
-        draws_[ev.seq] = std::make_pair(p, n);
+        if (!ev.opening && !drew_this_turn(p, ev.turn)) {
+            DrawRef d;
+            d.player = p;
+            d.node = n;
+            d.turn = ev.turn;
+            draws_[ev.seq] = d;
+        }
         bind_handle(p, n, c.handle_after);
     }
+}
+
+bool Knowledge::drew_this_turn(int p, uint16_t turn) const {
+    for (const auto &d : draws_)
+        if (d.second.player == p && d.second.turn == turn) return true;
+    return false;
 }
 
 // ── zone_move, cast_from_hidden, play_from_hidden ─────────────────────────────────────────────
@@ -482,11 +498,11 @@ void Knowledge::on_reveal(const Event &ev) {
             case Zn::SIDEBOARD: {
                 if (c.draw_seq != 0) {
                     const auto d = draws_.find(c.draw_seq);
-                    if (d == draws_.end() || d->second.first != p) {
+                    if (d == draws_.end() || d->second.player != p) {
                         error(
                             "a draw link to draw " + std::to_string(c.draw_seq) + ", which the model has no unit for");
                     } else {
-                        const NodeId n = d->second.second;
+                        const NodeId n = d->second.node;
                         pin_unit(p, n, c.card);
                         const Node &node = m.net.node(n);
                         if (node.loc == Loc::HAND && node.handle == 0) {

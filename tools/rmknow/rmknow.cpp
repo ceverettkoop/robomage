@@ -2,7 +2,11 @@
 //
 //   rmknow [--viewer A|B] [--in FILE] [--out FILE] [--text | --quiet] [--truth] < frames.bin > knowledge.bin
 //   rmknow --selftest
+//   rmknow --exactness N
 //
+// --stats prints, after the summary, one RMKNOW_STATS line: frames, exact frames (k_meta.exact),
+// the most nodes and junctions either player's network held, the largest and mean serialised state
+// (Knowledge::serialize) and the percentiles and histogram of k_meta's solver steps.
 // Reads RMSTATE records (an --rmstate-dump file, or a --machine-format rmstate stream), keeps the
 // chosen seat's frames (SCHEMA, CARDS, DECKLISTS, STATE) and runs the knowledge sidecar on them.
 // With several viewers in the stream --viewer picks one (default: the stream's first frame's seat).
@@ -21,8 +25,13 @@
 // Exit status 0 when there was no error.
 //
 // --selftest runs the update-rule unit tests on synthetic event streams (selftest.cpp).
+// --exactness N checks the exact solver and compaction against an independent enumerator of the
+// worlds on N synthetic histories and N random event streams plus sculpted cases (exactness.cpp);
+// the last line is RMKNOW_EXACTNESS: cases=… checks=… exact=… skipped=… failed=….
 
+#include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <string>
@@ -43,6 +52,19 @@ struct Options {
         bool quiet = false;
         bool truth = false;
         bool selftest = false;
+        int exactness = 0;
+        bool stats = false;
+};
+
+// Per-frame cost and size figures (--stats).
+struct Stats {
+        size_t frames = 0;
+        size_t exact_frames = 0;
+        size_t max_nodes[2] = {0, 0};
+        size_t max_junctions[2] = {0, 0};
+        size_t max_blob = 0;
+        uint64_t blob_sum = 0;
+        std::vector<uint32_t> steps;
 };
 
 // The true world of one decision, from the omniscient frame.
@@ -61,6 +83,8 @@ static size_t check_truth(const knowledge::Knowledge &know, const knowledge::KRo
     const knowledge::Snapshot &omni, size_t frame);
 static void truth_error(const std::string &what, const knowledge::Snapshot &omni, size_t *errors);
 static int count_of(const std::map<int, int> &m, int card);
+static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st);
+static void print_stats(Stats *st);
 
 static bool parse_args(int argc, char **argv, Options *opt) {
     for (int i = 1; i < argc; ++i) {
@@ -86,13 +110,23 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             opt->quiet = true;
         } else if (a == "--truth") {
             opt->truth = true;
+        } else if (a == "--stats") {
+            opt->stats = true;
         } else if (a == "--selftest") {
             opt->selftest = true;
+        } else if (a == "--exactness" && has_value) {
+            opt->exactness = std::atoi(argv[++i]);
+            if (opt->exactness <= 0) {
+                std::fprintf(stderr, "rmknow: --exactness takes a positive count\n");
+                return false;
+            }
         } else if (a == "--help" || a == "-h") {
             std::fprintf(stderr,
-                "usage: rmknow [--viewer A|B] [--in FILE] [--out FILE] [--text | --quiet] [--truth] < frames > "
+                "usage: rmknow [--viewer A|B] [--in FILE] [--out FILE] [--text | --quiet] [--truth] [--stats] < frames "
+                "> "
                 "knowledge\n"
-                "       rmknow --selftest\n");
+                "       rmknow --selftest\n"
+                "       rmknow --exactness N\n");
             return false;
         } else {
             std::fprintf(stderr, "rmknow: unknown argument '%s' (see --help)\n", a.c_str());
@@ -100,6 +134,43 @@ static bool parse_args(int argc, char **argv, Options *opt) {
         }
     }
     return true;
+}
+
+static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st) {
+    ++st->frames;
+    if (rows.meta.exact) ++st->exact_frames;
+    st->steps.push_back(rows.meta.steps);
+    for (int p = 0; p < 2; ++p) {
+        st->max_nodes[p] = std::max(st->max_nodes[p], know.player(p).net.node_count());
+        st->max_junctions[p] = std::max(st->max_junctions[p], know.player(p).net.junction_count());
+    }
+    std::string blob;
+    know.serialize(blob);
+    st->max_blob = std::max(st->max_blob, blob.size());
+    st->blob_sum += blob.size();
+}
+
+// RMKNOW_STATS: frames, exact frames, the most nodes and junctions per player, the largest and
+// mean serialised state, the k_meta step counts' percentiles and their histogram (frames with at
+// most 10^2, 10^3, 10^4, 10^5, 10^6 steps, and more).
+static void print_stats(Stats *st) {
+    std::vector<uint32_t> &v = st->steps;
+    std::sort(v.begin(), v.end());
+    const auto pct = [&v](double q) {
+        return v.empty() ? 0u : v[static_cast<size_t>(q * static_cast<double>(v.size() - 1))];
+    };
+    size_t hist[6] = {0, 0, 0, 0, 0, 0};
+    for (uint32_t x : v) {
+        size_t b = 0;
+        for (uint64_t lim = 100; b < 5 && x > lim; lim *= 10) ++b;
+        ++hist[b];
+    }
+    std::fprintf(stderr,
+        "RMKNOW_STATS: frames=%zu exact=%zu nodes=%zu/%zu junctions=%zu/%zu blob_max=%zu blob_mean=%llu "
+        "steps_p50=%u p90=%u p99=%u max=%u hist=%zu/%zu/%zu/%zu/%zu/%zu\n",
+        st->frames, st->exact_frames, st->max_nodes[0], st->max_nodes[1], st->max_junctions[0], st->max_junctions[1],
+        st->max_blob, static_cast<unsigned long long>(st->frames ? st->blob_sum / st->frames : 0), pct(0.5), pct(0.9),
+        pct(0.99), v.empty() ? 0u : v.back(), hist[0], hist[1], hist[2], hist[3], hist[4], hist[5]);
 }
 
 static int count_of(const std::map<int, int> &m, int card) {
@@ -214,6 +285,7 @@ int main(int argc, char **argv) {
     Options opt;
     if (!parse_args(argc, argv, &opt)) return 2;
     if (opt.selftest) return run_selftest();
+    if (opt.exactness) return run_exactness(opt.exactness);
     FILE *in = stdin;
     if (!opt.in.empty() && opt.in != "-") {
         in = std::fopen(opt.in.c_str(), "rb");
@@ -243,6 +315,7 @@ int main(int argc, char **argv) {
     knowledge::Snapshot last_snap;
     bool have_last = false;
     bool wrote_schema = false;
+    Stats stats;
 
     while (reader.next(&payload, &res)) {
         rmstate::FrameKind kind;
@@ -296,6 +369,7 @@ int main(int argc, char **argv) {
         }
         if (kind != rmstate::FrameKind::STATE) continue;
         ++frames;
+        if (opt.stats && know.game_active()) add_stats(know, know.rows(), &stats);
         if (opt.truth) {
             rmstate::DecodedFrame frame;
             std::string err;
@@ -321,6 +395,7 @@ int main(int argc, char **argv) {
     std::fprintf(stderr, "RMKNOW: viewer=%s frames=%zu errors=%zu", opt.viewer == 1 ? "B" : "A", frames, errors);
     if (opt.truth) std::fprintf(stderr, " truth_frames=%zu truth_errors=%zu", truth_frames, truth_errors);
     std::fprintf(stderr, "\n");
+    if (opt.stats) print_stats(&stats);
     if (in != stdin) std::fclose(in);
     if (out != stdout) std::fclose(out);
     return errors == 0 && truth_errors == 0 ? 0 : 1;

@@ -131,12 +131,20 @@ void BoundStore::node_changed(const Network &net, NodeId n) {
     if (node.loc != Loc::GONE || node.root >= 0) cut_queued_ = true;
 }
 
-// The in nodes' units are the out nodes' units, per class: each member's interval is narrowed to
-// what the other side's sum leaves after its own side's other members.
-void BoundStore::eval_relation(const Network &net, const std::vector<NodeId> &in, const std::vector<NodeId> &out) {
+// Per class of the universe, the copies `c` lists.
+void BoundStore::class_counts(const CardCounts &c, std::vector<int> *out) const {
+    out->assign(classes_, 0);
+    for (const auto &e : c) (*out)[universe.index_of(e.first)] += e.second;
+}
+
+// The in nodes' units plus `in_fixed` are the out nodes' units plus `out_fixed`, per class: each
+// member's interval is narrowed to what the other side's sum leaves after its own side's other
+// members and fixed cards.
+void BoundStore::eval_relation(const Network &net, const std::vector<NodeId> &in, const std::vector<NodeId> &out,
+    const std::vector<int> &in_fixed, const std::vector<int> &out_fixed) {
     changed_.clear();
     for (size_t k = 0; k < classes_; ++k) {
-        int in_lo = 0, in_hi = 0, out_lo = 0, out_hi = 0;
+        int in_lo = in_fixed[k], in_hi = in_fixed[k], out_lo = out_fixed[k], out_hi = out_fixed[k];
         for (NodeId n : in) in_lo += lo_[n * classes_ + k], in_hi += hi_[n * classes_ + k];
         for (NodeId n : out) out_lo += lo_[n * classes_ + k], out_hi += hi_[n * classes_ + k];
         if (in_lo > out_hi || out_lo > in_hi) {
@@ -195,6 +203,13 @@ uint64_t BoundStore::propagate(const Network &net, const std::vector<NodeId> &li
         node_changed(net, pins[i]);
     }
     for (size_t j = junctions_done_; j < net.junction_count(); ++j) enqueue(static_cast<uint32_t>(j));
+    cut_in_fixed_.assign(classes_, 0);
+    cut_out_fixed_.assign(classes_, 0);
+    for (size_t j = 0; j < net.junction_count(); ++j) {
+        const Junction &jn = net.junction(static_cast<uint32_t>(j));
+        for (const auto &e : jn.in_fixed) cut_in_fixed_[universe.index_of(e.first)] += e.second;
+        for (const auto &e : jn.out_fixed) cut_out_fixed_[universe.index_of(e.first)] += e.second;
+    }
     nodes_done_ = n_nodes;
     pins_done_ = pins.size();
     junctions_done_ = net.junction_count();
@@ -210,10 +225,13 @@ uint64_t BoundStore::propagate(const Network &net, const std::vector<NodeId> &li
         if (head < queue_.size()) {
             const uint32_t j = queue_[head++];
             queued_[j] = 0;
-            eval_relation(net, net.junction(j).in, net.junction(j).out);
+            const Junction &jn = net.junction(j);
+            class_counts(jn.in_fixed, &fixed_in_);
+            class_counts(jn.out_fixed, &fixed_out_);
+            eval_relation(net, jn.in, jn.out, fixed_in_, fixed_out_);
         } else {
             cut_queued_ = false;
-            eval_relation(net, roots_, live);
+            eval_relation(net, roots_, live, cut_in_fixed_, cut_out_fixed_);
         }
         if (head > 4096 && head * 2 > queue_.size()) {
             queue_.erase(queue_.begin(), queue_.begin() + static_cast<std::ptrdiff_t>(head));

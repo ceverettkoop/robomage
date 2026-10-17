@@ -9,8 +9,11 @@ namespace knowledge {
 // Constraint evaluations one propagation may use per player and store before it stops (still
 // sound, possibly looser).
 static constexpr uint64_t PROPAGATION_BUDGET = 4000000;
+// Steps the exact solver may use per player and frame before it reports the propagated bounds
+// for what it has not settled (still sound; k_meta.exact 0).
+static constexpr uint64_t SOLVER_BUDGET = 1000000;
 static constexpr uint32_t STATE_MAGIC = 0x4E4B4D52u;  // "RMKN"
-static constexpr uint16_t STATE_VERSION = 1;
+static constexpr uint16_t STATE_VERSION = 2;
 
 static const char *zone_word(Zn z);
 static const char *loc_word(Loc l);
@@ -18,6 +21,8 @@ static void put_seen(std::string &out, const std::map<int, uint8_t> &m);
 static bool get_seen(ByteReader &r, std::map<int, uint8_t> *m);
 static void put_entries(std::string &out, const std::vector<DeckEntry> &v);
 static bool get_entries(ByteReader &r, std::vector<DeckEntry> *v);
+static void put_solution(std::string &out, const Solution &s);
+static bool get_solution(ByteReader &r, Solution *s);
 
 Knowledge::Knowledge(rmstate::KnowledgeLevel level) : level_(level) {}
 
@@ -126,9 +131,11 @@ void Knowledge::apply_frame(const Snapshot &snap) {
     apply_events(snap.events);
     frame_seq_ = 0;
     if (!game_active_) return;
+    compact();
     propagate();
     update_seen();
     check(snap);
+    solve();
 }
 
 void Knowledge::apply_events(const std::vector<Event> &events) {
@@ -148,6 +155,7 @@ void Knowledge::apply_events(const std::vector<Event> &events) {
 void Knowledge::apply_event(const Event &ev) {
     using rmstate::EventKind;
     frame_seq_ = ev.seq;
+    turn_ = std::max(turn_, ev.turn);
     if (last_seq_ != 0 && ev.seq != last_seq_ + 1)
         error("event seq " + std::to_string(ev.seq) + " follows " + std::to_string(last_seq_) + " (a lost event)");
     last_seq_ = ev.seq;
@@ -202,7 +210,61 @@ void Knowledge::apply_event(const Event &ev) {
     }
 }
 
-// ── Propagation and match memory ──────────────────────────────────────────────────────────────
+// ── Compaction, propagation, solving and match memory ─────────────────────────────────────────
+
+// Compacts every network that changed since its last compaction. A draw link only names a draw of
+// the turn it is in, so earlier turns' draws are forgotten first and this turn's are kept.
+// Handles and draw links follow their units to the new ids.
+void Knowledge::compact() {
+    if (!compaction_) return;
+    for (auto it = draws_.begin(); it != draws_.end();)
+        if (it->second.turn != turn_)
+            it = draws_.erase(it);
+        else
+            ++it;
+    for (int p = 0; p < 2; ++p) {
+        PlayerModel &m = players_[p];
+        if (!m.needs_compaction()) continue;
+        std::vector<NodeId> protect;
+        for (const auto &d : draws_)
+            if (d.second.player == p) protect.push_back(d.second.node);
+        std::vector<NodeId> remap;
+        m.compact(protect, &remap);
+        for (auto it = handles_.begin(); it != handles_.end();) {
+            if (it->second.first == p) {
+                const NodeId n = remap[it->second.second];
+                if (n == NO_NODE) {
+                    it = handles_.erase(it);
+                    continue;
+                }
+                it->second.second = n;
+            }
+            ++it;
+        }
+        for (auto &d : draws_)
+            if (d.second.player == p) d.second.node = remap[d.second.node];
+    }
+}
+
+std::vector<std::vector<NodeId>> Knowledge::pool_groups(int p) const {
+    std::vector<std::vector<NodeId>> groups;
+    for (const PoolSpec &spec : pool_specs(p)) groups.push_back(spec.nodes);
+    return groups;
+}
+
+// The exact solver over every pool the tables may report (pool_specs), per player.
+void Knowledge::solve() {
+    solve_steps_ = 0;
+    for (int p = 0; p < 2; ++p) {
+        const PlayerModel &m = players_[p];
+        solved_[p] = solver_.solve(m.net, m.full, pool_groups(p), SOLVER_BUDGET);
+        solve_steps_ += solved_[p].steps;
+        if (solved_[p].contradiction && m.full.contradiction().empty() && !reported_contradiction_[p][0]) {
+            reported_contradiction_[p][0] = true;
+            error(std::string("player ") + (p == 0 ? "A" : "B") + ": the exact solver finds no world");
+        }
+    }
+}
 
 void Knowledge::propagate() {
     steps_ = 0;
@@ -525,6 +587,35 @@ static bool get_entries(ByteReader &r, std::vector<DeckEntry> *v) {
     return r.ok;
 }
 
+static void put_solution(std::string &out, const Solution &s) {
+    put_u8(out, s.exact ? 1 : 0);
+    put_u8(out, s.contradiction ? 1 : 0);
+    put_u64(out, s.steps);
+    put_u32(out, s.groups.size());
+    for (const GroupBounds &g : s.groups) {
+        put_str(out, std::string(g.lo.begin(), g.lo.end()));
+        put_str(out, std::string(g.hi.begin(), g.hi.end()));
+    }
+}
+
+static bool get_solution(ByteReader &r, Solution *s) {
+    *s = Solution{};
+    s->exact = r.u8() != 0;
+    s->contradiction = r.u8() != 0;
+    s->steps = r.u64();
+    const uint64_t n = r.u32();
+    if (!r.count(n, r.in.size())) return false;
+    for (uint64_t i = 0; i < n; ++i) {
+        GroupBounds g;
+        const std::string lo = r.str(), hi = r.str();
+        g.lo.assign(lo.begin(), lo.end());
+        g.hi.assign(hi.begin(), hi.end());
+        if (g.lo.size() != g.hi.size()) return false;
+        s->groups.push_back(g);
+    }
+    return r.ok;
+}
+
 void Knowledge::serialize(std::string &out) const {
     put_u32(out, STATE_MAGIC);
     put_u16(out, STATE_VERSION);
@@ -547,18 +638,26 @@ void Knowledge::serialize(std::string &out) const {
     for (int p = 0; p < 2; ++p) put_u8(out, closed_[p] ? 1 : 0);
     put_entries(out, own_deck_);
     for (int p = 0; p < 2; ++p) players_[p].serialize(out);
-    for (const auto *m : {&handles_, &draws_}) {
-        put_u32(out, m->size());
-        for (const auto &e : *m) {
-            put_u32(out, e.first);
-            put_u8(out, static_cast<uint8_t>(e.second.first));
-            put_u32(out, e.second.second);
-        }
+    put_u32(out, handles_.size());
+    for (const auto &e : handles_) {
+        put_u32(out, e.first);
+        put_u8(out, static_cast<uint8_t>(e.second.first));
+        put_u32(out, e.second.second);
+    }
+    put_u32(out, draws_.size());
+    for (const auto &e : draws_) {
+        put_u32(out, e.first);
+        put_u8(out, static_cast<uint8_t>(e.second.player));
+        put_u32(out, e.second.node);
+        put_u16(out, e.second.turn);
     }
     for (int p = 0; p < 2; ++p) put_seen(out, seen_game_[p]);
     for (int p = 0; p < 2; ++p)
         for (int s = 0; s < 2; ++s) put_u8(out, reported_contradiction_[p][s] ? 1 : 0);
     put_u64(out, steps_);
+    put_u16(out, turn_);
+    for (int p = 0; p < 2; ++p) put_solution(out, solved_[p]);
+    put_u64(out, solve_steps_);
 }
 
 bool Knowledge::deserialize(const std::string &in) {
@@ -594,23 +693,37 @@ bool Knowledge::deserialize(const std::string &in) {
     for (int p = 0; p < 2; ++p)
         if (!players_[p].deserialize(in, &at)) return false;
     ByteReader r2(in, at);
-    for (auto *m : {&handles_, &draws_}) {
-        m->clear();
-        const uint64_t n = r2.u32();
-        if (!r2.count(n, in.size())) return false;
-        for (uint64_t i = 0; i < n; ++i) {
-            const uint32_t key = static_cast<uint32_t>(r2.u32());
-            const int p = static_cast<int>(r2.u8());
-            const NodeId node = static_cast<NodeId>(r2.u32());
-            if (p > 1 || node >= players_[p].net.node_count()) return false;
-            (*m)[key] = std::make_pair(p, node);
-        }
+    handles_.clear();
+    const uint64_t n_handles = r2.u32();
+    if (!r2.count(n_handles, in.size())) return false;
+    for (uint64_t i = 0; i < n_handles; ++i) {
+        const uint32_t key = static_cast<uint32_t>(r2.u32());
+        const int p = static_cast<int>(r2.u8());
+        const NodeId node = static_cast<NodeId>(r2.u32());
+        if (p > 1 || node >= players_[p].net.node_count()) return false;
+        handles_[key] = std::make_pair(p, node);
+    }
+    draws_.clear();
+    const uint64_t n_draws = r2.u32();
+    if (!r2.count(n_draws, in.size())) return false;
+    for (uint64_t i = 0; i < n_draws; ++i) {
+        const uint32_t key = static_cast<uint32_t>(r2.u32());
+        DrawRef d;
+        d.player = static_cast<int>(r2.u8());
+        d.node = static_cast<NodeId>(r2.u32());
+        d.turn = static_cast<uint16_t>(r2.u16());
+        if (d.player > 1 || d.node >= players_[d.player].net.node_count()) return false;
+        draws_[key] = d;
     }
     for (int p = 0; p < 2; ++p)
         if (!get_seen(r2, &seen_game_[p])) return false;
     for (int p = 0; p < 2; ++p)
         for (int s = 0; s < 2; ++s) reported_contradiction_[p][s] = r2.u8() != 0;
     steps_ = r2.u64();
+    turn_ = static_cast<uint16_t>(r2.u16());
+    for (int p = 0; p < 2; ++p)
+        if (!get_solution(r2, &solved_[p])) return false;
+    solve_steps_ = r2.u64();
     return r2.ok && r2.at == in.size();
 }
 

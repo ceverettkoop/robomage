@@ -1,5 +1,9 @@
 #include "player_model.h"
 
+#include <algorithm>
+#include <map>
+
+#include "compact.h"
 #include "serial.h"
 
 namespace knowledge {
@@ -195,6 +199,66 @@ const std::vector<NodeId> *PlayerModel::zone_list(Loc loc) const {
     return const_cast<PlayerModel *>(this)->zone_list(loc);
 }
 
+// Two live nodes only their common producer constrains (each appears in it once, as a part of a
+// sum): any split of their union between them is as possible as any other, so they can be one node.
+bool PlayerModel::interchangeable(NodeId a, NodeId b, const std::vector<uint8_t> &protect) const {
+    const Node &x = net.node(a);
+    const Node &y = net.node(b);
+    if (x.in == NO_JUNCTION || x.in != y.in) return false;
+    if (x.pin >= 0 || y.pin >= 0 || x.handle != 0 || y.handle != 0 || x.root >= 0 || y.root >= 0) return false;
+    return !protect[a] && !protect[b];
+}
+
+// Merges the interchangeable sub-pools of a set zone that share a drawn-this-turn turn; the merged
+// node takes the place of the group's first.
+void PlayerModel::merge_set_zone(std::vector<NodeId> &zone, const std::vector<uint8_t> &protect) {
+    std::vector<NodeId> out;
+    std::vector<bool> used(zone.size(), false);
+    for (size_t i = 0; i < zone.size(); ++i) {
+        if (used[i]) continue;
+        std::vector<NodeId> group = {zone[i]};
+        for (size_t k = i + 1; k < zone.size(); ++k)
+            if (!used[k] && interchangeable(zone[i], zone[k], protect) &&
+                net.node(zone[i]).drawn_turn == net.node(zone[k]).drawn_turn) {
+                group.push_back(zone[k]);
+                used[k] = true;
+            }
+        out.push_back(group.size() == 1 ? group[0] : net.merge(group, net.node(zone[i]).loc));
+    }
+    zone = out;
+}
+
+void PlayerModel::compact(const std::vector<NodeId> &protect, std::vector<NodeId> *remap) {
+    std::vector<uint8_t> prot(net.node_count(), 0);
+    for (NodeId n : protect)
+        if (n < prot.size()) prot[n] = 1;
+    for (size_t seg = 1; seg < library.size();) {
+        if (!interchangeable(library[seg - 1], library[seg], prot)) {
+            ++seg;
+            continue;
+        }
+        const NodeId m = net.merge({library[seg - 1], library[seg]}, Loc::LIBRARY);
+        prot.push_back(0);
+        library[seg - 1] = m;
+        library.erase(library.begin() + static_cast<std::ptrdiff_t>(seg));
+    }
+    for (std::vector<NodeId> *z : {&hand, &sideboard, &set_aside}) {
+        merge_set_zone(*z, prot);
+        prot.resize(net.node_count(), 0);
+    }
+
+    std::vector<uint8_t> keep(net.node_count(), 0);
+    for (NodeId n : live()) keep[n] = 1;
+    for (NodeId n : protect)
+        if (n < keep.size()) keep[n] = 1;
+    net = compact_network(net, keep, remap);
+    for (std::vector<NodeId> *z : {&library, &hand, &sideboard, &set_aside, &face_down, &publics})
+        for (NodeId &n : *z) n = (*remap)[n];
+    full.reset();
+    seen.reset();
+    compacted_nodes = net.node_count();
+}
+
 void PlayerModel::serialize(std::string &out) const {
     net.serialize(out);
     full.serialize(out);
@@ -202,6 +266,7 @@ void PlayerModel::serialize(std::string &out) const {
     for (const std::vector<NodeId> *z : {&library, &hand, &sideboard, &set_aside, &face_down, &publics})
         put_nodes(out, *z);
     put_i32(out, dtt_unknown_turn);
+    put_u64(out, compacted_nodes);
 }
 
 bool PlayerModel::deserialize(const std::string &in, size_t *at) {
@@ -209,6 +274,7 @@ bool PlayerModel::deserialize(const std::string &in, size_t *at) {
     ByteReader r(in, *at);
     for (std::vector<NodeId> *z : {&library, &hand, &sideboard, &set_aside, &face_down, &publics}) *z = r.u32s();
     dtt_unknown_turn = r.i32();
+    compacted_nodes = static_cast<size_t>(r.u64());
     *at = r.at;
     if (!r.ok) return false;
     for (const NodeId n : live())
