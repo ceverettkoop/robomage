@@ -43,6 +43,9 @@ class Sweep {
 
 static void vectors_of_size(
     int size, const std::vector<int> *limit, std::vector<int> &cur, size_t k, std::vector<std::vector<int>> *out);
+static double factorial(int n);
+static void weighted_divide(const EnumSpec &spec, const std::vector<int> &rem, const std::vector<int> &outs, size_t i,
+    const std::vector<int> &slot, int K, double w, State &st, std::map<State, double> *out);
 
 // Every count vector of `size` over cur.size() classes (at most `limit` per class when given).
 static void vectors_of_size(
@@ -255,6 +258,129 @@ EnumResult Sweep::run() {
                 res.hi[g][k] = std::max(res.hi[g][k], c);
             }
     return res;
+}
+
+static double factorial(int n) {
+    double f = 1;
+    for (int i = 2; i <= n; ++i) f *= i;
+    return f;
+}
+
+// Every division of `rem` among the out nodes `outs[i..]` (their sizes and pins), each adding
+// w / Π_o Π_c x_oc! to `out` (the rest of the division's probability is the caller's).
+static void weighted_divide(const EnumSpec &spec, const std::vector<int> &rem, const std::vector<int> &outs, size_t i,
+    const std::vector<int> &slot, int K, double w, State &st, std::map<State, double> *out) {
+    if (i == outs.size()) {
+        for (int c : rem)
+            if (c != 0) return;
+        (*out)[st] += w;
+        return;
+    }
+    const EnumSpec::Node &node = spec.nodes[static_cast<size_t>(outs[i])];
+    std::vector<std::vector<int>> vs;
+    std::vector<int> cur(static_cast<size_t>(K), 0);
+    vectors_of_size(node.size, &rem, cur, 0, &vs);
+    std::vector<int> rest(rem.size());
+    for (const std::vector<int> &v : vs) {
+        if (node.pin >= 0 && v[static_cast<size_t>(node.pin)] != 1) continue;
+        double f = 1;
+        for (size_t k = 0; k < v.size(); ++k) {
+            rest[k] = rem[k] - v[k];
+            f *= factorial(v[k]);
+        }
+        const int s = slot[static_cast<size_t>(outs[i])];
+        if (s >= 0) std::copy(v.begin(), v.end(), st.begin() + static_cast<std::ptrdiff_t>(s) * K);
+        weighted_divide(spec, rest, outs, i + 1, slot, K, w / f, st, out);
+    }
+    const int s = slot[static_cast<size_t>(outs[i])];
+    if (s >= 0)
+        std::fill(
+            st.begin() + static_cast<std::ptrdiff_t>(s) * K, st.begin() + static_cast<std::ptrdiff_t>(s + 1) * K, 0);
+}
+
+double weighted_world_probability(const EnumSpec &spec, uint64_t cap, bool *complete) {
+    *complete = false;
+    const size_t n = spec.nodes.size();
+    const int K = spec.K;
+    std::vector<int> producer(n, -1), consumer(n, -1);
+    for (size_t j = 0; j < spec.junctions.size(); ++j) {
+        for (int m : spec.junctions[j].in) consumer[static_cast<size_t>(m)] = static_cast<int>(j);
+        for (int m : spec.junctions[j].out) producer[static_cast<size_t>(m)] = static_cast<int>(j);
+    }
+    // Junction order: each after the junctions that made its in nodes.
+    std::vector<int> order;
+    std::vector<bool> done(spec.junctions.size(), false);
+    while (order.size() < spec.junctions.size()) {
+        bool progress = false;
+        for (size_t j = 0; j < spec.junctions.size(); ++j) {
+            if (done[j]) continue;
+            bool ready = true;
+            for (int m : spec.junctions[j].in) {
+                const int pj = producer[static_cast<size_t>(m)];
+                if (pj >= 0 && !done[static_cast<size_t>(pj)]) ready = false;
+            }
+            if (!ready) continue;
+            done[j] = true;
+            progress = true;
+            order.push_back(static_cast<int>(j));
+        }
+        if (!progress) return 0;
+    }
+    // A slot per node a junction consumes.
+    std::vector<int> slot(n, -1);
+    int slots = 0;
+    for (size_t i = 0; i < n; ++i)
+        if (consumer[i] >= 0) slot[i] = slots++;
+    State start(static_cast<size_t>(slots) * static_cast<size_t>(K), 0);
+    for (const EnumSpec::Root &r : spec.roots) {
+        if (r.kind != 0) return 0;
+        const EnumSpec::Node &node = spec.nodes[static_cast<size_t>(r.node)];
+        int total = 0;
+        for (int c : r.counts) total += c;
+        if (total != node.size || (node.pin >= 0 && r.counts[static_cast<size_t>(node.pin)] != 1)) {
+            *complete = true;
+            return 0;
+        }
+        const int s = slot[static_cast<size_t>(r.node)];
+        if (s >= 0) std::copy(r.counts.begin(), r.counts.end(), start.begin() + static_cast<std::ptrdiff_t>(s) * K);
+    }
+    std::map<State, double> states = {{start, 1.0}};
+    for (int j : order) {
+        const EnumSpec::Junction &jn = spec.junctions[static_cast<size_t>(j)];
+        std::map<State, double> next;
+        for (const auto &e : states) {
+            std::vector<int> y(jn.in_fixed);
+            for (int m : jn.in) {
+                const size_t s = static_cast<size_t>(slot[static_cast<size_t>(m)]);
+                for (size_t k = 0; k < y.size(); ++k) y[k] += e.first[s * static_cast<size_t>(K) + k];
+            }
+            std::vector<int> rem(y.size());
+            int units = 0;
+            bool ok = true;
+            double w = e.second;
+            for (size_t k = 0; k < y.size(); ++k) {
+                units += y[k];
+                rem[k] = y[k] - jn.out_fixed[k];
+                if (rem[k] < 0) ok = false;
+                w *= factorial(y[k]);
+            }
+            if (!ok) continue;
+            w /= factorial(units);
+            for (int m : jn.out) w *= factorial(spec.nodes[static_cast<size_t>(m)].size);
+            State st = e.first;
+            for (int m : jn.in) {
+                const std::ptrdiff_t s = slot[static_cast<size_t>(m)];
+                std::fill(st.begin() + s * K, st.begin() + (s + 1) * K, 0);
+            }
+            weighted_divide(spec, rem, jn.out, 0, slot, K, w, st, &next);
+            if (next.size() > cap) return 0;
+        }
+        states.swap(next);
+    }
+    *complete = true;
+    double total = 0;
+    for (const auto &e : states) total += e.second;
+    return total;
 }
 
 EnumSpec spec_of(const knowledge::Network &net, const knowledge::Universe &uni) {

@@ -1,9 +1,10 @@
 // rmknow: one seat's knowledge from a recorded RMSTATE stream (docs/knowledge_store.md §2, §7).
 //
-//   rmknow [--viewer A|B] [--level off|expert] [--in FILE] [--out FILE] [--text | --quiet] [--truth]
-//          [--isolation] [--stats] < frames.bin > knowledge.bin
+//   rmknow [--viewer A|B] [--level off|expert|expert+belief] [--in FILE] [--out FILE] [--text | --quiet]
+//          [--truth] [--isolation] [--stats] [--belief] [--hide-lists] < frames.bin > knowledge.bin
 //   rmknow --selftest
 //   rmknow --exactness N
+//   rmknow --belief-exactness N
 //
 // --stats prints, after the summary, one RMKNOW_STATS line: frames, exact frames (k_meta.exact),
 // the most nodes and junctions either player's network held, the largest and mean serialised state
@@ -35,6 +36,17 @@
 // first differing table and row, and the summary adds isolation_frames=<n> isolation_errors=<n>.
 // Exit status 0 when there was no error.
 //
+// --belief (implies --quiet; --level expert+belief) prints, per STATE frame of the seat in a live game
+// whose opponent's list it does not see, one line for calibration (docs/knowledge_store.md §10.6):
+//   RMKNOW_BELIEF: game=<g> decision=<d> true=<list ids equal to the opponent's registered list, from
+//   the omniscient DECKLISTS frame, comma-separated, or -> exact=<0|1> prob=<b_list prob per list>
+// --hide-lists feeds the seat's DECKLISTS frame without the opponent's list, as --closed-decklist
+// would have sent it: the belief layer's calibration over games played with open decklists (the
+// agents that need BQUERY cannot play under --closed-decklist); the events are the same either way.
+// It does not combine with --isolation (the frames' own tables were built with the list).
+// --belief-exactness N checks the belief layer against the weighted enumeration of the hypothesis
+// networks and the model played out directly on N simulated games (exactness.cpp); the last line is
+// RMKNOW_BELIEF_EXACTNESS: cases=… enum_checks=… model_checks=… skipped=… failed=….
 // --selftest runs the update-rule unit tests on synthetic event streams (selftest.cpp).
 // --exactness N checks the exact solver and compaction against an independent enumerator of the
 // worlds on N synthetic histories and N random event streams plus sculpted cases (exactness.cpp);
@@ -48,6 +60,7 @@
 #include <string>
 #include <vector>
 
+#include "../../src/knowledge/belief.h"
 #include "../../src/knowledge/knowledge.h"
 #include "../../src/knowledge/truth.h"
 #include "../../src/state_format/decode.h"
@@ -67,6 +80,9 @@ struct Options {
         bool isolation = false;
         bool selftest = false;
         int exactness = 0;
+        int belief_exactness = 0;
+        bool belief = false;
+        bool hide_lists = false;
         bool stats = false;
 };
 
@@ -88,6 +104,8 @@ static size_t check_frame_truth(const knowledge::Knowledge &know, const knowledg
     const knowledge::Truth &truth, const knowledge::Snapshot &omni, size_t *facts);
 static void truth_error(const std::string &what, const knowledge::Snapshot &omni, size_t *errors);
 static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st);
+static void print_belief(const knowledge::Knowledge &know, const knowledge::Decklists *truth, FILE *out);
+static void feed_hidden_lists(knowledge::Knowledge &know, const std::string &payload);
 static void print_stats(Stats *st);
 static std::string tables_frame(const std::string &blocks, uint32_t n, rmstate::Viewer viewer, uint64_t hash);
 static std::string describe_k_difference(const knowledge::Knowledge &know, const std::string &engine, uint32_t n_engine,
@@ -113,8 +131,10 @@ static bool parse_args(int argc, char **argv, Options *opt) {
                 opt->level = rmstate::KnowledgeLevel::OFF;
             else if (v == "expert")
                 opt->level = rmstate::KnowledgeLevel::EXPERT;
+            else if (v == "expert+belief")
+                opt->level = rmstate::KnowledgeLevel::EXPERT_BELIEF;
             else {
-                std::fprintf(stderr, "rmknow: --level takes off or expert, got '%s'\n", v.c_str());
+                std::fprintf(stderr, "rmknow: --level takes off, expert or expert+belief, got '%s'\n", v.c_str());
                 return false;
             }
         } else if (a == "--isolation") {
@@ -139,13 +159,25 @@ static bool parse_args(int argc, char **argv, Options *opt) {
                 std::fprintf(stderr, "rmknow: --exactness takes a positive count\n");
                 return false;
             }
+        } else if (a == "--belief-exactness" && has_value) {
+            opt->belief_exactness = std::atoi(argv[++i]);
+            if (opt->belief_exactness <= 0) {
+                std::fprintf(stderr, "rmknow: --belief-exactness takes a positive count\n");
+                return false;
+            }
+        } else if (a == "--belief") {
+            opt->belief = true;
+        } else if (a == "--hide-lists") {
+            opt->hide_lists = true;
         } else if (a == "--help" || a == "-h") {
             std::fprintf(stderr,
-                "usage: rmknow [--viewer A|B] [--level off|expert] [--in FILE] [--out FILE] [--text | --quiet] "
+                "usage: rmknow [--viewer A|B] [--level off|expert|expert+belief] [--in FILE] [--out FILE] [--text | "
+                "--quiet] "
                 "[--truth]\n"
-                "              [--isolation] [--stats] < frames > knowledge\n"
+                "              [--isolation] [--stats] [--belief] [--hide-lists] < frames > knowledge\n"
                 "       rmknow --selftest\n"
-                "       rmknow --exactness N\n");
+                "       rmknow --exactness N\n"
+                "       rmknow --belief-exactness N\n");
             return false;
         } else {
             std::fprintf(stderr, "rmknow: unknown argument '%s' (see --help)\n", a.c_str());
@@ -153,6 +185,14 @@ static bool parse_args(int argc, char **argv, Options *opt) {
         }
     }
     if (opt->isolation && !opt->text) opt->quiet = true;
+    if (opt->hide_lists && opt->isolation) {
+        std::fprintf(stderr, "rmknow: --hide-lists does not combine with --isolation\n");
+        return false;
+    }
+    if (opt->belief) {
+        opt->quiet = true;
+        opt->level = rmstate::KnowledgeLevel::EXPERT_BELIEF;
+    }
     return true;
 }
 
@@ -190,6 +230,48 @@ static std::string describe_k_difference(const knowledge::Knowledge &know, const
         }
     }
     return "the k_* tables differ in their layout";
+}
+
+// The seat's DECKLISTS frame with the opponent's list left out (--hide-lists).
+static void feed_hidden_lists(knowledge::Knowledge &know, const std::string &payload) {
+    rmstate::DecodedFrame frame;
+    knowledge::Decklists lists;
+    std::string err;
+    if (!rmstate::decode_frame(payload, know.schema(), &frame).ok() ||
+        !knowledge::read_decklists(frame, know.codes(), &lists, &err)) {
+        know.feed(payload);
+        return;
+    }
+    const int opp = 1 - know.viewer();
+    lists.present[opp] = false;
+    lists.name[opp].clear();
+    std::vector<knowledge::DeckEntry> kept;
+    for (const knowledge::DeckEntry &e : lists.cards)
+        if (e.player != opp) kept.push_back(e);
+    lists.cards = kept;
+    know.begin_match(know.viewer(), know.codes(), lists);
+}
+
+// One RMKNOW_BELIEF line (--belief): the opponent's b_list probabilities and which lists are truly
+// theirs.
+static void print_belief(const knowledge::Knowledge &know, const knowledge::Decklists *truth, FILE *out) {
+    const int opp = 1 - know.viewer();
+    std::string true_lists;
+    if (truth) {
+        std::vector<std::pair<int, int>> main, side;
+        knowledge::registered_counts(*truth, opp, &main, &side);
+        for (int l : knowledge::matching_lists(know.metagame(), main, side))
+            true_lists += (true_lists.empty() ? "" : ",") + std::to_string(l);
+    }
+    std::string probs;
+    bool exact = true;
+    for (const knowledge::BListRow &b : know.rows().belief_lists) {
+        if (b.player != opp) continue;
+        probs += (probs.empty() ? "" : ",") + std::to_string(b.prob);
+        if (b.prob > 0 && !b.exact) exact = false;
+    }
+    std::fprintf(out, "RMKNOW_BELIEF: game=%u decision=%u true=%s exact=%d prob=%s\n", know.frame_game(),
+        know.frame_decision(), true_lists.empty() ? "-" : true_lists.c_str(), exact ? 1 : 0, probs.c_str());
 }
 
 static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st) {
@@ -252,6 +334,7 @@ int main(int argc, char **argv) {
     if (!parse_args(argc, argv, &opt)) return 2;
     if (opt.selftest) return run_selftest();
     if (opt.exactness) return run_exactness(opt.exactness);
+    if (opt.belief_exactness) return run_belief_exactness(opt.belief_exactness);
     FILE *in = stdin;
     if (!opt.in.empty() && opt.in != "-") {
         in = std::fopen(opt.in.c_str(), "rb");
@@ -294,7 +377,7 @@ int main(int argc, char **argv) {
             continue;
         }
         if (viewer == rmstate::Viewer::OMNISCIENT) {
-            if (!opt.truth) continue;
+            if (!opt.truth && !opt.belief) continue;
             if (kind == rmstate::FrameKind::SCHEMA) {
                 std::string err;
                 have_omni_schema = rmstate::decode_schema_frame(payload, &omni_schema).ok() &&
@@ -308,7 +391,7 @@ int main(int argc, char **argv) {
                                   knowledge::read_decklists(frame, omni_codes, &omni_lists, &err);
                 continue;
             }
-            if (kind != rmstate::FrameKind::STATE || !have_omni_schema || !have_last) continue;
+            if (kind != rmstate::FrameKind::STATE || !have_omni_schema || !have_last || !opt.truth) continue;
             rmstate::DecodedFrame frame;
             knowledge::Snapshot omni;
             std::string err;
@@ -350,7 +433,10 @@ int main(int argc, char **argv) {
                 continue;
             }
         }
-        know.feed(fed);
+        if (opt.hide_lists && kind == rmstate::FrameKind::DECKLISTS && know.started())
+            feed_hidden_lists(know, fed);
+        else
+            know.feed(fed);
         for (const std::string &e : know.take_errors()) {
             ++errors;
             if (errors <= 200) std::fprintf(stderr, "%s\n", e.c_str());
@@ -380,6 +466,8 @@ int main(int argc, char **argv) {
             }
         }
         if (opt.stats && know.game_active()) add_stats(know, know.rows(), &stats);
+        if (opt.belief && know.game_active() && !know.decklists().present[1 - opt.viewer])
+            print_belief(know, have_omni_lists ? &omni_lists : nullptr, out);
         if (opt.truth) {
             rmstate::DecodedFrame frame;
             std::string err;

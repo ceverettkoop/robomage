@@ -54,6 +54,14 @@ struct EnumResult {
         std::vector<std::vector<int>> lo, hi;  // per group × class
 };
 
+// The belief layer's likelihood (src/knowledge/belief.h) of `spec`, independently: the same forward
+// sweep, every state carrying the probability of reaching it when each junction divides its in side
+// (its in nodes' cards plus its fixed cards) uniformly at random among its out nodes and fixed cards,
+// Π_c y_c! / Π_o Π_c x_oc! × Π_o s_o! / n! per division (every out node enumerated, sinks included;
+// no closed form, no interchangeable-node merging). Every root must be exact. Returns the
+// probability that every pin and fixed card holds; `complete` false past `cap` states (or a root
+// that is not exact, or a cycle).
+double weighted_world_probability(const EnumSpec &spec, uint64_t cap, bool *complete);
 // The description of `net` over `uni`'s classes (cards, then OTHER).
 EnumSpec spec_of(const knowledge::Network &net, const knowledge::Universe &uni);
 // The projections of `spec`'s worlds onto `groups` (at most `cap` states at a time).
