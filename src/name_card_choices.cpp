@@ -3,19 +3,27 @@
 #include <algorithm>
 #include <string>
 
+#include "card_db.h"
 #include "card_vocab.h"
 #include "components/carddata.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_driver.h"
 #include "queries/filters.h"
 
 extern Coordinator global_coordinator;
+
+static std::vector<LegalAction> vocab_name_card_choices(
+    const std::string &valid_filter, std::vector<std::string> &out_names);
 
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
                                                  Zone::Ownership owner,
                                                  const std::string &valid_filter,
                                                  std::vector<std::string> &out_names,
                                                  NameCardScope scope) {
+    // A closed decklist hides the opponent's list, so the candidates cannot come from the decks
+    // (docs/state_format.md register 11a).
+    if (closed_decklist) return vocab_name_card_choices(valid_filter, out_names);
     // Distinct vocab card names in scope, each with a representative entity (so the
     // per-action card id encodes the candidate) and a copy count for ordering.
     // CHOOSER_ONLY keeps only cards owned by `owner`; BOTH_PLAYERS accepts cards owned
@@ -61,6 +69,34 @@ std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entitie
         la.card_is_public = true;
         name_choices.push_back(la);
         out_names.push_back(names[idx]);
+    }
+    return name_choices;
+}
+
+// The --closed-decklist candidate set: every vocab card (by its front face; a back face's own
+// vocab entry is not a separate card) whose printed characteristics pass `valid_filter`, in name
+// order, uncapped. The cards are read from the process-wide parse cache (card_data_by_name), so
+// cards no deck holds create no entity and touch no game state; no object stands for a
+// candidate, so each choice carries its card as `named_card`.
+static std::vector<LegalAction> vocab_name_card_choices(
+    const std::string &valid_filter, std::vector<std::string> &out_names) {
+    std::vector<std::pair<std::string, int>> cards;
+    for (int i = 0; i < CARD_VOCAB_SIZE; i++) {
+        const CardData *cd = card_data_by_name(card_vocab_entries[i].name);
+        if (cd == nullptr || cd->name != card_vocab_entries[i].name) continue;
+        if (!valid_filter.empty() && !card_matches_any(*cd, valid_filter)) continue;
+        cards.push_back({cd->name, card_vocab_entries[i].index});
+    }
+    std::sort(cards.begin(), cards.end());
+    std::vector<LegalAction> name_choices;
+    out_names.clear();
+    for (const auto &card : cards) {
+        LegalAction la(PASS_PRIORITY, 0, "Name card: " + card.first);
+        la.category = ActionCategory::NAME_CARD;
+        la.card_is_public = true;
+        la.named_card = card.second;
+        name_choices.push_back(la);
+        out_names.push_back(card.first);
     }
     return name_choices;
 }

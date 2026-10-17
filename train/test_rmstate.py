@@ -16,13 +16,19 @@ Checks, over freshly played games (or the dumps given on the command line):
      equal the dump's; and the stream's bytes are the same with and without ``--rmstate-dump``;
   4. refusals — a STATE frame with another version, another schema hash, an unknown kind or a
      known table at another row width is refused by both decoders; an unknown table block is
-     skipped by both (listed under ``"skipped"``), and the engine will not re-encode it.
+     skipped by both (listed under ``"skipped"``), and the engine will not re-encode it;
+  5. name-a-card — a Disruptor Flute preset's opening name-a-card menu offers the opponent's
+     registered cards with open decklists, and every vocab card (in name order, no object behind a
+     candidate; CARDS lists the whole vocab, DECKLISTS only the seat's own) under
+     ``--closed-decklist`` (``docs/state_format.md`` register 11a).
 
 Games: bo1 and bo3 explore-fuzz games through ``runner.run_match`` with the dump flags passed by
-``$ROBOMAGE_ENGINE_FLAGS``, and the stream sessions on two league matchups (bo1 and bo3).
+``$ROBOMAGE_ENGINE_FLAGS``, and the stream sessions on league matchups (bo1 and bo3, and one under
+``--closed-decklist``, which only the RMSTATE stream supports).
 
 Entry points: ``run(binary=…, dumps=…, work_dir=…, quick=…)`` returns the list of failure
-messages (empty = pass), for ``train/ci_check.py``; ``main()`` is the CLI (exit 1 on failure)::
+messages (empty = pass), for ``train/ci_check.py``; ``check_dump``, ``check_refusals`` and
+``stream_checks`` are its parts; ``main()`` is the CLI (exit 1 on failure)::
 
     train/.venv/bin/python train/test_rmstate.py              # play games, check everything
     train/.venv/bin/python train/test_rmstate.py --quick      # fewer / shorter games
@@ -57,6 +63,7 @@ _FUZZ_GAMES = [
 _STREAM_GAMES = [
     ("league/ur_delver", "league/bug", False, 21, ["--narrative"]),
     ("league/wrb_energy", "league/burn", True, 22, []),
+    ("league/wrb_energy", "league/bw_dnt", False, 23, ["--closed-decklist"]),
 ]
 _STREAM_DECISION_CAP = 250  # a seat concedes the game past this decision number
 _TIMEOUT_S = 600
@@ -326,9 +333,11 @@ def check_stream(payloads, dump_path, label):
     return fails
 
 
-def _stream_checks(binary, out_dir, quick):
+def stream_checks(binary, out_dir, games):
+    """Check 3 (plus check 1 and 2 on the dump each session writes) on `games`, a list of
+    (deck_a, deck_b, bo3, seed, extra engine flags); returns failure messages. A session's engine
+    stderr is kept as ``stream_<seed>.err`` in `out_dir`."""
     fails = []
-    games = _STREAM_GAMES[:1] if quick else _STREAM_GAMES
     for deck_a, deck_b, bo3, seed, flags in games:
         label = f"stream {os.path.basename(deck_a)} vs {os.path.basename(deck_b)} {'bo3' if bo3 else 'bo1'}"
         dump = os.path.join(out_dir, f"stream_{seed}.rms")
@@ -349,6 +358,87 @@ def _stream_checks(binary, out_dir, quick):
         got += check_dump(dump, binary)
         if not got:
             print(f"  OK   {label}: {len(with_dump)} records", flush=True)
+        fails += got
+    return fails
+
+
+# ── name-a-card candidates and --closed-decklist (docs/state_format.md register 11a) ────────────
+
+# A Disruptor Flute preset on Player A's battlefield names a card as the game starts (its ETB
+# choice), so the session's first name-a-card menu comes without any scripted play.
+_NAME_CARD_FLAGS = ["--battlefield-a", "Disruptor Flute", "--selfcheck-state", "--selfcheck-state-sample", "1"]
+_NAME_CARD_GAME = ("league/bw_dnt", "league/burn", 31)
+
+
+def _first_name_card_menu(payloads):
+    """(A's CARDS frame, A's DECKLISTS frame, the rows of A's first NAME_CARD menu, the schema)
+    of a session."""
+    dec = rmstate.StreamDecoder()
+    cards = decklists = None
+    for p in payloads:
+        f = dec.feed(p)
+        if f.viewer != "A":
+            continue
+        if f.kind == "CARDS":
+            cards = f
+        elif f.kind == "DECKLISTS":
+            decklists = f
+        elif f.kind == "STATE":
+            cats = dec.schema.enums["action_category"]
+            rows = [m for m in f.tables.get("menu", []) if cats[m["category"]] == "NAME_CARD"]
+            if rows:
+                return cards, decklists, rows, dec.schema
+    return cards, decklists, [], dec.schema
+
+
+def check_name_card_candidates(binary, out_dir):
+    """Disruptor Flute's name-a-card menu with open decklists (the default: the opponent's
+    registered cards, which DECKLISTS shows) and under --closed-decklist (every vocab card, by front
+    face, in name order, with no object behind a candidate; CARDS then lists the whole vocab and
+    DECKLISTS only the seat's own list); returns failure messages."""
+    fails = []
+    deck_a, deck_b, seed = _NAME_CARD_GAME
+    for closed in (False, True):
+        label = f"name-a-card {'closed' if closed else 'open'} decklist"
+        flags = _NAME_CARD_FLAGS + (["--closed-decklist"] if closed else [])
+        err = os.path.join(out_dir, f"name_card_{'closed' if closed else 'open'}.err")
+        got = []
+        try:
+            payloads = run_stream(binary, deck_a, deck_b, False, seed, cap=20, err_path=err, flags=flags)
+        except (rmstate.RMStateError, subprocess.TimeoutExpired) as exc:
+            fails.append(f"{label}: {exc}")
+            continue
+        cards, decklists, rows, schema = _first_name_card_menu(payloads)
+        if not rows:
+            fails.append(f"{label}: Player A was never offered a name-a-card menu")
+            continue
+        seats = schema.enums["seat"]
+        faces = schema.enums["face"]
+        named = [m["source_card"] for m in rows]
+        listed = {seats[r["player"]]: set() for r in decklists.tables.get("decklist_card", [])}
+        for r in decklists.tables.get("decklist_card", []):
+            listed[seats[r["player"]]].add(r["card"])
+        fronts = sorted(r["card"] for r in cards.tables["card"] if faces[r["face"]] == "FRONT" and not r["token"])
+        if closed:
+            if sorted(named) != fronts:
+                got.append(f"{label}: {len(named)} candidates, CARDS lists {len(fronts)} vocab cards")
+            if any(m["source"] for m in rows):
+                got.append(f"{label}: a candidate has an object handle")
+            descs = [m["description"] for m in rows]
+            if descs != sorted(descs):
+                got.append(f"{label}: the candidates are not in name order")
+            if set(listed) != {"PLAYER_A"}:
+                got.append(f"{label}: DECKLISTS lists {sorted(listed)}, expected only A's own list")
+        else:
+            opp = listed.get("PLAYER_B", set())
+            if not set(named) <= opp or len(set(named)) != len(named):
+                got.append(f"{label}: candidates outside the opponent's registered list")
+        with open(err, encoding="utf-8", errors="replace") as fh:
+            bad = [ln for ln in fh if ln.startswith(("ERROR:", "FATAL:"))]
+        if bad:
+            got.append(f"{label}: {bad[0].strip()}")
+        if not got:
+            print(f"  OK   {label}: {len(rows)} candidates", flush=True)
         fails += got
     return fails
 
@@ -376,7 +466,8 @@ def run(binary=BINARY, dumps=None, work_dir=None, quick=False):
         if paths:
             fails += check_refusals(paths[0], binary, work_dir)
         print("rmstate: --machine-format rmstate sessions", flush=True)
-        fails += _stream_checks(binary, work_dir, quick)
+        fails += stream_checks(binary, work_dir, _STREAM_GAMES[:1] if quick else _STREAM_GAMES)
+        fails += check_name_card_candidates(binary, work_dir)
     finally:
         if tmp is not None and not fails:
             shutil.rmtree(tmp, ignore_errors=True)

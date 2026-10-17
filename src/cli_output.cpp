@@ -238,7 +238,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      reverses the spell or ability being proposed (CR 733.1).\n");
     printf("                      A testing aid (default: off)\n");
     printf("  --closed-decklist   Each seat's state-format frames carry only its own\n");
-    printf("                      registered decklist (default: both lists are open)\n");
+    printf("                      registered decklist (default: both lists are open);\n");
+    printf("                      name-a-card then offers every vocab card. A machine run\n");
+    printf("                      needs --machine-format rmstate\n");
     printf("\nInput and output:\n");
     printf("  --player <A|B>      Designate a human seat (any value other than A/a means\n");
     printf("                      B); hidden information is shown from that seat's view.\n");

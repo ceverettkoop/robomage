@@ -405,9 +405,18 @@ static bool sees_decklist(Zone::Ownership viewer, Zone::Ownership owner) {
     return !closed_decklist || !is_seat(viewer) || viewer == owner;
 }
 
-// The vocab ids of the cards in the registered lists `viewer` may see, ascending.
+// The vocab ids of the cards in the registered lists `viewer` may see, ascending. Under a closed
+// decklist, every vocab card (by its front face), whoever views: the opponent's cards need rows,
+// and listing only the viewer's own would show which cards are the opponent's.
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     std::set<int> ids;
+    if (closed_decklist) {
+        for (int i = 0; i < CARD_VOCAB_SIZE; ++i) {
+            const CardData *cd = card_data_by_name(card_vocab_entries[i].name);
+            if (cd != nullptr && cd->name == card_vocab_entries[i].name) ids.insert(card_vocab_entries[i].index);
+        }
+        return std::vector<int>(ids.begin(), ids.end());
+    }
     for (Zone::Ownership owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         if (!sees_decklist(viewer, owner)) continue;
         for (const DecklistEntry &e : deck_state_registered_main(owner)) ids.insert(e.vocab_idx);
@@ -1174,7 +1183,10 @@ static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
         const bool src_player = src != 0 && global_coordinator.entity_has_component<Player>(src);
         const bool tgt_player = tgt != 0 && global_coordinator.entity_has_component<Player>(tgt);
         const bool src_zoned = src != 0 && global_coordinator.entity_has_component<Zone>(src);
-        const int src_card = src_player ? -1 : la.card_is_public ? public_card_id(src) : visible_card_id(src, c.viewer);
+        const int src_card = src_player           ? -1
+                             : la.named_card >= 0 ? la.named_card
+                             : la.card_is_public  ? public_card_id(src)
+                                                  : visible_card_id(src, c.viewer);
         Row r = c.w.row(TableId::MENU);
         r.u8(static_cast<uint64_t>(la.category)).u8(static_cast<uint64_t>(la.type));
         r.u32(src_zoned ? handle(c, src) : 0)
@@ -1241,9 +1253,15 @@ std::string encode_cards_frame(Zone::Ownership viewer) {
     FrameWriter w(FrameKind::CARDS, frame_viewer(viewer), rmstate_schema_hash());
     std::set<std::string> token_scripts;
     for (int id : cards_frame_ids(viewer)) {
+        // A card the match loaded is read from its card_db entry; one no deck holds (a closed
+        // decklist lists the whole vocab) from the parse cache, which creates no entity.
         auto it = card_db.find(name_to_uid(card_index_to_name(id)));
-        if (it == card_db.end() || !global_coordinator.entity_has_component<CardData>(it->second)) continue;
-        const CardData &cd = global_coordinator.GetComponent<CardData>(it->second);
+        const CardData *loaded = it != card_db.end() && global_coordinator.entity_has_component<CardData>(it->second)
+                                     ? &global_coordinator.GetComponent<CardData>(it->second)
+                                     : nullptr;
+        const CardData *found = loaded ? loaded : card_data_by_name(card_index_to_name(id));
+        if (found == nullptr) continue;
+        const CardData &cd = *found;
         write_card_face(w, id, cd, rmstate::Face::FRONT, id);
         if (cd.backside)
             write_card_face(w, id, *cd.backside, rmstate::Face::BACK, card_name_to_index(cd.backside->name));

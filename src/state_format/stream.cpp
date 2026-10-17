@@ -33,6 +33,13 @@ static bool stream_match_frames_sent[3] = {false, false, false};
 void rmstate_outputs_init() {
     if (state_dump_json && rmstate_dump_path.empty() && rmstate_read_path.empty())
         cli_warning("--state-dump json renders the --rmstate-dump or --rmstate-read stream; neither is given");
+    // A closed decklist's name-a-card menus offer the whole vocab, more than the MAX_ACTIONS a
+    // BQUERY (or search-server) query can carry; only the RMSTATE stream's menu is unbounded.
+    if (closed_decklist && machine_mode && !machine_format_rmstate)
+        fatal_error(
+            "--closed-decklist on a machine run needs --machine-format rmstate: its name-a-card menus "
+            "offer every vocab card, more than BQUERY's MAX_ACTIONS=" +
+            std::to_string(MAX_ACTIONS));
     if (!machine_format_rmstate) return;
     if (search_server_mode) fatal_error("--machine-format rmstate is incompatible with --search-server");
     std::fflush(stdout);

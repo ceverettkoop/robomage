@@ -121,11 +121,11 @@ child tables.
 
 Sent once per match (not per snapshot):
 
-- `CARDS`: the card table for every implemented card and token in either registered list, plus
-  tokens they can make. Each entry has the vocab id, name, uid, printed characteristics, the
-  **oracle text** (always: `CardData::oracle_text`, parsed from the script's `Oracle:` line;
-  token scripts carry one too), an ability list (category, costs, timing, script line text)
-  and, optionally, the raw script.
+- `CARDS`: the card table for every implemented card and token in either registered list (the
+  whole vocab under `--closed-decklist`), plus tokens they can make. Each entry has the vocab id,
+  name, uid, printed characteristics, the **oracle text** (always: `CardData::oracle_text`,
+  parsed from the script's `Oracle:` line; token scripts carry one too), an ability list
+  (category, costs, timing, script line text) and, optionally, the raw script.
 - `DECKLISTS`: both registered lists with their deck names (only the viewer's own under
   `--closed-decklist`).
 
@@ -383,6 +383,11 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
     at startup and points stdout at stderr, so everything else it prints (narrative under
     `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, a `--player` seat's CLI prompt) goes to
     stderr. Passive `BSTATE` frames are not written; `--search-server` is refused.
+  - The menu is unbounded. `--closed-decklist`'s name-a-card menus offer every vocab card
+    (register 11a), more than BQUERY's `MAX_ACTIONS`, so a machine run with `--closed-decklist`
+    is refused unless it uses this format (BQUERY's state vector shows the opponent's registered
+    list anyway). A `--player` seat's CLI prompt is capped the same way: a debug build stops on
+    such a menu there.
   - At each decision the deciding seat (the sideboarding player between games, else the
     priority holder) gets, the first time it decides in the match, its `SCHEMA`, `CARDS` and
     `DECKLISTS` frames, then its `STATE` frame with the menu. Its events are those queued for it
@@ -506,13 +511,13 @@ in-process actor.
   check reported it in every fuzz game, the scramble and permutation checks never.
 - **Bypasses of `card_identity`.** Three identity reads do not go through `visible_card_id`. The
   card a `card_is_public` menu choice makes public (`public_card_id`) is safe where the choice
-  itself is public, but the name-a-card menus (Cabal Therapy, Disruptor Flute, Petrified Hamlet)
-  take their candidates from the opponent's owned cards: under open decklists those are the
-  registered list, but under `--closed-decklist` they show the opponent's list (the gap in
-  `docs/rules_deviations.md` 1.2). Captured public ids (last-known information of an object that
-  left the battlefield, a delayed or floating trigger's creator) were public when captured. A
-  zone-less sideboard template card is shown only to the sideboarding player. The menu's
-  `description` strings are built by the engine before the encoder sees them; the encoder
+  itself is public: the name-a-card menus (Cabal Therapy, Disruptor Flute, Petrified Hamlet) take
+  their candidates from the registered lists (public under open decklists) or, under
+  `--closed-decklist`, from the whole vocab, with no object behind a candidate
+  (`LegalAction::named_card`; register 11a). Captured public ids (last-known information of an
+  object that left the battlefield, a delayed or floating trigger's creator) were public when
+  captured. A zone-less sideboard template card is shown only to the sideboarding player. The
+  menu's `description` strings are built by the engine before the encoder sees them; the encoder
   redacts an entry whose source or target is hidden (`(hidden card)`), and the names check covers
   the rest.
 
@@ -531,7 +536,7 @@ in-process actor.
 | 9 | Own library: count only; contents and order are actor-side | decided |
 | 10 | Opponent hand: count plus live reveal windows | decided |
 | 11 | Decklists are open by default: both registered lists (main + side) are explicit, sent in `DECKLISTS`. `--closed-decklist` turns this off: the viewer then gets only their own list, and the leak tests treat the opponent's list as hidden. The setting is recorded in the RMLOG header | decided |
-| 11a | Name-a-card candidate set follows decision 11. With open decklists (default) it stays as today: the distinct vocab cards of the relevant registered list, filtered by `ValidCards$`. The list is explicit information, so this no longer leaks, but it remains the documented CR 201.4 deviation. Under `--closed-decklist`: every vocab card passing `ValidCards$` | decided |
+| 11a | Name-a-card candidate set follows decision 11. With open decklists (default) it stays as today: the distinct vocab cards of the relevant registered list, filtered by `ValidCards$`. The list is explicit information, so this no longer leaks, but it remains the documented CR 201.4 deviation. Under `--closed-decklist`: every vocab card passing `ValidCards$`, in name order, uncapped (`build_name_card_choices`); that menu is wider than BQUERY's `MAX_ACTIONS`, so a machine run with `--closed-decklist` needs `--machine-format rmstate` (refused otherwise) | decided |
 | 12 | Descriptions included and covered by the leak tests; the full-information narrative never goes to a seat | decided |
 | 13 | `CARDS` table once per match, replacing `card_props` / `card_costs` / script reading for the agent; card id stays the vocab index | decided |
 | 14 | Full keyword lists with parameters; counters as kind → count | decided |
@@ -669,10 +674,12 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `card` | u16 | `card` | |
 | | `main`, `side` | u8 | `count` | registered counts |
 
-`CARDS` holds every card of the registered lists the viewer may see (both lists, or a seat's own
-only under `--closed-decklist`; the omniscient viewer always gets both), in ascending card id,
-then every registered token those cards can make, in ascending card id. A card's tokens are
-found from its parsed definitions: each `TokenScript$` of its abilities (sub-abilities, modes,
+`CARDS` holds every card of both registered lists, in ascending card id, then every registered
+token those cards can make, in ascending card id. Under `--closed-decklist` it holds every vocab
+card instead (by front face; a back face's own vocab entry is that card's back row), for every
+viewer: the opponent's cards need rows, and listing only the seat's own would show which are the
+opponent's. A card no deck holds is read from the parse cache (`card_data_by_name`,
+`src/card_db.h`), which creates no entity. A card's tokens are found from its parsed definitions: each `TokenScript$` of its abilities (sub-abilities, modes,
 floating and granted abilities included), the engine-synthesized ones (Investigate → Clue,
 Amass → the subtype's Army, Mobilize → Warrior, `src/effects/effects.h`), then the tokens those
 tokens make. A token script with no token-band vocab entry or no script file is left out.
