@@ -590,9 +590,14 @@ sections above are not repeated here.
   METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
   §10); the shared soundness check `truth.h`; std + `state_format/decode.h`/`schema.h` only;
   `docs/knowledge_store.md` §9-10)
+- `src/knowledge/belief.{h,cpp}` — the belief layer (level `expert+belief`, `b_list` / `b_archetype`):
+  each reference list's likelihood as the weighted world count of its hypothesis network, the
+  posterior in fixed point (`docs/knowledge_store.md` §10.6)
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
   (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
-  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator)
+  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
+  `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
+  `generative.h`, the belief model played out directly)
 
 **AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
 Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):

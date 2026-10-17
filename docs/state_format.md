@@ -339,16 +339,18 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **Input:** only the viewer's own frame stream.
 - **Output:** `k_*` knowledge tables attached to that viewer's frames, the same for every kind
   of agent.
-- **Levels:** `off` (tables empty: the `k_meta` row alone) and `expert` (perfect recall plus
-  every sound logical deduction), selected by `--knowledge-a/-b off|expert`, default `expert`.
-  The level changes only that seat's `k_*` tables, never play; it is an output option like the
-  frame writers, so the RMLOG header does not record it and a `--replay` honours it.
+- **Levels:** `off` (tables empty: the `k_meta` row alone), `expert` (perfect recall plus
+  every sound logical deduction) and `expert+belief` (expert's `k_*` tables, the same bytes but
+  `k_meta.level`, plus the belief layer's `b_*` tables: a posterior over the reference lists,
+  `knowledge_store.md` §10.6), selected by `--knowledge-a/-b off|expert|expert+belief`, default
+  `expert`. The level changes only that seat's `k_*` and `b_*` tables, never play; it is an output
+  option like the frame writers, so the RMLOG header does not record it and a `--replay` honours it.
 - **As built** (`src/state_format/knowledge_feed.h`, `knowledge_store.md` §9.6): every frame
   writer (`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) has an instance of
   its own per seat, fed exactly the frames that writer builds for the seat (its SCHEMA, CARDS,
-  DECKLISTS, METAGAME, then each STATE frame as encoded), and appends the instance's `k_*` tables (ids
-  90-97, the last blocks of the frame) to each of the seat's STATE frames, terminal frames
-  included. The omniscient frames carry none. The model is a function of the seat's events (each
+  DECKLISTS, METAGAME, then each STATE frame as encoded), and appends the instance's `k_*` tables
+  (ids 90-97) and, at `expert+belief`, `b_*` tables (98-99), the last blocks of the frame, to each
+  of the seat's STATE frames, terminal frames included. The omniscient frames carry none. The model is a function of the seat's events (each
   event is applied and settled on its own; the snapshot is only checked), not of the frames they
   were drained into, so every writer's frame for one seat and decision carries the same `k_*`
   tables; a writer's `k_*` tables are a pure function of the seat's frames from that writer
@@ -604,7 +606,7 @@ in-process actor.
 | 24 | `object.is_token`, and token entries in `CARDS` with their real types; from the agent read map | decided |
 | 25 | Ability references carry a keyword key for keyword-built abilities (`Ninjutsu`, `Equip`, `Reconfigure:attach`, …); from the agent read map | decided |
 | 26 | Recall and inference live in a C++ sidecar fed only by the viewer's frame stream (`knowledge_store.md`), not in the engine and not in Python | decided |
-| 27 | Knowledge levels `off` and `expert` only; default `expert`; per seat (`--knowledge-a/-b`); no `engine-compat` level (the agent port reads `expert`) | decided |
+| 27 | Knowledge levels `off` and `expert` only; default `expert`; per seat (`--knowledge-a/-b`); no `engine-compat` level (the agent port reads `expert`). Register 38 adds `expert+belief` (expert plus the `b_*` tables) | decided |
 | 28 | Knowledge tables (`k_*`) travel inside the viewer's RMSTATE frame, with a schema fixed across levels | decided |
 | 29 | `CARDS` always carries oracle text, for cards and tokens; text embeddings for learned models are built from it | decided |
 | 30 | Every schema column carries a semantic tag and, where defined, a value range (section 9) | decided |
@@ -615,6 +617,7 @@ in-process actor.
 | 35 | Face-down exiled cards follow CR 406.3: a per-player look window, opened for whoever looked at the card before it was exiled face down or is allowed to look, lasting until the card leaves exile | decided |
 | 36 | Events carry draw provenance: `turn` on every event, an opening-hand flag on `draw`, a hand subset (`drawn_this_turn`) on a `zone_move` out of a hand whose instruction is restricted to cards drawn this turn (Sylvan Library), and a draw link on a `reveal_start` that shows the card just drawn (Miracle). Both restrictions are explicit to both players, so the sidecar may use them | decided |
 | 37 | A reference metagame frame (`METAGAME`, once per match after `DECKLISTS`, the same for every viewer: archetype labels and reference lists from `bin/resources/decks/archetypes.json`) and the archetype tables `k_template` (per player and reference list: consistent, exact, registered) and `k_archetype` (per player and label: possible, exact) in `k_*`. Sound facts only (`knowledge_store.md` §10); a probabilistic layer is a later `b_*` level | decided |
+| 38 | A belief level `expert+belief` (per seat, `--knowledge-a/-b`; default stays `expert`) adds the `b_*` tables after `k_*`: `b_list` (per player and reference list: posterior probability in units of 10^-9, log-likelihood in milli-nats, exact) and `b_archetype` (per player and label: probability). A posterior under a uniform prior over the reference lists, with likelihood the weighted count of each list's hypothesis-network worlds (`knowledge_store.md` §10.6); probabilities, kept out of `k_*`, which stays sound facts. Zero exactly for the lists `k_template` excludes, at least one unit for the others, summing to 10^9 per player (or 0 when no list is consistent); a function of the seat's events like `k_*`. Absent below that level (fixed schema) | decided |
 
 ## Appendix A: column definitions
 
@@ -643,7 +646,8 @@ definitions in debug builds (storage type per value, column count per row, row w
 - `index`: a 0-based position or ordinal (library or stack position, ability index, mode), not
   a quantity;
 - `row:<table>`: a row index into another table of the same frame;
-- `mask:<enum>`: a bitset over an enum.
+- `mask:<enum>`: a bitset over an enum;
+- `prob`: a probability in units of 10^-9 (the belief layer's tables).
 
 No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `enum:zone`.
 
@@ -658,7 +662,7 @@ No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `
 | Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
 | Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
 | Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
-| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `METAGAME` (17–19), `STATE` (snapshot 20–48, events 80–82, knowledge 90–97) |
+| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `METAGAME` (17–19), `STATE` (snapshot 20–48, events 80–82, knowledge 90–97, belief 98–99) |
 
 **Events channel.** One `event` table, one row per event in queue order, with a kind enum and
 the scalar fields of every kind (unused ones are none/0). Per-card parts go in `event_card`,
@@ -973,7 +977,7 @@ encoder's.
 | | `player` | seat | | |
 | | `library`, `sideboard` | u16 | `count` | `game_start` |
 | | `wins` | u8 | `count` | match wins |
-| `k_meta` (90) | `level` | u8 | `enum:knowledge_level` | off, expert |
+| `k_meta` (90) | `level` | u8 | `enum:knowledge_level` | off, expert, expert+belief |
 | | `exact` | u8 | `bool` | |
 | | `steps` | u32 | `count` | solver steps used |
 | `k_seen` (91) | `player` | seat | | |
@@ -1001,6 +1005,14 @@ encoder's.
 | `k_archetype` (97) | `player` | seat | | per player and label, every label |
 | | `archetype` | u8 | `index` | a `meta_archetype` row |
 | | `possible`, `exact` | u8 | `bool` | some consistent list has the label; every consistent list has it |
+| `b_list` (98) | `player` | seat | | level expert+belief only (register 38): per player (self first) and reference list, every list |
+| | `list` | u16 | `index` | a `meta_list` row |
+| | `prob` | u32 | `prob` | posterior probability in units of 10^-9: 0 exactly when `k_template` excludes the list, at least 1 otherwise; a player's rows sum to 10^9 (0 when no list is consistent). A list the viewer sees is explicit: the lists equal to it share 10^9 (`knowledge_store.md` §10.6) |
+| | `loglik` | i32 | `signed` | the list's log-likelihood over the match's games, milli-nats (0 for a list the viewer sees; i32 minimum: excluded) |
+| | `exact` | u8 | `bool` | the likelihood is the exact weighted world count in every game (0: a game used the copies-seen fallback) |
+| `b_archetype` (99) | `player` | seat | | per player and label, every label |
+| | `archetype` | u8 | `index` | a `meta_archetype` row |
+| | `prob` | u32 | `prob` | the sum of its lists' `b_list.prob` |
 
 ### A.7 Enums with no C++ type yet
 
@@ -1032,7 +1044,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
 | `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL |
-| `knowledge_level` | OFF, EXPERT |
+| `knowledge_level` | OFF, EXPERT, EXPERT_BELIEF |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
 
 These are X-macro lists in `schema.h`, so each C++ enum and its string table come from one list.
