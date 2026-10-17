@@ -697,6 +697,23 @@ struct Game {
             // resolves (effect_miracle.cpp, CR 608.2g). Miracle is never offered as a normal
             // priority-menu cast (can_afford_alt returns false for it).
             Entity miracle_reveal = 0;
+            // A cost being paid at a decision that neither the cast nor the activation state
+            // machine holds: the interactive mana payment loop (prompt_mana_payment) and an
+            // unless-cost offer (run_unless_loop, CR 118.12). Set for the span of the payment
+            // (CostPaymentScope, queries/pending_cost.h) and read only by the state format's
+            // pending_cost; nothing in the game decides on it. Value member, so a snapshot of a
+            // parked unless-offer keeps it.
+            struct CostPayment {
+                bool active = false;
+                bool unless = false;  // an unless-cost offered to its payer
+                Entity paid_for = 0;  // the spell or ability (or the resolving ability's source)
+                ManaValue remaining;  // mana still to pay
+                int life = 0;
+                int energy = 0;
+                int discard = 0;  // cards to discard
+                int paid = 0;     // mana paid toward it so far
+            };
+            CostPayment cost_payment;
         };
         PendingDecisions pending;
 
@@ -791,6 +808,9 @@ struct Game {
         };
         // Indexed by viewer: [Zone::UNKNOWN] the omniscient viewer, [Zone::PLAYER_A], [Zone::PLAYER_B].
         HandleTable handle_tables[3];
+        // Decisions of this game the state format has encoded (the RMSTATE header's decision
+        // number, state_format/dump.h); counted only while frames are written.
+        uint32_t state_decisions = 0;
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution

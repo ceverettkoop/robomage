@@ -20,6 +20,7 @@
 #include "queries/zones.h"
 #include "machine_io.h"
 #include "search_server.h"
+#include "state_format/dump.h"
 #include "state_format/handles.h"
 
 extern std::string RESOURCE_DIR;
@@ -364,6 +365,10 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
 
     // --trace-handles: every viewer's handle table as of this decision (state_format/handles.h).
     if (trace_handles) trace_handle_tables();
+
+    // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h).
+    // Not while the search server unwinds to a restore: that decision is never made.
+    if (!search_restore_pending()) rmstate_dump_decision(actions);
 
     if (replay_mode) {
         int choice;

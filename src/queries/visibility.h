@@ -50,6 +50,31 @@ bool individually_identifiable(Entity entity, Zone::Ownership viewer);
 // it would say which copy was drawn when).
 std::vector<Entity> canonical_object_order(std::vector<Entity> objects, Zone::Ownership viewer);
 
+// ── Identity as a viewer sees it (the state format's one identity read) ─────────────────────
+//
+// Every card id the state format emits for an object comes from visible_card_id, and every read of
+// an object's characteristics in the encoder is gated on the same visibility, so a hidden
+// identity can reach a frame only through card_identity. A card id is the vocab index of the
+// physical card (a double-faced card's front face; a copy's printed card), a token's token-band
+// index (TOKEN_SENTINEL for an unregistered token script), or -1.
+
+// The card id of `entity` with no visibility check: the one place an object's identity is read for
+// a frame. `viewer` is who the frame is for (a test-mode scrambler can substitute an id for an
+// entity hidden from them).
+int card_identity(Entity entity, Zone::Ownership viewer);
+
+// The card id of `entity` as `viewer` sees it: card_identity when identity_visible, else -1. An
+// ability on the stack shows its source's card: the source as it is while it is still that object
+// (visibility applies to it), else the last-known identity it left the battlefield with, which
+// was public (CR 608.2h), else (a delayed or floating trigger) the card that created it; -1 when
+// there is none (an inherent trigger such as the monarch's). A card with no zone (a sideboarding
+// menu's template) is visible only to the sideboarding player.
+int visible_card_id(Entity entity, Zone::Ownership viewer);
+
+// The card id of a card a menu choice itself makes public (LegalAction::card_is_public: a name in
+// a name-a-card menu, a revealed tutor target), whatever zone its representative entity is in.
+int public_card_id(Entity entity);
+
 // One-word names of a zone and a seat for the trace lines (--trace-visibility, --trace-handles).
 const char *trace_zone_word(Zone::ZoneValue zone);
 const char *trace_seat_word(Zone::Ownership seat);

@@ -31,6 +31,16 @@ using EffectHandler = HandlerResult (*)(Ability &, std::shared_ptr<Orderer>, Fra
 // subabilities when this returns nullptr.
 EffectHandler handler_for(EffectKind kind);
 
+// The token scripts the engine synthesizes rather than reading from a TokenScript$ param: the Clue
+// an investigate makes (CR 701.16a), the Warrior a mobilize makes (CR 702.181a), and the 0/0 Army
+// of `subtype` an amass makes when its controller has none (CR 701.47a). Also how the state format
+// finds the tokens a card can make.
+inline constexpr const char *INVESTIGATE_TOKEN_SCRIPT = "c_a_clue_draw";
+inline constexpr const char *MOBILIZE_TOKEN_SCRIPT = "r_1_1_warrior";
+std::string amass_army_token_script(const std::string &subtype);
+// The creature subtype an Amass definition amasses (its Type$; Orc when unset).
+std::string amass_subtype(const AbilityDef &def);
+
 // The per-effect handlers, one per src/effects/effect_*.cpp (documented in effect_kinds.def).
 #define EFFECT_KIND(kind, category, handler) \
     HandlerResult handler(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);

@@ -24,8 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   add your own `is_phased_out` check at the call site. The only code that reads
   `Permanent::is_phased_out` directly is the phasing subsystem itself (the untap-step
   phase-in/skip in `classes/game.cpp`), the phase-out setter in `effects/effect_phases.cpp`,
-  and the observation serializer in `machine_io.cpp` (which deliberately includes phased-out
-  permanents, flagged).
+  and the observation serializers — `machine_io.cpp` and the state-format encoder
+  `state_format/encode.cpp` — which deliberately include phased-out permanents, flagged.
   Add similar shared accessors (in the `src/queries/` header for their concern) when a new
   entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
@@ -535,11 +535,18 @@ sections above are not repeated here.
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
   exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`,
   `visibility` (what a viewer sees: `identity_visible`, reveal windows, `individually_identifiable`,
-  `canonical_object_order`)
+  `canonical_object_order`, and `visible_card_id` / `card_identity`, the state format's one
+  identity read), `pending_cost` (the cost being paid at a decision, `CostPaymentScope`)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a search root)
 - `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on
   `Game`: issue, old → new links at zone changes, retirement; `--trace-handles`
+- `src/state_format/schema.{h,cpp}` — the RMSTATE format's single definition (std-only): table/column
+  definitions, the format's enums, the frame writer (debug-checked rows), SCHEMA frame and hash
+- `src/state_format/enum_names.{h,cpp}` — the engine's enums as SCHEMA string tables, type-mask and
+  keyword indices
+- `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
+- `src/state_format/dump.{h,cpp}` — `--rmstate-dump FILE`: every viewer's frames at each decision
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
   protocol
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;

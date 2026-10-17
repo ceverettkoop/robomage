@@ -84,6 +84,11 @@ static const CliOption OPTIONS[] = {
         [](DecisionLogHeader &h, const std::string &k) {
             if (offer_cast_cancel) h.add_flag(k);
         }},
+    // Each seat's state-format frames carry only its own registered decklist (decision 11).
+    {"--closed-decklist", nullptr, false, true, [](const char *) { closed_decklist = true; },
+        [](DecisionLogHeader &h, const std::string &k) {
+            if (closed_decklist) h.add_flag(k);
+        }},
 
     // Setup options recorded in their own header fields (DECK_A / DECK_B / SEED)
     {"--deck", nullptr, true, true,
@@ -140,6 +145,8 @@ static const CliOption OPTIONS[] = {
     // Print the per-viewer handle tables at each decision and narrate handle issue/link/retire
     // (HANDLES: / HANDLE: lines in the game log).
     {"--trace-handles", nullptr, false, false, [](const char *) { trace_handles = true; }, nullptr},
+    // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
+    {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},
 };
 

@@ -113,6 +113,12 @@ bool trace_visibility = false;
 // as it is issued, linked and retired (HANDLES: / HANDLE: lines, src/state_format/handles.cpp).
 // A debugging aid; off by default, so no output changes.
 bool trace_handles = false;
+// --closed-decklist: each seat's state-format frames carry only its own registered list
+// (docs/state_format.md decision 11). Recorded in the RMLOG header.
+bool closed_decklist = false;
+// --rmstate-dump FILE: every viewer's state-format frames are written to FILE at each decision
+// (state_format/dump.h); empty = off.
+std::string rmstate_dump_path;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;

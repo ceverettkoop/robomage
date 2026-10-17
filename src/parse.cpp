@@ -145,6 +145,10 @@ struct KeywordEntry {
     void (*handler)(const std::string &kw_line, KeywordContext &ctx);
 };
 static void parse_keyword_line(const std::string& kw_line, KeywordContext& ctx);
+static std::string expand_newline_escapes(std::string text);
+static void mark_keyword_ability(AbilityDef& ab, const KeywordEntry& entry, const std::string& kw_line);
+static std::string keyword_entry_name(const KeywordEntry& entry);
+static std::vector<std::string>& script_line_store();
 static std::string keyword_arg(const std::string& kw_line);
 static void add_keyword_alt_cost(const std::string& kw_line, const char* name, bool AltCost::*flag,
                                  CardData& card);
@@ -722,13 +726,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.is_split = (value_from_script(front_script, "AlternateMode") == "Split");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
-    card.oracle_text = value_from_script(front_script, "Oracle");
-    // Expand literal \n escape sequences to real newlines for word-wrap rendering
-    for (size_t i = 0; i + 1 < card.oracle_text.size(); ++i) {
-        if (card.oracle_text[i] == '\\' && card.oracle_text[i + 1] == 'n') {
-            card.oracle_text.replace(i, 2, "\n");
-        }
-    }
+    card.oracle_text = expand_newline_escapes(value_from_script(front_script, "Oracle"));
     // TODO optimize
     card.power = parse_power(value_from_script(front_script, "PT"));
     card.toughness = parse_toughness(value_from_script(front_script, "PT"));
@@ -812,10 +810,81 @@ static void parse_keyword_line(const std::string &kw_line, KeywordContext &ctx) 
                        : entry.match == KeywordEntry::PREFIX ? kw_line.rfind(entry.name, 0) == 0
                                                              : kw_line.find(entry.name) != std::string::npos;
         if (!matches) continue;
+        FaceAbilityDefs &defs = ctx.face_defs;
+        const size_t before[] = {defs.abilities.size(), defs.gift_abilities.size(), defs.saga_chapters.size(),
+            defs.opening_hand_abilities.size()};
+        const size_t statics_before = ctx.card.static_abilities.size();
+        const size_t replacements_before = ctx.card.replacement_effects.size();
         entry.handler(kw_line, ctx);
+        std::vector<AbilityDef> *lists[] = {
+            &defs.abilities, &defs.gift_abilities, &defs.saga_chapters, &defs.opening_hand_abilities};
+        for (size_t l = 0; l < 4; ++l)
+            for (size_t i = before[l]; i < lists[l]->size(); ++i) mark_keyword_ability((*lists[l])[i], entry, kw_line);
+        if (ctx.card.static_abilities.size() > statics_before ||
+            ctx.card.replacement_effects.size() > replacements_before) {
+            const uint32_t line = intern_script_line("K:" + kw_line);
+            for (size_t i = statics_before; i < ctx.card.static_abilities.size(); ++i)
+                ctx.card.static_abilities[i].script_line = line;
+            for (size_t i = replacements_before; i < ctx.card.replacement_effects.size(); ++i)
+                ctx.card.replacement_effects[i].script_line = line;
+        }
         return;
     }
     split_keywords(kw_line, ctx.card.keywords);
+}
+
+// An Oracle: line with its literal \n escape sequences expanded to real newlines (for word-wrap
+// rendering).
+static std::string expand_newline_escapes(std::string text) {
+    for (size_t i = 0; i + 1 < text.size(); ++i) {
+        if (text[i] == '\\' && text[i + 1] == 'n') {
+            text.replace(i, 2, "\n");
+        }
+    }
+    return text;
+}
+
+// Records on a definition a keyword line built where it came from: its K: line, and its reference
+// key — the keyword's name, plus the ability's own label when the keyword builds several
+// ("Reconfigure" and "Reconfigure:unattach").
+static void mark_keyword_ability(AbilityDef &ab, const KeywordEntry &entry, const std::string &kw_line) {
+    ab.script_line = "K:" + kw_line;
+    std::string key = keyword_entry_name(entry);
+    if (!ab.keyword_label.empty() && ab.keyword_label != key) {
+        std::string label = ab.keyword_label;
+        for (char &c : label) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        key += ":" + label;
+    }
+    ab.ref_key = key;
+}
+
+// A keyword table entry's name without its trailing ':' ("Cycling:" → "Cycling").
+static std::string keyword_entry_name(const KeywordEntry &entry) {
+    std::string name = entry.name;
+    if (!name.empty() && name.back() == ':') name.pop_back();
+    return name;
+}
+
+std::vector<std::string> parser_keyword_names() {
+    std::vector<std::string> names;
+    for (const KeywordEntry &entry : kKeywordTable) names.push_back(keyword_entry_name(entry));
+    return names;
+}
+
+static std::vector<std::string> &script_line_store() {
+    static std::vector<std::string> lines(1);  // id 0 = no line
+    return lines;
+}
+
+uint32_t intern_script_line(const std::string &line) {
+    std::vector<std::string> &lines = script_line_store();
+    lines.push_back(line);
+    return static_cast<uint32_t>(lines.size() - 1);
+}
+
+const std::string &script_line_text(uint32_t id) {
+    const std::vector<std::string> &lines = script_line_store();
+    return id < lines.size() ? lines[id] : lines[0];
 }
 
 // The text after a keyword line's first ':' ("Spectacle:1 R" → "1 R"); "" when it has none.
@@ -1362,6 +1431,7 @@ static bool parse_token_file(const std::string &script_name, Token &tok) {
                          kTokenSuffix) == 0)
         tok.name.erase(tok.name.size() - kTokenSuffix.size());
     tok.types = parse_types(value_from_script(script_data, "Types"));
+    tok.oracle_text = expand_newline_escapes(value_from_script(script_data, "Oracle"));
     tok.explicit_colors = parse_colors_field(value_from_script(script_data, "Colors"));
 
     std::string pt = value_from_script(script_data, "PT");
@@ -2863,6 +2933,7 @@ static std::vector<AbilityDef> parse_abilities(const std::vector<std::string> &l
         if (category_end <= pos) continue;
         ret_val.push_back(parse_ability_text(
             line, pos, is_spell ? AbilityDef::SPELL : AbilityDef::ACTIVATED, svars, card_name));
+        ret_val.back().script_line = "A:" + line;
     }
     return ret_val;
 }
@@ -3323,6 +3394,7 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string &scri
     std::vector<AbilityDef> result;
     for (const auto &line : multi_values_from_script(script, "T")) {
         AbilityDef ab = parse_one_trigger(line, svars, card_name);
+        ab.script_line = "T:" + line;
         // Keep event-driven triggers (trigger_on != 0) and state-triggered abilities
         // (Mode$ Always, CR 603.8), which have no event but are fired by the state-trigger scan.
         if (ab.trigger_on != 0 || ab.trigger_state_condition)
@@ -3574,6 +3646,7 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
         // Skip alt cost lines (handled separately) and garbage matches
         if (line.find("AlternativeCost") != std::string::npos) continue;
         StaticAbility sa = parse_one_static_ability(line, svars);
+        sa.script_line = intern_script_line("S:" + line);
         if (!sa.category.empty()) result.push_back(sa);
     }
     return result;
@@ -3587,6 +3660,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
     std::vector<Effect::Replacement> result;
 
     for (const auto& line : multi_values_from_script(script, "R")) {
+        const size_t line_first = result.size();  // the replacements this line yields start here
         bool event_is_moved       = false;
         bool event_is_counter     = false;
         bool event_is_untap       = false;
@@ -3926,6 +4000,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.applies_to_self_only = true;
             result.push_back(r);
         }
+        for (size_t i = line_first; i < result.size(); ++i) result[i].script_line = intern_script_line("R:" + line);
     }
 
     return result;

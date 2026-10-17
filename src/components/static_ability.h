@@ -5,6 +5,7 @@
 
 struct StaticAbility {
     std::string category  = "";  // "Continuous", "MustAttack"
+    uint32_t script_line = 0;     // its S: line in the script-line store (script_line_text); 0 = none
     std::string condition = "";  // "Delirium", etc.; empty = always active
     // Continuous mode fields:
     int add_power     = 0;

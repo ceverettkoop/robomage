@@ -27,6 +27,7 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 - **Rules:** the player may name any card in the Oracle card reference.
 - **Engine:** the candidates are the distinct vocab cards in the relevant deck(s), filtered by `ValidCards$`, capped at `MAX_ACTIONS`. `CHOOSER_ONLY` offers one player's whole deck (Cabal Therapy: the target player's deck; Disruptor Flute: the opponent's). `BOTH_PLAYERS` offers both decks for land naming (Petrified Hamlet).
 - **Effect:** a card that is in neither deck can't be named. Naming such a card has no effect except bluffing.
+- **Gap:** under `--closed-decklist` the candidate set is unchanged, so a name-a-card menu still offers the opponent's deck, which a closed decklist hides. Register 11a of `docs/state_format.md` (every vocab card passing `ValidCards$` under a closed decklist) is not implemented yet: offering cards no deck loaded needs card data that does not create game entities.
 - **Code:** `src/name_card_choices.cpp`: `build_name_card_choices`; `src/effects/effect_name_card.cpp`.
 
 ### 1.3 Drawn games in a bo3 match

@@ -1,7 +1,9 @@
 #ifndef PARSE_H
 #define PARSE_H
 
+#include <cstdint>
 #include <string>
+#include <vector>
 #include "ecs/entity.h"
 #include "components/ability.h"
 #include "components/token.h"
@@ -10,6 +12,16 @@ std::string name_to_uid(std::string name);
 // Parses the card script at `path` into a new entity; returns 0 when the file can't be opened.
 Entity parse_card_script(std::string path);
 Token parse_token_script(const std::string &script_name);
+
+// The names of the K: keywords the parser has a dedicated parse for, in its table order, each
+// without a trailing ':' ("Cycling", "Ninjutsu"). The state format's keyword enum starts with them.
+std::vector<std::string> parser_keyword_names();
+
+// The process-wide store of S: and R: script lines a StaticAbility / Effect::Replacement was
+// parsed from (they are copied as the game runs, so they hold an id rather than the text).
+// intern_script_line returns the new line's id; script_line_text(0) is the empty string.
+uint32_t intern_script_line(const std::string &line);
+const std::string &script_line_text(uint32_t id);
 
 // Parse a single activated/spell ability body line (e.g. "AB$ Mana | Cost$ T | Produced$ C")
 // into an Ability. Used to materialize an AddAbility$ static's granted ability (Petrified

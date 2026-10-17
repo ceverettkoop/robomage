@@ -21,6 +21,7 @@ struct Token {
     // parse_token_script. Keys the ML token-identity lookup (token_script_to_index in
     // card_vocab.h) — display names collide across scripts, script stems do not.
     std::string script_name = "";
+    std::string oracle_text = "";  // the token script's Oracle: line (display and the state format)
     std::set<Type> types;
     std::vector<const AbilityDef *> abilities;    // triggered abilities (e.g. Prowess)
     // Continuous static abilities from the token script's S: lines (e.g. the Urza's Saga

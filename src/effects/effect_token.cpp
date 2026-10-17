@@ -158,7 +158,7 @@ HandlerResult investigate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // expr) makes more. Route the count through token() unchanged (it reads ab.amount /
     // ab.dynamic_amount_expr), only ensuring the Clue script is set.
     ab.def = derived_ability_def(ab.def, "investigate_clue", 0, [](AbilityDef &d) {
-        effect_params<TokenParams>(d).script = "c_a_clue_draw";
+        effect_params<TokenParams>(d).script = INVESTIGATE_TOKEN_SCRIPT;
     });
     return token(ab, orderer, ctx);
 }

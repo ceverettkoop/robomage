@@ -237,6 +237,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --offer-cancel      Offer \"Cancel\" at every cast and activation prompt; it\n");
     printf("                      reverses the spell or ability being proposed (CR 733.1).\n");
     printf("                      A testing aid (default: off)\n");
+    printf("  --closed-decklist   Each seat's state-format frames carry only its own\n");
+    printf("                      registered decklist (default: both lists are open)\n");
     printf("\nInput and output:\n");
     printf("  --player <A|B>      Designate a human seat (any value other than A/a means\n");
     printf("                      B); hidden information is shown from that seat's view.\n");
@@ -256,6 +258,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --trace-handles     Print each viewer's handle table at every decision and\n");
     printf("                      narrate handles as they are issued, linked and retired\n");
     printf("                      (HANDLES: / HANDLE: lines in the game log; a debugging aid)\n");
+    printf("  --rmstate-dump <file>  Write every viewer's (A, B, omniscient) RMSTATE frames\n");
+    printf("                      to <file> at each decision (%%p in <file> = the process\n");
+    printf("                      id); the normal protocol is unchanged\n");
     printf("  --search-server     MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/\n");
     printf("                      RELEASE); implies --machine. Incompatible with\n");
     printf("                      --replay, --log-decisions and --player\n");
@@ -267,7 +272,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --no-shuffle, test setup); those flags given alongside\n");
     printf("                      --replay are ignored with a warning. Output flags\n");
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
-    printf("                      --broadcast-steps, --trace-visibility, --trace-handles)\n");
+    printf("                      --broadcast-steps, --trace-visibility, --trace-handles,\n");
+    printf("                      --rmstate-dump)\n");
     printf("                      still apply; --log-decisions has no effect\n");
     printf("\nTest setup (card lists are comma-separated; applied at the start of each game):\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");

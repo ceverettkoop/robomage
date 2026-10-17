@@ -5,13 +5,18 @@
 #include <string>
 #include <tuple>
 
+#include "../card_vocab.h"
 #include "../cli_output.h"
-#include "../components/zone.h"
+#include "../components/ability.h"
+#include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/token.h"
+#include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
 #include "../state_format/handles.h"
 #include "characteristics.h"
+#include "lki.h"
 #include "players.h"
 #include "zones.h"
 
@@ -37,6 +42,10 @@ static CanonicalKey canonical_key(Entity e, Zone::Ownership viewer);
 static int zone_rank(Zone::ZoneValue zone);
 static int seat_rank(Zone::Ownership seat, Zone::Ownership viewer);
 static bool arrival_visible(const Zone &z, Zone::Ownership viewer);
+static int physical_card_id(Entity e);
+static int token_card_id(Entity e);
+static int last_known_card_id(Entity e);
+static bool is_stack_ability(Entity e);
 
 static bool is_seat(Zone::Ownership p) {
     return p == Zone::PLAYER_A || p == Zone::PLAYER_B;
@@ -399,4 +408,77 @@ void close_resolution_windows(Entity resolving) {
             return s == 0 || s == resolving || global_coordinator.GetComponent<Zone>(s).location != Zone::STACK;
         },
         "resolution end");
+}
+
+// A token's token-band index, keyed by its script stem (display names collide, stems don't).
+static int token_card_id(Entity e) {
+    if (!global_coordinator.entity_has_component<Token>(e)) return TOKEN_SENTINEL;
+    const int idx = token_script_to_index(global_coordinator.GetComponent<Token>(e).script_name);
+    return idx >= 0 ? idx : TOKEN_SENTINEL;
+}
+
+// The identity an object that left the battlefield took with it (CR 608.2h): its name's vocab
+// index, or a token's token-band index; -1 with no last-known information.
+static int last_known_card_id(Entity e) {
+    const LastKnownInfo *lki = departed_lki_for(e);
+    if (!lki || lki->name.empty()) return -1;
+    if (!lki->is_token) return card_name_to_index(lki->name);
+    const int idx = token_script_to_index(lki->token_script);
+    return idx >= 0 ? idx : TOKEN_SENTINEL;
+}
+
+// An activated or triggered ability's own stack object (it has no card of its own).
+static bool is_stack_ability(Entity e) {
+    return global_coordinator.entity_has_component<Ability>(e) &&
+           !global_coordinator.entity_has_component<CardData>(e) &&
+           !global_coordinator.entity_has_component<Permanent>(e) && !global_coordinator.entity_has_component<Token>(e);
+}
+
+static int physical_card_id(Entity e) {
+    if (e == 0) return -1;
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.is_token) return token_card_id(e);
+        if (perm.printed_card) return card_name_to_index(perm.printed_card->name);
+    }
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+    if (global_coordinator.entity_has_component<Token>(e)) return token_card_id(e);
+    return last_known_card_id(e);
+}
+
+int card_identity(Entity entity, Zone::Ownership /*viewer*/) {
+    return physical_card_id(entity);
+}
+
+int visible_card_id(Entity entity, Zone::Ownership viewer) {
+    if (entity == 0 || global_coordinator.entity_has_component<Player>(entity)) return -1;
+    if (is_stack_ability(entity)) {
+        const Ability &ab = global_coordinator.GetComponent<Ability>(entity);
+        const Entity live = ab.source.get();
+        if (live != 0 && live != entity) return visible_card_id(live, viewer);
+        const int lki = last_known_card_id(ab.source.lki_entity());
+        if (lki >= 0) return lki;
+        // A delayed or floating trigger with no source object: the card that created it, as
+        // captured when it did (public: the creating ability was on the stack or battlefield).
+        if (ab.delayed_link.seq != 0 && ab.delayed_link.creator_vocab_idx >= 0)
+            return ab.delayed_link.creator_vocab_idx;
+        return ab.floating_creator_vocab_idx;
+    }
+    if (!global_coordinator.entity_has_component<Zone>(entity)) {
+        // A card with no zone is a sideboarding menu's template card: the sideboarding player's own
+        // (their post-board configuration is hidden from the opponent). A departed object has
+        // only its last-known identity.
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            const bool own = !is_seat(viewer) || (sideboard_phase && viewer == sideboard_phase_player);
+            return own ? card_identity(entity, viewer) : -1;
+        }
+        return last_known_card_id(entity);
+    }
+    if (!identity_visible(entity, viewer)) return -1;
+    return card_identity(entity, viewer);
+}
+
+int public_card_id(Entity entity) {
+    return physical_card_id(entity);
 }

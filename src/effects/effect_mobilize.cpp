@@ -42,7 +42,7 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 
     std::vector<Entity> created;
     for (int i = 0; i < n; i++) {
-        Token tok = parse_token_script("r_1_1_warrior");
+        Token tok = parse_token_script(MOBILIZE_TOKEN_SCRIPT);
         if (tok.name.empty()) {
             game_log("Mobilize: no token script for Warrior.\n");
             break;
