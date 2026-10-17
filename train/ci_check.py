@@ -157,6 +157,12 @@ fails, so one invocation reports every finding):
           decklists; and the include-isolation grep over the knowledge-side
           sources (decode/schema/json/recode, src/knowledge/). Flags reach the
           engines through $ROBOMAGE_ENGINE_FLAGS. Needs bin/robomage; ~2.5 min.
+  knowledge The knowledge sidecar (train/test_knowledge.py): --machine-format
+          rmstate sessions (bo1, bo3 with sideboarding, a --closed-decklist bo3)
+          each with a --rmstate-dump: every stream frame equals the dump's for
+          that seat and decision, k_* tables included, and rmknow --isolation
+          recomputes every seat frame's k_* from each writer's own frames byte
+          for byte. Needs bin/robomage and bin/rmknow.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
           lines) across the league mirrors + a ring of crosses. Fixed seeds.
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league
@@ -254,7 +260,7 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", 
              "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
-             "mirror", "xwsearch", "replay", "rmstate", "smoke", "fuzz"]
+             "mirror", "xwsearch", "replay", "rmstate", "knowledge", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -859,6 +865,19 @@ def tier_rmstate(rep, out_dir):
               "[--part corpus|fuzz|scenarios|decode|isolation]", flush=True)
 
 
+def tier_knowledge(rep, out_dir):
+    """The knowledge sidecar's checks over real games (test_knowledge.py)."""
+    work = os.path.join(out_dir, "knowledge")
+    r = subprocess.run([sys.executable, "train/test_knowledge.py", "--binary", runner.BINARY,
+                        "--out-dir", work], cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_knowledge.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("knowledge", msg)
+        print("  reproduce: train/.venv/bin/python train/test_knowledge.py [--part <part>]", flush=True)
+
+
 def _run_capturing(out_path, run_fn):
     """Run run_fn() capturing both Python stdout AND the engine subprocess's
     stderr (fd 2, which NarrativeEnv inherits) into out_path. Returns whatever
@@ -1233,6 +1252,7 @@ _TIER_FNS = {
     "xwsearch": lambda rep, args, out_dir: tier_xwsearch(rep),
     "replay": lambda rep, args, out_dir: tier_replay(rep),
     "rmstate": lambda rep, args, out_dir: tier_rmstate(rep, out_dir),
+    "knowledge": lambda rep, args, out_dir: tier_knowledge(rep, out_dir),
     "smoke": tier_smoke,
     "fuzz": tier_fuzz,
     "actor": lambda rep, args, out_dir: tier_actor(rep),
@@ -1275,13 +1295,13 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "scenarios", "obsinv", "pergame", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "scenarios", "obsinv", "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "rmstate", "scenarios", "obsinv", "snapshot", "sbselfplay",
+    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "scenarios", "obsinv", "snapshot", "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):

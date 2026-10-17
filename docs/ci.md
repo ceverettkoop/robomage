@@ -52,6 +52,7 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
 | `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed | any transcript drift |
 | `rmstate` | the RMSTATE state format (`test_selfcheck_state.py`, below): the engine's `--selfcheck-state` checks over the replay corpus, a short explore fuzz and every scenario, with each seat's knowledge sidecar (`k_*` tables) on at level expert; the Python-vs-C++ decode comparison, decoder refusals and `--machine-format rmstate` sessions (`test_rmstate.py`'s parts); name-a-card candidates with open and closed decklists; the knowledge-side include isolation | needs the engine; ~3 min on 4 cores (2.5 min before the knowledge sidecar). Engine stderr in `ci_out/rmstate/` |
+| `knowledge` | the knowledge sidecar (`test_knowledge.py`, below): `--machine-format rmstate` sessions each with a `--rmstate-dump`, stream frames equal to the dump's `k_*` tables included, and `rmknow --isolation` on each writer's frames | needs the engine and `rmknow`; ~40 s on 4 cores. Engine stderr in `ci_out/knowledge/` |
 | `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup) | see classification below |
 | `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
 
@@ -92,6 +93,20 @@ train/.venv/bin/python train/test_selfcheck_state.py --part fuzz --fuzz-seed 102
 # one scenario with the checks on
 ROBOMAGE_ENGINE_FLAGS="--selfcheck-state --selfcheck-state-sample 1" \
   train/.venv/bin/python train/test_scenarios.py --show <name>
+```
+
+### The `knowledge` tier
+
+`train/test_knowledge.py` (`run()` is the tier; `--part` runs one part) keeps each engine's stderr in
+`ci_out/knowledge/` and deletes its dumps and saved streams once checked. Every seat frame of every
+writer carries that writer's knowledge instance's `k_*` tables (`docs/knowledge_store.md` §9.6).
+
+| Part | Runs | Fails on |
+|---|---|---|
+| `isolation` | three `--machine-format rmstate` sessions (`STREAM_GAMES`: ur_delver vs bug bo1, reanimator vs uw_control bo3, bug vs wubg_doomsday bo3 under `--closed-decklist`), each with a `--rmstate-dump` and `--selfcheck-state`; `test_rmstate.check_stream` (every stream frame equals the dump's for that seat and decision, `k_*` tables included; decision numbers unique), then `rmknow --isolation` for both seats on each dump and each saved stream (`test_rmstate.check_knowledge_isolation`) | a frame or event difference, a duplicate decision number, a bo3 session without a sideboarding frame, an isolation difference, an `ERROR:` line or a missing summary |
+
+```bash
+train/.venv/bin/python train/test_knowledge.py --part isolation
 ```
 
 ### Opt-in tiers (valid for `--tier`, not in the default run)

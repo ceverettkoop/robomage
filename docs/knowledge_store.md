@@ -568,7 +568,9 @@ STATE frames at table 90 (`rmstate::split_frame_blocks`), feeds the rest, comput
 rmknow isolation` line names the first differing table and row). `train/test_rmstate.py --isolation
 FILE…` runs it for both seats (`check_knowledge_isolation`), and `test_rmstate.py` alone runs it on
 its fuzz dumps and its stream sessions' dumps and saved streams (`stream_<seed>.stream.rms`); the
-gate does not run it yet (T12). On five stream sessions (bo1 and bo3, one under
+`knowledge` gate tier (`train/test_knowledge.py`, `docs/ci.md`) runs it on each writer's frames of
+its stream sessions (the dump's and the saved stream), after checking that every stream frame equals
+the dump's frame for that seat and decision, `k_*` included. At T11, on five stream sessions (bo1 and bo3, one under
 `--closed-decklist`, one with seat A at level off), each with its dump, a dump with the self-check
 sampled at every decision, and the off variants: 0 differences over 14,514 seat frames.
 
