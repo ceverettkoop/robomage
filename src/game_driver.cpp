@@ -68,6 +68,7 @@ static void pregame_opening_actions(EcsSystems &sys);
 static int pregame_ask(std::vector<LegalAction> &actions);
 static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
+static void discard_conceded_game_suspensions();
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 
 std::string RESOURCE_DIR;
@@ -263,6 +264,17 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
     g_concede_unwind_count = 0;
 }
 
+// The conceded game's suspended state (CR 104.3a: the conceder leaves the game
+// at once, so nothing it had in flight continues): the parked query, the
+// resolution frame, every flow continuation that can park one, and an
+// unfinished pregame. The game is over; dropping them lets the decision loop
+// exit with nothing parked.
+static void discard_conceded_game_suspensions() {
+    cur_game.pending = Game::PendingDecisions();
+    cur_game.resolution = ResolutionFrame();
+    cur_game.pregame.stage = Game::PregameState::DONE;
+}
+
 // True while play_single_game's decision loop is running. Blocking fallbacks
 // gate on it: a prompt fired OUTSIDE the loop has no loop top to suspend to,
 // so it must block inline. Since the pregame gate (Batch 13) the whole pregame
@@ -403,6 +415,16 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             concede_reset_unwind();
             return cur_game.winner;
         }
+        // A concession ended the game: whatever decision it was read at (a
+        // parked query, a pregame step, a priority window, a prompt below the
+        // loop that the unwind carried back here), the game's suspended state is
+        // discarded and the loop exits — no parked prompt of the conceded game
+        // is answered or resumed.
+        if (cur_game.ended && concede_unwind_pending()) {
+            discard_conceded_game_suspensions();
+            if (!search_intercept_game_end()) break;
+            continue;
+        }
         // Set by the RESOLUTION dispatch below when a resumed resolution ran to
         // completion inside its direct advance_step call: skip straight to the
         // post-resolution half of the iteration (the post-advance SBE + legal
@@ -440,6 +462,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 // A RESTORE latched during the query unwound it: loop back
                 // WITHOUT storing the answer so the restored state re-emits.
                 if (search_restore_pending() || search_match_restore_pending()) continue;
+                // A concession read here: the loop top discards the parked query.
+                if (concede_unwind_pending()) continue;
                 pq.answer = choice;
                 pq.answered = true;
             }
@@ -697,11 +721,15 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         int choice = InputLogger::instance().get_input(legal_actions);
         g_priority_window_open = false;
         search_set_loop_safe(false);
+        // A concession read here takes no action; the loop top ends the game's loop.
+        if (concede_unwind_pending()) continue;
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
     // A real game end must never strand a suspended resolution (plan risk R7):
     // the winner is decided by state-based effects, which never run while a
     // resolution is parked, so an active frame/query here is a protocol bug.
+    // (A concession discards its game's suspended state at the loop top, so it
+    // reaches here with nothing parked too.)
     // Same for a half-finished cast or activation: pending.cast /
     // pending.activation are active only while their query is parked or their
     // run_*_flow is on the stack, never at loop exit. A live pregame stage is

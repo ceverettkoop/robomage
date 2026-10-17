@@ -20,6 +20,14 @@ everything else is built on:
      sentinel reproduces the game byte-for-byte, and the sentinel is recorded
      in the RMLOG decision log, so ``--replay`` re-plays the concession and the
      replayed game ends with the same winner.
+  7. a concession at a PARKED decision — a mid-resolution query (Brainstorm's
+     put-back) and an SBE-pass prompt (Cavern of Souls' ETB creature type) —
+     ends the game at once: the parked query and its suspended resolution are
+     discarded (nothing of the conceded game resolves after the concession),
+     the engine exits cleanly with GAME_RESULT / MATCH_RESULT and no FATAL, for
+     -2 (bo1; bo3 continuing into game 2) and -3, under BQUERY ``--machine`` and
+     ``--machine-format rmstate``, and the logged decisions ``--replay`` to the
+     same concession and results.
 
 Mirror replay of a concession (a SearchRoboMageEnv spawning a detached mirror
 from a history that contains one) is deliberately NOT covered: a concession
@@ -34,6 +42,7 @@ the ``concede`` tier (so ``make check`` runs it); also runnable standalone::
     train/.venv/bin/python train/test_concede.py
 """
 import os
+import re
 import subprocess
 import sys
 
@@ -42,6 +51,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import decode
+import rmstate
 from env import (CONCEDE_GAME, CONCEDE_MATCH, GAME_LOSS_REWARD, GAME_WIN_REWARD,
                  NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX)
 
@@ -391,16 +401,226 @@ def test_driver_drain_pending_input():
     check(d._human_q.get_nowait() is None, "a pending quit survives the drain")
 
 
+# ── 7. a concession at a parked mid-flow query ends the game cleanly ─────────
+
+_TEMP_DECKS = os.path.join(_BIN_DIR, "resources", "decks", "temp")
+# Stacked (--no-shuffle) 20-card lists: the first 7 cards are the opening hand.
+# Seat B holds only basic lands, so it never has a response that would put a
+# decision between A's play and the parked prompt.
+_PARKED_DECKS = {
+    "concede_parked_brainstorm": ["1 Brainstorm", "19 Island"],
+    "concede_parked_cavern": ["1 Cavern of Souls", "1 Delver of Secrets", "1 Murktide Regent",
+                              "17 Island"],
+    "concede_parked_lands": ["20 Forest"],
+}
+# (label, A's deck, the menu entry A picks, a menu entry that marks the parked
+# prompt — None: the decision right after the pick —, the narrative line that
+# announces the prompt, a narrative pattern that only a continued resolution
+# would print after the concession)
+_PARKED_CASES = [
+    ("Brainstorm put-back (RESOLUTION)", "concede_parked_brainstorm", "Cast Brainstorm", None,
+     "chooses a card from Player A hand", r"puts .* to top of library"),
+    ("Cavern of Souls creature type (SBE_LATCHED)", "concede_parked_cavern", "Play Cavern of Souls",
+     "Choose creature type", "Choose a creature type for Cavern of Souls", r"chooses .*creature type"),
+]
+_RESULT_RE = re.compile(r"^(GAME_RESULT|MATCH_RESULT): .*$", re.M)
+
+
+def _write_parked_decks():
+    os.makedirs(_TEMP_DECKS, exist_ok=True)
+    paths = []
+    for name, lines in _PARKED_DECKS.items():
+        path = os.path.join(_TEMP_DECKS, f"{name}.dk")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+        paths.append(path)
+    return paths
+
+
+class _ParkedScript:
+    """The replies of one parked-concession line: choice 0 until A's pick is on
+    the menu, the pick, choice 0 until the parked prompt, then `sentinel`. In a
+    bo3 after a CONCEDE_GAME: choice 0 through the sideboard phase, and a second
+    CONCEDE_GAME at game 2's first decision."""
+
+    def __init__(self, pick, prompt, sentinel, bo3):
+        self.pick, self.prompt, self.sentinel, self.bo3 = pick, prompt, sentinel, bo3
+        self.stage = "pick"
+        self.conceded_at = []  # the menus the sentinels were sent at
+
+    def reply(self, descs, sideboarding):
+        if self.stage == "pick":
+            for i, d in enumerate(descs):
+                if self.pick in d:
+                    self.stage = "prompt"
+                    return i
+            return 0
+        if self.stage == "prompt":
+            if self.prompt is None or any(self.prompt in d for d in descs):
+                self.stage = "game2" if self.bo3 and self.sentinel == CONCEDE_GAME else "done"
+                self.conceded_at.append(list(descs))
+                return self.sentinel
+            return 0
+        if self.stage == "game2" and not sideboarding:
+            self.stage = "done"
+            self.conceded_at.append(list(descs))
+            return CONCEDE_GAME
+        return 0
+
+
+def _parked_flags(deck_a, bo3, seed):
+    flags = ["--seed", str(seed), "--deck-a", f"temp/{deck_a}",
+             "--deck-b", "temp/concede_parked_lands", "--no-shuffle", "--battlefield-a", "Island",
+             "--log-decisions"]
+    return flags + (["--bo3"] if bo3 else [])
+
+
+def _run_parked_bquery(deck_a, script, bo3, seed):
+    """Drive the line over BQUERY --machine (NarrativeEnv); returns the narrative."""
+    env = NarrativeEnv(binary_path=_BINARY, deck_a=f"temp/{deck_a}",
+                       deck_b="temp/concede_parked_lands", bo3=bo3, no_shuffle=True,
+                       battlefield_a="Island", log_decisions=True)
+    lines = []
+    try:
+        obs, _ = env.reset(options={"engine_seed": seed})
+        for _ in range(400):
+            n = env._num_choices
+            descs = list(env._action_descriptions or [])[:n]
+            mctx = decode._decode_match_context(obs[:STATE_SIZE])
+            obs, _r, term, trunc, _i = env.step(script.reply(descs, bool(mctx["is_sideboard"])))
+            lines += env.flush_lines()
+            if term or trunc:
+                break
+    except RuntimeError as exc:  # the engine exited nonzero (a FATAL)
+        lines += env.flush_lines() + [f"ENGINE-EXIT: {exc}"]
+    finally:
+        env.close()
+    return "\n".join(lines)
+
+
+def _run_parked_rmstate(deck_a, script, bo3, seed, err_path):
+    """Drive the line over --machine-format rmstate; returns (the narrative from
+    stderr — --narrative —, terminal frame count, exit code)."""
+    cmd = [_BINARY, "--machine-format", "rmstate", "--narrative"] + _parked_flags(deck_a, bo3, seed)
+    dec = rmstate.StreamDecoder()
+    terminals = 0
+    with open(err_path, "wb") as err:
+        proc = subprocess.Popen(cmd, cwd=_BIN_DIR, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                stderr=err)
+        try:
+            for payload in rmstate.records(proc.stdout):
+                frame = dec.feed(payload)
+                if frame.kind != "STATE":
+                    continue
+                header = frame.tables["header"][0]
+                if header["terminal"]:
+                    terminals += 1
+                    continue
+                descs = [r["description"] for r in frame.tables.get("menu", [])]
+                reply = script.reply(descs, bool(header["sideboarding"]))
+                proc.stdin.write(f"{reply}\n".encode())
+                proc.stdin.flush()
+            rc = proc.wait(timeout=120)
+        except (rmstate.RMStateError, BrokenPipeError) as exc:
+            rc = f"stream error: {exc}"
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
+    with open(err_path, encoding="utf-8", errors="replace") as f:
+        return f.read(), terminals, rc
+
+
+def _check_parked_line(label, text, case, sentinel, bo3, script):
+    _name, _deck, _pick, _prompt, announce, continued = case
+    check("FATAL" not in text and "ENGINE-EXIT" not in text, f"{label}: no FATAL, clean exit")
+    check(len(script.conceded_at) == (2 if bo3 and sentinel == CONCEDE_GAME else 1),
+          f"{label}: the line reached the parked prompt and conceded")
+    check(announce in text, f"{label}: the parked prompt was offered ({announce!r})")
+    after = text.split("concedes", 1)[-1].split("GAME_RESULT", 1)[0]
+    check(not re.search(continued, after),
+          f"{label}: nothing of the conceded game resolved after the concession")
+    results = _RESULT_RE.findall(text)
+    if not bo3:
+        check(results == ["GAME_RESULT"], f"{label}: one GAME_RESULT")
+        check("GAME_RESULT: 1 Player B wins" in text, f"{label}: the conceder (A) lost")
+    elif sentinel == CONCEDE_GAME:
+        check(results == ["GAME_RESULT", "GAME_RESULT", "MATCH_RESULT"],
+              f"{label}: game 1 conceded, game 2 played and conceded, then MATCH_RESULT")
+        check("GAME_RESULT: 1 Player B wins" in text, f"{label}: game 1 lost by the conceder (A)")
+    else:
+        check(results == ["GAME_RESULT", "MATCH_RESULT"], f"{label}: GAME_RESULT then MATCH_RESULT")
+        check("MATCH_RESULT: Player B wins 0-1" in text,
+              f"{label}: the match concession credited Player B")
+    return [ln for ln in text.splitlines() if _RESULT_RE.match(ln)]
+
+
+def _check_parked_replay(label, seed, live_results, announce, sentinel):
+    log_path = os.path.join(_BIN_DIR, "resources", "logs", f"game_{seed}.log")
+    if not os.path.exists(log_path):
+        check(False, f"{label}: a decision log was written ({log_path})")
+        return
+    with open(log_path, encoding="utf-8") as f:
+        decisions = f.read().split("DECISIONS\n", 1)[-1].split()
+    check(str(sentinel) in decisions, f"{label}: the log holds the sentinel ({sentinel})")
+    r = subprocess.run([_BINARY, "--replay", log_path, "--narrative"], cwd=_BIN_DIR,
+                       capture_output=True, text=True, timeout=120)
+    out = r.stdout + r.stderr
+    check(r.returncode == 0 and "FATAL" not in out, f"{label}: --replay exited cleanly (rc={r.returncode})")
+    replay_results = [ln for ln in out.splitlines() if _RESULT_RE.match(ln)]
+    check(replay_results == live_results, f"{label}: --replay reproduced {live_results}")
+    at = out.find(f"Input: {sentinel} (concede)")
+    check(at >= 0 and announce in out[:at], f"{label}: --replay conceded at the parked prompt")
+    os.unlink(log_path)
+
+
+def test_concede_at_parked_query(err_dir):
+    print("[7] a concession at a parked mid-flow query ends the game cleanly")
+    paths = _write_parked_decks()
+    seed = 104300
+    try:
+        for case in _PARKED_CASES:
+            name, deck_a, pick, prompt, announce, _continued = case
+            for mode in ("bquery", "rmstate"):
+                for sentinel, bo3 in ((CONCEDE_GAME, False), (CONCEDE_GAME, True),
+                                      (CONCEDE_MATCH, True)):
+                    seed += 1
+                    label = (f"{name}, {mode}, {'bo3' if bo3 else 'bo1'} "
+                             f"{'CONCEDE_GAME' if sentinel == CONCEDE_GAME else 'CONCEDE_MATCH'}")
+                    script = _ParkedScript(pick, prompt, sentinel, bo3)
+                    if mode == "bquery":
+                        text = _run_parked_bquery(deck_a, script, bo3, seed)
+                    else:
+                        err = os.path.join(err_dir, f"concede_parked_{seed}.err")
+                        text, terminals, rc = _run_parked_rmstate(deck_a, script, bo3, seed, err)
+                        check(rc == 0, f"{label}: engine exit 0 (got {rc}; see {err})")
+                        check(terminals == 2, f"{label}: one terminal frame per seat ({terminals})")
+                    results = _check_parked_line(label, text, case, sentinel, bo3, script)
+                    _check_parked_replay(label, seed, results, announce, sentinel)
+    finally:
+        for p in paths:
+            try:
+                os.unlink(p)
+            except OSError:
+                pass
+
+
 def main():
+    import tempfile
+    err_dir = tempfile.mkdtemp(prefix="test_concede_")
     for t in (test_bo1_concede_game,
               test_bo3_concede_game_continues_match,
               test_bo3_concede_match,
               test_bo3_concede_between_games,
               test_determinism_and_replay,
               test_driver_concede_and_timeout,
-              test_driver_drain_pending_input):
+              test_driver_drain_pending_input,
+              lambda: test_concede_at_parked_query(err_dir)):
         t()
     print()
+    if not _failures:
+        import shutil
+        shutil.rmtree(err_dir, ignore_errors=True)
     if _failures:
         print(f"FAILED: {len(_failures)} check(s)")
         for f in _failures:

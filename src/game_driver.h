@@ -129,9 +129,13 @@ void set_priority_window_open(bool open);
 // COOPERATIVE UNWIND modelled on the search-server RESTORE unwind: the engine
 // cannot unwind the C++ stack (-fno-exceptions), so every get_input below the
 // concede hands back choice 0 — emitting no query, consuming no stdin,
-// committing nothing — until control returns to the main loop, whose
-// already-decided-game check exits it. Those auto-choices run under an ended
-// game (state-based effects early-return, so nothing can change the winner).
+// committing nothing — until control returns to the main loop. Those
+// auto-choices run under an ended game (state-based effects early-return, so
+// nothing can change the winner). A concession read at a loop-level decision (a
+// parked query, a priority window) acts on nothing; at the loop top the
+// conceded game's suspended state — the parked query, the resolution frame,
+// the cast / activation / draw continuations, an unfinished pregame — is
+// discarded and the game's decision loop exits.
 //
 // `whole_match` (the -3 sentinel) additionally latches match_conceded(): the
 // bo3 dispatcher stops after the current game and reports the conceder's

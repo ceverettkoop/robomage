@@ -84,9 +84,12 @@ fails, so one invocation reports every finding):
           -3, accepted wherever the engine reads a decision): a bo1 concede
           loses for the conceding seat, a bo3 game concede is an ordinary game
           loss the match continues past (sideboard, game 2), a match concede
-          ends the match with MATCH_RESULT naming the opponent, and the
-          sentinel is logged so --replay reproduces the concession
-          (train/test_concede.py). Torch-free; needs bin/robomage; ~0.5s.
+          ends the match with MATCH_RESULT naming the opponent, the
+          sentinel is logged so --replay reproduces the concession, and a
+          concession at a parked query (a mid-resolution put-back, an SBE-pass
+          ETB choice; BQUERY and --machine-format rmstate) ends the game at once
+          with nothing parked left (train/test_concede.py). Torch-free; needs
+          bin/robomage; ~2s.
   scenarios The rules-regression scenarios (train/regression/scenarios/*.json,
           run by train/test_scenarios.py): sculpted bo1 test_harness games,
           each pinning the rules outcome of one fixed engine bug (a narrative
@@ -569,9 +572,10 @@ def tier_concede(rep):
     Drives the engine's out-of-band concede sentinels through RoboMageEnv: bo1
     concede loses for the conceding seat, a bo3 game concede leaves the match
     running (sideboard phase, game 2), a match concede ends it with the
-    opponent as MATCH_RESULT winner, and the sentinel is recorded in the
-    decision log so --replay reproduces the concession. Torch-free; needs
-    bin/robomage; well under a second."""
+    opponent as MATCH_RESULT winner, the sentinel is recorded in the
+    decision log so --replay reproduces the concession, and a concession at a
+    parked mid-flow query discards the conceded game's suspended state (BQUERY
+    and --machine-format rmstate). Torch-free; needs bin/robomage; ~2s."""
     r = subprocess.run([sys.executable, "train/test_concede.py"],
                        cwd=_REPO_ROOT, capture_output=True, text=True)
     print(r.stdout, end="", flush=True)

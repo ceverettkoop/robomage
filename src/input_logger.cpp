@@ -76,7 +76,7 @@ static Zone::Ownership deciding_player() {
 // (CR 104.3a) and return the index the caller should act on. That is choice 0,
 // the cooperative unwind's first-choice hand-back: the game is already decided,
 // so the auto-choices below simply carry control back to the main loop, which
-// exits on the ended game (see game_driver.h).
+// discards the conceded game's suspended state and exits (see game_driver.h).
 static int apply_concede_input(int choice) {
     concede_current_game(deciding_player(), choice == CONCEDE_MATCH);
     return concede_unwind_choice();
