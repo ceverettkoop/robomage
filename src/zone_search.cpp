@@ -116,10 +116,20 @@ static ActionCategory search_menu_category(const ZoneSearch &search) {
 
 // CR 701.23a: searching a zone is looking at every card in it, so the searcher sees the searched
 // hidden zones' cards while the search is under way (the resolution, until a shuffle or a move).
+// A search that picks its cards one at a time (exclude_remembered: Doomsday) does not look again at
+// the cards it already chose and put back into the zone: the searcher knows them from putting them
+// there, and the other player can then tell the next pick apart from them (it comes from the cards
+// still looked at, never from the ones already chosen).
 static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
                                    Zone::Ownership searcher) {
-    for (auto zone : search.zones)
-        if (!is_public_zone(zone)) look_at_cards(zone_contents(orderer, search.owner, zone), searcher);
+    const std::vector<ObjectRef> &remembered = cur_game.resolution.memory.remembered;
+    for (auto zone : search.zones) {
+        if (is_public_zone(zone)) continue;
+        std::vector<Entity> looked;
+        for (Entity e : zone_contents(orderer, search.owner, zone))
+            if (!search.exclude_remembered || !refs_contain(remembered, e)) looked.push_back(e);
+        look_at_cards(looked, searcher);
+    }
 }
 
 // A search event per searched hidden zone, once the pick is made (CR 701.23): a library, a

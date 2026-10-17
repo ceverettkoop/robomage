@@ -114,6 +114,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destination, LibraryTopView top_view,
     bool exile_face_down, const MoveOptions &opts) {
     size_t back = 0;
+    bool destination_occupied = false;  // the owner's destination zone holds another card (bottom placement)
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
     bool with_void_counter = false;
 
@@ -310,10 +311,12 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
         } else {
             // placing on bottom: find the current bottom position
             if (cmp_zone.distance_from_top > back) back = cmp_zone.distance_from_top;
+            destination_occupied = true;
         }
     }
 
-    if (on_bottom) target_zone.distance_from_top = back + 1;
+    // On the bottom: one below the current bottom card, or the only card (position 0) of an empty zone.
+    if (on_bottom) target_zone.distance_from_top = destination_occupied ? back + 1 : 0;
     target_zone.location = destination;
 
     // CR 400.7: entering a zone makes this a NEW object. Stamp a globally-unique generation so a

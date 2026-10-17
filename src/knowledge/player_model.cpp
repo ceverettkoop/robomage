@@ -96,15 +96,14 @@ void PlayerModel::erase_library_run(size_t seg) {
 }
 
 // Runs `seg - 1` and `seg`, adjacent now that what was between them left, merge back into one when
-// nothing tells them apart: two unknown parts of one split (a run cut around a position the
-// viewer saw, as a searched card is located in the shuffled library before it leaves) are the
-// same as their union. Exact: their only constraint is the split they came from.
+// nothing tells them apart: two unknown parts of one junction's out side (a run cut around a
+// position the viewer saw, as a searched card is located in the shuffled library before it leaves;
+// the junction may have several in nodes once compaction folded the history behind the shuffle into
+// it) are the same as their union. Exact: their only constraint is the junction they came from.
 void PlayerModel::rejoin(size_t seg) {
     if (seg == 0 || seg >= library.size()) return;
-    const Node &a = net.node(library[seg - 1]);
-    const Node &b = net.node(library[seg]);
-    if (a.in == NO_JUNCTION || a.in != b.in || net.junction(a.in).in.size() != 1) return;
-    if (a.pin >= 0 || b.pin >= 0 || a.handle != 0 || b.handle != 0) return;
+    const std::vector<uint8_t> unprotected(net.node_count(), 0);
+    if (!interchangeable(library[seg - 1], library[seg], unprotected)) return;
     const NodeId m = net.merge({library[seg - 1], library[seg]}, Loc::LIBRARY);
     library[seg - 1] = m;
     library.erase(library.begin() + static_cast<std::ptrdiff_t>(seg));
