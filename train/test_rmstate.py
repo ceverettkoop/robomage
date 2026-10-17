@@ -218,10 +218,10 @@ def check_refusals(dump_path, binary=BINARY, work_dir=None):
 # ── the --machine-format rmstate stream ───────────────────────────────────────────────────────
 
 def run_stream(binary, deck_a, deck_b, bo3, seed, dump=None, cap=_STREAM_DECISION_CAP, err_path=os.devnull,
-               flags=()):
+               flags=(), frames=None):
     """Drives one --machine-format rmstate session; returns its payloads. Raises on a protocol
     error. Replies: a seeded random menu row, now and then -1 (confirm = the last row), and a game
-    concession once a game passes `cap` decisions."""
+    concession once a game passes `cap` decisions. `frames`, a list, receives every decoded frame."""
     cmd = [binary, "--machine-format", "rmstate", "--seed", str(seed), "--deck-a", deck_a, "--deck-b", deck_b]
     if bo3:
         cmd.append("--bo3")
@@ -238,6 +238,8 @@ def run_stream(binary, deck_a, deck_b, bo3, seed, dump=None, cap=_STREAM_DECISIO
             for payload in rmstate.records(proc.stdout):
                 payloads.append(payload)
                 frame = dec.feed(payload)
+                if frames is not None:
+                    frames.append(frame)
                 if frame.kind != "STATE":
                     continue
                 header = frame.tables["header"][0]
@@ -550,9 +552,9 @@ def main(argv=None):
     ap.add_argument("--quick", action="store_true", help="fewer, shorter games")
     ap.add_argument("--isolation", nargs="+", metavar="FILE",
                     help="only check 6 (rmknow --isolation) on these dumps / saved streams")
-    ap.add_argument("--knowledge-a", default="expert", choices=["off", "expert"],
+    ap.add_argument("--knowledge-a", default="expert", choices=["off", "expert", "expert+belief"],
                     help="with --isolation: seat A's knowledge level in those files")
-    ap.add_argument("--knowledge-b", default="expert", choices=["off", "expert"],
+    ap.add_argument("--knowledge-b", default="expert", choices=["off", "expert", "expert+belief"],
                     help="with --isolation: seat B's knowledge level in those files")
     args = ap.parse_args(argv)
     if args.isolation:

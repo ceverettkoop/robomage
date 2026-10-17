@@ -167,9 +167,11 @@ fails, so one invocation reports every finding):
           --closed-decklist bo3) each with a --rmstate-dump: every stream frame
           equals the dump's for that seat and decision, k_* tables included, and
           rmknow --isolation recomputes every seat frame's k_* from each writer's
-          own frames byte for byte; rmknow --truth on every dump. The replay
-          corpus runs under --selfcheck-knowledge in the rmstate tier. Needs
-          bin/robomage and bin/rmknow; ~1 min.
+          own frames byte for byte; rmknow --truth on every dump; archetype
+          inference; the belief layer (expert+belief: structure, calibration
+          sessions, rmknow --belief-exactness). The replay corpus runs under
+          --selfcheck-knowledge in the rmstate tier. Needs bin/robomage and
+          bin/rmknow; ~2 min.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
           lines) across the league mirrors + a ring of crosses. Fixed seeds.
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league
