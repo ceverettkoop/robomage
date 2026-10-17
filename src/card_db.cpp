@@ -19,6 +19,7 @@ static bool ends_with(const std::string& s, const std::string& suffix);
 static std::string script_face_name(const std::string& path, bool back);
 static std::string resolve_dfc_script_path(const std::string& dir, const std::string& uid);
 static std::string resolve_back_face_script_path(const std::string& uid);
+static std::string script_path_for(const std::string &uid);
 
 Entity load_card(std::string card_name) {
     //search for card based on normalized name string
@@ -27,17 +28,7 @@ Entity load_card(std::string card_name) {
     //check if already loaded
     if(itr != card_db.end()) return itr->second;
     //load script
-    std::string dir = RESOURCE_DIR + "/cardsfolder/" + uid[0] + "/";
-    std::string path = dir + uid + ".txt";
-    //A double-faced card has no "<uid>.txt" of its own: Forge stores it under the
-    //combined "<front>_<back>.txt" filename. Fall back to that combined script when
-    //the direct file is absent — matched on its front face, else on its back face
-    //(a card named by its back-face name, e.g. a test preset of a transformed DFC).
-    if(!script_file_exists(path)){
-        std::string dfc_path = resolve_dfc_script_path(dir, uid);
-        if(dfc_path.empty()) dfc_path = resolve_back_face_script_path(uid);
-        if(!dfc_path.empty()) path = dfc_path;
-    }
+    std::string path = script_path_for(uid);
     Entity parsed_card_eid = parse_card_script(path);
     if(parsed_card_eid == 0) fatal_error("Failed to parse card " + card_name + " (" + path + ")");
     //success
@@ -57,6 +48,35 @@ Entity load_card(std::string card_name) {
     }
 
     return parsed_card_eid;
+}
+
+const CardData *card_data_by_name(const std::string &card_name) {
+    // Resolved once per name: the scripts on disk do not change while the process runs.
+    static std::unordered_map<std::string, const CardData *> by_uid;
+    auto uid = name_to_uid(card_name);
+    if (uid.empty()) return nullptr;
+    auto itr = by_uid.find(uid);
+    if (itr != by_uid.end()) return itr->second;
+    std::string path = script_path_for(uid);
+    const CardData *cd = script_file_exists(path) ? parsed_card_data(path) : nullptr;
+    by_uid.emplace(uid, cd);
+    return cd;
+}
+
+// The script file load_card reads for `uid`.
+static std::string script_path_for(const std::string &uid) {
+    std::string dir = RESOURCE_DIR + "/cardsfolder/" + uid[0] + "/";
+    std::string path = dir + uid + ".txt";
+    //A double-faced card has no "<uid>.txt" of its own: Forge stores it under the
+    //combined "<front>_<back>.txt" filename. Fall back to that combined script when
+    //the direct file is absent — matched on its front face, else on its back face
+    //(a card named by its back-face name, e.g. a test preset of a transformed DFC).
+    if (!script_file_exists(path)) {
+        std::string dfc_path = resolve_dfc_script_path(dir, uid);
+        if (dfc_path.empty()) dfc_path = resolve_back_face_script_path(uid);
+        if (!dfc_path.empty()) path = dfc_path;
+    }
+    return path;
 }
 
 bool names_back_face(const std::string& card_name, const CardData& cd) {

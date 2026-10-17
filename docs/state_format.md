@@ -491,6 +491,19 @@ in-process actor.
   exact (`snapshot_restore_exact`, registry put back from the copies): the search server's restore
   re-derives the continuous effects instead, which can change characteristics at a decision where
   the derived ones lag the state (`docs/rules_deviations.md` 2.3).
+- **names** (every frame of a seat): the text columns of a STATE frame (the menu's `description`
+  above all, and keyword texts, counter kinds and player-effect filters) may name only cards the
+  frame itself shows. Every vocab card name a text cell contains as whole words (the longest name
+  at each word start, case-sensitive, so `Island` is not found in `Islandwalk` and `Force` not in
+  `Force of Will`) must be the name of a card some `card` column of the frame holds (objects,
+  stack, LKI, events, the menu's `source_card`, chosen names, …; the seat's `own_deck` rows do
+  not count: they say which cards the seat has, not where), a face of that card, or a card name
+  that card's oracle text mentions (a fetch land's land types). The descriptions are built before
+  encoding, so the scramble and the permutation, which change the world and not a string already
+  built, cannot see what they name; this check can. It cannot tell copies apart: a description
+  naming a hidden card whose name the frame shows elsewhere passes. Proved with a temporary
+  bypass that appended the deciding seat's top library card's name to each first menu entry: the
+  check reported it in every fuzz game, the scramble and permutation checks never.
 - **Bypasses of `card_identity`.** Three identity reads do not go through `visible_card_id`. The
   card a `card_is_public` menu choice makes public (`public_card_id`) is safe where the choice
   itself is public, but the name-a-card menus (Cabal Therapy, Disruptor Flute, Petrified Hamlet)
@@ -500,9 +513,8 @@ in-process actor.
   left the battlefield, a delayed or floating trigger's creator) were public when captured. A
   zone-less sideboard template card is shown only to the sideboarding player. The menu's
   `description` strings are built by the engine before the encoder sees them; the encoder
-  redacts an entry whose source or target is hidden, but a description that names some other
-  hidden card would pass both leak checks (the scramble and the permutation change the world, not
-  a string already built).
+  redacts an entry whose source or target is hidden (`(hidden card)`), and the names check covers
+  the rest.
 
 ## 11. Decision register
 

@@ -8,9 +8,14 @@
 #include "components/ability.h"
 #include "components/token.h"
 
+struct CardData;
+
 std::string name_to_uid(std::string name);
 // Parses the card script at `path` into a new entity; returns 0 when the file can't be opened.
 Entity parse_card_script(std::string path);
+// The card script at `path`, parsed once per process (parse_card_script's cache): no entity is
+// created and no game state is read. nullptr when the file can't be opened.
+const CardData *parsed_card_data(const std::string &path);
 Token parse_token_script(const std::string &script_name);
 
 // The names of the K: keywords the parser has a dedicated parse for, in its table order, each

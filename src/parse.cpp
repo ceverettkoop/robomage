@@ -643,18 +643,24 @@ static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::s
 }
 
 Entity parse_card_script(std::string path) {
+    const CardData *card = parsed_card_data(path);
+    if (card == nullptr) return 0;
+    auto id = global_coordinator.CreateEntity();
+    global_coordinator.AddComponent(id, *card);
+    return id;
+}
+
+const CardData *parsed_card_data(const std::string &path) {
     // A script parses the same way every time, so each is parsed once per process: its ability
     // definitions are interned once, and a later load (the next game's init_ecs) reuses them.
     static std::unordered_map<std::string, CardData> parsed;
     auto it = parsed.find(path);
     if (it == parsed.end()) {
         CardData card;
-        if (!parse_card_file(path, card)) return 0;
+        if (!parse_card_file(path, card)) return nullptr;
         it = parsed.emplace(path, std::move(card)).first;
     }
-    auto id = global_coordinator.CreateEntity();
-    global_coordinator.AddComponent(id, it->second);
-    return id;
+    return &it->second;
 }
 
 static bool parse_card_file(const std::string &path, CardData &card) {

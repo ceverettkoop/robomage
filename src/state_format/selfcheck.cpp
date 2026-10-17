@@ -1,6 +1,7 @@
 #include "selfcheck.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <map>
 #include <random>
@@ -8,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "../card_db.h"
 #include "../card_vocab.h"
 #include "../classes/game.h"
 #include "../components/carddata.h"
@@ -103,6 +105,11 @@ static uint64_t cell(const DecodedTable &t, size_t row, int col);
 static size_t rows_of(const DecodedFrame &f, TableId id);
 static void check_complete(Zone::Ownership viewer, const DecodedFrame &f, size_t menu_rows);
 static void check_references(Zone::Ownership viewer, const DecodedFrame &f, const std::set<uint64_t> &handles);
+static bool is_word_char(char ch);
+static const std::vector<std::vector<std::string>> &vocab_names_by_initial();
+static std::vector<std::string> card_names_in(const std::string &text);
+static const std::vector<std::string> &names_shown_by(int card_id);
+static void check_names(Zone::Ownership viewer, const DecodedFrame &f);
 static void check_frame(Zone::Ownership viewer, const std::string &payload, size_t menu_rows);
 static void check_match_frames();
 static std::vector<Entity> public_choice_cards(const std::vector<LegalAction> &actions);
@@ -141,6 +148,9 @@ static std::string context() {
 static void report(const char *check, Zone::Ownership viewer, const std::string &detail) {
     ++stats.errors;
     if (stats.errors > MAX_ERROR_LINES) return;
+    // Under --machine-format rmstate stdout is stderr's descriptor with a buffer of its own: a
+    // partly buffered narrative line would otherwise run into this one.
+    std::fflush(stdout);
     non_fatal_error(
         std::string("selfcheck-state ") + check + ": viewer " + viewer_word(viewer) + ", " + context() + ": " + detail);
     if (stats.errors == MAX_ERROR_LINES) non_fatal_error("selfcheck-state: further failures are only counted");
@@ -464,11 +474,124 @@ static void check_references(Zone::Ownership viewer, const DecodedFrame &f, cons
     }
 }
 
-// Roundtrip and complete for one STATE frame.
+// ── Card names in text (the names check) ──────────────────────────────────────────────────────
+
+// A letter, a digit or a byte of a multibyte UTF-8 character: what a card name must not run on
+// into for an occurrence to count (so "Island" is not found in "Islandwalk").
+static bool is_word_char(char ch) {
+    const unsigned char u = static_cast<unsigned char>(ch);
+    return u >= 0x80 || std::isalnum(u) != 0;
+}
+
+// Every vocab card name (both faces of a double-faced card are entries), grouped by first byte,
+// each group longest first.
+static const std::vector<std::vector<std::string>> &vocab_names_by_initial() {
+    static const std::vector<std::vector<std::string>> by_initial = [] {
+        std::vector<std::vector<std::string>> out(256);
+        for (int i = 0; i < CARD_VOCAB_SIZE; ++i) {
+            const std::string name = card_vocab_entries[i].name;
+            if (!name.empty()) out[static_cast<unsigned char>(name[0])].push_back(name);
+        }
+        for (std::vector<std::string> &group : out)
+            std::stable_sort(group.begin(), group.end(),
+                [](const std::string &a, const std::string &b) { return a.size() > b.size(); });
+        return out;
+    }();
+    return by_initial;
+}
+
+// The vocab card names `text` contains as whole words, in order of appearance: at each place a
+// word starts, the longest name found there (a name inside a longer one it is part of, such as
+// "Force" in "Force of Will", is not counted).
+static std::vector<std::string> card_names_in(const std::string &text) {
+    std::vector<std::string> found;
+    const std::vector<std::vector<std::string>> &by_initial = vocab_names_by_initial();
+    size_t i = 0;
+    while (i < text.size()) {
+        if (i > 0 && is_word_char(text[i - 1])) {
+            ++i;
+            continue;
+        }
+        const std::string *hit = nullptr;
+        for (const std::string &name : by_initial[static_cast<unsigned char>(text[i])]) {
+            const size_t end = i + name.size();
+            if (end > text.size() || text.compare(i, name.size(), name) != 0) continue;
+            if (end < text.size() && is_word_char(text[end])) continue;
+            hit = &name;
+            break;
+        }
+        if (hit == nullptr) {
+            ++i;
+            continue;
+        }
+        if (std::find(found.begin(), found.end(), *hit) == found.end()) found.push_back(*hit);
+        i += hit->size();
+    }
+    return found;
+}
+
+// The card names a frame makes explicit by showing card `card_id`: its name, the names of both
+// faces of its card, and the card names its faces' oracle text mentions (public text: a fetch land
+// names the land types it finds).
+static const std::vector<std::string> &names_shown_by(int card_id) {
+    static std::map<int, std::vector<std::string>> cache;
+    auto it = cache.find(card_id);
+    if (it != cache.end()) return it->second;
+    std::vector<std::string> names;
+    const char *vocab_name = card_index_to_name(card_id);
+    if (vocab_name != nullptr && vocab_name[0] != '\0') {
+        names.push_back(vocab_name);
+        if (const CardData *cd = card_data_by_name(vocab_name)) {
+            for (const CardData *face : {cd, static_cast<const CardData *>(cd->backside.get())}) {
+                if (face == nullptr) continue;
+                names.push_back(face->name);
+                for (const std::string &n : card_names_in(face->oracle_text)) names.push_back(n);
+            }
+        }
+    }
+    return cache.emplace(card_id, std::move(names)).first->second;
+}
+
+// The names check of one seat's decoded STATE frame: every card name a text column holds (a menu
+// entry's description above all: it is built by the engine before the encoder sees it, so the
+// scramble and permutation checks cannot see what it names) must be the name of a card the frame
+// shows in a card column, or one that card's own text makes public (names_shown_by). The seat's
+// own 75 (own_deck) does not count: it says which cards the seat has, not where. A description
+// naming a hidden card whose name the frame shows nowhere else is reported.
+static void check_names(Zone::Ownership viewer, const DecodedFrame &f) {
+    std::set<std::string> shown;
+    for (const DecodedTable &t : f.tables) {
+        if (t.id == static_cast<uint16_t>(TableId::OWN_DECK)) continue;
+        for (size_t c = 0; c < t.def->columns.size(); ++c) {
+            const rmstate::ColumnDef &col = t.def->columns[c];
+            if (col.tag != "card") continue;
+            for (const std::vector<rmstate::Value> &row : t.rows)
+                if (!rmstate::value_is_all_ones(row[c], col.storage))
+                    for (const std::string &n : names_shown_by(static_cast<int>(row[c].bits))) shown.insert(n);
+        }
+    }
+    for (const DecodedTable &t : f.tables) {
+        for (size_t c = 0; c < t.def->columns.size(); ++c) {
+            if (t.def->columns[c].tag != "text") continue;
+            for (size_t r = 0; r < t.rows.size(); ++r) {
+                const std::string &text = t.rows[r][c].text;
+                for (const std::string &name : card_names_in(text))
+                    if (!shown.count(name))
+                        report("names", viewer,
+                            "table " + t.def->name + " row " + std::to_string(r) + " column " + t.def->columns[c].name +
+                                " names " + name + ", which no card column of the frame shows: \"" + text + "\"");
+            }
+        }
+    }
+}
+
+// Roundtrip, complete and (for a seat) names for one STATE frame.
 static void check_frame(Zone::Ownership viewer, const std::string &payload, size_t menu_rows) {
     ++stats.frames;
     DecodedFrame f;
-    if (roundtrip(viewer, payload, &f)) check_complete(viewer, f, menu_rows);
+    if (!roundtrip(viewer, payload, &f)) return;
+    check_complete(viewer, f, menu_rows);
+    if (is_seat(viewer)) check_names(viewer, f);
 }
 
 // Once per match: each viewer's SCHEMA, CARDS and DECKLISTS frames decode and re-encode the same.
@@ -684,6 +807,7 @@ void selfcheck_state_match_over() {
         check_frame(viewer, frame, 0);
         if (is_seat(viewer)) check_scramble(viewer, {}, Zone::UNKNOWN, events, {}, frame, true);
     }
+    std::fflush(stdout);
     std::fprintf(stderr,
         "SELFCHECK-STATE: decisions=%zu frames=%zu events=%zu permutations=%zu snapshots=%zu errors=%zu\n",
         stats.decisions, stats.frames, stats.events, stats.permutations, stats.snapshots, stats.errors);
