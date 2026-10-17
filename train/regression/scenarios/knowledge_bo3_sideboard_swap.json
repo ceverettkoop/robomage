@@ -1,0 +1,35 @@
+{
+  "name": "knowledge_bo3_sideboard_swap",
+  "why": "docs/knowledge_store.md \u00a73.2 roots / \u00a74.2 sideboarding, \u00a77 sharpness: in game 1 A knows B's sideboard is exactly B's registered 15; B concedes and boards in four Leyline of the Void for the Chain Lightnings, which A does not see, so in game 2 any of B's registered 75 may be in its sideboard (each card 0 to its copies); B then begins game 2 with Leyline of the Void on the battlefield, which proves a swap: at most three Leylines are left in B's sideboard (CR 100.4a, 113.6b; step 1 T12 sharpness)",
+  "format": "bo3",
+  "deck_a": "league/ur_delver",
+  "deck_b": "league/burn",
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:concede",
+    "A:sb-done",
+    "B:sb-in:Leyline of the Void",
+    "B:sb-out:Chain Lightning",
+    "B:sb-in:Leyline of the Void",
+    "B:sb-out:Chain Lightning",
+    "B:sb-in:Leyline of the Void",
+    "B:sb-out:Chain Lightning",
+    "B:sb-in:Leyline of the Void",
+    "B:sb-out:Chain Lightning",
+    "B:sb-done",
+    "B:keep",
+    "A:keep",
+    "B:desc:Accept"
+  ],
+  "seed": 6,
+  "max_decisions": 19,
+  "expect_dump": [
+    "^A d=\\d+ g0 \\S+ pool opp sideboard size=15: Dead 2-2, Leyline of the Void 4-4, Roiling Vortex 2-2, Searing Blood 3-3, Smash to Smithereens 4-4$",
+    "^A d=\\d+ g1 \\S+ pool opp sideboard size=15: .*, Leyline of the Void 0-4, "
+  ],
+  "expect_dump_final": [
+    "^A d=\\d+ g1 \\S+ pool opp sideboard size=15: .*, Leyline of the Void 0-3, ",
+    "^A d=\\d+ g1 \\S+ seen opp Leyline of the Void game=1 match=1$"
+  ]
+}

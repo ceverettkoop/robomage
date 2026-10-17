@@ -4,7 +4,8 @@
 Each ``train/regression/scenarios/*.json`` file is a test_harness ``--scenario``
 (zone presets, hands, a ``play`` spec list, seed; see CLAUDE.md "JSON
 scenarios") extended with assertions about the RULES OUTCOME of the line it
-plays. Every scenario runs as a bo1 harness process (in parallel), and a
+plays. Every scenario runs as a harness process (in parallel; bo1 unless its
+``format`` says bo3), and a
 scenario fails when an assertion misses, the engine or harness prints an error
 (``ERROR:`` / ``FATAL:`` / a traceback / a failed ``--play`` spec), or the
 ``play`` script ends before all of its specs were applied.
@@ -26,11 +27,35 @@ Scenario keys beyond the harness's own:
                  may carry its own expect_same, which replaces the scenario's for that variant
   expect_same    regexes: the narrative lines matching any of them must be identical, in
                  order, between the scenario's run and each variant's run (needs variants)
+  format         "bo1" (default) or "bo3": a bo3 scenario plays on through sideboarding and the
+                 later games once its script runs out (presets apply to game 1)
   player_a / player_b  the seats' agents once the script runs out (default auto)
   deck_a / deck_b      a deck for a seat with no hand preset
   offer_cancel   true: run with --offer-cancel
   engine_flags   extra engine flags (a list, e.g. ["--trace-visibility"]), passed to the
                  engine through $ROBOMAGE_ENGINE_FLAGS (train/env.py)
+  expect_dump    regexes that must each match some knowledge line (below), any frame
+  expect_dump_not  regexes that must match no knowledge line
+  expect_dump_final  regexes that must each match a knowledge line of a seat's last frame
+  expect_dump_final_not  regexes that must match no knowledge line of either seat's last frame
+
+Knowledge lines: with any expect_dump* key the scenario runs with ``--rmstate-dump FILE
+--state-dump json`` (a temporary file), and every seat STATE frame's knowledge tables (``k_*``,
+docs/knowledge_store.md §6) are rendered one fact per line, prefixed by the seat and the frame::
+
+  <A|B> d=<decision> g<game> <t<turn>|sb> <fact>        (sb: a sideboarding frame, between games)
+
+  meta level=<OFF|EXPERT> exact=<0|1>
+  seen <self|opp> <card> game=<n> match=<n>
+  pool <self|opp> <hand|library|sideboard|face_down|set_aside>[ <range>] size=<n>: <card> <min>-<max>, ...
+  position <self|opp> <at> = <card>                 (the card there is known)
+  position <self|opp> <at> one of: <card>, ...      (its candidates)
+  known_hand <card> x<copies>
+
+Owners are relative to the seat; a library range or position is ``top<pos>`` (one position) or
+``top<pos>+<span>``; a pool's cards (every card with max > 0) and a position's candidates are
+sorted by name. A seat's last frame is its last STATE frame in the dump (the decision at
+``max_decisions``, or the terminal frame of a finished game). Variants do not check these keys.
 
 The narrative is the engine's game log (the harness's "--- Narrative ---"
 blocks) from the first turn banner on (the pregame's opening draws are left
@@ -42,6 +67,7 @@ Usage:
   train/.venv/bin/python train/test_scenarios.py ward*        # a subset (globs)
   train/.venv/bin/python train/test_scenarios.py --show NAME  # print one run's output
   train/.venv/bin/python train/test_scenarios.py --narrative NAME  # just its narrative
+  train/.venv/bin/python train/test_scenarios.py --dump NAME  # its knowledge lines
   train/.venv/bin/python train/test_scenarios.py --binary PATH  # another engine build
 """
 import argparse
@@ -49,6 +75,7 @@ import fnmatch
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -70,9 +97,10 @@ _HARNESS_KEYS = {"name", "hand_a", "hand_b", "library_a", "library_b",
                  "battlefield_a", "battlefield_b", "graveyard_a", "graveyard_b",
                  "exile_a", "exile_b", "sideboard_a", "sideboard_b",
                  "life_a", "life_b", "play", "actions", "seed", "max_decisions"}
+_DUMP_KEYS = {"expect_dump", "expect_dump_not", "expect_dump_final", "expect_dump_final_not"}
 _ASSERT_KEYS = {"expect", "expect_not", "expect_order", "expect_count", "expect_menu",
-                "expect_menu_not", "expect_result", "expect_unique", "expect_same"}
-_RUN_KEYS = {"why", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel", "engine_flags",
+                "expect_menu_not", "expect_result", "expect_unique", "expect_same"} | _DUMP_KEYS
+_RUN_KEYS = {"why", "format", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel", "engine_flags",
              "variants"}
 _KNOWN_KEYS = _HARNESS_KEYS | _ASSERT_KEYS | _RUN_KEYS
 
@@ -126,7 +154,7 @@ def split_output(text):
 
 def harness_cmd(scn, path, binary=None):
     """The test_harness command line for one scenario."""
-    cmd = [sys.executable, _HARNESS, "--scenario", path, "--format", "bo1",
+    cmd = [sys.executable, _HARNESS, "--scenario", path, "--format", scn.get("format", "bo1"),
            "--player-a", scn.get("player_a", "auto"),
            "--player-b", scn.get("player_b", "auto")]
     if "max_decisions" not in scn:
@@ -141,13 +169,115 @@ def harness_cmd(scn, path, binary=None):
     return cmd
 
 
-def harness_env(scn):
-    """The environment for one scenario's harness process: ours, plus its engine_flags."""
+def harness_env(scn, dump_path=None, extra_flags=()):
+    """The environment for one scenario's harness process: ours, plus its engine_flags and
+    `extra_flags` (and, with `dump_path`, the flags that write the RMSTATE dump the knowledge
+    lines are read from)."""
     env = dict(os.environ)
-    flags = scn.get("engine_flags", [])
+    flags = list(scn.get("engine_flags", [])) + list(extra_flags)
+    if dump_path:
+        flags += ["--rmstate-dump", dump_path, "--state-dump", "json"]
     if flags:
-        env[ENGINE_FLAGS_ENV] = " ".join([env.get(ENGINE_FLAGS_ENV, "")] + list(flags)).strip()
+        env[ENGINE_FLAGS_ENV] = " ".join([env.get(ENGINE_FLAGS_ENV, "")] + flags).strip()
     return env
+
+
+def wants_dump(scn):
+    return bool(_DUMP_KEYS & set(scn))
+
+
+def _libpos_text(anchor, pos, span):
+    if anchor is None:
+        return None
+    end = "top" if anchor == "TOP" else "bottom"
+    return f"{end}{pos}" + (f"+{span}" if span and span > 1 else "")
+
+
+def _knowledge_facts(tables, names):
+    """The knowledge lines (without the seat/frame prefix) of one decoded STATE frame."""
+    def card(cid):
+        return names.get(cid, f"#{cid}")
+
+    def rel(r):
+        return "self" if r == 1 else "opp"
+
+    out = []
+    for m in tables.get("k_meta", []):
+        out.append(f"meta level={m['level']} exact={int(bool(m['exact']))}")
+    for r in tables.get("k_seen", []):
+        out.append(f"seen {rel(r['player_rel'])} {card(r['card'])} game={r['game']} match={r['match']}")
+    pool_cards = {}
+    for r in tables.get("k_pool_card", []):
+        pool_cards.setdefault(r["pool"], []).append((card(r["card"]), r["min"], r["max"]))
+    pools = tables.get("k_pool", [])
+    for i, r in enumerate(pools):
+        rng = _libpos_text(r["range_anchor"], r["range_pos"], r["range_span"])
+        kind = {"LIBRARY_RANGE": "library"}.get(r["kind"], r["kind"].lower())
+        cards = ", ".join(f"{n} {lo}-{hi}" for n, lo, hi in sorted(pool_cards.get(i, [])))
+        out.append(f"pool {rel(r['owner_rel'])} {kind}{' ' + rng if rng else ''} size={r['size']}: {cards}")
+    for r in tables.get("k_position", []):
+        at = _libpos_text(r["at_anchor"], r["at_pos"], r["at_span"])
+        if r["card"] is not None:
+            out.append(f"position {rel(r['owner_rel'])} {at} = {card(r['card'])}")
+        else:
+            cands = ", ".join(sorted(n for n, _lo, hi in pool_cards.get(r["pool"], []) if hi > 0))
+            out.append(f"position {rel(r['owner_rel'])} {at} one of: {cands}")
+    for r in tables.get("k_known_hand", []):
+        out.append(f"known_hand {card(r['card'])} x{r['copies']}")
+    return out
+
+
+def knowledge_frames(jsonl_path):
+    """[(seat, lines)] for every seat STATE frame of a --state-dump json file, in order: each
+    line is one knowledge fact prefixed by the seat and the frame (see the module docstring)."""
+    names = {}
+    frames = []
+    with open(jsonl_path) as fh:
+        for raw in fh:
+            rec = json.loads(raw)
+            viewer = rec.get("viewer")
+            if viewer not in ("A", "B"):
+                continue
+            tables = rec.get("tables", {})
+            if rec.get("frame") == "CARDS":
+                seat_names = names.setdefault(viewer, {})
+                for row in tables.get("card", []):
+                    seat_names.setdefault(row["card"], row["name"])
+            elif rec.get("frame") == "STATE":
+                head = tables["header"][0]
+                turn = tables["turn"][0]["turn"] if tables.get("turn") else 0
+                when = "sb" if head.get("sideboarding") else f"t{turn}"
+                prefix = f"{viewer} d={head['decision']} g{head['game']} {when} "
+                frames.append((viewer, [prefix + f for f in _knowledge_facts(tables, names.get(viewer, {}))]))
+    return frames
+
+
+def check_dump(scn, frames):
+    """Failure messages for the expect_dump* assertions over `frames` (knowledge_frames)."""
+    if not frames:
+        return ["no seat STATE frame in the --state-dump json output"]
+    fails = []
+    lines = [ln for _seat, fl in frames for ln in fl]
+    final = []
+    for seat in ("A", "B"):
+        last = [fl for s, fl in frames if s == seat]
+        if last:
+            final += last[-1]
+    for rx in scn.get("expect_dump", []):
+        if not any(re.search(rx, ln) for ln in lines):
+            fails.append(f"missing knowledge line /{rx}/")
+    for rx in scn.get("expect_dump_not", []):
+        hit = next((ln for ln in lines if re.search(rx, ln)), None)
+        if hit is not None:
+            fails.append(f"forbidden knowledge line /{rx}/: {hit!r}")
+    for rx in scn.get("expect_dump_final", []):
+        if not any(re.search(rx, ln) for ln in final):
+            fails.append(f"missing knowledge line in a seat's last frame /{rx}/")
+    for rx in scn.get("expect_dump_final_not", []):
+        hit = next((ln for ln in final if re.search(rx, ln)), None)
+        if hit is not None:
+            fails.append(f"forbidden knowledge line in a seat's last frame /{rx}/: {hit!r}")
+    return fails
 
 
 def check_output(scn, text):
@@ -214,6 +344,8 @@ def load_scenario(path):
         raise ValueError(f"unknown key(s) {sorted(unknown)}")
     if not scn.get("why"):
         raise ValueError("missing 'why'")
+    if scn.get("format", "bo1") not in ("bo1", "bo3"):
+        raise ValueError(f"format must be bo1 or bo3, got {scn['format']!r}")
     if not (_ASSERT_KEYS & set(scn)):
         raise ValueError("no assertion (expect / expect_not / expect_order / expect_count / "
                          "expect_menu / expect_menu_not / expect_result)")
@@ -284,23 +416,38 @@ def check_variants(scn, text, binary=None):
     return fails
 
 
-def run_one(path, binary=None):
-    """(name, failure messages, harness output) for one scenario file."""
+def run_one(path, binary=None, dump=False, extra_flags=()):
+    """(name, failure messages, harness output, knowledge frames) for one scenario file, its engine
+    run with `extra_flags` as well; the frames (knowledge_frames) are read when the scenario has an
+    expect_dump* key or `dump` is set, else they are empty."""
     name = os.path.basename(path)[:-5]
     try:
         scn = load_scenario(path)
     except (ValueError, re.error, json.JSONDecodeError) as e:
-        return name, [f"bad scenario file: {e}"], ""
+        return name, [f"bad scenario file: {e}"], "", []
+    dump_dir = tempfile.mkdtemp(prefix=f"scenario_{name}_") if dump or wants_dump(scn) else None
+    dump_path = os.path.join(dump_dir, "frames.rms") if dump_dir else None
+    frames = []
     try:
-        r = subprocess.run(harness_cmd(scn, path, binary), cwd=_REPO_ROOT, env=harness_env(scn),
-                           capture_output=True, text=True, timeout=_TIMEOUT_S)
-        out = r.stdout + r.stderr
-    except subprocess.TimeoutExpired as e:
-        return name, [f"timed out after {_TIMEOUT_S}s"], str(e.stdout or "")
-    fails = check_output(scn, out)
+        try:
+            r = subprocess.run(harness_cmd(scn, path, binary), cwd=_REPO_ROOT,
+                               env=harness_env(scn, dump_path, extra_flags),
+                               capture_output=True, text=True, timeout=_TIMEOUT_S)
+            out = r.stdout + r.stderr
+        except subprocess.TimeoutExpired as e:
+            return name, [f"timed out after {_TIMEOUT_S}s"], str(e.stdout or ""), []
+        fails = check_output(scn, out)
+        if dump_path:
+            jsonl = dump_path + ".jsonl"
+            frames = knowledge_frames(jsonl) if os.path.exists(jsonl) else []
+            if wants_dump(scn):
+                fails += check_dump(scn, frames)
+    finally:
+        if dump_dir:
+            shutil.rmtree(dump_dir, ignore_errors=True)
     if scn.get("variants"):
         fails += check_variants(scn, out, binary)
-    return name, fails, out
+    return name, fails, out, frames
 
 
 def main(argv=None):
@@ -311,6 +458,8 @@ def main(argv=None):
                    help="print each selected scenario's full harness output")
     p.add_argument("--narrative", action="store_true",
                    help="print each selected scenario's narrative (what expect* match)")
+    p.add_argument("--dump", action="store_true",
+                   help="print each selected scenario's knowledge lines (what expect_dump* match)")
     p.add_argument("--binary", default=None, help="engine binary to run against")
     p.add_argument("-j", "--jobs", type=int, default=min(16, os.cpu_count() or 4))
     args = p.parse_args(argv)
@@ -320,14 +469,17 @@ def main(argv=None):
         print("no scenarios matched", file=sys.stderr)
         return 2
     with ThreadPoolExecutor(max_workers=args.jobs) as ex:
-        results = list(ex.map(lambda q: run_one(q, args.binary), paths))
+        results = list(ex.map(lambda q: run_one(q, args.binary, args.dump), paths))
     failed = 0
-    for name, fails, out in results:
+    for name, fails, out, frames in results:
         if args.show:
             print(f"##### {name}\n{out}")
         elif args.narrative:
             print(f"##### {name}")
             print("\n".join(split_output(out)[0]))
+        elif args.dump:
+            print(f"##### {name}")
+            print("\n".join(ln for _seat, lines in frames for ln in lines))
         if fails:
             failed += 1
             print(f"  FAIL {name}", flush=True)

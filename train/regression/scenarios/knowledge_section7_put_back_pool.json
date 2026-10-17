@@ -1,0 +1,27 @@
+{
+  "name": "knowledge_section7_put_back_pool",
+  "why": "docs/knowledge_store.md §4.2 / §7 sharpness (the §7 example, adapted to the vocab): B's Cabal Therapy shows A's whole hand {Brainstorm, Force of Will, Daze, Lightning Bolt, Island, Island} (A's library holds only Islands, so Brainstorm's three draws are Islands by deduction); A puts back two cards, so the top two are two of {Force of Will, Daze, Lightning Bolt, Island}; A casts the Bolt, so they are two of {Force of Will, Daze, Island}; B's Thoughtseize then shows a hand of five Islands, so the top two are exactly one Force of Will and one Daze (CR 701.20a, 401.2; step 1 T12 sharpness)",
+  "hand_a": ["Brainstorm", "Force of Will", "Daze", "Lightning Bolt", "Ponder", "Island", "Island"],
+  "battlefield_a": ["Island", "Mountain"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Cabal Therapy", "Thoughtseize", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "battlefield_b": ["Swamp", "Swamp"],
+  "library_b": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "play": ["A:keep", "B:keep", "B:cast:Cabal Therapy", "B:target:Player A", "B:choice:Ponder",
+           "A:cast:Brainstorm", "A:pass", "A:desc:Force of Will", "A:desc:Daze",
+           "A:cast:Lightning Bolt", "A:target:Player B",
+           "B:cast:Thoughtseize", "B:target:Player A"],
+  "max_decisions": 26,
+  "expect_dump": [
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=5: Daze 1-1, Force of Will 1-1, Island 2-2, Lightning Bolt 1-1$",
+    "^B d=\\d+ \\S+ \\S+ pool opp library top0\\+2 size=2: Daze 0-1, Force of Will 0-1, Island 0-2, Lightning Bolt 0-1$",
+    "^B d=\\d+ \\S+ \\S+ pool opp library top0\\+2 size=2: Daze 0-1, Force of Will 0-1, Island 0-2$"
+  ],
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ pool opp library top0\\+2 size=2: Daze 1-1, Force of Will 1-1$",
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=5: Island 5-5$",
+    "^B d=\\d+ \\S+ \\S+ known_hand Island x5$",
+    "^B d=\\d+ \\S+ \\S+ meta level=EXPERT exact=1$"
+  ],
+  "expect_dump_final_not": ["^B .* position opp top[01] = "]
+}
