@@ -209,7 +209,7 @@ class SeatFrames:
         self.seat = seat                    # "A" / "B"
         self.schema = None
         self.en = {}
-        self._cards_frame = None
+        self.cards_frame = None
         self.cards = None                   # FrameCards
         self.deck_names = {}                # seat value (1 A, 2 B) -> registered deck name
         self.lists = {}                     # player-rel -> {card name: copies} (main + side)
@@ -221,7 +221,7 @@ class SeatFrames:
             self.schema = schema
             self.en = schema.enums
         elif frame.kind == "CARDS":
-            self._cards_frame = frame
+            self.cards_frame = frame
             self.cards = FrameCards(schema, frame)
             if self._metagame is not None:
                 self._read_metagame(self._metagame)

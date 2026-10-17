@@ -61,7 +61,7 @@ FORMAT_SUBS = {
                            "az-selfplay", "az-eval", "az", "az-league",
                            "bench-nenvs")
 } | {("analysis", s) for s in ("browse", "report")} | {
-    ("play", "play"), ("harness", "harness")}
+    ("play", "play"), ("harness", "harness"), ("driver", "driver")}
 
 
 # Scripts that import a package the per-push CI image omits before they parse.
@@ -325,6 +325,7 @@ SEED_DEFAULTS = {
     ("analysis", "report"): 1, ("analysis", "browse"): 1,
     ("harness", "harness"): None,
     ("play", "play"): None,
+    ("driver", "driver"): 1,
     ("train", "az-selfplay"): None, ("train", "az-train"): None,
     ("train", "az"): None, ("train", "az-league"): None,
     ("train", "bench-actor"): 1, ("train", "bench-workers"): 1,
@@ -1156,6 +1157,24 @@ def test_rmstate_entry():
     check(code == 2, "rmstate dump without FILE should be rejected")
 
 
+def test_driver_entry():
+    print("rm_driver.py parses its own flags, the ones cli_spec.DRIVER_TOOL registers")
+    import rm_driver
+    check(cli_spec.DRIVER_TOOL in ALL_TOOLS, "DRIVER_TOOL is registered in ALL_TOOLS")
+    own = rm_driver.build_parser()
+    spec = build(cli_spec.DRIVER_TOOL.subs[0])
+    argv = ["--player-a", "explore", "--deck-a", "league/bug", "--format", "bo1", "--games", "3",
+            "--on-the-play", "b", "--closed-decklist", "--knowledge-b", "off"]
+
+    def parsed(parser, args):
+        return {k: v for k, v in vars(parser.parse_args(args)).items() if not k.startswith("_removed_")}
+    check(parsed(own, argv) == parsed(spec, argv),
+          "the driver's parser and the cli_spec-built one parse alike")
+    check(parsed(own, []) == parsed(spec, []), "their defaults agree")
+    code, err = parse_error(own, ["--on-the-play", "c"])
+    check(code == 2 and "invalid choice" in err, "--on-the-play c should be rejected")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -1183,6 +1202,7 @@ def main():
     test_az_inspect_entry()
     test_browse_source()
     test_rmstate_entry()
+    test_driver_entry()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")
         return 1

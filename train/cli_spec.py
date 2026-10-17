@@ -3403,8 +3403,24 @@ RMSTATE_TOOL = Tool("rmstate", "train/rmstate.py", subs=[
                    help="RMSTATE stream to decode (- = stdin)")]),
 ])
 
+
+
+def _driver_tool() -> Tool:
+    """train/rm_driver.py: the agent-game driver on RMSTATE (plan step 2). Its flags are the
+    driver's own table (``rm_driver.CLI_FLAGS``, the Arg fields as dicts), so the driver parses
+    without this module; registered here as every other CLI is."""
+    from rm_driver import CLI_FLAGS
+    return Tool("driver", "train/rm_driver.py", flat=True, subs=[
+        Sub("driver", "Play agent games (the scripted tiers, explore, first, actions:) on the "
+                      "RMSTATE protocol with the stdlib-only driver",
+            items=[Arg(**f) for f in CLI_FLAGS]),
+    ])
+
+
+DRIVER_TOOL = _driver_tool()
+
 ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, AZ_INSPECT_TOOL,
-             PLAY_TOOL, HARNESS_TOOL, RMSTATE_TOOL]
+             PLAY_TOOL, HARNESS_TOOL, RMSTATE_TOOL, DRIVER_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────
