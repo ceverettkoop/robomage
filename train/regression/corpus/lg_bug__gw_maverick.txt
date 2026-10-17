@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -55,11 +50,6 @@
   Wasteland
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -76,11 +66,6 @@
   Tropical Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -90,11 +75,6 @@
   Player A: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -111,11 +91,6 @@
   PB: Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Wasteland
 
 --- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -127,14 +102,6 @@
   Player B looks at the top 5 card(s) of their library.
 
 --- Decision 6 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Stack: Once Upon a Time (spell, self)
-  Pending: Once Upon a Time (self)
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
@@ -148,15 +115,6 @@
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -171,15 +129,6 @@
   PB: Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Tropical Island
-  Self GY: Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -199,16 +148,6 @@
   PB: Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(8): Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dryad Arbor [1/1]
-  Opp BF:   Tropical Island
-  Self GY: Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -219,16 +158,6 @@
   Player B played Misty Rainforest
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dryad Arbor [1/1] | Misty Rainforest (NEW)
-  Opp BF:   Tropical Island
-  Self GY: Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -242,18 +171,6 @@
   Searching Player B's library:
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dryad Arbor [1/1]
-  Opp BF:   Tropical Island
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Forest
@@ -264,16 +181,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dryad Arbor [1/1] | Savannah (NEW)
-  Opp BF:   Tropical Island
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -287,18 +194,6 @@
   Choose X value (0-1):
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dryad Arbor [1/1] | Savannah (NEW)
-  Opp BF:   Tropical Island
-  Stack: Green Sun's Zenith (spell, self)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -312,18 +207,6 @@
   Searching Player B's library:
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Green Sun's Zenith (spell, self) [X=1]
-  Pending: Green Sun's Zenith (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Birds of Paradise
@@ -341,17 +224,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 15 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Tropical Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -367,15 +239,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -384,32 +247,12 @@
   Player B draws Green Sun's Zenith
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -424,18 +267,6 @@
   Choose X value (0-2):
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Green Sun's Zenith (spell, self)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -451,18 +282,6 @@
   Searching Player B's library:
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Green Sun's Zenith (spell, self) [X=2]
-  Pending: Green Sun's Zenith (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Badgermole Cub
@@ -480,17 +299,6 @@
   Choose target for Badgermole Cub:
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Pending: Badgermole Cub (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dryad Arbor
    1: Savannah
@@ -502,17 +310,6 @@
   Dryad Arbor becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
 
 --- Decision 22 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW,res 1) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -521,17 +318,6 @@
   Player B played Wasteland
 
 --- Decision 23 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW,res 1) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -540,19 +326,6 @@
   Choose target for Wasteland:
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW,res 1) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Wasteland (ability, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Tropical Island
    1: Dryad Arbor
@@ -573,19 +346,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying]
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -595,19 +355,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 26 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (NEW)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -618,19 +365,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (NEW)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -649,17 +383,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  19 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -668,36 +391,12 @@
   Player B draws Knight of the Reliquary
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Knight of the Reliquary, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Knight of the Reliquary, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Keen-Eyed Curator  [#0]
@@ -713,19 +412,6 @@
   Player B casts Keen-Eyed Curator
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(5): Knight of the Reliquary, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Stack: Keen-Eyed Curator (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -734,18 +420,6 @@
   Keen-Eyed Curator enters the battlefield
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(5): Knight of the Reliquary, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Knight of the Reliquary  [#0]
@@ -765,18 +439,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  19 life | mana: empty | hand(4): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Confirm attackers
@@ -787,18 +449,6 @@
     [attacking] Badgermole Cub [2/2] -> Player A
 
 --- Decision 34 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  19 life | mana: empty | hand(4): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -817,19 +467,6 @@
   PB: Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  18 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK) | Knight of the Reliquary [4/4] (SICK) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -843,17 +480,6 @@
   PB: Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
 --- Decision 36 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  19 life | mana: empty | hand(4): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   18 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -864,18 +490,6 @@
   Player B draws Windswept Heath
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  19 life | mana: empty | hand(5): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   18 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -884,18 +498,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(5): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   18 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -912,19 +514,6 @@
   Player B casts Scythecat Cub
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   18 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Scythecat Cub (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -933,20 +522,6 @@
   >> B/B: 3 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   18 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Dryad Arbor
    1: Sacrifice Savannah
@@ -957,19 +532,6 @@
   Delayed trigger fires.
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   18 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Dryad Arbor (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor (self, leaves bf, on stack #0)
-  Self GY: Dryad Arbor, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -977,20 +539,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 42 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah
-  Stack: Dryad Arbor (ability, opponent) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Scythecat Cub (spell, opponent)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor (opponent, leaves bf, on stack #0)
-  Self GY: Tropical Island
-  Opp GY:  Dryad Arbor, Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -999,21 +547,6 @@
   Choose target for Force of Will:
 
 --- Decision 43 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah
-  Stack: Force of Will (spell, self) -> Dryad Arbor (ability, opponent) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Scythecat Cub (spell, opponent)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor (opponent, leaves bf, on stack #1)
-  Pending: Force of Will (self)
-  Self GY: Tropical Island
-  Opp GY:  Dryad Arbor, Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Scythecat Cub
   >> A/A: 0 (Scythecat Cub)
@@ -1021,21 +554,6 @@
   Targeting choice 0
 
 --- Decision 44 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah
-  Stack: Force of Will (spell, self) -> Scythecat Cub (opponent, slot 99) -> Dryad Arbor (ability, opponent) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Scythecat Cub (spell, opponent)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor (opponent, leaves bf, on stack #1)
-  Pending: Force of Will (self)
-  Self GY: Tropical Island
-  Opp GY:  Dryad Arbor, Wasteland, Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Exile Baleful Strix
   >> A/A: 0 (Exile Baleful Strix)
@@ -1045,20 +563,6 @@
   Player A casts Force of Will targeting Scythecat Cub
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Force of Will (spell, opponent) -> Scythecat Cub (self, slot 99) -> Dryad Arbor (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor (self, leaves bf, on stack #1)
-  Self GY: Dryad Arbor, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1069,20 +573,6 @@
   Scythecat Cub is countered
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Dryad Arbor (ability, self) -> Knight of the Reliquary (ability, self) [amt=1]
-  Delayed: Badgermole Cub@0 -> Dryad Arbor (self, leaves bf, on stack #0)
-  Self GY: Scythecat Cub, Dryad Arbor, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1094,19 +584,6 @@
   Dryad Arbor enters tapped.
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1117,20 +594,6 @@
   Searching Player B's library:
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Pending: Knight of the Reliquary (self)
-  Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Bojuka Bog
@@ -1151,18 +614,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1177,19 +628,6 @@
   Player B casts Thalia, Guardian of Thraben
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Thalia, Guardian of Thraben (spell, self)
-  Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 drawn=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1199,18 +637,6 @@
   Thalia, Guardian of Thraben enters the battlefield
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 drawn=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1226,18 +652,6 @@
   Legend rule: Player B controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
 
 --- Decision 52 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Windswept Heath | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Keep Thalia, Guardian of Thraben
    1: Keep Thalia, Guardian of Thraben
@@ -1246,18 +660,6 @@
   Thalia, Guardian of Thraben is put into the graveyard (legend rule)
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Windswept Heath | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1266,18 +668,6 @@
   Player B played Windswept Heath
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Windswept Heath (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Windswept Heath (ChangeZone)  [#0]
@@ -1290,20 +680,6 @@
   Searching Player B's library:
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Windswept Heath (ability, self)
-  Pending: Windswept Heath (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 life_lost=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Forest
@@ -1315,18 +691,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 life_lost=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1335,20 +699,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Force of Will, Tropical Island
-  Opp exile:  Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 life_lost=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Force of Will
    1: Tropical Island
@@ -1368,18 +718,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 life_lost=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Keen-Eyed Curator [3/3]
@@ -1391,18 +729,6 @@
     [attacking] Badgermole Cub [2/2] -> Player A
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 life_lost=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -1414,18 +740,6 @@
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
-  Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 drawn=1 life_lost=1 colors=WG | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1440,18 +754,6 @@
   Your creatures:
 
 --- Decision 61 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  17 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] (T,ATK) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Self GY: Tropical Island
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=3 drawn=1 life_lost=1 colors=WG
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -1470,18 +772,6 @@
   PB: Swords to Plowshares
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: empty | hand(6): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Swamp, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Self GY: Tropical Island
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Swamp
@@ -1490,18 +780,6 @@
   Player A played Swamp
 
 --- Decision 63 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Swamp (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Self GY: Tropical Island
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -1514,20 +792,6 @@
   Choose target for Fatal Push:
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Swamp (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Stack: Fatal Push (spell, self)
-  Pending: Fatal Push (self)
-  Self GY: Tropical Island
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Badgermole Cub
    1: Birds of Paradise
@@ -1547,18 +811,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 65 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  12 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Swamp (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Self GY: Fatal Push, Tropical Island
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1569,18 +821,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
 --- Decision 66 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  12 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Swamp (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T) | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Self GY: Fatal Push, Tropical Island
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1599,17 +839,6 @@
   PB: Swords to Plowshares
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1620,18 +849,6 @@
   Player B draws Scythecat Cub
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: Draw (turn 12)
-  Self:  18 life | mana: empty | hand(2): Scythecat Cub, Swords to Plowshares | lib 43
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1640,18 +857,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 69 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(2): Scythecat Cub, Swords to Plowshares | lib 43
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Scythecat Cub  [#0]
@@ -1665,19 +870,6 @@
   Player B casts Scythecat Cub
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Scythecat Cub (spell, self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1686,20 +878,6 @@
   >> B/B: 3 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 71 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (spell, self)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Dryad Arbor
    1: Sacrifice Savannah
@@ -1711,19 +889,6 @@
   Player B's Knight of the Reliquary ability is on the stack
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (spell, self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1734,20 +899,6 @@
   Searching Player B's library:
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (spell, self)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Bojuka Bog
@@ -1767,19 +918,6 @@
   Player B puts Forest to the battlefield
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Scythecat Cub (spell, self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1789,18 +927,6 @@
   Scythecat Cub enters the battlefield
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1810,20 +936,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 76 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fatal Push
    1: Tropical Island
@@ -1841,19 +953,6 @@
   Player B's Keen-Eyed Curator ability targeting Fatal Push is on the stack
 
 --- Decision 77 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fatal Push, Tropical Island
-  Opp exile:  Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1864,18 +963,6 @@
   Fatal Push is moved to exile
 
 --- Decision 78 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1885,20 +972,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 79 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Tropical Island
    1: Dryad Arbor
@@ -1916,19 +989,6 @@
   Player B's Keen-Eyed Curator ability targeting Tropical Island is on the stack
 
 --- Decision 80 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: 1G | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Tropical Island (opponent)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Tropical Island
-  Opp exile:  Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1939,17 +999,6 @@
   Tropical Island is moved to exile
 
 --- Decision 81 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: 1G | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1959,19 +1008,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 82 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: 1G | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dryad Arbor
    1: Misty Rainforest
@@ -1986,18 +1022,6 @@
   Player B's Keen-Eyed Curator ability targeting Dryad Arbor is on the stack
 
 --- Decision 83 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [6/6] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Dryad Arbor (self)
-  Self GY: Dryad Arbor, Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2008,18 +1032,6 @@
   Dryad Arbor is moved to exile
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2029,20 +1041,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Misty Rainforest
    1: Once Upon a Time
@@ -2057,19 +1055,6 @@
   Player B's Keen-Eyed Curator ability targeting Misty Rainforest is on the stack
 
 --- Decision 86 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Misty Rainforest (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2080,18 +1065,6 @@
   Misty Rainforest is moved to exile
 
 --- Decision 87 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Once Upon a Time
-  Self exile: Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2101,20 +1074,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 88 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Once Upon a Time
-  Self exile: Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Once Upon a Time
    1: Scythecat Cub
@@ -2128,19 +1087,6 @@
   Player B's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
 
 --- Decision 89 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Once Upon a Time
-  Self exile: Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2150,18 +1096,6 @@
   Once Upon a Time is moved to exile
 
 --- Decision 90 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland
-  Self exile: Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2170,20 +1104,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 91 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland
-  Self exile: Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Scythecat Cub
    1: Thalia, Guardian of Thraben
@@ -2199,18 +1119,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Keen-Eyed Curator [3/3]
@@ -2223,18 +1131,6 @@
     [attacking] Badgermole Cub [2/2] -> Player A
 
 --- Decision 93 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Thalia, Guardian of Thraben [2/1]
@@ -2247,18 +1143,6 @@
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
 --- Decision 94 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm attackers
@@ -2271,18 +1155,6 @@
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
 
 --- Decision 95 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   12 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Force of Will, Swamp, Fatal Push, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2305,17 +1177,6 @@
   PB: Swords to Plowshares
 
 --- Decision 96 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  5 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -2327,19 +1188,6 @@
   Choose target for Fatal Push:
 
 --- Decision 97 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  5 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Fatal Push (spell, self)
-  Pending: Fatal Push (self)
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Badgermole Cub
    1: Birds of Paradise
@@ -2359,19 +1207,6 @@
   Player A draws Misty Rainforest
 
 --- Decision 98 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  5 life | mana: empty | hand(4): Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Self GY: Fatal Push
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -2380,19 +1215,6 @@
   Player A played Misty Rainforest
 
 --- Decision 99 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  5 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Misty Rainforest (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Self GY: Fatal Push
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -2405,21 +1227,6 @@
   Searching Player A's library:
 
 --- Decision 100 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  4 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Fatal Push
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Bayou
@@ -2435,19 +1242,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 101 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  4 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Bayou (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Self GY: Misty Rainforest, Fatal Push
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -2458,19 +1252,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
 --- Decision 102 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  4 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   18 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Bayou (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T) | Clue | Clue
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Self GY: Misty Rainforest, Fatal Push
-  Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp exile:  Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2489,18 +1270,6 @@
   PB: Swords to Plowshares
 
 --- Decision 103 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2511,19 +1280,6 @@
   Player B draws Swords to Plowshares
 
 --- Decision 104 ---
-  Priority: Player B (active)
-  Step: Draw (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2533,19 +1289,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 105 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2557,21 +1300,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 106 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Fatal Push
    1: Misty Rainforest
@@ -2585,20 +1313,6 @@
   Player B's Keen-Eyed Curator ability targeting Fatal Push is on the stack
 
 --- Decision 107 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2608,21 +1322,6 @@
   >> B/B: 4 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 108 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Forest
    1: Sacrifice Savannah
@@ -2634,20 +1333,6 @@
   Player B's Knight of the Reliquary ability is on the stack
 
 --- Decision 109 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2659,21 +1344,6 @@
   Searching Player B's library:
 
 --- Decision 110 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 41
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Bojuka Bog
@@ -2693,21 +1363,6 @@
   Choose target for Scythecat Cub:
 
 --- Decision 111 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Pending: Scythecat Cub (self)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub
    1: Birds of Paradise
@@ -2721,20 +1376,6 @@
   Scythecat Cub triggered
 
 --- Decision 112 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Scythecat Cub (ability, self) -> Keen-Eyed Curator (self, slot 2) -> Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2748,20 +1389,6 @@
   Resolving ability (category: MultiplyCounter)
 
 --- Decision 113 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Fatal Push (opponent)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest, Fatal Push
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2773,19 +1400,6 @@
   Fatal Push is moved to exile
 
 --- Decision 114 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2796,21 +1410,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 115 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Misty Rainforest
    1: Forest
@@ -2825,20 +1424,6 @@
   Player B's Keen-Eyed Curator ability targeting Misty Rainforest is on the stack
 
 --- Decision 116 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: 1G | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Misty Rainforest (opponent)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Opp GY:  Misty Rainforest
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2850,18 +1435,6 @@
   Misty Rainforest is moved to exile
 
 --- Decision 117 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: 1G | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2872,20 +1445,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 118 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: 1G | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Forest
    1: Thalia, Guardian of Thraben
@@ -2897,19 +1456,6 @@
   Player B's Keen-Eyed Curator ability targeting Forest is on the stack
 
 --- Decision 119 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [5/5] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Forest (self)
-  Self GY: Forest, Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2921,18 +1467,6 @@
   Forest is moved to exile
 
 --- Decision 120 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [4/4] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2943,20 +1477,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 121 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [4/4] (T) | Plains (NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Thalia, Guardian of Thraben
    1: Wasteland
@@ -2968,19 +1488,6 @@
   Player B's Keen-Eyed Curator ability targeting Thalia, Guardian of Thraben is on the stack
 
 --- Decision 122 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [4/4] (T) | Plains (T,NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (self)
-  Self GY: Windswept Heath, Thalia, Guardian of Thraben, Wasteland
-  Self exile: Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2992,18 +1499,6 @@
   Thalia, Guardian of Thraben is moved to exile
 
 --- Decision 123 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [4/4] (T) | Plains (T,NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Windswept Heath, Wasteland
-  Self exile: Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3014,20 +1509,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 124 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [4/4] (T) | Plains (T,NEW) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Wasteland
-  Self exile: Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wasteland
    1: Windswept Heath
@@ -3038,19 +1519,6 @@
   Player B's Keen-Eyed Curator ability targeting Wasteland is on the stack
 
 --- Decision 125 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [4/4] (T) | Plains (T,NEW) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Wasteland (self)
-  Self GY: Windswept Heath, Wasteland
-  Self exile: Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3062,18 +1530,6 @@
   Wasteland is moved to exile
 
 --- Decision 126 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [3/3] (T) | Plains (T,NEW) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self GY: Windswept Heath
-  Self exile: Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3084,20 +1540,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 127 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [3/3] (T) | Plains (T,NEW) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath
-  Self exile: Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Windswept Heath
   >> B/B: 0 (Windswept Heath)
@@ -3107,19 +1549,6 @@
   Player B's Keen-Eyed Curator ability targeting Windswept Heath is on the stack
 
 --- Decision 128 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [3/3] (T) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Stack: Keen-Eyed Curator (ability, self) -> Windswept Heath (self)
-  Self GY: Windswept Heath
-  Self exile: Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3130,17 +1559,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 129 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [2/2] (T) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self exile: Windswept Heath, Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Keen-Eyed Curator [4/4]
@@ -3154,17 +1572,6 @@
     [attacking] Badgermole Cub [2/2] -> Player A
 
 --- Decision 130 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Knight of the Reliquary [2/2] (T) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self exile: Windswept Heath, Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [4/4]
    1: Scythecat Cub [2/2]
@@ -3178,17 +1585,6 @@
     [attacking] Keen-Eyed Curator [4/4] -> Player A
 
 --- Decision 131 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] (ATK) | Knight of the Reliquary [2/2] (T) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self exile: Windswept Heath, Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Scythecat Cub [2/2]
    1: Thalia, Guardian of Thraben [2/1]
@@ -3202,17 +1598,6 @@
     [attacking] Scythecat Cub [2/2] -> Player A
 
 --- Decision 132 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] (ATK) | Knight of the Reliquary [2/2] (T) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (ATK,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self exile: Windswept Heath, Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm attackers
@@ -3226,17 +1611,6 @@
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
 
 --- Decision 133 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
-  Opp:   4 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] (ATK) | Knight of the Reliquary [2/2] (T) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (ATK,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
-  Self exile: Windswept Heath, Wasteland, Thalia, Guardian of Thraben, Forest, Scythecat Cub, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp exile:  Misty Rainforest, Fatal Push, Tropical Island, Fatal Push, Force of Will, Baleful Strix
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)

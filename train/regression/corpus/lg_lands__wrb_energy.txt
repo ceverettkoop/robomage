@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Voice of Victory
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -86,12 +72,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -102,15 +82,6 @@
   Player A casts Mox Diamond
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Discard Dark Depths (put Mox Diamond onto the battlefield)
    1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
@@ -122,14 +93,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(4): Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Dark Depths
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -139,16 +102,6 @@
   Player A casts Mox Diamond
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  Self GY: Dark Depths
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
    1: Discard Wasteland (put Mox Diamond onto the battlefield)
@@ -159,14 +112,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 8 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(2): Skateboard, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (NEW) | Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Urza's Saga, Dark Depths
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Skateboard  [#0]
@@ -178,15 +123,6 @@
   Choose target for Skateboard:
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (T,NEW) | Mox Diamond (NEW) | Skateboard (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Pending: Skateboard (self)
-  Self GY: Urza's Saga, Dark Depths
-  This turn: self spells=3 noncreature=3
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Mox Diamond
    1: Mox Diamond
@@ -206,14 +142,6 @@
   PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -223,16 +151,6 @@
   Player B played Marsh Flats
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Marsh Flats (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -245,18 +163,6 @@
   Searching Player B's library:
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Marsh Flats (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Badlands
@@ -271,17 +177,6 @@
   Player B puts Badlands to the battlefield
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Badlands (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Self GY: Marsh Flats
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Cabal Therapy  [#0]
@@ -291,19 +186,6 @@
   Choose target for Cabal Therapy:
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Badlands (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Cabal Therapy (spell, self)
-  Pending: Cabal Therapy (self)
-  Self GY: Marsh Flats
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -316,19 +198,6 @@
   Player B names a card:
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Badlands (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Cabal Therapy (spell, self) -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Marsh Flats
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Name card: Crop Rotation
    1: Name card: Exploration
@@ -361,16 +230,6 @@
   PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 16 ---
-  Priority: Player A (active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp BF:   Badlands (T)
-  Self GY: Urza's Saga, Dark Depths
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
@@ -380,17 +239,6 @@
   Urza's Saga chapter 2 triggers.
 
 --- Decision 17 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Badlands (T)
-  Stack: Urza's Saga (ability, self)
-  Self GY: Urza's Saga, Dark Depths
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
@@ -399,19 +247,6 @@
   Choose target for this ability:
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Badlands (T)
-  Stack: Boseiju, Who Endures (ability, self) -> Urza's Saga (ability, self)
-  Pending: Boseiju, Who Endures (self)
-  Self GY: Urza's Saga, Dark Depths
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Badlands
   >> A/A: 0 (Badlands)
@@ -427,19 +262,6 @@
   Searching Player B's library:
 
 --- Decision 19 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Boseiju, Who Endures (ability, opponent) -> Badlands (self) -> Urza's Saga (ability, opponent)
-  Pending: Boseiju, Who Endures (opp)
-  Self GY: Badlands, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Elegant Parlor
@@ -458,20 +280,6 @@
   Surveil: looking at Silent Clearing
 
 --- Decision 20 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Self BF:  Elegant Parlor (T,NEW,res 1)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Elegant Parlor (ability, self) [amt=1] -> Urza's Saga (ability, opponent)
-  Pending: Elegant Parlor (self)
-  Self GY: Badlands, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Put Silent Clearing on top of library  [#0]
    1: Put Silent Clearing into graveyard
@@ -481,17 +289,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Elegant Parlor (T,NEW,res 1)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Badlands, Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self drawn=1
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -500,17 +297,6 @@
   Player A played Wasteland
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
-  Opp BF:   Elegant Parlor (T,NEW,res 1)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Badlands, Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -519,19 +305,6 @@
   Choose target for Wasteland:
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
-  Opp BF:   Elegant Parlor (T,NEW,res 1)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Badlands, Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Elegant Parlor
    1: Urza's Saga
@@ -551,15 +324,6 @@
   PB: Amped Raptor, Ocelot Pride, Scrubland, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Elegant Parlor, Badlands, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -569,17 +333,6 @@
   Player B played Scrubland
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Scrubland (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Elegant Parlor, Badlands, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Ocelot Pride  [#0]
@@ -591,17 +344,6 @@
   Ocelot Pride enters the battlefield
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(5): Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Elegant Parlor, Badlands, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Cabal Therapy (flashback)  [#4]
@@ -610,19 +352,6 @@
   Choose target for Cabal Therapy:
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(5): Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Cabal Therapy (spell, self)
-  Pending: Cabal Therapy (self)
-  Self GY: Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -631,19 +360,6 @@
   Targeting choice 0
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(5): Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Cabal Therapy (spell, self) -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Sacrifice Ocelot Pride
   >> B/B: 0 (Sacrifice Ocelot Pride)
@@ -654,19 +370,6 @@
   Player B names a card:
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(5): Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Scrubland (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WB
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Name card: Crop Rotation
    1: Name card: Exploration
@@ -698,16 +401,6 @@
   PB: Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 30 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Scrubland (T)
-  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
    1: Activate Urza's Saga (Token)  [#1]
@@ -726,20 +419,6 @@
   Searching Player A's library:
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T,res 1) | Construct [4/4] (SICK,NEW)
-  Opp BF:   Scrubland (T)
-  Stack: Urza's Saga (ability, self) [amt=1]
-  Pending: Urza's Saga (self)
-  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Expedition Map
@@ -753,18 +432,6 @@
   Urza's Saga is sacrificed (final chapter completed).
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 50
-  Opp:   19 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Expedition Map (NEW) | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK,NEW)
-  Opp BF:   Scrubland (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy
-  This turn: self drawn=1
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -779,16 +446,6 @@
   PB: Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  19 life | mana: empty | hand(5): Amped Raptor, Silent Clearing, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -797,19 +454,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 34 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  19 life | mana: empty | hand(4): Amped Raptor, Silent Clearing, Thoughtseize, Voice of Victory | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Swords to Plowshares (spell, self)
-  Pending: Swords to Plowshares (self)
-  Self GY: Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: not_priority_window
   Actions:
    0: Construct token
   >> B/B: 0 (Construct token)
@@ -825,18 +469,6 @@
   Player B draws Marsh Flats
 
 --- Decision 35 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(5): Amped Raptor, Marsh Flats, Silent Clearing, Thoughtseize, Voice of Victory | lib 48
-  Opp:   25 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Scrubland (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard
-  Self GY: Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=5
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -846,18 +478,6 @@
   Player B played Marsh Flats
 
 --- Decision 36 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(4): Amped Raptor, Silent Clearing, Thoughtseize, Voice of Victory | lib 48
-  Opp:   25 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Marsh Flats (NEW) | Scrubland (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard
-  Self GY: Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=5
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -870,20 +490,6 @@
   Searching Player B's library:
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Amped Raptor, Silent Clearing, Thoughtseize, Voice of Victory | lib 48
-  Opp:   25 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Scrubland (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard
-  Stack: Marsh Flats (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=W | opp life_gained=5
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -901,16 +507,6 @@
   PB: Amped Raptor, Silent Clearing, Thoughtseize, Voice of Victory
 
 --- Decision 38 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  25 life | mana: empty | hand(0): (empty) | lib 50
-  Opp:   18 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Plateau | Scrubland (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
@@ -919,34 +515,12 @@
   Player A draws Exploration
 
 --- Decision 39 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  25 life | mana: empty | hand(1): Exploration | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Plateau | Scrubland (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 40 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  25 life | mana: empty | hand(1): Exploration | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Plateau | Scrubland (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Exploration  [#0]
@@ -964,17 +538,6 @@
   PB: Amped Raptor, Silent Clearing, Thoughtseize, Voice of Victory, Voice of Victory
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(5): Amped Raptor, Silent Clearing, Thoughtseize, Voice of Victory, Voice of Victory | lib 46
-  Opp:   25 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Plateau | Scrubland
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Silent Clearing
@@ -998,20 +561,6 @@
   Player B may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | energy 2 | hand(4): Silent Clearing, Thoughtseize, Voice of Victory, Voice of Victory | lib 45
-  Opp:   25 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Plateau (T) | Scrubland (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Stack: Amped Raptor (ability, self)
-  Pending: Ajani, Nacatl Pariah (self)
-  Self GY: Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Ajani, Nacatl Pariah, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=R
-  Extras: not_priority_window
   Actions:
    0: Do not cast Ajani, Nacatl Pariah  [#0]
    1: Cast Ajani, Nacatl Pariah  [#1]
@@ -1026,17 +575,6 @@
   Token created: 2/1 Cat Warrior
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(4): Silent Clearing, Thoughtseize, Voice of Victory, Voice of Victory | lib 45
-  Opp:   25 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (SICK,NEW)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 colors=WR
   Actions:
    0: Pass priority
    1: Play Silent Clearing
@@ -1045,18 +583,6 @@
   Player B played Silent Clearing
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(3): Thoughtseize, Voice of Victory, Voice of Victory | lib 45
-  Opp:   25 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Plateau (T) | Scrubland (T) | Silent Clearing (NEW) | Cat Warrior [2/1] (SICK,NEW)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 colors=WR
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -1065,20 +591,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(2): Voice of Victory, Voice of Victory | lib 45
-  Opp:   25 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Plateau (T) | Scrubland (T) | Silent Clearing (NEW) | Cat Warrior [2/1] (SICK,NEW)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 colors=WR
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (25 life)
    1: Player B (18 life)
@@ -1100,16 +612,6 @@
   PB: Voice of Victory, Voice of Victory
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  25 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   15 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Cat Warrior [2/1] (SICK)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Silent Clearing
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
@@ -1118,34 +620,12 @@
   Player A draws Exploration
 
 --- Decision 47 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  25 life | mana: empty | hand(1): Exploration | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Cat Warrior [2/1] (SICK)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Silent Clearing
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  25 life | mana: empty | hand(1): Exploration | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Cat Warrior [2/1] (SICK)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Silent Clearing
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Exploration  [#0]
@@ -1162,16 +642,6 @@
   PB: Voice of Victory, Voice of Victory
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  15 life | mana: empty | hand(2): Voice of Victory, Voice of Victory | lib 45
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau | Scrubland | Silent Clearing | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   Actions:
    0: Pass priority
    1: Activate Silent Clearing (Draw)  [#1]
@@ -1180,34 +650,12 @@
   Player B draws Marsh Flats
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  15 life | mana: empty | hand(3): Marsh Flats, Voice of Victory, Voice of Victory | lib 44
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau | Scrubland | Silent Clearing | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Silent Clearing (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  15 life | mana: empty | hand(3): Marsh Flats, Voice of Victory, Voice of Victory | lib 44
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau | Scrubland | Silent Clearing | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -1222,17 +670,6 @@
   Voice of Victory enters the battlefield
 
 --- Decision 52 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  15 life | mana: empty | hand(2): Marsh Flats, Voice of Victory | lib 44
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau (T) | Scrubland (T) | Silent Clearing | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -1241,18 +678,6 @@
   Player B played Marsh Flats
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  15 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Marsh Flats (NEW) | Plateau (T) | Scrubland (T) | Silent Clearing | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -1265,20 +690,6 @@
   Searching Player B's library:
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau (T) | Scrubland (T) | Silent Clearing | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Stack: Marsh Flats (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -1291,18 +702,6 @@
   Player B puts Plateau to the battlefield
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | hand(1): Voice of Victory | lib 43
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau (T) | Plateau (NEW) | Scrubland (T) | Silent Clearing | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Voice of Victory  [#0]
@@ -1317,18 +716,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau (T) | Plateau (T,NEW) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK,NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 life_lost=2 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Ajani, Nacatl Pariah [1/2]
    1: Amped Raptor [2/1]
@@ -1341,18 +728,6 @@
     [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] | Plateau (T) | Plateau (T,NEW) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK,NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 life_lost=2 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Amped Raptor [2/1]
    1: Cat Warrior token [2/1]
@@ -1365,18 +740,6 @@
     [attacking] Amped Raptor [2/1] -> Player A
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (ATK) | Plateau (T) | Plateau (T,NEW) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK,NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 life_lost=2 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat Warrior token [2/1]
    1: Confirm attackers
@@ -1389,18 +752,6 @@
     [attacking] Cat Warrior token [2/1] -> Player A
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   25 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (ATK) | Plateau (T) | Plateau (T,NEW) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK,NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat Warrior [2/1] (ATK)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond | Skateboard
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 drawn=1 life_lost=2 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1423,16 +774,6 @@
   PB: (empty)
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 48
-  Opp:   13 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (T) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK) | Voice of Victory [1/3] (SICK) | Cat Warrior [2/1] (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Silent Clearing
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
@@ -1441,34 +782,12 @@
   Player A draws Sphere of Resistance
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 47
-  Opp:   13 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (T) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK) | Voice of Victory [1/3] (SICK) | Cat Warrior [2/1] (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Silent Clearing
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 47
-  Opp:   13 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond | Mox Diamond | Skateboard
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (T) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (SICK) | Voice of Victory [1/3] (SICK) | Cat Warrior [2/1] (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Silent Clearing
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Sphere of Resistance  [#0]
@@ -1486,16 +805,6 @@
   PB: (empty)
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau | Plateau | Scrubland | Silent Clearing | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
   Actions:
    0: Pass priority
    1: Activate Silent Clearing (Draw)  [#1]
@@ -1504,34 +813,12 @@
   Player B draws Amped Raptor
 
 --- Decision 64 ---
-  Priority: Player B (active)
-  Step: Draw (turn 12)
-  Self:  13 life | mana: empty | hand(1): Amped Raptor | lib 42
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau | Plateau | Scrubland | Silent Clearing | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Silent Clearing (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  13 life | mana: empty | hand(1): Amped Raptor | lib 42
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Plateau | Plateau | Scrubland | Silent Clearing | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Amped Raptor  [#0]
@@ -1555,20 +842,6 @@
   Player B may cast Goblin Bombardment by paying 2 energy rather than its mana cost.
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  13 life | mana: empty | energy 2 | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Amped Raptor (ability, self)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Goblin Bombardment, Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=R
-  Extras: not_priority_window
   Actions:
    0: Do not cast Goblin Bombardment  [#0]
    1: Cast Goblin Bombardment  [#1]
@@ -1582,34 +855,12 @@
   Goblin Bombardment enters the battlefield
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1618,18 +869,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 69 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Ajani, Nacatl Pariah [1/2]
    1: Amped Raptor [2/1]
@@ -1644,18 +883,6 @@
     [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Amped Raptor [2/1]
    1: Voice of Victory [1/3]
@@ -1670,18 +897,6 @@
     [attacking] Amped Raptor [2/1] -> Player A
 
 --- Decision 71 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Voice of Victory [1/3]
    1: Voice of Victory [1/3]
@@ -1696,18 +911,6 @@
     [attacking] Voice of Victory [1/3] -> Player A
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Voice of Victory [1/3]
    1: Cat Warrior token [2/1]
@@ -1722,18 +925,6 @@
     [attacking] Voice of Victory [1/3] -> Player A
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (ATK) | Cat Warrior [2/1]
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat Warrior token [2/1]
    1: Confirm attackers
@@ -1748,18 +939,6 @@
     [attacking] Cat Warrior token [2/1] -> Player A
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (ATK) | Cat Warrior [2/1] (ATK)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1773,19 +952,6 @@
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (T,ATK) | Cat Warrior [2/1] (T,ATK)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Pending: Voice of Victory (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window
   Actions:
    0: Voice of Victory (Mobilize)  [#0]
    1: Voice of Victory (Mobilize)  [#1]
@@ -1795,18 +961,6 @@
   Voice of Victory triggered
 
 --- Decision 76 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (T,ATK) | Cat Warrior [2/1] (T,ATK)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Voice of Victory (ability, self) [amt=2] -> Voice of Victory (ability, self) [amt=2]
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1816,19 +970,6 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
 
 --- Decision 77 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (T,ATK,res 1) | Cat Warrior [2/1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Voice of Victory (ability, self) [amt=2]
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1838,18 +979,6 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
 
 --- Decision 78 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat Warrior [2/1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1858,18 +987,6 @@
   No creatures eligible to block.
 
 --- Decision 79 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat Warrior [2/1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1880,18 +997,6 @@
   --- End First Strike Combat Damage ---
 
 --- Decision 80 ---
-  Priority: Player B (active)
-  Step: First Strike Dmg (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   18 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat Warrior [2/1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=2
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1909,54 +1014,18 @@
   --- End Combat Damage ---
 
 --- Decision 81 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat Warrior [2/1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 82 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat Warrior [2/1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 83 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -1965,21 +1034,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1]
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
-  Extras: not_priority_window
   Actions:
    0: Player A (9 life)
    1: Player B (12 life)
@@ -1998,21 +1052,6 @@
   Targeting choice 0
 
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1]
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@13 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
-  Extras: not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Amped Raptor
@@ -2031,20 +1070,6 @@
   Warrior (token) is put into the graveyard and ceases to exist.
 
 --- Decision 86 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@12 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2053,21 +1078,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 87 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@12 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (9 life)
    1: Player B (12 life)
@@ -2085,21 +1095,6 @@
   Targeting choice 0
 
 --- Decision 88 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior@11 (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@12 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Amped Raptor
@@ -2117,20 +1112,6 @@
   Warrior (token) is put into the graveyard and ceases to exist.
 
 --- Decision 89 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   9 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=11
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2140,20 +1121,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 8 life)
 
 --- Decision 90 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=12
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2162,21 +1129,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 91 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=12
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (8 life)
    1: Player B (12 life)
@@ -2193,21 +1145,6 @@
   Targeting choice 0
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=12
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Amped Raptor
@@ -2224,20 +1161,6 @@
   Warrior (token) is put into the graveyard and ceases to exist.
 
 --- Decision 93 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=12
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2247,20 +1170,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 7 life)
 
 --- Decision 94 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   7 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=13
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2269,21 +1178,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 95 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   7 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=13
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (7 life)
    1: Player B (12 life)
@@ -2299,21 +1193,6 @@
   Targeting choice 0
 
 --- Decision 96 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   7 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior@11 (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=13
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Amped Raptor
@@ -2329,20 +1208,6 @@
   Warrior (token) is put into the graveyard and ceases to exist.
 
 --- Decision 97 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   7 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=13
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2352,20 +1217,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 6 life)
 
 --- Decision 98 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   6 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=14
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2374,21 +1225,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 99 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   6 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=14
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (6 life)
    1: Player B (12 life)
@@ -2403,21 +1239,6 @@
   Targeting choice 0
 
 --- Decision 100 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   6 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1) | Cat Warrior [2/1] (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=14
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Amped Raptor
@@ -2433,41 +1254,12 @@
   Ajani, Nacatl Pariah triggered
 
 --- Decision 101 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   6 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Ajani, Nacatl Pariah (ability, self) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=14
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 102 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   6 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Pariah [1/2] (T,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Ajani, Nacatl Pariah (ability, self) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Pending: Ajani, Nacatl Pariah (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=14
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Decline: use Ajani, Nacatl Pariah's triggered ability  [#0]
    1: Accept: use Ajani, Nacatl Pariah's triggered ability  [#1]
@@ -2481,20 +1273,6 @@
   Ajani, Nacatl Avenger enters transformed.
 
 --- Decision 103 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   6 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=14
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2504,20 +1282,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 5 life)
 
 --- Decision 104 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   5 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=15
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2527,19 +1291,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 4 life)
 
 --- Decision 105 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   4 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=16
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
@@ -2551,20 +1302,6 @@
   Player B's Ajani, Nacatl Avenger ability is on the stack
 
 --- Decision 106 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   4 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=16
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2573,21 +1310,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 107 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   4 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=16
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (4 life)
    1: Player B (12 life)
@@ -2601,21 +1323,6 @@
   Targeting choice 0
 
 --- Decision 108 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   4 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (T) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@9 -> Warrior (self, end step this turn, waiting) | Voice of Victory@8 -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=16
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Amped Raptor
    1: Sacrifice Amped Raptor
@@ -2627,20 +1334,6 @@
   Player B's Goblin Bombardment ability targeting Player A is on the stack
 
 --- Decision 109 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   4 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@8 -> Warrior (self, end step this turn, waiting) | Voice of Victory@7 -> Warrior (self, end step this turn, waiting)
-  Self GY: Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=16
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2650,20 +1343,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 3 life)
 
 --- Decision 110 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@8 -> Warrior (self, end step this turn, waiting) | Voice of Victory@7 -> Warrior (self, end step this turn, waiting)
-  Self GY: Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=17
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2672,21 +1351,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 111 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@8 -> Warrior (self, end step this turn, waiting) | Voice of Victory@7 -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=17
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (3 life)
    1: Player B (12 life)
@@ -2699,21 +1363,6 @@
   Targeting choice 0
 
 --- Decision 112 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@8 -> Warrior (self, end step this turn, waiting) | Voice of Victory@7 -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=17
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Amped Raptor
    1: Sacrifice Voice of Victory
@@ -2724,20 +1373,6 @@
   Player B's Goblin Bombardment ability targeting Player A is on the stack
 
 --- Decision 113 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@7 -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Self GY: Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=17
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2747,20 +1382,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 2 life)
 
 --- Decision 114 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   2 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@7 -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Self GY: Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=18
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2769,21 +1390,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 115 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   2 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@7 -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=18
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (2 life)
    1: Player B (12 life)
@@ -2795,21 +1401,6 @@
   Targeting choice 0
 
 --- Decision 116 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   2 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T) | Voice of Victory [1/3] (T,res 1)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory@7 -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=18
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Amped Raptor
    1: Sacrifice Voice of Victory
@@ -2819,20 +1410,6 @@
   Player B's Goblin Bombardment ability targeting Player A is on the stack
 
 --- Decision 117 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   2 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=18
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2842,20 +1419,6 @@
   Goblin Bombardment deals 1 damage to Player A (now at 1 life)
 
 --- Decision 118 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   1 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=19
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Goblin Bombardment (DealDamage)  [#0]
@@ -2864,21 +1427,6 @@
   Choose target for Goblin Bombardment:
 
 --- Decision 119 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   1 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=19
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (1 life)
    1: Player B (12 life)
@@ -2889,21 +1437,6 @@
   Targeting choice 0
 
 --- Decision 120 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  12 life | mana: empty | hand(0): (empty) | lib 39
-  Opp:   1 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Goblin Bombardment (NEW) | Plateau (T) | Plateau (T) | Scrubland (T) | Silent Clearing (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> Ajani, Nacatl Avenger (ability, self)
-  Delayed: Voice of Victory -> Warrior (self, end step this turn, waiting) | Voice of Victory -> Warrior (self, end step this turn, waiting)
-  Pending: Goblin Bombardment (self)
-  Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Marsh Flats, Thoughtseize, Marsh Flats, Swords to Plowshares, Ocelot Pride, Elegant Parlor, Badlands, Marsh Flats
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Karakas, Arid Mesa, Cabal Therapy
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Exploration, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 life_lost=1 colors=R | opp life_lost=19
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Amped Raptor
   >> B/B: 0 (Sacrifice Amped Raptor)

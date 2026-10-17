@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -55,11 +50,6 @@
   Verdant Catacombs
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -83,11 +73,6 @@
   Thalia, Guardian of Thraben
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Forest, Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -97,11 +82,6 @@
   Player A: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Forest, Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, bottom_remaining=1
   Actions:
    0: Forest
    1: Green Sun's Zenith
@@ -122,11 +102,6 @@
   Island
 
 --- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Brainstorm, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -136,11 +111,6 @@
   Player B: Choose card to put on library bottom (1 remaining):
 
 --- Decision 6 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Brainstorm, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, bottom_remaining=1
   Actions:
    0: Thoughtseize
    1: Dark Ritual
@@ -154,14 +124,9 @@
   -------- TURN 1 (Player A) --------
 --- Turn 1 (Player A) ---
   PA: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  PB: Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Brainstorm, Polluted Delta, Island
+  PB: Brainstorm, Dark Ritual, Edge of Autumn, Island, Lotus Petal, Polluted Delta, Thoughtseize
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 54
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Forest
@@ -171,12 +136,6 @@
   Player A played Forest
 
 --- Decision 8 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 54
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Forest (NEW)
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -185,12 +144,6 @@
   No creatures eligible to attack.
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 54
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Forest (NEW)
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -200,17 +153,9 @@
   Player B draws Dark Ritual
 --- Turn 2 (Player B) ---
   PA: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  PB: Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Edge of Autumn, Polluted Delta, Island
+  PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island, Lotus Petal, Polluted Delta, Thoughtseize
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Edge of Autumn, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Forest
-  Opp revealed: Forest
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -222,15 +167,6 @@
   Lotus Petal enters the battlefield
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Dark Ritual, Dark Ritual, Edge of Autumn, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Lotus Petal (NEW)
-  Opp BF:   Forest
-  Opp revealed: Forest
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -243,17 +179,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Lotus Petal (NEW)
-  Opp BF:   Forest
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Opp revealed: Forest
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (20 life)
@@ -273,18 +198,6 @@
   Player B chooses a card to discard:
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Forest
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Lotus Petal
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Green Sun's Zenith
    1: Keen-Eyed Curator
@@ -297,17 +210,6 @@
   Player B loses 2 life (now at 18)
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  18 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Polluted Delta, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Opp BF:   Forest
-  Self GY: Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -317,18 +219,6 @@
   Player B played Polluted Delta
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  18 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Polluted Delta (NEW)
-  Opp BF:   Forest
-  Self GY: Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -342,19 +232,6 @@
   Searching Player B's library:
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Opp BF:   Forest
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Swamp
@@ -366,18 +243,6 @@
   Player B puts Underground Sea to the battlefield
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -386,18 +251,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -408,18 +261,6 @@
   No creatures eligible to attack.
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -428,18 +269,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -448,18 +277,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -468,18 +285,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 22 ---
-  Priority: Player B (active)
-  Step: End Step (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -493,17 +298,6 @@
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
 --- Decision 23 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -514,17 +308,6 @@
   Player A draws Once Upon a Time
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara | lib 53
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest
-  Opp BF:   Underground Sea
-  Self GY: Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -534,19 +317,6 @@
   Player A casts Once Upon a Time
 
 --- Decision 25 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Underground Sea
-  Opp BF:   Forest
-  Stack: Once Upon a Time (spell, opponent)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -558,19 +328,6 @@
   Player A looks at the top 5 card(s) of their library.
 
 --- Decision 26 ---
-  Priority: Player A (active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara | lib 53
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest
-  Opp BF:   Underground Sea
-  Stack: Once Upon a Time (spell, self)
-  Pending: Once Upon a Time (self)
-  Self GY: Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
@@ -582,18 +339,6 @@
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 27 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Forest
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -602,17 +347,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest
-  Opp BF:   Underground Sea
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -623,18 +357,6 @@
   Choose target for Talon Gates of Madara:
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest | Talon Gates of Madara (NEW)
-  Opp BF:   Underground Sea
-  Pending: Talon Gates of Madara (self)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: No target
   >> A/A: 0 (No target)
@@ -643,19 +365,6 @@
   Talon Gates of Madara triggered
 
 --- Decision 30 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Forest | Talon Gates of Madara (NEW)
-  Stack: Talon Gates of Madara (ability, opponent)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -666,17 +375,6 @@
   Resolving ability (category: Phases)
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest | Talon Gates of Madara (NEW,res 1)
-  Opp BF:   Underground Sea
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -686,19 +384,6 @@
   Choose X value (0-1):
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest | Talon Gates of Madara (NEW,res 1)
-  Opp BF:   Underground Sea
-  Stack: Green Sun's Zenith (spell, self)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -710,19 +395,6 @@
   Player A casts Green Sun's Zenith
 
 --- Decision 33 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Stack: Green Sun's Zenith (spell, opponent) [X=1]
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -734,19 +406,6 @@
   Searching Player A's library:
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Opp BF:   Underground Sea
-  Stack: Green Sun's Zenith (spell, self) [X=1]
-  Pending: Green Sun's Zenith (self)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Thoughtseize, Lotus Petal, Underground Sea
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Birds of Paradise
@@ -760,18 +419,6 @@
   Green Sun's Zenith is shuffled into its owner's library
 
 --- Decision 35 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -780,18 +427,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 36 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -802,18 +437,6 @@
   No creatures eligible to attack.
 
 --- Decision 37 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -822,18 +445,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 38 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -842,18 +453,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 39 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -862,18 +461,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 40 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Talon Gates of Madara (T,NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -887,17 +474,6 @@
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -908,18 +484,6 @@
   Player B draws Ponder
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: Draw (turn 4)
-  Self:  17 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Ponder, Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -928,18 +492,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Ponder, Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -953,19 +505,6 @@
   Player B casts Ponder
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -976,20 +515,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Brainstorm  [#2]
    1: Doomsday  [#2]
@@ -999,42 +524,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Doomsday  [#1]
    1: Undercity Sewers  [#1]
   >> B/B: 0 (Doomsday)
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Undercity Sewers, Doomsday, Brainstorm, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1044,19 +539,6 @@
   Player B draws Undercity Sewers
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Undercity Sewers, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -1069,20 +551,6 @@
   Undercity Sewers triggered
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1093,59 +561,18 @@
   Surveil: looking at Doomsday
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Put Doomsday on top of library  [#0]
    1: Put Doomsday into graveyard
   >> B/B: 0 (Put Doomsday on top of library)
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 52 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1154,76 +581,24 @@
   No creatures eligible to attack.
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: End Step (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1235,18 +610,6 @@
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
 --- Decision 57 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] | Forest | Talon Gates of Madara
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1255,36 +618,12 @@
   Player A draws Keen-Eyed Curator
 
 --- Decision 58 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] | Forest | Talon Gates of Madara
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 59 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 51
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Keen-Eyed Curator  [#0]
@@ -1298,20 +637,6 @@
   Player A casts Keen-Eyed Curator
 
 --- Decision 60 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Talon Gates of Madara
-  Stack: Keen-Eyed Curator (spell, opponent)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1320,17 +645,6 @@
   Keen-Eyed Curator enters the battlefield
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 51
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1339,19 +653,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 51
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Thoughtseize
    1: Lotus Petal
@@ -1366,20 +667,6 @@
   Player A's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
 
 --- Decision 63 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Stack: Keen-Eyed Curator (ability, opponent) -> Thoughtseize (self)
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1389,40 +676,12 @@
   Thoughtseize is moved to exile
 
 --- Decision 64 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 65 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1431,80 +690,24 @@
   No creatures eligible to attack.
 
 --- Decision 66 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 67 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 68 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 69 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1516,19 +719,6 @@
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers | Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1539,20 +729,6 @@
   Player B draws Doomsday
 
 --- Decision 71 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers | Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1561,20 +737,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers | Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -1587,21 +749,6 @@
   Player B casts Dark Ritual
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Doomsday, Dark Ritual, Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Dark Ritual (spell, self)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1612,21 +759,6 @@
   Player B casts Dark Ritual
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(3): Doomsday, Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Dark Ritual (spell, self) -> Dark Ritual (spell, self)
-  Self GY: Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1636,21 +768,6 @@
   Player B adds 3{B}
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(3): Doomsday, Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Dark Ritual (spell, self)
-  Self GY: Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1660,20 +777,6 @@
   Player B adds 3{B}
 
 --- Decision 76 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 6B | hand(3): Doomsday, Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -1684,21 +787,6 @@
   Player B casts Doomsday
 
 --- Decision 77 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1708,22 +796,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 78 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1759,22 +831,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 79 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1809,22 +865,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 80 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1859,22 +899,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 81 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, Brainstorm, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1909,22 +933,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 82 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, Brainstorm
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -2012,21 +1020,6 @@
   Choose which card goes 5 from top:
 
 --- Decision 83 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith  [#4]
    1: Thassa's Oracle  [#4]
@@ -2035,21 +1028,6 @@
   Choose which card goes 4 from top:
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Street Wraith, Street Wraith, Street Wraith, Street Wraith
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith  [#3]
   >> B/B: 0 (Street Wraith)
@@ -2057,21 +1035,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, Street Wraith, Street Wraith, Street Wraith
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith  [#2]
   >> B/B: 0 (Street Wraith)
@@ -2079,21 +1042,6 @@
   Choose which card goes 2 from top:
 
 --- Decision 86 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, Street Wraith, Street Wraith
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith  [#1]
   >> B/B: 0 (Street Wraith)
@@ -2103,20 +1051,6 @@
   Resolving ability (category: Cleanup)
 
 --- Decision 87 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  8 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -2126,40 +1060,12 @@
   Player B played Island
 
 --- Decision 88 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  8 life | mana: 3B | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 89 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2168,80 +1074,24 @@
   No creatures eligible to attack.
 
 --- Decision 90 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 91 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 93 ---
-  Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2253,36 +1103,12 @@
   PB: Edge of Autumn
 
 --- Decision 94 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 51
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 95 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2291,56 +1117,18 @@
   Player A draws Life from the Loam
 
 --- Decision 96 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(4): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 97 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 98 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(4): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
@@ -2355,40 +1143,12 @@
   Player A casts Life from the Loam
 
 --- Decision 99 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Stack: Life from the Loam (spell, self)
-  Self GY: Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 100 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Stack: Life from the Loam (spell, opponent)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2397,18 +1157,6 @@
   Resolving ability (category: ChangeZone)
 
 --- Decision 101 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Self GY: Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2417,20 +1165,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 102 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Doomsday
    1: Life from the Loam
@@ -2443,21 +1177,6 @@
   Player A's Keen-Eyed Curator ability targeting Doomsday is on the stack
 
 --- Decision 103 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara (T)
-  Stack: Keen-Eyed Curator (ability, opponent) -> Doomsday (self)
-  Self GY: Doomsday
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2467,38 +1186,12 @@
   Doomsday is moved to exile
 
 --- Decision 104 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 105 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2507,17 +1200,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 106 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara (T)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Self GY: Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -2528,17 +1210,6 @@
     [attacking] Keen-Eyed Curator [3/3] -> Player B
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   8 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (ATK) | Talon Gates of Madara (T)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
-  Self GY: Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2547,19 +1218,6 @@
     Keen-Eyed Curator -> Player B
 
 --- Decision 108 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T,ATK) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2568,19 +1226,6 @@
   No creatures eligible to block.
 
 --- Decision 109 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T,ATK) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2591,76 +1236,24 @@
   --- End Combat Damage ---
 
 --- Decision 110 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  5 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T,ATK) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 111 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 7)
-  Self:  5 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T,ATK) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 112 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 7)
-  Self:  5 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 113 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 7)
-  Self:  5 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2672,18 +1265,6 @@
   PB: Edge of Autumn
 
 --- Decision 114 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  5 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2692,19 +1273,6 @@
   Player B draws Street Wraith
 
 --- Decision 115 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  5 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 4
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -2712,19 +1280,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 116 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 4
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -2735,21 +1290,6 @@
   Player B activates Street Wraith from hand
 
 --- Decision 117 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  3 life | mana: empty | hand(1): Edge of Autumn | lib 4
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=1 life_lost=2
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2759,20 +1299,6 @@
   Player B draws Street Wraith
 
 --- Decision 118 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  3 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 3
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Self GY: Street Wraith
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=2 life_lost=2
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -2783,21 +1309,6 @@
   Player B activates Street Wraith from hand
 
 --- Decision 119 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  1 life | mana: empty | hand(1): Edge of Autumn | lib 3
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith, Street Wraith
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=2 life_lost=4
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2807,42 +1318,12 @@
   Player B draws Street Wraith
 
 --- Decision 120 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 2
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Self GY: Street Wraith, Street Wraith
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=3 life_lost=4
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 1 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 121 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 2
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Undercity Sewers | Underground Sea | Island
-  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Talon Gates of Madara (T)
-  Stack: Edge of Autumn (ability, self) [amt=1]
-  Pending: Edge of Autumn (self)
-  Self GY: Street Wraith, Street Wraith
-  Opp GY:  Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
-  Known opp hand: Scythecat Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Birds of Paradise, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  This turn: self drawn=3 life_lost=4
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Sacrifice Undercity Sewers
    1: Sacrifice Underground Sea
@@ -2857,37 +1338,15 @@
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  PB: Street Wraith, Edge of Autumn
+  PB: Edge of Autumn, Street Wraith
 
 --- Decision 122 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 123 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Draw a card
    1: Dredge Life from the Loam (mill 3)
@@ -2899,34 +1358,12 @@
   Player A dredges Life from the Loam (milled 3)
 
 --- Decision 124 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  20 life | mana: empty | hand(4): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Green Sun's Zenith, Windswept Heath, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 125 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(4): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Green Sun's Zenith, Windswept Heath, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
@@ -2939,19 +1376,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 126 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Green Sun's Zenith, Windswept Heath, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Done selecting targets
    1: Wasteland
@@ -2962,19 +1386,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 127 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Green Sun's Zenith, Windswept Heath, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Done selecting targets
    1: Windswept Heath
@@ -2986,19 +1397,6 @@
   Player A casts Life from the Loam targeting Wasteland
 
 --- Decision 128 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Stack: Life from the Loam (spell, self) -> Wasteland (self)
-  Self GY: Green Sun's Zenith, Windswept Heath, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3008,18 +1406,6 @@
   Wasteland is moved to hand
 
 --- Decision 129 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Wasteland | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -3029,18 +1415,6 @@
   Player A played Wasteland
 
 --- Decision 130 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara | Wasteland (NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3050,20 +1424,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 131 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara | Wasteland (NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith
    1: Edge of Autumn
@@ -3080,19 +1440,6 @@
   Player A's Keen-Eyed Curator ability targeting Street Wraith is on the stack
 
 --- Decision 132 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Stack: Keen-Eyed Curator (ability, self) -> Street Wraith (opponent)
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith, Street Wraith
-  Opp exile:  Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3102,18 +1449,6 @@
   Street Wraith is moved to exile
 
 --- Decision 133 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith
-  Opp exile:  Street Wraith, Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3122,20 +1457,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 134 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island, Street Wraith
-  Opp exile:  Street Wraith, Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith
    1: Edge of Autumn
@@ -3155,18 +1476,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 135 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Talon Gates of Madara (T) | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island
-  Opp exile:  Street Wraith, Street Wraith, Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -3177,18 +1486,6 @@
     [attacking] Keen-Eyed Curator [3/3] -> Player B
 
 --- Decision 136 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(3): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
-  Opp:   1 life | mana: empty | hand count: 2 | lib 1
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Keen-Eyed Curator [3/3] (ATK) | Talon Gates of Madara (T) | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers | Underground Sea
-  Self GY: Life from the Loam, Green Sun's Zenith, Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
-  Opp GY:  Edge of Autumn, Island
-  Opp exile:  Street Wraith, Street Wraith, Doomsday, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)

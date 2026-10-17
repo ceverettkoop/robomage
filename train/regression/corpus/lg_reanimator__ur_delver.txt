@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Volcanic Island
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -81,12 +67,6 @@
   Lotus Petal enters the battlefield
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Brainstorm, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Lotus Petal (NEW)
-  This turn: self spells=1 noncreature=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -108,15 +88,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(8): Archon of Cruelty, Bloodstained Mire, Marsh Flats, Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 50
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Lotus Petal
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Bloodstained Mire
@@ -132,16 +103,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Bloodstained Mire, Marsh Flats, Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Lotus Petal
-  Known top: Archon of Cruelty, ?, ?, ?, ?
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Bloodstained Mire
    1: Marsh Flats
@@ -155,14 +116,6 @@
   Player A puts Bloodstained Mire to top of library
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Marsh Flats, Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self GY: Brainstorm, Lotus Petal
-  Known top: Bloodstained Mire, Archon of Cruelty, ?, ?, ?
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -173,15 +126,6 @@
   Player A played Marsh Flats
 
 --- Decision 8 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Marsh Flats (NEW)
-  Self GY: Brainstorm, Lotus Petal
-  Known top: Bloodstained Mire, Archon of Cruelty, ?, ?, ?
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -194,16 +138,6 @@
   Searching Player A's library:
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Marsh Flats (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats, Brainstorm, Lotus Petal
-  Known top: Bloodstained Mire, Archon of Cruelty, ?, ?, ?
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -220,16 +154,6 @@
   Surveil: looking at Swamp
 
 --- Decision 10 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Undercity Sewers (T,NEW,res 1)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Marsh Flats, Brainstorm, Lotus Petal
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Swamp on top of library  [#0]
    1: Put Swamp into graveyard
@@ -243,14 +167,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Opp BF:   Undercity Sewers (T)
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -263,15 +179,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mishra's Bauble (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -283,16 +190,6 @@
   Player B played Polluted Delta
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -302,18 +199,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Mishra's Bauble (ability, self)
-  Pending: Mishra's Bauble (self)
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (19 life)
    1: Player B (20 life)
@@ -324,18 +209,6 @@
   Player B's Mishra's Bauble ability targeting Player A is on the stack
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Polluted Delta (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -348,18 +221,6 @@
   Searching Player B's library:
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Opp BF:   Undercity Sewers (T)
-  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -377,19 +238,6 @@
   Surveil: looking at Misty Rainforest
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Thundering Falls (T,NEW,res 1)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Thundering Falls (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Thundering Falls (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Brainstorm, Lotus Petal, Undercity Sewers, Marsh Flats
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Misty Rainforest on top of library  [#0]
    1: Put Misty Rainforest into graveyard
@@ -407,18 +255,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers
-  Opp BF:   Thundering Falls (T)
-  Stack: Mishra's Bauble (ability, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
-  Self GY: Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Known top: Swamp, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze  [#0]
@@ -433,21 +269,6 @@
   Surveil: looking at Atraxa, Grand Unifier
 
 --- Decision 19 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(4): Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Thundering Falls (T)
-  Stack: Otherworldly Gaze (spell, self) -> Mishra's Bauble (ability, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #1)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Known top: Swamp, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Swamp on top of library  [#0]
    1: Put Griselbrand on top of library  [#0]
@@ -460,21 +281,6 @@
   Player A puts Griselbrand into their graveyard.
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(4): Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 50
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Thundering Falls (T)
-  Stack: Otherworldly Gaze (spell, self) -> Mishra's Bauble (ability, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #1)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Known top: Swamp, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Swamp on top of library  [#0]
    1: Put Atraxa, Grand Unifier on top of library  [#0]
@@ -485,21 +291,6 @@
   Player A puts Atraxa, Grand Unifier into their graveyard.
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(4): Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Thundering Falls (T)
-  Stack: Otherworldly Gaze (spell, self) -> Mishra's Bauble (ability, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #1)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Known top: Swamp, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Swamp on top of library  [#0]
    1: Put Swamp into graveyard
@@ -510,16 +301,6 @@
   Player A draws Swamp
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Polluted Delta, Swamp, Thoughtseize, Thoughtseize, Undercity Sewers | lib 48
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -530,17 +311,6 @@
   Player A played Polluted Delta
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(4): Swamp, Thoughtseize, Thoughtseize, Undercity Sewers | lib 48
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Polluted Delta (NEW) | Undercity Sewers (T)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U | opp drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -553,19 +323,6 @@
   Searching Player A's library:
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Swamp, Thoughtseize, Thoughtseize, Undercity Sewers | lib 48
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Thundering Falls (T)
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -576,17 +333,6 @@
   Player A puts Underground Sea to the battlefield
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Swamp, Thoughtseize, Thoughtseize, Undercity Sewers | lib 47
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -596,19 +342,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 26 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(3): Swamp, Thoughtseize, Undercity Sewers | lib 47
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (NEW)
-  Opp BF:   Thundering Falls (T)
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (19 life)
    1: Player A (18 life)
@@ -629,20 +362,6 @@
   Player A chooses a card to discard:
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(3): Swamp, Thoughtseize, Undercity Sewers | lib 47
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T,NEW)
-  Opp BF:   Thundering Falls (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Known opp hand: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Misty Rainforest, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB | opp drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Cori-Steel Cutter
    1: Dragon's Rage Channeler
@@ -661,16 +380,6 @@
   PB: Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Misty Rainforest, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: Draw (turn 4)
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Misty Rainforest, Ponder, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   16 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Thundering Falls
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Otherworldly Gaze [play:opponent], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -679,19 +388,6 @@
   Choose target for Lightning Bolt:
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: Draw (turn 4)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Into the Flood Maw, Misty Rainforest, Ponder, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   16 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Thundering Falls
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Lightning Bolt (spell, self)
-  Pending: Lightning Bolt (self)
-  Self GY: Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Otherworldly Gaze [play:opponent], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Player A (16 life)
    1: Player B (19 life)
@@ -704,16 +400,6 @@
   Lightning Bolt deals 3 damage to Player A (now at 13 life)
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Into the Flood Maw, Misty Rainforest, Ponder, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   13 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Otherworldly Gaze [play:opponent], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -724,17 +410,6 @@
   Player B played Misty Rainforest
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   13 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Misty Rainforest (NEW) | Thundering Falls (T)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Otherworldly Gaze [play:opponent], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -747,19 +422,6 @@
   Searching Player B's library:
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   13 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Otherworldly Gaze [play:opponent], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -771,17 +433,6 @@
   Player B puts Volcanic Island to the battlefield
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 48
-  Opp:   13 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Thundering Falls (T) | Volcanic Island (NEW)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Otherworldly Gaze [play:opponent], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -798,16 +449,6 @@
   PB: Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  13 life | mana: empty | hand(3): Swamp, Thoughtseize, Undercity Sewers | lib 47
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Undercity Sewers | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Polluted Delta, Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze (flashback)  [#4]
@@ -823,20 +464,6 @@
   Surveil: looking at Polluted Delta
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  13 life | mana: empty | hand(3): Swamp, Thoughtseize, Undercity Sewers | lib 47
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Polluted Delta on top of library  [#0]
@@ -847,41 +474,12 @@
   Player A puts Polluted Delta into their graveyard.
 
 --- Decision 36 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  13 life | mana: empty | hand(3): Swamp, Thoughtseize, Undercity Sewers | lib 46
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
   >> A/A: 0 (Put Brainstorm on top of library)
 
 --- Decision 37 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  13 life | mana: empty | hand(3): Swamp, Thoughtseize, Undercity Sewers | lib 46
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#1]
    1: Put Brainstorm into graveyard
@@ -891,19 +489,6 @@
   Player A draws Brainstorm
 
 --- Decision 38 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  13 life | mana: empty | hand(4): Brainstorm, Swamp, Thoughtseize, Undercity Sewers | lib 45
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Swamp
@@ -913,20 +498,6 @@
   Player A played Swamp
 
 --- Decision 39 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  13 life | mana: empty | hand(3): Brainstorm, Thoughtseize, Undercity Sewers | lib 45
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Swamp (NEW) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -935,22 +506,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 40 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  13 life | mana: empty | hand(2): Brainstorm, Undercity Sewers | lib 45
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Swamp (NEW) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (18 life)
    1: Player A (13 life)
@@ -968,22 +523,6 @@
   Player A chooses a card to discard:
 
 --- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  13 life | mana: empty | hand(2): Brainstorm, Undercity Sewers | lib 45
-  Opp:   18 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Swamp (T,NEW) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Into the Flood Maw
    1: Ponder
@@ -1001,17 +540,6 @@
   PB: Daze, Into the Flood Maw, Scalding Tarn, Volcanic Island
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Daze, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 47
-  Opp:   11 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Thundering Falls | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1021,18 +549,6 @@
   Player B played Scalding Tarn
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(3): Daze, Into the Flood Maw, Volcanic Island | lib 47
-  Opp:   11 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Scalding Tarn (NEW) | Thundering Falls | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -1045,20 +561,6 @@
   Searching Player B's library:
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(3): Daze, Into the Flood Maw, Volcanic Island | lib 47
-  Opp:   11 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Thundering Falls | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1073,18 +575,6 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  17 life | mana: empty | hand(3): Daze, Into the Flood Maw, Volcanic Island | lib 46
-  Opp:   11 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Thundering Falls | Volcanic Island | Volcanic Island (NEW)
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1101,18 +591,6 @@
   PB: Daze, Into the Flood Maw, Volcanic Island
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(2): Brainstorm, Undercity Sewers | lib 45
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Self GY: Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1122,19 +600,6 @@
   Player A casts Brainstorm
 
 --- Decision 47 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  17 life | mana: empty | hand(3): Daze, Into the Flood Maw, Volcanic Island | lib 46
-  Opp:   8 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp | Undercity Sewers (T) | Underground Sea
-  Stack: Brainstorm (spell, opponent)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze  [#0]
@@ -1149,21 +614,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(4): Atraxa, Grand Unifier, Brainstorm, Thoughtseize, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
-  Extras: not_priority_window
   Actions:
    0: Atraxa, Grand Unifier
    1: Brainstorm
@@ -1175,22 +625,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(3): Brainstorm, Thoughtseize, Undercity Sewers | lib 43
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Atraxa, Grand Unifier, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
-  Extras: not_priority_window
   Actions:
    0: Brainstorm
    1: Thoughtseize
@@ -1200,19 +634,6 @@
   Player A puts Undercity Sewers to top of library
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(2): Brainstorm, Thoughtseize | lib 44
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Self GY: Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Undercity Sewers, Atraxa, Grand Unifier, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1222,19 +643,6 @@
   Player A casts Brainstorm
 
 --- Decision 51 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  17 life | mana: empty | hand(3): Daze, Into the Flood Maw, Volcanic Island | lib 46
-  Opp:   8 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Brainstorm (spell, opponent)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=3 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze  [#0]
@@ -1249,21 +657,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(4): Atraxa, Grand Unifier, Polluted Delta, Thoughtseize, Undercity Sewers | lib 41
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 colors=U
-  Extras: not_priority_window
   Actions:
    0: Atraxa, Grand Unifier
    1: Polluted Delta
@@ -1275,22 +668,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(3): Atraxa, Grand Unifier, Thoughtseize, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 colors=U
-  Extras: not_priority_window
   Actions:
    0: Atraxa, Grand Unifier
    1: Thoughtseize
@@ -1301,19 +678,6 @@
   Player A draws Atraxa, Grand Unifier
 
 --- Decision 54 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(3): Atraxa, Grand Unifier, Thoughtseize, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Self GY: Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -1323,22 +687,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 55 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(2): Atraxa, Grand Unifier, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
-  Extras: not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (8 life)
@@ -1349,19 +697,6 @@
   Player A casts Thoughtseize targeting Player B
 
 --- Decision 56 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(3): Daze, Into the Flood Maw, Volcanic Island | lib 46
-  Opp:   8 life | mana: empty | hand count: 2 | lib 42
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Thoughtseize (spell, opponent) -> self (player)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=3 noncreature=3 instant_sorcery=3 drawn=7 colors=UB
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze  [#0]
@@ -1371,20 +706,6 @@
   Choose target for Daze:
 
 --- Decision 57 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Volcanic Island | lib 46
-  Opp:   8 life | mana: empty | hand count: 2 | lib 42
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Daze (spell, self) -> Thoughtseize (spell, opponent) -> self (player)
-  Pending: Daze (self)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=3 noncreature=3 instant_sorcery=3 drawn=7 colors=UB
-  Extras: not_priority_window
   Actions:
    0: Thoughtseize
   >> B/B: 0 (Thoughtseize)
@@ -1399,20 +720,6 @@
   Surveil: looking at Ponder
 
 --- Decision 58 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Volcanic Island | lib 46
-  Opp:   8 life | mana: empty | hand count: 2 | lib 42
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Thoughtseize (opponent, slot 98) -> Thoughtseize (spell, opponent) -> self (player)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=3 noncreature=3 instant_sorcery=3 drawn=7 colors=UB
-  Extras: not_priority_window
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -1422,22 +729,6 @@
   Thoughtseize's controller may pay {1} to save it:
 
 --- Decision 59 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(2): Atraxa, Grand Unifier, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
-  Pending: Daze (opp)
-  Self GY: Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=7 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Don't pay (Thoughtseize is countered)  [#0]
   >> A/A: 0 (Don't pay (Thoughtseize is countered))
@@ -1445,20 +736,6 @@
   Thoughtseize is countered
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(2): Atraxa, Grand Unifier, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=7 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -1472,22 +749,6 @@
   Surveil: looking at Polluted Delta
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(1): Atraxa, Grand Unifier | lib 42
-  Opp:   17 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Known opp hand: Into the Flood Maw, Volcanic Island
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=7 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Polluted Delta on top of library  [#0]
    1: Put Polluted Delta into graveyard
@@ -1502,17 +763,6 @@
   PB: Into the Flood Maw, Ponder, Volcanic Island
 
 --- Decision 62 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(3): Into the Flood Maw, Ponder, Volcanic Island | lib 45
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1527,20 +777,6 @@
   Surveil: looking at Force of Will
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Volcanic Island | lib 45
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
@@ -1551,21 +787,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 64 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Volcanic Island | lib 45
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Force of Will  [#2]
    1: Mystic Sanctuary  [#2]
@@ -1574,41 +795,11 @@
   Choose which card goes 2 from top:
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Volcanic Island | lib 45
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Mystic Sanctuary, Force of Will, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Force of Will  [#1]
   >> B/B: 0 (Force of Will)
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Volcanic Island | lib 45
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Force of Will, Mystic Sanctuary, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1618,18 +809,6 @@
   Player B draws Force of Will
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Into the Flood Maw, Volcanic Island | lib 44
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1641,19 +820,6 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Into the Flood Maw | lib 44
-  Opp:   8 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK,res 1) | Thundering Falls (T) | Volcanic Island (NEW) | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1671,18 +837,6 @@
   PB: Force of Will, Into the Flood Maw
 
 --- Decision 69 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Atraxa, Grand Unifier, Flow State | lib 40
-  Opp:   17 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp GY:  Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Self exile: Otherworldly Gaze
-  Known opp hand: Into the Flood Maw
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
@@ -1693,20 +847,6 @@
   Player A casts Flow State
 
 --- Decision 70 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Into the Flood Maw | lib 44
-  Opp:   5 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
-  Stack: Flow State (spell, opponent)
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1715,21 +855,6 @@
   Choose target for Force of Will:
 
 --- Decision 71 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 44
-  Opp:   5 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
-  Stack: Force of Will (spell, self) -> Flow State (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Flow State
   >> B/B: 0 (Flow State)
@@ -1737,21 +862,6 @@
   Targeting choice 0
 
 --- Decision 72 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 44
-  Opp:   5 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
-  Stack: Force of Will (spell, self) -> Flow State (opponent, slot 97) -> Flow State (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Exile Into the Flood Maw
   >> B/B: 0 (Exile Into the Flood Maw)
@@ -1765,22 +875,6 @@
   Surveil: looking at Force of Will
 
 --- Decision 73 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  16 life | mana: empty | hand(0): (empty) | lib 44
-  Opp:   5 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Force of Will (spell, self) -> Flow State (opponent, slot 98) -> Flow State (spell, opponent)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Self exile: Into the Flood Maw
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
@@ -1799,20 +893,6 @@
   PB: Force of Will
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  16 life | mana: empty | hand(1): Force of Will | lib 43
-  Opp:   5 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
-  Self GY: Force of Will, Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Flow State, Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Self exile: Into the Flood Maw
-  Opp exile:  Otherworldly Gaze
-  Known top: Mystic Sanctuary, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1833,18 +913,6 @@
   PB: Force of Will, Mystic Sanctuary
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  16 life | mana: empty | hand(2): Force of Will, Mystic Sanctuary | lib 42
-  Opp:   2 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
-  Self GY: Force of Will, Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Flow State, Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Self exile: Into the Flood Maw
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mystic Sanctuary
@@ -1854,20 +922,6 @@
   Choose target for Mystic Sanctuary:
 
 --- Decision 76 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  16 life | mana: empty | hand(1): Force of Will | lib 42
-  Opp:   2 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mystic Sanctuary (NEW) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
-  Pending: Mystic Sanctuary (self)
-  Self GY: Force of Will, Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Flow State, Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Self exile: Into the Flood Maw
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Daze
    1: Force of Will
@@ -1879,21 +933,6 @@
   Mystic Sanctuary triggered
 
 --- Decision 77 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  16 life | mana: empty | hand(1): Force of Will | lib 42
-  Opp:   2 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mystic Sanctuary (NEW,res 1) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
-  Stack: Mystic Sanctuary (ability, self) -> Force of Will (self)
-  Pending: Mystic Sanctuary (self)
-  Self GY: Force of Will, Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Flow State, Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Self exile: Into the Flood Maw
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: use Mystic Sanctuary's triggered ability  [#0]
    1: Accept: use Mystic Sanctuary's triggered ability  [#1]
@@ -1906,20 +945,6 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
 --- Decision 78 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  16 life | mana: empty | hand(1): Force of Will | lib 43
-  Opp:   2 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Mystic Sanctuary (NEW,res 1) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
-  Self GY: Ponder, Daze, Scalding Tarn, Ponder, Misty Rainforest, Lightning Bolt, Cori-Steel Cutter, Polluted Delta, Mishra's Bauble
-  Opp GY:  Flow State, Polluted Delta, Thoughtseize, Brainstorm, Brainstorm, Thoughtseize, Polluted Delta, Thoughtseize, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Marsh Flats, Brainstorm, Lotus Petal
-  Self exile: Into the Flood Maw
-  Opp exile:  Otherworldly Gaze
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Griselbrand, Otherworldly Gaze, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)

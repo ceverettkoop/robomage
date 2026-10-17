@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Windswept Heath
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -61,15 +51,10 @@
   Player B keeps a 7-card hand.
   -------- TURN 1 (Player A) --------
 --- Turn 1 (Player A) ---
-  PA: Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  PA: Daze, Daze, Dragon's Rage Channeler, Misty Rainforest, Ponder, Scalding Tarn, Wasteland
   PB: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
 
 --- Decision 3 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -81,14 +66,6 @@
   Player B looks at the top 5 card(s) of their library.
 
 --- Decision 4 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Once Upon a Time (spell, self)
-  Pending: Once Upon a Time (self)
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Wasteland
@@ -101,14 +78,6 @@
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -119,16 +88,6 @@
   Player A played Misty Rainforest
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Misty Rainforest (NEW)
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -141,18 +100,6 @@
   Searching Player A's library:
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time
-  This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -164,17 +111,6 @@
   Player A puts Volcanic Island to the battlefield
 
 --- Decision 8 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Volcanic Island (NEW)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time
-  This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -185,18 +121,6 @@
   Player A casts Dragon's Rage Channeler
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Volcanic Island (T,NEW)
-  Stack: Dragon's Rage Channeler (spell, self)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time
-  This turn: self spells=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -212,15 +136,6 @@
   PB: Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Savannah, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Savannah, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
-  Self GY: Once Upon a Time
-  Opp GY:  Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Dragon's Rage Channeler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -232,17 +147,6 @@
   Player B played Savannah
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Savannah (NEW)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
-  Self GY: Once Upon a Time
-  Opp GY:  Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Dragon's Rage Channeler
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -252,19 +156,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Savannah (NEW)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self)
-  Pending: Swords to Plowshares (self)
-  Self GY: Once Upon a Time
-  Opp GY:  Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Dragon's Rage Channeler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Dragon's Rage Channeler
   >> B/B: 0 (Dragon's Rage Channeler)
@@ -274,19 +165,6 @@
   Player B casts Swords to Plowshares targeting Dragon's Rage Channeler
 
 --- Decision 13 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
-  Opp BF:   Savannah (T,NEW)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -296,20 +174,6 @@
   Choose target for Daze:
 
 --- Decision 14 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
-  Opp BF:   Savannah (T,NEW)
-  Stack: Daze (spell, self) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
-  Pending: Daze (self)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Swords to Plowshares
   >> A/A: 0 (Swords to Plowshares)
@@ -317,20 +181,6 @@
   Targeting choice 0
 
 --- Decision 15 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
-  Opp BF:   Savannah (T,NEW)
-  Stack: Daze (spell, self) -> Swords to Plowshares (opponent, slot 97) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
-  Pending: Daze (self)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Return Volcanic Island
   >> A/A: 0 (Return Volcanic Island)
@@ -343,20 +193,6 @@
   Surveil: looking at Unholy Heat
 
 --- Decision 16 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Daze, Ponder, Volcanic Island, Scalding Tarn, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,res 1)
-  Opp BF:   Savannah (T,NEW)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Swords to Plowshares (opponent, slot 98) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Unholy Heat on top of library  [#0]
    1: Put Unholy Heat into graveyard
@@ -366,20 +202,6 @@
   Swords to Plowshares's controller may pay {1} to save it:
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Savannah (T,NEW)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK,res 1)
-  Stack: Daze (spell, opponent) -> Swords to Plowshares (self, slot 97) -> Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent, slot 48)
-  Pending: Daze (opp)
-  Self GY: Once Upon a Time
-  Opp GY:  Misty Rainforest
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Misty Rainforest, Daze, Dragon's Rage Channeler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Don't pay (Swords to Plowshares is countered)  [#0]
   >> B/B: 0 (Don't pay (Swords to Plowshares is countered))
@@ -389,21 +211,10 @@
   -------- TURN 3 (Player A) --------
   Player A draws Unholy Heat
 --- Turn 3 (Player A) ---
-  PA: Daze, Unholy Heat, Ponder, Volcanic Island, Scalding Tarn, Wasteland
+  PA: Daze, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island, Wasteland
   PB: Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Daze, Unholy Heat, Ponder, Volcanic Island, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1]
-  Opp BF:   Savannah (T)
-  Self GY: Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -414,18 +225,6 @@
   Player A played Volcanic Island
 
 --- Decision 19 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Daze, Unholy Heat, Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (NEW)
-  Opp BF:   Savannah (T)
-  Self GY: Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Unholy Heat  [#0]
@@ -435,20 +234,6 @@
   Choose target for Unholy Heat:
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (NEW)
-  Opp BF:   Savannah (T)
-  Stack: Unholy Heat (spell, self)
-  Pending: Unholy Heat (self)
-  Self GY: Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Dragon's Rage Channeler
   >> A/A: 0 (Dragon's Rage Channeler)
@@ -459,19 +244,6 @@
   Dragon's Rage Channeler triggered
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T,NEW)
-  Opp BF:   Savannah (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
-  Self GY: Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -482,40 +254,12 @@
   Surveil: looking at Scalding Tarn
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Volcanic Island (T,NEW)
-  Opp BF:   Savannah (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
   >> A/A: 0 (Put Scalding Tarn on top of library)
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Volcanic Island (T,NEW)
-  Opp BF:   Savannah (T)
-  Stack: Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
-  Self GY: Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -532,16 +276,6 @@
   PB: Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Wasteland, Windswept Heath
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Wasteland, Windswept Heath | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Savannah
-  Opp BF:   Volcanic Island (T)
-  Self GY: Swords to Plowshares, Once Upon a Time
-  Opp GY:  Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -555,18 +289,6 @@
   Choose target for Talon Gates of Madara:
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Savannah | Talon Gates of Madara (NEW)
-  Opp BF:   Volcanic Island (T)
-  Pending: Talon Gates of Madara (self)
-  Self GY: Swords to Plowshares, Once Upon a Time
-  Opp GY:  Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: No target
   >> B/B: 0 (No target)
@@ -576,17 +298,6 @@
   Resolving ability (category: Phases)
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
-  Opp BF:   Volcanic Island (T)
-  Self GY: Swords to Plowshares, Once Upon a Time
-  Opp GY:  Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -595,19 +306,6 @@
   Choose X value (0-1):
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
-  Opp BF:   Volcanic Island (T)
-  Stack: Green Sun's Zenith (spell, self)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Swords to Plowshares, Once Upon a Time
-  Opp GY:  Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -619,20 +317,6 @@
   Player B casts Green Sun's Zenith
 
 --- Decision 28 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T,NEW,res 1)
-  Stack: Green Sun's Zenith (spell, opponent) [X=1]
-  Self GY: Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -641,21 +325,6 @@
   Choose target for Daze:
 
 --- Decision 29 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(3): Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T,NEW,res 1)
-  Stack: Daze (spell, self) -> Green Sun's Zenith (spell, opponent) [X=1]
-  Pending: Daze (self)
-  Self GY: Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Green Sun's Zenith
   >> A/A: 0 (Green Sun's Zenith)
@@ -663,21 +332,6 @@
   Targeting choice 0
 
 --- Decision 30 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(3): Ponder, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T,NEW,res 1)
-  Stack: Daze (spell, self) -> Green Sun's Zenith (opponent, slot 97) -> Green Sun's Zenith (spell, opponent) [X=1]
-  Pending: Daze (self)
-  Self GY: Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Swords to Plowshares, Once Upon a Time
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Return Volcanic Island
   >> A/A: 0 (Return Volcanic Island)
@@ -688,19 +342,6 @@
   Green Sun's Zenith's controller may pay {1} to save it:
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
-  Opp:   19 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Savannah (T) | Talon Gates of Madara (T,NEW,res 1)
-  Stack: Daze (spell, opponent) -> Green Sun's Zenith (self, slot 97) -> Green Sun's Zenith (spell, self) [X=1]
-  Pending: Daze (opp)
-  Self GY: Swords to Plowshares, Once Upon a Time
-  Opp GY:  Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Misty Rainforest, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Don't pay (Green Sun's Zenith is countered)  [#0]
   >> B/B: 0 (Don't pay (Green Sun's Zenith is countered))
@@ -710,20 +351,10 @@
   -------- TURN 5 (Player A) --------
   Player A draws Scalding Tarn
 --- Turn 5 (Player A) ---
-  PA: Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  PA: Ponder, Scalding Tarn, Scalding Tarn, Volcanic Island, Wasteland
   PB: Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  19 life | mana: empty | hand(5): Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T)
-  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -735,18 +366,6 @@
   Player A played Volcanic Island
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (NEW)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T)
-  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -759,20 +378,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T,NEW)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Mishra's Bauble  [#2]
    1: Volcanic Island  [#2]
@@ -782,42 +387,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T,NEW)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Mishra's Bauble  [#1]
    1: Murktide Regent  [#1]
   >> A/A: 0 (Mishra's Bauble)
 
 --- Decision 36 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T,NEW)
-  Opp BF:   Savannah (T) | Talon Gates of Madara (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Murktide Regent, Mishra's Bauble, Volcanic Island, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -833,16 +408,6 @@
   PB: Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Wasteland, Wasteland, Windswept Heath
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(6): Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Wasteland, Wasteland, Windswept Heath | lib 49
-  Opp:   19 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Savannah | Talon Gates of Madara
-  Opp BF:   Volcanic Island (T)
-  Self GY: Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -856,16 +421,6 @@
   Noble Hierarch enters the battlefield
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 49
-  Opp:   19 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Volcanic Island (T)
-  Self GY: Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -876,17 +431,6 @@
   Player B played Wasteland
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Windswept Heath | lib 49
-  Opp:   19 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
-  Opp BF:   Volcanic Island (T)
-  Self GY: Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -895,19 +439,6 @@
   Choose target for Wasteland:
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Windswept Heath | lib 49
-  Opp:   19 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
-  Opp BF:   Volcanic Island (T)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Volcanic Island
    1: Savannah
@@ -924,20 +455,10 @@
   -------- TURN 7 (Player A) --------
   Player A draws Mishra's Bauble
 --- Turn 7 (Player A) ---
-  PA: Murktide Regent, Mishra's Bauble, Scalding Tarn, Scalding Tarn, Wasteland
+  PA: Mishra's Bauble, Murktide Regent, Scalding Tarn, Scalding Tarn, Wasteland
   PB: Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Windswept Heath
 
 --- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(5): Murktide Regent, Mishra's Bauble, Scalding Tarn, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Opp BF:   Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -950,17 +471,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 42 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(4): Murktide Regent, Scalding Tarn, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Mishra's Bauble (NEW)
-  Opp BF:   Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -972,18 +482,6 @@
   Player A played Scalding Tarn
 
 --- Decision 43 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(3): Murktide Regent, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Mishra's Bauble (NEW) | Scalding Tarn (NEW)
-  Opp BF:   Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -993,20 +491,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 44 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(3): Murktide Regent, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Mishra's Bauble (NEW) | Scalding Tarn (NEW)
-  Opp BF:   Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Mishra's Bauble (ability, self)
-  Pending: Mishra's Bauble (self)
-  Self GY: Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
@@ -1017,19 +501,6 @@
   Player A's Mishra's Bauble ability targeting Player B is on the stack
 
 --- Decision 45 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(3): Murktide Regent, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Scalding Tarn (NEW)
-  Opp BF:   Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -1042,19 +513,6 @@
   Searching Player A's library:
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | hand(3): Murktide Regent, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Opp BF:   Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Scalding Tarn (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Known top: Volcanic Island, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1080,16 +538,6 @@
   PB: Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Noble Hierarch [0/1] | Savannah | Talon Gates of Madara
-  Opp BF:   Volcanic Island
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1105,16 +553,6 @@
   Keen-Eyed Curator enters the battlefield
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Volcanic Island
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1126,17 +564,6 @@
   Player B played Wasteland
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
-  Opp BF:   Volcanic Island
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1146,19 +573,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
-  Opp BF:   Volcanic Island
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Dragon's Rage Channeler
    1: Mishra's Bauble
@@ -1179,18 +593,6 @@
   Player B's Keen-Eyed Curator ability targeting Dragon's Rage Channeler is on the stack
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (T,NEW)
-  Opp BF:   Volcanic Island
-  Stack: Keen-Eyed Curator (ability, self) -> Dragon's Rage Channeler (opponent)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Dragon's Rage Channeler, Unholy Heat, Daze, Misty Rainforest
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1200,18 +602,6 @@
   Dragon's Rage Channeler is moved to exile
 
 --- Decision 52 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (T,NEW)
-  Opp BF:   Volcanic Island
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1220,20 +610,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (T,NEW)
-  Opp BF:   Volcanic Island
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Mishra's Bauble, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Mishra's Bauble
    1: Daze
@@ -1261,17 +637,6 @@
   PB: Knight of the Reliquary, Windswept Heath, Windswept Heath
 
 --- Decision 54 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(5): Murktide Regent, Ponder, Scalding Tarn, Scalding Tarn, Wasteland | lib 45
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1287,20 +652,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 55 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(4): Murktide Regent, Scalding Tarn, Scalding Tarn, Wasteland | lib 45
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Daze  [#2]
    1: Wasteland  [#2]
@@ -1310,42 +661,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 56 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(4): Murktide Regent, Scalding Tarn, Scalding Tarn, Wasteland | lib 45
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Daze  [#1]
    1: Delver of Secrets  [#1]
   >> A/A: 0 (Daze)
 
 --- Decision 57 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(4): Murktide Regent, Scalding Tarn, Scalding Tarn, Wasteland | lib 45
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Known top: Delver of Secrets, Daze, Wasteland, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1355,18 +676,6 @@
   Player A draws Delver of Secrets
 
 --- Decision 58 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(5): Delver of Secrets, Murktide Regent, Scalding Tarn, Scalding Tarn, Wasteland | lib 44
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Known top: Daze, Wasteland, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1377,19 +686,6 @@
   Player A played Scalding Tarn
 
 --- Decision 59 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(4): Delver of Secrets, Murktide Regent, Scalding Tarn, Wasteland | lib 44
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T) | Scalding Tarn (NEW)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Known top: Daze, Wasteland, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -1402,21 +698,6 @@
   Searching Player A's library:
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(4): Delver of Secrets, Murktide Regent, Scalding Tarn, Wasteland | lib 44
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Known top: Daze, Wasteland, ?, ?, ?
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1429,18 +710,6 @@
   Player A puts Volcanic Island to the battlefield
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(4): Delver of Secrets, Murktide Regent, Scalding Tarn, Wasteland | lib 43
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Volcanic Island (T) | Volcanic Island (NEW)
-  Opp BF:   Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp GY:  Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Delver of Secrets  [#0]
@@ -1456,16 +725,6 @@
   PB: Knight of the Reliquary, Windswept Heath, Windswept Heath
 
 --- Decision 62 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 48
-  Opp:   17 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1475,17 +734,6 @@
   Player B draws Green Sun's Zenith
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1493,17 +741,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 64 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1517,20 +754,6 @@
   Choose X value (0-3):
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Green Sun's Zenith (spell, self)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -1548,20 +771,6 @@
   Searching Player B's library:
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Green Sun's Zenith (spell, self) [X=3]
-  Pending: Green Sun's Zenith (self)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Birds of Paradise
@@ -1582,19 +791,6 @@
   Choose target for Endurance:
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Pending: Endurance (self)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Scalding Tarn, Ponder, Scalding Tarn, Volcanic Island, Ponder, Daze, Unholy Heat, Daze, Misty Rainforest
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: No target
    1: Player A (17 life)
@@ -1616,16 +812,6 @@
   Player A moves 9 card(s) to the bottom of their library
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Windswept Heath, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1635,17 +821,6 @@
   Player B played Windswept Heath
 
 --- Decision 69 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T) | Windswept Heath (NEW)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Windswept Heath (ChangeZone)  [#0]
@@ -1658,19 +833,6 @@
   Searching Player B's library:
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Windswept Heath (ability, self)
-  Pending: Windswept Heath (self)
-  Self GY: Windswept Heath, Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -1683,17 +845,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 71 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Windswept Heath, Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1702,19 +853,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Keen-Eyed Curator (ability, self)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Windswept Heath, Wasteland, Green Sun's Zenith, Swords to Plowshares, Once Upon a Time
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Green Sun's Zenith
    1: Once Upon a Time
@@ -1731,18 +869,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -1753,18 +879,6 @@
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 46
-  Opp:   17 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [3/3] (ATK) | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1780,18 +894,6 @@
   Your creatures:
 
 --- Decision 75 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  17 life | mana: empty | hand(3): Murktide Regent, Scalding Tarn, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm blockers
@@ -1811,20 +913,6 @@
   PB: Knight of the Reliquary, Windswept Heath
 
 --- Decision 76 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  13 life | mana: empty | hand(3): Murktide Regent, Scalding Tarn, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Delver of Secrets (ability, self)
-  Pending: Delver of Secrets (self)
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: not_priority_window
   Actions:
    0: Don't reveal
    1: Reveal
@@ -1833,17 +921,6 @@
   Player A draws Brainstorm
 
 --- Decision 77 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  13 life | mana: empty | hand(4): Murktide Regent, Brainstorm, Scalding Tarn, Wasteland | lib 51
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1859,20 +936,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 78 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  13 life | mana: empty | hand(6): Murktide Regent, Murktide Regent, Lightning Bolt, Ponder, Scalding Tarn, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Murktide Regent
    1: Murktide Regent
@@ -1886,21 +949,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 79 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  13 life | mana: empty | hand(5): Murktide Regent, Murktide Regent, Lightning Bolt, Ponder, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Murktide Regent
    1: Murktide Regent
@@ -1912,19 +960,6 @@
   Player A puts Wasteland to top of library
 
 --- Decision 80 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  13 life | mana: empty | hand(4): Murktide Regent, Murktide Regent, Lightning Bolt, Ponder | lib 50
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Brainstorm
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Wasteland, Scalding Tarn, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -1933,22 +968,6 @@
   Choose target for Lightning Bolt:
 
 --- Decision 81 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  13 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Ponder | lib 50
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Lightning Bolt (spell, self)
-  Pending: Lightning Bolt (self)
-  Self GY: Brainstorm
-  Opp GY:  Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Wasteland, Scalding Tarn, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Player B (19 life)
    1: Player A (13 life)
@@ -1967,20 +986,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 82 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  13 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Ponder | lib 50
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Wasteland, Scalding Tarn, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm attackers
@@ -1994,17 +999,6 @@
   PB: Knight of the Reliquary, Windswept Heath
 
 --- Decision 83 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 46
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] | Savannah | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2013,18 +1007,6 @@
   Player B draws Scryb Ranger
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: Draw (turn 12)
-  Self:  19 life | mana: empty | hand(3): Knight of the Reliquary, Scryb Ranger, Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] | Savannah | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Scryb Ranger  [#0]
@@ -2037,36 +1019,12 @@
   Scryb Ranger enters the battlefield
 
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: Draw (turn 12)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Talon Gates of Madara | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 86 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  19 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Talon Gates of Madara | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -2080,19 +1038,6 @@
   Player B casts Knight of the Reliquary
 
 --- Decision 87 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Knight of the Reliquary (spell, self)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 drawn=1 colors=WG
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
@@ -2101,21 +1046,6 @@
   Choose target for Scryb Ranger:
 
 --- Decision 88 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Scryb Ranger (ability, self) -> Knight of the Reliquary (spell, self)
-  Pending: Scryb Ranger (self)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: not_priority_window
   Actions:
    0: Delver of Secrets
    1: Endurance
@@ -2126,21 +1056,6 @@
   Targeting choice 0
 
 --- Decision 89 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Scryb Ranger (ability, self) -> Knight of the Reliquary (spell, self)
-  Pending: Scryb Ranger (self)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: not_priority_window
   Actions:
    0: Return Savannah to hand
    1: Return Savannah to hand
@@ -2154,19 +1069,6 @@
   Knight of the Reliquary gains (always)
 
 --- Decision 90 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  19 life | mana: empty | hand(2): Savannah, Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [4/4] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2177,19 +1079,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 91 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [4/4] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Endurance [3/4]
    1: Confirm attackers
@@ -2200,19 +1089,6 @@
     [attacking] Endurance [3/4] -> Player A
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] (ATK) | Knight of the Reliquary [4/4] (SICK,NEW) | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2228,20 +1104,6 @@
   Your creatures:
 
 --- Decision 93 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  13 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Ponder | lib 50
-  Opp:   19 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Endurance [4/5] [Reach, Flash] (T,ATK) | Knight of the Reliquary [4/4] (SICK,NEW) | Noble Hierarch [0/1] (T,res 1) | Savannah (NEW) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Wasteland, Scalding Tarn, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp spells=2 drawn=1 colors=WG
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm blockers
@@ -2259,19 +1121,6 @@
   PB: Windswept Heath
 
 --- Decision 94 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 13)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island | Volcanic Island
-  Stack: Delver of Secrets (ability, opponent)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
@@ -2281,39 +1130,12 @@
   Top card of library: Wasteland
 
 --- Decision 95 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Ponder | lib 50
-  Opp:   19 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Delver of Secrets (ability, self)
-  Pending: Delver of Secrets (self)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Wasteland, Scalding Tarn, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: not_priority_window
   Actions:
    0: Don't reveal
    1: Reveal
   >> A/A: 0 (Don't reveal)
 
 --- Decision 96 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 13)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island | Volcanic Island
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
@@ -2322,38 +1144,12 @@
   Player A draws Wasteland
 
 --- Decision 97 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 13)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island | Volcanic Island
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 98 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(4): Murktide Regent, Murktide Regent, Ponder, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2364,20 +1160,6 @@
   Player A casts Ponder
 
 --- Decision 99 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Stack: Ponder (spell, opponent)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
@@ -2386,21 +1168,6 @@
   Choose target for Scryb Ranger:
 
 --- Decision 100 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Stack: Scryb Ranger (ability, self) -> Ponder (spell, opponent)
-  Pending: Scryb Ranger (self)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Delver of Secrets
    1: Endurance
@@ -2412,21 +1179,6 @@
   Targeting choice 0
 
 --- Decision 101 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  19 life | mana: empty | hand(1): Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Stack: Scryb Ranger (ability, self) -> Ponder (spell, opponent)
-  Pending: Scryb Ranger (self)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Return Savannah to hand
    1: Return Savannah to hand
@@ -2441,23 +1193,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 102 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Scalding Tarn  [#2]
    1: Thundering Falls  [#2]
@@ -2467,46 +1202,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 103 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Thundering Falls  [#1]
    1: Wasteland  [#1]
   >> A/A: 0 (Thundering Falls)
 
 --- Decision 104 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Wasteland, Thundering Falls, Scalding Tarn, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -2516,21 +1217,6 @@
   Player A draws Wasteland
 
 --- Decision 105 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(4): Murktide Regent, Murktide Regent, Wasteland, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Thundering Falls, Scalding Tarn, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2540,21 +1226,6 @@
   Player A played Wasteland
 
 --- Decision 106 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island | Wasteland (NEW)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Thundering Falls, Scalding Tarn, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2563,23 +1234,6 @@
   Choose target for Wasteland:
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island | Wasteland (NEW)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Thundering Falls, Scalding Tarn, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Savannah
    1: Talon Gates of Madara
@@ -2594,20 +1248,6 @@
   Player A's Wasteland ability targeting Savannah is on the stack
 
 --- Decision 108 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  19 life | mana: empty | hand(2): Savannah, Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [4/4] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Stack: Wasteland (ability, opponent) -> Savannah (self, slot 3)
-  Self GY: Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Tap Savannah for (G)
@@ -2619,21 +1259,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 109 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [5/5] (SICK) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK,act 1) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Thundering Falls, Scalding Tarn, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm attackers
@@ -2647,17 +1272,6 @@
   PB: Savannah, Windswept Heath
 
 --- Decision 110 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  19 life | mana: empty | hand(2): Savannah, Windswept Heath | lib 45
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [5/5] | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Self GY: Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2666,36 +1280,12 @@
   Player B draws Wooded Foothills
 
 --- Decision 111 ---
-  Priority: Player B (active)
-  Step: Draw (turn 14)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [5/5] | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Self GY: Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 112 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [5/5] | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Self GY: Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2707,19 +1297,6 @@
   Player B played Savannah
 
 --- Decision 113 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [5/5] | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Self GY: Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
@@ -2728,21 +1305,6 @@
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 114 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [5/5] | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Pending: Knight of the Reliquary (self)
-  Self GY: Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Sacrifice Savannah
   >> B/B: 0 (Sacrifice Savannah)
@@ -2751,20 +1313,6 @@
   Player B's Knight of the Reliquary ability is on the stack
 
 --- Decision 115 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [6/6] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Self GY: Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2773,21 +1321,6 @@
   Choose target for Wasteland:
 
 --- Decision 116 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [6/6] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara | Wasteland
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island (T) | Volcanic Island
-  Stack: Wasteland (ability, self) -> Knight of the Reliquary (ability, self) [amt=1]
-  Pending: Wasteland (self)
-  Self GY: Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Volcanic Island
    1: Volcanic Island
@@ -2804,21 +1337,6 @@
   Searching Player B's library:
 
 --- Decision 117 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 44
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Pending: Knight of the Reliquary (self)
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -2837,19 +1355,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 118 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 43
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
@@ -2858,21 +1363,6 @@
   Choose target for Scryb Ranger:
 
 --- Decision 119 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 43
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Stack: Scryb Ranger (ability, self)
-  Pending: Scryb Ranger (self)
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Delver of Secrets
    1: Endurance
@@ -2884,21 +1374,6 @@
   Targeting choice 0
 
 --- Decision 120 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  19 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 43
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Stack: Scryb Ranger (ability, self)
-  Pending: Scryb Ranger (self)
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Return Savannah to hand
   >> B/B: 0 (Return Savannah to hand)
@@ -2910,19 +1385,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 121 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 43
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (act 1) | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Endurance [3/4]
    1: Noble Hierarch [0/1]
@@ -2935,19 +1397,6 @@
     [attacking] Endurance [3/4] -> Player A
 
 --- Decision 122 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 43
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] (ATK) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (act 1) | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Noble Hierarch [0/1]
    1: Scryb Ranger [1/1]
@@ -2960,19 +1409,6 @@
     [attacking] Scryb Ranger [1/1] -> Player A
 
 --- Decision 123 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 43
-  Opp:   9 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Endurance [3/4] [Reach, Flash] (ATK) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (ATK,act 1) | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Noble Hierarch [0/1]
    1: Confirm attackers
@@ -2988,21 +1424,6 @@
   Your creatures:
 
 --- Decision 124 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  9 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T,ATK) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T,ATK,act 1) | Talon Gates of Madara
-  Self GY: Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Thundering Falls, Scalding Tarn, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm blockers
@@ -3023,22 +1444,6 @@
   PB: Savannah, Windswept Heath, Wooded Foothills
 
 --- Decision 125 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 15)
-  Self:  5 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T) | Talon Gates of Madara
-  Stack: Delver of Secrets (ability, self)
-  Pending: Delver of Secrets (self)
-  Self GY: Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Thundering Falls, Scalding Tarn, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: not_priority_window
   Actions:
    0: Don't reveal
    1: Reveal
@@ -3048,20 +1453,6 @@
   Player A draws Thundering Falls
 
 --- Decision 126 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  5 life | mana: empty | hand(4): Murktide Regent, Murktide Regent, Wasteland, Thundering Falls | lib 47
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T) | Talon Gates of Madara
-  Self GY: Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -3071,21 +1462,6 @@
   Player A played Wasteland
 
 --- Decision 127 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  5 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 47
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Wasteland (NEW)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T) | Talon Gates of Madara
-  Self GY: Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -3094,23 +1470,6 @@
   Choose target for Wasteland:
 
 --- Decision 128 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  5 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 47
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Wasteland (NEW)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T) | Talon Gates of Madara
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Talon Gates of Madara
    1: Volcanic Island
@@ -3122,20 +1481,6 @@
   Player A's Wasteland ability targeting Talon Gates of Madara is on the stack
 
 --- Decision 129 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 15)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 43
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T) | Talon Gates of Madara
-  Opp BF:   Delver of Secrets [1/1] (res 1) | Volcanic Island
-  Stack: Wasteland (ability, opponent) -> Talon Gates of Madara (self, slot 4)
-  Self GY: Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Tap Talon Gates of Madara for (C)
@@ -3151,21 +1496,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 130 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  5 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 47
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [8/8] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Self GY: Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm attackers
@@ -3176,21 +1506,6 @@
     [attacking] Delver of Secrets [1/1] -> Player B
 
 --- Decision 131 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  5 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 47
-  Opp:   19 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Delver of Secrets [1/1] (ATK,res 1) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [8/8] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Self GY: Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3203,19 +1518,6 @@
   Your creatures:
 
 --- Decision 132 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 15)
-  Self:  19 life | mana: empty | hand(3): Savannah, Windswept Heath, Wooded Foothills | lib 43
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [8/8] (T) | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Opp BF:   Delver of Secrets [1/1] (T,ATK,res 1) | Volcanic Island
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Noble Hierarch [0/1]
    1: Confirm blockers
@@ -3233,18 +1535,6 @@
   PB: Life from the Loam, Savannah, Windswept Heath, Wooded Foothills
 
 --- Decision 133 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(4): Life from the Loam, Savannah, Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -3255,19 +1545,6 @@
   Player B played Savannah
 
 --- Decision 134 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(3): Life from the Loam, Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
@@ -3278,21 +1555,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 135 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Done selecting targets
    1: Savannah
@@ -3305,21 +1567,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 136 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Done selecting targets
    1: Savannah
@@ -3332,21 +1579,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 137 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Done selecting targets
    1: Savannah
@@ -3360,20 +1592,6 @@
   Player B casts Life from the Loam targeting Wasteland
 
 --- Decision 138 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Life from the Loam (spell, self) -> Wasteland (self); Wasteland (self)
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
@@ -3381,21 +1599,6 @@
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 139 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [8/8] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Life from the Loam (spell, self) -> Wasteland (self); Wasteland (self)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Sacrifice Savannah
   >> B/B: 0 (Sacrifice Savannah)
@@ -3406,21 +1609,6 @@
   Searching Player B's library:
 
 --- Decision 140 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 42
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [9/9] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Life from the Loam (spell, self) -> Wasteland (self); Wasteland (self)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Savannah, Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -3439,20 +1627,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 141 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 41
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [9/9] (T) | Noble Hierarch [0/1] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Life from the Loam (spell, self) -> Wasteland (self); Wasteland (self)
-  Self GY: Savannah, Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)  [#0]
@@ -3461,21 +1635,6 @@
   Choose target for Scryb Ranger:
 
 --- Decision 142 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 41
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [9/9] (T) | Noble Hierarch [0/1] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Scryb Ranger (ability, self) -> Life from the Loam (spell, self) -> Wasteland (self); Wasteland (self)
-  Pending: Scryb Ranger (self)
-  Self GY: Savannah, Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Delver of Secrets
    1: Endurance
@@ -3487,21 +1646,6 @@
   Targeting choice 0
 
 --- Decision 143 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  18 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 41
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [9/9] (T) | Noble Hierarch [0/1] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash]
-  Opp BF:   Delver of Secrets [1/1] (T) | Volcanic Island
-  Stack: Scryb Ranger (ability, self) -> Life from the Loam (spell, self) -> Wasteland (self); Wasteland (self)
-  Pending: Scryb Ranger (self)
-  Self GY: Savannah, Talon Gates of Madara, Wasteland, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Return Savannah to hand
   >> B/B: 0 (Return Savannah to hand)
@@ -3516,19 +1660,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 144 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 16)
-  Self:  18 life | mana: empty | hand(5): Savannah, Wasteland, Wasteland, Windswept Heath, Wooded Foothills | lib 41
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (act 1)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Endurance [3/4]
    1: Scryb Ranger [1/1]
@@ -3540,19 +1671,6 @@
     [attacking] Endurance [3/4] -> Player A
 
 --- Decision 145 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 16)
-  Self:  18 life | mana: empty | hand(5): Savannah, Wasteland, Wasteland, Windswept Heath, Wooded Foothills | lib 41
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] (ATK) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (act 1)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm attackers
@@ -3564,19 +1682,6 @@
     [attacking] Scryb Ranger [1/1] -> Player A
 
 --- Decision 146 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 16)
-  Self:  18 life | mana: empty | hand(5): Savannah, Wasteland, Wasteland, Windswept Heath, Wooded Foothills | lib 41
-  Opp:   5 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Endurance [3/4] [Reach, Flash] (ATK) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK,act 1)
-  Opp BF:   Delver of Secrets [1/1] | Volcanic Island
-  Self GY: Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Self exile: Green Sun's Zenith
-  Opp exile:  Mishra's Bauble, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3591,21 +1696,6 @@
   Your creatures:
 
 --- Decision 147 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 16)
-  Self:  5 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 47
-  Opp:   18 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Delver of Secrets [1/1] | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T,ATK) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK,act 1)
-  Self GY: Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah, Wasteland, Wasteland
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath, Life from the Loam
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm blockers
@@ -3626,22 +1716,6 @@
   PB: Savannah, Wasteland, Wasteland, Windswept Heath, Wooded Foothills
 
 --- Decision 148 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 17)
-  Self:  1 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 47
-  Opp:   18 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Stack: Delver of Secrets (ability, self)
-  Pending: Delver of Secrets (self)
-  Self GY: Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp hand: Savannah, Wasteland, Wasteland
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath, Life from the Loam
-  Extras: not_priority_window
   Actions:
    0: Don't reveal
    1: Reveal
@@ -3650,19 +1724,6 @@
   Player A draws Scalding Tarn
 
 --- Decision 149 ---
-  Priority: Player A (active)
-  Step: First Main (turn 17)
-  Self:  1 life | mana: empty | hand(4): Murktide Regent, Murktide Regent, Scalding Tarn, Thundering Falls | lib 46
-  Opp:   18 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Self GY: Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known opp hand: Savannah, Wasteland, Wasteland
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath, Life from the Loam
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -3672,20 +1733,6 @@
   Player A played Scalding Tarn
 
 --- Decision 150 ---
-  Priority: Player A (active)
-  Step: First Main (turn 17)
-  Self:  1 life | mana: empty | hand(3): Murktide Regent, Murktide Regent, Thundering Falls | lib 46
-  Opp:   18 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Delver of Secrets [1/1] (res 1) | Volcanic Island | Scalding Tarn (NEW)
-  Opp BF:   Endurance [3/4] [Reach, Flash] (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Self GY: Wasteland, Volcanic Island, Wasteland, Ponder, Lightning Bolt, Brainstorm
-  Opp GY:  Life from the Loam, Savannah, Talon Gates of Madara, Savannah, Savannah, Keen-Eyed Curator, Windswept Heath, Swords to Plowshares, Once Upon a Time
-  Self exile: Mishra's Bauble, Dragon's Rage Channeler
-  Opp exile:  Green Sun's Zenith
-  Known opp hand: Savannah, Wasteland, Wasteland
-  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Scryb Ranger, Swords to Plowshares, Talon Gates of Madara, Windswept Heath, Life from the Loam
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]

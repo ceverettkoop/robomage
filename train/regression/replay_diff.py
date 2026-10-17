@@ -2,11 +2,15 @@
 """Byte-identical determinism safety net for the curated decks.
 
 Plays a fixed set of scripted deck-vs-deck games (the three fully-implemented
-curated decks — delver/doomsday/mav — in every seating) and snapshots the full
-scripted transcript (every `game_log` line the engine emits plus the runner's
-per-decision markers) into one file per scenario. The scripted agent is a pure
-function of game state and the engine is deterministic given a seed, so an
-unchanged engine + agent + card data reproduces each transcript byte-for-byte.
+curated decks — delver/doomsday/mav — in every seating, and every league pairing)
+and snapshots the full scripted transcript (every `game_log` line the engine emits
+plus the runner's per-decision markers: the menu as offered and the choice) into
+one file per scenario. The scripted agent (hard, both seats) plays over
+``--machine-format rmstate`` on its RMSTATE frame view (``rm_agent.py``), so the
+transcript has no decoded board block. The scripted agent is a pure function of
+game state and the engine is deterministic given a seed, so an unchanged engine +
+agent + card data reproduces each transcript byte-for-byte. (The agent's BQUERY
+vector view keeps pinned games of its own: ``test_agent_parity.py``.)
 
   record  — play each scenario, write train/regression/corpus/<name>.txt
   check   — replay each scenario, diff against the recorded transcript (exit 1
@@ -33,7 +37,6 @@ _TRAIN = _HERE.parent
 _REPO = _TRAIN.parent
 _CORPUS = _HERE / "corpus"
 
-# test_harness owns the BQUERY binary protocol + scripted agent.
 sys.path.insert(0, str(_TRAIN))
 
 # Resolve the engine binary through cli_spec so it honors the per-config build
@@ -81,10 +84,11 @@ def _play(deck_a: str, deck_b: str, seed: int) -> str:
     """Drive one scripted deck-vs-deck game and return its full transcript.
 
     Uses the shared deterministic game loop (runner.run_games) with the scripted
-    (hard) agent on both seats. The scripted agent is a pure function of game
-    state and the engine is deterministic given a seed, so an unchanged engine +
-    agent + card data reproduces the transcript byte-for-byte. Libraries shuffle
-    with the seeded RNG (natural games, deterministic given the frozen SEED)."""
+    (hard) agent on both seats, over --machine-format rmstate. The scripted agent
+    is a pure function of game state and the engine is deterministic given a seed,
+    so an unchanged engine + agent + card data reproduces the transcript
+    byte-for-byte. Libraries shuffle with the seeded RNG (natural games,
+    deterministic given the frozen SEED)."""
     import contextlib
     import io
 
@@ -96,7 +100,8 @@ def _play(deck_a: str, deck_b: str, seed: int) -> str:
         runner.run_games(
             make_controller("scripted"), make_controller("scripted"),
             label_a="A", label_b="B", binary_path=str(_BINARY),
-            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed, verbose=True)
+            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed, verbose=True,
+            machine_format="rmstate")
     return buf.getvalue()
 
 

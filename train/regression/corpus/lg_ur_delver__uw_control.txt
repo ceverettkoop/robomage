@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Daze, Mishra's Bauble, Mishra's Bauble, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Tune the Narrative
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Daze, Mishra's Bauble, Mishra's Bauble, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -81,14 +67,6 @@
   Player A casts Mishra's Bauble
 
 --- Decision 4 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Stack: Mishra's Bauble (spell, opponent)
-  Opp revealed: Mishra's Bauble
-  This turn: opp spells=1 noncreature=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -97,12 +75,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Daze, Mishra's Bauble, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble (NEW)
-  This turn: self spells=1 noncreature=1
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -115,13 +87,6 @@
   Player A casts Mishra's Bauble
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble (NEW)
-  Stack: Mishra's Bauble (spell, self)
-  This turn: self spells=2 noncreature=2
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -130,15 +95,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble (NEW)
-  Stack: Mishra's Bauble (ability, self) -> Mishra's Bauble (spell, self)
-  Pending: Mishra's Bauble (self)
-  This turn: self spells=2 noncreature=2
-  Extras: not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (20 life)
@@ -149,15 +105,6 @@
   Player A's Mishra's Bauble ability targeting Player B is on the stack
 
 --- Decision 8 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Mishra's Bauble (spell, opponent)
-  Opp GY:  Mishra's Bauble
-  Opp revealed: Mishra's Bauble
-  This turn: opp spells=2 noncreature=2
-  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -169,16 +116,6 @@
   Delayed trigger registered: Draw at next Upkeep.
 
 --- Decision 9 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Stack: Mishra's Bauble (spell, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, waiting)
-  Opp GY:  Mishra's Bauble
-  Opp revealed: Mishra's Bauble
-  This turn: opp spells=2 noncreature=2
-  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -187,16 +124,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 10 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble (NEW)
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Self GY: Mishra's Bauble
-  Known opp top: The One Ring, ?, ?, ?, ?
-  This turn: self spells=2 noncreature=2
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -210,17 +137,6 @@
   Thundering Falls triggered
 
 --- Decision 11 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Stack: Thundering Falls (ability, self) [amt=1]
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Self GY: Mishra's Bauble
-  Known opp top: The One Ring, ?, ?, ?, ?
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -229,18 +145,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 12 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Pending: Mishra's Bauble (self)
-  Self GY: Mishra's Bauble
-  Known opp top: The One Ring, ?, ?, ?, ?
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (20 life)
@@ -258,18 +162,6 @@
   Surveil: looking at Brainstorm
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Thundering Falls (T,NEW,res 1)
-  Stack: Thundering Falls (ability, self) [amt=1]
-  Delayed: Mishra's Bauble (self, upkeep, waiting) | Mishra's Bauble (self, upkeep, waiting)
-  Pending: Thundering Falls (self)
-  Self GY: Mishra's Bauble, Mishra's Bauble
-  Known opp top: The One Ring, ?, ?, ?, ?
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -283,16 +175,6 @@
   PB: Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
 
 --- Decision 14 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 2)
-  Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Thundering Falls (T)
-  Pending: Mishra's Bauble (self)
-  Self GY: Mishra's Bauble, Mishra's Bauble
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp top: The One Ring, ?, ?, ?, ?
-  Extras: not_priority_window
   Actions:
    0: Delayed trigger  [#0]
    1: Delayed trigger  [#1]
@@ -307,14 +189,6 @@
   Player B draws The One Ring
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Opp BF:   Thundering Falls (T)
-  Opp GY:  Mishra's Bauble, Mishra's Bauble
-  Opp revealed: Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=2
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -324,16 +198,6 @@
   Player B played Flooded Strand
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Flooded Strand (NEW)
-  Opp BF:   Thundering Falls (T)
-  Opp GY:  Mishra's Bauble, Mishra's Bauble
-  Opp revealed: Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=2
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -346,18 +210,6 @@
   Searching Player B's library:
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Opp BF:   Thundering Falls (T)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand
-  Opp GY:  Mishra's Bauble, Mishra's Bauble
-  Opp revealed: Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=2
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -376,19 +228,6 @@
   Surveil: looking at Tundra
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T,NEW,res 1)
-  Opp BF:   Thundering Falls (T)
-  Stack: Meticulous Archive (ability, self) [amt=1]
-  Pending: Meticulous Archive (self)
-  Self GY: Flooded Strand
-  Opp GY:  Mishra's Bauble, Mishra's Bauble
-  Opp revealed: Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=2
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Tundra on top of library  [#0]
    1: Put Tundra into graveyard
@@ -401,15 +240,6 @@
   PB: Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative
 
 --- Decision 19 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(6): Brainstorm, Daze, Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Opp revealed: Flooded Strand, Meticulous Archive
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -419,17 +249,6 @@
   Player A casts Brainstorm
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(5): Daze, Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Brainstorm (spell, self)
-  Self GY: Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -437,19 +256,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 21 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Thundering Falls (T)
-  Stack: Brainstorm (spell, opponent)
-  Self GY: Flooded Strand
-  Opp GY:  Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -463,19 +269,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(8): Brainstorm, Cori-Steel Cutter, Daze, Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
-  Extras: not_priority_window
   Actions:
    0: Brainstorm
    1: Cori-Steel Cutter
@@ -491,20 +284,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Daze, Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
-  Extras: not_priority_window
   Actions:
    0: Brainstorm
    1: Cori-Steel Cutter
@@ -519,17 +298,6 @@
   Player A draws Volcanic Island
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Daze, Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -539,18 +307,6 @@
   Player A played Volcanic Island
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Brainstorm, Cori-Steel Cutter, Daze, Daze, Murktide Regent, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (NEW)
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -560,19 +316,6 @@
   Player A casts Brainstorm
 
 --- Decision 26 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Daze, Daze, Murktide Regent, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Brainstorm (spell, self)
-  Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -580,19 +323,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 27 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Stack: Brainstorm (spell, opponent)
-  Self GY: Flooded Strand
-  Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Opp revealed: Volcanic Island, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -606,19 +336,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Daze, Daze, Mishra's Bauble, Murktide Regent, Ponder, Scalding Tarn, Volcanic Island | lib 46
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Cori-Steel Cutter
    1: Daze
@@ -634,20 +351,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Daze, Mishra's Bauble, Murktide Regent, Ponder, Volcanic Island | lib 47
-  Opp:   19 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Cori-Steel Cutter
    1: Daze
@@ -666,16 +369,6 @@
   PB: Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Flooded Strand
-  Opp GY:  Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Opp revealed: Volcanic Island, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Tune the Narrative  [#0]
@@ -685,37 +378,12 @@
   Player B casts Tune the Narrative
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Stack: Tune the Narrative (spell, self)
-  Self GY: Flooded Strand
-  Opp GY:  Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Opp revealed: Volcanic Island, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 32 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Daze, Murktide Regent, Ponder, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Tune the Narrative (spell, opponent)
-  Self GY: Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, Scalding Tarn, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive, Tune the Narrative
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -725,20 +393,6 @@
   Choose target for Daze:
 
 --- Decision 33 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Daze (spell, self) -> Tune the Narrative (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, Scalding Tarn, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive, Tune the Narrative
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Tune the Narrative
   >> A/A: 0 (Tune the Narrative)
@@ -746,20 +400,6 @@
   Targeting choice 0
 
 --- Decision 34 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Daze (spell, self) -> Tune the Narrative (opponent, slot 97) -> Tune the Narrative (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, Scalding Tarn, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive, Tune the Narrative
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Return Thundering Falls
    1: Return Volcanic Island
@@ -769,19 +409,6 @@
   Player A casts Daze targeting Tune the Narrative
 
 --- Decision 35 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Thundering Falls, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Daze (spell, self) -> Tune the Narrative (opponent, slot 97) -> Tune the Narrative (spell, opponent)
-  Self GY: Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, Scalding Tarn, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -790,20 +417,6 @@
   Choose target for Daze:
 
 --- Decision 36 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Thundering Falls, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Daze (spell, self) -> Daze (spell, self) -> Tune the Narrative (opponent, slot 98) -> Tune the Narrative (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, Scalding Tarn, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Daze
    1: Tune the Narrative
@@ -812,20 +425,6 @@
   Targeting choice 1
 
 --- Decision 37 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Thundering Falls, Volcanic Island | lib 48
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Daze (spell, self) -> Tune the Narrative (opponent, slot 98) -> Daze (spell, self) -> Tune the Narrative (opponent, slot 98) -> Tune the Narrative (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand
-  Known top: Mishra's Bauble, Scalding Tarn, ?, ?, ?
-  Opp revealed: Flooded Strand, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Return Volcanic Island
   >> A/A: 0 (Return Volcanic Island)
@@ -834,19 +433,6 @@
   Player A casts Daze targeting Tune the Narrative
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Stack: Daze (spell, opponent) -> Tune the Narrative (self, slot 98) -> Daze (spell, opponent) -> Tune the Narrative (self, slot 98) -> Tune the Narrative (spell, self)
-  Self GY: Flooded Strand
-  Opp GY:  Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -855,20 +441,6 @@
   Choose target for Force of Will:
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(5): Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Stack: Force of Will (spell, self) -> Daze (spell, opponent) -> Tune the Narrative (self, slot 99) -> Daze (spell, opponent) -> Tune the Narrative (self, slot 99) -> Tune the Narrative (spell, self)
-  Pending: Force of Will (self)
-  Self GY: Flooded Strand
-  Opp GY:  Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Daze
    1: Daze
@@ -878,20 +450,6 @@
   Targeting choice 0
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(5): Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Stack: Force of Will (spell, self) -> Daze (opponent, slot 97) -> Daze (spell, opponent) -> Tune the Narrative (self, slot 99) -> Daze (spell, opponent) -> Tune the Narrative (self, slot 99) -> Tune the Narrative (spell, self)
-  Pending: Force of Will (self)
-  Self GY: Flooded Strand
-  Opp GY:  Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Known top: Tundra, ?, ?, ?, ?
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder
    1: Exile Tamiyo, Inquisitive Student
@@ -906,21 +464,6 @@
   Tune the Narrative's controller may pay {1} to save it:
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  18 life | mana: empty | hand(4): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Stack: Daze (spell, opponent) -> Tune the Narrative (self, slot 97) -> Tune the Narrative (spell, self)
-  Pending: Daze (opp)
-  Self GY: Force of Will, Flooded Strand
-  Opp GY:  Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known top: Tundra, ?, ?, ?, ?
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 life_lost=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Don't pay (Tune the Narrative is countered)  [#0]
   >> B/B: 0 (Don't pay (Tune the Narrative is countered))
@@ -929,18 +472,6 @@
   Player B draws Tundra
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Self GY: Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -950,18 +481,6 @@
   Player B played Misty Rainforest
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(4): Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T) | Misty Rainforest (NEW)
-  Self GY: Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -974,20 +493,6 @@
   Searching Player B's library:
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T)
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -999,18 +504,6 @@
   Player B puts Tundra to the battlefield
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 48
-  Self BF:  Meticulous Archive (T) | Tundra (NEW)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Thundering Falls, Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -1027,17 +520,6 @@
   PB: Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Mishra's Bauble, Murktide Regent, Ponder, Thundering Falls, Volcanic Island, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 49
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Self GY: Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -1050,18 +532,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 47 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Murktide Regent, Ponder, Thundering Falls, Volcanic Island, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Mishra's Bauble (NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Self GY: Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -1075,20 +545,6 @@
   Thundering Falls triggered
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Stack: Thundering Falls (ability, self) [amt=1]
-  Self GY: Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -1097,21 +553,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
-  Pending: Mishra's Bauble (self)
-  Self GY: Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (20 life)
@@ -1129,23 +570,6 @@
   Surveil: looking at Scalding Tarn
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Thundering Falls (T,NEW,res 1)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Stack: Thundering Falls (ability, self) [amt=1]
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Pending: Thundering Falls (self)
-  Self GY: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Scalding Tarn, ?, ?, ?, ?
-  Known opp top: Polluted Delta, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
@@ -1159,19 +583,6 @@
   PB: Swords to Plowshares, The One Ring, Tundra
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 49
-  Opp:   20 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Stack: Mishra's Bauble (ability, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1181,18 +592,6 @@
   Player A draws Scalding Tarn
 
 --- Decision 52 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: opp drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1201,36 +600,12 @@
   Player B draws Polluted Delta
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  17 life | mana: empty | hand(4): Polluted Delta, Swords to Plowshares, The One Ring, Tundra | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Polluted Delta, Swords to Plowshares, The One Ring, Tundra | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -1241,19 +616,6 @@
   Player B played Polluted Delta
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Polluted Delta (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1265,20 +627,6 @@
   Player B's Polluted Delta ability is on the stack
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Stack: Polluted Delta (ability, self)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1288,21 +636,6 @@
   Searching Player B's library:
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Opp BF:   Thundering Falls (T)
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1314,38 +647,12 @@
   Player B puts Tundra to the battlefield
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1354,19 +661,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1377,19 +671,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
 --- Decision 61 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1399,20 +680,6 @@
   Tamiyo, Inquisitive Student triggered
 
 --- Decision 62 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Stack: Tamiyo, Inquisitive Student (ability, self)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1422,19 +689,6 @@
   Token created: 0/0 Clue
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1444,19 +698,6 @@
   No creatures eligible to block.
 
 --- Decision 64 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1467,19 +708,6 @@
   --- End Combat Damage ---
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1487,19 +715,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1507,19 +722,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1533,20 +735,6 @@
   Clue (token) is put into the graveyard and ceases to exist.
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Stack: Clue (ability, self) [amt=1]
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1556,38 +744,12 @@
   Player B draws Force of Negation
 
 --- Decision 69 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=2 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=2 life_lost=1 | opp drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1599,18 +761,6 @@
   PB: Force of Negation, Swords to Plowshares, The One Ring, Tundra
 
 --- Decision 71 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   20 life | mana: empty | hand count: 6 | lib 46
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1619,17 +769,6 @@
   Player A draws Unholy Heat
 
 --- Decision 72 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Murktide Regent, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island, Volcanic Island | lib 45
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra
-  Self GY: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Unholy Heat  [#0]
@@ -1638,20 +777,6 @@
   Choose target for Unholy Heat:
 
 --- Decision 73 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Murktide Regent, Ponder, Scalding Tarn, Volcanic Island, Volcanic Island | lib 45
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra
-  Stack: Unholy Heat (spell, self)
-  Pending: Unholy Heat (self)
-  Self GY: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Tamiyo, Inquisitive Student
   >> A/A: 0 (Tamiyo, Inquisitive Student)
@@ -1661,20 +786,6 @@
   Player A casts Unholy Heat targeting Tamiyo, Inquisitive Student
 
 --- Decision 74 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   20 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T)
-  Stack: Unholy Heat (spell, opponent) -> Tamiyo, Inquisitive Student (self, slot 1)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1684,36 +795,12 @@
   Unholy Heat deals 2 damage to Tamiyo, Inquisitive Student
 
 --- Decision 75 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   20 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 76 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Murktide Regent, Ponder, Scalding Tarn, Volcanic Island, Volcanic Island | lib 45
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Self GY: Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1724,18 +811,6 @@
   Player A played Scalding Tarn
 
 --- Decision 77 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 45
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Scalding Tarn (NEW) | Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Self GY: Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -1746,20 +821,6 @@
   Player A's Scalding Tarn ability is on the stack
 
 --- Decision 78 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T)
-  Stack: Scalding Tarn (ability, opponent)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1769,20 +830,6 @@
   Searching Player A's library:
 
 --- Decision 79 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 45
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1794,18 +841,6 @@
   Player A puts Volcanic Island to the battlefield
 
 --- Decision 80 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 44
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls (T) | Volcanic Island (NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Self GY: Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -1815,20 +850,6 @@
   Player A casts Ponder
 
 --- Decision 81 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Stack: Ponder (spell, opponent)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1839,20 +860,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 82 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 44
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Mystic Sanctuary  [#2]
    1: Polluted Delta  [#2]
@@ -1862,42 +869,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 83 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 44
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Mystic Sanctuary, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Polluted Delta  [#1]
    1: Into the Flood Maw  [#1]
   >> A/A: 0 (Polluted Delta)
 
 --- Decision 84 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 44
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Into the Flood Maw, Polluted Delta, Mystic Sanctuary, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1907,38 +884,12 @@
   Player A draws Into the Flood Maw
 
 --- Decision 85 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 86 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1947,76 +898,24 @@
   No creatures eligible to attack.
 
 --- Decision 87 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 88 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 89 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 90 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 7)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3, 2dmg] [Flying] (T) | Tundra (T) | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2028,17 +927,6 @@
   PB: Force of Negation, Swords to Plowshares, The One Ring, Tundra
 
 --- Decision 91 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Tundra | lib 46
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2047,36 +935,12 @@
   Player B draws Wrath of the Skies
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  16 life | mana: empty | hand(5): Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 45
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 93 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(5): Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 45
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Tundra
@@ -2087,19 +951,6 @@
   Player B played Tundra
 
 --- Decision 94 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 45
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra | Tundra (NEW)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2116,20 +967,6 @@
   The One Ring triggered
 
 --- Decision 95 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(3): Force of Negation, Swords to Plowshares, Wrath of the Skies | lib 45
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [Indestructible] (NEW) | Tundra (T) | Tundra (T) | Tundra (T,NEW)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate The One Ring (PutCounter)  [#0]
@@ -2145,20 +982,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 96 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra (T,NEW)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 drawn=2
-  Self effects: protection from everything
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -2169,20 +992,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
 --- Decision 97 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   19 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra (T,NEW)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat
-  This turn: self spells=1 noncreature=1 drawn=2
-  Self effects: protection from everything
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2201,39 +1010,12 @@
   PB: Force of Negation, Force of Will, Swords to Plowshares, Wrath of the Skies
 
 --- Decision 98 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Murktide Regent, Volcanic Island, Volcanic Island | lib 43
-  Opp:   16 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Thundering Falls | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Self GY: Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Polluted Delta, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Opp effects: protection from everything
   Actions:
    0: Pass priority
    1: Cast Into the Flood Maw  [#0]
   >> A/A: 1 (Cast Into the Flood Maw)
 
 --- Decision 99 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 43
-  Opp:   16 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Thundering Falls | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Stack: Into the Flood Maw (spell, self)
-  Pending: Into the Flood Maw (self)
-  Self GY: Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Polluted Delta, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Opp effects: protection from everything
-  Extras: not_priority_window
   Actions:
    0: Decline: promise a tapped Fish to your opponent  [#0]
    1: Accept: promise a tapped Fish to your opponent  [#1]
@@ -2242,21 +1024,6 @@
   Choose target for Into the Flood Maw:
 
 --- Decision 100 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 43
-  Opp:   16 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Thundering Falls | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Stack: Into the Flood Maw (spell, self)
-  Pending: Into the Flood Maw (self)
-  Self GY: Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp exile:  Ponder
-  Known top: Polluted Delta, Mystic Sanctuary, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Opp effects: protection from everything
-  Extras: not_priority_window
   Actions:
    0: Tamiyo, Inquisitive Student
   >> A/A: 0 (Tamiyo, Inquisitive Student)
@@ -2266,21 +1033,6 @@
   Player A casts Into the Flood Maw targeting Tamiyo, Inquisitive Student
 
 --- Decision 101 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  16 life | mana: empty | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   19 life | mana: empty | hand count: 4 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Opp BF:   Thundering Falls (T) | Volcanic Island
-  Stack: Into the Flood Maw (spell, opponent) -> Tamiyo, Inquisitive Student (self, slot 1)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Self effects: protection from everything
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Negation (alternate cost)  [#1]
@@ -2290,22 +1042,6 @@
   Choose target for Force of Negation:
 
 --- Decision 102 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  16 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   19 life | mana: empty | hand count: 4 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Opp BF:   Thundering Falls (T) | Volcanic Island
-  Stack: Force of Negation (spell, self) -> Into the Flood Maw (spell, opponent) -> Tamiyo, Inquisitive Student (self, slot 1)
-  Pending: Force of Negation (self)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Self effects: protection from everything
-  Extras: not_priority_window
   Actions:
    0: Into the Flood Maw
   >> B/B: 0 (Into the Flood Maw)
@@ -2313,22 +1049,6 @@
   Targeting choice 0
 
 --- Decision 103 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  16 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   19 life | mana: empty | hand count: 4 | lib 43
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Opp BF:   Thundering Falls (T) | Volcanic Island
-  Stack: Force of Negation (spell, self) -> Into the Flood Maw (opponent, slot 97) -> Into the Flood Maw (spell, opponent) -> Tamiyo, Inquisitive Student (self, slot 1)
-  Pending: Force of Negation (self)
-  Self GY: Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Ponder
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Self effects: protection from everything
-  Extras: not_priority_window
   Actions:
    0: Exile Force of Will
   >> B/B: 0 (Exile Force of Will)
@@ -2340,20 +1060,6 @@
   Player A draws Polluted Delta
 
 --- Decision 104 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Polluted Delta, Volcanic Island, Volcanic Island | lib 42
-  Opp:   16 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Thundering Falls (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Self GY: Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Known top: Mystic Sanctuary, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Opp effects: protection from everything
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -2364,21 +1070,6 @@
   Player A played Polluted Delta
 
 --- Decision 105 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 42
-  Opp:   16 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Polluted Delta (NEW) | Thundering Falls (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Self GY: Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Known top: Mystic Sanctuary, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Opp effects: protection from everything
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -2391,23 +1082,6 @@
   Searching Player A's library:
 
 --- Decision 106 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 42
-  Opp:   16 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Thundering Falls (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Known top: Mystic Sanctuary, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Opp effects: protection from everything
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -2419,20 +1093,6 @@
   Player A puts Volcanic Island to the battlefield
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 41
-  Opp:   16 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Thundering Falls (T) | Volcanic Island | Volcanic Island (NEW)
-  Opp BF:   Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Opp effects: protection from everything
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Cori-Steel Cutter  [#0]
@@ -2451,19 +1111,6 @@
   PB: Swords to Plowshares, Wrath of the Skies
 
 --- Decision 108 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(2): Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self)
-  Self GY: Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2474,19 +1121,6 @@
   Player B's The One Ring ability is on the stack
 
 --- Decision 109 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(2): Swords to Plowshares, Wrath of the Skies | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self) -> The One Ring (ability, self)
-  Self GY: Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2500,20 +1134,6 @@
   Player B draws Brainstorm
 
 --- Decision 110 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(4): Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies | lib 42
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self)
-  Self GY: Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=2
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2525,20 +1145,6 @@
   Player B casts Brainstorm
 
 --- Decision 111 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(3): Plains, Swords to Plowshares, Wrath of the Skies | lib 42
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Brainstorm (spell, self) -> The One Ring (ability, self)
-  Self GY: Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2553,22 +1159,6 @@
   Player B chooses a card from Player B hand:
 
 --- Decision 112 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(6): Force of Negation, Plains, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Wrath of the Skies | lib 39
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Brainstorm (spell, self) -> The One Ring (ability, self)
-  Pending: Brainstorm (self)
-  Self GY: Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 colors=U
-  Extras: not_priority_window
   Actions:
    0: Force of Negation
    1: Plains
@@ -2582,23 +1172,6 @@
   Player B chooses a card from Player B hand:
 
 --- Decision 113 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(5): Force of Negation, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Wrath of the Skies | lib 40
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Brainstorm (spell, self) -> The One Ring (ability, self)
-  Pending: Brainstorm (self)
-  Self GY: Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known top: Plains, ?, ?, ?, ?
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 colors=U
-  Extras: not_priority_window
   Actions:
    0: Force of Negation
    1: Swords to Plowshares
@@ -2611,21 +1184,6 @@
   Tamiyo, Inquisitive Student triggered
 
 --- Decision 114 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(4): Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Wrath of the Skies | lib 41
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Tamiyo, Inquisitive Student (ability, self) -> The One Ring (ability, self)
-  Self GY: Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known top: Force of Negation, Plains, ?, ?, ?
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 colors=U
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2637,21 +1195,6 @@
   Player B casts Tune the Narrative
 
 --- Decision 115 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 41
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Tune the Narrative (spell, self) -> Tamiyo, Inquisitive Student (ability, self) -> The One Ring (ability, self)
-  Self GY: Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known top: Force of Negation, Plains, ?, ?, ?
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2664,21 +1207,6 @@
   Player B gets 2 ENERGY counter(s) (now 2).
 
 --- Decision 116 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 40
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Tamiyo, Inquisitive Student (ability, self) -> The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known top: Plains, ?, ?, ?, ?
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 colors=U
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2693,22 +1221,6 @@
   Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 117 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 40
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known top: Plains, ?, ?, ?, ?
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2718,21 +1230,6 @@
   Player B loses 2 life (now at 14)
 
 --- Decision 118 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  14 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 40
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known top: Plains, ?, ?, ?, ?
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2741,40 +1238,12 @@
   Player B draws Plains
 
 --- Decision 119 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  14 life | mana: empty | energy 2 | hand(5): Force of Negation, Plains, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 39
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 120 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | energy 2 | hand(5): Force of Negation, Plains, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 39
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Plains
@@ -2789,20 +1258,6 @@
   Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 121 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | energy 2 | hand(4): Force of Negation, Plains, Swords to Plowshares, Wrath of the Skies | lib 39
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=7 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Plains
@@ -2813,20 +1268,6 @@
   Player B played Plains
 
 --- Decision 122 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | energy 2 | hand(3): Force of Negation, Swords to Plowshares, Wrath of the Skies | lib 39
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=7 life_lost=2 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2839,21 +1280,6 @@
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
 --- Decision 123 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | energy 2 | hand(3): Force of Negation, Swords to Plowshares, Wrath of the Skies | lib 39
-  Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
-  Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=7 life_lost=2 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2877,19 +1303,6 @@
   PB: Force of Negation, Swords to Plowshares, Wrath of the Skies
 
 --- Decision 124 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(4): Misty Rainforest, Murktide Regent, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -2901,22 +1314,6 @@
   Choose how many cards to exile via Delve (4-5):
 
 --- Decision 125 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: not_priority_window
   Actions:
    0: Exile 4 cards from graveyard (Delve)  [#4]
    1: Exile 5 cards from graveyard (Delve)  [#5]
@@ -2925,22 +1322,6 @@
   Choose a card to exile via Delve (1 of 5):
 
 --- Decision 126 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Daze (Delve)
@@ -2954,22 +1335,6 @@
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 127 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Daze (Delve)
@@ -2983,22 +1348,6 @@
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 128 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: not_priority_window
   Actions:
    0: Exile Daze (Delve)
    1: Exile Mishra's Bauble (Delve)
@@ -3011,22 +1360,6 @@
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 129 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: not_priority_window
   Actions:
    0: Exile Daze (Delve)
    1: Exile Mishra's Bauble (Delve)
@@ -3039,22 +1372,6 @@
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 130 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: not_priority_window
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Polluted Delta (Delve)
@@ -3075,19 +1392,6 @@
   Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
 
 --- Decision 131 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -3098,20 +1402,6 @@
   Player A played Misty Rainforest
 
 --- Decision 132 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Misty Rainforest (NEW) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -3124,22 +1414,6 @@
   Searching Player A's library:
 
 --- Decision 133 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  17 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 40
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -3150,20 +1424,6 @@
   Player A puts Island to the battlefield
 
 --- Decision 134 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  17 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 39
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Island (NEW) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -3172,22 +1432,6 @@
   Choose target for Cori-Steel Cutter:
 
 --- Decision 135 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  17 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 39
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter | Island (NEW) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Stack: Cori-Steel Cutter (ability, self)
-  Pending: Cori-Steel Cutter (self)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Murktide Regent
   >> A/A: 0 (Murktide Regent)
@@ -3202,20 +1446,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 136 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  17 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 39
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [8/8]
    1: Confirm attackers
@@ -3224,21 +1454,6 @@
   Select target for Murktide Regent:
 
 --- Decision 137 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  17 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 39
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Pending: Murktide Regent (self)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Player B (14 life)
    1: Tamiyo, Seasoned Scholar (loyalty 4)
@@ -3249,20 +1464,6 @@
     [attacking] Murktide Regent [8/8] -> Player B
 
 --- Decision 138 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  17 life | mana: empty | hand(2): Volcanic Island, Volcanic Island | lib 39
-  Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 38
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Brainstorm, Plains, Force of Negation, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3278,21 +1479,6 @@
   Your creatures:
 
 --- Decision 139 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 11)
-  Self:  14 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 38
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [7/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=U
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -3310,19 +1496,6 @@
   PB: Force of Negation, Swords to Plowshares, Wasteland, Wrath of the Skies
 
 --- Decision 140 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 38
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3332,21 +1505,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 141 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(3): Force of Negation, Wasteland, Wrath of the Skies | lib 38
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self) -> The One Ring (ability, self)
-  Pending: Swords to Plowshares (self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  Extras: not_priority_window
   Actions:
    0: Murktide Regent
    1: Tamiyo, Inquisitive Student
@@ -3357,20 +1515,6 @@
   Player B casts Swords to Plowshares targeting Murktide Regent
 
 --- Decision 142 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(3): Force of Negation, Wasteland, Wrath of the Skies | lib 38
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self) -> Murktide Regent (opponent, slot 50) -> The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -3380,20 +1524,6 @@
   Player B's The One Ring ability is on the stack
 
 --- Decision 143 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(3): Force of Negation, Wasteland, Wrath of the Skies | lib 38
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: The One Ring (ability, self) -> Swords to Plowshares (spell, self) -> Murktide Regent (opponent, slot 50) -> The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -3408,20 +1538,6 @@
   Tamiyo, Inquisitive Student triggered
 
 --- Decision 144 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 35
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Tamiyo, Inquisitive Student (ability, self) -> Swords to Plowshares (spell, self) -> Murktide Regent (opponent, slot 50) -> The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=W
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -3438,21 +1554,6 @@
   Legend rule: Player B controls 2 copies of Tamiyo, Seasoned Scholar; choose one to keep.
 
 --- Decision 145 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 35
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self) -> Murktide Regent (opponent, slot 50) -> The One Ring (ability, self)
-  Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Keep Tamiyo, Seasoned Scholar
    1: Keep Tamiyo, Seasoned Scholar
@@ -3461,21 +1562,6 @@
   Tamiyo, Seasoned Scholar is put into the graveyard (legend rule)
 
 --- Decision 146 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  7 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 35
-  Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self) -> Murktide Regent (opponent, slot 50) -> The One Ring (ability, self)
-  Self GY: Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=W
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -3493,20 +1579,6 @@
   Player B draws Flooded Strand
 
 --- Decision 147 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  4 life | mana: empty | energy 2 | hand(7): Flooded Strand, Flow State, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 34
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=3 colors=W | opp life_gained=8
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -3522,21 +1594,6 @@
   Player B casts Flow State
 
 --- Decision 148 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  4 life | mana: empty | energy 2 | hand(6): Flooded Strand, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 34
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Flow State (spell, self)
-  Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=3 colors=WU | opp life_gained=8
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -3547,22 +1604,6 @@
   Player B looks at the top 3 card(s) of their library.
 
 --- Decision 149 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  4 life | mana: empty | energy 2 | hand(6): Flooded Strand, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 34
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Flow State (spell, self)
-  Pending: Flow State (self)
-  Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=3 colors=WU | opp life_gained=8
-  Extras: self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Brainstorm
    1: Geist of Saint Traft
@@ -3573,20 +1614,6 @@
   Player B puts 2 card(s) on the bottom of their library.
 
 --- Decision 150 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  4 life | mana: empty | energy 2 | hand(7): Flooded Strand, Force of Negation, Force of Will, Geist of Saint Traft, Spell Pierce, Wasteland, Wrath of the Skies | lib 33
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=3 colors=WU | opp life_gained=8
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -3599,20 +1626,6 @@
   Player B played Flooded Strand
 
 --- Decision 151 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  4 life | mana: empty | energy 2 | hand(6): Force of Negation, Force of Will, Geist of Saint Traft, Spell Pierce, Wasteland, Wrath of the Skies | lib 33
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Flooded Strand (NEW) | Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=3 colors=WU | opp life_gained=8
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -3628,22 +1641,6 @@
   Searching Player B's library:
 
 --- Decision 152 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  3 life | mana: empty | energy 2 | hand(6): Force of Negation, Force of Will, Geist of Saint Traft, Spell Pierce, Wasteland, Wrath of the Skies | lib 33
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=4 colors=WU | opp life_gained=8
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -3654,20 +1651,6 @@
   Player B puts Island to the battlefield
 
 --- Decision 153 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  3 life | mana: empty | energy 2 | hand(6): Force of Negation, Force of Will, Geist of Saint Traft, Spell Pierce, Wasteland, Wrath of the Skies | lib 32
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (NEW) | Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=4 colors=WU | opp life_gained=8
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Geist of Saint Traft  [#0]
@@ -3682,21 +1665,6 @@
   Player B casts Geist of Saint Traft
 
 --- Decision 154 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  3 life | mana: empty | energy 2 | hand(5): Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 32
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T,NEW) | Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (T)
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Geist of Saint Traft (spell, self)
-  Self GY: Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=4 life_lost=4 colors=WU | opp life_gained=8
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -3705,20 +1673,6 @@
   Geist of Saint Traft enters the battlefield
 
 --- Decision 155 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  3 life | mana: empty | energy 2 | hand(5): Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 32
-  Opp:   25 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T,NEW) | Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (T)
-  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Known opp hand: Volcanic Island
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=4 life_lost=4 colors=WU | opp life_gained=8
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -3737,19 +1691,6 @@
   PB: Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies
 
 --- Decision 156 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  25 life | mana: empty | hand(3): Daze, Volcanic Island, Volcanic Island | lib 38
-  Opp:   3 life | mana: empty | energy 2 | hand count: 5 | lib 32
-  Self BF:  Cori-Steel Cutter | Island | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Meticulous Archive (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:3] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
-  Self GY: Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Self exile: Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp exile:  Force of Will, Ponder
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Force of Negation, Flow State, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  This turn: self drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -3765,18 +1706,6 @@
   PB: Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies
 
 --- Decision 157 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  3 life | mana: empty | energy 2 | hand(5): Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 32
-  Opp:   25 life | mana: empty | hand count: 2 | lib 38
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Meticulous Archive | Plains | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:3] [Indestructible] | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Stack: The One Ring (ability, self)
-  Self GY: Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Activate The One Ring (PutCounter)  [#0]
@@ -3792,19 +1721,6 @@
   Player B draws Flow State
 
 --- Decision 158 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  3 life | mana: empty | energy 2 | hand(9): Flow State, Flow State, Force of Negation, Force of Will, Lorien Revealed, Ponder, Spell Pierce, Wasteland, Wrath of the Skies | lib 28
-  Opp:   25 life | mana: empty | hand count: 2 | lib 38
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Meticulous Archive | Plains | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:4] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Opp BF:   Cori-Steel Cutter | Island | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Stack: The One Ring (ability, self)
-  Self GY: Flooded Strand, Flow State, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
-  Opp GY:  Misty Rainforest, Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Mishra's Bauble
-  Self exile: Force of Will, Ponder
-  Opp exile:  Murktide Regent, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Into the Flood Maw
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=4
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]

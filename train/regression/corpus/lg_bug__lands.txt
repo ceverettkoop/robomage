@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -55,11 +50,6 @@
   Urza's Saga
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Exploration, Malevolent Rumble, Mox Diamond, Sphere of Resistance, Swords to Plowshares, Urza's Saga | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -83,11 +73,6 @@
   Tropical Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -97,11 +82,6 @@
   Player A: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -122,11 +102,6 @@
   Urza's Saga
 
 --- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Forest, Karakas, Pithing Needle, Savannah, Thespian's Stage, Urza's Saga | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -136,11 +111,6 @@
   Player B: Choose card to put on library bottom (1 remaining):
 
 --- Decision 6 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Forest, Karakas, Pithing Needle, Savannah, Thespian's Stage, Urza's Saga | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, bottom_remaining=1
   Actions:
    0: Crop Rotation
    1: Forest
@@ -157,11 +127,6 @@
   PB: Crop Rotation, Forest, Karakas, Pithing Needle, Savannah, Thespian's Stage, Urza's Saga
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -176,14 +141,6 @@
   PB: Crop Rotation, Exploration, Karakas, Pithing Needle, Savannah, Thespian's Stage, Urza's Saga
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Exploration, Karakas, Pithing Needle, Savannah, Thespian's Stage, Urza's Saga | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -199,15 +156,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Karakas, Pithing Needle, Savannah, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Pithing Needle  [#0]
@@ -219,16 +167,6 @@
   Choose a card name for Pithing Needle:
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Pithing Needle (NEW) | Urza's Saga [lore:1] (T,NEW,res 1)
-  Opp BF:   Tropical Island
-  Pending: Pithing Needle (self)
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Name card: Brainstorm
    1: Name card: Force of Will
@@ -285,15 +223,6 @@
   PB: Blast Zone, Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Blast Zone, Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Blast Zone
@@ -306,30 +235,12 @@
   Blast Zone enters with 1 CHARGE counter(s).
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] (NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] (NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -338,60 +249,24 @@
   No creatures eligible to attack.
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] (NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] (NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] (NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: End Step (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] (NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -403,14 +278,6 @@
   PB: Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage
 
 --- Decision 18 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -419,30 +286,12 @@
   Player A draws Tamiyo, Inquisitive Student
 
 --- Decision 19 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: opp drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Tropical Island
-  Opp BF:   Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp revealed: Pithing Needle, Urza's Saga, Blast Zone
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -452,16 +301,6 @@
   Player A casts Tamiyo, Inquisitive Student
 
 --- Decision 21 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tropical Island (T)
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -470,30 +309,12 @@
   Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 22 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 23 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -502,60 +323,24 @@
   No creatures eligible to attack.
 
 --- Decision 24 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 25 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 26 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 27 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 5)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -567,14 +352,6 @@
   PB: Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -583,15 +360,6 @@
   Player B draws Mox Diamond
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Karakas, Mox Diamond, Savannah, Thespian's Stage | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -601,16 +369,6 @@
   Urza's Saga chapter 3 triggers.
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Karakas, Mox Diamond, Savannah, Thespian's Stage | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:3]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Urza's Saga (ability, self) [amt=1]
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -620,17 +378,6 @@
   Searching Player B's library:
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Karakas, Mox Diamond, Savannah, Thespian's Stage | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:3] (res 1)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Urza's Saga (ability, self) [amt=1]
-  Pending: Urza's Saga (self)
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Expedition Map
@@ -644,16 +391,6 @@
   Urza's Saga is sacrificed (final chapter completed).
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Karakas, Mox Diamond, Savannah, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -666,35 +403,12 @@
   Player B casts Mox Diamond
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Mox Diamond (spell, self)
-  Self GY: Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 34 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Karakas, Savannah, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  Self GY: Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Discard Karakas (put Mox Diamond onto the battlefield)
    1: Discard Savannah (put Mox Diamond onto the battlefield)
@@ -706,16 +420,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 35 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(4): Crop Rotation, Exploration, Savannah, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Mox Diamond (NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -730,17 +434,6 @@
   Player B casts Exploration
 
 --- Decision 36 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Crop Rotation, Savannah, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Exploration (spell, self)
-  Self GY: Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 drawn=1 colors=G
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -749,16 +442,6 @@
   Exploration enters the battlefield
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Crop Rotation, Savannah, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 drawn=1 colors=G
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -769,16 +452,6 @@
   Player B played Savannah
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(2): Crop Rotation, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm] | Savannah (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Thespian's Stage
@@ -788,18 +461,6 @@
   >> B/B: 2 (Cast Crop Rotation)
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm] | Savannah (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Crop Rotation (spell, self)
-  Pending: Crop Rotation (self)
-  Self GY: Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Sacrifice Blast Zone
    1: Sacrifice Savannah
@@ -810,17 +471,6 @@
   Player B casts Crop Rotation
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Crop Rotation (spell, self)
-  Self GY: Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -830,18 +480,6 @@
   Searching Player B's library:
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Crop Rotation (spell, self)
-  Pending: Crop Rotation (self)
-  Self GY: Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Ancient Tomb
@@ -866,17 +504,6 @@
   Urza's Saga chapter 1 triggers.
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Thespian's Stage | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:1] (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Urza's Saga (ability, self)
-  Self GY: Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -886,16 +513,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Thespian's Stage | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm] | Urza's Saga [lore:1] (NEW,res 1)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Thespian's Stage
@@ -906,16 +523,6 @@
   Player B played Thespian's Stage
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] | Expedition Map (NEW) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm] | Thespian's Stage (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=2, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -931,18 +538,6 @@
   Searching Player B's library:
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Blast Zone [charge:1] (T) | Exploration (NEW) | Mox Diamond (T,NEW) | Pithing Needle [naming: Brainstorm] | Thespian's Stage (NEW) | Urza's Saga [lore:1] (T,NEW,res 1)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Expedition Map (ability, self) [amt=1]
-  Pending: Expedition Map (self)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=2, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Ancient Tomb
@@ -971,17 +566,6 @@
   PB: (empty)
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -991,17 +575,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 47 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (NEW) | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1012,17 +585,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (NEW) | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1034,17 +596,6 @@
   Token created: 0/0 Clue
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1053,17 +604,6 @@
   No creatures eligible to block.
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1073,51 +613,18 @@
   --- End Combat Damage ---
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: End Combat (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 7)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1] (T)
-  Opp GY:  Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Known opp hand: Dark Depths
-  Opp revealed: Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1136,15 +643,6 @@
   PB: Dark Depths
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 48
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] | Exploration | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -1155,16 +653,6 @@
   Player B draws Wasteland
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] | Exploration | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:1]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -1176,17 +664,6 @@
   Urza's Saga chapter 2 triggers.
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] | Exploration | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Stack: Urza's Saga (ability, self)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -1198,16 +675,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] | Exploration | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -1226,16 +693,6 @@
   Construct token gains (always)
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] (T) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T,res 1) | Construct [3/3] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -1246,16 +703,6 @@
   Dark Depths enters with 10 ICE counter(s).
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] (NEW) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T,res 1) | Construct [3/3] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1264,16 +711,6 @@
   Player B played Wasteland
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] (NEW) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T,res 1) | Wasteland (NEW) | Construct [3/3] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=2, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1282,18 +719,6 @@
   Choose target for Wasteland:
 
 --- Decision 61 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] (NEW) | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T,res 1) | Wasteland (NEW) | Construct [3/3] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=2, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Tropical Island
    1: Tropical Island
@@ -1317,17 +742,6 @@
   PB: (empty)
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(8): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Swamp, Thoughtseize | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T) | Construct [3/3] (SICK)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Swamp
@@ -1336,17 +750,6 @@
   Player A played Swamp
 
 --- Decision 63 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Swamp (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T) | Construct [3/3] (SICK)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Baleful Strix  [#0]
@@ -1367,17 +770,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   20 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (SICK,NEW,res 1) | Swamp (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] (T) | Construct [3/3] (SICK)
-  Self GY: Tropical Island
-  Opp GY:  Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 drawn=2 colors=UB
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1391,16 +783,6 @@
   PB: (empty)
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   20 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Blast Zone [charge:1] | Dark Depths [ice:10] | Exploration | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:2] | Construct [3/3]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Self GY: Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Tropical Island
-  Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -1423,19 +805,6 @@
   Searching Player B's library:
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 46
-  Opp:   20 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Urza's Saga [lore:3] (T,res 1) | Construct [4/4] | Construct [4/4] (SICK,NEW)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Stack: Urza's Saga (ability, self) [amt=1]
-  Pending: Urza's Saga (self)
-  Self GY: Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Tropical Island
-  Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Grafdigger's Cage
@@ -1449,17 +818,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 45
-  Opp:   20 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage (NEW) | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [5/5] | Construct [5/5] (SICK,NEW)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Self GY: Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Tropical Island
-  Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [5/5]
    1: Confirm attackers
@@ -1470,17 +828,6 @@
     [attacking] Construct token [5/5] -> Player A
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 45
-  Opp:   20 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage (NEW) | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [5/5] (ATK) | Construct [5/5] (SICK,NEW)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Self GY: Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Tropical Island
-  Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1493,17 +840,6 @@
   Your creatures:
 
 --- Decision 69 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage (NEW) | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [5/5] (T,ATK) | Construct [5/5] (SICK,NEW)
-  Self GY: Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Baleful Strix [1/1]
    1: Tamiyo, Inquisitive Student [0/3]
@@ -1521,16 +857,6 @@
   PB: Sphere of Resistance
 
 --- Decision 70 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  15 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [5/5] (T) | Construct [5/5] (SICK)
-  Self GY: Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -1542,18 +868,6 @@
   Choose target for Fatal Push:
 
 --- Decision 71 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  15 life | mana: empty | hand(6): Fatal Push, Force of Will, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [5/5] (T) | Construct [5/5] (SICK)
-  Stack: Fatal Push (spell, self)
-  Pending: Fatal Push (self)
-  Self GY: Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Construct token
    1: Construct token
@@ -1570,34 +884,12 @@
   Player A draws Lórien Revealed
 
 --- Decision 72 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  15 life | mana: empty | hand(7): Fatal Push, Force of Will, Lorien Revealed, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Self GY: Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: opp_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 73 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  15 life | mana: empty | hand(7): Fatal Push, Force of Will, Lorien Revealed, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Self GY: Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: opp_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1607,17 +899,6 @@
   Player A played Misty Rainforest
 
 --- Decision 74 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  15 life | mana: empty | hand(6): Fatal Push, Force of Will, Lorien Revealed, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Misty Rainforest (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Self GY: Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_lands_played=1, opp_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -1629,18 +910,6 @@
   Player A's Misty Rainforest ability is on the stack
 
 --- Decision 75 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  14 life | mana: empty | hand(6): Fatal Push, Force of Will, Lorien Revealed, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Stack: Misty Rainforest (ability, self)
-  Self GY: Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -1652,19 +921,6 @@
   Searching Player A's library:
 
 --- Decision 76 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  14 life | mana: empty | hand(5): Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Stack: Lorien Revealed (ability, self) -> Misty Rainforest (ability, self)
-  Pending: Lorien Revealed (self)
-  Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -1679,19 +935,6 @@
   Searching Player A's library:
 
 --- Decision 77 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  14 life | mana: empty | hand(6): Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 46
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Bayou
@@ -1705,17 +948,6 @@
   Player A puts Bayou to the battlefield
 
 --- Decision 78 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  14 life | mana: empty | hand(6): Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -1725,19 +957,6 @@
   Choose target for Fatal Push:
 
 --- Decision 79 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage | Construct [4/4] (SICK)
-  Stack: Fatal Push (spell, self)
-  Pending: Fatal Push (self)
-  Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Construct token
    1: Baleful Strix
@@ -1753,17 +972,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 80 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T,NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Baleful Strix [1/1]
    1: Tamiyo, Inquisitive Student [0/3]
@@ -1775,17 +983,6 @@
     [attacking] Baleful Strix [1/1] -> Player B
 
 --- Decision 81 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (ATK) | Bayou (T,NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1797,17 +994,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
 --- Decision 82 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (ATK) | Bayou (T,NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T)
-  Opp BF:   Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1828,17 +1014,6 @@
   PB: Sphere of Resistance
 
 --- Decision 83 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  19 life | mana: empty | hand(1): Sphere of Resistance | lib 45
-  Opp:   14 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Blast Zone [charge:1] | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
-  Self GY: Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Known opp hand: Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -1849,19 +1024,6 @@
   Choose target for Thespian's Stage:
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  19 life | mana: empty | hand(1): Sphere of Resistance | lib 45
-  Opp:   14 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Blast Zone [charge:1] | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
-  Stack: Thespian's Stage (ability, self)
-  Pending: Thespian's Stage (self)
-  Self GY: Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Known opp hand: Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Bayou
    1: Swamp
@@ -1880,17 +1042,6 @@
   Legend rule: Player B controls 2 copies of Dark Depths; choose one to keep.
 
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  19 life | mana: empty | hand(1): Sphere of Resistance | lib 45
-  Opp:   14 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Blast Zone [charge:1] (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Dark Depths (T)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
-  Self GY: Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Known opp hand: Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep Dark Depths
    1: Keep Dark Depths
@@ -1904,18 +1055,6 @@
   Player B draws Mox Diamond
 
 --- Decision 86 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  19 life | mana: empty | hand(2): Mox Diamond, Sphere of Resistance | lib 44
-  Opp:   14 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible] (SICK,NEW)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Known opp hand: Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -1931,16 +1070,6 @@
   PB: Mox Diamond, Sphere of Resistance
 
 --- Decision 87 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   19 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -1955,18 +1084,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 88 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  14 life | mana: empty | hand(4): Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 45
-  Opp:   19 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Player B (19 life)
    1: Player A (14 life)
@@ -1985,17 +1102,6 @@
   Player A draws Underground Sea
 
 --- Decision 89 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island, Underground Sea | lib 44
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -2005,17 +1111,6 @@
   Player A played Tropical Island
 
 --- Decision 90 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  14 life | mana: empty | hand(4): Force of Will, Sheoldred's Edict, Thoughtseize, Underground Sea | lib 44
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Tropical Island (NEW) | Clue | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2031,17 +1126,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 91 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Force of Will, Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 drawn=2 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Baleful Strix [1/1]
    1: Tamiyo, Inquisitive Student [0/3]
@@ -2056,16 +1140,6 @@
   PB: Sphere of Resistance
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  18 life | mana: empty | hand(1): Sphere of Resistance | lib 44
-  Opp:   14 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -2074,34 +1148,12 @@
   Player B draws Yavimaya, Cradle of Growth
 
 --- Decision 93 ---
-  Priority: Player B (active)
-  Step: Draw (turn 14)
-  Self:  18 life | mana: empty | hand(2): Sphere of Resistance, Yavimaya, Cradle of Growth | lib 43
-  Opp:   14 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 94 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Sphere of Resistance, Yavimaya, Cradle of Growth | lib 43
-  Opp:   14 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp revealed: Misty Rainforest, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Yavimaya, Cradle of Growth
@@ -2114,18 +1166,6 @@
   Player B casts Sphere of Resistance
 
 --- Decision 95 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 14)
-  Self:  14 life | mana: empty | hand(5): Force of Will, Force of Will, Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Stack: Sphere of Resistance (spell, opponent)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2135,19 +1175,6 @@
   Choose target for Force of Will:
 
 --- Decision 96 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 14)
-  Self:  14 life | mana: empty | hand(4): Force of Will, Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Stack: Force of Will (spell, self) -> Sphere of Resistance (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Sphere of Resistance
   >> A/A: 0 (Sphere of Resistance)
@@ -2155,19 +1182,6 @@
   Targeting choice 0
 
 --- Decision 97 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 14)
-  Self:  14 life | mana: empty | hand(4): Force of Will, Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Stack: Force of Will (spell, self) -> Sphere of Resistance (opponent, slot 97) -> Sphere of Resistance (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Exile Force of Will
   >> A/A: 0 (Exile Force of Will)
@@ -2179,18 +1193,6 @@
   Sphere of Resistance is countered
 
 --- Decision 98 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Yavimaya, Cradle of Growth | lib 43
-  Opp:   13 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Yavimaya, Cradle of Growth
@@ -2200,18 +1202,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 99 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   13 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth (NEW) | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Marit Lage token [20/20]
    1: Confirm attackers
@@ -2222,18 +1212,6 @@
     [attacking] Marit Lage token [20/20] -> Player A
 
 --- Decision 100 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   13 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth (NEW) | Marit Lage [20/20] [Flying, Indestructible] (ATK)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2246,18 +1224,6 @@
   Your creatures:
 
 --- Decision 101 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  13 life | mana: empty | hand(3): Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth (NEW) | Marit Lage [20/20] [Flying, Indestructible] (T,ATK)
-  Self GY: Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Baleful Strix [1/1]
    1: Tamiyo, Inquisitive Student [0/3]
@@ -2267,19 +1233,6 @@
   Select attacker for Tamiyo, Inquisitive Student to block:
 
 --- Decision 102 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  13 life | mana: empty | hand(3): Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth (NEW) | Marit Lage [20/20] [Flying, Indestructible] (T,ATK)
-  Pending: Tamiyo, Inquisitive Student (self)
-  Self GY: Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Marit Lage token [20/20]
   >> A/A: 0 (Marit Lage token [20/20])
@@ -2292,18 +1245,6 @@
     (assigned) Tamiyo, Inquisitive Student [0/3] blocking Marit Lage token
 
 --- Decision 103 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  13 life | mana: empty | hand(3): Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (BLK->Token) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth (NEW) | Marit Lage [20/20] [Flying, Indestructible] (T,ATK,BLOCKED)
-  Self GY: Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Baleful Strix [1/1]
    1: Confirm blockers
@@ -2321,17 +1262,6 @@
   PB: (empty)
 
 --- Decision 104 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 15)
-  Self:  13 life | mana: empty | hand(3): Sheoldred's Edict, Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Sheoldred's Edict  [#0]
@@ -2340,19 +1270,6 @@
   Choose mode:
 
 --- Decision 105 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 15)
-  Self:  13 life | mana: empty | hand(2): Thoughtseize, Underground Sea | lib 43
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Stack: Sheoldred's Edict (spell, self)
-  Pending: Sheoldred's Edict (self)
-  Self GY: Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Each opponent sacrifices a nontoken creature.  [#0]
    1: Each opponent sacrifices a creature token.  [#1]
@@ -2368,18 +1285,6 @@
   Player A draws Uro, Titan of Nature's Wrath
 
 --- Decision 106 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  13 life | mana: empty | hand(3): Thoughtseize, Underground Sea, Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -2389,20 +1294,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  13 life | mana: empty | hand(2): Underground Sea, Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Player B (18 life)
    1: Player A (13 life)
@@ -2418,18 +1309,6 @@
   Player A loses 2 life (now at 11)
 
 --- Decision 108 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  11 life | mana: empty | hand(2): Underground Sea, Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=B
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -2439,18 +1318,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 109 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  11 life | mana: empty | hand(1): Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Baleful Strix [1/1]
    1: Orcish Bowmasters [1/1]
@@ -2463,18 +1330,6 @@
     [attacking] Baleful Strix [1/1] -> Player B
 
 --- Decision 110 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  11 life | mana: empty | hand(1): Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (ATK) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [1/1]
@@ -2487,18 +1342,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
 --- Decision 111 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  11 life | mana: empty | hand(1): Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (ATK) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -2511,18 +1354,6 @@
     [attacking] Orc Army token [1/1] -> Player B
 
 --- Decision 112 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  11 life | mana: empty | hand(1): Uro, Titan of Nature's Wrath | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 43
-  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (ATK) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
-  Opp BF:   Blast Zone [charge:1] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp GY:  Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Self exile: Force of Will
-  Opp revealed: Wasteland, Karakas, Savannah, Grafdigger's Cage, Pithing Needle, Expedition Map, Urza's Saga, Exploration, Crop Rotation, Sphere of Resistance, Yavimaya, Cradle of Growth, Blast Zone, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2543,17 +1374,6 @@
   PB: (empty)
 
 --- Decision 113 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 16)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 43
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -2562,36 +1382,12 @@
   Player B draws Thespian's Stage
 
 --- Decision 114 ---
-  Priority: Player B (active)
-  Step: Draw (turn 16)
-  Self:  15 life | mana: empty | hand(1): Thespian's Stage | lib 42
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 115 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  15 life | mana: empty | hand(1): Thespian's Stage | lib 42
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Thespian's Stage
@@ -2601,18 +1397,6 @@
   Player B played Thespian's Stage
 
 --- Decision 116 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage (NEW) | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Blast Zone (PutCounter)  [#1]
@@ -2623,20 +1407,6 @@
   Choose X value (0-1):
 
 --- Decision 117 ---
-  Priority: Player B (active)
-  Step: First Main (turn 16)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:1] | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Brainstorm] | Thespian's Stage (NEW) | Yavimaya, Cradle of Growth | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Blast Zone (ability, self)
-  Pending: Blast Zone (self)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -2651,18 +1421,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 118 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 16)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:2] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage (NEW) | Yavimaya, Cradle of Growth (T) | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Marit Lage token [20/20]
    1: Confirm attackers
@@ -2673,18 +1431,6 @@
     [attacking] Marit Lage token [20/20] -> Player A
 
 --- Decision 119 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 16)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
-  Opp:   11 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Blast Zone [charge:2] (T) | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Brainstorm] | Thespian's Stage (NEW) | Yavimaya, Cradle of Growth (T) | Marit Lage [20/20] [Flying, Indestructible] (ATK)
-  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (T) | Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Sphere of Resistance, Mox Diamond, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Expedition Map, Crop Rotation, Savannah, Karakas, Urza's Saga
-  Opp GY:  Thoughtseize, Sheoldred's Edict, Tamiyo, Inquisitive Student, Force of Will, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island
-  Opp exile:  Force of Will
-  Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)

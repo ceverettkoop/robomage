@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Tropical Island
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -86,12 +72,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -102,30 +82,12 @@
   Player A casts Mox Diamond
 
 --- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (spell, opponent)
-  Opp revealed: Urza's Saga, Mox Diamond
-  This turn: opp spells=1 noncreature=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Discard Dark Depths (put Mox Diamond onto the battlefield)
    1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
@@ -137,14 +99,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(4): Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Dark Depths
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -154,32 +108,12 @@
   Player A casts Mox Diamond
 
 --- Decision 8 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 3 | lib 53
-  Opp BF:   Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (spell, opponent)
-  Opp GY:  Dark Depths
-  Opp revealed: Urza's Saga, Dark Depths, Mox Diamond
-  This turn: opp spells=2 noncreature=2
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  Self GY: Dark Depths
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
    1: Discard Wasteland (put Mox Diamond onto the battlefield)
@@ -190,14 +124,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 10 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(2): Skateboard, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (NEW) | Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Urza's Saga, Dark Depths
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Skateboard  [#0]
@@ -207,16 +133,6 @@
   Player A casts Skateboard
 
 --- Decision 11 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Opp BF:   Mox Diamond (T,NEW) | Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Skateboard (spell, opponent)
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: opp spells=3 noncreature=3
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -226,15 +142,6 @@
   Choose target for Skateboard:
 
 --- Decision 12 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mox Diamond (T,NEW) | Mox Diamond (NEW) | Skateboard (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Pending: Skateboard (self)
-  Self GY: Urza's Saga, Dark Depths
-  This turn: self spells=3 noncreature=3
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Mox Diamond
    1: Mox Diamond
@@ -254,14 +161,6 @@
   PB: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -271,15 +170,6 @@
   Player B casts Lotus Petal
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Lotus Petal (spell, self)
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -288,15 +178,6 @@
   Lotus Petal enters the battlefield
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -307,16 +188,6 @@
   Player B played Tropical Island
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -328,17 +199,6 @@
   Player B casts Tamiyo, Inquisitive Student
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Tamiyo, Inquisitive Student (spell, self)
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -348,32 +208,12 @@
   Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -382,64 +222,24 @@
   No creatures eligible to attack.
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 22 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 23 ---
-  Priority: Player B (active)
-  Step: End Step (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -451,15 +251,6 @@
   PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler
 
 --- Decision 24 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -468,31 +259,12 @@
   Player A draws Boseiju, Who Endures
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Urza's Saga, Dark Depths
-  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 26 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -502,16 +274,6 @@
   Urza's Saga chapter 2 triggers.
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Urza's Saga (ability, self)
-  Self GY: Urza's Saga, Dark Depths
-  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
@@ -520,18 +282,6 @@
   Choose target for this ability:
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Boseiju, Who Endures (ability, self) -> Urza's Saga (ability, self)
-  Pending: Boseiju, Who Endures (self)
-  Self GY: Urza's Saga, Dark Depths
-  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Lotus Petal
    1: Tropical Island
@@ -544,17 +294,6 @@
   Player A activates Boseiju, Who Endures from hand targeting Lotus Petal
 
 --- Decision 29 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Boseiju, Who Endures (ability, opponent) -> Lotus Petal (self, slot 0) -> Urza's Saga (ability, opponent)
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -571,19 +310,6 @@
   Searching Player B's library:
 
 --- Decision 30 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Boseiju, Who Endures (ability, opponent) -> Lotus Petal (self) -> Urza's Saga (ability, opponent)
-  Pending: Boseiju, Who Endures (opp)
-  Self GY: Lotus Petal
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -598,18 +324,6 @@
   Player B puts Underground Sea to the battlefield
 
 --- Decision 31 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Urza's Saga (ability, opponent)
-  Self GY: Lotus Petal
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -619,17 +333,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (NEW)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Lotus Petal
-  Opp revealed: Lotus Petal, Underground Sea, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -638,17 +341,6 @@
   Player A played Wasteland
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (NEW)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Lotus Petal
-  Opp revealed: Lotus Petal, Underground Sea, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -657,19 +349,6 @@
   Choose target for Wasteland:
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (NEW)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Lotus Petal
-  Opp revealed: Lotus Petal, Underground Sea, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Tropical Island
    1: Underground Sea
@@ -682,18 +361,6 @@
   Player A's Wasteland ability targeting Tropical Island is on the stack
 
 --- Decision 35 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Stack: Wasteland (ability, opponent) -> Tropical Island (self, slot 1)
-  Self GY: Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -703,34 +370,12 @@
   Tropical Island is destroyed
 
 --- Decision 36 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 37 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -739,68 +384,24 @@
   No creatures eligible to attack.
 
 --- Decision 38 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 39 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 40 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 41 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -812,15 +413,6 @@
   PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -829,32 +421,12 @@
   Player B draws Tropical Island
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: Draw (turn 4)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -865,17 +437,6 @@
   Player B casts Dark Ritual
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Dark Ritual (spell, self)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -885,16 +446,6 @@
   Player B adds 3{B}
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: 3B | hand(5): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -904,17 +455,6 @@
   Player B casts Doomsday
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -924,19 +464,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -970,20 +497,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1016,20 +529,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known top: Edge of Autumn, Thassa's Oracle, ?, ?, ?
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1061,20 +560,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known top: Street Wraith, Edge of Autumn, Thassa's Oracle, ?, ?
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1105,20 +590,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 52 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known top: Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle, ?
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Lotus Petal (graveyard)
@@ -1201,20 +672,6 @@
   Choose which card goes 5 from top:
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Brainstorm  [#4]
    1: Street Wraith  [#4]
@@ -1225,20 +682,6 @@
   Choose which card goes 4 from top:
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Brainstorm  [#3]
    1: Street Wraith  [#3]
@@ -1249,20 +692,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#2]
    1: Edge of Autumn  [#2]
@@ -1272,20 +701,6 @@
   Choose which card goes 2 from top:
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, Street Wraith, Edge of Autumn
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#1]
    1: Edge of Autumn  [#1]
@@ -1296,18 +711,6 @@
   Resolving ability (category: Cleanup)
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Doomsday
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=B
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -1317,19 +720,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 4)
-  Self:  10 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (NEW) | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Doomsday
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=B
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1340,19 +730,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 4)
-  Self:  10 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (NEW) | Underground Sea (T)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Doomsday
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=B
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1371,16 +748,6 @@
   PB: Force of Will, Quantum Riddler, Teferi, Time Raveler
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   10 life | mana: empty | hand count: 3 | lib 5
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea (T) | Clue (SICK)
-  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
   Actions:
    0: Pass priority
    1: Activate Urza's Saga (Token)  [#1]
@@ -1399,20 +766,6 @@
   Searching Player A's library:
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
-  Opp:   10 life | mana: empty | hand count: 3 | lib 5
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T,res 1) | Construct [4/4] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea (T) | Clue (SICK)
-  Stack: Urza's Saga (ability, self) [amt=1]
-  Pending: Urza's Saga (self)
-  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Expedition Map
@@ -1426,18 +779,6 @@
   Urza's Saga is sacrificed (final chapter completed).
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 50
-  Opp:   10 life | mana: empty | hand count: 3 | lib 5
-  Self BF:  Expedition Map (NEW) | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea (T) | Clue (SICK)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -1452,17 +793,6 @@
   PB: Force of Will, Quantum Riddler, Teferi, Time Raveler
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  10 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1471,18 +801,6 @@
   Player B draws Edge of Autumn
 
 --- Decision 64 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  10 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1490,18 +808,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  10 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Edge of Autumn  [#0]
@@ -1515,19 +821,6 @@
   Player B casts Quantum Riddler
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  10 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Quantum Riddler (spell, self)
-  Self GY: Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1539,20 +832,6 @@
   Quantum Riddler triggered
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  10 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Quantum Riddler (ability, self)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1562,19 +841,6 @@
   Player B draws Street Wraith
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  10 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Street Wraith, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1585,20 +851,6 @@
   Player B activates Street Wraith from hand
 
 --- Decision 69 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  8 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Street Wraith (ability, self) [amt=1]
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=2 life_lost=2 colors=U
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1609,20 +861,6 @@
   Tamiyo, Inquisitive Student triggered
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Tamiyo, Inquisitive Student (ability, self)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1636,20 +874,6 @@
   Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 71 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -1657,20 +881,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1679,60 +889,18 @@
   No creatures eligible to attack.
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -1742,21 +910,6 @@
   Delayed trigger fires.
 
 --- Decision 76 ---
-  Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Quantum Riddler (ability, self)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step, on stack #0)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1766,19 +919,6 @@
   Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
 
 --- Decision 77 ---
-  Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1790,34 +930,12 @@
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
 --- Decision 78 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 50
-  Opp:   8 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 79 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1826,53 +944,18 @@
   Player A draws Sphere of Resistance
 
 --- Decision 80 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 49
-  Opp:   8 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 81 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 82 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 49
-  Opp:   8 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Sphere of Resistance  [#0]
@@ -1885,20 +968,6 @@
   Player A casts Sphere of Resistance
 
 --- Decision 83 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5]
-  Stack: Sphere of Resistance (spell, opponent)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1908,38 +977,12 @@
   Sphere of Resistance enters the battlefield
 
 --- Decision 84 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 85 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1948,18 +991,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 86 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   8 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [6/6]
    1: Confirm attackers
@@ -1968,19 +999,6 @@
   Select target for Construct token:
 
 --- Decision 87 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   8 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Pending: Construct (self)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Player B (8 life)
    1: Tamiyo, Seasoned Scholar (loyalty 2)
@@ -1991,18 +1009,6 @@
     [attacking] Construct token [6/6] -> Player B
 
 --- Decision 88 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   8 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (ATK)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2011,19 +1017,6 @@
     Construct token -> Player B
 
 --- Decision 89 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2032,19 +1025,6 @@
   No creatures eligible to block.
 
 --- Decision 90 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2055,76 +1035,24 @@
   --- End Combat Damage ---
 
 --- Decision 91 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self life_lost=6 | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 92 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 7)
-  Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self life_lost=6 | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 93 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 7)
-  Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self life_lost=6 | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 94 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 7)
-  Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T) | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self life_lost=6 | opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2136,17 +1064,6 @@
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
 --- Decision 95 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2156,18 +1073,6 @@
   Player B draws Brainstorm
 
 --- Decision 96 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2176,18 +1081,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 97 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2197,18 +1090,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 98 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2219,18 +1100,6 @@
   No creatures eligible to attack.
 
 --- Decision 99 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2239,18 +1108,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 100 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2259,18 +1116,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 101 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2280,18 +1125,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 102 ---
-  Priority: Player B (active)
-  Step: End Step (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2305,34 +1138,12 @@
   PB: Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
 --- Decision 103 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 104 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2343,36 +1154,12 @@
   Player A draws Malevolent Rumble
 
 --- Decision 105 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 106 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2381,17 +1168,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
@@ -2404,20 +1180,6 @@
   Player A's Expedition Map ability is on the stack
 
 --- Decision 108 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [5/5]
-  Stack: Expedition Map (ability, opponent) [amt=1]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2429,20 +1191,6 @@
   Searching Player A's library:
 
 --- Decision 109 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Stack: Expedition Map (ability, self) [amt=1]
-  Pending: Expedition Map (self)
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Ancient Tomb
@@ -2466,18 +1214,6 @@
   Player A reveals Thespian's Stage and puts it to hand
 
 --- Decision 110 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Thespian's Stage | lib 47
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Thespian's Stage
@@ -2486,18 +1222,6 @@
   Player A played Thespian's Stage
 
 --- Decision 111 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (NEW) | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Equip Skateboard  [#0]
@@ -2506,20 +1230,6 @@
   Choose target for Skateboard:
 
 --- Decision 112 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (NEW) | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Stack: Skateboard (ability, self)
-  Pending: Skateboard (self)
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Construct token
   >> A/A: 0 (Construct token)
@@ -2529,20 +1239,6 @@
   Player A's Skateboard ability targeting Construct token is on the stack
 
 --- Decision 113 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [5/5]
-  Stack: Skateboard (ability, opponent) -> Construct (opponent, slot 54)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2555,19 +1251,6 @@
   Construct token gains 1/0 Haste (always)
 
 --- Decision 114 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2576,19 +1259,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 115 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2599,18 +1269,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 116 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [6/5]
    1: Confirm attackers
@@ -2619,19 +1277,6 @@
   Select target for Construct token:
 
 --- Decision 117 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Pending: Construct (self)
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Player B (2 life)
    1: Tamiyo, Seasoned Scholar (loyalty 2)
@@ -2642,18 +1287,6 @@
     [attacking] Construct token [6/5] -> Player B
 
 --- Decision 118 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
-  Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard) (ATK)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Street Wraith, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2662,19 +1295,6 @@
     Construct token -> Player B
 
 --- Decision 119 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard) (T,ATK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2685,19 +1305,6 @@
   No creatures eligible to block.
 
 --- Decision 120 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 9)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard) (T,ATK)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]

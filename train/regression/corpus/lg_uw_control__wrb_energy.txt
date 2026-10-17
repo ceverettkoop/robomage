@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Voice of Victory
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -79,12 +65,6 @@
   Player A played Polluted Delta
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Polluted Delta (NEW)
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -97,15 +77,6 @@
   Searching Player A's library:
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta
-  This turn: self life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -123,16 +94,6 @@
   Surveil: looking at Ponder
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Meticulous Archive (T,NEW,res 1)
-  Stack: Meticulous Archive (ability, self) [amt=1]
-  Pending: Meticulous Archive (self)
-  Self GY: Polluted Delta
-  This turn: self life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -146,14 +107,6 @@
   PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 7 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Opp BF:   Meticulous Archive (T)
-  Opp GY:  Polluted Delta
-  Opp revealed: Polluted Delta, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -163,16 +116,6 @@
   Player B played Marsh Flats
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Marsh Flats (NEW)
-  Opp BF:   Meticulous Archive (T)
-  Opp GY:  Polluted Delta
-  Opp revealed: Polluted Delta, Meticulous Archive
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -185,18 +128,6 @@
   Searching Player B's library:
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Opp BF:   Meticulous Archive (T)
-  Stack: Marsh Flats (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats
-  Opp GY:  Polluted Delta
-  Opp revealed: Polluted Delta, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Badlands
@@ -211,17 +142,6 @@
   Player B puts Badlands to the battlefield
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badlands (NEW)
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Marsh Flats
-  Opp GY:  Polluted Delta
-  Opp revealed: Polluted Delta, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Cabal Therapy  [#0]
@@ -231,19 +151,6 @@
   Choose target for Cabal Therapy:
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badlands (NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Cabal Therapy (spell, self)
-  Pending: Cabal Therapy (self)
-  Self GY: Marsh Flats
-  Opp GY:  Polluted Delta
-  Opp revealed: Polluted Delta, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player A (19 life)
    1: Player B (19 life)
@@ -256,19 +163,6 @@
   Player B names a card:
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badlands (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Cabal Therapy (spell, self) -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Marsh Flats
-  Opp GY:  Polluted Delta
-  Opp revealed: Polluted Delta, Meticulous Archive
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Name card: Brainstorm
    1: Name card: Consign to Memory
@@ -312,16 +206,6 @@
   PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive
-  Opp BF:   Badlands (T)
-  Self GY: Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
    1: Cast Tune the Narrative  [#0]
@@ -336,16 +220,6 @@
   Player A draws Flooded Strand
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | energy 2 | hand(7): Flooded Strand, Flow State, Ponder, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 50
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Badlands (T)
-  Self GY: Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -356,17 +230,6 @@
   Player A played Flooded Strand
 
 --- Decision 15 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | energy 2 | hand(6): Flow State, Ponder, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 50
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Flooded Strand (NEW) | Meticulous Archive (T)
-  Opp BF:   Badlands (T)
-  Self GY: Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -379,19 +242,6 @@
   Searching Player A's library:
 
 --- Decision 16 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | energy 2 | hand(6): Flow State, Ponder, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 50
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Badlands (T)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -404,17 +254,6 @@
   Player A puts Tundra to the battlefield
 
 --- Decision 17 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | energy 2 | hand(6): Flow State, Ponder, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T) | Tundra (NEW)
-  Opp BF:   Badlands (T)
-  Self GY: Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -428,19 +267,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | energy 2 | hand(5): Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T) | Tundra (T,NEW)
-  Opp BF:   Badlands (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Plains  [#2]
    1: Teferi, Time Raveler  [#2]
@@ -450,40 +276,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 19 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | energy 2 | hand(5): Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T) | Tundra (T,NEW)
-  Opp BF:   Badlands (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Plains, ?, ?, ?, ?
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Teferi, Time Raveler  [#1]
    1: Tune the Narrative  [#1]
   >> A/A: 1 (Tune the Narrative)
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | energy 2 | hand(5): Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Meticulous Archive (T) | Tundra (T,NEW)
-  Opp BF:   Badlands (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Teferi, Time Raveler, Tune the Narrative, Plains, ?, ?
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -499,17 +297,6 @@
   PB: Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
-  Opp:   18 life | mana: empty | energy 2 | hand count: 6 | lib 48
-  Self BF:  Badlands
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Self GY: Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Arid Mesa
@@ -520,20 +307,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 22 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   18 life | mana: empty | energy 2 | hand count: 6 | lib 48
-  Self BF:  Badlands
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Player A (18 life)
    1: Player B (19 life)
@@ -553,20 +326,6 @@
   Player B chooses a card to discard:
 
 --- Decision 23 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   18 life | mana: empty | energy 2 | hand count: 6 | lib 48
-  Self BF:  Badlands (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Ponder, Swords to Plowshares, Teferi, Time Raveler, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Flow State
    1: Ponder
@@ -579,17 +338,6 @@
   Player B loses 2 life (now at 17)
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(6): Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 48
-  Self BF:  Badlands (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Actions:
    0: Pass priority
    1: Play Arid Mesa
@@ -599,18 +347,6 @@
   Player B played Arid Mesa
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 48
-  Self BF:  Arid Mesa (NEW) | Badlands (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Arid Mesa (ChangeZone)  [#0]
@@ -623,20 +359,6 @@
   Searching Player B's library:
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 48
-  Self BF:  Badlands (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Stack: Arid Mesa (ability, self)
-  Pending: Arid Mesa (self)
-  Self GY: Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Elegant Parlor
@@ -655,20 +377,6 @@
   Surveil: looking at Marsh Flats
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 49
-  Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 48
-  Self BF:  Badlands (T) | Elegant Parlor (T,NEW,res 1)
-  Opp BF:   Meticulous Archive (T) | Tundra (T)
-  Stack: Elegant Parlor (ability, self) [amt=1]
-  Pending: Elegant Parlor (self)
-  Self GY: Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Ponder, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Marsh Flats on top of library  [#0]
    1: Put Marsh Flats into graveyard
@@ -682,17 +390,6 @@
   PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  18 life | mana: empty | energy 2 | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 47
-  Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive | Tundra
-  Opp BF:   Badlands (T) | Elegant Parlor (T)
-  Self GY: Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Plains, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Tune the Narrative  [#0]
@@ -706,16 +403,6 @@
   Player A gets 2 ENERGY counter(s) (now 4).
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | energy 4 | hand(6): Flow State, Plains, Ponder, Swords to Plowshares, Tundra, Wasteland | lib 46
-  Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive (T) | Tundra
-  Opp BF:   Badlands (T) | Elegant Parlor (T)
-  Self GY: Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Plains
@@ -731,19 +418,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 30 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | energy 4 | hand(5): Flow State, Plains, Swords to Plowshares, Tundra, Wasteland | lib 46
-  Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Badlands (T) | Elegant Parlor (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=U
-  Extras: not_priority_window
   Actions:
    0: Force of Will  [#2]
    1: Swords to Plowshares  [#2]
@@ -753,40 +427,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | energy 4 | hand(5): Flow State, Plains, Swords to Plowshares, Tundra, Wasteland | lib 46
-  Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Badlands (T) | Elegant Parlor (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=U
-  Extras: not_priority_window
   Actions:
    0: Swords to Plowshares  [#1]
    1: Murktide Regent  [#1]
   >> A/A: 0 (Swords to Plowshares)
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | energy 4 | hand(5): Flow State, Plains, Swords to Plowshares, Tundra, Wasteland | lib 46
-  Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Badlands (T) | Elegant Parlor (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Murktide Regent, Swords to Plowshares, Force of Will, ?, ?
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=U
-  Extras: not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -796,17 +442,6 @@
   Player A draws Murktide Regent
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | energy 4 | hand(6): Flow State, Murktide Regent, Plains, Swords to Plowshares, Tundra, Wasteland | lib 45
-  Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Badlands (T) | Elegant Parlor (T)
-  Self GY: Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Swords to Plowshares, Force of Will, ?, ?, ?
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 colors=U
   Actions:
    0: Pass priority
    1: Play Plains
@@ -823,17 +458,6 @@
   PB: Amped Raptor, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 34 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  16 life | mana: empty | hand(6): Amped Raptor, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 48
-  Opp:   18 life | mana: empty | energy 4 | hand count: 5 | lib 45
-  Self BF:  Badlands | Elegant Parlor
-  Opp BF:   Meticulous Archive (T) | Plains | Tundra (T)
-  Self GY: Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Known opp hand: Flow State, Swords to Plowshares, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -850,19 +474,6 @@
   Amped Raptor triggered
 
 --- Decision 35 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | energy 4 | hand(5): Flow State, Murktide Regent, Swords to Plowshares, Tundra, Wasteland | lib 45
-  Opp:   16 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Meticulous Archive (T) | Plains | Tundra (T)
-  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK,NEW) | Badlands (T) | Elegant Parlor (T)
-  Stack: Amped Raptor (ability, opponent)
-  Self GY: Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Swords to Plowshares, Force of Will, ?, ?, ?
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: opp spells=1 drawn=1 colors=R
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -871,20 +482,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 36 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | energy 4 | hand(4): Flow State, Murktide Regent, Tundra, Wasteland | lib 45
-  Opp:   16 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Meticulous Archive (T) | Plains | Tundra (T)
-  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK,NEW) | Badlands (T) | Elegant Parlor (T)
-  Stack: Swords to Plowshares (spell, self) -> Amped Raptor (ability, opponent)
-  Pending: Swords to Plowshares (self)
-  Self GY: Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Arid Mesa, Thoughtseize, Cabal Therapy [play:opponent], Marsh Flats
-  Known top: Swords to Plowshares, Force of Will, ?, ?, ?
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: opp spells=1 drawn=1 colors=R
-  Extras: not_priority_window
   Actions:
    0: Amped Raptor
   >> A/A: 0 (Amped Raptor)
@@ -905,21 +502,6 @@
   Player B may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | energy 2 | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Badlands (T) | Elegant Parlor (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Amped Raptor (ability, self)
-  Pending: Ajani, Nacatl Pariah (self)
-  Self GY: Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Ajani, Nacatl Pariah, Amped Raptor
-  Known opp hand: Flow State, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 life_gained=2 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Do not cast Ajani, Nacatl Pariah  [#0]
    1: Cast Ajani, Nacatl Pariah  [#1]
@@ -934,19 +516,6 @@
   Token created: 2/1 Cat Warrior
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Cat Warrior [2/1] (SICK,NEW)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Self GY: Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats
-  Opp GY:  Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Amped Raptor
-  Known opp hand: Flow State, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 drawn=1 life_gained=2 colors=WR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -957,21 +526,6 @@
   Choose target for Cabal Therapy:
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Cat Warrior [2/1] (SICK,NEW)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Cabal Therapy (spell, self)
-  Pending: Cabal Therapy (self)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Amped Raptor
-  Known opp hand: Flow State, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 drawn=1 life_gained=2 colors=WR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Player A (18 life)
    1: Player B (18 life)
@@ -980,21 +534,6 @@
   Targeting choice 0
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Cat Warrior [2/1] (SICK,NEW)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Cabal Therapy (spell, self) -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Amped Raptor
-  Known opp hand: Flow State, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 drawn=1 life_gained=2 colors=WR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Cat Warrior
@@ -1006,21 +545,6 @@
   Ajani, Nacatl Pariah triggered
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 2) | Badlands (T) | Elegant Parlor (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Ajani, Nacatl Pariah (ability, self) -> Cabal Therapy (spell, self) [flashback] -> opponent (player)
-  Pending: Ajani, Nacatl Pariah (self)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Amped Raptor
-  Known opp hand: Flow State, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Decline: use Ajani, Nacatl Pariah's triggered ability  [#0]
    1: Accept: use Ajani, Nacatl Pariah's triggered ability  [#1]
@@ -1036,21 +560,6 @@
   Player B names a card:
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Badlands (T) | Elegant Parlor (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Amped Raptor
-  Known opp hand: Flow State, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Name card: Brainstorm
    1: Name card: Consign to Memory
@@ -1088,19 +597,6 @@
   Cabal Therapy is exiled (flashback)
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Badlands (T) | Elegant Parlor (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Cabal Therapy, Amped Raptor
-  Known opp hand: Murktide Regent, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -1112,19 +608,6 @@
   Player B played Marsh Flats
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Badlands (T) | Elegant Parlor (T) | Marsh Flats (NEW)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Cabal Therapy, Amped Raptor
-  Known opp hand: Murktide Regent, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
@@ -1136,20 +619,6 @@
   Player B's Ajani, Nacatl Avenger ability is on the stack
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Badlands (T) | Elegant Parlor (T) | Marsh Flats (NEW)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Self GY: Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Cabal Therapy, Amped Raptor
-  Known opp hand: Murktide Regent, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -1162,21 +631,6 @@
   Searching Player B's library:
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
-  Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Badlands (T) | Elegant Parlor (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Stack: Marsh Flats (ability, self) -> Ajani, Nacatl Avenger (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Cabal Therapy, Amped Raptor
-  Known opp hand: Murktide Regent, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 life_lost=1 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -1190,19 +644,6 @@
   Resolving ability (category: PutCounterAll, amount: 1)
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 46
-  Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Badlands (T) | Elegant Parlor (T) | Plateau (NEW)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
-  Self GY: Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Self exile: Cabal Therapy, Amped Raptor
-  Known opp hand: Murktide Regent, Tundra, Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 life_lost=1 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Ocelot Pride  [#0]
@@ -1223,18 +664,6 @@
   PB: Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(4): Murktide Regent, Swords to Plowshares, Tundra, Wasteland | lib 44
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T) | Cat [1/1] (SICK)
-  Self GY: Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1243,21 +672,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(3): Murktide Regent, Tundra, Wasteland | lib 44
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T) | Cat [1/1] (SICK)
-  Stack: Swords to Plowshares (spell, self)
-  Pending: Swords to Plowshares (self)
-  Self GY: Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Ocelot Pride
    1: Cat token
@@ -1272,19 +686,6 @@
   Player B gains 1 life (now at 18)
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(3): Murktide Regent, Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains (T) | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Self GY: Swords to Plowshares, Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Tundra
@@ -1295,21 +696,6 @@
   Choose a card to exile via Delve (1 of 5):
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(2): Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains (T) | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Flow State (Delve)
@@ -1323,21 +709,6 @@
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(2): Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains (T) | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Flow State (Delve)
    1: Exile Polluted Delta (Delve)
@@ -1350,21 +721,6 @@
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(2): Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains (T) | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Polluted Delta (Delve)
    1: Exile Ponder (Delve)
@@ -1376,21 +732,6 @@
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 54 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(2): Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains (T) | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Swords to Plowshares (Delve)
@@ -1401,21 +742,6 @@
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 55 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(2): Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive | Plains (T) | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Stack: Murktide Regent (spell, self)
-  Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Swords to Plowshares (Delve)
@@ -1435,20 +761,6 @@
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
 
 --- Decision 56 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  18 life | mana: empty | energy 4 | hand(2): Tundra, Wasteland | lib 44
-  Opp:   18 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Plains (T) | Tundra (T)
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Cat [1/1] (SICK)
-  Self GY: Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WU | opp life_gained=1
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Tundra
@@ -1463,18 +775,6 @@
   PB: Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  18 life | mana: empty | hand(3): Scrubland, Swords to Plowshares, Voice of Victory | lib 46
-  Opp:   18 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 5] | Badlands | Elegant Parlor | Plateau | Cat [1/1]
-  Opp BF:   Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Plains (T) | Tundra (T) | Tundra
-  Self GY: Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1483,21 +783,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  18 life | mana: empty | hand(2): Scrubland, Voice of Victory | lib 46
-  Opp:   18 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 5] | Badlands | Elegant Parlor | Plateau | Cat [1/1]
-  Opp BF:   Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Plains (T) | Tundra (T) | Tundra
-  Stack: Swords to Plowshares (spell, self)
-  Pending: Swords to Plowshares (self)
-  Self GY: Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  Extras: not_priority_window
   Actions:
    0: Murktide Regent
    1: Cat token
@@ -1513,20 +798,6 @@
   Player B draws Voice of Victory
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(3): Scrubland, Voice of Victory, Voice of Victory | lib 45
-  Opp:   24 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 5] | Badlands | Elegant Parlor (T) | Plateau | Cat [1/1]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T) | Tundra
-  Self GY: Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=6
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -1543,20 +814,6 @@
   Voice of Victory enters the battlefield
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(2): Scrubland, Voice of Victory | lib 45
-  Opp:   24 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Voice of Victory [1/3] (SICK,NEW) | Cat [1/1]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T) | Tundra
-  Self GY: Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=6
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -1568,20 +825,6 @@
   Player B played Scrubland
 
 --- Decision 61 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 45
-  Opp:   24 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 5] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Scrubland (NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat [1/1]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T) | Tundra
-  Self GY: Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=6
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
@@ -1596,20 +839,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 62 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 45
-  Opp:   24 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 7] (act 1) | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Scrubland (NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat [2/2] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T) | Tundra
-  Self GY: Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=6
-  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [2/2]
    1: Confirm attackers
@@ -1620,20 +849,6 @@
     [attacking] Cat token [2/2] -> Player A
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 45
-  Opp:   24 life | mana: empty | energy 4 | hand count: 1 | lib 44
-  Self BF:  Ajani, Nacatl Avenger [loy 7] (act 1) | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Scrubland (NEW) | Voice of Victory [1/3] (SICK,NEW) | Cat [2/2] [+1/+1:1] (ATK)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T) | Tundra
-  Self GY: Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Known opp hand: Wasteland
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=6
-  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1651,18 +866,6 @@
   PB: Voice of Victory
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  22 life | mana: empty | energy 4 | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Meticulous Archive | Plains | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 7] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (SICK) | Cat [2/2] [+1/+1:1] (T)
-  Self GY: Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1671,19 +874,6 @@
   Player A played Wasteland
 
 --- Decision 65 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  22 life | mana: empty | energy 4 | hand(1): Force of Will | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Meticulous Archive | Plains | Tundra | Tundra | Wasteland (NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 7] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (SICK) | Cat [2/2] [+1/+1:1] (T)
-  Self GY: Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1692,21 +882,6 @@
   Choose target for Wasteland:
 
 --- Decision 66 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  22 life | mana: empty | energy 4 | hand(1): Force of Will | lib 43
-  Opp:   18 life | mana: empty | hand count: 1 | lib 45
-  Self BF:  Meticulous Archive | Plains | Tundra | Tundra | Wasteland (NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 7] | Badlands (T) | Elegant Parlor (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (SICK) | Cat [2/2] [+1/+1:1] (T)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Badlands
    1: Elegant Parlor
@@ -1731,18 +906,6 @@
   PB: Orcish Bowmasters, Voice of Victory
 
 --- Decision 67 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, Voice of Victory | lib 44
-  Opp:   22 life | mana: empty | energy 4 | hand count: 1 | lib 43
-  Self BF:  Ajani, Nacatl Avenger [loy 7] | Elegant Parlor | Plateau | Scrubland | Voice of Victory [1/3] | Cat [2/2] [+1/+1:1]
-  Opp BF:   Meticulous Archive | Plains | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -1755,20 +918,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 68 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   22 life | mana: empty | energy 4 | hand count: 1 | lib 43
-  Self BF:  Ajani, Nacatl Avenger [loy 7] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Plateau | Scrubland (T) | Voice of Victory [1/3] | Cat [2/2] [+1/+1:1]
-  Opp BF:   Meticulous Archive | Plains | Tundra | Tundra
-  Pending: Orcish Bowmasters (self)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Player A (22 life)
    1: Player B (18 life)
@@ -1786,18 +935,6 @@
   Amass Orc 1: Player B Army is now 1/1.
 
 --- Decision 69 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   21 life | mana: empty | energy 4 | hand count: 1 | lib 43
-  Self BF:  Ajani, Nacatl Avenger [loy 7] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau | Scrubland (T) | Voice of Victory [1/3] | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Meticulous Archive | Plains | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Actions:
    0: Pass priority
    1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
@@ -1812,19 +949,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 70 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   21 life | mana: empty | energy 4 | hand count: 1 | lib 43
-  Self BF:  Ajani, Nacatl Avenger [loy 9] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau | Scrubland (T) | Voice of Victory [1/3] | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Meticulous Archive | Plains | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Voice of Victory [1/3]
    1: Cat token [3/3]
@@ -1836,19 +960,6 @@
     [attacking] Voice of Victory [1/3] -> Player A
 
 --- Decision 71 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   21 life | mana: empty | energy 4 | hand count: 1 | lib 43
-  Self BF:  Ajani, Nacatl Avenger [loy 9] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau | Scrubland (T) | Voice of Victory [1/3] (ATK) | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Meticulous Archive | Plains | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [3/3]
    1: Confirm attackers
@@ -1860,19 +971,6 @@
     [attacking] Cat token [3/3] -> Player A
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  18 life | mana: empty | hand(1): Voice of Victory | lib 44
-  Opp:   21 life | mana: empty | energy 4 | hand count: 1 | lib 43
-  Self BF:  Ajani, Nacatl Avenger [loy 9] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau | Scrubland (T) | Voice of Victory [1/3] (ATK) | Cat [3/3] [+1/+1:2] (ATK) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Meticulous Archive | Plains | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1903,18 +1001,6 @@
   PB: Voice of Victory
 
 --- Decision 73 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  15 life | mana: empty | energy 4 | hand(2): Force of Will, Tamiyo, Inquisitive Student | lib 42
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Meticulous Archive | Plains | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 9] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau | Scrubland (T) | Voice of Victory [1/3] (T) | Cat [3/3] [+1/+1:2] (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -1931,36 +1017,12 @@
   PB: Swords to Plowshares, Voice of Victory
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: Draw (turn 12)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Voice of Victory | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 9] | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Voice of Victory | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 9] | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1975,19 +1037,6 @@
   Player B casts Voice of Victory
 
 --- Decision 76 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 9] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Scrubland | Voice of Victory [1/3] | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Stack: Voice of Victory (spell, self)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1996,18 +1045,6 @@
   Voice of Victory enters the battlefield
 
 --- Decision 77 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 9] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] (SICK,NEW) | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2020,19 +1057,6 @@
   Player B's Ajani, Nacatl Avenger ability is on the stack
 
 --- Decision 78 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] (SICK,NEW) | Cat [3/3] [+1/+1:2] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2042,36 +1066,12 @@
   Put 1 P1P1 counter(s) on Cat.
 
 --- Decision 79 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 80 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2080,19 +1080,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 81 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Voice of Victory [1/3]
@@ -2106,19 +1093,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player A
 
 --- Decision 82 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Voice of Victory [1/3]
    1: Cat token [4/4]
@@ -2132,19 +1106,6 @@
     [attacking] Voice of Victory [1/3] -> Player A
 
 --- Decision 83 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [4/4]
    1: Orc Army token [1/1]
@@ -2158,19 +1119,6 @@
     [attacking] Cat token [4/4] -> Player A
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (ATK) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -2184,19 +1132,6 @@
     [attacking] Orc Army token [1/1] -> Player A
 
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2209,19 +1144,6 @@
   Voice of Victory triggered
 
 --- Decision 86 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Stack: Voice of Victory (ability, self) [amt=2]
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2231,19 +1153,6 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
 
 --- Decision 87 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Delayed: Voice of Victory@5 -> Warrior@9 (self, end step this turn, waiting)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2260,20 +1169,6 @@
   Your creatures:
 
 --- Decision 88 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  15 life | mana: empty | energy 4 | hand(1): Force of Will | lib 42
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Delayed: Voice of Victory@53 -> Warrior@57 (opponent, end step this turn, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -2283,19 +1178,6 @@
     (none)
 
 --- Decision 89 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   15 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Delayed: Voice of Victory@5 -> Warrior@9 (self, end step this turn, waiting)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2311,57 +1193,18 @@
   --- End Combat Damage ---
 
 --- Decision 90 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Delayed: Voice of Victory@5 -> Warrior@9 (self, end step this turn, waiting)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=9
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 91 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Delayed: Voice of Victory@5 -> Warrior@9 (self, end step this turn, waiting)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=9
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 92 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T) | Warrior [1/1] (T,SICK,NEW,DELAYED) | Warrior [1/1] (T,SICK,NEW,DELAYED)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Delayed: Voice of Victory@5 -> Warrior@9 (self, end step this turn, waiting)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=9
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2370,20 +1213,6 @@
   Delayed trigger fires.
 
 --- Decision 93 ---
-  Priority: Player B (active)
-  Step: End Step (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,res 1) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T) | Warrior [1/1] (T,SICK,NEW) | Warrior [1/1] (T,SICK,NEW)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Stack: Voice of Victory (ability, self) -> Warrior (self, slot 9); Warrior (self, slot 10)
-  Delayed: Voice of Victory@5 -> Warrior@9 (self, end step, on stack #0)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=9
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2396,19 +1225,6 @@
   Warrior (token) is put into the graveyard and ceases to exist.
 
 --- Decision 94 ---
-  Priority: Player B (active)
-  Step: End Step (turn 12)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] (act 1) | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T,res 2) | Voice of Victory [1/3] (SICK,NEW) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=9
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2420,18 +1236,6 @@
   PB: Swords to Plowshares
 
 --- Decision 95 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 42
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2440,37 +1244,12 @@
   Player A draws Flow State
 
 --- Decision 96 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 2 | lib 41
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 97 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  6 life | mana: empty | energy 4 | hand(2): Flow State, Force of Will | lib 41
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
@@ -2481,20 +1260,6 @@
   Player A casts Flow State
 
 --- Decision 98 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   6 life | mana: empty | energy 4 | hand count: 1 | lib 41
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Stack: Flow State (spell, opponent)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2504,21 +1269,6 @@
   Player A looks at the top 3 card(s) of their library.
 
 --- Decision 99 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  6 life | mana: empty | energy 4 | hand(1): Force of Will | lib 41
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Flow State (spell, self)
-  Pending: Flow State (self)
-  Self GY: Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Tamiyo, Inquisitive Student
    1: Flooded Strand
@@ -2529,18 +1279,6 @@
   Player A puts 2 card(s) on the bottom of their library.
 
 --- Decision 100 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  6 life | mana: empty | energy 4 | hand(2): Flooded Strand, Force of Will | lib 40
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -2549,19 +1287,6 @@
   Player A played Flooded Strand
 
 --- Decision 101 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  6 life | mana: empty | energy 4 | hand(1): Force of Will | lib 40
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Flooded Strand (NEW) | Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -2572,20 +1297,6 @@
   Player A's Flooded Strand ability is on the stack
 
 --- Decision 102 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 40
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Stack: Flooded Strand (ability, opponent)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2595,21 +1306,6 @@
   Searching Player A's library:
 
 --- Decision 103 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 40
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -2621,38 +1317,12 @@
   Player A puts Tundra to the battlefield
 
 --- Decision 104 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra | Tundra (NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 105 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra | Tundra (NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2661,19 +1331,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 106 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra | Tundra (NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -2682,20 +1339,6 @@
   Select target for Tamiyo, Inquisitive Student:
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Tundra | Tundra (NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Pending: Tamiyo, Inquisitive Student (self)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Player B (18 life)
    1: Ajani, Nacatl Avenger (loyalty 11)
@@ -2706,19 +1349,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
 --- Decision 108 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra | Tundra | Tundra (NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2728,20 +1358,6 @@
   Tamiyo, Inquisitive Student triggered
 
 --- Decision 109 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Tundra | Tundra (NEW)
-  Stack: Tamiyo, Inquisitive Student (ability, opponent)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2751,38 +1367,12 @@
   Token created: 0/0 Clue
 
 --- Decision 110 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 111 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2791,38 +1381,12 @@
   No creatures eligible to block.
 
 --- Decision 112 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 113 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2832,95 +1396,30 @@
   --- End Combat Damage ---
 
 --- Decision 114 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 115 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 116 ---
-  Priority: Player A (active)
-  Step: End Combat (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 117 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 118 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 13)
-  Self:  5 life | mana: empty | energy 4 | hand(1): Force of Will | lib 39
-  Opp:   18 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra | Tundra | Tundra (NEW) | Clue (SICK,NEW)
-  Opp BF:   Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Opp GY:  Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp exile:  Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2933,20 +1432,6 @@
   Clue (token) is put into the graveyard and ceases to exist.
 
 --- Decision 119 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 1 | lib 39
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (NEW)
-  Stack: Clue (ability, opponent) [amt=1]
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2957,20 +1442,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 120 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (NEW)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Player A (5 life)
    1: Player B (18 life)
@@ -2987,20 +1458,6 @@
   Orcish Bowmasters triggered
 
 --- Decision 121 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   5 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (NEW)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3012,38 +1469,12 @@
   Amass Orc 1: Player B Army is now 2/2.
 
 --- Decision 122 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 123 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 13)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Scrubland | Voice of Victory [1/3] (T) | Voice of Victory [1/3] (SICK) | Cat [4/4] [+1/+1:3] (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Tundra (T) | Tundra (NEW)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3055,17 +1486,6 @@
   PB: Swords to Plowshares
 
 --- Decision 124 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3074,36 +1494,12 @@
   Player B draws Wasteland
 
 --- Decision 125 ---
-  Priority: Player B (active)
-  Step: Draw (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 126 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -3116,19 +1512,6 @@
   Player B played Wasteland
 
 --- Decision 127 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 11] | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Wasteland (NEW) | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3142,20 +1525,6 @@
   Player B's Ajani, Nacatl Avenger ability is on the stack
 
 --- Decision 128 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Wasteland (NEW) | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3165,21 +1534,6 @@
   Choose target for Wasteland:
 
 --- Decision 129 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Wasteland (NEW) | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Stack: Wasteland (ability, self) -> Ajani, Nacatl Avenger (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Meticulous Archive
    1: Tundra
@@ -3196,20 +1550,6 @@
   Player B's Wasteland ability targeting Meticulous Archive is on the stack
 
 --- Decision 130 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Meticulous Archive (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Stack: Wasteland (ability, self) -> Meticulous Archive (opponent, slot 48) -> Ajani, Nacatl Avenger (ability, self)
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3219,20 +1559,6 @@
   Meticulous Archive is destroyed
 
 --- Decision 131 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [4/4] [+1/+1:3] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Stack: Ajani, Nacatl Avenger (ability, self)
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3242,38 +1568,12 @@
   Put 1 P1P1 counter(s) on Cat.
 
 --- Decision 132 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [5/5] [+1/+1:4] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 133 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [5/5] [+1/+1:4] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3282,19 +1582,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 134 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [5/5] [+1/+1:4] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Voice of Victory [1/3]
@@ -3309,19 +1596,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player A
 
 --- Decision 135 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland | Voice of Victory [1/3] | Voice of Victory [1/3] | Cat [5/5] [+1/+1:4] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Voice of Victory [1/3]
    1: Voice of Victory [1/3]
@@ -3336,19 +1610,6 @@
     [attacking] Voice of Victory [1/3] -> Player A
 
 --- Decision 136 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] | Cat [5/5] [+1/+1:4] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Voice of Victory [1/3]
    1: Cat token [5/5]
@@ -3363,19 +1624,6 @@
     [attacking] Voice of Victory [1/3] -> Player A
 
 --- Decision 137 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (ATK) | Cat [5/5] [+1/+1:4] | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [5/5]
    1: Orc Army token [2/2]
@@ -3390,19 +1638,6 @@
     [attacking] Cat token [5/5] -> Player A
 
 --- Decision 138 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (ATK) | Cat [5/5] [+1/+1:4] (ATK) | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [2/2]
    1: Confirm attackers
@@ -3417,19 +1652,6 @@
     [attacking] Orc Army token [2/2] -> Player A
 
 --- Decision 139 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland | Voice of Victory [1/3] (ATK) | Voice of Victory [1/3] (ATK) | Cat [5/5] [+1/+1:4] (ATK) | Orc Army [2/2] [+1/+1:2] (ATK)
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3443,20 +1665,6 @@
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 140 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (T,ATK) | Cat [5/5] [+1/+1:4] (T,ATK) | Orc Army [2/2] [+1/+1:2] (T,ATK)
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Pending: Voice of Victory (self)
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Voice of Victory (Mobilize)  [#0]
    1: Voice of Victory (Mobilize)  [#1]
@@ -3466,20 +1674,6 @@
   Voice of Victory triggered
 
 --- Decision 141 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (T,ATK) | Cat [5/5] [+1/+1:4] (T,ATK) | Orc Army [2/2] [+1/+1:2] (T,ATK)
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Stack: Voice of Victory (ability, self) [amt=2] -> Voice of Victory (ability, self) [amt=2]
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3489,21 +1683,6 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
 
 --- Decision 142 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland | Voice of Victory [1/3] (T,ATK) | Voice of Victory [1/3] (T,ATK,res 1) | Cat [5/5] [+1/+1:4] (T,ATK) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Stack: Voice of Victory (ability, self) [amt=2]
-  Delayed: Voice of Victory@6 -> Warrior@9 (self, end step this turn, waiting)
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3513,20 +1692,6 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
 
 --- Decision 143 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat [5/5] [+1/+1:4] (T,ATK) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Delayed: Voice of Victory@6 -> Warrior@9 (self, end step this turn, waiting) | Voice of Victory@5 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3535,20 +1700,6 @@
   No creatures eligible to block.
 
 --- Decision 144 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 14)
-  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   4 life | mana: empty | energy 4 | hand count: 2 | lib 38
-  Self BF:  Ajani, Nacatl Avenger [loy 13] (act 1) | Elegant Parlor | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland | Voice of Victory [1/3] (T,ATK,res 1) | Voice of Victory [1/3] (T,ATK,res 1) | Cat [5/5] [+1/+1:4] (T,ATK) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED) | Warrior [1/1] (T,ATK,SICK,NEW,DELAYED)
-  Opp BF:   Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Tundra (T) | Tundra
-  Delayed: Voice of Victory@6 -> Warrior@9 (self, end step this turn, waiting) | Voice of Victory@5 -> Warrior@11 (self, end step this turn, waiting)
-  Self GY: Wasteland, Badlands, Swords to Plowshares, Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
-  Opp GY:  Meticulous Archive, Flooded Strand, Flow State, Wasteland, Swords to Plowshares, Swords to Plowshares, Tune the Narrative, Teferi, Time Raveler, Tune the Narrative
-  Self exile: Ocelot Pride, Cabal Therapy, Amped Raptor
-  Opp exile:  Murktide Regent, Ponder, Ponder, Polluted Delta, Flow State, Flooded Strand
-  Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Tundra, Murktide Regent, Plains, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
