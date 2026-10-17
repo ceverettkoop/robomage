@@ -81,6 +81,13 @@ int visible_card_id(Entity entity, Zone::Ownership viewer);
 // a name-a-card menu, a revealed tutor target), whatever zone its representative entity is in.
 int public_card_id(Entity entity);
 
+// The card id of the physical card the vocab id `card_id` names: a double-faced card's back face
+// names that card, reported by its front face (as card_identity reports the object); any other id
+// (a front face, a single-faced card, a token-band id, -1) is returned as is. A deck line or a
+// departed permanent's last-known name may name either face, so the ids read from them pass
+// through it.
+int physical_card_of(int card_id);
+
 // Where `viewer` knows the library card `card` sits (docs/state_format.md §5 library positions):
 // `span` consecutive positions from `pos` (from the top) it may be in, 1 = exactly at `pos`, 0 =
 // anywhere. Exact when the viewer can see its identity (or is omniscient) or when nobody has a

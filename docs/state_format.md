@@ -581,6 +581,7 @@ definitions in debug builds (storage type per value, column count per row, row w
 | Seat pair | type `seat` below = two u8 columns: `<name>` (`enum:seat` = `Zone::Ownership`: 0 none, 1 A, 2 B; range 0-2) and `<name>_rel` (`player-rel`: 0 none, 1 self, 2 opponent; for `omniscient`, self = A; range 0-2). Register 31 |
 | Library position | type `libpos` = `<name>_anchor` u8 `enum:lib_anchor` (top, bottom) + `<name>_pos` u16 `index` (0 = the end card) + `<name>_span` u16 `count` (1 exact, n = one of n from pos, 0 unknown); section 5 |
 | Ability reference | type `abref` = `ab_card` u16 `card` + `ab_index` u16 `index` (row of that card in `card_ability`) + `ab_key` `text`. Registers 2, 25. `ab_key` is `AbilityDef::ref_key`: for a keyword-built ability the keyword table entry's name, plus `:<label>` when the ability's label differs (`Equip`, `Ninjutsu`, `Reconfigure`, `Reconfigure:unattach`); for an engine-built definition its `keyed_ability_def` key (`subtype_mana:1`, `keyword:Prowess`); empty for a plain script ability. An ability that is not in its card's list (granted, engine-built) has `ab_card` and `ab_index` none; its key is `ref_key`, else its keyword label, else the keyword it derives from, else `LandType` for a land-type mana ability. The lookup reads the card's loaded definition by card id, never an object the viewer cannot see |
+| Card ids | a `card` column holds the vocab id of the physical card: a double-faced card's front face, whichever face is up and whichever face a deck line, a last-known name or a captured creator names (`physical_card_of`, `src/queries/visibility.h`); a copy's printed card; a token's token-band id. A back face's own vocab id appears only as `card.face_card` |
 | Parent links | a child row names its parent by handle when the parent has one (`object`, `stack`), else by the parent's row index in the same frame (`row:<table>`) |
 | Masks | bit i = value i of the enum (`mask:color` over `Colors`, `mask:card_type` over the engine's type list, …) |
 | Ranges | `bool` columns 0-1; seat pairs 0-2; no other column carries a range yet (enums are bounded by their string tables) |
@@ -671,7 +672,7 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `name` | text | `text` | deck name (register 23) |
 | | `main`, `side` | u16 | `count` | |
 | `decklist_card` (16) | `player` | seat | | |
-| | `card` | u16 | `card` | |
+| | `card` | u16 | `card` | a line naming a double-faced card's back face counts as that card (its front face) |
 | | `main`, `side` | u8 | `count` | registered counts |
 
 `CARDS` holds every card of both registered lists, in ascending card id, then every registered
@@ -776,7 +777,7 @@ computes neither outside its legal-action enumeration.
 | | `assigned` | u16 | `count` | damage assigned so far (`Game::combat.damage_assignment`). No damage-assignment order column: the engine keeps no order (CR 510.1c-d assignment is chosen as damage is dealt) |
 | `stack` (32): top first | `handle` | u32 | `handle` | |
 | | `pos` | u16 | `index` | 0 = top |
-| | `kind` | u8 | `enum:stack_kind` | spell, activated, triggered, copy |
+| | `kind` | u8 | `enum:stack_kind` | spell, activated, triggered, copy; a card on the stack is a spell (also a resolving permanent spell whose entry is waiting on a choice, Mox Diamond's discard) |
 | | `controller` | seat | | |
 | | `source` | u32 | `handle` | an ability's source; 0 if gone, and for a spell |
 | | `source_card` | u16 | `card` | as `object.card` (a spell's own card) |
@@ -870,7 +871,7 @@ computes neither outside its legal-action enumeration.
 | | `sb_drift` | i8 | `signed` | |
 | | `closed_decklist` | u8 | `bool` | |
 | `own_deck` (48): the viewer's current 75 (the omniscient frame: both players') | `player` | seat | | |
-| | `card` | u16 | `card` | |
+| | `card` | u16 | `card` | as `decklist_card.card` |
 | | `main`, `side` | u8 | `count` | |
 
 ### A.6 Events and knowledge (`STATE` frame)

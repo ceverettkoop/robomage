@@ -282,11 +282,17 @@ void Knowledge::check(const Snapshot &snap) {
         if (o.token) continue;
         int p = NO_SEAT;
         const NodeId n = handle_node(o.handle, &p);
+        // An ability or spell copy on the stack is no card: the model holds no unit for it.
+        const bool non_card = std::binary_search(snap.stack_non_cards.begin(), snap.stack_non_cards.end(), o.handle);
         if (n == NO_NODE) {
-            // An ability or spell copy on the stack is no card. (A resolving permanent spell is a
-            // card the model holds even when its stack row reads as an ability.)
-            if (std::binary_search(snap.stack_non_cards.begin(), snap.stack_non_cards.end(), o.handle)) continue;
-            error(std::string("no model unit for the ") + zone_word(o.zone) + " object h" + std::to_string(o.handle));
+            if (!non_card)
+                error(
+                    std::string("no model unit for the ") + zone_word(o.zone) + " object h" + std::to_string(o.handle));
+            continue;
+        }
+        if (non_card) {
+            error("the stack object h" + std::to_string(o.handle) +
+                  " is an ability or spell copy, the model holds a unit for it");
             continue;
         }
         const Node &node = players_[p].net.node(n);

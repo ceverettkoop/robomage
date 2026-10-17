@@ -125,6 +125,7 @@ static void write_provenance(const Ctx &c, Entity e, uint32_t h);
 static void write_combat(const Ctx &c, const std::vector<Entity> &battlefield);
 static int write_lki(const Ctx &c, Entity departed);
 static void write_stack(const Ctx &c, const std::vector<Entity> &stack);
+static rmstate::StackKind stack_kind(Entity e, const Spell *sp, const Ability *ab);
 static void write_stack_targets(const Ctx &c, Entity stack_object, uint32_t h, const Ability &ab);
 static void write_delayed_triggers(const Ctx &c, const std::vector<Entity> &stack);
 static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_cards);
@@ -405,9 +406,10 @@ static bool sees_decklist(Zone::Ownership viewer, Zone::Ownership owner) {
     return !closed_decklist || !is_seat(viewer) || viewer == owner;
 }
 
-// The vocab ids of the cards in the registered lists `viewer` may see, ascending. Under a closed
-// decklist, every vocab card (by its front face), whoever views: the opponent's cards need rows,
-// and listing only the viewer's own would show which cards are the opponent's.
+// The card ids of the cards in the registered lists `viewer` may see (physical_card_of: a deck line
+// naming a back face is its card's front-face id), ascending. Under a closed decklist, every vocab
+// card (by its front face), whoever views: the opponent's cards need rows, and listing only the
+// viewer's own would show which cards are the opponent's.
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     std::set<int> ids;
     if (closed_decklist) {
@@ -419,8 +421,8 @@ static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     }
     for (Zone::Ownership owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         if (!sees_decklist(viewer, owner)) continue;
-        for (const DecklistEntry &e : deck_state_registered_main(owner)) ids.insert(e.vocab_idx);
-        for (const DecklistEntry &e : deck_state_registered_side(owner)) ids.insert(e.vocab_idx);
+        for (const DecklistEntry &e : deck_state_registered_main(owner)) ids.insert(physical_card_of(e.vocab_idx));
+        for (const DecklistEntry &e : deck_state_registered_side(owner)) ids.insert(physical_card_of(e.vocab_idx));
     }
     return std::vector<int>(ids.begin(), ids.end());
 }
@@ -828,7 +830,8 @@ static int write_lki(const Ctx &c, Entity departed) {
     const LastKnownInfo *lki = departed_lki_for(departed);
     if (!lki || lki->name.empty()) return -1;
     const int row = static_cast<int>(c.w.row_count(TableId::LKI));
-    const int card = lki->is_token ? token_script_to_index(lki->token_script) : card_name_to_index(lki->name);
+    const int card =
+        lki->is_token ? token_script_to_index(lki->token_script) : physical_card_of(card_name_to_index(lki->name));
     Row r = c.w.row(TableId::LKI);
     r.u16(card_or_none(card)).u8(lki->is_token ? 1 : 0);
     put_seat(r, lki->controller, c.self);
@@ -846,11 +849,7 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
         const Spell *sp = is_spell ? &global_coordinator.GetComponent<Spell>(e) : nullptr;
         const bool has_ab = global_coordinator.entity_has_component<Ability>(e);
         const Ability *ab = has_ab ? &stack_object_ability(e) : nullptr;
-        rmstate::StackKind kind = rmstate::StackKind::ACTIVATED;
-        if (sp)
-            kind = sp->is_copy ? rmstate::StackKind::COPY : rmstate::StackKind::SPELL;
-        else if (ab && ab->def->ability_type == AbilityDef::TRIGGERED)
-            kind = rmstate::StackKind::TRIGGERED;
+        const rmstate::StackKind kind = stack_kind(e, sp, ab);
         const Entity source = sp || !ab ? 0 : ab->source.get();
         const int source_card = visible_card_id(e, c.viewer);
         Row r = c.w.row(TableId::STACK);
@@ -891,6 +890,16 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
         for (int mode : ab->charm_chosen) c.w.row(TableId::STACK_MODE).u32(h).u8(u8_count(mode));
         write_stack_targets(c, e, h, *ab);
     }
+}
+
+// A stack object's kind. A card on the stack is a spell even without its Spell component: a
+// resolving permanent spell drops it (and its Ability) as it starts to enter the battlefield, and
+// stays on the stack while a choice its entry asks for (Mox Diamond's discard) is pending.
+static rmstate::StackKind stack_kind(Entity e, const Spell *sp, const Ability *ab) {
+    if (sp) return sp->is_copy ? rmstate::StackKind::COPY : rmstate::StackKind::SPELL;
+    if (global_coordinator.entity_has_component<CardData>(e)) return rmstate::StackKind::SPELL;
+    if (ab && ab->def->ability_type == AbilityDef::TRIGGERED) return rmstate::StackKind::TRIGGERED;
+    return rmstate::StackKind::ACTIVATED;
 }
 
 // The announced targets of a stack object, in the order the observation lists them: the primary
@@ -945,7 +954,8 @@ static void write_delayed_triggers(const Ctx &c, const std::vector<Entity> &stac
         const DelayedTriggerLink &link = ab.delayed_link;
         const uint32_t row = c.w.row_count(TableId::DELAYED_TRIGGER);
         const Entity creator = link.creator.get();
-        const int creator_card = creator != 0 ? visible_card_id(creator, c.viewer) : link.creator_vocab_idx;
+        const int creator_card =
+            creator != 0 ? visible_card_id(creator, c.viewer) : physical_card_of(link.creator_vocab_idx);
         {
             Row r = c.w.row(TableId::DELAYED_TRIGGER);
             r.u32(link.seq);
@@ -1037,7 +1047,7 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
     for (const Emblem &em : cur_game.resolved_effects.emblems) {
         Row r = c.w.row(TableId::EMBLEM);
         put_seat(r, em.controller, c.self);
-        r.u16(card_or_none(em.source_vocab_idx));
+        r.u16(card_or_none(physical_card_of(em.source_vocab_idx)));
     }
     write_player_effects(c, c.self);
     write_player_effects(c, opponent_of(c.self));
@@ -1224,8 +1234,8 @@ static void write_own_deck(const Ctx &c) {
         seats = {Zone::PLAYER_A, Zone::PLAYER_B};
     for (Zone::Ownership p : seats) {
         std::map<int, std::pair<int, int>> deck;
-        for (const DecklistEntry &e : deck_state_live_main(p)) deck[e.vocab_idx].first += e.count;
-        for (const DecklistEntry &e : deck_state_live_side(p)) deck[e.vocab_idx].second += e.count;
+        for (const DecklistEntry &e : deck_state_live_main(p)) deck[physical_card_of(e.vocab_idx)].first += e.count;
+        for (const DecklistEntry &e : deck_state_live_side(p)) deck[physical_card_of(e.vocab_idx)].second += e.count;
         for (const auto &kv : deck) {
             Row r = c.w.row(TableId::OWN_DECK);
             put_seat(r, p, c.self);
@@ -1298,11 +1308,11 @@ std::string encode_decklists_frame(Zone::Ownership viewer) {
         int main = 0;
         int side = 0;
         for (const DecklistEntry &e : deck_state_registered_main(owner)) {
-            cards[e.vocab_idx].first += e.count;
+            cards[physical_card_of(e.vocab_idx)].first += e.count;
             main += e.count;
         }
         for (const DecklistEntry &e : deck_state_registered_side(owner)) {
-            cards[e.vocab_idx].second += e.count;
+            cards[physical_card_of(e.vocab_idx)].second += e.count;
             side += e.count;
         }
         {

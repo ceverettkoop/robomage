@@ -5,6 +5,7 @@
 #include <string>
 #include <tuple>
 
+#include "../card_db.h"
 #include "../card_vocab.h"
 #include "../cli_output.h"
 #include "../components/ability.h"
@@ -482,7 +483,7 @@ static int token_card_id(Entity e) {
 static int last_known_card_id(Entity e) {
     const LastKnownInfo *lki = departed_lki_for(e);
     if (!lki || lki->name.empty()) return -1;
-    if (!lki->is_token) return card_name_to_index(lki->name);
+    if (!lki->is_token) return physical_card_of(card_name_to_index(lki->name));
     const int idx = token_script_to_index(lki->token_script);
     return idx >= 0 ? idx : TOKEN_SENTINEL;
 }
@@ -518,6 +519,14 @@ int card_identity(Entity entity, Zone::Ownership /*viewer*/) {
     return identity_scrambler ? identity_scrambler(entity, id) : id;
 }
 
+int physical_card_of(int card_id) {
+    if (card_id < 0 || card_id >= TOKEN_VOCAB_BASE) return card_id;
+    const CardData *cd = card_data_by_name(card_index_to_name(card_id));
+    if (cd == nullptr) return card_id;
+    const int front = card_name_to_index(cd->name);
+    return front >= 0 ? front : card_id;
+}
+
 int visible_card_id(Entity entity, Zone::Ownership viewer) {
     if (entity == 0 || global_coordinator.entity_has_component<Player>(entity)) return -1;
     if (is_stack_ability(entity)) {
@@ -529,8 +538,8 @@ int visible_card_id(Entity entity, Zone::Ownership viewer) {
         // A delayed or floating trigger with no source object: the card that created it, as
         // captured when it did (public: the creating ability was on the stack or battlefield).
         if (ab.delayed_link.seq != 0 && ab.delayed_link.creator_vocab_idx >= 0)
-            return ab.delayed_link.creator_vocab_idx;
-        return ab.floating_creator_vocab_idx;
+            return physical_card_of(ab.delayed_link.creator_vocab_idx);
+        return physical_card_of(ab.floating_creator_vocab_idx);
     }
     if (!global_coordinator.entity_has_component<Zone>(entity)) {
         // A card with no zone is a sideboarding menu's template card: the sideboarding player's own
