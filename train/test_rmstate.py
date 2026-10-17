@@ -27,8 +27,9 @@ Games: bo1 and bo3 explore-fuzz games through ``runner.run_match`` with the dump
 ``--closed-decklist``, which only the RMSTATE stream supports).
 
 Entry points: ``run(binary=…, dumps=…, work_dir=…, quick=…)`` returns the list of failure
-messages (empty = pass), for ``train/ci_check.py``; ``check_dump``, ``check_refusals`` and
-``stream_checks`` are its parts; ``main()`` is the CLI (exit 1 on failure)::
+messages (empty = pass); ``check_dump``, ``check_refusals`` and ``stream_checks`` are its parts,
+which the ``rmstate`` gate tier (``train/test_selfcheck_state.py``) calls on its own games;
+``main()`` is the CLI (exit 1 on failure)::
 
     train/.venv/bin/python train/test_rmstate.py              # play games, check everything
     train/.venv/bin/python train/test_rmstate.py --quick      # fewer / shorter games

@@ -51,6 +51,7 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `mirror` | world-parallel mirror-pool search: bit-identical visits vs serial, bo3 lockstep, pool disable on drift (`test_mirror_search.py`) | needs the engine |
 | `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
 | `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed | any transcript drift |
+| `rmstate` | the RMSTATE state format (`test_selfcheck_state.py`, below): the engine's `--selfcheck-state` checks over the replay corpus, a short explore fuzz and every scenario; the Python-vs-C++ decode comparison, decoder refusals and `--machine-format rmstate` sessions (`test_rmstate.py`'s parts); name-a-card candidates with open and closed decklists; the knowledge-side include isolation | needs the engine; ~2.5 min on 4 cores. Engine stderr in `ci_out/rmstate/` |
 | `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup) | see classification below |
 | `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
 
@@ -60,6 +61,34 @@ engine process, seed and fresh controllers), and each matchup's games are reasse
 order into `ci_out/<tier>_<a>__<b>.txt` (per game: a `--- Game i/N [mode] seed S ---` header,
 Python output plus that game's engine stderr). A draw's saved log lands next to it as
 `<tier>_<a>__<b>_g<i>_draw_<stamp>.txt`.
+
+### The `rmstate` tier
+
+`train/test_selfcheck_state.py` (`run()` is the tier; `--part` runs one part) passes its engine
+flags through `ROBOMAGE_ENGINE_FLAGS` and keeps each engine's stderr in `ci_out/rmstate/` (the
+`--rmstate-dump` files it writes are deleted once checked). A self-check failure is an `ERROR:
+selfcheck-state <check>: viewer …, decision … (game, turn, step): <first differing cell>` line on
+an engine's stderr; each engine prints one `SELFCHECK-STATE: decisions=… errors=N` line when its
+match ends (`docs/state_format.md` §10).
+
+| Part | Runs | Fails on |
+|---|---|---|
+| `corpus` | `replay_diff.py check` with `--selfcheck-state` | corpus drift, an `ERROR:` line, a missing summary (one per corpus game) or `errors≠0` |
+| `fuzz` | 16 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; reanimator for face-down exile, wrb_energy and bw_dnt for Cabal Therapy and Disruptor Flute; four with `--selfcheck-state-sample 1`); two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` summary (one stopped at the 2500-decision cap is scanned only) |
+| `scenarios` | `test_scenarios.py` with `--selfcheck-state --selfcheck-state-sample 1` | any failing scenario (the runner fails on an `ERROR:` line; a scenario stops at its decision cap, so it prints no summary) |
+| `decode` | `test_rmstate.check_dump` / `check_refusals` on the fuzz dumps, `stream_checks` on two `--machine-format rmstate` sessions with the self-checks on (one bo3 under `--closed-decklist`), `check_name_card_candidates` (a Disruptor Flute preset's opening menu: the opponent's registered cards with open decklists, every vocab card under `--closed-decklist`) | any check's failure; a session's `ERROR:` line or missing summary |
+| `isolation` | the includes of `src/state_format/decode.*`, `schema.*`, `json.*`, `recode.*` and `src/knowledge/*` | an include outside `STD_HEADERS`, `ALLOWED_PROJECT_HEADERS` (`decode.h`, `schema.h`, `json.h`), the file's own header and (for `src/knowledge/`) its own headers |
+
+Reproduce a failure:
+
+```bash
+train/.venv/bin/python train/test_selfcheck_state.py --part fuzz      # one part
+# one fuzz game (its seed is in the failure's label); its engine stderr is ci_out/rmstate/fuzz_<seed>.err
+train/.venv/bin/python train/test_selfcheck_state.py --part fuzz --fuzz-seed 102
+# one scenario with the checks on
+ROBOMAGE_ENGINE_FLAGS="--selfcheck-state --selfcheck-state-sample 1" \
+  train/.venv/bin/python train/test_scenarios.py --show <name>
+```
 
 ### Opt-in tiers (valid for `--tier`, not in the default run)
 

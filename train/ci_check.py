@@ -144,6 +144,19 @@ fails, so one invocation reports every finding):
           (train/test_xw_search.py).
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
+  rmstate The RMSTATE state format (train/test_selfcheck_state.py, with
+          train/test_rmstate.py's decode checks): the engine's --selfcheck-state
+          self-checks (roundtrip, scramble and permutation leak checks, names in
+          text, complete, snapshot) over the replay corpus (still byte-identical,
+          one errors=0 SELFCHECK-STATE summary per game), a short explore fuzz
+          (bo1 + bo3, face-down exile and name-a-card decks, some games sampled
+          at every decision) and every rules-regression scenario; the Python vs
+          C++ decode comparison on the fuzz games' --rmstate-dump files, the
+          decoders' refusals and --machine-format rmstate sessions (one under
+          --closed-decklist); the name-a-card candidate sets with open and closed
+          decklists; and the include-isolation grep over the knowledge-side
+          sources (decode/schema/json/recode, src/knowledge/). Flags reach the
+          engines through $ROBOMAGE_ENGINE_FLAGS. Needs bin/robomage; ~2.5 min.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
           lines) across the league mirrors + a ring of crosses. Fixed seeds.
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league
@@ -241,7 +254,7 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", 
              "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
-             "mirror", "xwsearch", "replay", "smoke", "fuzz"]
+             "mirror", "xwsearch", "replay", "rmstate", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -832,6 +845,20 @@ def tier_replay(rep):
                             "if the behavior change is expected")
 
 
+def tier_rmstate(rep, out_dir):
+    """The state format's self-checks, decoders and include isolation (test_selfcheck_state.py)."""
+    work = os.path.join(out_dir, "rmstate")
+    r = subprocess.run([sys.executable, "train/test_selfcheck_state.py", "--binary", runner.BINARY,
+                        "--out-dir", work], cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_selfcheck_state.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("rmstate", msg)
+        print("  reproduce: train/.venv/bin/python train/test_selfcheck_state.py "
+              "[--part corpus|fuzz|scenarios|decode|isolation]", flush=True)
+
+
 def _run_capturing(out_path, run_fn):
     """Run run_fn() capturing both Python stdout AND the engine subprocess's
     stderr (fd 2, which NarrativeEnv inherits) into out_path. Returns whatever
@@ -1205,6 +1232,7 @@ _TIER_FNS = {
     "mirror": lambda rep, args, out_dir: tier_mirror(rep),
     "xwsearch": lambda rep, args, out_dir: tier_xwsearch(rep),
     "replay": lambda rep, args, out_dir: tier_replay(rep),
+    "rmstate": lambda rep, args, out_dir: tier_rmstate(rep, out_dir),
     "smoke": tier_smoke,
     "fuzz": tier_fuzz,
     "actor": lambda rep, args, out_dir: tier_actor(rep),
@@ -1247,13 +1275,13 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "scenarios", "obsinv", "pergame", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "scenarios", "obsinv", "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "scenarios", "obsinv", "snapshot", "sbselfplay",
+    if {"smoke", "fuzz", "vocab", "rmstate", "scenarios", "obsinv", "snapshot", "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
