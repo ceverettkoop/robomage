@@ -84,6 +84,8 @@ void Knowledge::feed(const std::string &payload) {
         error("a frame before the SCHEMA frame");
         return;
     }
+    // Level off reads nothing from a STATE frame: its tables are k_meta alone.
+    if (kind == rmstate::FrameKind::STATE && level_ == rmstate::KnowledgeLevel::OFF) return;
     rmstate::DecodedFrame frame;
     const rmstate::DecodeResult r = rmstate::decode_frame(payload, schema_, &frame);
     if (!r.ok()) {
@@ -665,10 +667,15 @@ bool Knowledge::deserialize(const std::string &in) {
     if (r.u32() != STATE_MAGIC || r.u16() != STATE_VERSION) return false;
     level_ = static_cast<rmstate::KnowledgeLevel>(r.u8());
     viewer_ = r.i32();
+    const bool had_schema = have_schema_;
     have_schema_ = r.u8() != 0;
-    schema_payload_ = r.str();
+    std::string payload = r.str();
     if (!r.ok) return false;
-    if (have_schema_) {
+    // A restore into the instance that saved the state (an engine snapshot) finds the same SCHEMA
+    // frame already decoded.
+    const bool same_schema = had_schema && payload == schema_payload_;
+    schema_payload_ = std::move(payload);
+    if (have_schema_ && !same_schema) {
         schema_ = rmstate::Schema{};
         if (!rmstate::decode_schema_frame(schema_payload_, &schema_).ok()) return false;
     }

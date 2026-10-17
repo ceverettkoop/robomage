@@ -17,11 +17,14 @@
 #include "encode.h"
 #include "events.h"
 #include "handles.h"
+#include "knowledge_feed.h"
 #include "schema.h"
 #include "selfcheck.h"
 
 static void stream_write(const std::string &payload);
 static void stream_match_frames_once(Zone::Ownership seat);
+static void stream_state_frame(
+    Zone::Ownership seat, const std::vector<LegalAction> &actions, Zone::Ownership decider, bool terminal);
 static int read_reply();
 
 // The descriptor stdout had at startup, which carries the frames (stdout itself is pointed at
@@ -72,10 +75,21 @@ static void stream_write(const std::string &payload) {
 
 static void stream_match_frames_once(Zone::Ownership seat) {
     if (stream_match_frames_sent[seat]) return;
-    stream_write(encode_schema_frame(seat));
-    stream_write(encode_cards_frame(seat));
-    stream_write(encode_decklists_frame(seat));
+    for (const std::string &payload :
+        {encode_schema_frame(seat), encode_cards_frame(seat), encode_decklists_frame(seat)}) {
+        knowledge_feed_match_frame(ObsConsumer::STREAM, seat, payload);
+        stream_write(payload);
+    }
     stream_match_frames_sent[seat] = true;
+}
+
+// The seat's STATE frame from its stream queue, with the stream's knowledge tables.
+static void stream_state_frame(
+    Zone::Ownership seat, const std::vector<LegalAction> &actions, Zone::Ownership decider, bool terminal) {
+    std::string payload =
+        encode_state_frame(seat, actions, decider, take_obs_events(seat, ObsConsumer::STREAM), terminal);
+    knowledge_append_tables(ObsConsumer::STREAM, seat, &payload);
+    stream_write(payload);
 }
 
 // One reply line from stdin, as the BQUERY path reads it: the integer it starts with, else -1
@@ -96,7 +110,7 @@ static int read_reply() {
 int rmstate_stream_exchange(const std::vector<LegalAction> &actions) {
     const Zone::Ownership seat = rmstate_deciding_seat();
     stream_match_frames_once(seat);
-    stream_write(encode_state_frame(seat, actions, seat, take_obs_events(seat, ObsConsumer::STREAM)));
+    stream_state_frame(seat, actions, seat, false);
     std::fflush(stream_out);
     return read_reply();
 }
@@ -108,7 +122,7 @@ void rmstate_match_over() {
     if (!machine_format_rmstate) return;
     for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         stream_match_frames_once(seat);
-        stream_write(encode_state_frame(seat, {}, Zone::UNKNOWN, take_obs_events(seat, ObsConsumer::STREAM), true));
+        stream_state_frame(seat, {}, Zone::UNKNOWN, true);
     }
     std::fflush(stream_out);
 }

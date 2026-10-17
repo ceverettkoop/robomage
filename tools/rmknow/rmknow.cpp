@@ -1,6 +1,7 @@
 // rmknow: one seat's knowledge from a recorded RMSTATE stream (docs/knowledge_store.md §2, §7).
 //
-//   rmknow [--viewer A|B] [--in FILE] [--out FILE] [--text | --quiet] [--truth] < frames.bin > knowledge.bin
+//   rmknow [--viewer A|B] [--level off|expert] [--in FILE] [--out FILE] [--text | --quiet] [--truth]
+//          [--isolation] [--stats] < frames.bin > knowledge.bin
 //   rmknow --selftest
 //   rmknow --exactness N
 //
@@ -8,8 +9,11 @@
 // the most nodes and junctions either player's network held, the largest and mean serialised state
 // (Knowledge::serialize) and the percentiles and histogram of k_meta's solver steps.
 // Reads RMSTATE records (an --rmstate-dump file, or a --machine-format rmstate stream), keeps the
-// chosen seat's frames (SCHEMA, CARDS, DECKLISTS, STATE) and runs the knowledge sidecar on them.
-// With several viewers in the stream --viewer picks one (default: the stream's first frame's seat).
+// chosen seat's frames (SCHEMA, CARDS, DECKLISTS, STATE) and runs the knowledge sidecar on them at
+// --level (default expert). With several viewers in the stream --viewer picks one (default: the
+// stream's first frame's seat). A STATE frame's own k_* tables (the engine's, tables 90 and up)
+// are split off before it is fed, so the sidecar sees each frame exactly as the engine's instance
+// for that seat and writer did.
 // Output, per STATE frame of that seat:
 //   - default: one RMSTATE record holding the frame's k_* tables (the stream starts with the seat's
 //     SCHEMA frame, so the output decodes like any RMSTATE stream);
@@ -22,6 +26,11 @@
 // k_seen game count must not exceed the copies the player really has; a violation is an
 // `ERROR: rmknow truth…` line. The last stderr line is the summary
 //   RMKNOW: viewer=<A|B> frames=<n> errors=<n>[ truth_frames=<n> truth_errors=<n>]
+// --isolation (implies --quiet unless --text) compares, for every STATE frame of the seat, the k_*
+// tables this run computes with the ones the frame carries, byte for byte (docs/knowledge_store.md
+// §7, isolation: the engine's instance is a pure function of the seat's frames from that writer).
+// A difference, or a frame without k_* tables, is an `ERROR: rmknow isolation…` line naming the
+// first differing table and row, and the summary adds isolation_frames=<n> isolation_errors=<n>.
 // Exit status 0 when there was no error.
 //
 // --selftest runs the update-rule unit tests on synthetic event streams (selftest.cpp).
@@ -46,11 +55,13 @@ namespace {
 
 struct Options {
         int viewer = knowledge::NO_SEAT;
+        rmstate::KnowledgeLevel level = rmstate::KnowledgeLevel::EXPERT;
         std::string in;
         std::string out;
         bool text = false;
         bool quiet = false;
         bool truth = false;
+        bool isolation = false;
         bool selftest = false;
         int exactness = 0;
         bool stats = false;
@@ -85,6 +96,9 @@ static void truth_error(const std::string &what, const knowledge::Snapshot &omni
 static int count_of(const std::map<int, int> &m, int card);
 static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st);
 static void print_stats(Stats *st);
+static std::string tables_frame(const std::string &blocks, uint32_t n, rmstate::Viewer viewer, uint64_t hash);
+static std::string describe_k_difference(const knowledge::Knowledge &know, const std::string &engine, uint32_t n_engine,
+    const std::string &mine, uint32_t n_mine, rmstate::Viewer viewer);
 
 static bool parse_args(int argc, char **argv, Options *opt) {
     for (int i = 1; i < argc; ++i) {
@@ -100,6 +114,18 @@ static bool parse_args(int argc, char **argv, Options *opt) {
                 std::fprintf(stderr, "rmknow: --viewer takes A or B, got '%s'\n", v.c_str());
                 return false;
             }
+        } else if (a == "--level" && has_value) {
+            const std::string v = argv[++i];
+            if (v == "off")
+                opt->level = rmstate::KnowledgeLevel::OFF;
+            else if (v == "expert")
+                opt->level = rmstate::KnowledgeLevel::EXPERT;
+            else {
+                std::fprintf(stderr, "rmknow: --level takes off or expert, got '%s'\n", v.c_str());
+                return false;
+            }
+        } else if (a == "--isolation") {
+            opt->isolation = true;
         } else if (a == "--in" && has_value) {
             opt->in = argv[++i];
         } else if (a == "--out" && has_value) {
@@ -122,9 +148,9 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             }
         } else if (a == "--help" || a == "-h") {
             std::fprintf(stderr,
-                "usage: rmknow [--viewer A|B] [--in FILE] [--out FILE] [--text | --quiet] [--truth] [--stats] < frames "
-                "> "
-                "knowledge\n"
+                "usage: rmknow [--viewer A|B] [--level off|expert] [--in FILE] [--out FILE] [--text | --quiet] "
+                "[--truth]\n"
+                "              [--isolation] [--stats] < frames > knowledge\n"
                 "       rmknow --selftest\n"
                 "       rmknow --exactness N\n");
             return false;
@@ -133,7 +159,44 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             return false;
         }
     }
+    if (opt->isolation && !opt->text) opt->quiet = true;
     return true;
+}
+
+// A STATE frame holding only `blocks` (n table blocks) beside an empty string pool, for decoding.
+static std::string tables_frame(const std::string &blocks, uint32_t n, rmstate::Viewer viewer, uint64_t hash) {
+    std::string frame = rmstate::FrameWriter(rmstate::FrameKind::STATE, viewer, hash).finish();
+    if (!rmstate::append_frame_blocks(&frame, blocks, n).ok()) return std::string();
+    return frame;
+}
+
+// Where the frame's own k_* tables (`engine`) and this run's (`mine`) first differ: the table and
+// row, with both rows' cells.
+static std::string describe_k_difference(const knowledge::Knowledge &know, const std::string &engine, uint32_t n_engine,
+    const std::string &mine, uint32_t n_mine, rmstate::Viewer viewer) {
+    rmstate::DecodedFrame a, b;
+    if (!rmstate::decode_frame(tables_frame(engine, n_engine, viewer, know.schema_hash()), know.schema(), &a).ok() ||
+        !rmstate::decode_frame(tables_frame(mine, n_mine, viewer, know.schema_hash()), know.schema(), &b).ok())
+        return "the k_* tables differ (and do not decode)";
+    const auto row_text = [](const rmstate::DecodedTable &t, size_t r) {
+        std::string out;
+        for (size_t c = 0; c < t.def->columns.size(); ++c)
+            out += (c ? " " : "") + t.def->columns[c].name + "=" + std::to_string(t.rows[r][c].bits);
+        return out;
+    };
+    for (const rmstate::TableDef &def : know.schema().tables) {
+        const uint16_t id = static_cast<uint16_t>(def.id);
+        if (id < static_cast<uint16_t>(rmstate::TableId::K_META)) continue;
+        const rmstate::DecodedTable *x = a.table(id);
+        const rmstate::DecodedTable *y = b.table(id);
+        const size_t nx = x ? x->rows.size() : 0, ny = y ? y->rows.size() : 0;
+        for (size_t r = 0; r < std::max(nx, ny); ++r) {
+            const std::string ex = r < nx ? row_text(*x, r) : "(none)";
+            const std::string my = r < ny ? row_text(*y, r) : "(none)";
+            if (ex != my) return def.name + " row " + std::to_string(r) + ": frame has " + ex + ", rmknow has " + my;
+        }
+    }
+    return "the k_* tables differ in their layout";
 }
 
 static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st) {
@@ -303,14 +366,14 @@ int main(int argc, char **argv) {
         }
     }
 
-    knowledge::Knowledge know;
+    knowledge::Knowledge know(opt.level);
     rmstate::RecordReader reader(in);
     std::string payload;
     rmstate::DecodeResult res;
     rmstate::Schema omni_schema;
     bool have_omni_schema = false;
     knowledge::Codes omni_codes;
-    size_t frames = 0, errors = 0, truth_frames = 0, truth_errors = 0;
+    size_t frames = 0, errors = 0, truth_frames = 0, truth_errors = 0, isolation_errors = 0;
     knowledge::KRows last_rows;
     knowledge::Snapshot last_snap;
     bool have_last = false;
@@ -357,7 +420,19 @@ int main(int argc, char **argv) {
         const int seat = viewer == rmstate::Viewer::A ? 0 : 1;
         if (opt.viewer == knowledge::NO_SEAT) opt.viewer = seat;
         if (seat != opt.viewer) continue;
-        know.feed(payload);
+        // A STATE frame is fed without the k_* tables the engine appended to it.
+        std::string fed = payload, embedded;
+        uint32_t n_embedded = 0;
+        if (kind == rmstate::FrameKind::STATE) {
+            const rmstate::DecodeResult split = rmstate::split_frame_blocks(
+                payload, static_cast<uint16_t>(rmstate::TableId::K_META), &fed, &embedded, &n_embedded);
+            if (!split.ok()) {
+                std::fprintf(stderr, "ERROR: rmknow: record %zu: %s\n", reader.count(), split.message.c_str());
+                ++errors;
+                continue;
+            }
+        }
+        know.feed(fed);
         for (const std::string &e : know.take_errors()) {
             ++errors;
             if (errors <= 200) std::fprintf(stderr, "%s\n", e.c_str());
@@ -369,12 +444,29 @@ int main(int argc, char **argv) {
         }
         if (kind != rmstate::FrameKind::STATE) continue;
         ++frames;
+        if (opt.isolation) {
+            std::string mine;
+            uint32_t n_mine = 0;
+            std::string what;
+            if (n_embedded == 0)
+                what = "the frame carries no k_* tables";
+            else if (!know.table_blocks(&mine, &n_mine))
+                what = "no k_* tables before the SCHEMA frame";
+            else if (mine != embedded || n_mine != n_embedded)
+                what = describe_k_difference(know, embedded, n_embedded, mine, n_mine, viewer);
+            if (!what.empty()) {
+                ++isolation_errors;
+                if (isolation_errors <= 50)
+                    std::fprintf(stderr, "ERROR: rmknow isolation: frame %zu (game %u decision %u): %s\n", frames,
+                        know.frame_game(), know.frame_decision(), what.c_str());
+            }
+        }
         if (opt.stats && know.game_active()) add_stats(know, know.rows(), &stats);
         if (opt.truth) {
             rmstate::DecodedFrame frame;
             std::string err;
             last_rows = know.rows();
-            have_last = rmstate::decode_frame(payload, know.schema(), &frame).ok() &&
+            have_last = rmstate::decode_frame(fed, know.schema(), &frame).ok() &&
                         knowledge::read_snapshot(frame, know.codes(), &last_snap, &err) && know.game_active();
         }
         if (opt.quiet) continue;
@@ -394,9 +486,10 @@ int main(int argc, char **argv) {
     }
     std::fprintf(stderr, "RMKNOW: viewer=%s frames=%zu errors=%zu", opt.viewer == 1 ? "B" : "A", frames, errors);
     if (opt.truth) std::fprintf(stderr, " truth_frames=%zu truth_errors=%zu", truth_frames, truth_errors);
+    if (opt.isolation) std::fprintf(stderr, " isolation_frames=%zu isolation_errors=%zu", frames, isolation_errors);
     std::fprintf(stderr, "\n");
     if (opt.stats) print_stats(&stats);
     if (in != stdin) std::fclose(in);
     if (out != stdout) std::fclose(out);
-    return errors == 0 && truth_errors == 0 ? 0 : 1;
+    return errors == 0 && truth_errors == 0 && isolation_errors == 0 ? 0 : 1;
 }

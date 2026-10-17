@@ -61,6 +61,8 @@ struct GameSnapshot {
     // Placeholder captured/restored now, consumed in Stage 3 (determinization
     // seed salt); always 0 until then so the plumbing is complete and inert.
     unsigned int sim_seed_salt = 0;
+    // The sidecar hooks' state (snapshot_set_sidecar_hooks); empty when none were registered.
+    std::string sidecar;
 };
 
 GameSnapshot g_slots[N_SNAPSHOT_SLOTS];
@@ -68,6 +70,10 @@ GameSnapshot g_slots[N_SNAPSHOT_SLOTS];
 // See snapshot_set_post_restore_hook (snapshot.h): re-derives the rule-613
 // derived state after every restore, before a resumed suspended flow reads it.
 void (*g_post_restore_hook)() = nullptr;
+
+// See snapshot_set_sidecar_hooks (snapshot.h).
+void (*g_sidecar_save)(std::string &blob) = nullptr;
+void (*g_sidecar_restore)(const std::string &blob) = nullptr;
 
 // See snapshot_set_quiet (snapshot.h).
 bool g_quiet = false;
@@ -108,6 +114,10 @@ bool snapshot_save(int slot) {
     s.sideboard_phase = sideboard_phase;
     s.sideboard_phase_player = sideboard_phase_player;
     s.sim_seed_salt = g_sim_seed_salt;
+    if (g_sidecar_save)
+        g_sidecar_save(s.sidecar);
+    else
+        s.sidecar.clear();
     s.live = true;
 #ifndef NDEBUG
     // Counterpart of the [restore] trace: every save, so an overwritten search
@@ -165,6 +175,7 @@ static bool restore_slot(int slot) {
     sideboard_phase = s.sideboard_phase;
     sideboard_phase_player = s.sideboard_phase_player;
     g_sim_seed_salt = s.sim_seed_salt;
+    if (g_sidecar_restore) g_sidecar_restore(s.sidecar);
 #ifndef NDEBUG
     // Debug trace for the az_mcts world-consistency hunt: what suspended-flow
     // state each restore hands back to the loop, plus enough authoritative
@@ -192,6 +203,11 @@ static bool restore_slot(int slot) {
 }
 
 void snapshot_set_post_restore_hook(void (*hook)()) { g_post_restore_hook = hook; }
+
+void snapshot_set_sidecar_hooks(void (*save)(std::string &blob), void (*restore)(const std::string &blob)) {
+    g_sidecar_save = save;
+    g_sidecar_restore = restore;
+}
 
 void snapshot_set_quiet(bool quiet) { g_quiet = quiet; }
 

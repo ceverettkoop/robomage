@@ -1,10 +1,11 @@
 # Knowledge store: the actor-side memory and inference sidecar (design)
 
-Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md). **T9 and T10 are implemented**
-(`src/knowledge/`, `tools/rmknow/`): the model, the update rules, bound propagation, the per-frame
-consistency check, the `k_*` rows and serialisation (T9), the exact solver, compaction and the
-enumerator tests (T10); section 9 says how. The engine integration (T11) and the gate checks (T12)
-are not yet. It builds on
+Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md). **T9, T10 and T11 are
+implemented** (`src/knowledge/`, `tools/rmknow/`, `src/state_format/knowledge_feed.*`): the model,
+the update rules, bound propagation, the per-frame consistency check, the `k_*` rows and
+serialisation (T9), the exact solver, compaction and the enumerator tests (T10), and the engine
+integration: per-seat instances appending `k_*` to every seat frame, the snapshot hook and
+`rmknow --isolation` (T11); section 9 says how. The gate checks (T12) are not yet. It builds on
 [`state_format.md`](state_format.md): the engine
 sends only what each viewer explicitly knows right now. This component supplies everything a
 player with **perfect recall and perfect logical inference** would know on top of that, in one
@@ -17,10 +18,11 @@ consistent form for every kind of agent.
   observation events. Its output is a set of **knowledge tables** attached to that viewer's
   frames.
 - **Level per seat:**
-  - `off` — the knowledge tables are present but empty;
+  - `off` — the knowledge tables are present but empty: the `k_meta` row alone, with level off;
   - `expert` — full recall plus every sound logical deduction (section 4).
 
-  Flags are `--knowledge-a off|expert` / `--knowledge-b …`; the default is `expert`.
+  Flags are `--knowledge-a off|expert` / `--knowledge-b …`; the default is `expert`. The level
+  changes only the seat's `k_*` tables, never play.
 - **The same output for every consumer:**
   - the C++ CLI renders it as a "you know / you can deduce" panel;
   - the scripted agent decodes it like any other table;
@@ -41,9 +43,9 @@ consistent form for every kind of agent.
 | Piece | Location |
 |---|---|
 | core (model, update rules, solver) | `src/knowledge/` (C++17, `-fno-exceptions`), linked into `bin/robomage` and `rmknow` |
-| engine integration | per-seat instance fed from that seat's outbound frame bytes, i.e. the same bytes `--machine` writes, decoded through `src/state_format/decode.*`; it appends `k_*` tables before emission |
+| engine integration | `src/state_format/knowledge_feed.{h,cpp}` (engine side): one instance per RMSTATE frame writer (`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) and seat, fed with exactly the bytes that writer builds for that seat, decoded through `src/state_format/decode.*`; it appends the `k_*` tables to each of the seat's STATE frames before the writer emits it (section 9.6) |
 | in-process agents and the CLI | read the decoded knowledge tables through the same decoder as everything else |
-| `rmknow` | `tools/rmknow/` → `bin/<config>/rmknow` (`make rmknow`, part of `make`): `rmknow [--viewer A\|B] < frames.bin > knowledge.bin`; used by the isolation test and for offline analysis of recorded games (section 9) |
+| `rmknow` | `tools/rmknow/` → `bin/<config>/rmknow` (`make rmknow`, part of `make`): `rmknow [--viewer A\|B] [--level off\|expert] < frames.bin > knowledge.bin`; `--isolation` recomputes every frame's `k_*` from the frames and compares them with the engine's (the isolation test); offline analysis of recorded games (section 9) |
 
 ## 3. Model
 
@@ -264,10 +266,10 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   leak changed what the agent saw. Those games are re-recorded, each with its classification
   as the reason.
 
-## 9. Implementation (step 1 T9, T10)
+## 9. Implementation (step 1 T9, T10, T11)
 
-Code: `src/knowledge/` (std-only; `Knowledge` in `knowledge.h` is the entry point) and the
-standalone driver `tools/rmknow/`.
+Code: `src/knowledge/` (std-only; `Knowledge` in `knowledge.h` is the entry point), the
+standalone driver `tools/rmknow/` and the engine side `src/state_format/knowledge_feed.*`.
 
 ### 9.1 Data model (section 3)
 
@@ -465,3 +467,80 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
   going beyond the closed form into the search; `--exactness 400`: 13,606 and 2,102. Deliberately broken, each of the leaf
   formula, the series-elimination condition, the propagation, the flow bound and its cycle
   cancelling is caught.
+
+### 9.6 Engine integration (T11)
+
+**Placement and lifetime.** `src/state_format/knowledge_feed.{h,cpp}` (engine side; `src/knowledge/`
+still sees no engine header) keeps one `Knowledge` per RMSTATE frame writer (`ObsConsumer`:
+`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) and seat, at most six. An
+instance is made at its writer's first frame for that seat and lives outside `Game` for the whole
+match, so match memory crosses the per-game reset (the instance resets its networks itself at
+`game_start`). The writer feeds it the seat's SCHEMA, CARDS and DECKLISTS frames as it writes them,
+then every STATE frame of the seat exactly as encoded, its events drained from that writer's own
+queue (terminal frames included). `Knowledge::table_blocks` gives the `k_*` tables as table blocks
+and `rmstate::append_frame_blocks` adds them to the frame before the writer emits it. Their ids
+(90-95) are the highest and they have no text column, so the result is the frame one `FrameWriter`
+would have written with those rows (the self-check's roundtrip confirms it at every frame). The
+omniscient frames carry no `k_*` tables. With no writer on, no instance exists and nothing runs.
+
+**Levels.** `--knowledge-a` / `--knowledge-b off|expert` (default expert) choose the level each
+seat's instances are made with. At level off `Knowledge::feed` decodes only the match frames and the
+STATE frames get the `k_meta` row alone (level off, exact 0, steps 0). The level changes only the
+`k_*` tables: play, the RNG, BQUERY and every other table are the same. It is an output option like
+the writers themselves: the RMLOG header does not record it and `--replay` honours it (a replay
+with the same level reproduces the frames).
+
+**Cadence and determinism: one instance per writer.** An instance's output at a frame depends on
+the frames it was fed before, not only on the events and the current snapshot: `k_meta.steps`
+counts propagation, which is incremental per frame, and compaction and the merging of runs nothing
+tells apart run per frame, so the pools a frame reports (which library runs stay split) can differ
+too. Fed the seat's frames at every decision (the dump) or only at the seat's own decisions (the
+stream), two instances report the same facts in different shapes: over three stream sessions, 11-38%
+of a seat's stream frames had another `k_meta` than the dump's frame for the same decision and up to
+25% other pool rows (a mulligan's bottomed card kept as a run of its own beside the rest of the
+library), each frame exact. Rather than make every output cadence-free, every writer feeds an
+instance of its own with exactly the frames it emits, so:
+- a writer's `k_*` tables are a pure function of the seat's frames from that writer:
+  `rmknow --isolation` on those frames (a dump's seat frames, or a saved stream) recomputes them
+  byte for byte;
+- one writer's bytes never depend on another being on: the stream is byte-identical with and
+  without `--rmstate-dump` and `--selfcheck-state`, as T5 made it for the rest of the frame;
+- the dump's and the self-check's instances see the same frames (every decision, each from its own
+  queue), so their tables agree; the self-check has its own so that it runs without a dump.
+
+**Snapshots.** The first instance registers sidecar hooks with the engine snapshot
+(`snapshot_set_sidecar_hooks`, `src/snapshot.h`): every `snapshot_save` stores every instance's
+`Knowledge::serialize` blob (a presence byte, then length and state, per writer and seat) and every
+restore puts them back with `deserialize` (an instance the blob does not hold is dropped). A restore
+into the live instance finds the same SCHEMA payload and does not decode it again; the solver's memo
+is not part of the state and outputs do not depend on it. Without a writer no hook is registered, so
+snapshots cost nothing more. With one, a snapshot carries about 45-65 KB per instance (two to six),
+mostly the SCHEMA payload, and serialising or restoring one instance takes about 20-35 us in a
+release build (150-300 us debug). The stream is refused under `--search-server` and the self-check
+is off there, so search pays this only with `--rmstate-dump` on.
+
+**Self-checks.** The self-check's instance takes each real frame exactly once (a decision's, and the
+terminal one); the scrambled and permuted builds are compared with the frame as encoded, before its
+`k_*` tables, which are a function of the instance and those bytes alone (state_format §10). The
+snapshot check saves after the match frames are fed and before the decision's frames are, re-feeds
+the saved decision's re-encoded frames to the restored instances and compares the frames with their
+`k_*` tables. The instance's consistency errors are `selfcheck-state knowledge` failures. The dump's
+and stream's instances print theirs as `ERROR: knowledge[…] … (dump frames)` / `(stream frames)`.
+
+**Isolation.** `rmknow --isolation [--viewer A|B] [--level off|expert]` splits each of the seat's
+STATE frames at table 90 (`rmstate::split_frame_blocks`), feeds the rest, computes
+`Knowledge::table_blocks` and compares them with the split-off tables byte for byte (an `ERROR:
+rmknow isolation` line names the first differing table and row). `train/test_rmstate.py --isolation
+FILE…` runs it for both seats (`check_knowledge_isolation`), and `test_rmstate.py` alone runs it on
+its fuzz dumps and its stream sessions' dumps and saved streams (`stream_<seed>.stream.rms`); the
+gate does not run it yet (T12). On five stream sessions (bo1 and bo3, one under
+`--closed-decklist`, one with seat A at level off), each with its dump, a dump with the self-check
+sampled at every decision, and the off variants: 0 differences over 14,514 seat frames.
+
+**Cost.** Feeding a seat frame and building its tables takes 0.16-1.0 ms on average per game in a
+release build (most in reanimator vs uw_control bo3: 805 decisions with a dump took 3.3 s at
+expert, 1.7 s at off and 0.8 s with no dump, so about 1 ms per seat frame) and 1.5-9 ms in a debug
+one (22.7 s, 8.5 s, 3.3 s). A dump pays it twice per decision, the stream once per decision of the
+seat, the self-check twice more. The `rmstate` gate tier (corpus and fuzz under the self-check,
+two fuzz dumps, two stream sessions) takes 2 min 40 s on 4 cores, against 2 min 30 s before the
+sidecar was on.

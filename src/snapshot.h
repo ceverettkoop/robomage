@@ -1,5 +1,8 @@
 #ifndef SNAPSHOT_H
 #define SNAPSHOT_H
+
+#include <string>
+
 // In-process deep-copy snapshot/restore of the complete per-game state
 // (cur_game + ECS + card_db + match revealed arrays), for MCTS search.
 //
@@ -35,4 +38,11 @@ void snapshot_set_quiet(bool quiet);
 // world-consistency violation. init_ecs registers apply_continuous_effects
 // here so every restore re-derives the statics at the same choke point.
 void snapshot_set_post_restore_hook(void (*hook)());
+
+// Sidecar state hooks: state kept outside cur_game, the ECS and the match stores that a restored
+// decision must find as it was (the RMSTATE knowledge instances, state_format/knowledge_feed.h,
+// which register them with their first instance). Every snapshot_save calls `save` for a blob the
+// slot keeps, and every restore of that slot calls `restore` with it; a slot saved before the
+// hooks were registered restores an empty blob. Unregistered (the default), nothing is saved.
+void snapshot_set_sidecar_hooks(void (*save)(std::string &blob), void (*restore)(const std::string &blob));
 #endif

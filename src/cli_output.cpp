@@ -278,6 +278,11 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (- = stdin), re-encode it and compare the bytes; ERROR:\n");
     printf("                      lines and a summary on stderr, exit status 1 on any\n");
     printf("                      mismatch. With --state-dump json, the JSON lines on stdout\n");
+    printf("  --knowledge-a <off|expert>  --knowledge-b <off|expert>\n");
+    printf("                      That seat's knowledge sidecar in its RMSTATE frames (the\n");
+    printf("                      k_* tables: recall and sound deduction from the seat's\n");
+    printf("                      own frames; off = the k_meta row alone). Default expert;\n");
+    printf("                      play is unchanged\n");
     printf("  --selfcheck-state   Check the RMSTATE frames at every decision: decode and\n");
     printf("                      re-encode byte-identical, no hidden identity read (frames\n");
     printf("                      and events rebuilt with hidden cards substituted), complete\n");
@@ -299,7 +304,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
     printf("                      --broadcast-steps, --trace-visibility, --trace-handles,\n");
     printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
-    printf("                      --selfcheck-state)\n");
+    printf("                      --knowledge-a/-b, --selfcheck-state)\n");
     printf("                      still apply; --log-decisions has no effect\n");
     printf("\nTest setup (card lists are comma-separated; applied at the start of each game):\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");

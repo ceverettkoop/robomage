@@ -11,7 +11,8 @@
 // "RMSTATE <nbytes>\n<payload>" records while the normal protocol runs unchanged: for each viewer,
 // at its first decision of the match its SCHEMA, CARDS and DECKLISTS frames, then a STATE frame
 // at every decision, and once the match is over a terminal STATE frame (header.terminal = 1, no
-// menu) with its last events. A "%p" in FILE is replaced by the engine's process id. Encoding only
+// menu) with its last events. A seat's STATE frames end with the k_* tables of the dump's own
+// knowledge instance for that seat (state_format/knowledge_feed.h). A "%p" in FILE is replaced by the engine's process id. Encoding only
 // reads the game (it issues handles, which play never reads), so play is the same with or without
 // the dump.
 //

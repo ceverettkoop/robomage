@@ -436,6 +436,8 @@ reads one integer on stdin; other stdout lines are narrative. Emitter: `emit_mac
 `--machine-format rmstate` instead writes the deciding seat's RMSTATE frames (`RMSTATE <nbytes>\n`
 + payload, `docs/state_format.md` §9) as the only stdout output (everything else goes to stderr),
 answered by the same one integer, plus a terminal frame per seat at match end; the default is unchanged.
+Every seat's STATE frame (stream and `--rmstate-dump`) ends with that seat's knowledge-sidecar tables
+(`k_*`, `--knowledge-a/-b off|expert`, default expert; `docs/knowledge_store.md` §9.6).
 ```
 BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 float32[STATE_SIZE] state   (priority player's = "self" perspective)
@@ -562,6 +564,9 @@ sections above are not repeated here.
 - `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
   shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
   (match-long `seq`), drained into each STATE frame; `--trace-events`
+- `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
+  per frame writer (dump, stream, self-check) and seat, fed that writer's frames, appending `k_*` to
+  each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks (`snapshot_set_sidecar_hooks`)
 - `src/state_format/selfcheck.{h,cpp}` — `--selfcheck-state`: per-decision roundtrip, scramble
   (frames and events rebuilt with hidden identities rotated), complete and, sampled, permutation
   (hidden zones physically permuted) and snapshot (save → K decisions → exact restore) checks;
@@ -579,8 +584,8 @@ sections above are not repeated here.
   frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; std + `state_format/decode.h`/
   `schema.h` only; `docs/knowledge_store.md` §9)
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
-  (`--viewer A|B`, `--text`, `--truth` vs the omniscient frames, `--stats`, `--selftest`,
-  `--exactness N` vs an independent world enumerator)
+  (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
+  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator)
 
 **AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
 Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):
@@ -643,7 +648,7 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
 - `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
-  JSON, the `--machine-format rmstate` stream vs the dump
+  JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
 - `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
   scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)

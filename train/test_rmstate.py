@@ -12,15 +12,23 @@ Checks, over freshly played games (or the dumps given on the command line):
      ``-1`` confirms, a game concession past a decision cap): stdout holds only RMSTATE records;
      each seat gets its SCHEMA / CARDS / DECKLISTS frames before its first STATE frame and a
      terminal frame (``header.terminal``) at match end; every STATE frame equals the dump's frame
-     for that seat and decision apart from the event tables; each seat's events, concatenated,
-     equal the dump's; and the stream's bytes are the same with and without ``--rmstate-dump``;
+     for that seat and decision apart from the event tables and the knowledge tables (``k_*``: each
+     writer feeds a knowledge instance of its own, so the stream's tables come from the seat's
+     stream frames and the dump's from its every-decision frames); each seat's events,
+     concatenated, equal the dump's; and the stream's bytes are the same with and without
+     ``--rmstate-dump``;
   4. refusals — a STATE frame with another version, another schema hash, an unknown kind or a
      known table at another row width is refused by both decoders; an unknown table block is
      skipped by both (listed under ``"skipped"``), and the engine will not re-encode it;
   5. name-a-card — a Disruptor Flute preset's opening name-a-card menu offers the opponent's
      registered cards with open decklists, and every vocab card (in name order, no object behind a
      candidate; CARDS lists the whole vocab, DECKLISTS only the seat's own) under
-     ``--closed-decklist`` (``docs/state_format.md`` register 11a).
+     ``--closed-decklist`` (``docs/state_format.md`` register 11a);
+  6. knowledge isolation (``check_knowledge_isolation``; ``run()`` and ``--isolation`` only, not
+     part of the ``rmstate`` tier) — ``rmknow --isolation`` on each seat's frames of a dump or a
+     saved stream (``stream_<seed>.stream.rms``) recomputes every frame's ``k_*`` tables from the
+     frames alone and finds them byte-identical to the ones the engine appended
+     (``docs/knowledge_store.md`` §7, §9.6).
 
 Games: bo1 and bo3 explore-fuzz games through ``runner.run_match`` with the dump flags passed by
 ``$ROBOMAGE_ENGINE_FLAGS``, and the stream sessions on league matchups (bo1 and bo3, and one under
@@ -34,6 +42,7 @@ which the ``rmstate`` gate tier (``train/test_selfcheck_state.py``) calls on its
     train/.venv/bin/python train/test_rmstate.py              # play games, check everything
     train/.venv/bin/python train/test_rmstate.py --quick      # fewer / shorter games
     train/.venv/bin/python train/test_rmstate.py --dumps F…   # check existing dumps (1, 2 only)
+    train/.venv/bin/python train/test_rmstate.py --isolation F…   # check 6 on dumps / saved streams
 
 Torch-free; needs the engine (debug tier by default, ``--binary`` to override).
 """
@@ -275,7 +284,52 @@ def _events(frames):
 
 
 def _without_events(frame):
-    return {k: v for k, v in frame.tables.items() if not k.startswith("event")}
+    """The frame's tables apart from the event and knowledge tables (each writer drains its own
+    event queue and feeds its own knowledge instance)."""
+    return {k: v for k, v in frame.tables.items() if not k.startswith(("event", "k_"))}
+
+
+def rmknow_binary(binary=BINARY):
+    """The rmknow tool built beside `binary` (bin/<config>/rmknow)."""
+    return os.path.join(os.path.dirname(os.path.abspath(binary)), "rmknow")
+
+
+def check_knowledge_isolation(path, binary=BINARY, levels=("expert", "expert")):
+    """Check 6 on one RMSTATE stream file (a --rmstate-dump, or a saved --machine-format rmstate
+    stream): for each seat, ``rmknow --isolation`` recomputes the k_* tables of every one of that
+    seat's STATE frames from the frames themselves and compares them with the engine's, byte for
+    byte. `levels` are the seats' --knowledge-a/-b levels. Returns failure messages."""
+    fails = []
+    name = os.path.basename(path)
+    summaries = []
+    for seat, level in zip(("A", "B"), levels):
+        r = subprocess.run([rmknow_binary(binary), "--viewer", seat, "--level", level, "--isolation", "--in", path],
+                           capture_output=True, timeout=_TIMEOUT_S)
+        err = r.stderr.decode(errors="replace").splitlines()
+        summary = [ln for ln in err if ln.startswith("RMKNOW:")]
+        if r.returncode != 0 or not summary or "isolation_frames=0 " in summary[0]:
+            bad = [ln for ln in err if "ERROR:" in ln]
+            fails.append(f"{name} viewer {seat}: rmknow --isolation exit {r.returncode}: {bad[:3]} {summary}")
+        summaries += summary
+    if not fails:
+        print(f"  OK   isolation {name}: " + "; ".join(summaries), flush=True)
+    return fails
+
+
+def write_stream(payloads, path):
+    """Saves a session's payloads as RMSTATE records (the bytes the engine wrote on stdout)."""
+    with open(path, "wb") as fp:
+        for p in payloads:
+            fp.write(b"RMSTATE %d\n" % len(p) + p)
+
+
+def _frame_key(frame):
+    """A STATE frame's decision: (viewer, game, decision, terminal, sideboarding). The sideboarding
+    frames before a game carry that game's number and go on with the previous game's decision
+    count, which the game itself restarts at 1, so the phase tells them apart."""
+    h = frame.tables["header"][0]
+    sideboarding = bool(frame.tables.get("match", [{}])[0].get("sideboard_phase"))
+    return (frame.viewer, h["game"], h["decision"], h["terminal"], sideboarding)
 
 
 def check_stream(payloads, dump_path, label):
@@ -292,8 +346,7 @@ def check_stream(payloads, dump_path, label):
     dump_by_viewer = {}
     for p, f in dump:
         if f.kind == "STATE":
-            h = f.tables["header"][0]
-            dump_state[(f.viewer, h["game"], h["decision"], h["terminal"])] = f
+            dump_state[_frame_key(f)] = f
             dump_by_viewer.setdefault(f.viewer, []).append(f)
         else:
             dump_match.setdefault((f.viewer, f.kind), p)
@@ -313,13 +366,13 @@ def check_stream(payloads, dump_path, label):
         if {(f.viewer, k) for k in ("SCHEMA", "CARDS", "DECKLISTS")} - seen_match:
             fails.append(f"{label}: record {i + 1}: {f.viewer}'s STATE frame before its match frames")
         h = f.tables["header"][0]
-        key = (f.viewer, h["game"], h["decision"], h["terminal"])
+        key = _frame_key(f)
         d = dump_state.get(key)
         if d is None:
             fails.append(f"{label}: no dump frame for {key}")
         elif _without_events(d) != _without_events(f):
             diff = sorted(k for k in set(d.tables) | set(f.tables)
-                          if not k.startswith("event") and d.tables.get(k) != f.tables.get(k))
+                          if not k.startswith(("event", "k_")) and d.tables.get(k) != f.tables.get(k))
             fails.append(f"{label}: frame {key} differs from the dump's in {diff}")
         by_seat.setdefault(f.viewer, []).append(f)
         if h["terminal"]:
@@ -356,6 +409,7 @@ def stream_checks(binary, out_dir, games):
             got.append(f"{label}: the results / narrative did not reach stderr")
         if with_dump != alone:
             got.append(f"{label}: the stream differs with and without --rmstate-dump")
+        write_stream(with_dump, os.path.join(out_dir, f"stream_{seed}.stream.rms"))
         got += check_dump(dump, binary)
         if not got:
             print(f"  OK   {label}: {len(with_dump)} records", flush=True)
@@ -467,8 +521,12 @@ def run(binary=BINARY, dumps=None, work_dir=None, quick=False):
         if paths:
             fails += check_refusals(paths[0], binary, work_dir)
         print("rmstate: --machine-format rmstate sessions", flush=True)
-        fails += stream_checks(binary, work_dir, _STREAM_GAMES[:1] if quick else _STREAM_GAMES)
+        games = _STREAM_GAMES[:1] if quick else _STREAM_GAMES
+        fails += stream_checks(binary, work_dir, games)
         fails += check_name_card_candidates(binary, work_dir)
+        print("rmstate: knowledge isolation (rmknow --isolation)", flush=True)
+        for path in paths + sorted(glob.glob(os.path.join(work_dir, "stream_*.rms"))):
+            fails += check_knowledge_isolation(path, binary)
     finally:
         if tmp is not None and not fails:
             shutil.rmtree(tmp, ignore_errors=True)
@@ -483,8 +541,20 @@ def main(argv=None):
     ap.add_argument("--dumps", nargs="+", help="check these --rmstate-dump files instead of playing games")
     ap.add_argument("--work-dir", help="keep the games' dumps here")
     ap.add_argument("--quick", action="store_true", help="fewer, shorter games")
+    ap.add_argument("--isolation", nargs="+", metavar="FILE",
+                    help="only check 6 (rmknow --isolation) on these dumps / saved streams")
+    ap.add_argument("--knowledge-a", default="expert", choices=["off", "expert"],
+                    help="with --isolation: seat A's knowledge level in those files")
+    ap.add_argument("--knowledge-b", default="expert", choices=["off", "expert"],
+                    help="with --isolation: seat B's knowledge level in those files")
     args = ap.parse_args(argv)
-    fails = run(args.binary, args.dumps, args.work_dir, args.quick)
+    if args.isolation:
+        fails = []
+        for path in args.isolation:
+            fails += check_knowledge_isolation(os.path.abspath(path), args.binary,
+                                               (args.knowledge_a, args.knowledge_b))
+    else:
+        fails = run(args.binary, args.dumps, args.work_dir, args.quick)
     for f in fails:
         print(f"  FAIL {f}", flush=True)
     print(f"rmstate: {'FAIL' if fails else 'OK'} ({len(fails)} failure(s))", flush=True)

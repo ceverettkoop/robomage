@@ -20,7 +20,8 @@
 // --narrative, GAME_RESULT / MATCH_RESULT, the CLI prompt of a --player seat) goes to stderr. At
 // each machine decision the deciding seat (the sideboarding player between games, else the
 // priority holder) gets, the first time it decides in the match, its SCHEMA, CARDS and DECKLISTS
-// frames, then its STATE frame with the menu; the engine then reads one integer line from stdin,
+// frames, then its STATE frame with the menu (ending with the k_* tables of the stream's own
+// knowledge instance for that seat, state_format/knowledge_feed.h); the engine then reads one integer line from stdin,
 // exactly as for BQUERY: a menu row index, -1 (the last row: confirm), -2 / -3 (concede game /
 // match); end of input or an unparseable line is -1. Menu row i is the action reply i selects
 // (the menu as offered, after the interchangeable-choice collapse). When the match is over each

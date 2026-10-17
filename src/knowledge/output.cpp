@@ -240,6 +240,23 @@ void Knowledge::write_tables(rmstate::FrameWriter &w) const {
     write_k_tables(w, rows(), codes_, viewer_);
 }
 
+bool Knowledge::table_blocks(std::string *blocks, uint32_t *n) const {
+    blocks->clear();
+    *n = 0;
+    if (viewer_ == NO_SEAT) return false;
+    rmstate::FrameWriter w(
+        rmstate::FrameKind::STATE, viewer_ == 0 ? rmstate::Viewer::A : rmstate::Viewer::B, schema_.hash);
+    write_tables(w);
+    std::string head;
+    if (!rmstate::split_frame_blocks(w.finish(), static_cast<uint16_t>(rmstate::TableId::K_META), &head, blocks, n)
+             .ok())
+        return false;
+    // The k_* tables have no text, so the frame they join keeps its own string pool: the rest is
+    // that pool alone, holding only the empty string.
+    return head.size() == rmstate::FRAME_HEADER_SIZE + rmstate::TABLE_HEADER_SIZE + rmstate::ROW_ALIGN &&
+           head[rmstate::FRAME_HEADER_SIZE + 8] == 1;
+}
+
 // One line per player: hand, library runs, sideboard, face-down cards, then what was seen.
 std::string Knowledge::text() const {
     if (viewer_ == NO_SEAT) return "(no viewer yet)\n";

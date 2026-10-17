@@ -59,6 +59,11 @@ class Knowledge {
         KRows rows() const;
         // Appends rows() to a frame being built.
         void write_tables(rmstate::FrameWriter &w) const;
+        // rows() as the table blocks of this viewer's STATE frame (k_meta … k_known_hand, laid out
+        // as rmstate::split_frame_blocks gives them; `n` = how many): what the engine appends to
+        // the frame it fed (rmstate::append_frame_blocks) and rmknow --isolation recomputes.
+        // False before the SCHEMA frame.
+        bool table_blocks(std::string *blocks, uint32_t *n) const;
         // A human-readable summary of the current knowledge (rmknow --text).
         std::string text() const;
         // ERROR: lines produced since the last call.

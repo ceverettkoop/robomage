@@ -1,6 +1,7 @@
 #include "decode.h"
 
 #include <cstring>
+#include <utility>
 
 namespace rmstate {
 
@@ -22,6 +23,8 @@ static DecodeResult read_schema_enums(const DecodedFrame &f, Schema *out);
 static DecodeResult check_bootstrap_agrees(const Schema &schema);
 static DecodeResult encodable(const DecodedFrame &frame, const DecodedTable &t);
 static void write_value(FrameWriter::Row &r, Storage storage, const Value &v);
+static DecodeResult scan_blocks(const std::string &payload, std::vector<std::pair<uint16_t, size_t>> *blocks);
+static void write_le(std::string *bytes, size_t at, uint32_t width, uint64_t v);
 
 // ── Small helpers ─────────────────────────────────────────────────────────────────────────────
 
@@ -443,6 +446,79 @@ DecodeResult encode_frame(const DecodedFrame &frame, std::string *out) {
         }
     }
     *out = w.finish();
+    return DecodeResult();
+}
+
+// ── Table blocks by framing alone ─────────────────────────────────────────────────────────────
+
+// Every block of `payload` as (table id, offset of its header), plus the end offset as a last entry
+// with id 0. Checks only that the blocks add up to the payload.
+static DecodeResult scan_blocks(const std::string &payload, std::vector<std::pair<uint16_t, size_t>> *blocks) {
+    blocks->clear();
+    if (payload.size() < FRAME_HEADER_SIZE || read_le(payload, 0, 4) != FRAME_MAGIC)
+        return fail(DecodeStatus::MALFORMED, "not an RMSF frame");
+    const uint32_t n = static_cast<uint32_t>(read_le(payload, 16, 4));
+    size_t off = FRAME_HEADER_SIZE;
+    for (uint32_t i = 0; i < n; ++i) {
+        if (payload.size() - off < TABLE_HEADER_SIZE) return fail(DecodeStatus::MALFORMED, "truncated table header");
+        const uint16_t id = static_cast<uint16_t>(read_le(payload, off, 2));
+        const uint64_t len = read_le(payload, off + 4, 4) * read_le(payload, off + 8, 4);
+        const uint64_t padded = (len + ROW_ALIGN - 1) / ROW_ALIGN * ROW_ALIGN;
+        if (padded > payload.size() - off - TABLE_HEADER_SIZE)
+            return fail(DecodeStatus::MALFORMED, "truncated table " + std::to_string(id));
+        blocks->push_back({id, off});
+        off += TABLE_HEADER_SIZE + static_cast<size_t>(padded);
+    }
+    if (off != payload.size()) return fail(DecodeStatus::MALFORMED, "bytes after the last table block");
+    blocks->push_back({0, off});
+    return DecodeResult();
+}
+
+static void write_le(std::string *bytes, size_t at, uint32_t width, uint64_t v) {
+    for (uint32_t i = 0; i < width; ++i) (*bytes)[at + i] = static_cast<char>((v >> (8 * i)) & 0xFF);
+}
+
+DecodeResult split_frame_blocks(
+    const std::string &payload, uint16_t first_id, std::string *head, std::string *tail, uint32_t *n_tail) {
+    std::vector<std::pair<uint16_t, size_t>> blocks;
+    DecodeResult res = scan_blocks(payload, &blocks);
+    if (!res.ok()) return res;
+    head->clear();
+    tail->clear();
+    *n_tail = 0;
+    uint32_t n_head = 0;
+    head->assign(payload, 0, FRAME_HEADER_SIZE);
+    for (size_t i = 0; i + 1 < blocks.size(); ++i) {
+        const size_t at = blocks[i].second;
+        const size_t len = blocks[i + 1].second - at;
+        if (blocks[i].first >= first_id) {
+            tail->append(payload, at, len);
+            ++*n_tail;
+        } else {
+            head->append(payload, at, len);
+            ++n_head;
+        }
+    }
+    write_le(head, 16, 4, n_head);
+    return DecodeResult();
+}
+
+DecodeResult append_frame_blocks(std::string *payload, const std::string &blocks, uint32_t n) {
+    std::vector<std::pair<uint16_t, size_t>> have;
+    DecodeResult res = scan_blocks(*payload, &have);
+    if (!res.ok()) return res;
+    // The appended blocks, framed as a frame of their own, must add up too.
+    std::string extra = payload->substr(0, FRAME_HEADER_SIZE) + blocks;
+    write_le(&extra, 16, 4, n);
+    std::vector<std::pair<uint16_t, size_t>> add;
+    res = scan_blocks(extra, &add);
+    if (!res.ok()) return res;
+    const int last = have.size() > 1 ? have[have.size() - 2].first : -1;
+    if (n > 0 && static_cast<int>(add[0].first) <= last)
+        return fail(DecodeStatus::MALFORMED, "an appended table block is not above the frame's");
+    const uint32_t total = static_cast<uint32_t>(read_le(*payload, 16, 4)) + n;
+    payload->append(blocks);
+    write_le(payload, 16, 4, total);
     return DecodeResult();
 }
 

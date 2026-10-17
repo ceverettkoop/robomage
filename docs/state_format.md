@@ -325,8 +325,18 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **Input:** only the viewer's own frame stream.
 - **Output:** `k_*` knowledge tables attached to that viewer's frames, the same for every kind
   of agent.
-- **Levels:** `off` (tables empty) and `expert` (perfect recall plus every sound logical
-  deduction), selected by `--knowledge-a/-b off|expert`, default `expert`.
+- **Levels:** `off` (tables empty: the `k_meta` row alone) and `expert` (perfect recall plus
+  every sound logical deduction), selected by `--knowledge-a/-b off|expert`, default `expert`.
+  The level changes only that seat's `k_*` tables, never play; it is an output option like the
+  frame writers, so the RMLOG header does not record it and a `--replay` honours it.
+- **As built** (`src/state_format/knowledge_feed.h`, `knowledge_store.md` §9.6): every frame
+  writer (`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) has an instance of
+  its own per seat, fed exactly the frames that writer builds for the seat (its SCHEMA, CARDS,
+  DECKLISTS, then each STATE frame as encoded), and appends the instance's `k_*` tables (ids
+  90-95, the last blocks of the frame) to each of the seat's STATE frames, terminal frames
+  included. The omniscient frames carry none. So a writer's `k_*` tables are a pure function of
+  the seat's frames from that writer (`rmknow --isolation` recomputes them byte for byte), and
+  one writer's bytes never depend on whether another is on.
 - **Checks:**
   - soundness against the omniscient truth;
   - exactness against brute-force enumeration;
@@ -401,7 +411,10 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
     seat's last events (`game_end`, `match_end`). The engine then exits. `--rmstate-dump` ends
     with the same terminal frame for each of its three viewers.
   - The frames are the ones `--rmstate-dump` writes for that seat at that decision, apart from
-    the events: each writer drains its own copy of the queues. At every decision, while either
+    the events and the knowledge tables: each writer drains its own copy of the queues and feeds
+    its own knowledge instance (section 7), so the stream's `k_*` follow from the seat's stream
+    frames (events batched since its previous decision) and the dump's from its every-decision
+    frames. At every decision, while either
     writer is on, every viewer's handles are issued canonically before any frame is built, so
     handle numbers (and so the stream's bytes) do not depend on whether a dump is written.
 - **Versioning.** Every frame header carries the format version and schema hash; a decoder
@@ -444,7 +457,9 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   resolves, every menu handle exists, and the knowledge sidecar's pool sizes match the snapshot.
 - **snapshot:** save → K actions → restore; both viewers' frames match the pre-save bytes.
 - **knowledge:** the sidecar's soundness, exactness, isolation and shadow checks
-  (`knowledge_store.md` §7).
+  (`knowledge_store.md` §7). The self-check below covers the knowledge tables as frame bytes
+  (roundtrip, references, snapshot restore) and reports the sidecar's per-frame consistency
+  check; isolation is `rmknow --isolation`; the rest is T12's `--selfcheck-knowledge`.
 
 **Implementation** (`--selfcheck-state`, `src/state_format/selfcheck.{h,cpp}`). At every decision
 the self-check builds every viewer's STATE frame (A, B, omniscient) from a queue copy of its own
@@ -454,6 +469,16 @@ row, card and column>`), and a `SELFCHECK-STATE: decisions=… frames=… events
 snapshots=… errors=…` summary goes to stderr at match end. Play, the RNG, BQUERY and the
 `--rmstate-dump` bytes are the same with it on. It is off under `--search-server` and for the
 in-process actor.
+- **Knowledge tables.** The self-check has its own knowledge instance per seat
+  (`ObsConsumer::SELFCHECK`, section 7), fed each seat's once-per-match frames and, exactly once,
+  each real STATE frame the self-check builds (a decision's and the terminal one); its `k_*`
+  tables are appended to that frame. roundtrip, complete (the `row:k_pool` references) and the
+  snapshot comparison run on the frame with them. The scramble and permutation builds are never
+  fed: they are compared with the frame as encoded, before its `k_*` tables, which are a function
+  of the instance's state and those bytes alone, so equal bytes imply equal tables (computing them
+  on a copy of the instance would add cost and nothing else). The names check does not count the
+  `k_*` card columns as shown (deductions are not cards the engine shows). The instance's
+  consistency errors are `selfcheck-state knowledge` failures, counted in the summary.
 - **Hidden, decided independently.** Both leak checks decide what a seat cannot see from the
   table in section 3 directly (zone, owner, controller, face-down state, and the seat's windows in
   `Game::reveal_windows`), not through `queries/visibility.h`, so a visibility rule that wrongly
@@ -489,10 +514,13 @@ in-process actor.
   range; the menu has one row per action as offered for the deciding seat and the omniscient
   viewer, none otherwise.
 - **snapshot** (sampled): at a loop-safe decision outside sideboarding the game is saved
-  (`snapshot_save`, with the continuous-effects registry copied); at the first loop-safe decision
-  at least 3 decisions later the current state is saved, the earlier one restored, every viewer's
-  frame encoded there (its menu, decider, priority-window flag, and the events it drained) and
-  compared with the saved decision's bytes, and the current state restored. Both restores are
+  (`snapshot_save`, with the continuous-effects registry copied; the knowledge instances through
+  the snapshot's sidecar hooks, after the match frames have been fed and before the decision's
+  frames are); at the first loop-safe decision at least 3 decisions later the current state is
+  saved, the earlier one restored, every viewer's frame encoded there (its menu, decider,
+  priority-window flag, and the events it drained) and fed to the restored knowledge instance,
+  and compared, `k_*` tables included, with the saved decision's bytes, and the current state
+  restored. Both restores are
   exact (`snapshot_restore_exact`, registry put back from the copies): the search server's restore
   re-derives the continuous effects instead, which can change characteristics at a decision where
   the derived ones lag the state (`docs/rules_deviations.md` 2.3).
@@ -602,7 +630,7 @@ No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `
 | Frame header (24 B) | `magic` u32 (`RMSF`), `version` u16, `kind` u8 (`enum:frame_kind`), `viewer` u8 (`enum:viewer`), `schema_hash` u64, `n_tables` u32, reserved u32 (0) |
 | Table block | header (16 B): `table_id` u16, reserved u16, `row_width` u32, `row_count` u32, reserved u32; then `row_count × row_width` bytes, zero-padded to a multiple of 8 |
 | Order | blocks in ascending table id (so `strings`, id 1, comes first); a table with no rows is omitted; `n_tables` counts the blocks present |
-| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
+| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
 | Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
 | Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
 | Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `STATE` (snapshot 20–48, events 80–82, knowledge 90–95) |
@@ -691,7 +719,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 |---|---|---|---|---|
 | `header` (20) | `game` | u8 | `count` | 0-based game of the match (between games, the upcoming one); version, schema hash and viewer are in the frame header |
 | | `decision` | u32 | `count` | decision number in the game, from 1 (`Game::state_decisions`) |
-| | `knowledge` | u8 | `enum:knowledge_level` | this viewer's level; OFF until the sidecar lands (T11) |
+| | `knowledge` | u8 | `enum:knowledge_level` | this viewer's level (`--knowledge-a/-b`); OFF for the omniscient viewer |
 | | `terminal` | u8 | `bool` | the frame written once the match is over: no menu, no reply; it carries the last events (section 9) |
 | `turn` (21) | `turn` | u16 | `count` | |
 | | `step` | u8 | `enum:step` | |
@@ -876,8 +904,11 @@ computes neither outside its legal-action enumeration.
 
 ### A.6 Events and knowledge (`STATE` frame)
 
-The encoder emits the event tables (`src/state_format/events.*`, §5); the knowledge tables are
-defined but not emitted yet (T11).
+The encoder emits the event tables (`src/state_format/events.*`, §5). The knowledge tables are
+appended to each seat's STATE frame by that writer's knowledge instance
+(`src/state_format/knowledge_feed.h`, §7): `k_meta` always (one row), the others at level
+`expert` (`knowledge_store.md` §6). They have no text column, so the frame's string pool is the
+encoder's.
 
 | Table (id) | Column | Type | Tag | Range / notes |
 |---|---|---|---|---|

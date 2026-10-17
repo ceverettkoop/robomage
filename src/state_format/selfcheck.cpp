@@ -27,6 +27,7 @@
 #include "decode.h"
 #include "encode.h"
 #include "handles.h"
+#include "knowledge_feed.h"
 #include "schema.h"
 #include "stream.h"
 
@@ -111,6 +112,7 @@ static std::vector<std::string> card_names_in(const std::string &text);
 static const std::vector<std::string> &names_shown_by(int card_id);
 static void check_names(Zone::Ownership viewer, const DecodedFrame &f);
 static void check_frame(Zone::Ownership viewer, const std::string &payload, size_t menu_rows);
+static std::string with_knowledge(Zone::Ownership viewer, const std::string &payload);
 static void check_match_frames();
 static std::vector<Entity> public_choice_cards(const std::vector<LegalAction> &actions);
 static void check_scramble(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
@@ -561,7 +563,8 @@ static const std::vector<std::string> &names_shown_by(int card_id) {
 static void check_names(Zone::Ownership viewer, const DecodedFrame &f) {
     std::set<std::string> shown;
     for (const DecodedTable &t : f.tables) {
-        if (t.id == static_cast<uint16_t>(TableId::OWN_DECK)) continue;
+        if (t.id == static_cast<uint16_t>(TableId::OWN_DECK) || t.id >= static_cast<uint16_t>(TableId::K_META))
+            continue;
         for (size_t c = 0; c < t.def->columns.size(); ++c) {
             const rmstate::ColumnDef &col = t.def->columns[c];
             if (col.tag != "card") continue;
@@ -594,7 +597,20 @@ static void check_frame(Zone::Ownership viewer, const std::string &payload, size
     if (is_seat(viewer)) check_names(viewer, f);
 }
 
-// Once per match: each viewer's SCHEMA, CARDS and DECKLISTS frames decode and re-encode the same.
+// `payload`, a STATE frame the self-check built for `viewer`, as the self-check's knowledge
+// instance for a seat extends it: fed to the instance, with its k_* tables appended (the
+// instance's error lines are failures of the knowledge check). The omniscient frame as it is.
+static std::string with_knowledge(Zone::Ownership viewer, const std::string &payload) {
+    if (!is_seat(viewer)) return payload;
+    std::string out = payload;
+    std::vector<std::string> errors;
+    knowledge_append_tables(ObsConsumer::SELFCHECK, viewer, &out, &errors);
+    for (const std::string &e : errors) report("knowledge", viewer, e.rfind("ERROR: ", 0) == 0 ? e.substr(7) : e);
+    return out;
+}
+
+// Once per match: each viewer's SCHEMA, CARDS and DECKLISTS frames decode and re-encode the same,
+// and the seats' frames start the self-check's knowledge instances.
 static void check_match_frames() {
     if (match_frames_checked) return;
     match_frames_checked = true;
@@ -603,6 +619,7 @@ static void check_match_frames() {
             {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer)}) {
             DecodedFrame f;
             roundtrip(viewer, payload, &f);
+            knowledge_feed_match_frame(ObsConsumer::SELFCHECK, viewer, payload);
         }
     }
 }
@@ -753,8 +770,8 @@ static void finish_snapshot_check() {
     set_priority_window_open(snap.priority_window);
     std::string frames[3];
     for (Zone::Ownership viewer : VIEWERS)
-        frames[viewer_index(viewer)] =
-            encode_state_frame(viewer, snap.actions, snap.decider, take_obs_events(viewer, ObsConsumer::SELFCHECK));
+        frames[viewer_index(viewer)] = with_knowledge(viewer,
+            encode_state_frame(viewer, snap.actions, snap.decider, take_obs_events(viewer, ObsConsumer::SELFCHECK)));
     set_priority_window_open(window);
     snapshot_restore_exact(RESUME_SLOT);
     g_active_statics = statics;
@@ -775,21 +792,27 @@ void selfcheck_state_decision(const std::vector<LegalAction> &actions) {
     const bool restorable = search_loop_safe() && !sideboard_phase;
     if (snap.active && (snap.game != match_game_number || !snapshot_slot_live(SAVED_SLOT))) snap = SnapshotCheck{};
     const bool start = sampled && restorable && !snap.active;
+    // The match frames first, so that a snapshot saved at the first decision holds the knowledge
+    // instances they start.
+    check_match_frames();
     if (start) snapshot_save(SAVED_SLOT);
 
-    check_match_frames();
     const Zone::Ownership decider = rmstate_deciding_seat();
     const std::vector<Entity> keep = public_choice_cards(actions);
     std::string frames[3];
     for (Zone::Ownership viewer : VIEWERS) {
         const int i = viewer_index(viewer);
         const std::vector<ObsEvent> events = take_obs_events(viewer, ObsConsumer::SELFCHECK);
-        frames[i] = encode_state_frame(viewer, actions, decider, events);
+        // The leak checks compare the frame as encoded, before its knowledge tables: those are a
+        // function of the knowledge instance and the frame's bytes alone, so equal bytes give
+        // equal tables, and the instance takes each real frame exactly once.
+        const std::string plain = encode_state_frame(viewer, actions, decider, events);
+        frames[i] = with_knowledge(viewer, plain);
         const bool gets_menu = !is_seat(viewer) || viewer == decider;
         check_frame(viewer, frames[i], gets_menu ? actions.size() : 0);
         if (!is_seat(viewer)) continue;
-        check_scramble(viewer, actions, decider, events, keep, frames[i], false);
-        if (sampled) check_permutation(viewer, actions, decider, events, keep, frames[i]);
+        check_scramble(viewer, actions, decider, events, keep, plain, false);
+        if (sampled) check_permutation(viewer, actions, decider, events, keep, plain);
     }
     if (start)
         start_snapshot_check(actions, decider, frames);
@@ -804,7 +827,7 @@ void selfcheck_state_match_over() {
     for (Zone::Ownership viewer : VIEWERS) {
         const std::vector<ObsEvent> events = take_obs_events(viewer, ObsConsumer::SELFCHECK);
         const std::string frame = encode_state_frame(viewer, {}, Zone::UNKNOWN, events, true);
-        check_frame(viewer, frame, 0);
+        check_frame(viewer, with_knowledge(viewer, frame), 0);
         if (is_seat(viewer)) check_scramble(viewer, {}, Zone::UNKNOWN, events, {}, frame, true);
     }
     std::fflush(stdout);

@@ -42,6 +42,7 @@
 #include "../type_constants.h"
 #include "enum_names.h"
 #include "handles.h"
+#include "knowledge_feed.h"
 #include "schema.h"
 
 using rmstate::FrameKind;
@@ -534,7 +535,7 @@ static void write_header(const Ctx &c, bool terminal) {
     c.w.row(TableId::HEADER)
         .u8(u8_count(match_game_index()))
         .u32(cur_game.state_decisions)
-        .u8(static_cast<uint64_t>(rmstate::KnowledgeLevel::OFF))
+        .u8(static_cast<uint64_t>(knowledge_level_of(c.viewer)))
         .u8(terminal ? 1 : 0);
 }
 

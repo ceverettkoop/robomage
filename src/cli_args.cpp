@@ -34,6 +34,7 @@ struct ParsedOption {
 
 static std::vector<std::string> split_card_list(const std::string &csv);
 static bool is_seat_a(const char *value);
+static bool knowledge_level_expert(const char *value);
 static const CliOption *find_option(const std::string &name);
 static const CliOption *find_header_option(const std::string &key);
 static std::string header_key(const CliOption &option);
@@ -171,6 +172,12 @@ static const CliOption OPTIONS[] = {
         nullptr},
     // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
     {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
+    // Each seat's knowledge sidecar level in its RMSTATE frames (state_format/knowledge_feed.h).
+    // Output only, like the RMSTATE writers: not recorded in the log header, honored in replay.
+    {"--knowledge-a", nullptr, true, false, [](const char *v) { knowledge_expert_a = knowledge_level_expert(v); },
+        nullptr},
+    {"--knowledge-b", nullptr, true, false, [](const char *v) { knowledge_expert_b = knowledge_level_expert(v); },
+        nullptr},
     // Run the state format's self-checks at every decision (state_format/selfcheck.h).
     {"--selfcheck-state", nullptr, false, false, [](const char *) { selfcheck_state = true; }, nullptr},
     // Start the sampled self-checks (permutation leak, snapshot) at every Nth decision.
@@ -206,6 +213,14 @@ static std::vector<std::string> split_card_list(const std::string &csv) {
 // Seat argument of --player / --log-viewer: "A" or "a" is Player A, anything else Player B.
 static bool is_seat_a(const char *value) {
     return std::strcmp(value, "A") == 0 || std::strcmp(value, "a") == 0;
+}
+
+// The value of --knowledge-a / --knowledge-b: expert (true) or off (false); anything else is fatal.
+static bool knowledge_level_expert(const char *value) {
+    if (std::strcmp(value, "expert") == 0) return true;
+    if (std::strcmp(value, "off") != 0)
+        fatal_error("--knowledge-a/--knowledge-b: expected off or expert, got '" + std::string(value) + "'");
+    return false;
 }
 
 static const CliOption *find_option(const std::string &name) {

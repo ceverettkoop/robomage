@@ -111,6 +111,19 @@ DecodeResult decode_frame(const std::string &payload, const Schema &schema, Deco
 // column storages or another frame kind, or the frame skipped unknown blocks.
 DecodeResult encode_frame(const DecodedFrame &frame, std::string *out);
 
+// Splits a frame payload at table id `first_id` by its framing alone (header and block headers,
+// Appendix A.2; nothing is decoded): `head` receives the frame without its blocks of id `first_id`
+// or above (n_tables adjusted), `tail` those blocks' bytes as laid out, in order, and `n_tail`
+// their count. Refused (MALFORMED) when the framing does not add up. The knowledge tables (ids 90
+// and up) are appended to a STATE frame after it is built, and split off it to compare them.
+DecodeResult split_frame_blocks(
+    const std::string &payload, uint16_t first_id, std::string *head, std::string *tail, uint32_t *n_tail);
+
+// Appends `n` table blocks (`blocks`, laid out as split_frame_blocks gives them) to a frame payload,
+// adjusting its n_tables. Refused (MALFORMED) when the framing of either does not add up, or an
+// appended block's id is not above every id the frame holds.
+DecodeResult append_frame_blocks(std::string *payload, const std::string &blocks, uint32_t n);
+
 // Reads stream records ("RMSTATE <nbytes>\n" + payload, §9) from a file or pipe.
 class RecordReader {
     public:

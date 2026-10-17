@@ -12,6 +12,7 @@
 #include "encode.h"
 #include "events.h"
 #include "json.h"
+#include "knowledge_feed.h"
 #include "schema.h"
 #include "stream.h"
 
@@ -21,6 +22,8 @@ static std::string dump_path();
 static const rmstate::Schema &json_schema();
 static void write_record(const std::string &payload);
 static void write_match_frames(Zone::Ownership viewer);
+static void write_state_frame(
+    Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider, bool terminal);
 
 static const Zone::Ownership DUMP_VIEWERS[] = {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN};
 static bool match_frames_written = false;
@@ -80,9 +83,20 @@ static void write_record(const std::string &payload) {
 }
 
 static void write_match_frames(Zone::Ownership viewer) {
-    write_record(encode_schema_frame(viewer));
-    write_record(encode_cards_frame(viewer));
-    write_record(encode_decklists_frame(viewer));
+    for (const std::string &payload :
+        {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer)}) {
+        knowledge_feed_match_frame(ObsConsumer::DUMP, viewer, payload);
+        write_record(payload);
+    }
+}
+
+// The viewer's STATE frame from its dump queue, a seat's with the dump's knowledge tables.
+static void write_state_frame(
+    Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider, bool terminal) {
+    std::string payload =
+        encode_state_frame(viewer, actions, decider, take_obs_events(viewer, ObsConsumer::DUMP), terminal);
+    knowledge_append_tables(ObsConsumer::DUMP, viewer, &payload);
+    write_record(payload);
 }
 
 void rmstate_dump_decision(const std::vector<LegalAction> &actions) {
@@ -90,7 +104,7 @@ void rmstate_dump_decision(const std::vector<LegalAction> &actions) {
     const Zone::Ownership decider = rmstate_deciding_seat();
     for (Zone::Ownership viewer : DUMP_VIEWERS) {
         if (!match_frames_written) write_match_frames(viewer);
-        write_record(encode_state_frame(viewer, actions, decider, take_obs_events(viewer, ObsConsumer::DUMP)));
+        write_state_frame(viewer, actions, decider, false);
     }
     match_frames_written = true;
     std::fflush(dump_file());
@@ -101,7 +115,7 @@ void rmstate_dump_match_over() {
     if (rmstate_dump_path.empty()) return;
     for (Zone::Ownership viewer : DUMP_VIEWERS) {
         if (!match_frames_written) write_match_frames(viewer);
-        write_record(encode_state_frame(viewer, {}, Zone::UNKNOWN, take_obs_events(viewer, ObsConsumer::DUMP), true));
+        write_state_frame(viewer, {}, Zone::UNKNOWN, true);
     }
     match_frames_written = true;
     std::fflush(dump_file());

@@ -39,6 +39,12 @@
 //                restored, every viewer's frame encoded again and compared with the bytes of the
 //                saved decision, and the current state restored.
 //
+// Each seat's frame is fed, once, to the self-check's own knowledge instance
+// (state_format/knowledge_feed.h), whose k_* tables it carries for roundtrip, complete and snapshot;
+// the scramble and permutation comparisons use the frame as encoded, before them (the tables are a
+// function of the instance and those bytes). The instance's consistency errors are failures of the
+// `knowledge` check.
+//
 // A failure prints an ERROR: line (non_fatal_error) naming the check, the viewer and the first
 // differing table cell. None of the checks changes play: everything they change is put back, the
 // RNG is never drawn, and nothing is written to stdout. The self-check is off under
