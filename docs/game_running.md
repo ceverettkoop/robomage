@@ -43,6 +43,7 @@ play.py, analysis, the TUI/GUI) and `run_match`. Specs are case-insensitive:
 | `random` | uniform random |
 | `explore`, `fuzz` | coverage fuzzer (vary `--seed`) |
 | `explore:patient`, `patient` | fuzzer's big-mana profile |
+| any scripted spec `?view=vector` | on `machine_format="rmstate"`: the scripted agent reads the pass-1 parity adapter's rebuilt BQUERY vector (`scripted_agent.VectorView`) instead of the decoded frame (`rm_agent.FrameView`, the default there); on BQUERY the vector is the only view |
 | `auto`, `autopass` | always action 0 (pass / first choice) |
 | `human` | terminal seat: prints board + menu, takes an index or a semantic spec (`cast:bolt`, `target:bears@opp`, `pass`), `quit`/`q`/`exit` to leave |
 | `play:<spec,spec,…>` | semantic action script (the harness `--play` grammar, `action_spec.py`); once exhausted, action 0 |
@@ -132,10 +133,12 @@ run_match(agent_a="scripted", agent_b="scripted", *, deck_a=None, deck_b=None,
   `sideboard_b`, …), `no_shuffle`, `life_a/b`, `log_decisions`, `coverage` (a
   `coverage_report.CoverageAccumulator`), hooks `on_query` / `on_action` / `on_game_end(record)`,
   `narrative=False` (engine without its game log; the benchmark path, only sensible quiet), and
-  `machine_format="rmstate"`: the engine speaks RMSTATE (`--machine-format rmstate`) and each
-  decision's observation is rebuilt from the deciding seat's frames by the pass-1 parity adapter
-  (`rmstate_env.py`, `rmstate_adapter.py`); only `rmstate_capable` controllers may play (the scripted
-  tiers, `auto`, `actions:`, `play:`), and the verbose transcript has no board block.
+  `machine_format="rmstate"`: the engine speaks RMSTATE (`--machine-format rmstate`); the scripted
+  tiers read the deciding seat's decoded frame (`rm_agent.py`; with `?view=vector` the old
+  observation the pass-1 parity adapter rebuilds from it, `rmstate_adapter.py`); only
+  `rmstate_capable` controllers may play (the scripted tiers, `auto`, `actions:`, `play:`), the menu
+  is unbounded (`--closed-decklist` name-a-card menus; the vector view refuses one wider than
+  `MAX_ACTIONS`), and the verbose transcript has no board block.
 - Returns `MatchResult`: `wins` / `losses` / `draws` from seat A, `games`, `win_rate`,
   `label_a/b`, and `records` — one `GameRecord` per game (bo1) or match (bo3) with `reward`,
   `decisions`, `capped`, `actions` (every index sent; with `engine_seed`, enough to replay),

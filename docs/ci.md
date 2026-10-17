@@ -50,11 +50,12 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `plansearch` | sideboard plan search (`mcts.run_plan_search` + `IncrementalPlanSearch`): coverage, accounting, determinism, memo (`test_plan_search.py`) | needs the engine |
 | `mirror` | world-parallel mirror-pool search: bit-identical visits vs serial, bo3 lockstep, pool disable on drift (`test_mirror_search.py`) | needs the engine |
 | `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
-| `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed | any transcript drift |
+| `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed; the scripted agent (hard, both seats) on its RMSTATE frame view (`--machine-format rmstate`, `train/rm_agent.py`), so a transcript has no decoded board block | any transcript drift |
 | `rmstate` | the RMSTATE state format (`test_selfcheck_state.py`, below): the engine's `--selfcheck-state` checks over the replay corpus, a short explore fuzz and every scenario, with each seat's knowledge sidecar (`k_*` tables) on at level expert; the Python-vs-C++ decode comparison, decoder refusals and `--machine-format rmstate` sessions (`test_rmstate.py`'s parts); name-a-card candidates with open and closed decklists; the knowledge-side include isolation | needs the engine; ~3 min on 4 cores (2.5 min before the knowledge sidecar). Engine stderr in `ci_out/rmstate/` |
 | `knowledge` | the knowledge sidecar (`test_knowledge.py`, below): `rmknow --selftest` / `--exactness`; an explore fuzz under `--selfcheck-knowledge` (soundness against the engine state, knowledge state across snapshot restores); `--machine-format rmstate` sessions each with a `--rmstate-dump`, stream frames equal to the dump's `k_*` tables included, `rmknow --isolation` on each writer's frames; `rmknow --truth` on every dump; archetype inference against the true lists and the cards seen; the belief layer's structure, calibration and exactness. The replay corpus runs under `--selfcheck-knowledge` in the `rmstate` tier | needs the engine and `rmknow`; ~100 s on 4 cores. Engine stderr in `ci_out/knowledge/` |
-| `agentparity` | the scripted agent on RMSTATE (`test_agent_parity.py`, below): its card knowledge from a `CARDS` frame equals the generated tables'; replay-corpus games over `--machine-format rmstate` equal the committed transcripts; smoke games (two bo3) equal on both protocols; listed divergences against their re-recorded baselines | needs the engine; ~20 s on 4 cores (`--full`: every corpus and smoke-tier game and a bo3 match per mirror, ~75 s) |
-| `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup) | see classification below |
+| `agentparity` | the scripted agent's vector view on RMSTATE through the pass-1 parity adapter (`test_agent_parity.py`, below): its card knowledge from a `CARDS` frame equals the generated tables'; the light corpus set's BQUERY games equal their frozen transcripts and their RMSTATE games equal those; smoke games (two bo3) equal on both protocols; listed divergences against their re-recorded baselines | needs the engine; ~20 s on 4 cores (`--full`: every corpus and smoke-tier game and a bo3 match per mirror, ~75 s) |
+| `rmagent` | the scripted agent's RMSTATE frame view (`test_rm_agent.py`): every card the decision rules name is a `CARDS` card; the structured `CARDS` columns' card knowledge (`rm_agent.FrameCards`) answers as the generated tables do on every vocab card except the listed, rules-correct differences; scripted-hard bo3 matches under `--closed-decklist` finish | needs the engine; ~10 s |
+| `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup), on its RMSTATE frame view (`--machine-format rmstate`) | see classification below |
 | `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
 
 `smoke`/`fuzz` play through `runner.run_games`; game `i` of matchup `k` uses seed
@@ -139,11 +140,16 @@ ROBOMAGE_ENGINE_FLAGS=--selfcheck-knowledge train/.venv/bin/python train/regress
 ### The `agentparity` tier
 
 `train/test_agent_parity.py` (plan step 2, pass 1; `run()` is the tier, `--part` runs one part) plays
-the scripted agent (hard tier, both seats) over `--machine-format rmstate`: `runner.run_games`
-runs `rmstate_env.RMStateNarrativeEnv`, which rebuilds the old observation from each seat's frames
-and `k_*` tables (`rmstate_adapter.SeatAdapter`), and the agent reads its card knowledge from
-`CARDS` (the engine adds the raw scripts under `--rmstate-card-scripts`) and its deck names and the
-opponent's list from `DECKLISTS`. A game is compared through `project`: the RMSTATE transcript has no
+the scripted agent (hard tier, both seats) on its vector view (`scripted_agent.VectorView`) over
+`--machine-format rmstate` (`scripted?view=vector`): `runner.run_games` runs
+`rmstate_env.RMStateNarrativeEnv`, which rebuilds the old observation from each seat's frames and
+`k_*` tables (`rmstate_adapter.SeatAdapter`), and the agent reads its card knowledge from `CARDS`
+(the engine adds the raw scripts under `--rmstate-card-scripts`) and its deck names and the
+opponent's list from `DECKLISTS`. The tier also pins the vector view's own games: the replay
+corpus is the agent's frame-view games (the `replay` tier), so the light corpus set's BQUERY
+transcripts are frozen in `train/regression/agent_parity/bquery_corpus/`, and each such game is played on
+BQUERY and must equal its frozen transcript byte for byte (the BQUERY consumers' agent, until plan
+step 3b deletes them). A game is compared through `project`: the RMSTATE transcript has no
 board block (the adapter rebuilds only what the agent reads), so the lines between `--- Decision N
 ---` and `Actions:` are left out of both, and the `PA:` / `PB:` hand lines are compared sorted;
 the narrative, every menu and every choice must be identical.
@@ -151,7 +157,7 @@ the narrative, every menu and every choice must be identical.
 | Part | Runs | Fails on |
 |---|---|---|
 | `cards` | a `--closed-decklist` CARDS frame (every vocab card): `FrameCardKnowledge` against `scripted_agent.VocabCardKnowledge` | any card whose cost row, land flag, property column, script lines or type line differs |
-| `corpus` | `CORPUS_GAMES` of the replay corpus (`--full`: all 64) over RMSTATE | a projection that differs from the committed corpus transcript's |
+| `corpus` | `CORPUS_GAMES` of the replay corpus (`--full`: all 64) on both protocols | a light-set BQUERY game that differs from its frozen transcript (`agent_parity/bquery_corpus/`), an RMSTATE projection that differs from the BQUERY game's |
 | `smoke` | `SMOKE_GAMES`: smoke-tier games, two bo3 matches and the listed divergence (`--full`: every smoke-tier game and a bo3 match per league mirror), on both protocols | projections that differ |
 
 A game whose old vector leaked or had a quirk that changed what the agent saw is listed in
@@ -159,7 +165,7 @@ A game whose old vector leaked or had a quirk that changed what the agent saw is
 the read that differed, a classification naming a signature of `knowledge_divergences.json`, why)
 and re-recorded: its RMSTATE projection is committed as `train/regression/agent_parity/<game>.txt`,
 which the check compares against, and the BQUERY game must still first differ at the listed
-decision. `--record` rewrites those baselines. `--lockstep GAME` is the diagnostic that attributes a
+decision. `--record` rewrites those baselines and the frozen BQUERY transcripts (`make regen` runs it). `--lockstep GAME` is the diagnostic that attributes a
 difference: the BQUERY game is played with `--rmstate-dump` and `--selfcheck-knowledge`; at every
 decision the adapter's observation is compared with the real vector block by block and a second agent
 decides on it; the first differing choice is printed with the differing blocks, the menu and the
@@ -169,6 +175,22 @@ classified `SHADOW:` line of the deciding seat for each differing memory block.
 train/.venv/bin/python train/test_agent_parity.py --full
 train/.venv/bin/python train/test_agent_parity.py --games smoke/burn__bw_dnt/11001
 train/.venv/bin/python train/test_agent_parity.py --lockstep match/bw_dnt__wrb_energy/298
+```
+
+### The `rmagent` tier
+
+`train/test_rm_agent.py` (plan step 2, pass 2; `run()` is the tier, `--part` runs one part) checks
+the scripted agent's RMSTATE frame view (`train/rm_agent.py`) where the replay corpus, which pins its
+games, cannot:
+
+| Part | Runs | Fails on |
+|---|---|---|
+| `names` | a `--closed-decklist` CARDS frame (every vocab card) against every card name constant of `train/scripted_core.py` | a name no `CARDS` row has (a misspelt or renamed card silently disables its rule) |
+| `cards` | `rm_agent.FrameCards` (the structured `CARDS` columns) against the generated tables read by name (`scripted_agent._NameCardKnowledge`) on every vocab card face: mana value, pip colours, land, printed power, Delve, Equipment, Miracle, legendary, basic land types, damage to a chosen target, non-mana activations (lands), artifact / enchantment | a difference not listed in `EXPECTED_CARD_DIFFERENCES` (each listed one with its reason: hybrid and Phyrexian pips, split halves, a two-digit generic cost, damage with no chosen target), or a listed one that no longer differs |
+| `closed` | `CLOSED_GAMES`: scripted-hard bo3 matches under `--closed-decklist` (the opponent's list withheld: the agent reads the lists it can be on from `k_template`) | no winner, an `ERROR:` / `FATAL` line or a traceback |
+
+```bash
+train/.venv/bin/python train/test_rm_agent.py --part cards
 ```
 
 ### Opt-in tiers (valid for `--tier`, not in the default run)
@@ -288,6 +310,7 @@ changed files. What it covers:
 - **`replay` drift** from a deliberate engine / agent / card-data change: re-record and commit.
   ```bash
   train/.venv/bin/python train/regression/replay_diff.py record
+  train/.venv/bin/python train/test_agent_parity.py --record   # the agentparity tier's pinned games
   ```
   The corpus is **platform-portable**: all gameplay randomness goes through `src/stable_rng.h`
   (hand-rolled Fisher–Yates + rejection sampling over the raw mt19937 stream), so Mac and Linux

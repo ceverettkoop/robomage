@@ -7,7 +7,10 @@ completeness checklist for the step-2 port and the specification of the pass-1 p
 **Status:** step 2 pass 1 is built (section 7): the parity adapter (`train/rmstate_adapter.py`,
 `train/rmstate_env.py`) serves every read below, and the `agentparity` gate tier
 (`train/test_agent_parity.py`, `docs/ci.md`) holds the agent's RMSTATE games byte-identical with its
-BQUERY games, except listed and classified old-vector leaks and quirks.
+BQUERY games, except listed and classified old-vector leaks and quirks. Pass 2 is built (section 8):
+the agent's decisions are one view-independent core read through a decoded-frame view
+(`train/rm_agent.py`) on RMSTATE and through the vector view on BQUERY; the replay corpus holds its
+RMSTATE games.
 
 **Legend for "served by":**
 
@@ -272,7 +275,7 @@ smoke games; none of them reached a decision except the knowledge reads):
 | own library top, opponent's known hand | the old memory | `k_position`, `k_known_hand` | the classified divergences of `knowledge_divergences.json` (`knowledge_store.md` §8, §9.7) |
 | zone and controller of a name-a-card choice | the zone of the card the engine picked to stand for the name (it can be in the opponent's hand or a library) | none | an old-vector leak; the frame has no handle for a hidden representative |
 | stack slot "is a spell" of a resolving permanent spell waiting on its entry's choice (Mox Diamond's discard) | 0 (its Spell component is gone) | 1 (`stack.kind` SPELL) | an old-vector quirk: it is still a spell (CR 608.3) |
-| card of a stack target that has left the stack (a countered spell's target spell) | its card | none | a format gap: last-known information is kept for permanents only (`lki` rows); not read by the agent |
+| card of a stack target that has left the stack (a countered spell's target spell) | its card | none | a format gap: last-known information was kept for permanents only (`lki` rows); not read by the agent. Fixed in pass 2 (register 40: an `lki` row for a departed stack target too) |
 
 Format fixes made for the port: `object.types` has Creature exactly while the permanent is a
 creature (an impending permanent and an attached reconfigure permanent were reported as creatures);
@@ -293,3 +296,78 @@ the raw scripts (the tier's `cards` part shows what each column must reproduce);
 key replaces `_keyword_ability_ordinal`; the summoning-sickness emulation goes once the agent reads
 `object.sick` (the rule); the richer knowledge tables (pools, positions as candidate sets) can serve
 the Ponder / Brainstorm / Doomsday decisions directly.
+
+## 8. Pass 2 as built (plan step 2)
+
+**Structure.** The decisions are written once, in `train/scripted_core.py` (`ScriptedCore`: the
+tiers, presets and every rule), over an abstract view of one decision (its module docstring lists
+the view's reads): cards are names (the constants of the rules are card names, checked against a
+closed-decklist `CARDS` frame by the `rmagent` tier), categories, steps and zone references are the
+engine's enum names, card characteristics come from the view's card knowledge by name. It imports no
+numpy and nothing of the BQUERY layout. Two views implement it:
+
+- `scripted_agent.VectorView` (BQUERY; `ScriptedAgent.act(obs, num_choices)`, `make_agent`,
+  `scripted_action` keep their API): every read exactly as the agent read the vector before the
+  split, quirks included (the caps and slot order, the null-card float test that reads ids 0-9 as
+  null, ids one apart as one card in the two-pass reveal rule, joins by card id, keyword abilities
+  by script-counted ordinal, the vocab tables' card knowledge). Checked in lockstep with the
+  previous agent: 654 bo3 matches (every ordered league pairing and the curated decks; hard at
+  three seeds, easy, explore and explore:patient at one), 278,125 decisions, no choice and no RNG
+  state differs. The BQUERY consumers (PPO's scripted opponents, `scripted_oracle.py`, the
+  BQUERY gate tiers) play the same games, about 1.6x faster (release, hard vs hard: 650 to about
+  1,050 decisions/s).
+- `rm_agent.FrameView` (RMSTATE; `rm_agent.decide`): built from one seat's decoded frame
+  (`rm_agent.SeatFrames` follows the seat's SCHEMA, CARDS, DECKLISTS and METAGAME frames).
+
+On `--machine-format rmstate` a plain scripted spec reads the frame; `scripted?view=vector` keeps
+the pass-1 path (section 7), which the `agentparity` tier still holds to the BQUERY games. The env
+builds the adapter's whole observation (and asks for `--rmstate-card-scripts`) only for that path;
+otherwise only the fields the driver and the menu-reading controllers (`auto`, `actions:`,
+`play:`) read, and the menu through the driver is unbounded.
+
+**What the frame view reads, against section 5's emulation list:**
+
+| Read | Pass 2 |
+|---|---|
+| caps (48 / 12 / 10 / 64) | none: every permanent, stack object, hand, graveyard and exile card |
+| slot order, empty slots, normalisers | none: `object` rows by handle, values as decoded |
+| summoning sickness | `object.sick`, the rule (a creature, haste considered) |
+| keywords | every `object_keyword` (by keyword name) |
+| tokens | real characteristics from `object` / `CARDS` (types, mana value) |
+| a permanent's mana value, types, legendary | the `object` row's (post-layer, rules-correct), not its card's |
+| an action's object | `menu.source` by handle (`exact_refs`): attackers, blockers, the pending blocker, targets |
+| keyword-built abilities | the menu's ability key (`ab_key`: `Ninjutsu`, `Equip`, `Reconfigure`) |
+| card knowledge | `CARDS`' structured columns (`rm_agent.FrameCards`): mana value, plain and hybrid / Phyrexian pips, types, supertypes, subtypes, keywords, printed power, ability kinds and categories, oracle text; no raw scripts |
+| own known top, opponent's known hand | `k_position` (exact rows), `k_known_hand` |
+
+**Knowledge-table use** beyond pass 1's two reads:
+
+- Cabal Therapy names a card the opponent's hand can hold first (`k_pool` HAND, most copies > 0):
+  in game 1 a sideboard card cannot be in hand (it named Leyline of the Void before);
+- the Doomsday pile's Island: whether the own library can hold it, from the own library pools and
+  positions (it was "not on our battlefield, in hand or in a graveyard");
+- Ponder's shuffle reads each top position's candidate set (an exact card is a set of one);
+- under `--closed-decklist` the opponent's list is the reference lists `k_template` still holds
+  consistent (METAGAME): whether it can run Force of Will (the Doomsday all-in mulligan) and each
+  card's most copies (name-a-card's unseen counts).
+
+**Differences from the pass-1 agent** are those intended above. Over 100 bo1 games played by the
+pass-1 agent with both views deciding at every frame, 7 of 15,760 choices differed: Cabal Therapy
+names (2: sideboard cards), reanimation targets (3: Raph & Mikey, Troublemakers' mana value is 7,
+not the cost table's 9), attacks (2: a hasty creature is not summoning sick, so its P/T is weighed).
+The re-recorded replay corpus changed in 4 of its 64 games, for the same reasons.
+
+**Head-to-head** (release, both agents over RMSTATE, scripted hard, bo3; every ordered league
+pairing with each agent in each seat at the same seed, 13 seeds): 2,600 matches, no draw, none
+capped; pass 2 won 1,306, 0.502 (95% Wilson interval 0.483-0.522). The two agents agree on almost
+every decision (over 300 bo3 matches played by pass 1 with both views deciding, 69 of 115,167
+choices differ), so the paired count is the sharper one: of the 1,300 seed pairs, 20 had the same
+agent win both seatings, 13 pass 2 and 7 pass 1 (sign test p = 0.26: no significant difference,
+none in pass 1's favour).
+
+**Performance** (release, one process, scripted hard vs hard, 20 league matchups): BQUERY about
+1,050 decisions/s; RMSTATE pass 1 about 390; pass 2 about 450. On pass 2 the engine's frames and
+knowledge sidecar are about 45% of the time, the Python decode about 25%, the agent about 13%.
+
+**numpy:** `scripted_core.py` and `rm_agent.py` import none; the driver (`env.py`, `runner.py`,
+`opponents.py`, the adapter) still does, until the minimal driver replaces it.

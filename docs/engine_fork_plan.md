@@ -221,6 +221,13 @@ the fields of the event it consumes, which is the completeness check on the even
 - **Pass 2, simplify.** Replace offset arithmetic with decoded objects, drop the caps, and drop
   numpy if possible. The agent may now use the richer knowledge tables. Re-record the corpus
   with the live agent, saying why.
+  **Status: done** (`state_format_agent_map.md` §8). The decisions are one numpy-free core over a
+  view (`train/scripted_core.py`): the decoded-frame view (`train/rm_agent.py`) is the default on
+  RMSTATE, the vector view keeps the BQUERY consumers' games unchanged (checked in lockstep;
+  `agentparity` pins them). The replay corpus holds the frame view's RMSTATE games (4 of 64 games
+  changed: rules-correct sickness and mana values, the opponent's possible hand cards); head to
+  head over 2,600 bo3 matches the two passes are level (pass 2 0.502, 95% CI 0.483-0.522). Format gap
+  fixed: a departed stack target's `lki` row (register 40).
 - **Explore.** The `explore` tiers in the same file move with the rest; step 3 decides whether
   they also get a C++ port.
 - **Driver.** A minimal driver (engine subprocess, frame read, reply write) replaces `env.py`

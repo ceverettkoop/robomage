@@ -610,7 +610,13 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 **Python core (`train/`)**
 - `env.py` — `RoboMageEnv` / `ModelVsScriptedEnv` / `SelfPlayEnv`; obs offsets; re-exports
   `scripted_action` (back-compat)
-- `scripted_agent.py` — the rule-based `ScriptedAgent` (all `scripted:*` tiers)
+- `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
+  tiers) over an abstract view of a decision (card names, engine enum names; no numpy)
+- `scripted_agent.py` — the agent on the BQUERY vector: `VectorView`, `ScriptedAgent.act(obs, n)`,
+  `make_agent`, `scripted_action`, the vocab card knowledge (`use_card_knowledge`)
+- `rm_agent.py` — the agent on RMSTATE (step-2 pass 2): one seat's decoded frames and `k_*` tables
+  as the core's view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns
+  (`FrameCards`); the default `scripted` view on `--machine-format rmstate`
 - `runner.py` — `drive_game` / `run_games` / `run_match` (see `docs/game_running.md`)
 - `opponents.py` — `Controller`, `make_controller` spec grammar, training pools, and THE model-spec
   resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator` / `load_spec_net` /
@@ -628,9 +634,11 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   reads, rebuilt from one seat's RMSTATE frames and `k_*` tables (`SeatAdapter`), and its card
   knowledge from `CARDS` / `DECKLISTS` (`FrameCardKnowledge`; the agent reads cards through
   `scripted_agent.use_card_knowledge`)
-- `rmstate_env.py` — `RMStateNarrativeEnv`: the engine on `--machine-format rmstate` through the
-  adapter; `runner.run_games(machine_format="rmstate")` / `--machine-format rmstate` (observe,
-  the harness) select it, for `rmstate_capable` controllers (scripted tiers, auto, actions:, play:)
+- `rmstate_env.py` — `RMStateNarrativeEnv`: the engine on `--machine-format rmstate`, each seat's
+  frames into `rm_agent.SeatFrames` and the adapter (whole observation only for
+  `scripted?view=vector`); `runner.run_games(machine_format="rmstate")` / `--machine-format
+  rmstate` (observe, the harness) select it, for `rmstate_capable` controllers (scripted tiers,
+  auto, actions:, play:)
 
 **Training (`train/`)**
 - `train.py` — CLI for PPO (`train`, `league`, `exploiter`, …), `observe`, `baseline`, `curriculum`,
@@ -667,9 +675,12 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
-- `test_agent_parity.py` — tier `agentparity`: the scripted agent on RMSTATE plays the games it plays
-  on BQUERY (card knowledge, corpus and smoke games; listed divergences in
+- `test_agent_parity.py` — tier `agentparity`: the scripted agent's vector view on RMSTATE plays the
+  games it plays on BQUERY (card knowledge, corpus and smoke games; the light corpus set's BQUERY
+  games frozen in `regression/agent_parity/bquery_corpus/`; listed divergences in
   `regression/agent_parity_divergences.json`; `--lockstep GAME` attributes one)
+- `test_rm_agent.py` — tier `rmagent`: the agent's RMSTATE frame view (card names, `FrameCards`
+  against the generated tables, `--closed-decklist` games)
 - `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
   JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
 - `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
