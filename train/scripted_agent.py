@@ -287,17 +287,85 @@ _PATIENT_ACTIVATE_NOVELTY = False
 _PATIENT_HOLD_MV_FACTOR = 1.0
 
 
+class VocabCardKnowledge:
+    """The agent's card knowledge from outside the engine: the generated vocab
+    tables (``card_costs``, ``card_props``) and the card scripts on disk. Every
+    card read below goes through the installed knowledge object
+    (:func:`use_card_knowledge`), so a driver on the RMSTATE format can swap in
+    the same answers built from the match's ``CARDS`` frame
+    (``rmstate_adapter.FrameCardKnowledge``)."""
+
+    def __init__(self):
+        self._deck_cache: dict = {}
+
+    def cost_row(self, cid: int):
+        """The card's cast-cost row (W/U/B/R/G/C/generic pip counts / 10,
+        float32), or None for an id outside the table."""
+        return _CARD_COST_MATRIX[cid] if 0 <= cid < len(_CARD_COST_MATRIX) else None
+
+    def prop(self, cid: int, col: int) -> float:
+        """Column ``col`` of the card's property row (0 outside the table)."""
+        if 0 <= cid < len(_CARD_PROP_MATRIX):
+            return float(_CARD_PROP_MATRIX[cid, col])
+        return 0.0
+
+    def is_land(self, cid: int) -> bool:
+        return cid in _LAND_VOCAB_IDS
+
+    def script_lines(self, cid: int):
+        """The script lines of the card's face, or None."""
+        return _card_script_lines(cid)
+
+    def types_line(self, cid: int) -> str:
+        """The face's ``Types:`` value ('' when unknown; '' for a token)."""
+        return card_types(cid)
+
+    def deck_runs_card(self, deck_name: str, card_name: str):
+        """Whether the named deck's list (main or sideboard) holds ``card_name``,
+        from its ``.dk`` file; None when the file can't be read."""
+        key = (deck_name, card_name)
+        if key not in self._deck_cache:
+            try:
+                text = (_DECKS_DIR / f"{deck_name}.dk").read_text()
+            except OSError:
+                self._deck_cache[key] = None
+            else:
+                self._deck_cache[key] = card_name.lower() in text.lower()
+        return self._deck_cache[key]
+
+
+_DECKS_DIR = Path(__file__).resolve().parent.parent / "bin" / "resources" / "decks"
+
+
+_VOCAB_CARD_KNOWLEDGE = VocabCardKnowledge()
+_card_knowledge = _VOCAB_CARD_KNOWLEDGE
+
+
+def use_card_knowledge(knowledge=None) -> None:
+    """Install the card knowledge every card read consults (None: the vocab
+    tables). Both seats of one match share it: a match's card table is the same
+    for every viewer."""
+    global _card_knowledge
+    _card_knowledge = knowledge if knowledge is not None else _VOCAB_CARD_KNOWLEDGE
+
+
+def _is_land_card(cid: int) -> bool:
+    """True if the card is a land (its Types line includes Land)."""
+    return _card_knowledge.is_land(cid)
+
+
 def _card_mana_value(cid: int) -> float:
     """Printed mana value of a vocab card via the cast-cost matrix.
 
-    ``_CARD_COST_MATRIX`` rows are the 7 pip counts (W/U/B/R/G/C/generic)
+    Cost rows are the 7 pip counts (W/U/B/R/G/C/generic)
     divided by 10, so the row sum times 10 is the card's total mana value
     (X contributes 0), rounded back to a whole number (the float32 row sum
     of a mana value 4 card is 4.00000006, which compares greater than 4).
     Unknown/out-of-range ids count as 0.
     """
-    if 0 <= cid < len(_CARD_COST_MATRIX):
-        return float(round(float(_CARD_COST_MATRIX[cid].sum()) * 10.0))
+    row = _card_knowledge.cost_row(cid)
+    if row is not None:
+        return float(round(float(row.sum()) * 10.0))
     return 0.0
 
 
@@ -329,6 +397,14 @@ def _vid(name: str) -> int:
     return _VOCAB_ID[name]
 
 
+def card_name_mismatches(knowledge) -> list:
+    """The cards a match's card table (``knowledge.names``: id -> name, the CARDS frame) names
+    with another id than the vocab names the card constants resolve through: (name, frame id,
+    vocab id). Empty when every name the frame and the vocab share has one id."""
+    return [(name, cid, _VOCAB_ID[name]) for cid, name in sorted(knowledge.names.items())
+            if name in _VOCAB_ID and _VOCAB_ID[name] != cid]
+
+
 _PROP_COL = {name: i for i, name in enumerate(_PROP_NAMES)}
 
 
@@ -336,9 +412,7 @@ def _card_prop(cid: int, prop: str) -> float:
     """A printed property of a vocab card from the frozen card_props matrix
     (binary flags; pips / cmc / power / toughness are /10). 0 for ids
     outside the table (null sentinel, the generic token id)."""
-    if 0 <= cid < len(_CARD_PROP_MATRIX):
-        return float(_CARD_PROP_MATRIX[cid, _PROP_COL[prop]])
-    return 0.0
+    return _card_knowledge.prop(cid, _PROP_COL[prop])
 
 
 def _card_has_keyword(cid: int, keyword: str) -> bool:
@@ -346,7 +420,7 @@ def _card_has_keyword(cid: int, keyword: str) -> bool:
     if cid < 0:
         return False
     prefix = "K:" + keyword
-    return any(line.startswith(prefix) for line in (_card_script_lines(cid) or []))
+    return any(line.startswith(prefix) for line in (_card_knowledge.script_lines(cid) or []))
 
 
 def _keyword_ability_ordinal(cid: int, keyword: str) -> int:
@@ -354,7 +428,7 @@ def _keyword_ability_ordinal(cid: int, keyword: str) -> int:
     (Equip, Reconfigure's attach, Ninjutsu): the card's A: abilities come
     first, then the keyword abilities in script order (src/parse.cpp).
     -1 when the card lacks the keyword."""
-    lines = (_card_script_lines(cid) if cid >= 0 else None) or []
+    lines = (_card_knowledge.script_lines(cid) if cid >= 0 else None) or []
     ordinal = sum(1 for line in lines if line.startswith("A:"))
     for line in lines:
         if not line.startswith("K:"):
@@ -394,12 +468,12 @@ def _is_doomsday_deck(obs: np.ndarray) -> bool:
 # Ritual in reanimator's graveyard must not flip it onto the Doomsday rules
 # for the rest of the game.
 _DD_EXCLUSIVE_IDS = frozenset({
-    53,   # Doomsday
-    57,   # Lion's Eye Diamond
-    58,   # Thassa's Oracle
-    59,   # Personal Tutor
-    60,   # Street Wraith
-    61,   # Edge of Autumn
+    _vid("Doomsday"),
+    _vid("Lion's Eye Diamond"),
+    _vid("Thassa's Oracle"),
+    _vid("Personal Tutor"),
+    _vid("Street Wraith"),
+    _vid("Edge of Autumn"),
 })
 
 
@@ -573,7 +647,7 @@ def _hand_land_count(obs: np.ndarray) -> int:
     """Lands in the priority player's hand."""
     count = 0
     for slot in range(MAX_HAND_SLOTS):
-        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) in _LAND_VOCAB_IDS:
+        if _is_land_card(_slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)):
             count += 1
     return count
 
@@ -611,14 +685,14 @@ _SELF_LIFE_IDX = _SELF_BLOCK_START + _PB_LIFE   # priority player's life / 20
 # is actually available after the combo resolves.
 _BLUE_SOURCES_NEEDED = 2
 _BLUE_SOURCE_IDS = frozenset({
-    4,    # Volcanic Island (U/R)
-    15,   # Tundra (W/U)
-    19,   # Island (U)
-    63,   # Undercity Sewers (U/B)
-    64,   # Underground Sea (U/B)
-    67,   # Cavern of Souls (any colour for creature spells, e.g. Oracle)
-    56,   # Lotus Petal (sacrifice: one mana of any colour)
-    300,  # Tropical Island (U/G) — wubg_doomsday runs 2; omitting it
+    _vid("Volcanic Island"),    # Volcanic Island (U/R)
+    _vid("Tundra"),   # Tundra (W/U)
+    _vid("Island"),   # Island (U)
+    _vid("Undercity Sewers"),   # Undercity Sewers (U/B)
+    _vid("Underground Sea"),   # Underground Sea (U/B)
+    _vid("Cavern of Souls"),   # Cavern of Souls (any colour for creature spells, e.g. Oracle)
+    _vid("Lotus Petal"),   # Lotus Petal (sacrifice: one mana of any colour)
+    _vid("Tropical Island"),  # Tropical Island (U/G) — wubg_doomsday runs 2; omitting it
           # undercounted blue sources and held Doomsday longer than needed
 })
 
@@ -628,30 +702,30 @@ _BLUE_SOURCE_IDS = frozenset({
 # Delta fetch Underground Sea, Verdant Catacombs fetches Sea or Tropical);
 # Lotus Petal counts for both sides.
 _DD_HAND_B_SOURCE_IDS = frozenset({
-    62,   # Swamp
-    63,   # Undercity Sewers (U/B)
-    64,   # Underground Sea (U/B)
-    153,  # Scrubland (W/B)
-    65,   # Bloodstained Mire (fetches a Swamp-typed dual)
-    66,   # Verdant Catacombs (fetches Underground Sea)
-    6,    # Flooded Strand (fetches Underground Sea / Scrubland)
-    7,    # Polluted Delta (fetches Sea / Sewers)
-    56,   # Lotus Petal
+    _vid("Swamp"),
+    _vid("Undercity Sewers"),   # Undercity Sewers (U/B)
+    _vid("Underground Sea"),   # Underground Sea (U/B)
+    _vid("Scrubland"),  # Scrubland (W/B)
+    _vid("Bloodstained Mire"),   # Bloodstained Mire (fetches a Swamp-typed dual)
+    _vid("Verdant Catacombs"),   # Verdant Catacombs (fetches Underground Sea)
+    _vid("Flooded Strand"),    # Flooded Strand (fetches Underground Sea / Scrubland)
+    _vid("Polluted Delta"),    # Polluted Delta (fetches Sea / Sewers)
+    _vid("Lotus Petal"),
 })
 _DD_HAND_U_SOURCE_IDS = frozenset({
-    19,   # Island
-    15,   # Tundra (W/U)
-    4,    # Volcanic Island (U/R)
-    63,   # Undercity Sewers (U/B)
-    64,   # Underground Sea (U/B)
-    67,   # Cavern of Souls (creature spells — pays for Oracle)
-    300,  # Tropical Island (U/G)
-    5,    # Scalding Tarn (fetches an Island-typed dual)
-    9,    # Misty Rainforest (fetches an Island-typed dual)
-    6,    # Flooded Strand
-    7,    # Polluted Delta
-    66,   # Verdant Catacombs (fetches Tropical Island)
-    56,   # Lotus Petal
+    _vid("Island"),
+    _vid("Tundra"),   # Tundra (W/U)
+    _vid("Volcanic Island"),    # Volcanic Island (U/R)
+    _vid("Undercity Sewers"),   # Undercity Sewers (U/B)
+    _vid("Underground Sea"),   # Underground Sea (U/B)
+    _vid("Cavern of Souls"),   # Cavern of Souls (creature spells — pays for Oracle)
+    _vid("Tropical Island"),  # Tropical Island (U/G)
+    _vid("Scalding Tarn"),    # Scalding Tarn (fetches an Island-typed dual)
+    _vid("Misty Rainforest"),    # Misty Rainforest (fetches an Island-typed dual)
+    _vid("Flooded Strand"),
+    _vid("Polluted Delta"),
+    _vid("Verdant Catacombs"),   # Verdant Catacombs (fetches Tropical Island)
+    _vid("Lotus Petal"),
 })
 
 # Instant-speed removal that can kill Thassa's Oracle mid-combo (in response
@@ -660,29 +734,16 @@ _DD_HAND_U_SOURCE_IDS = frozenset({
 # _TARGETED_REMOVAL_IDS: Prismatic Ending is sorcery-speed, so it can't
 # disrupt the kill and stays on the highest-MV fallback.
 _DD_DISRUPTOR_REMOVAL_IDS = frozenset({
-    48,   # Swords to Plowshares
-    84,   # Fatal Push
+    _vid("Swords to Plowshares"),
+    _vid("Fatal Push"),
 })
 
-_DECKS_DIR = Path(__file__).resolve().parent.parent / "bin" / "resources" / "decks"
-_deck_fow_cache: dict = {}
-
-
 def _deck_runs_force_of_will(deck_name: str):
-    """Whether the named deck's .dk file (main or sideboard) contains Force of
-    Will. Returns True/False, or None when the list can't be read (unknown
-    deck name, sculpted temp deck already cleaned up, ...) — callers treat
-    None as "assume it does" and stay conservative."""
-    if deck_name in _deck_fow_cache:
-        return _deck_fow_cache[deck_name]
-    try:
-        text = (_DECKS_DIR / f"{deck_name}.dk").read_text()
-    except OSError:
-        result = None
-    else:
-        result = "force of will" in text.lower()
-    _deck_fow_cache[deck_name] = result
-    return result
+    """Whether the named deck (main or sideboard) contains Force of Will.
+    Returns True/False, or None when the list can't be read (unknown deck name,
+    sculpted temp deck already cleaned up, ...) — callers treat None as "assume
+    it does" and stay conservative."""
+    return _card_knowledge.deck_runs_card(deck_name, "Force of Will")
 
 
 def _dd_fast_hand(obs: np.ndarray, hand_ids) -> bool:
@@ -835,7 +896,7 @@ def _hand_free_draw_count(obs: np.ndarray) -> int:
 # the direct-play half of _DD_HAND_U_SOURCE_IDS. Fetch lands are excluded on
 # purpose — after Doomsday lays the pile a fetch can't be cracked (the search
 # shuffles the pile away), so a fetch in hand covers nothing for Oracle.
-_DD_HAND_U_DIRECT_IDS = frozenset({19, 15, 4, 63, 64, 67, 300, 56})
+_DD_HAND_U_DIRECT_IDS = frozenset({_vid("Island"), _vid("Tundra"), _vid("Volcanic Island"), _vid("Undercity Sewers"), _vid("Underground Sea"), _vid("Cavern of Souls"), _vid("Tropical Island"), _vid("Lotus Petal")})
 
 
 def _hand_direct_blue_sources(obs: np.ndarray) -> int:
@@ -910,11 +971,11 @@ def _led_covers_oracle(obs: np.ndarray) -> bool:
 # Black-mana producers a Doomsday deck can control (Doomsday costs BBB; Dark
 # Ritual needs one B to start). Lotus Petal makes any colour.
 _DD_BLACK_SOURCE_IDS = frozenset({
-    62,   # Swamp
-    63,   # Undercity Sewers (U/B)
-    64,   # Underground Sea (U/B)
-    153,  # Scrubland (W/B)
-    56,   # Lotus Petal
+    _vid("Swamp"),
+    _vid("Undercity Sewers"),   # Undercity Sewers (U/B)
+    _vid("Underground Sea"),   # Underground Sea (U/B)
+    _vid("Scrubland"),  # Scrubland (W/B)
+    _vid("Lotus Petal"),
 })
 # Cards a pre-pile surveil must keep on top rather than mill: the kill itself,
 # the mana that casts it, and the pile's free draws.
@@ -922,14 +983,14 @@ _DD_COMBO_PIECE_IDS = frozenset({
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _LED_VOCAB_IDX, _LOTUS_PETAL_VOCAB_IDX, _STREET_WRAITH_VOCAB_IDX,
     _EDGE_OF_AUTUMN_VOCAB_IDX,
-    59,   # Personal Tutor
+    _vid("Personal Tutor"),
 })
 # Fetch-land / land-search preference while piloting Doomsday: a dual serving
 # BOTH combo colours first (Underground Sea untapped ahead of the enters-tapped
 # Sewers), then whichever single colour the board is missing.
-_DD_FETCH_BOTH_COLOURS = (64, 63)
-_DD_FETCH_BLACK = (153, 62)
-_DD_FETCH_BLUE = (19, 15, 300)
+_DD_FETCH_BOTH_COLOURS = (_vid("Underground Sea"), _vid("Undercity Sewers"))
+_DD_FETCH_BLACK = (_vid("Scrubland"), _vid("Swamp"))
+_DD_FETCH_BLUE = (_vid("Island"), _vid("Tundra"), _vid("Tropical Island"))
 # Smallest library each cantrip may be cast into: Brainstorm draws three,
 # Ponder draws one, Consider may surveil its one card away and then draw.
 # Drawing from an empty library loses the game.
@@ -969,7 +1030,7 @@ _DD_PETAL_WORTHY_IDS = frozenset({
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _LOTUS_PETAL_VOCAB_IDX, _LED_VOCAB_IDX,
     _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX, _CONSIDER_VOCAB_IDX,
-    283,  # Veil of Summer (protection for the kill turn)
+    _vid("Veil of Summer"),  # Veil of Summer (protection for the kill turn)
 }) | _COUNTER_SPELL_VOCAB_IDS
 # Payment / pitch preference: mana sources and pitch fodder ranked worst-first.
 # Cracking Petal / LED to pay for a cantrip wastes the combo's mana; pitching
@@ -1174,7 +1235,7 @@ def _dd_oracle_mana_choice(obs: np.ndarray, cats, card_ids, own_main: bool) -> i
 # and a single copy, so the selection phase can never pick a second land. A
 # Tundra fallback once got picked alongside it, and the extra land pushed the
 # cyclers below Oracle.
-_DD_PILE_LAND_IDS = (19,)
+_DD_PILE_LAND_IDS = (_vid("Island"),)
 
 
 def _dd_pile_wants_land(obs: np.ndarray) -> bool:
@@ -1247,7 +1308,7 @@ def _dd_return_pick(obs: np.ndarray, cats, card_ids, cat) -> int:
             tiers[3].append(i)
         elif cid in _DD_CANTRIP_IDS:
             tiers[1].append(i)
-        elif cid in _LAND_VOCAB_IDS:
+        elif _is_land_card(cid):
             tiers[0 if land_heavy else 2].append(i)
         else:
             tiers[2].append(i)
@@ -2245,7 +2306,7 @@ def _card_want(cid: int, lands_total: int) -> float:
     Countermagic (pitch / alternative costs) and delve spells count as cheap."""
     if cid < 0:
         return 0.0
-    if cid in _LAND_VOCAB_IDS:
+    if _is_land_card(cid):
         if lands_total < 3:
             return 2.0
         if lands_total < 4:
@@ -2385,10 +2446,10 @@ def _has_nonmana_activation(cid: int) -> bool:
     """True unless ``cid`` is a land whose only activated abilities are mana
     abilities (basic land types or AB$ Mana lines): Pithing Needle can't stop
     those (its text exempts mana abilities, CR 605.1a)."""
-    if cid not in _LAND_VOCAB_IDS:
+    if not _is_land_card(cid):
         return True
     return any(line.startswith("A:") and "AB$ Mana" not in line
-               for line in (_card_script_lines(cid) or []))
+               for line in (_card_knowledge.script_lines(cid) or []))
 
 
 # ── Combat sub-choices ──────────────────────────────────────────────────────
@@ -2591,7 +2652,7 @@ _KNIGHT_LIFE_THRESHOLD = 8
 
 def _is_artifact_or_enchantment(cid: int) -> bool:
     """True if the card (or token) is an artifact or an enchantment."""
-    types = card_types(cid).split()
+    types = _card_knowledge.types_line(cid).split()
     return "Artifact" in types or "Enchantment" in types
 
 
@@ -2697,7 +2758,7 @@ def _best_void_card(obs: np.ndarray) -> int | None:
     for slot in range(MAX_GY_SLOTS):
         base = _EXILE_START + (MAX_GY_SLOTS + slot) * _EXILE_SLOT_SIZE
         cid = _slot_card_idx(obs, base)
-        if cid < 0 or cid in _LAND_VOCAB_IDS:
+        if cid < 0 or _is_land_card(cid):
             continue
         if obs[base + EXILE_COUNTERS_OFF] * ZONE_COUNTER_NORMALIZER < 0.5:
             continue
@@ -2737,7 +2798,7 @@ def _tutor_pick(cats, card_ids, num_choices: int) -> int | None:
         if cats[i] != _CAT_SEARCH:
             continue
         cid = _action_card_id(card_ids, i)
-        if cid < 0 or cid in _LAND_VOCAB_IDS:
+        if cid < 0 or _is_land_card(cid):
             continue
         mv = _card_mana_value(cid) + 0.1 * _card_prop(cid, "power")
         if mv > best_mv:
@@ -2769,8 +2830,9 @@ def _land_search_pick(g: dict, cats, card_ids, num_choices: int) -> int | None:
     need: set[int] = set()
     for c in g["self_hand"]:
         cid = c["card_idx"]
-        if 0 <= cid < len(_CARD_COST_MATRIX) and cid not in _LAND_VOCAB_IDS:
-            need |= {col for col in range(5) if _CARD_COST_MATRIX[cid][col] > 0}
+        row = _card_knowledge.cost_row(cid)
+        if row is not None and not _is_land_card(cid):
+            need |= {col for col in range(5) if row[col] > 0}
     need -= have
     best_i, best_key = None, None
     for i in range(num_choices):
@@ -2779,7 +2841,7 @@ def _land_search_pick(g: dict, cats, card_ids, num_choices: int) -> int | None:
         cid = _action_card_id(card_ids, i)
         if cid < 0:
             continue
-        if cid not in _LAND_VOCAB_IDS:
+        if not _is_land_card(cid):
             return None
         colors = _land_colors(cid)
         key = (len(colors & need), len(colors))
@@ -3158,7 +3220,7 @@ class ScriptedAgent:
             if own_dc:
                 if _hand_land_count(obs) >= 3:
                     for i, cid in own_dc:
-                        if cid in _LAND_VOCAB_IDS:
+                        if _is_land_card(cid):
                             return i
                 castable_mv = _self_land_count(obs) + 1
                 uncastable = [(_effective_mana_value(cid), i) for i, cid in own_dc
@@ -3557,7 +3619,7 @@ class ScriptedAgent:
                     if (c != _CAT_MULLIGAN) == keep:
                         return i
                 return 0
-        lands = sum(1 for c in g["self_hand"] if c["card_idx"] in _LAND_VOCAB_IDS)
+        lands = sum(1 for c in g["self_hand"] if _is_land_card(c["card_idx"]))
         has_dig = any(c["card_idx"] in _KEEP_ONE_LANDER_IDS for c in g["self_hand"])
         # Each mulligan costs a card, so the bar drops as they add up: a
         # 5-lander is kept going to six, any hand with a land going to five,
