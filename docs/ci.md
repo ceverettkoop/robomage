@@ -40,7 +40,7 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `browser` | Textual analysis browser (`test_tui_browser.py`) driven headlessly: `.rmtrace` load/save round trip, a net probe, Tree tab rebuild/expand/walk, live-stream rows | needs the engine, textual and matplotlib; `[skip]` without the packages |
 | `modelspec` | model-spec resolver (`test_model_spec.py`): the spec-family table, knob stripping, and one spec → one checkpoint across every consumer | torch-free, engine-free |
 | `concede` | CR 104.3a concession sentinels (`test_concede.py`): bo1 / bo3-game / match concede outcomes, and the sentinel replays via `--replay` | needs the engine |
-| `scenarios` | rules-regression scenarios (`test_scenarios.py`): every `train/regression/scenarios/*.json` sculpted harness game (bo1, parallel) still shows its asserted rules outcome — narrative lines present / absent / in order, actions offered or withheld, the game result | needs the engine; ~2 s. A failure names the missing / forbidden line; `test_scenarios.py --narrative <name>` prints what the assertions match against |
+| `scenarios` | rules-regression scenarios (`test_scenarios.py`): every `train/regression/scenarios/*.json` sculpted harness game (bo1 unless its `format` says bo3, parallel) still shows its asserted rules outcome — narrative lines present / absent / in order, actions offered or withheld, the game result, and (`expect_dump*`, the `knowledge_*` sharpness scenarios) the deductions on the seats' knowledge tables, rendered as text lines from a `--rmstate-dump --state-dump json` run | needs the engine; ~2 s. A failure names the missing / forbidden line; `test_scenarios.py --narrative <name>` (`--dump <name>` for the knowledge lines) prints what the assertions match against |
 | `obsinv` | per-decision structural invariants on the raw observation over seeded scripted games (`test_obs_invariants.py`) — see its docstring for the list | prints the violated invariant (decision, seat, block, slot, value) |
 | `actorobs` | `make actor-syntax` (`-fsyntax-only` over the actor's libtorch-free TUs, firing the obs-layout `static_assert`s in `src/actor/obs_builder.{h,cpp}`), plus a generated TU asserting `machine_io.h`'s `OFFSET_CHAIN` equals `env.py`'s offsets block by block | compiler only |
 | `pergame` | bo3 per-game-index win-rate split: seat-flip consistency, tally merging, a live bo3 (`test_per_game_split.py`) | needs the engine |
@@ -78,7 +78,7 @@ match ends (`docs/state_format.md` §10). Every seat frame carries its writer's 
 
 | Part | Runs | Fails on |
 |---|---|---|
-| `corpus` | `replay_diff.py check` with `--selfcheck-knowledge` (which implies `--selfcheck-state`; the `knowledge` tier shares these runs) | corpus drift, an `ERROR:` line, a missing summary (one `SELFCHECK-STATE` and one `SELFCHECK-KNOWLEDGE` per corpus game) or `errors≠0` |
+| `corpus` | `replay_diff.py check` with `--selfcheck-knowledge` (which implies `--selfcheck-state`; the `knowledge` tier shares these runs) | corpus drift, an `ERROR:` line, a missing summary (one `SELFCHECK-STATE`, one `SELFCHECK-KNOWLEDGE` and one `SHADOW-KNOWLEDGE` per corpus game), `errors≠0`, or a `SHADOW:` line no signature of `train/regression/knowledge_divergences.json` classifies (the `knowledge` tier's `shadow` part) |
 | `fuzz` | 16 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; reanimator for face-down exile, wrb_energy and bw_dnt for Cabal Therapy and Disruptor Flute; four with `--selfcheck-state-sample 1`); two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` summary (one stopped at the 2500-decision cap is scanned only) |
 | `scenarios` | `test_scenarios.py` with `--selfcheck-state --selfcheck-state-sample 1` | any failing scenario (the runner fails on an `ERROR:` line; a scenario stops at its decision cap, so it prints no summary) |
 | `decode` | `test_rmstate.check_dump` / `check_refusals` on the fuzz dumps, `stream_checks` on two `--machine-format rmstate` sessions with the self-checks on (one bo3 under `--closed-decklist`), `check_name_card_candidates` (a Disruptor Flute preset's opening menu: the opponent's registered cards with open decklists, every vocab card under `--closed-decklist`) | any check's failure; a session's `ERROR:` line or missing summary |
@@ -104,8 +104,13 @@ writer carries that writer's knowledge instance's `k_*` tables (`docs/knowledge_
 checks, at every decision, every `k_*` fact of both seats against the true world built from the
 engine state, and every knowledge instance's state across the self-check's snapshot restores; a
 failure is an `ERROR: selfcheck-knowledge soundness|snapshot: viewer …, decision …: …` line and each
-engine prints one `SELFCHECK-KNOWLEDGE: decisions=… facts=… errors=N` line at match end. The replay
-corpus runs under it in the `rmstate` tier's corpus part (shared engine runs).
+engine prints one `SELFCHECK-KNOWLEDGE: decisions=… facts=… errors=N` line at match end. It also
+runs the shadow comparison (`src/state_format/shadow_knowledge.h`): wherever the `k_*` tables and the
+old BQUERY vector's memory (known library tops, known opponent hand cards, the decklist revealed
+bits) disagree, a `SHADOW: <kind> <direction> viewer=… owner=… card=… … events=…` line when the
+mismatch appears, and one `SHADOW-KNOWLEDGE: decisions=… compared=… mismatches=… shown=…` line at
+match end; a mismatch is no engine error, the tier classifies it. The replay corpus runs under it in
+the `rmstate` tier's corpus part (shared engine runs).
 
 | Part | Runs | Fails on |
 |---|---|---|
@@ -113,10 +118,14 @@ corpus runs under it in the `rmstate` tier's corpus part (shared engine runs).
 | `fuzz` | 6 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; ur_delver, bug and uw_control put-backs, wubg_doomsday and reanimator tutors, bug, wrb_energy and reanimator discard, mav's Sylvan Library, reanimator's face-down exile; one with `--selfcheck-state-sample 1`) under `--selfcheck-knowledge`; two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` `SELFCHECK-STATE` and `SELFCHECK-KNOWLEDGE` summaries |
 | `isolation` | three `--machine-format rmstate` sessions (`STREAM_GAMES`: ur_delver vs bug bo1, reanimator vs uw_control bo3, bug vs wubg_doomsday bo3 under `--closed-decklist`), each with a `--rmstate-dump` and `--selfcheck-knowledge`; `test_rmstate.check_stream` (every stream frame equals the dump's for that seat and decision, `k_*` tables included; decision numbers unique), then `rmknow --isolation` for both seats on every dump (the fuzz games' too) and each saved stream (`test_rmstate.check_knowledge_isolation`) | a frame or event difference, a duplicate decision number, a bo3 session without a sideboarding frame, an isolation difference, an `ERROR:` line or a missing summary |
 | `truth` | `rmknow --truth` for both seats on every dump (fuzz and stream sessions): the soundness check against the dump's omniscient frames | a violated fact, a model error, no frame checked |
+| `shadow` | the `SHADOW:` lines of the fuzz and stream sessions' engines, matched against the signatures of `train/regression/knowledge_divergences.json` (each a kind, a direction, a pattern over the line, a classification, a why and a regression scenario; the first that matches classifies it); then every signature's scenario run with `--selfcheck-knowledge` | an unclassified mismatch, a malformed signature file, a scenario that fails or prints no `SHADOW:` line its signature classifies |
 
 ```bash
 train/.venv/bin/python train/test_knowledge.py --part fuzz --fuzz-seed 203   # one fuzz game
 train/.venv/bin/python train/test_knowledge.py --part isolation
+train/.venv/bin/python train/test_knowledge.py --part shadow
+# classify the SHADOW lines of any engine stderr (counts per signature; unclassified lines fail)
+train/.venv/bin/python train/test_knowledge.py --classify ci_out/rmstate/corpus.err
 # the soundness check on any game: one errors=0 SELFCHECK-KNOWLEDGE line per engine
 ROBOMAGE_ENGINE_FLAGS=--selfcheck-knowledge train/.venv/bin/python train/regression/replay_diff.py check
 ```

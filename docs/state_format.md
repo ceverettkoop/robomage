@@ -1,13 +1,16 @@
-# RMSTATE: the engine's state format (draft spec)
+# RMSTATE: the engine's state format
 
-Status: **step-1a spec, decisions closed** (register in section 11). Companions:
+Status: **implemented** (step 1 of [`engine_fork_plan.md`](engine_fork_plan.md) is done; decisions
+closed, register in section 11). Companions:
 [`state_format_agent_map.md`](state_format_agent_map.md) (agent read map) and
-[`knowledge_store.md`](knowledge_store.md) (recall/inference sidecar). Implemented so far:
-visibility and reveal windows (`src/queries/visibility.*`), handles
-(`src/state_format/handles.*`), the schema and the encoder for the snapshot and once-per-match
-frames (`src/state_format/schema.*`, `enum_names.*`, `encode.*`) with `--rmstate-dump`
-(`dump.*`), and the observation events (`src/state_format/events.*`). The decoders and the
-knowledge sidecar are not yet.
+[`knowledge_store.md`](knowledge_store.md) (recall/inference sidecar). Code: visibility and reveal
+windows (`src/queries/visibility.*`), handles (`src/state_format/handles.*`), the schema and the
+encoder for the snapshot and once-per-match frames (`src/state_format/schema.*`, `enum_names.*`,
+`encode.*`), the observation events (`src/state_format/events.*`), the C++ decoder and JSON
+rendering (`decode.*`, `json.*`), the dump and stream writers (`dump.*`, `stream.*`), the Python
+decoder (`train/rmstate.py`), the self-checks (`selfcheck.*`, `selfcheck_knowledge.*`,
+`shadow_knowledge.*`; section 10) and the knowledge sidecar (`src/knowledge/`, `knowledge_feed.*`).
+BQUERY is still the default protocol; RMSTATE runs beside it until later steps switch over.
 
 RMSTATE replaces the float state vector (BQUERY). The engine sends it to whoever makes a
 decision: an in-process agent, the C++ CLI, or an external machine agent over `--machine`.
@@ -83,7 +86,10 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
   its library is shuffled or reordered (CR 701.20d). "The effect finishes" is the end of the
   resolution that opened it (a mid-resolution decision is still inside it), so a card put back
   in a library by Ponder or a scry stops being looked at as it is put back.
-- A search is a look at every card in the searched hidden zones (CR 701.23a).
+- A search is a look at every card in the searched hidden zones (CR 701.23a). A search that picks
+  its cards one at a time (Doomsday) looks again only at the cards it may still pick: the cards it
+  already chose and put back are not candidates, so the other player can tell the next pick apart
+  from them (`src/zone_search.cpp`).
 - A miracle card stays revealed until its trigger leaves the stack (CR 701.20a, 702.94b).
 - Continuous reveals (e.g. "play with the top card of your library revealed") are windows that
   last as long as the effect. No card has one today except the chosen companion, revealed
@@ -345,7 +351,9 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   - exactness against brute-force enumeration;
   - isolation via the standalone `rmknow` tool;
   - a shadow comparison with the engine's current memory, in which every mismatch is
-    classified as a bug or an old-vector leak.
+    classified as a bug or an old-vector leak (built into `--selfcheck-knowledge`,
+    `src/state_format/shadow_knowledge.h`; signatures in
+    `train/regression/knowledge_divergences.json`; `knowledge_store.md` §9.7).
 
 ## 8. Engine changes this requires
 
@@ -464,7 +472,9 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   (roundtrip, references, snapshot restore) and reports the sidecar's per-frame consistency
   check; isolation is `rmknow --isolation`; soundness against the engine state, and the knowledge
   state across a snapshot restore, are `--selfcheck-knowledge` (`src/state_format/selfcheck_knowledge.h`,
-  `knowledge_store.md` §9.5), which implies `--selfcheck-state`.
+  `knowledge_store.md` §9.5), which implies `--selfcheck-state`; it also runs the shadow comparison
+  with the old BQUERY vector's memory (`src/state_format/shadow_knowledge.h`, `knowledge_store.md`
+  §9.7).
 
 **Implementation** (`--selfcheck-state`, `src/state_format/selfcheck.{h,cpp}`). At every decision
 the self-check builds every viewer's STATE frame (A, B, omniscient) from a queue copy of its own

@@ -97,6 +97,25 @@ Later steps only consume this. It is all emitted next to BQUERY, so nothing exis
 **Handoff brief:** [`step1_handoff.md`](step1_handoff.md) has the ordered task list (T0–T12),
 file layout, code locations, checks and exit criteria for a session executing step 1.
 
+**Status: done.** 1a, 1b and 1c are implemented and every check below runs in `make check` (the
+`rmstate` and `knowledge` tiers, `docs/ci.md`), with the replay corpus byte-identical and `obsinv`
+green. Deviations from the plan as written:
+
+- the shadow comparison is part of `--selfcheck-knowledge` (no flag of its own) and runs on the
+  same engines as the soundness check; its mismatches are printed as `SHADOW:` lines and classified
+  by the Python tiers against `train/regression/knowledge_divergences.json`
+  (`knowledge_store.md` §9.7). Three old-vector leaks were found (the known Brainstorm put-back
+  one, its per-copy variant, and library positions followed through ranges the viewer cannot tell
+  apart); the other classes are quirks (§9.7);
+- it found and fixed, in the engine: a card put on the bottom of an empty library got position 1
+  (`Orderer::move_object`); Doomsday's one-at-a-time search looked again at the cards it had
+  already chosen, so the other player could not tell a pick from them (`zone_search.cpp`); in the
+  sidecar, two library runs from one junction did not rejoin once compaction had folded the
+  history behind the junction into it (`PlayerModel::rejoin`);
+- the sharpness scenarios assert on the knowledge dump through `train/test_scenarios.py`'s
+  `expect_dump*` keys, which render each seat frame's `k_*` tables as text lines; scenarios may
+  now also be bo3 (`format`).
+
 ### 1a. Design (docs)
 
 - [`state_format.md`](state_format.md): visibility, handles, snapshot tables, events, encoding,

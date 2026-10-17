@@ -31,7 +31,9 @@ ways: raw `obs[...]` reads, `decode.decode_game_state` (`g`, built once per deci
    It never reads the opponent's known library top, and it binds but ignores the decklist
    "revealed" bit (`_rev`, :2355). The agent therefore needs only those two outputs from the
    knowledge sidecar. The full shadow comparison with today's engine memory
-   (`knowledge_store.md` §7) remains the broader event-completeness check.
+   (`knowledge_store.md` §7, §9.7) is the broader event-completeness check; its classified
+   divergences (`train/regression/knowledge_divergences.json`) are the parity caveats of the
+   port (`knowledge_store.md` §8).
 3. **Player identity is never needed beyond "self/opp".** The seat flag is read only to pick
    which deck *name* belongs to the agent (`_seat_deck` :2895).
 4. **Out-of-band inputs exist today:**
@@ -102,9 +104,9 @@ and the menu's `ref` (§2).
 
 | Quantity | Read today | Served by | Parity note |
 |---|---|---|---|
-| own library top card is X | `obs[5777]` (`_led_crack_choice` :732) | `K.k_position` (own, top, exact) | engine source today: `Game::KnownLibraryTop` (by owner); covered by the shadow comparison |
-| own known top 3 | `_known_top_ids(obs, 3)` (:2323 → `_shuffle_pick` :2332) | `K.k_position` (own, top 3, exact) | same |
-| opponent known hand cards | `g["opp_known_hand"]` (:2361) | `K.k_known_hand` | engine source today: `Zone::identity_known` via `machine_io.cpp:954`. Known divergence: after an opponent's put-back the old vector leaks which cards went back; `expert` does not (`knowledge_store.md` §7) |
+| own library top card is X | `obs[5777]` (`_led_crack_choice` :732) | `K.k_position` (owner self, `at` top 0, `card` set) | engine source today: `Game::KnownLibraryTop` (by owner). Shadow comparison (`knowledge_store.md` §9.7): expert never knows less in a game; it knows more during a look (`pending_look`) and by deduction (`deduction`); between games the old vector still shows the finished game (`between_games`) |
+| own known top 3 | `_known_top_ids(obs, 3)` (:2323 → `_shuffle_pick` :2332) | `K.k_position` (owner self, `at` top 0-2, `card` set) | same |
+| opponent known hand cards | `g["opp_known_hand"]` (:2361) | `K.k_known_hand` | engine source today: `Zone::identity_known` (`opp_known_hand_cards`, `machine_io.cpp`; the vector shows the first 10). Shadow comparison: expert knows less after a hidden put-back (`put_back_leak`) and after a copy of a known card leaves the hand (`copy_leak`), both old-vector leaks; more after a known top card is drawn (`known_card_drawn`), a companion is put into hand (`public_entry_untracked`) and by deduction |
 | opponent decklist (cid, count) | `decode_opp_decklist` (:2355) | `D.` opponent registered list | the `revealed` bit is unused |
 
 ## 2. Menu reads

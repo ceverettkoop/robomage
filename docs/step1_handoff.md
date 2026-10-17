@@ -1,5 +1,11 @@
 # Step 1 handoff: state format emitted + knowledge sidecar
 
+**Status: done.** Every task (T0–T12) is implemented and the exit criteria of section 6 hold:
+the `rmstate` and `knowledge` checks run in `make check`, the replay corpus is byte-identical,
+`obsinv` is green, and every shadow-comparison mismatch is classified in
+`train/regression/knowledge_divergences.json` (`knowledge_store.md` §9.7; deviations from this
+brief in `engine_fork_plan.md`, step 1). The brief below is kept as written for the record.
+
 This is a self-contained brief for a session picking up **step 1** of
 [`engine_fork_plan.md`](engine_fork_plan.md). Read it top to bottom before writing code.
 

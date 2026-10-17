@@ -1,13 +1,14 @@
 # Knowledge store: the actor-side memory and inference sidecar (design)
 
-Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md). **T9, T10 and T11 are
-implemented** (`src/knowledge/`, `tools/rmknow/`, `src/state_format/knowledge_feed.*`): the model,
-the update rules, bound propagation, the per-frame consistency check, the `k_*` rows and
-serialisation (T9), the exact solver, compaction and the enumerator tests (T10), and the engine
-integration: per-seat instances appending `k_*` to every seat frame, the snapshot hook and
-`rmknow --isolation` (T11); section 9 says how. Of T12, the cadence-independent model (section
-9.6), `--selfcheck-knowledge` (soundness and the snapshot check, section 9.5) and the `knowledge`
-gate tier (`docs/ci.md`) are built; the shadow comparison and the sharpness scenarios are not yet.
+Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md), **done**. T9-T12 are implemented
+(`src/knowledge/`, `tools/rmknow/`, `src/state_format/knowledge_feed.*`,
+`src/state_format/selfcheck_knowledge.*`, `src/state_format/shadow_knowledge.*`): the model, the
+update rules, bound propagation, the per-frame consistency check, the `k_*` rows and serialisation
+(T9), the exact solver, compaction and the enumerator tests (T10), the engine integration (T11),
+and the verification of T12: the cadence-independent model (section 9.6), `--selfcheck-knowledge`
+(soundness, the snapshot check and the shadow comparison with the old vector, sections 9.5 and
+9.7), the sharpness scenarios (section 9.7) and the `knowledge` gate tier (`docs/ci.md`); section 9
+says how.
 It builds on
 [`state_format.md`](state_format.md): the engine
 sends only what each viewer explicitly knows right now. This component supplies everything a
@@ -254,7 +255,8 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 - **Sharpness (the model):** hand-written regression scenarios with the deduction a strong
   player would make, asserted on the knowledge dump. Example: after a Brainstorm put-back
   from a hand known to hold {Force of Will, Daze, X}, and X then cast, the top two cards are
-  exactly {Force of Will, Daze}.
+  exactly {Force of Will, Daze}. Built as `train/regression/scenarios/knowledge_*.json` with the
+  `expect_dump*` keys of `train/test_scenarios.py` (section 9.7).
 - **Isolation:** `rmknow` on the recorded frame stream gives byte-identical knowledge tables
   to the in-process run, per writer (the dump's seat frames, a saved stream); and the stream's
   `k_*` tables equal the dump's at every seat and decision (section 9.6).
@@ -265,25 +267,41 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   - a sidecar or event bug: fixed; or
   - an old-vector leak or quirk: documented, with a regression scenario.
 
-  **One leak is already known.** `Zone::identity_known` is tracked per physical card. After an
+  **One leak was known in advance.** `Zone::identity_known` is tracked per physical card. After an
   opponent's Brainstorm put-back, the old vector still lists a known Force of Will in hand only
   if that particular card stayed in hand, which tells the viewer which cards went back.
-  `expert` reports "Force of Will: in hand or in the top two". The shadow comparison must
-  classify every such case.
+  `expert` reports "Force of Will: in hand or in the top two". Built as part of
+  `--selfcheck-knowledge`, with every mismatch classified in
+  `train/regression/knowledge_divergences.json` (section 9.7): three leaks (this one, its copy
+  variant and a library-position one), the rest quirks; no sidecar bug remained.
 - **Snapshot/restore:** the knowledge state is saved and restored with the engine snapshot,
   and frames after a restore match the originals.
 
 ## 8. Effect on the scripted-agent port (plan step 2)
 
 - **The agent reads knowledge from `expert`, not from an `engine-compat` level.** The
-  read map's two knowledge reads come from the knowledge tables:
-  - own known top 0–2 and the Thassa's Oracle check: `k_position` (own, exact);
-  - `opp_known_hand`: `k_known_hand`.
-- **Parity target:** byte-identical transcripts, except in games where a classified old-vector
-  leak changed what the agent saw. Those games are re-recorded, each with its classification
-  as the reason.
+  read map's two knowledge reads come from the knowledge tables, both built and shadow-compared
+  in step 1:
+  - own known top 0–2 and the Thassa's Oracle check: the `k_position` rows of the viewer's own
+    library with `card` set (`at` from the top);
+  - `opp_known_hand`: `k_known_hand` (per card, the copies definitely in the opponent's hand).
+- **Parity target:** byte-identical transcripts, except in games where a classified divergence
+  (`train/regression/knowledge_divergences.json`, section 9.7) changed what the agent saw. Those
+  games are re-recorded, each with its divergence as the reason. What the divergences imply:
+  - `opp_known_hand` → `k_known_hand`: expert knows **less** after an opponent's hidden put-back
+    (`put_back_leak`) and after a copy of a known card leaves the hand (`copy_leak`), and **more**
+    after the opponent draws a card the viewer knew on top (`known_card_drawn`), after a companion
+    is put into hand (`public_entry_untracked`) and by deduction (`deduction`). The agent's
+    name-a-card pick (Cabal Therapy) is the reader, so these change what it names;
+  - own top → `k_position`: expert knows **more** during a look (`pending_look`: the looked-at
+    cards before the effect puts them back) and by deduction (positions known deeper than five,
+    a library left with one card's copies); never less in a game. Between games the old vector
+    still shows the finished game (`between_games`); the agent's sideboarding reads neither;
+  - the opponent's known library top and the decklist revealed bits are not read by the agent
+    (`state_format_agent_map.md`), so `position_leak`, `private_look_seen` and
+    `harness_preset_seen` change nothing in the port.
 
-## 9. Implementation (step 1 T9, T10, T11)
+## 9. Implementation (step 1 T9-T12)
 
 Code: `src/knowledge/` (std-only; `Knowledge` in `knowledge.h` is the entry point), the
 standalone driver `tools/rmknow/` and the engine side `src/state_format/knowledge_feed.*`.
@@ -314,8 +332,9 @@ rest of the turn, so a later drawn-this-turn pick (Sylvan Library) falls back to
 Library operations go through the network: taking the unit at a position splits it off its run,
 inserting into a run cuts the run there, a position range the viewer cannot tell apart (a scry
 pick, a reorder) merges into one run, a shuffle merges the whole library, a pinned position is a
-three-way split of its run. Two runs that become adjacent again and are unpinned parts of one split
-rejoin (exact: nothing else constrains them).
+three-way split of its run. Two runs that become adjacent again and are unpinned outputs of one
+junction rejoin (exact: nothing else constrains them), also when compaction has folded the history
+behind that junction into it (a searched card located in the shuffled library, then gone).
 
 ### 9.2 Bound propagation, the exact solver, compaction
 
@@ -464,7 +483,7 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
     objects by the seat's handle, so face-down pools are checked too), and at the self-check's
     snapshot restore every instance's serialised state against the one saved. Failures are `ERROR:
     selfcheck-knowledge soundness|snapshot: …` lines; `SELFCHECK-KNOWLEDGE: decisions=… facts=…
-    errors=…` at match end. A reanimator vs uw_control bo3 fuzz match checks 179,079 facts over
+    errors=…` at match end. It also runs the shadow comparison (section 9.7). A reanimator vs uw_control bo3 fuzz match checks 179,079 facts over
     588 decisions. Proved with temporary bugs: a pool's max one too low (10,859 errors), a known
     position reported one place off (12) and a deserialise that dropped one player's copies seen
     (28 snapshot errors, besides the frame comparison's) were each caught. Over the replay corpus
@@ -585,5 +604,86 @@ expert, 1.7 s at off and 0.8 s with no dump, so about 1 ms per seat frame) and 1
 one (22.7 s, 8.5 s, 3.3 s). A dump pays it twice per decision, the stream once per decision of the
 seat, the self-check twice more. The `rmstate` gate tier (corpus under `--selfcheck-knowledge`,
 fuzz under the self-check, two fuzz dumps, two stream sessions) takes about 3 min 10 s on 4 cores
-(2 min 30 s without the sidecar), the `knowledge` tier about 70 s, and the whole `make check`
-about 7 min.
+(2 min 30 s without the sidecar), the `knowledge` tier about 70 s (its shadow part about 2 s: the
+divergence scenarios; the corpus and fuzz comparisons ride on engines that run anyway), and the
+whole `make check` about 8 min.
+
+### 9.7 Shadow comparison and sharpness (T12)
+
+**Shadow comparison** (`src/state_format/shadow_knowledge.{h,cpp}`, part of
+`--selfcheck-knowledge`: it reads the same frames the soundness check reads). At every decision,
+for each seat, the seat's `k_*` rows are compared with the old BQUERY vector's memory for that
+seat, read through the serializer's own sources (`populate_gamestate`, and `opp_known_hand_cards`
+for the whole set behind the ten `opp_known_hand` slots, `src/machine_io.h`):
+
+| Kind | `k_*` side | old side |
+|---|---|---|
+| `top` | `k_position` rows with a card, positions 0-4 from the top, of each library | `known_top_library_self` / `_opp` |
+| `hand` | `k_known_hand` copies, per card | the opponent-hand cards with `Zone::identity_known`, per card |
+| `seen` | `k_seen` rows of the opponent with `match` > 0 | the opponent's registered-decklist revealed bits (match_state) |
+
+A mismatch is no engine error. It is printed to stderr when it appears (a mismatch of the same
+kind, direction, owner and card at the seat's previous decision is only counted) as one `SHADOW:`
+line naming its kind, direction (`old_more`, `new_more`, `conflict`), viewer, owner, card, both
+sides' values, whether the old side's claim holds in the true world, the game, turn and decision,
+and the frame's events with their source cards (the cause to classify by); a `SHADOW-KNOWLEDGE:`
+summary closes the match. The Python tiers classify every line against
+`train/regression/knowledge_divergences.json` (first matching signature: kind, direction, owner,
+a regex over the line; `train/test_knowledge.py`): the `rmstate` tier's corpus part and the
+`knowledge` tier's fuzz and stream sessions, and the `knowledge` tier runs each signature's
+regression scenario to show it prints a line of that class. An unclassified line fails the tier.
+
+**What it found** (every class investigated on sample games; counts are the lines printed over
+the replay corpus, 9,382 decisions and 371,764 comparisons, and over 800 release-build explore
+fuzz matches, half of them bo3 with sideboarding, all league pairings):
+
+| Signature | Kind, direction | Classification | Lines (corpus / fuzz) | Scenario |
+|---|---|---|---|---|
+| `between_games` | hand, top; old_more | quirk: between games BQUERY still describes the finished game | 0 / 765 | `knowledge_divergence_between_games` |
+| `put_back_leak` | hand; old_more | **leak**: the known Brainstorm put-back leak (section 7) | 19 / 387 | `knowledge_divergence_put_back_leak` |
+| `copy_leak` | hand; old_more | **leak**: known-ness per physical copy tells which copy of a known card left the hand | 5 / 254 | `knowledge_divergence_copy_leak` |
+| `position_leak` | top (opponent's library); old_more | **leak**: the old record follows a card out of a range of positions the viewer cannot tell apart by its true position (Ponder's or Doomsday's rearrange, a pick among looked-at cards) | 2 / 139 | `knowledge_opponent_ponder_unordered` |
+| `pending_look` | top; new_more | quirk: during a look the old record does not have the looked-at cards yet (a search never) | 1,736 / 48,795 | `knowledge_opponent_ponder_unordered` |
+| `private_look_seen` | seen; new_more | quirk: the old revealed bits count public reveals only (Mishra's Bauble's look is private) | 22 / 99 | `knowledge_divergence_bauble_look` |
+| `harness_preset_seen` | seen; new_more | quirk: test-harness presets bypass the old reveal marking | 0 / 0 (harness only) | `knowledge_section7_put_back_pool` |
+| `known_card_drawn` | hand; new_more | quirk: a card known on top of the library stays known when drawn | 48 / 727 | `knowledge_divergence_bauble_look` |
+| `public_entry_untracked` | hand; new_more | quirk: a companion put into hand is known to both players | 3 / 120 | `knowledge_divergence_companion_to_hand` |
+| `deduction` | top, hand; new_more | quirk: a sound deduction the old vector does not make (a library or hand whose cards the list minus the cards seen pins, a hand reveal that pins a put-back pool, positions deeper than five) | 1 / 153 | `knowledge_section7_put_back_pool` |
+
+The 800 fuzz matches made 223,002 decisions, 12.3 million comparisons and 57.9 million soundness
+facts (no soundness error). Most lines are `pending_look` (a search shows the searcher the whole
+library, up to five lines per look). No `conflict` (both sides naming different cards) and no
+old-side claim false in the true world occurred. Within a game expert never knows less than the
+old vector except through the three leaks. The comparison also turned up three bugs, fixed: Doomsday's one-at-a-time search looked again at the
+cards it had already chosen and put on top, so the other player's events could not tell a pick from
+them and the sidecar lost the positions Doomsday's own rules give away (`src/zone_search.cpp`
+now looks only at the cards the search may still pick; the old record had them, an `old_more` with
+a search in the frame, which the `position_leak` signature therefore excludes); a card put on the
+bottom of an empty library got position 1 (`Orderer::move_object`; the soundness check's "positions
+are not 0..n-1"); and two library runs from one junction did not rejoin after compaction had folded
+the history behind it into it (`PlayerModel::rejoin`; a run split around a searched card stayed
+split after the card left).
+
+**Sharpness scenarios** (`train/regression/scenarios/knowledge_*.json`). A scenario with an
+`expect_dump`, `expect_dump_not`, `expect_dump_final` or `expect_dump_final_not` key runs with
+`--rmstate-dump FILE --state-dump json`, and `train/test_scenarios.py` renders every seat STATE
+frame's `k_*` tables as one text line per fact (`<seat> d=<decision> g<game> t<turn> pool opp
+library top0+2 size=2: Daze 1-1, Force of Will 1-1`, `position self top0 = Daze`, `known_hand
+Island x5`, …; `sb` for the turn between games; grammar in the module docstring), which the keys'
+regexes match (any frame, or each seat's last frame). `test_scenarios.py --dump NAME` prints them.
+Scenarios may now be bo3 (`format`). The sharpness set:
+
+| Scenario | The deduction |
+|---|---|
+| `knowledge_section7_put_back_pool` | section 7's example: a hand known through Cabal Therapy, a Brainstorm put-back, the Bolt cast, then a Thoughtseize showing only Islands: A's top two are exactly one Force of Will and one Daze |
+| `knowledge_own_brainstorm_put_back` | own Brainstorm put-back: own top two known exactly (`k_position`); the opponent knows neither position |
+| `knowledge_shuffle_keeps_contents` | a shuffle drops every position fact and keeps the contents (both viewers: the library holds exactly one Force of Will and one Daze) |
+| `knowledge_sylvan_library_keeps_known_hand` | Sylvan Library's put-backs come from this turn's draws, so the known hand cards stay definitely in hand |
+| `knowledge_miracle_draw_link` | the miracle reveal's draw link pins the drawn card: with one Triumph already known in hand, both are known |
+| `knowledge_opponent_ponder_unordered` | the opponent's Ponder leaves the looked-at range unordered: a known top card becomes one of three positions, no `k_position` |
+| `knowledge_bo3_sideboard_swap` | game 2: the Leyline of the Void the opponent starts with proves a swap (sideboard Leyline 4-4 in game 1, 0-4 in game 2, 0-3 once seen) |
+
+plus the divergence scenarios above, which assert expert's side of each difference. With
+`--knowledge-a off --knowledge-b off` all twelve fail; with the draw link ignored the miracle
+scenario fails, and with the drawn-this-turn subset ignored the Sylvan Library one does.
+
