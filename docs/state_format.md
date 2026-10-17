@@ -623,6 +623,7 @@ in-process actor.
 | 37 | A reference metagame frame (`METAGAME`, once per match after `DECKLISTS`, the same for every viewer: archetype labels and reference lists from `bin/resources/decks/archetypes.json`) and the archetype tables `k_template` (per player and reference list: consistent, exact, registered) and `k_archetype` (per player and label: possible, exact) in `k_*`. Sound facts only (`knowledge_store.md` §10); a probabilistic layer is a later `b_*` level | decided |
 | 38 | A belief level `expert+belief` (per seat, `--knowledge-a/-b`; default stays `expert`) adds the `b_*` tables after `k_*`: `b_list` (per player and reference list: posterior probability in units of 10^-9, log-likelihood in milli-nats, exact) and `b_archetype` (per player and label: probability). A posterior under a uniform prior over the reference lists, with likelihood the weighted count of each list's hypothesis-network worlds (`knowledge_store.md` §10.6); probabilities, kept out of `k_*`, which stays sound facts. Zero exactly for the lists `k_template` excludes, at least one unit for the others, summing to 10^9 per player (or 0 when no list is consistent); a function of the seat's events like `k_*`. Absent below that level (fixed schema) | decided |
 | 39 | The raw card script travels in `CARDS` on request (`--rmstate-card-scripts`: the `script` column of a card's front row and of a token's row). The step-2 pass-1 parity adapter (`train/rmstate_adapter.py`) reads the scripted agent's card knowledge from it through the generators' own parsing, so it equals the generated tables (`card_props`, `card_costs`) card for card; pass 2 reads the structured columns instead | decided |
+| 40 | A stack object's target that has left the stack has an `lki` row too, not only a departed permanent: the target's card, token flag, controller, printed P/T, types and colours as it left the stack, as each viewer saw them (recorded at the zone-move choke point while another stack object is there to refer to it, dropped once the stack empties). Found by the step-2 port (`state_format_agent_map.md` §7); regression scenario `format_stack_target_lki` | decided |
 
 ## Appendix A: column definitions
 
@@ -866,7 +867,7 @@ computes neither outside its legal-action enumeration.
 | | `kind` | u8 | `enum:target_kind` | object, player |
 | | `target` | u32 | `handle` | |
 | | `target_player` | seat | | |
-| | `lki` | u16 | `row:lki` | the target left its zone (target 0); none when it has no last-known information |
+| | `lki` | u16 | `row:lki` | the target left its zone (target 0): its last-known row (register 40); none when it has no last-known information |
 | `delayed_trigger` (35): waiting and fired ones, in `seq` order | `seq` | u32 | `index` | registration order |
 | | `controller` | seat | | |
 | | `state` | u8 | `enum:delayed_state` | waiting, on the stack |
@@ -896,7 +897,7 @@ computes neither outside its legal-action enumeration.
 | `shield` (40) | `kind` | u8 | `enum:shield_kind` | combat-damage prevention |
 | | `obj` | u32 | `handle` | |
 | | `as_source`, `as_target` | u8 | `bool` | |
-| `lki` (41): rows for departed stack targets, as referenced | `card` | u16 | `card` | |
+| `lki` (41): rows for departed stack targets, as referenced: a permanent's characteristics as it left the battlefield (`LastKnownInfo`), else, for an object that left the stack while another stack object could refer to it (a target spell countered or resolved first), its characteristics as it left the stack, as the viewer saw it go (`ObsStackDeparture`, `src/state_format/events.h`; no row when the viewer did not see its identity; register 40) | `card` | u16 | `card` | |
 | | `token` | u8 | `bool` | |
 | | `controller` | seat | | |
 | | `power`, `toughness` | i16 | `signed` | |

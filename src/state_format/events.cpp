@@ -15,8 +15,11 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
+#include "../queries/characteristics.h"
+#include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
+#include "enum_names.h"
 #include "handles.h"
 #include "selfcheck.h"
 
@@ -43,6 +46,7 @@ static uint32_t push(Zone::Ownership viewer, ObsEvent ev);
 template <class Build>
 static uint32_t emit(Zone::Ownership viewer, Build build);
 static ObsMoveCapture::Seen see_before_move(Entity e, Zone::Ownership viewer);
+static void note_stack_departure(Entity e);
 static bool same_seen(const ObsMoveCapture::Seen &a, const ObsMoveCapture::Seen &b);
 static ObsEventCard object_card(Entity e, Zone::Ownership viewer, bool issue);
 static void zone_counts(uint16_t library[3], uint16_t sideboard[3]);
@@ -213,6 +217,7 @@ ObsMoveCapture obs_begin_move(Entity e) {
     cap.origin = z.location;
     cap.origin_owner = z.owner;
     cap.origin_hidden = !is_public_zone(z.location) || z.is_face_down;
+    if (z.location == Zone::STACK) note_stack_departure(e);
     if (z.location == Zone::HAND) cap.hand_subset = cur_game.obs_events.hand_subset;
     for (Zone::Ownership viewer : VIEWERS) {
         ObsMoveCapture::Seen &s = cap.before[slot(viewer)];
@@ -238,6 +243,56 @@ static ObsMoveCapture::Seen see_before_move(Entity e, Zone::Ownership viewer) {
     if (s.visible) s.card = visible_card_id(e, viewer);
     if (global_coordinator.GetComponent<Zone>(e).location == Zone::LIBRARY) s.from = position_seen(e, viewer);
     return s;
+}
+
+// Records `e`, leaving the stack, while another stack object can refer to it; when none is left
+// the departures recorded so far are dropped too.
+static void note_stack_departure(Entity e) {
+    std::vector<ObsStackDeparture> &departed = cur_game.obs_events.stack_departed;
+    bool others = false;
+    for (Entity o : zoned_entities())
+        if (o != e && global_coordinator.GetComponent<Zone>(o).location == Zone::STACK) {
+            others = true;
+            break;
+        }
+    if (!others) {
+        departed.clear();
+        return;
+    }
+    ObsStackDeparture d;
+    d.ref = ObjectRef::of(e);
+    for (Zone::Ownership viewer : VIEWERS) {
+        ObsStackDeparture::Seen &s = d.seen[slot(viewer)];
+        s.visible = identity_visible(e, viewer);
+        if (s.visible) s.card = visible_card_id(e, viewer);
+    }
+    d.token = is_token_object(e);
+    d.controller = source_controller(e);
+    const Token *tok =
+        global_coordinator.entity_has_component<Token>(e) ? &global_coordinator.GetComponent<Token>(e) : nullptr;
+    const CardData *cd =
+        global_coordinator.entity_has_component<CardData>(e) ? &global_coordinator.GetComponent<CardData>(e) : nullptr;
+    const CardData *face = cd ? &active_face(e, *cd) : nullptr;
+    d.power = face ? static_cast<int>(face->power) : tok ? static_cast<int>(tok->power) : 0;
+    d.toughness = face ? static_cast<int>(face->toughness) : tok ? static_cast<int>(tok->toughness) : 0;
+    const std::set<Type> empty_types;
+    d.types = card_type_mask(face ? face->types : tok ? tok->types : empty_types);
+    uint32_t colors = 0;
+    for (Colors col : effective_colors(e))
+        if (col >= WHITE && col <= NO_COLOR) colors |= 1u << static_cast<int>(col);
+    d.colors = static_cast<uint8_t>(colors);
+    departed.push_back(d);
+}
+
+const ObsStackDeparture *obs_stack_departure(const ObjectRef &ref, Zone::Ownership viewer, int &card) {
+    for (const ObsStackDeparture &d : cur_game.obs_events.stack_departed) {
+        if (d.ref != ref) continue;
+        const ObsStackDeparture::Seen &s = d.seen[slot(viewer)];
+        if (!s.visible) return nullptr;
+        card = s.card;
+        return &d;
+    }
+    return nullptr;
 }
 
 static bool same_seen(const ObsMoveCapture::Seen &a, const ObsMoveCapture::Seen &b) {

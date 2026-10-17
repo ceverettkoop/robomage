@@ -128,6 +128,7 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h);
 static void write_provenance(const Ctx &c, Entity e, uint32_t h);
 static void write_combat(const Ctx &c, const std::vector<Entity> &battlefield);
 static int write_lki(const Ctx &c, Entity departed);
+static int write_stack_lki(const Ctx &c, const ObjectRef &departed);
 static void write_stack(const Ctx &c, const std::vector<Entity> &stack);
 static rmstate::StackKind stack_kind(Entity e, const Spell *sp, const Ability *ab);
 static void write_stack_targets(const Ctx &c, Entity stack_object, uint32_t h, const Ability &ab);
@@ -859,6 +860,22 @@ static int write_lki(const Ctx &c, Entity departed) {
     return row;
 }
 
+// An lki row for an object a stack object refers to that has left the stack (a target spell
+// countered or resolved first), as the viewer saw it go (ObsStackDeparture); its row index, or -1
+// when the viewer did not see it or it left no record.
+static int write_stack_lki(const Ctx &c, const ObjectRef &departed) {
+    int card = -1;
+    const ObsStackDeparture *d = obs_stack_departure(departed, c.viewer, card);
+    if (!d) return -1;
+    const int row = static_cast<int>(c.w.row_count(TableId::LKI));
+    Row r = c.w.row(TableId::LKI);
+    r.u16(card_or_none(card)).u8(d->token ? 1 : 0);
+    put_seat(r, d->controller, c.self);
+    r.i16(std::max(-32768, std::min(d->power, 32767))).i16(std::max(-32768, std::min(d->toughness, 32767)));
+    r.u32(d->types).u8(d->colors);
+    return row;
+}
+
 // `stack` is the stack from the top; a row's pos is its index there.
 static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
     for (size_t pos = 0; pos < stack.size(); ++pos) {
@@ -928,7 +945,8 @@ static void write_stack_targets(const Ctx &c, Entity /*stack_object*/, uint32_t 
     auto put_target = [&](const ObjectRef &t) {
         if (t.lki_entity() == 0) return;
         const Entity live = t.get();
-        const int lki_row = live == 0 ? write_lki(c, t.lki_entity()) : -1;
+        int lki_row = live == 0 ? write_lki(c, t.lki_entity()) : -1;
+        if (live == 0 && lki_row < 0) lki_row = write_stack_lki(c, t);
         Row r = c.w.row(TableId::STACK_TARGET);
         r.u32(h).u8(u8_count(order++));
         if (live != 0 && global_coordinator.entity_has_component<Player>(live)) {

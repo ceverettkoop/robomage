@@ -119,6 +119,24 @@ struct ObsBatch {
         std::vector<ObjectRef> cards;  // the cards placed so far (their new objects)
 };
 
+// An object that left the stack while another stack object was there to refer to it (a spell's
+// target), as each viewer saw it go: its last-known characteristics for the frame's lki rows
+// (CR 608.2h; encode.cpp's stack targets). Recorded by obs_begin_move, kept until a stack object
+// leaves an otherwise empty stack (nothing on it can refer to a departed object any more).
+struct ObsStackDeparture {
+        ObjectRef ref;  // the object as it was on the stack
+        struct Seen {
+                bool visible = false;  // the viewer saw its identity (a face-up spell: everyone)
+                int card = -1;         // its card id as the viewer saw it
+        } seen[3];                     // indexed like Game::handle_tables
+        bool token = false;            // a token or a spell copy
+        Zone::Ownership controller = Zone::UNKNOWN;
+        int power = 0;
+        int toughness = 0;
+        uint32_t types = 0;  // rmstate card_type mask
+        uint8_t colors = 0;  // rmstate color mask
+};
+
 // Everything the events channel keeps (Game::obs_events).
 struct ObsEventState {
         ObsEventQueue queues[3];    // indexed like Game::handle_tables: omniscient, A, B
@@ -132,7 +150,13 @@ struct ObsEventState {
         // draw link on its reveal (CR 702.94a).
         ObjectRef miracle_card;
         uint32_t miracle_draw_seq[3] = {0, 0, 0};
+        std::vector<ObsStackDeparture> stack_departed;
 };
+
+// The object `ref` named as it left the stack (ObsStackDeparture), with in `card` its card id as
+// `viewer` saw it; null when it did not leave the stack while referable, or the viewer did not see
+// its identity.
+const ObsStackDeparture *obs_stack_departure(const ObjectRef &ref, Zone::Ownership viewer, int &card);
 
 // Whether anyone consumes events (a frame writer: --rmstate-dump or --machine-format rmstate; the
 // --selfcheck-state frames; or --trace-events). Every obs_* hook is a no-op otherwise.

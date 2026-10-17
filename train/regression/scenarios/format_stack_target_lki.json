@@ -1,0 +1,16 @@
+{
+  "name": "format_stack_target_lki",
+  "why": "State format (docs/state_format.md register 40, Appendix A lki): a stack object's target that has left the stack keeps a last-known row. Player B counters Lightning Bolt with a second Counterspell while the first still targets it; at Player A's next decision the first Counterspell's target is gone (CR 608.2b will make it fizzle) and the frame names it through an lki row. Before step 2 pass 2 the stack_target row had no lki row for a departed spell (last-known information was kept for permanents only).",
+  "hand_a": ["Lightning Bolt", "Lightning Bolt"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "hand_b": ["Counterspell", "Counterspell"],
+  "battlefield_b": ["Island", "Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B",
+           "B:cast:Counterspell", "B:target:Lightning Bolt",
+           "B:cast:Counterspell", "B:target:Lightning Bolt"],
+  "max_decisions": 11,
+  "expect": ["Lightning Bolt is countered"],
+  "expect_dump": ["^A d=\\d+ g0 t0 stack_target 0 Counterspell 0 = departed Lightning Bolt$",
+                  "^B d=\\d+ g0 t0 stack_target 0 Counterspell 0 = departed Lightning Bolt$"],
+  "expect_dump_not": ["stack_target \\d+ Counterspell 0 = none"]
+}

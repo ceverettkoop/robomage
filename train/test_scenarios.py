@@ -53,6 +53,9 @@ docs/knowledge_store.md §6) are rendered one fact per line, prefixed by the sea
   known_hand <card> x<copies>
   list <self|opp> <reference list> <consistent|inconsistent>[ unproven][ registered]
   archetype <self|opp> <label> <possible|impossible>[ exact]
+  stack_target <pos> <card> <order> = <card>|player <self|opp>|departed <card>|none
+                                                     (a stack object's announced targets; a target
+                                                      gone from its zone shows its last-known card)
 
 Owners are relative to the seat; a library range or position is ``top<pos>`` (one position) or
 ``top<pos>+<span>``; a pool's cards (every card with max > 0) and a position's candidates are
@@ -236,6 +239,31 @@ def _knowledge_facts(tables, names, metagame=None):
         label = labels[r["archetype"]] if r["archetype"] < len(labels) else f"#{r['archetype']}"
         out.append(f"archetype {rel(r['player_rel'])} {label} {'possible' if r['possible'] else 'impossible'}"
                    f"{' exact' if r['exact'] else ''}")
+    out += _stack_target_facts(tables, card)
+    return out
+
+
+def _stack_target_facts(tables, card):
+    """The stack_target lines of one decoded STATE frame (module docstring)."""
+    objects = {o["handle"]: o for o in tables.get("object", [])}
+    lki = tables.get("lki", [])
+
+    def obj_card(handle):
+        o = objects.get(handle)
+        return card(o["card"]) if o is not None and o["card"] is not None else "?"
+    out = []
+    pos_of = {r["handle"]: (r["pos"], r["source_card"]) for r in tables.get("stack", [])}
+    for r in tables.get("stack_target", []):
+        pos, src = pos_of.get(r["stack"], (None, None))
+        if r["kind"] == "PLAYER":
+            what = f"player {'self' if r['target_player_rel'] == 1 else 'opp'}"
+        elif r["target"]:
+            what = obj_card(r["target"])
+        elif r["lki"] is not None and r["lki"] < len(lki):
+            what = f"departed {card(lki[r['lki']]['card']) if lki[r['lki']]['card'] is not None else '?'}"
+        else:
+            what = "none"
+        out.append(f"stack_target {pos} {card(src) if src is not None else '?'} {r['order']} = {what}")
     return out
 
 
