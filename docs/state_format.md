@@ -156,11 +156,11 @@ closes the batch with the range.
 
 | Event | Fields (viewer's projection) |
 |---|---|
-| every event | `seq`; source object of the effect (handle, else card id) where there is one |
-| `zone_move` | one card. From zone/owner, plus its position if from a library; to zone/owner, plus its position (or `batch`) if into a library; handle before/after if identifiable (a face-down public object keeps a handle); card id if identifiable; face-down flag (exiled face down); token/copy flag. Zone `none` = created (token, spell copy, harness preset) or ceased to exist |
-| `draw` | player, count; per card: handle after and card id for the drawer; for another viewer, handle before and card id only if the card was in that viewer's live window |
+| every event | `seq`; `turn` (the game turn it happened in); source object of the effect (handle, else card id) where there is one |
+| `zone_move` | one card. From zone/owner, plus its position if from a library, plus its hand subset if from a hand (`drawn_this_turn` when the instruction may only choose among cards drawn this turn, e.g. Sylvan Library's put-back; else `any`); to zone/owner, plus its position (or `batch`) if into a library; handle before/after if identifiable (a face-down public object keeps a handle); card id if identifiable; face-down flag (exiled face down); token/copy flag. Zone `none` = created (token, spell copy, harness preset) or ceased to exist |
+| `draw` | player, count, opening-hand flag (opening-hand and mulligan draws are not draws for "drawn this turn"); per card: handle after and card id for the drawer; for another viewer, handle before and card id only if the card was in that viewer's live window |
 | `library_place` | closes an order-hidden batch: batch, library owner, range (anchor, pos, count), order known (false) |
-| `reveal_start` / `reveal_end` | cards (handles, zone, owner, library positions, card ids), revealed to whom, source effect. `reveal_end` also closes a look window. A window that ends because its card moved has no `reveal_end`; the move ends it |
+| `reveal_start` / `reveal_end` | cards (handles, zone, owner, library positions, card ids), revealed to whom, source effect; per card, a draw link (`seq` of the `draw` event and the card's index in it) when the reveal shows a card as the one just drawn (e.g. Miracle). `reveal_end` also closes a look window. A window that ends because its card moved has no `reveal_end`; the move ends it |
 | `look` | looker, zone/owner, count; per card: library position; identities and handles only for the looker. A search of another player's hidden zone is also a `look` at all of it |
 | `shuffle` | library owner |
 | `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
@@ -321,6 +321,7 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 | 33 | Every cost-payment decision's frame carries `pending_cost`: what is being paid for and the remaining cost by pip type (section 4) | decided |
 | 34 | Counter kinds travel as `text` (no engine enum; they are script strings) | decided |
 | 35 | Face-down exiled cards follow CR 406.3: a per-player look window, opened for whoever looked at the card before it was exiled face down or is allowed to look, lasting until the card leaves exile | decided |
+| 36 | Events carry draw provenance: `turn` on every event, an opening-hand flag on `draw`, a hand subset (`drawn_this_turn`) on a `zone_move` out of a hand whose instruction is restricted to cards drawn this turn (Sylvan Library), and a draw link on a `reveal_start` that shows the card just drawn (Miracle). Both restrictions are explicit to both players, so the sidecar may use them | decided |
 
 ## Appendix A: column definitions
 
@@ -625,6 +626,8 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `to` | seat | | audience of a reveal or look; none = all |
 | | `source` | u32 | `handle` | |
 | | `source_card` | u16 | `card` | |
+| | `turn` | u16 | `count` | game turn of the event |
+| | `opening` | u8 | `bool` | `draw`: opening hand or mulligan draw |
 | | `game` | u8 | `count` | game events |
 | `event_card` (81) | `event` | u32 | `row:event` | |
 | | `handle_before`, `handle_after` | u32 | `handle` | |
@@ -632,6 +635,9 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `from` | libpos | | from a library |
 | | `to` | libpos | | into a library; `to_pos` 0xFFFF = in a batch |
 | | `face_down`, `token` | u8 | `bool` | token = token or spell copy |
+| | `hand_subset` | u8 | `enum:hand_subset` | `zone_move` from a hand: any, drawn_this_turn |
+| | `draw_seq` | u32 | `index` | `reveal_start`: `seq` of the `draw` that brought this card; 0 = none |
+| | `draw_idx` | u16 | `index` | its index among that draw's cards |
 | `event_player` (82) | `event` | u32 | `row:event` | `game_start`, `game_end`, `match_end` |
 | | `player` | seat | | |
 | | `library`, `sideboard` | u16 | `count` | `game_start` |
@@ -666,6 +672,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `frame_kind` | SCHEMA, CARDS, DECKLISTS, STATE |
 | `viewer` | A, B, OMNISCIENT |
 | `storage` | U8, U16, U32, U64, I8, I16, I32, I64, F32, TEXT |
+| `hand_subset` | ANY, DRAWN_THIS_TURN |
 | `event_kind` | ZONE_MOVE, DRAW, LIBRARY_PLACE, REVEAL_START, REVEAL_END, LOOK, SHUFFLE, REORDER, SEARCH, CAST_FROM_HIDDEN, PLAY_FROM_HIDDEN, FACE_DOWN, FACE_UP, GAME_START, GAME_END, MATCH_END |
 | `lib_anchor` | TOP, BOTTOM |
 | `face` | FRONT, BACK |

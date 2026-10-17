@@ -186,6 +186,10 @@ tell subagents not to spawn further agents.
   - the reveal/look sites from T1;
   - mulligan (pregame in `game_driver.cpp`);
   - face-down transitions.
+  - draw provenance (register 36): `turn` on every event, the opening-hand flag on `draw`,
+    `hand_subset = drawn_this_turn` on Sylvan Library's put-back (`effect_sylvan_library.cpp`,
+    which reads `Player::cards_drawn_this_turn`), and the draw link on the Miracle reveal
+    (`effect_miracle.cpp`, the first-draw check in `orderer.cpp` around :804).
 - **Done when:** every place today's bookkeeping changes has a matching event. Verify by
   grepping `known_top_library_*`, `identity_known =`, `revealed_in_library.` and
   `mark_card_revealed`.
