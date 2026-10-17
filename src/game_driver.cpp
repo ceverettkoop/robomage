@@ -109,6 +109,10 @@ bool broadcast_steps_mode = false;
 // --trace-visibility: narrate every reveal window as it opens and closes (VISIBILITY: lines,
 // src/queries/visibility.cpp). A debugging aid; off by default, so no output changes.
 bool trace_visibility = false;
+// --trace-handles: print every viewer's handle table at each decision and narrate each handle
+// as it is issued, linked and retired (HANDLES: / HANDLE: lines, src/state_format/handles.cpp).
+// A debugging aid; off by default, so no output changes.
+bool trace_handles = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;

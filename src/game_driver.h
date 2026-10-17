@@ -52,6 +52,7 @@ extern bool bo3_mode;
 extern bool log_decisions_flag;
 extern bool broadcast_steps_mode;
 extern bool trace_visibility;
+extern bool trace_handles;
 extern std::vector<std::string> battlefield_a_cards;
 extern std::vector<std::string> battlefield_b_cards;
 extern std::vector<std::string> graveyard_a_cards;

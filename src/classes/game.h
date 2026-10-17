@@ -775,6 +775,22 @@ struct Game {
         };
         // The open reveal windows, in the order they opened (visibility.cpp keeps them).
         std::vector<RevealWindow> reveal_windows;
+        // One viewer's handle table (src/state_format/handles.h): the opaque per-viewer id of each
+        // object the viewer can individually identify right now (docs/state_format.md §6). A handle
+        // names one object (CR 400.7: the object a zone change makes is a new one), is retired as
+        // the viewer stops being able to identify it, and is never issued again.
+        struct HandleTable {
+            struct Entry {
+                ObjectRef obj;        // the object, by its exact identity stamp
+                uint32_t handle = 0;  // >= 1
+            };
+            uint32_t next = 1;  // the next handle to issue; 0 is "no handle"
+            // Live handles keyed by entity id, for lookup only: handles.cpp never lets this map's
+            // order decide anything it emits or issues.
+            std::map<Entity, Entry> live;
+        };
+        // Indexed by viewer: [Zone::UNKNOWN] the omniscient viewer, [Zone::PLAYER_A], [Zone::PLAYER_B].
+        HandleTable handle_tables[3];
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution

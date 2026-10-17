@@ -137,6 +137,9 @@ static const CliOption OPTIONS[] = {
     {"--broadcast-steps", nullptr, false, false, [](const char *) { broadcast_steps_mode = true; }, nullptr},
     // Narrate reveal windows opening and closing (VISIBILITY: lines in the game log).
     {"--trace-visibility", nullptr, false, false, [](const char *) { trace_visibility = true; }, nullptr},
+    // Print the per-viewer handle tables at each decision and narrate handle issue/link/retire
+    // (HANDLES: / HANDLE: lines in the game log).
+    {"--trace-handles", nullptr, false, false, [](const char *) { trace_handles = true; }, nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},
 };
 

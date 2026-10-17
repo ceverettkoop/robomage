@@ -19,6 +19,12 @@ Scenario keys beyond the harness's own:
   expect_menu    regexes that must each match some offered action (any decision)
   expect_menu_not  regexes that must match no offered action
   expect_result  "A" | "B" | "draw": the GAME_RESULT the game must end with
+  expect_unique  regexes with capture groups: over all matching narrative lines, the matched
+                 groups (joined) must be distinct (e.g. no handle issued twice)
+  variants       a list of {harness key: value} overrides: the scenario is also run once per
+                 variant (e.g. the same position built from a different deck order)
+  expect_same    regexes: the narrative lines matching any of them must be identical, in
+                 order, between the scenario's run and each variant's run (needs variants)
   player_a / player_b  the seats' agents once the script runs out (default auto)
   deck_a / deck_b      a deck for a seat with no hand preset
   offer_cancel   true: run with --offer-cancel
@@ -44,6 +50,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 from env import ENGINE_FLAGS_ENV
@@ -63,8 +70,9 @@ _HARNESS_KEYS = {"name", "hand_a", "hand_b", "library_a", "library_b",
                  "exile_a", "exile_b", "sideboard_a", "sideboard_b",
                  "life_a", "life_b", "play", "actions", "seed", "max_decisions"}
 _ASSERT_KEYS = {"expect", "expect_not", "expect_order", "expect_count", "expect_menu",
-                "expect_menu_not", "expect_result"}
-_RUN_KEYS = {"why", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel", "engine_flags"}
+                "expect_menu_not", "expect_result", "expect_unique", "expect_same"}
+_RUN_KEYS = {"why", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel", "engine_flags",
+             "variants"}
 _KNOWN_KEYS = _HARNESS_KEYS | _ASSERT_KEYS | _RUN_KEYS
 
 _ERROR_RE = re.compile(
@@ -176,6 +184,17 @@ def check_output(scn, text):
         hit = next((a for a in actions if re.search(rx, a)), None)
         if hit is not None:
             fails.append(f"forbidden action offered /{rx}/: {hit!r}")
+    for rx in scn.get("expect_unique", []):
+        seen = {}
+        for ln in narrative:
+            m = re.search(rx, ln)
+            if m is None:
+                continue
+            key = " ".join(g for g in m.groups() if g is not None)
+            if key in seen:
+                fails.append(f"/{rx}/ captured {key!r} twice: {seen[key]!r} and {ln!r}")
+                break
+            seen[key] = ln
     want = scn.get("expect_result")
     if want is not None:
         m = _RESULT_RE.search(text)
@@ -200,7 +219,62 @@ def load_scenario(path):
     for key in _ASSERT_KEYS - {"expect_result"}:
         for rx in scn.get(key, []):
             re.compile(rx)
+    for rx in scn.get("expect_unique", []):
+        if re.compile(rx).groups < 1:
+            raise ValueError(f"expect_unique /{rx}/ needs a capture group")
+    if bool(scn.get("variants")) != bool(scn.get("expect_same")):
+        raise ValueError("variants and expect_same go together")
+    for variant in scn.get("variants", []):
+        bad = set(variant) - (_HARNESS_KEYS - {"name"})
+        if bad:
+            raise ValueError(f"variant overrides non-harness key(s) {sorted(bad)}")
     return scn
+
+
+def same_lines(scn, text):
+    """The narrative lines of one run that expect_same compares."""
+    rxs = [re.compile(rx) for rx in scn.get("expect_same", [])]
+    return [ln for ln in split_output(text)[0] if any(rx.search(ln) for rx in rxs)]
+
+
+def run_variant(scn, variant, binary=None):
+    """The harness output of `scn` with `variant`'s overrides applied."""
+    merged = {k: v for k, v in scn.items() if k != "variants"}
+    merged.update(variant)
+    fd, path = tempfile.mkstemp(suffix=".json", prefix="scenario_variant_")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(merged, f)
+        r = subprocess.run(harness_cmd(merged, path, binary), cwd=_REPO_ROOT,
+                           env=harness_env(merged), capture_output=True, text=True,
+                           timeout=_TIMEOUT_S)
+        return r.stdout + r.stderr
+    finally:
+        os.unlink(path)
+
+
+def check_variants(scn, text, binary=None):
+    """Failure messages for the expect_same comparison of each variant against `text`."""
+    fails = []
+    base = same_lines(scn, text)
+    if not base:
+        return ["expect_same matched no narrative line"]
+    for i, variant in enumerate(scn.get("variants", [])):
+        try:
+            out = run_variant(scn, variant, binary)
+        except subprocess.TimeoutExpired:
+            fails.append(f"variant {i} timed out after {_TIMEOUT_S}s")
+            continue
+        fails += [f"variant {i}: {f}" for f in check_output(
+            {k: v for k, v in scn.items() if k not in ("expect_same", "variants")}, out)]
+        got = same_lines(scn, out)
+        if got != base:
+            k = next((j for j, (a, b) in enumerate(zip(base, got)) if a != b),
+                     min(len(base), len(got)))
+            fails.append(f"variant {i}: expect_same line {k} differs: "
+                         f"{base[k] if k < len(base) else None!r} vs "
+                         f"{got[k] if k < len(got) else None!r}")
+    return fails
 
 
 def run_one(path, binary=None):
@@ -216,7 +290,10 @@ def run_one(path, binary=None):
         out = r.stdout + r.stderr
     except subprocess.TimeoutExpired as e:
         return name, [f"timed out after {_TIMEOUT_S}s"], str(e.stdout or "")
-    return name, check_output(scn, out), out
+    fails = check_output(scn, out)
+    if scn.get("variants"):
+        fails += check_variants(scn, out, binary)
+    return name, fails, out
 
 
 def main(argv=None):

@@ -26,6 +26,34 @@ bool identity_visible(Entity entity, Zone::Ownership viewer);
 // shows its own position (it is read from its Zone).
 bool order_visible(Zone::ZoneValue zone, Zone::Ownership owner, Zone::Ownership viewer);
 
+// Whether `viewer` can tell `entity` apart as one individual object right now, so it may hold a
+// handle for it (docs/state_format.md §6): every object in a public zone, a face-down one included
+// (CR 400.2, 708.6: face-down objects must stay distinguishable even with their identity
+// withheld), plus every object whose identity the viewer can see (identity_visible: their own hand
+// and sideboard, a reveal window). The omniscient viewer (any non-seat value) identifies every
+// zoned object. Objects with no Zone (players) are never handle-bearing objects.
+bool individually_identifiable(Entity entity, Zone::Ownership viewer);
+
+// `objects` in an order `viewer` can derive from what they see right now, never from entity ids
+// or hidden information (docs/state_format.md §6): zone (battlefield, stack, graveyards, exile,
+// hands, libraries, sideboards); then the seat it belongs to, the viewer's own first (controller
+// on the battlefield, owner elsewhere; none on the shared stack); then its position where the
+// zone's order is visible (stack, graveyard and exile from the top, a library card in a window by
+// its position); then its name when the viewer can see its identity (a face-down object sorts
+// before named ones); then its battlefield timestamp; then its arrival order where the viewer saw
+// it arrive (a public zone or their own hand: the zone-entry stamp). Objects equal on all of
+// these are identical copies of one card in the same unordered place (two Islands in a revealed
+// hand, two copies in a sideboard): they are tied by entity id. That tells the viewer nothing:
+// swapping two such copies changes nothing the viewer sees, and the id order among copies of one
+// card is fixed when the deck is built and unrelated to where the uniform shuffle put each copy,
+// so to anything that happened to them since (their arrival order in a hidden hand would not be:
+// it would say which copy was drawn when).
+std::vector<Entity> canonical_object_order(std::vector<Entity> objects, Zone::Ownership viewer);
+
+// One-word names of a zone and a seat for the trace lines (--trace-visibility, --trace-handles).
+const char *trace_zone_word(Zone::ZoneValue zone);
+const char *trace_seat_word(Zone::Ownership seat);
+
 // ── Reveal windows (Game::reveal_windows) ─────────────────────────────────────────────────────
 
 // One window as one viewer has it: the card, why the viewer sees it, until when, and who it is

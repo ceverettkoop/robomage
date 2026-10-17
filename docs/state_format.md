@@ -208,8 +208,44 @@ closes the batch with the range.
 - New handles are issued in an order the viewer could derive from their own information:
   snapshot table order, then zone and position order. Never entity order.
 - The opponent's face-down permanents are public-zone objects and have handles (CR 708.6: they
-  must be distinguishable); only their identity is withheld.
+  must be distinguishable); only their identity is withheld. The same holds for a card exiled
+  face down; turning a public object face up or down keeps its handle (it is the same object).
+  Phased-out permanents are still on the battlefield and keep theirs (they are included, flagged).
 - The handle table is per game, lives in `Game` (snapshot-covered), and resets at game start.
+
+**Implementation** (`src/state_format/handles.{h,cpp}`, tables in `Game::handle_tables`: A, B and
+an omniscient table of its own). `individually_identifiable` (`src/queries/visibility.h`) is the
+predicate; `--trace-handles` prints each viewer's table at every decision (`HANDLES:`) and each
+issue, link and retirement (`HANDLE:`).
+- **Keyed by object.** An entry holds the object's exact identity stamp (`Zone::obj_gen` and the
+  id's issue count), so a zone change, a token ceasing to exist or a reissued id ends it.
+- **Retired where identifiability ends**, not only when a frame is built: at every zone change
+  (`Orderer::add_to_zone`, the cast move and its rewind: the rewound card is its old object again,
+  but its handles retired as it was cast, so it returns with a fresh one linked from its stack
+  handle), as the reveal window that showed a card closes (resolution end, shuffle, the close hook
+  in `visibility.cpp`), and as an ability or spell copy leaves the stack. Any lookup and every
+  canonical issue retires stale entries too, as a backstop.
+- **Links.** A zone change issues the new object's handle at once, in move order, for every viewer
+  who held one before and can still identify it; `handles_begin_move` / `handles_end_move` return
+  both handles per viewer (`HandleMove`) for the move event.
+- **Issue order.** Handles are issued lazily: by links in move order, by `handle_of` in its
+  caller's (event) order, and at frame start by `issue_handles_canonical` in
+  `canonical_object_order`. That order uses only what the viewer sees: zone (battlefield, stack,
+  graveyards, exile, hands, libraries, sideboards); seat, the viewer's own first (controller on
+  the battlefield, owner elsewhere, none on the stack); position where the zone's order is visible
+  (stack, graveyard and exile from the top; a library card in a window by its position); name when
+  the identity is visible (a face-down object sorts first); battlefield timestamp; arrival order
+  where the viewer saw the arrival (a public zone or their own hand).
+- **Ties.** Objects equal on every key are copies of one card in the same unordered place (two
+  Islands in a revealed hand, two copies in a sideboard), with identical rows in everything the
+  viewer sees. They are tied by entity id: swapping them changes nothing visible, and among copies
+  of one card the id order is fixed at deck build and unrelated to where the shuffle put each, so
+  to their history. Arrival order is deliberately not used for an opponent's hand: it would say
+  which copy was drawn when. A face-down object never reaches this tie (its zone order,
+  timestamp or arrival is unique). One caveat sits in the engine, not here: permanents that
+  enter together get their battlefield timestamps in entity order (the state-based pass that
+  builds them walks entity ids). That is harmless while their identities are public; it would
+  leak for face-down permanents entering together, which no vocab card makes.
 
 ## 7. Actor side: the knowledge sidecar
 

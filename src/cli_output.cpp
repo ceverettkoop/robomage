@@ -253,6 +253,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      forced auto-pass windows (no response expected)\n");
     printf("  --trace-visibility  Narrate each reveal/look window as it opens and closes\n");
     printf("                      (VISIBILITY: lines in the game log; a debugging aid)\n");
+    printf("  --trace-handles     Print each viewer's handle table at every decision and\n");
+    printf("                      narrate handles as they are issued, linked and retired\n");
+    printf("                      (HANDLES: / HANDLE: lines in the game log; a debugging aid)\n");
     printf("  --search-server     MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/\n");
     printf("                      RELEASE); implies --machine. Incompatible with\n");
     printf("                      --replay, --log-decisions and --player\n");
@@ -264,8 +267,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --no-shuffle, test setup); those flags given alongside\n");
     printf("                      --replay are ignored with a warning. Output flags\n");
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
-    printf("                      --broadcast-steps, --trace-visibility) still apply;\n");
-    printf("                      --log-decisions has no effect\n");
+    printf("                      --broadcast-steps, --trace-visibility, --trace-handles)\n");
+    printf("                      still apply; --log-decisions has no effect\n");
     printf("\nTest setup (card lists are comma-separated; applied at the start of each game):\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");
     printf("                      Start with these permanents on the battlefield\n");

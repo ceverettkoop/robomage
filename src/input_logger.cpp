@@ -20,6 +20,7 @@
 #include "queries/zones.h"
 #include "machine_io.h"
 #include "search_server.h"
+#include "state_format/handles.h"
 
 extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
@@ -360,6 +361,9 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // once the game has ended). Checked before every input path so a replay
     // consumes exactly the decisions the recorded run committed.
     if (concede_unwind_pending()) return concede_unwind_choice();
+
+    // --trace-handles: every viewer's handle table as of this decision (state_format/handles.h).
+    if (trace_handles) trace_handle_tables();
 
     if (replay_mode) {
         int choice;

@@ -533,9 +533,13 @@ sections above are not repeated here.
   controller, `Defined$` player), `affected` (the objects / player an effect acts on:
   targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
-  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`
+  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`,
+  `visibility` (what a viewer sees: `identity_visible`, reveal windows, `individually_identifiable`,
+  `canonical_object_order`)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a search root)
+- `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on
+  `Game`: issue, old → new links at zone changes, retirement; `--trace-handles`
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
   protocol
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;

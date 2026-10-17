@@ -27,6 +27,7 @@
 #include "../queries/players.h"
 #include "../queries/spells.h"
 #include "../queries/visibility.h"
+#include "../state_format/handles.h"
 #include "../transform.h"
 #include "../components/player.h"
 #include "../components/effect.h"
@@ -261,6 +262,9 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // may keep looking at it if it is being exiled face down (CR 406.3).
     const HiddenViewers saw_hidden =
         exile_face_down && destination == Zone::EXILE ? hidden_identity_viewers(target) : HiddenViewers{};
+    // The object's handles end with it; a viewer who can identify the new object gets its handle
+    // (the old → new link) once it is in place, below.
+    HandleMove handle_move = handles_begin_move(target);
     close_windows_on_zone_change(target);
     close_zone_gap(target);
 
@@ -365,6 +369,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         !target_zone.is_face_down) {
         mark_card_revealed(target, target_zone.owner);
     }
+    handles_end_move(handle_move, target);
 }
 
 // See declaration in orderer.h.
@@ -411,6 +416,7 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
         global_coordinator.RemoveComponent<Spell>(target);
     if (!is_card) {
         close_zone_gap(target);
+        retire_object_handles(target);
         global_coordinator.DestroyEntity(target);
         return false;
     }
@@ -428,6 +434,7 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
         origin.location != Zone::EXILE)
         fatal_error("begin_cast_move: a card can't be cast from zone " +
                     std::to_string(static_cast<int>(origin.location)));
+    HandleMove handle_move = handles_begin_move(card);
     close_windows_on_zone_change(card);
     close_zone_gap(card);
     for (auto &&e : mEntities) {
@@ -447,6 +454,7 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     z.is_face_down = false;
     // A spell on the stack is public (CR 400.2).
     mark_card_revealed(card, z.owner);
+    handles_end_move(handle_move, card);
     return origin;
 }
 
@@ -467,6 +475,9 @@ void Orderer::complete_cast_move(Entity card, const Zone &origin) {
 
 // See declaration in orderer.h.
 void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
+    // The card is its old object again (below), but a viewer's handle for that object retired as
+    // it was cast: the card returns as a move, linked from its stack handle.
+    HandleMove handle_move = handles_begin_move(card);
     close_zone_gap(card);
     // Reopen the card's old slot in its ordered zone (graveyard and exile are per-owner).
     if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE) {
@@ -484,6 +495,7 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
     // permission that followed it onto the stack is back on it.
     cur_game.resolved_effects.impulse_cast_permission.follow(card, stack_gen);
+    handles_end_move(handle_move, card);
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER

@@ -1,13 +1,18 @@
 #include "visibility.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
+#include <tuple>
 
 #include "../cli_output.h"
 #include "../components/zone.h"
+#include "../components/permanent.h"
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
+#include "../state_format/handles.h"
 #include "characteristics.h"
+#include "players.h"
 #include "zones.h"
 
 using Window = Game::RevealWindow;
@@ -27,8 +32,11 @@ static void close_windows_if(Pred pred, const char *reason);
 static void trace_window(const char *verb, const Window &w, Entity card, const char *detail);
 static const char *kind_word(Window::Kind kind);
 static const char *end_word(Window::End until);
-static const char *zone_word(Zone::ZoneValue zone);
-static const char *seat_word(Zone::Ownership seat);
+struct CanonicalKey;
+static CanonicalKey canonical_key(Entity e, Zone::Ownership viewer);
+static int zone_rank(Zone::ZoneValue zone);
+static int seat_rank(Zone::Ownership seat, Zone::Ownership viewer);
+static bool arrival_visible(const Zone &z, Zone::Ownership viewer);
 
 static bool is_seat(Zone::Ownership p) {
     return p == Zone::PLAYER_A || p == Zone::PLAYER_B;
@@ -117,9 +125,12 @@ static bool canonical_before(Entity a, Entity b) {
 
 // Ends every window for which pred(window, card) holds, narrating each with `reason`; a window
 // whose card is no longer that object is dropped on the way.
+// A viewer whose handle for a closed window's card depended on that window loses the handle here,
+// as the window closes (state_format/handles.h).
 template <class Pred>
 static void close_windows_if(Pred pred, const char *reason) {
     std::vector<Window> &windows = cur_game.reveal_windows;
+    std::vector<Entity> closed;
     size_t kept = 0;
     for (size_t i = 0; i < windows.size(); ++i) {
         const Window &w = windows[i];
@@ -130,12 +141,14 @@ static void close_windows_if(Pred pred, const char *reason) {
         }
         if (pred(w, card)) {
             trace_window("close", w, card, reason);
+            closed.push_back(card);
             continue;
         }
         if (kept != i) windows[kept] = windows[i];
         ++kept;
     }
     windows.resize(kept);
+    if (!closed.empty()) retire_unidentifiable_handles(closed);
 }
 
 // The --trace-visibility narration of one window event (a debugging aid; off by default).
@@ -144,13 +157,13 @@ static void trace_window(const char *verb, const Window &w, Entity card, const c
     std::string where = "(gone)";
     if (card != 0) {
         const Zone &z = global_coordinator.GetComponent<Zone>(card);
-        where = std::string("in ") + zone_word(z.location) + (z.is_face_down ? " face down" : "") + " of " +
-                seat_word(z.owner);
+        where = std::string("in ") + trace_zone_word(z.location) + (z.is_face_down ? " face down" : "") + " of " +
+                trace_seat_word(z.owner);
         if (z.location == Zone::LIBRARY) where += " at " + std::to_string(z.distance_from_top);
     }
     const std::string name = card != 0 ? entity_name(card) : std::string("a card");
     game_log("VISIBILITY: %s %s %s %s to %s (%s)\n", verb, kind_word(w.kind), name.c_str(), where.c_str(),
-        w.audience == Zone::UNKNOWN ? "all" : seat_word(w.audience), detail);
+        w.audience == Zone::UNKNOWN ? "all" : trace_seat_word(w.audience), detail);
 }
 
 static const char *kind_word(Window::Kind kind) {
@@ -179,7 +192,7 @@ static const char *end_word(Window::End until) {
     return "";
 }
 
-static const char *zone_word(Zone::ZoneValue zone) {
+const char *trace_zone_word(Zone::ZoneValue zone) {
     switch (zone) {
         case Zone::LIBRARY:
             return "library";
@@ -199,8 +212,94 @@ static const char *zone_word(Zone::ZoneValue zone) {
     return "zone";
 }
 
-static const char *seat_word(Zone::Ownership seat) {
+const char *trace_seat_word(Zone::Ownership seat) {
     return seat == Zone::PLAYER_A ? "A" : seat == Zone::PLAYER_B ? "B" : "?";
+}
+
+// What canonical_object_order sorts by (see visibility.h), in comparison order.
+struct CanonicalKey {
+        int zone = 0;
+        int seat = 0;
+        size_t pos = 0;
+        std::string name;  // empty when the viewer cannot see the object's identity
+        size_t timestamp = 0;
+        uint64_t arrival = 0;
+        Entity entity = 0;
+        bool operator<(const CanonicalKey &o) const {
+            return std::tie(zone, seat, pos, name, timestamp, arrival, entity) <
+                   std::tie(o.zone, o.seat, o.pos, o.name, o.timestamp, o.arrival, o.entity);
+        }
+};
+
+static CanonicalKey canonical_key(Entity e, Zone::Ownership viewer) {
+    CanonicalKey k;
+    k.entity = e;
+    if (!global_coordinator.entity_has_component<Zone>(e)) return k;
+    const Zone &z = global_coordinator.GetComponent<Zone>(e);
+    const bool visible = identity_visible(e, viewer);
+    k.zone = zone_rank(z.location);
+    if (z.location == Zone::BATTLEFIELD)
+        k.seat = seat_rank(source_controller(e), viewer);
+    else if (z.location != Zone::STACK)
+        k.seat = seat_rank(z.owner, viewer);
+    if (order_visible(z.location, z.owner, viewer) || (z.location == Zone::LIBRARY && visible))
+        k.pos = z.distance_from_top;
+    if (visible) k.name = entity_name(e);
+    if (z.location == Zone::BATTLEFIELD)
+        k.timestamp = global_coordinator.entity_has_component<Permanent>(e)
+                          ? global_coordinator.GetComponent<Permanent>(e).timestamp_entered_battlefield
+                          : SIZE_MAX;
+    if (arrival_visible(z, viewer)) k.arrival = z.obj_gen;
+    return k;
+}
+
+static int zone_rank(Zone::ZoneValue zone) {
+    switch (zone) {
+        case Zone::BATTLEFIELD:
+            return 0;
+        case Zone::STACK:
+            return 1;
+        case Zone::GRAVEYARD:
+            return 2;
+        case Zone::EXILE:
+            return 3;
+        case Zone::HAND:
+            return 4;
+        case Zone::LIBRARY:
+            return 5;
+        case Zone::SIDEBOARD:
+            return 6;
+    }
+    return 7;
+}
+
+// The viewer's own seat first (Player A's for the omniscient viewer), then the other, then none.
+static int seat_rank(Zone::Ownership seat, Zone::Ownership viewer) {
+    if (!is_seat(seat)) return 2;
+    const Zone::Ownership self = is_seat(viewer) ? viewer : Zone::PLAYER_A;
+    return seat == self ? 0 : 1;
+}
+
+// Whether `viewer` saw the object enter where it is now: every entry into a public zone is seen
+// by both players, and an entry into a hand by its owner.
+static bool arrival_visible(const Zone &z, Zone::Ownership viewer) {
+    return !is_seat(viewer) || is_public_zone(z.location) || (z.location == Zone::HAND && z.owner == viewer);
+}
+
+bool individually_identifiable(Entity entity, Zone::Ownership viewer) {
+    if (!global_coordinator.entity_has_component<Zone>(entity)) return false;
+    if (!is_seat(viewer)) return true;
+    if (is_public_zone(global_coordinator.GetComponent<Zone>(entity).location)) return true;
+    return identity_visible(entity, viewer);
+}
+
+std::vector<Entity> canonical_object_order(std::vector<Entity> objects, Zone::Ownership viewer) {
+    std::vector<CanonicalKey> keys;
+    keys.reserve(objects.size());
+    for (Entity e : objects) keys.push_back(canonical_key(e, viewer));
+    std::sort(keys.begin(), keys.end());
+    for (size_t i = 0; i < keys.size(); ++i) objects[i] = keys[i].entity;
+    return objects;
 }
 
 bool identity_visible(Entity entity, Zone::Ownership viewer) {
