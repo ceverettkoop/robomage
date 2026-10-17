@@ -29,7 +29,7 @@ from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
 from cli_spec import DEFAULT_AZ_C_PUCT
 from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS)
-from scripted_agent import ScriptedAgent, make_agent
+from scripted_agent import ScriptedAgent, card_name_mismatches, make_agent, use_card_knowledge
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
 # Keep in sync with scripted_agent._PRESETS.
@@ -239,11 +239,20 @@ class Controller(Protocol):
 
 
 class ScriptedController:
-    """Wraps a ScriptedAgent."""
+    """Wraps a ScriptedAgent.
+
+    On an RMSTATE env (``rmstate_env.RMStateNarrativeEnv``) the agent's card knowledge and
+    deck names come from the match's ``CARDS`` / ``DECKLISTS`` frames: before each decision the
+    controller installs the env's card knowledge (``scripted_agent.use_card_knowledge``; the
+    vocab tables on any other env) and the deck names the frames give."""
+
+    rmstate_capable = True
 
     def __init__(self, agent: ScriptedAgent, label: str = "scripted"):
         self._agent = agent
         self.label = label
+        self._env = None
+        self._checked_knowledge = None   # the card knowledge whose names were checked
 
     def new_game(self) -> None:
         """Reset the agent's per-game state (EXPLORE novelty set) at game start."""
@@ -253,7 +262,21 @@ class ScriptedController:
         """Push per-seat deck names to the agent (unified deck identification)."""
         self._agent.set_deck_names(deck_a, deck_b)
 
+    def bind_env(self, env) -> None:
+        """The env of the game about to start (runner.run_games)."""
+        self._env = env
+
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        knowledge = getattr(self._env, "card_knowledge", None)
+        if knowledge is not None and knowledge is not self._checked_knowledge:
+            bad = card_name_mismatches(knowledge)
+            if bad:
+                raise RuntimeError(f"the match's CARDS frame names cards with other ids than the vocab: {bad[:5]}")
+            self._checked_knowledge = knowledge
+        use_card_knowledge(knowledge)
+        if knowledge is not None:
+            names = self._env.deck_names
+            self._agent.set_deck_names(names["A"], names["B"])
         return self._agent.act(obs, num_choices)
 
 
@@ -1120,6 +1143,11 @@ class _ScriptedLine:
     def wants_search_env(self) -> bool:
         return any(getattr(p, "wants_search_env", False) for p in self._players)
 
+    @property
+    def rmstate_capable(self) -> bool:
+        """The script reads only the menu; its players decide the rest."""
+        return all(getattr(p, "rmstate_capable", False) for p in self._players)
+
     def set_deck_names(self, deck_a, deck_b):
         self._forward("set_deck_names", deck_a, deck_b)
 
@@ -1282,6 +1310,8 @@ class PlayController(_ScriptedLine):
 
 class AutoPassController:
     """Always picks action 0 (pass priority / first choice) — the harness default."""
+
+    rmstate_capable = True
 
     def __init__(self, label: str = "Auto"):
         self.label = label

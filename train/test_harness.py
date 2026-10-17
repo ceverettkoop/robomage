@@ -424,7 +424,7 @@ def main():
             life_a=life_a, life_b=life_b,
             max_decisions=max_decisions, log_decisions=args.log_decisions,
             offer_cancel=args.offer_cancel,
-            coverage=coverage)
+            coverage=coverage, machine_format=args.machine_format)
         winner = bool(wins or losses)
         if coverage is not None:
             coverage.write(args.coverage_json)

@@ -17,7 +17,8 @@ API (stdlib; numpy only for ``Schema.arrays``):
 
 - ``records(fp)``: the payloads of a binary file object (a file or a pipe);
 - ``Schema.from_frame(payload)``: the schema a SCHEMA frame describes; ``schema.decode(payload)``
-  → ``Frame`` (``frame.tables``: table name → list of row dicts, text resolved to ``str``);
+  → ``Frame`` (``frame.tables``: table name → list of row dicts, text resolved to ``str``; ``only=``
+  limits the rows decoded to some tables);
   ``schema.arrays(payload)`` → table name → numpy structured array (text as pool offsets);
 - ``StreamDecoder``: follows a stream's SCHEMA frames, ``feed(payload)`` → ``Frame``;
 - ``frame_json(frame, schema)``: the same JSON line the engine's ``--state-dump json`` writes
@@ -318,10 +319,12 @@ class Schema:
             out.append(dict(zip(names, vals)))
         return out
 
-    def decode(self, payload: bytes) -> Frame:
-        """A frame payload (any kind, SCHEMA included) decoded against this schema."""
+    def decode(self, payload: bytes, only=None) -> Frame:
+        """A frame payload (any kind, SCHEMA included) decoded against this schema; with `only` (a
+        set of table names) the other tables are checked but not decoded into rows."""
         (version, kind, viewer, h), pool, known, skipped = self._checked_blocks(payload)
-        tables = {t.name: self._table_rows(t, body, pool) for t, _rows, body in known}
+        tables = {t.name: self._table_rows(t, body, pool) for t, _rows, body in known
+                  if only is None or t.name in only}
         return Frame(self.enums["frame_kind"][kind], self.enums["viewer"][viewer], kind, viewer,
                      version, h, pool.pool, tables, skipped)
 
@@ -355,10 +358,12 @@ class StreamDecoder:
     def __init__(self):
         self.schema = None
 
-    def feed(self, payload: bytes) -> Frame:
+    def feed(self, payload: bytes, only=None) -> Frame:
+        """The payload decoded (`only`: as Schema.decode)."""
         if self.schema is None or self.schema.kind_of(payload) == "SCHEMA":
             self.schema = Schema.from_frame(payload)
-        return self.schema.decode(payload)
+            only = None
+        return self.schema.decode(payload, only)
 
 
 def records(fp):

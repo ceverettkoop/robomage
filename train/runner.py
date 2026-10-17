@@ -36,6 +36,7 @@ from env import (NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, MAX_ACTIONS,
                  ACT_CATS_START, ACT_IDS_START,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE, _EXTRAS_PLAYS_FIRST)
 from _enums import _CAT_NAMES, _STEP_NAMES
+from cli_spec import MACHINE_FORMAT_CHOICES
 
 
 class Decision:
@@ -306,6 +307,22 @@ def _compact_line(decision, player, label, step_name, cats, action):
             f"  choices={len(cats)}  available={all_cats}  -> {action} ({chosen_cat})")
 
 
+# The engine's machine protocols: the BQUERY vector, or RMSTATE frames read through the pass-1
+# parity adapter (rmstate_env.py).
+MACHINE_FORMATS = MACHINE_FORMAT_CHOICES
+
+
+def require_rmstate_capable(*controllers):
+    """Raises ValueError unless every controller declares ``rmstate_capable`` (reads only what
+    the RMSTATE parity adapter rebuilds of the old observation)."""
+    for ctrl in controllers:
+        if not getattr(ctrl, "rmstate_capable", False):
+            raise ValueError(
+                f"{getattr(ctrl, 'label', type(ctrl).__name__)!r} cannot play over "
+                "--machine-format rmstate: only the scripted tiers, auto, actions: and play: "
+                "read nothing beyond the parity adapter's observation")
+
+
 def run_games(controller_a, controller_b, *,
               label_a="A", label_b="B",
               binary_path=BINARY, deck_a=None, deck_b=None,
@@ -318,7 +335,7 @@ def run_games(controller_a, controller_b, *,
               life_a=None, life_b=None,
               max_decisions=None, log_decisions=False, coverage=None,
               offer_cancel=False, on_query=None, on_action=None, on_game_end=None,
-              narrative=True):
+              narrative=True, machine_format="bquery"):
     """Run ``n_games`` between two controllers and render the transcript.
 
     ``controller_a``/``controller_b`` are :class:`opponents.Controller` objects;
@@ -347,6 +364,13 @@ def run_games(controller_a, controller_b, *,
     ``narrative=False`` runs the engine without its game log / per-action
     descriptions (the lean path a throughput benchmark wants); only sensible
     with ``transcript="quiet"``, and a draw's saved log is then empty.
+
+    ``machine_format="rmstate"`` runs the engine on the RMSTATE protocol
+    (``rmstate_env.RMStateNarrativeEnv``): every decision's observation is
+    rebuilt from the deciding seat's frames by the pass-1 parity adapter, so
+    only controllers that read nothing beyond it may play (``rmstate_capable``:
+    the scripted tiers, ``auto``, ``actions:``, ``play:``); its verbose
+    transcript has no board block.
 
     Returns ``(wins, losses, draws)`` from Player A's perspective. A game that
     ends with no winner — a drawn game (both players lost at once, CR 104.4a) or
@@ -386,7 +410,13 @@ def run_games(controller_a, controller_b, *,
     # stub; the env class swap is transparent to everything else here.
     needs_search_env = any(getattr(c, "wants_search_env", False)
                            for c in (controller_a, controller_b))
-    if needs_search_env:
+    if machine_format not in MACHINE_FORMATS:
+        raise ValueError(f"unknown machine format {machine_format!r}")
+    if machine_format == "rmstate":
+        require_rmstate_capable(controller_a, controller_b)
+        from rmstate_env import RMStateNarrativeEnv
+        env_cls = RMStateNarrativeEnv
+    elif needs_search_env:
         from search_env import SearchNarrativeEnv
         env_cls = SearchNarrativeEnv
     else:
@@ -481,7 +511,7 @@ def run_games(controller_a, controller_b, *,
                 player = "A" if d.priority_is_a else "B"
                 label = label_a if d.priority_is_a else label_b
                 if is_verbose:
-                    gs = decode.decode_game_state(
+                    gs = None if getattr(d.env, "obs_partial", False) else decode.decode_game_state(
                         obs_[:STATE_SIZE],
                         perm_counters=getattr(d.env, "_perm_counters", None),
                         perm_token_names=getattr(d.env, "_perm_token_names", None))

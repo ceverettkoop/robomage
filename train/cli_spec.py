@@ -508,6 +508,16 @@ def format_name(bo3: bool) -> str:
     return FORMAT_BO3 if bo3 else FORMAT_BO1
 
 
+# ── Machine protocol (--machine-format bquery|rmstate) ────────────────────────
+# Which engine protocol a game-running tool drives: the BQUERY state vector, or
+# RMSTATE frames read through the pass-1 parity adapter (rmstate_env.py,
+# rmstate_adapter.py), on which only the scripted tiers, auto, actions: and
+# play: can play (runner.require_rmstate_capable).
+
+MACHINE_FORMAT_CHOICES = ("bquery", "rmstate")
+DEFAULT_MACHINE_FORMAT = "bquery"
+
+
 # ── Interactive play (play.py and the GUI launcher) ──────────────────────────
 #
 # play.py's flags and the GUI's New Play Session dialog share these defaults
@@ -1031,6 +1041,16 @@ def format_arg(help_extra: str = "") -> Arg:
                help="Match format: bo3 = best-of-three matches (deck swap + "
                     "sideboarding between games), bo1 = single games "
                     f"(default {DEFAULT_FORMAT})" + help_extra)
+
+
+def machine_format_arg() -> Arg:
+    """--machine-format bquery|rmstate: the engine protocol the agents play on."""
+    return Arg("--machine-format", "choice", choices=MACHINE_FORMAT_CHOICES,
+               default=DEFAULT_MACHINE_FORMAT,
+               help="Engine protocol: bquery (the state vector) or rmstate (RMSTATE "
+                    "frames through the pass-1 parity adapter; the scripted tiers, "
+                    "auto, actions: and play: only; the verbose transcript has no "
+                    f"board block) (default {DEFAULT_MACHINE_FORMAT})")
 
 
 def common_args(binary_default=BINARY):
@@ -1968,6 +1988,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "wall time, games/s, decisions/s, ms/decision). With --quiet "
                  "the engine also runs without narrative — the lean "
                  "benchmark path"),
+        machine_format_arg(),
         *common_args(),
     ]),
     Sub("baseline",
@@ -3042,6 +3063,7 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
             "between games; the default --max-decisions is 1500 (up to 3 games "
             "+ sideboard decisions) vs 500 for bo1. Sculpted scenarios usually "
             "want --format bo1"),
+        machine_format_arg(),
         Arg("--merge-sideboard", "flag",
             help="Fold each deck's SIDEBOARD: section into its mainboard "
                  "(quantities summed) and run from a merged temp deck with NO "
