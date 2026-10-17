@@ -35,12 +35,14 @@ NodeId Network::add_node(uint16_t size, Loc loc) {
     return static_cast<NodeId>(nodes_.size() - 1);
 }
 
-NodeId Network::add_root(uint16_t size, Loc loc, RootKind kind, const std::vector<std::pair<int, int>> &counts) {
+NodeId Network::add_root(
+    uint16_t size, Loc loc, RootKind kind, const std::vector<std::pair<int, int>> &counts, RootPart part) {
     const NodeId n = add_node(size, loc);
     Root r;
     r.node = n;
     r.kind = kind;
     r.counts = counts;
+    r.part = part;
     nodes_[n].root = static_cast<int32_t>(roots_.size());
     roots_.push_back(r);
     return n;
@@ -99,11 +101,12 @@ uint32_t Network::add_junction(const Junction &j) {
     return id;
 }
 
-void Network::add_root_record(NodeId n, RootKind kind, const CardCounts &counts) {
+void Network::add_root_record(NodeId n, RootKind kind, const CardCounts &counts, RootPart part) {
     Root r;
     r.node = n;
     r.kind = kind;
     r.counts = counts;
+    r.part = part;
     nodes_[n].root = static_cast<int32_t>(roots_.size());
     roots_.push_back(r);
 }
@@ -142,6 +145,7 @@ void Network::serialize(std::string &out) const {
         put_u32(out, r.node);
         put_u8(out, static_cast<uint8_t>(r.kind));
         put_counts(out, r.counts);
+        put_u8(out, static_cast<uint8_t>(r.part));
     }
     put_u32s(out, pin_log_);
 }
@@ -178,6 +182,7 @@ bool Network::deserialize(const std::string &in, size_t *at) {
         root.node = static_cast<NodeId>(r.u32());
         root.kind = static_cast<RootKind>(r.u8());
         if (!get_counts(r, in.size(), &root.counts)) return false;
+        root.part = static_cast<RootPart>(r.u8());
     }
     pin_log_ = r.u32s();
     *at = r.at;

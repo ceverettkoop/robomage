@@ -40,6 +40,10 @@ static int deck_name_to_vocab(const std::string &name) {
     return it != by_uid.end() ? it->second : -1;
 }
 
+int deck_card_vocab(const std::string &name) {
+    return deck_name_to_vocab(name);
+}
+
 // Build a sorted (vocab_idx, count) list from a deck section, merging by vocab id.
 // Fatal on an unregistered card name or on a distinct-name count exceeding max_slots.
 static std::vector<DecklistEntry> build_block(

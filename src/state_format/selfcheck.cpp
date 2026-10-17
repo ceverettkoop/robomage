@@ -614,14 +614,13 @@ static std::string with_knowledge(Zone::Ownership viewer, const std::string &pay
     return out;
 }
 
-// Once per match: each viewer's SCHEMA, CARDS and DECKLISTS frames decode and re-encode the same,
+// Once per match: each viewer's SCHEMA, CARDS, DECKLISTS and METAGAME frames decode and re-encode the same,
 // and the seats' frames start the self-check's knowledge instances.
 static void check_match_frames() {
     if (match_frames_checked) return;
     match_frames_checked = true;
     for (Zone::Ownership viewer : VIEWERS) {
-        for (const std::string &payload :
-            {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer)}) {
+        for (const std::string &payload : encode_match_frames(viewer)) {
             DecodedFrame f;
             roundtrip(viewer, payload, &f);
             knowledge_feed_match_frame(ObsConsumer::SELFCHECK, viewer, payload);

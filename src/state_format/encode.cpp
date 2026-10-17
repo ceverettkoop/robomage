@@ -43,6 +43,7 @@
 #include "enum_names.h"
 #include "handles.h"
 #include "knowledge_feed.h"
+#include "metagame.h"
 #include "schema.h"
 #include "stream.h"
 
@@ -408,10 +409,11 @@ static bool sees_decklist(Zone::Ownership viewer, Zone::Ownership owner) {
     return !closed_decklist || !is_seat(viewer) || viewer == owner;
 }
 
-// The card ids of the cards in the registered lists `viewer` may see (physical_card_of: a deck line
-// naming a back face is its card's front-face id), ascending. Under a closed decklist, every vocab
-// card (by its front face), whoever views: the opponent's cards need rows, and listing only the
-// viewer's own would show which cards are the opponent's.
+// The card ids of the cards in the registered lists `viewer` may see and in the reference
+// metagame's lists (physical_card_of: a deck line naming a back face is its card's front-face id),
+// ascending. Under a closed decklist, every vocab card (by its front face), whoever views: the
+// opponent's cards need rows, and listing only the viewer's own would show which cards are the
+// opponent's.
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     std::set<int> ids;
     if (closed_decklist) {
@@ -426,6 +428,8 @@ static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
         for (const DecklistEntry &e : deck_state_registered_main(owner)) ids.insert(physical_card_of(e.vocab_idx));
         for (const DecklistEntry &e : deck_state_registered_side(owner)) ids.insert(physical_card_of(e.vocab_idx));
     }
+    for (const ReferenceList &list : reference_metagame().lists)
+        for (const auto &c : list.cards) ids.insert(c.first);
     return std::vector<int>(ids.begin(), ids.end());
 }
 
@@ -1332,6 +1336,31 @@ std::string encode_decklists_frame(Zone::Ownership viewer) {
         }
     }
     return w.finish();
+}
+
+std::string encode_metagame_frame(Zone::Ownership viewer) {
+    FrameWriter w(FrameKind::METAGAME, frame_viewer(viewer), rmstate_schema_hash());
+    const ReferenceMetagame &m = reference_metagame();
+    for (const std::string &label : m.archetypes) w.row(TableId::META_ARCHETYPE).text(label);
+    for (const ReferenceList &list : m.lists)
+        w.row(TableId::META_LIST)
+            .text(list.name)
+            .u8(static_cast<uint64_t>(list.archetype))
+            .u16(u16_count(list.main))
+            .u16(u16_count(list.side));
+    for (size_t l = 0; l < m.lists.size(); ++l)
+        for (const auto &c : m.lists[l].cards)
+            w.row(TableId::META_LIST_CARD)
+                .u16(l)
+                .u16(card_or_none(c.first))
+                .u8(u8_count(c.second.first))
+                .u8(u8_count(c.second.second));
+    return w.finish();
+}
+
+std::vector<std::string> encode_match_frames(Zone::Ownership viewer) {
+    return {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer),
+        encode_metagame_frame(viewer)};
 }
 
 std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,

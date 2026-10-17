@@ -10,7 +10,7 @@ Checks, over freshly played games (or the dumps given on the command line):
      ``DUMP.jsonl`` the engine wrote live with ``--state-dump json``;
   3. stream — a ``--machine-format rmstate`` session driven over a pipe (seeded random replies,
      ``-1`` confirms, a game concession past a decision cap): stdout holds only RMSTATE records;
-     each seat gets its SCHEMA / CARDS / DECKLISTS frames before its first STATE frame and a
+     each seat gets its SCHEMA / CARDS / DECKLISTS / METAGAME frames before its first STATE frame and a
      terminal frame (``header.terminal``) at match end; every STATE frame equals the dump's frame
      for that seat and decision apart from the event tables, knowledge tables (``k_*``) included:
      each writer feeds a knowledge instance of its own, and the model is a function of the seat's
@@ -367,7 +367,7 @@ def check_stream(payloads, dump_path, label):
             if dump_match.get((f.viewer, f.kind)) != p:
                 fails.append(f"{label}: {f.viewer}'s {f.kind} frame differs from the dump's")
             continue
-        if {(f.viewer, k) for k in ("SCHEMA", "CARDS", "DECKLISTS")} - seen_match:
+        if {(f.viewer, k) for k in ("SCHEMA", "CARDS", "DECKLISTS", "METAGAME")} - seen_match:
             fails.append(f"{label}: record {i + 1}: {f.viewer}'s STATE frame before its match frames")
         h = f.tables["header"][0]
         key = _frame_key(f)

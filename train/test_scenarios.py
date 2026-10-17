@@ -51,6 +51,8 @@ docs/knowledge_store.md §6) are rendered one fact per line, prefixed by the sea
   position <self|opp> <at> = <card>                 (the card there is known)
   position <self|opp> <at> one of: <card>, ...      (its candidates)
   known_hand <card> x<copies>
+  list <self|opp> <reference list> <consistent|inconsistent>[ unproven][ registered]
+  archetype <self|opp> <label> <possible|impossible>[ exact]
 
 Owners are relative to the seat; a library range or position is ``top<pos>`` (one position) or
 ``top<pos>+<span>``; a pool's cards (every card with max > 0) and a position's candidates are
@@ -193,8 +195,10 @@ def _libpos_text(anchor, pos, span):
     return f"{end}{pos}" + (f"+{span}" if span and span > 1 else "")
 
 
-def _knowledge_facts(tables, names):
-    """The knowledge lines (without the seat/frame prefix) of one decoded STATE frame."""
+def _knowledge_facts(tables, names, metagame=None):
+    """The knowledge lines (without the seat/frame prefix) of one decoded STATE frame; `metagame`
+    is (list names, archetype labels) from the seat's METAGAME frame."""
+    lists, labels = metagame or ([], [])
     def card(cid):
         return names.get(cid, f"#{cid}")
 
@@ -224,6 +228,14 @@ def _knowledge_facts(tables, names):
             out.append(f"position {rel(r['owner_rel'])} {at} one of: {cands}")
     for r in tables.get("k_known_hand", []):
         out.append(f"known_hand {card(r['card'])} x{r['copies']}")
+    for r in tables.get("k_template", []):
+        name = lists[r["list"]] if r["list"] < len(lists) else f"#{r['list']}"
+        out.append(f"list {rel(r['player_rel'])} {name} {'consistent' if r['consistent'] else 'inconsistent'}"
+                   f"{'' if r['exact'] else ' unproven'}{' registered' if r['registered'] else ''}")
+    for r in tables.get("k_archetype", []):
+        label = labels[r["archetype"]] if r["archetype"] < len(labels) else f"#{r['archetype']}"
+        out.append(f"archetype {rel(r['player_rel'])} {label} {'possible' if r['possible'] else 'impossible'}"
+                   f"{' exact' if r['exact'] else ''}")
     return out
 
 
@@ -231,6 +243,7 @@ def knowledge_frames(jsonl_path):
     """[(seat, lines)] for every seat STATE frame of a --state-dump json file, in order: each
     line is one knowledge fact prefixed by the seat and the frame (see the module docstring)."""
     names = {}
+    metagames = {}
     frames = []
     with open(jsonl_path) as fh:
         for raw in fh:
@@ -243,12 +256,16 @@ def knowledge_frames(jsonl_path):
                 seat_names = names.setdefault(viewer, {})
                 for row in tables.get("card", []):
                     seat_names.setdefault(row["card"], row["name"])
+            elif rec.get("frame") == "METAGAME":
+                metagames[viewer] = ([r["name"] for r in tables.get("meta_list", [])],
+                                     [r["name"] for r in tables.get("meta_archetype", [])])
             elif rec.get("frame") == "STATE":
                 head = tables["header"][0]
                 turn = tables["turn"][0]["turn"] if tables.get("turn") else 0
                 when = "sb" if head.get("sideboarding") else f"t{turn}"
                 prefix = f"{viewer} d={head['decision']} g{head['game']} {when} "
-                frames.append((viewer, [prefix + f for f in _knowledge_facts(tables, names.get(viewer, {}))]))
+                facts = _knowledge_facts(tables, names.get(viewer, {}), metagames.get(viewer))
+                frames.append((viewer, [prefix + f for f in facts]))
     return frames
 
 

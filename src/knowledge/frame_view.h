@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../state_format/decode.h"
@@ -13,7 +14,8 @@
 //
 // Decoded frames (state_format/decode.h) read into the plain structs the model consumes: the
 // events of a STATE frame and the few snapshot facts the per-frame consistency check compares
-// against, plus the DECKLISTS and CARDS facts the model's roots and text rendering need. Columns
+// against, plus the DECKLISTS and CARDS facts the model's roots and text rendering need and the
+// METAGAME frame's reference lists. Columns
 // are found by name in the frame's schema, and the engine's enums (zones, seats) by their names
 // in the SCHEMA frame's string tables, so nothing here depends on an engine header.
 //
@@ -108,10 +110,28 @@ struct DeckEntry {
 };
 
 // The DECKLISTS frame: the registered lists present (only the viewer's own under
-// --closed-decklist).
+// --closed-decklist), with their deck names.
 struct Decklists {
         bool present[2] = {false, false};
+        std::string name[2];
         std::vector<DeckEntry> cards;
+};
+
+// One reference list of the METAGAME frame: its deck name, archetype (a meta_archetype row) and
+// registered counts, (card, copies) ascending by card with copies > 0.
+struct MetaList {
+        std::string name;
+        int archetype = 0;
+        std::vector<std::pair<int, int>> main;
+        std::vector<std::pair<int, int>> side;
+};
+
+// The METAGAME frame: the archetype labels (row index = archetype id) and the reference lists (row
+// index = list id). `present` is false until the frame arrives.
+struct Metagame {
+        bool present = false;
+        std::vector<std::string> archetypes;
+        std::vector<MetaList> lists;
 };
 
 struct SnapPlayer {
@@ -165,6 +185,7 @@ bool read_codes(const rmstate::Schema &schema, Codes *out, std::string *err);
 // model reads.
 bool read_snapshot(const rmstate::DecodedFrame &frame, const Codes &codes, Snapshot *out, std::string *err);
 bool read_decklists(const rmstate::DecodedFrame &frame, const Codes &codes, Decklists *out, std::string *err);
+bool read_metagame(const rmstate::DecodedFrame &frame, Metagame *out, std::string *err);
 // Card names from a CARDS frame (the front face's name per card id).
 bool read_card_names(const rmstate::DecodedFrame &frame, std::map<int, std::string> *out, std::string *err);
 

@@ -9,6 +9,7 @@
 #include "bounds.h"
 #include "frame_view.h"
 #include "k_rows.h"
+#include "templates.h"
 
 // ── Soundness: the k_* facts against the true world (docs/knowledge_store.md §7) ──────────────
 //
@@ -27,7 +28,11 @@
 //     library-range pool it names, which covers the position;
 //   - a k_known_hand row: the opponent's hand holds at least that many copies;
 //   - a k_seen row: the player owns at least the copies seen this game, and the match count is at
-//     least the game count.
+//     least the game count;
+//   - per player whose registered list is a reference list (equal counts, main and side): that
+//     list's k_template row is consistent, its archetype's k_archetype row possible, and no other
+//     archetype exact; and the k_template rows marked registered are exactly the classification of
+//     the true registered list when the viewer sees it, none otherwise.
 // Set-aside pools (test-harness presets not yet created) have no counterpart in the true world.
 
 namespace knowledge {
@@ -42,7 +47,18 @@ struct Truth {
         // omniscient frame's handles are not the viewer's).
         std::map<uint32_t, int> face_down;
         bool face_down_known = false;
+        // Per player, from the true registered list (set_truth_lists): the reference lists equal to
+        // it (list id, archetype), and its expected classification when the viewer sees the list
+        // (-1: none, or the list is hidden). Unchecked without set_truth_lists.
+        std::vector<std::pair<int, int>> reference[2];
+        int classified[2] = {-1, -1};
+        bool lists_known = false;
 };
+
+// Fills `truth`'s reference lists and classifications from both players' true registered lists:
+// `lists` (names and counts, as an omniscient DECKLISTS frame has them) against `metagame`;
+// `visible[p]` whether the viewer sees player p's list.
+void set_truth_lists(const Metagame &metagame, const Decklists &lists, const bool visible[2], Truth *truth);
 
 // The truth an omniscient STATE frame shows; false when its library positions are not 0..n-1.
 bool truth_from_snapshot(const Snapshot &omni, Truth *out);

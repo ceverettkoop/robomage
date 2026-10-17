@@ -61,6 +61,9 @@ static Result test_mulligan();
 static Result test_closed_match_memory();
 static Result test_serialize();
 static Result test_compaction_bounded();
+static Result test_reference_lists();
+static const knowledge::KTemplateRow *template_row(const KRows &r, int player, int list);
+static const knowledge::KArchetypeRow *archetype_row(const KRows &r, int player, int archetype);
 
 static void expect(Result &r, bool ok, const std::string &what) {
     if (ok) return;
@@ -459,6 +462,128 @@ static Result test_compaction_bounded() {
     return r;
 }
 
+static const knowledge::KTemplateRow *template_row(const KRows &r, int player, int list) {
+    for (const knowledge::KTemplateRow &t : r.templates)
+        if (t.player == player && t.list == list) return &t;
+    return nullptr;
+}
+
+static const knowledge::KArchetypeRow *archetype_row(const KRows &r, int player, int archetype) {
+    for (const knowledge::KArchetypeRow &a : r.archetypes)
+        if (a.player == player && a.archetype == archetype) return &a;
+    return nullptr;
+}
+
+// Reference lists (knowledge_store §10). Four lists: 0 (label 0) 2 Force of Will in the main deck and
+// 3 Daze in the sideboard; 1 (label 1) the reverse; 2 (label 0) one Force of Will and a Bolt in the
+// main deck; 3 (label 2) a 2-card sideboard. Viewer A registered list 2 under another name; B
+// registered list 0, hidden (closed decklist). The game starts with B's 12-card library and 3-card
+// sideboard (list 3 cannot be B's). A Force of Will cast from B's hand in game 1 excludes list 1 (its
+// copies are in the sideboard), a second excludes list 2 (one copy), and list 1 stays excluded in
+// game 2, where the 75 alone would allow it. With B's list open and named nothing in the metagame,
+// it is classified by the cards in common. The state survives serialisation.
+static Result test_reference_lists() {
+    Result r;
+    knowledge::Metagame meta;
+    meta.present = true;
+    meta.archetypes = {"t0", "t1", "t2", "unknown"};
+    const auto list = [](const char *name, int arch, std::vector<std::pair<int, int>> main,
+                          std::vector<std::pair<int, int>> side) {
+        knowledge::MetaList l;
+        l.name = name;
+        l.archetype = arch;
+        l.main = main;
+        l.side = side;
+        return l;
+    };
+    meta.lists = {list("zero", 0, {{FOW, 2}, {FILL, 10}}, {{DAZE, 3}}),
+        list("one", 1, {{DAZE, 2}, {FILL, 10}}, {{FOW, 3}}),
+        list("two", 0, {{FOW, 1}, {FILL, 10}, {BOLT, 1}}, {{DAZE, 3}}), list("three", 2, {{FILL, 12}}, {{FILL, 2}})};
+    const auto start = [&meta](Knowledge &k, bool closed) {
+        knowledge::Decklists lists;
+        lists.present[A] = true;
+        lists.name[A] = "mine";
+        for (const auto &c : meta.lists[2].main) lists.cards.push_back({A, c.first, c.second, 0});
+        for (const auto &c : meta.lists[2].side) lists.cards.push_back({A, c.first, 0, c.second});
+        if (!closed) {
+            lists.present[B] = true;
+            lists.name[B] = "theirs";
+            lists.cards.push_back({B, FOW, 1, 0});
+            lists.cards.push_back({B, DAZE, 2, 0});
+            lists.cards.push_back({B, FILL, 9, 2});
+        }
+        knowledge::Codes codes;
+        k.begin_match(A, codes, lists);
+        k.begin_metagame(meta);
+    };
+    const auto consistent = [](const KRows &rows, int p, int l) {
+        const knowledge::KTemplateRow *t = template_row(rows, p, l);
+        return t && t->consistent;
+    };
+    Knowledge k;
+    start(k, true);
+    Stream s(k);
+    s.game_start(12, 12, 0, 0, 3);
+    for (int i = 0; i < 7; ++i) s.draw(B, NO_CARD, 0, true, 0);
+    s.frame();
+    KRows rows = k.rows();
+    expect(r, rows.templates.size() == 8 && rows.archetypes.size() == 8, "a row per player and list, and label");
+    expect(r, consistent(rows, B, 0) && consistent(rows, B, 1) && consistent(rows, B, 2), "lists 0-2 are possible");
+    expect(r, !consistent(rows, B, 3) && template_row(rows, B, 3)->exact, "list 3's sideboard is too small");
+    expect(r,
+        archetype_row(rows, B, 0)->possible && archetype_row(rows, B, 1)->possible &&
+            !archetype_row(rows, B, 0)->exact && !archetype_row(rows, B, 2)->possible,
+        "labels 0 and 1 are possible, neither exact");
+    expect(r, consistent(rows, A, 2) && template_row(rows, A, 2)->registered && !consistent(rows, A, 0),
+        "the viewer's own list is list 2 (by its cards: no list has its name)");
+    for (const knowledge::KTemplateRow &t : rows.templates)
+        expect(r, t.player == A || !t.registered, "a hidden list is classified as nothing");
+    s.move(EventKind::CAST_FROM_HIDDEN, B, Zn::HAND, Zn::STACK, Stream::card(FOW, 0, 70));
+    s.frame();
+    rows = k.rows();
+    expect(r, consistent(rows, B, 0) && !consistent(rows, B, 1) && consistent(rows, B, 2),
+        "a Force of Will from the main deck excludes list 1");
+    expect(r, archetype_row(rows, B, 0)->exact && !archetype_row(rows, B, 1)->possible, "label 0 is exact");
+    expect(r, template_row(rows, B, 1)->exact, "list 1's exclusion is exact");
+
+    std::string blob;
+    k.serialize(blob);
+    Knowledge copy;
+    expect(r, copy.deserialize(blob), "the state deserializes");
+    knowledge::Codes codes;
+    const auto bytes = [&codes](const Knowledge &kk) {
+        rmstate::FrameWriter w(rmstate::FrameKind::STATE, rmstate::Viewer::A, 0);
+        knowledge::write_k_tables(w, kk.rows(), codes, A);
+        return w.finish();
+    };
+    expect(r, bytes(k) == bytes(copy), "the restored rows are identical");
+
+    s.move(EventKind::CAST_FROM_HIDDEN, B, Zn::HAND, Zn::STACK, Stream::card(FOW, 0, 71));
+    s.game_end();
+    s.frame();
+    rows = k.rows();
+    expect(r, consistent(rows, B, 0) && !consistent(rows, B, 2), "a second Force of Will excludes list 2");
+    s.game_start(12, 12, 1, 0, 3);
+    for (int i = 0; i < 7; ++i) s.draw(B, NO_CARD, 0, true, 0);
+    s.frame();
+    rows = k.rows();
+    expect(r, consistent(rows, B, 0) && !consistent(rows, B, 1) && !consistent(rows, B, 2),
+        "game 2: lists 1 and 2 stay excluded");
+    no_errors(r, k);
+
+    Knowledge open;
+    start(open, false);
+    Stream o(open);
+    o.game_start(12, 12, 0, 0, 2);
+    o.frame();
+    rows = open.rows();
+    expect(r, template_row(rows, B, 1)->registered, "the open list is classified as list 1 (the most cards in common)");
+    for (int l = 0; l < 4; ++l)
+        expect(r, !consistent(rows, B, l) && template_row(rows, B, l)->exact, "no reference list is the open list");
+    no_errors(r, open);
+    return r;
+}
+
 int run_selftest() {
     const std::vector<std::pair<const char *, std::function<Result()>>> tests = {
         {"brainstorm_put_back", test_brainstorm_put_back},
@@ -473,6 +598,7 @@ int run_selftest() {
         {"closed_match_memory", test_closed_match_memory},
         {"serialize", test_serialize},
         {"compaction_bounded", test_compaction_bounded},
+        {"reference_lists", test_reference_lists},
     };
     int failed = 0;
     for (const auto &t : tests) {

@@ -13,7 +13,7 @@ static constexpr uint64_t PROPAGATION_BUDGET = 4000000;
 // for what it has not settled (still sound; k_meta.exact 0).
 static constexpr uint64_t SOLVER_BUDGET = 1000000;
 static constexpr uint32_t STATE_MAGIC = 0x4E4B4D52u;  // "RMKN"
-static constexpr uint16_t STATE_VERSION = 2;
+static constexpr uint16_t STATE_VERSION = 3;
 
 static const char *zone_word(Zn z);
 static const char *loc_word(Loc l);
@@ -25,6 +25,12 @@ static std::vector<DeckEntry> entries_of(const std::vector<DeckEntry> &v, int pl
 static bool same_entries(const std::vector<DeckEntry> &a, const std::vector<DeckEntry> &b);
 static void put_solution(std::string &out, const Solution &s);
 static bool get_solution(ByteReader &r, Solution *s);
+static void put_pairs(std::string &out, const std::vector<std::pair<int, int>> &v);
+static bool get_pairs(ByteReader &r, std::vector<std::pair<int, int>> *v);
+static void put_metagame(std::string &out, const Metagame &m);
+static bool get_metagame(ByteReader &r, Metagame *m);
+static void put_flags(std::string &out, const std::vector<uint8_t> &v);
+static bool get_flags(ByteReader &r, std::vector<uint8_t> *v);
 
 Knowledge::Knowledge(rmstate::KnowledgeLevel level) : level_(level) {}
 
@@ -108,6 +114,15 @@ void Knowledge::feed(const std::string &payload) {
         begin_match(seat, codes_, lists);
         return;
     }
+    if (kind == rmstate::FrameKind::METAGAME) {
+        Metagame metagame;
+        if (!read_metagame(frame, &metagame, &err)) {
+            error(err);
+            return;
+        }
+        begin_metagame(metagame);
+        return;
+    }
     Snapshot snap;
     if (!read_snapshot(frame, codes_, &snap, &err)) {
         error(err);
@@ -124,6 +139,19 @@ void Knowledge::begin_match(int viewer, const Codes &codes, const Decklists &lis
     seen_match_[1].clear();
     last_seq_ = 0;
     game_active_ = false;
+    list_excluded_.assign(metagame_.lists.size(), 0);
+    list_unproven_.assign(metagame_.lists.size(), 0);
+    tpl_active_ = tpl_dirty_ = false;
+}
+
+void Knowledge::begin_metagame(const Metagame &metagame) {
+    metagame_ = metagame;
+    list_excluded_.assign(metagame_.lists.size(), 0);
+    list_unproven_.assign(metagame_.lists.size(), 0);
+    tpl_active_ = tpl_dirty_ = false;
+    tpl_done_.assign(metagame_.lists.size(), 0);
+    tpl_consistent_.assign(metagame_.lists.size(), 0);
+    tpl_exact_.assign(metagame_.lists.size(), 0);
 }
 
 // The model is a function of the events alone: every event is applied and then settled (settle),
@@ -144,6 +172,7 @@ void Knowledge::apply_frame(const Snapshot &snap) {
     if (!game_active_) return;
     check(snap);
     solve();
+    solve_templates();
 }
 
 void Knowledge::apply_events(const std::vector<Event> &events) {
@@ -155,8 +184,14 @@ void Knowledge::apply_events(const std::vector<Event> &events) {
     for (const Event &ev : events)
         if (ev.kind == rmstate::EventKind::LIBRARY_PLACE) batch_place_[ev.batch] = ev.range;
     for (const Event &ev : events) {
+        // An event that pins one of the opponent's cards or adds a root (or starts a game) makes a
+        // new template network (archetype.cpp): the opponent's network once the event is settled.
+        const size_t pins = opponent_pins(), roots = opponent_roots();
         apply_event(ev);
+        if (ev.kind == rmstate::EventKind::GAME_START || opponent_pins() != pins || opponent_roots() != roots)
+            tpl_dirty_ = true;
         if (game_active_) settle();
+        if (tpl_dirty_ && game_active_) save_template_network();
     }
     for (const auto &b : batch_nodes_)
         if (batch_place_.find(b.first) == batch_place_.end())
@@ -656,6 +691,66 @@ static bool get_solution(ByteReader &r, Solution *s) {
     return r.ok;
 }
 
+static void put_pairs(std::string &out, const std::vector<std::pair<int, int>> &v) {
+    put_u32(out, v.size());
+    for (const auto &e : v) {
+        put_i32(out, e.first);
+        put_i32(out, e.second);
+    }
+}
+
+static bool get_pairs(ByteReader &r, std::vector<std::pair<int, int>> *v) {
+    v->clear();
+    const uint64_t n = r.u32();
+    if (!r.count(n, r.in.size())) return false;
+    for (uint64_t i = 0; i < n; ++i) {
+        const int a = r.i32();
+        v->emplace_back(a, r.i32());
+    }
+    return r.ok;
+}
+
+static void put_metagame(std::string &out, const Metagame &m) {
+    put_u8(out, m.present ? 1 : 0);
+    put_u32(out, m.archetypes.size());
+    for (const std::string &a : m.archetypes) put_str(out, a);
+    put_u32(out, m.lists.size());
+    for (const MetaList &l : m.lists) {
+        put_str(out, l.name);
+        put_i32(out, l.archetype);
+        put_pairs(out, l.main);
+        put_pairs(out, l.side);
+    }
+}
+
+static bool get_metagame(ByteReader &r, Metagame *m) {
+    *m = Metagame{};
+    m->present = r.u8() != 0;
+    const uint64_t na = r.u32();
+    if (!r.count(na, r.in.size())) return false;
+    for (uint64_t i = 0; i < na; ++i) m->archetypes.push_back(r.str());
+    const uint64_t nl = r.u32();
+    if (!r.count(nl, r.in.size())) return false;
+    for (uint64_t i = 0; i < nl; ++i) {
+        MetaList l;
+        l.name = r.str();
+        l.archetype = r.i32();
+        if (!get_pairs(r, &l.main) || !get_pairs(r, &l.side)) return false;
+        m->lists.push_back(l);
+    }
+    return r.ok;
+}
+
+static void put_flags(std::string &out, const std::vector<uint8_t> &v) {
+    put_str(out, std::string(v.begin(), v.end()));
+}
+
+static bool get_flags(ByteReader &r, std::vector<uint8_t> *v) {
+    const std::string s = r.str();
+    v->assign(s.begin(), s.end());
+    return r.ok;
+}
+
 void Knowledge::serialize(std::string &out) const {
     put_u32(out, STATE_MAGIC);
     put_u16(out, STATE_VERSION);
@@ -698,6 +793,16 @@ void Knowledge::serialize(std::string &out) const {
     put_u16(out, turn_);
     for (int p = 0; p < 2; ++p) put_solution(out, solved_[p]);
     put_u64(out, solve_steps_);
+    for (int p = 0; p < 2; ++p) put_str(out, lists_.name[p]);
+    put_metagame(out, metagame_);
+    put_flags(out, list_excluded_);
+    put_flags(out, list_unproven_);
+    put_u8(out, tpl_active_ ? 1 : 0);
+    put_u8(out, tpl_dirty_ ? 1 : 0);
+    tpl_net_.serialize(out);
+    put_flags(out, tpl_done_);
+    put_flags(out, tpl_consistent_);
+    put_flags(out, tpl_exact_);
 }
 
 bool Knowledge::deserialize(const std::string &in) {
@@ -769,7 +874,21 @@ bool Knowledge::deserialize(const std::string &in) {
     for (int p = 0; p < 2; ++p)
         if (!get_solution(r2, &solved_[p])) return false;
     solve_steps_ = r2.u64();
-    return r2.ok && r2.at == in.size();
+    for (int p = 0; p < 2; ++p) lists_.name[p] = r2.str();
+    if (!get_metagame(r2, &metagame_) || !get_flags(r2, &list_excluded_) || !get_flags(r2, &list_unproven_))
+        return false;
+    tpl_active_ = r2.u8() != 0;
+    tpl_dirty_ = r2.u8() != 0;
+    if (!r2.ok) return false;
+    size_t at2 = r2.at;
+    if (!tpl_net_.deserialize(in, &at2)) return false;
+    ByteReader r3(in, at2);
+    if (!get_flags(r3, &tpl_done_) || !get_flags(r3, &tpl_consistent_) || !get_flags(r3, &tpl_exact_)) return false;
+    const size_t n = metagame_.lists.size();
+    if (list_excluded_.size() != n || list_unproven_.size() != n || tpl_done_.size() != n ||
+        tpl_consistent_.size() != n || tpl_exact_.size() != n)
+        return false;
+    return r3.ok && r3.at == in.size();
 }
 
 }  // namespace knowledge

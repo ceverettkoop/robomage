@@ -61,16 +61,16 @@ void Knowledge::on_game_start(const Event &ev) {
     if (!built[0] || !built[1]) error("game_start lacks a player's library and sideboard counts");
 }
 
-// Makes a root of `counts` (its size their total, or the parts' total for a FREE root) split into
-// parts of `sizes` (zero-size parts are left out); returns the parts, NO_NODE for a left-out one.
-std::vector<NodeId> Knowledge::add_root_parts(
-    int p, RootKind kind, const std::vector<std::pair<int, int>> &counts, const std::vector<uint16_t> &sizes) {
+// Makes a root standing for `part` of `counts` (its size the parts' total) split into parts of
+// `sizes` (zero-size parts are left out); returns the parts, NO_NODE for a left-out one.
+std::vector<NodeId> Knowledge::add_root_parts(int p, RootKind kind, RootPart part,
+    const std::vector<std::pair<int, int>> &counts, const std::vector<uint16_t> &sizes) {
     PlayerModel &m = players_[p];
     int total = 0;
     for (uint16_t s : sizes) total += s;
     std::vector<NodeId> out(sizes.size(), NO_NODE);
     if (total == 0) return out;
-    const NodeId root = m.net.add_root(clamp_size(total), Loc::SET_ASIDE, kind, counts);
+    const NodeId root = m.net.add_root(clamp_size(total), Loc::SET_ASIDE, kind, counts, part);
     std::vector<uint16_t> nonzero;
     for (uint16_t s : sizes)
         if (s > 0) nonzero.push_back(s);
@@ -93,14 +93,22 @@ void Knowledge::build_roots(int p, uint16_t library, uint16_t sideboard) {
     closed_[p] = !use_own && !lists_.present[p];
     std::vector<NodeId> parts;  // library, sideboard, set aside...
     if (closed_[p]) {
-        // Unknown cards from the vocab: a free root, at least the copies seen earlier this match.
+        // Unknown cards from the vocab: lower-bound roots (at least the copies seen earlier this
+        // match, nothing in game 1), which compaction keeps, so a reference list's hypothesis can
+        // take their place (templates.h): game 1 the main deck and the sideboard apart, games 2-3
+        // the 75.
         std::vector<std::pair<int, int>> lower;
-        if (game_ > 0)
+        if (game_ > 0) {
             for (const auto &s : seen_match_[p])
                 if (s.second > 0) lower.emplace_back(s.first, s.second);
-        const RootKind kind = lower.empty() ? RootKind::FREE : RootKind::LOWER;
-        const std::vector<NodeId> got = add_root_parts(p, kind, lower, {library, sideboard});
-        parts = {got[0], got[1], NO_NODE, NO_NODE};
+            const std::vector<NodeId> got =
+                add_root_parts(p, RootKind::LOWER, RootPart::ALL, lower, {library, sideboard});
+            parts = {got[0], got[1], NO_NODE, NO_NODE};
+        } else {
+            const NodeId main = add_root_parts(p, RootKind::LOWER, RootPart::MAIN, {}, {library})[0];
+            const NodeId side = add_root_parts(p, RootKind::LOWER, RootPart::SIDE, {}, {sideboard})[0];
+            parts = {main, side, NO_NODE, NO_NODE};
+        }
         for (const auto &c : lower) m.full.universe.add(c.first);
     } else {
         const std::vector<DeckEntry> &source = use_own ? own_list : lists_.cards;
@@ -113,16 +121,16 @@ void Knowledge::build_roots(int p, uint16_t library, uint16_t sideboard) {
             const long rest = static_cast<long>(n_main + n_side) - library - sideboard;
             if (rest < 0) error("game_start counts exceed the registered 75");
             const std::vector<NodeId> got =
-                add_root_parts(p, RootKind::EXACT, all, {library, sideboard, clamp_size(rest)});
+                add_root_parts(p, RootKind::EXACT, RootPart::ALL, all, {library, sideboard, clamp_size(rest)});
             parts = {got[0], got[1], got[2], NO_NODE};
         } else {
             const long main_rest = static_cast<long>(n_main) - library;
             const long side_rest = static_cast<long>(n_side) - sideboard;
             if (main_rest < 0 || side_rest < 0) error("game_start counts exceed the registered lists");
             const std::vector<NodeId> got_main =
-                add_root_parts(p, RootKind::EXACT, main, {library, clamp_size(main_rest)});
+                add_root_parts(p, RootKind::EXACT, RootPart::MAIN, main, {library, clamp_size(main_rest)});
             const std::vector<NodeId> got_side =
-                add_root_parts(p, RootKind::EXACT, side, {sideboard, clamp_size(side_rest)});
+                add_root_parts(p, RootKind::EXACT, RootPart::SIDE, side, {sideboard, clamp_size(side_rest)});
             parts = {got_main[0], got_side[0], got_main[1], got_side[1]};
         }
         for (const auto &c : list_counts(source, p, true, true)) m.full.universe.add(c.first);
@@ -145,10 +153,12 @@ void Knowledge::build_roots(int p, uint16_t library, uint16_t sideboard) {
 
 // ── game_end ──────────────────────────────────────────────────────────────────────────────────
 
-// The game's last events are already counted into match memory (each was settled); the networks
-// stay until the next game_start replaces them.
+// The game's last events are already counted into match memory (each was settled), and so is the
+// game's last answer for every reference list (close_templates); the networks stay until the next
+// game_start replaces them.
 void Knowledge::on_game_end(const Event &ev) {
     (void)ev;
+    close_templates();
     game_active_ = false;
 }
 

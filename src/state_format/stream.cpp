@@ -30,7 +30,7 @@ static int read_reply();
 // The descriptor stdout had at startup, which carries the frames (stdout itself is pointed at
 // stderr by rmstate_outputs_init).
 static FILE *stream_out = nullptr;
-// Per seat (indexed by Zone::Ownership): its SCHEMA, CARDS and DECKLISTS frames were sent.
+// Per seat (indexed by Zone::Ownership): its SCHEMA, CARDS, DECKLISTS and METAGAME frames were sent.
 static bool stream_match_frames_sent[3] = {false, false, false};
 
 void rmstate_outputs_init() {
@@ -79,8 +79,7 @@ static void stream_write(const std::string &payload) {
 
 static void stream_match_frames_once(Zone::Ownership seat) {
     if (stream_match_frames_sent[seat]) return;
-    for (const std::string &payload :
-        {encode_schema_frame(seat), encode_cards_frame(seat), encode_decklists_frame(seat)}) {
+    for (const std::string &payload : encode_match_frames(seat)) {
         knowledge_feed_match_frame(ObsConsumer::STREAM, seat, payload);
         stream_write(payload);
     }

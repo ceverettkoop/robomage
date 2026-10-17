@@ -73,16 +73,28 @@ enum class RootKind : uint8_t {
     FREE,   // any cards
 };
 
+// Which part of the player's registered list a root stands for (the roots a reference list's
+// hypothesis replaces, templates.h): the main deck (game 1), the sideboard (game 1), the whole 75
+// (games 2-3), or none (a unit of no known origin: a closed decklist's card created from zone none).
+enum class RootPart : uint8_t {
+    NONE,
+    MAIN,
+    SIDE,
+    ALL,
+};
+
 struct Root {
         NodeId node = NO_NODE;
         RootKind kind = RootKind::FREE;
         CardCounts counts;
+        RootPart part = RootPart::NONE;
 };
 
 class Network {
     public:
-        // A root of `size` units at `loc` (EXACT / LOWER take `counts`).
-        NodeId add_root(uint16_t size, Loc loc, RootKind kind, const std::vector<std::pair<int, int>> &counts);
+        // A root of `size` units at `loc` (EXACT / LOWER take `counts`), standing for `part`.
+        NodeId add_root(uint16_t size, Loc loc, RootKind kind, const std::vector<std::pair<int, int>> &counts,
+            RootPart part = RootPart::NONE);
         // Splits live `parent` into nodes of `sizes` (each > 0, summing to its size), all at the
         // parent's location; returns them in order. A parent of a single part is returned as is.
         std::vector<NodeId> split(NodeId parent, const std::vector<uint16_t> &sizes);
@@ -106,7 +118,7 @@ class Network {
         // Building blocks for compaction (compact.cpp), which assembles a new network from parts.
         NodeId add_node(uint16_t size, Loc loc);
         uint32_t add_junction(const Junction &j);
-        void add_root_record(NodeId n, RootKind kind, const CardCounts &counts);
+        void add_root_record(NodeId n, RootKind kind, const CardCounts &counts, RootPart part = RootPart::NONE);
 
     private:
         std::vector<Node> nodes_;

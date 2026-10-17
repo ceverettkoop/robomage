@@ -215,6 +215,7 @@ KRows Knowledge::rows() const {
             out.seen.push_back(r);
         }
     }
+    template_rows(out);
     if (!game_active_) return out;
 
     for (int p : order) player_rows(p, out);
@@ -318,6 +319,16 @@ std::string Knowledge::text() const {
                 seen += (seen.empty() ? "" : ", ") + card_word(names_, s.card) + " " + std::to_string(s.game) + "/" +
                         std::to_string(s.match);
         if (!seen.empty()) line += "; seen game/match: " + seen;
+        std::string lists, labels;
+        for (const KTemplateRow &t : r.templates)
+            if (t.player == p && t.consistent)
+                lists += (lists.empty() ? "" : ", ") + metagame_.lists[t.list].name + (t.exact ? "" : "?") +
+                         (t.registered ? " (registered)" : "");
+        for (const KArchetypeRow &a : r.archetypes)
+            if (a.player == p && a.possible)
+                labels +=
+                    (labels.empty() ? "" : ", ") + metagame_.archetypes[a.archetype] + (a.exact ? " (exact)" : "");
+        if (!r.templates.empty()) line += "; lists: " + (lists.empty() ? "none" : lists) + "; archetypes: " + labels;
         out += line + "\n";
     }
     return out;

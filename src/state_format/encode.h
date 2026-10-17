@@ -28,12 +28,19 @@ uint64_t rmstate_schema_hash();
 std::string encode_schema_frame(Zone::Ownership viewer);
 
 // The CARDS frame: every card in the registered lists the viewer may see (both, or under
-// --closed-decklist a seat's own only), each face a row, plus every token those cards can make.
+// --closed-decklist a seat's own only) and in the reference metagame's lists, each face a row, plus
+// every token those cards can make (under --closed-decklist every vocab card).
 std::string encode_cards_frame(Zone::Ownership viewer);
 
 // The DECKLISTS frame: the registered lists with their deck names (a seat's own only under
 // --closed-decklist).
 std::string encode_decklists_frame(Zone::Ownership viewer);
+
+// The METAGAME frame: the reference metagame (state_format/metagame.h), the same for every viewer.
+std::string encode_metagame_frame(Zone::Ownership viewer);
+
+// `viewer`'s once-per-match frames, in stream order: SCHEMA, CARDS, DECKLISTS, METAGAME.
+std::vector<std::string> encode_match_frames(Zone::Ownership viewer);
 
 // The STATE frame for one decision: the snapshot tables, the menu `actions` when the viewer is
 // the one deciding (`decider`) or omniscient, and `events`, the viewer's observation events since

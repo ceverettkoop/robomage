@@ -5,6 +5,7 @@ namespace knowledge {
 static int count_of(const std::map<int, int> &m, int card);
 static bool pool_contents(const KPoolRow &pool, const Truth &truth, std::map<int, int> *out, size_t *start);
 static void violation(TruthCheck *out, const std::string &what);
+static void check_lists(const KRows &rows, const Truth &truth, TruthCheck *out);
 
 static int count_of(const std::map<int, int> &m, int card) {
     const auto it = m.find(card);
@@ -171,6 +172,59 @@ void check_truth(
         if (s.match < s.game)
             violation(out, "seen " + std::to_string(s.game) + " of card " + std::to_string(s.card) + " this game but " +
                                std::to_string(s.match) + " this match");
+    }
+    check_lists(rows, truth, out);
+}
+
+void set_truth_lists(const Metagame &metagame, const Decklists &lists, const bool visible[2], Truth *truth) {
+    truth->lists_known = true;
+    for (int p = 0; p < 2; ++p) {
+        truth->reference[p].clear();
+        truth->classified[p] = -1;
+        if (!lists.present[p]) continue;
+        std::vector<std::pair<int, int>> main, side;
+        registered_counts(lists, p, &main, &side);
+        for (int l : matching_lists(metagame, main, side))
+            truth->reference[p].emplace_back(l, metagame.lists[static_cast<size_t>(l)].archetype);
+        if (visible[p]) truth->classified[p] = classify_list(metagame, lists.name[p], main, side);
+    }
+}
+
+// The k_template and k_archetype facts against the true registered lists.
+static void check_lists(const KRows &rows, const Truth &truth, TruthCheck *out) {
+    if (!truth.lists_known || rows.templates.empty()) return;
+    for (int p = 0; p < 2; ++p) {
+        const std::string who = p == 0 ? "A" : "B";
+        for (const auto &ref : truth.reference[p]) {
+            ++out->facts;
+            bool consistent = false;
+            for (const KTemplateRow &t : rows.templates)
+                if (t.player == p && t.list == ref.first) consistent = t.consistent;
+            if (!consistent)
+                violation(out, "player " + who + "'s registered list is reference list " + std::to_string(ref.first) +
+                                   ", reported inconsistent");
+            ++out->facts;
+            for (const KArchetypeRow &a : rows.archetypes) {
+                if (a.player != p) continue;
+                if (a.archetype == ref.second && !a.possible)
+                    violation(out,
+                        "player " + who + "'s archetype " + std::to_string(ref.second) + " is reported impossible");
+                if (a.archetype != ref.second && a.exact)
+                    violation(out, "player " + who + "'s archetype is reported exactly " + std::to_string(a.archetype) +
+                                       ", truly " + std::to_string(ref.second));
+            }
+        }
+        ++out->facts;
+        int registered = -1, n_registered = 0;
+        for (const KTemplateRow &t : rows.templates)
+            if (t.player == p && t.registered) {
+                registered = t.list;
+                ++n_registered;
+            }
+        if (n_registered > 1 || registered != truth.classified[p])
+            violation(out, "player " + who + "'s registered list is classified as list " + std::to_string(registered) +
+                               " (" + std::to_string(n_registered) + " row(s)), expected " +
+                               std::to_string(truth.classified[p]));
     }
 }
 

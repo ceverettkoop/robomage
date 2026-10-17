@@ -16,7 +16,7 @@ class Knowledge;
 //
 // Every RMSTATE frame writer (ObsConsumer: --rmstate-dump, --machine-format rmstate,
 // --selfcheck-state) has a knowledge::Knowledge instance of its own per seat, fed with exactly the
-// frames that writer builds for that seat, in order: the seat's SCHEMA, CARDS and DECKLISTS
+// frames that writer builds for that seat, in order: the seat's SCHEMA, CARDS, DECKLISTS and METAGAME
 // frames, then each of its STATE frames as encoded (its events drained into it), before the k_*
 // tables are appended to it. An instance is a pure function of its seat's frame stream from that
 // writer, so `rmknow --isolation` run on the frames the writer emitted reproduces the appended
@@ -41,7 +41,7 @@ class Knowledge;
 // has no sidecar): what its STATE frames' header.knowledge says.
 rmstate::KnowledgeLevel knowledge_level_of(Zone::Ownership viewer);
 
-// Feeds one of `viewer`'s once-per-match frames (SCHEMA, CARDS, DECKLISTS), as `consumer` writes
+// Feeds one of `viewer`'s once-per-match frames (SCHEMA, CARDS, DECKLISTS, METAGAME), as `consumer` writes
 // it, to that writer's instance for the seat. No-op for the omniscient viewer.
 void knowledge_feed_match_frame(ObsConsumer consumer, Zone::Ownership viewer, const std::string &payload);
 

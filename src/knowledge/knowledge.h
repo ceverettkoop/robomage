@@ -13,10 +13,11 @@
 #include "k_rows.h"
 #include "player_model.h"
 #include "solver.h"
+#include "templates.h"
 
 // ── The knowledge sidecar: one seat's recall and deduction (docs/knowledge_store.md) ──────────
 //
-// A pure function of one viewer's frame stream: the SCHEMA, CARDS and DECKLISTS frames, then every
+// A pure function of one viewer's frame stream: the SCHEMA, CARDS, DECKLISTS and METAGAME frames, then every
 // STATE frame (its events in order, then its snapshot). It never sees engine state; it may include
 // only the standard library and state_format/decode.h / schema.h (the rmstate gate tier checks).
 //
@@ -37,6 +38,15 @@
 //      under a per-player step budget.
 // rows() then gives the k_* tables for the current state.
 //
+// Archetype inference (templates.h, knowledge_store §10): every reference list of the METAGAME
+// frame is checked against each player. A list the viewer sees (their own, or the opponent's with
+// open decklists) is consistent exactly when it is that list; under --closed-decklist the
+// opponent's network decides, with the list as root. That check runs on the opponent's network as
+// it was after the last event that pinned a card or added a root (the template network): only such
+// an event can make a list inconsistent, so its answer is a function of the events, whichever frame
+// computes it. Each game's last answer (at game_end) is match memory: a list proven inconsistent in
+// one game stays so for the match, the registered list being the same in every game.
+//
 // The model per player (PlayerModel) is a network of nodes (sets of cards the viewer cannot tell
 // apart) rooted in the player's list: game 1 the registered main deck and sideboard, games 2-3 the
 // registered 75 for the opponent (split between deck and sideboard in a way the viewer does not
@@ -53,12 +63,13 @@ class Knowledge {
     public:
         explicit Knowledge(rmstate::KnowledgeLevel level = rmstate::KnowledgeLevel::EXPERT);
 
-        // One record payload of the viewer's stream: SCHEMA, CARDS, DECKLISTS or STATE. A frame
+        // One record payload of the viewer's stream: SCHEMA, CARDS, DECKLISTS, METAGAME or STATE. A frame
         // for another viewer, or one that does not decode, is an error.
         void feed(const std::string &payload);
 
         // The decoded entry points feed() uses; unit tests drive the model through them directly.
         void begin_match(int viewer, const Codes &codes, const Decklists &lists);
+        void begin_metagame(const Metagame &metagame);
         void apply_frame(const Snapshot &snap);
 
         // The k_* tables for the current state (k_meta only at level off).
@@ -104,6 +115,12 @@ class Knowledge {
         const Solution &solution(int p) const { return solved_[p]; }
         // For tests: compaction on (the default) or off. Not part of the serialised state.
         void set_compaction(bool on) { compaction_ = on; }
+        const Decklists &decklists() const { return lists_; }
+        const Metagame &metagame() const { return metagame_; }
+        // For tools and tests: the opponent's template network (its network after the last event
+        // that pinned a card or added a root) while the reference lists are checked against it.
+        bool template_network_active() const { return tpl_active_; }
+        const Network &template_network() const { return tpl_net_; }
 
     private:
         // ── frame flow ──
@@ -115,6 +132,19 @@ class Knowledge {
         void solve();
         void update_seen();
         void check(const Snapshot &snap);
+
+        // ── archetype inference (templates.h) ──
+        bool templates_by_network() const;
+        size_t opponent_pins() const;
+        size_t opponent_roots() const;
+        void save_template_network();
+        void check_template(size_t l);
+        void solve_templates();
+        void close_templates();
+        bool seen_allows(size_t l) const;
+        void list_state(int p, size_t l, const std::vector<std::pair<int, int>> &main,
+            const std::vector<std::pair<int, int>> &side, KTemplateRow *row) const;
+        void template_rows(KRows &out) const;
         void error(const std::string &what);
 
         // ── update rules (knowledge_store §5), one per event kind ──
@@ -131,8 +161,8 @@ class Knowledge {
 
         // ── shared steps ──
         void build_roots(int p, uint16_t library, uint16_t sideboard);
-        std::vector<NodeId> add_root_parts(
-            int p, RootKind kind, const std::vector<std::pair<int, int>> &counts, const std::vector<uint16_t> &sizes);
+        std::vector<NodeId> add_root_parts(int p, RootKind kind, RootPart part,
+            const std::vector<std::pair<int, int>> &counts, const std::vector<uint16_t> &sizes);
         NodeId take_unit(int p, Zn zone, const EventCard &c, const Event &ev);
         void put_unit(int p, Zn zone, NodeId n, const EventCard &c, const Event &ev);
         NodeId take_library_at(int p, const LibPos &from);
@@ -176,8 +206,12 @@ class Knowledge {
         Codes codes_;
         std::map<int, std::string> names_;
         Decklists lists_;
+        Metagame metagame_;
         // match memory
         std::map<int, uint8_t> seen_match_[2];
+        // Per reference list: proven inconsistent with the opponent in a finished game, and not
+        // proven consistent in one (its check ran out of budget).
+        std::vector<uint8_t> list_excluded_, list_unproven_;
         // game state
         uint32_t last_seq_ = 0;
         bool game_active_ = false;
@@ -203,6 +237,12 @@ class Knowledge {
         uint64_t solve_steps_ = 0;
         Solver solver_;
         bool compaction_ = true;
+        // The template network and, per reference list, whether it was checked against it and the
+        // answer (consistent, proven).
+        bool tpl_active_ = false;
+        bool tpl_dirty_ = false;
+        Network tpl_net_;
+        std::vector<uint8_t> tpl_done_, tpl_consistent_, tpl_exact_;
         // frame context
         uint8_t frame_game_ = 0;
         uint32_t frame_decision_ = 0;

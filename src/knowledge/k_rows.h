@@ -12,7 +12,7 @@
 // ── The knowledge tables as rows (docs/knowledge_store.md §6, state_format Appendix A.6) ──────
 //
 // Knowledge::rows() builds these from the model; write_k_tables appends them to a frame being
-// built (tables k_meta … k_known_hand, ids 90-95). Seats are player indices (0 = A, 1 = B), written
+// built (tables k_meta … k_archetype, ids 90-97). Seats are player indices (0 = A, 1 = B), written
 // as the seat pair (absolute and relative to the viewer); cards are vocab ids or NO_CARD.
 
 namespace knowledge {
@@ -57,6 +57,23 @@ struct KKnownHandRow {
         uint8_t copies = 0;
 };
 
+// One reference list (a METAGAME meta_list row) for one player.
+struct KTemplateRow {
+        int player = NO_SEAT;
+        uint16_t list = 0;
+        bool consistent = false;
+        bool exact = false;       // `consistent` is proven
+        bool registered = false;  // the list is the classification of the player's registered list
+};
+
+// One archetype label (a METAGAME meta_archetype row) for one player.
+struct KArchetypeRow {
+        int player = NO_SEAT;
+        uint8_t archetype = 0;
+        bool possible = false;  // some consistent list has this label
+        bool exact = false;     // possible, and every consistent list has it
+};
+
 struct KRows {
         KMetaRow meta;  // always one row
         std::vector<KSeenRow> seen;
@@ -64,6 +81,8 @@ struct KRows {
         std::vector<KPoolCardRow> pool_cards;
         std::vector<KPositionRow> positions;
         std::vector<KKnownHandRow> known_hand;
+        std::vector<KTemplateRow> templates;
+        std::vector<KArchetypeRow> archetypes;
 };
 
 // Appends `rows` to `w` for viewer seat `viewer`, with `codes` giving the seat enum values.

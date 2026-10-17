@@ -57,7 +57,9 @@ struct FlowArc {
 // The search of one component (solver.h, steps 3-4).
 class Search {
     public:
-        Search(const Problem &p, uint64_t budget);
+        // `any_world`: with no answers to settle, still search for one leaf with worlds (a
+        // feasibility check), which `infeasible` then reports.
+        Search(const Problem &p, uint64_t budget, bool any_world = false);
         void run();
 
         bool finished = false;
@@ -97,6 +99,7 @@ class Search {
         const Problem &p_;
         size_t K_, nv_, ng_;
         uint64_t budget_;
+        bool any_world_;
         bool aborted_ = false;
         bool any_leaf_ = false;
         int64_t target_ = -1;  // the answer (group × class) being searched for, -1 none
@@ -120,6 +123,10 @@ class Search {
 static void class_vec(const BoundStore &store, const CardCounts &c, std::vector<int> *out);
 static System build_system(const Network &net, const BoundStore &store, const std::vector<NodeId> &origin,
     const std::vector<std::vector<NodeId>> &groups);
+static void components(const System &sys, std::vector<std::vector<uint32_t>> *comps, std::vector<int> *comp_of,
+    std::vector<std::vector<uint32_t>> *comp_rows);
+static Problem component_problem(
+    const System &sys, const std::vector<uint32_t> &vars, const std::vector<uint32_t> &rows, std::vector<int> &local);
 static std::string problem_key(const Problem &p);
 static uint32_t find_root(std::vector<uint32_t> &parent, uint32_t x);
 static bool min_cost_flow(
@@ -432,8 +439,8 @@ static std::string problem_key(const Problem &p) {
 
 // ── Search ────────────────────────────────────────────────────────────────────────────────────
 
-Search::Search(const Problem &p, uint64_t budget)
-    : p_(p), K_(p.K), nv_(p.size.size()), ng_(p.groups.size()), budget_(budget) {
+Search::Search(const Problem &p, uint64_t budget, bool any_world)
+    : p_(p), K_(p.K), nv_(p.size.size()), ng_(p.groups.size()), budget_(budget), any_world_(any_world) {
     cell_cons_.resize((nv_ + ng_) * K_);
     var_rows_.resize(nv_);
     in_group_.assign(nv_, 0);
@@ -856,7 +863,7 @@ void Search::run() {
         for (size_t k = 0; k < K_; ++k) root.hi[gcell(g, k)] = static_cast<int16_t>(gsize_[g]);
     bool ok = propagate(root, -1);
     const bool has_answers = ng_ > 0 && K_ > 1;
-    if (ok && has_answers) {
+    if (ok && (has_answers || any_world_)) {
         for (uint32_t g = 0; g < ng_; ++g)
             for (size_t k = 0; k < K_; ++k) {
                 proven_lo_[g * K_ + k] = root.lo[gcell(g, k)];
@@ -917,6 +924,58 @@ void Search::run() {
 
 // ── Solver ────────────────────────────────────────────────────────────────────────────────────
 
+// Step 2: the components of `sys` (variables joined by a row), each variable's component, and each
+// component's rows.
+static void components(const System &sys, std::vector<std::vector<uint32_t>> *comps, std::vector<int> *comp_of,
+    std::vector<std::vector<uint32_t>> *comp_rows) {
+    const size_t nv = sys.size.size();
+    std::vector<uint32_t> parent(nv);
+    std::iota(parent.begin(), parent.end(), 0u);
+    for (const Row &r : sys.rows)
+        for (size_t i = 1; i < r.vars.size(); ++i) {
+            const uint32_t a = find_root(parent, r.vars[0]), b = find_root(parent, r.vars[i]);
+            if (a != b) parent[std::max(a, b)] = std::min(a, b);
+        }
+    comps->clear();
+    comp_of->assign(nv, -1);
+    for (uint32_t v = 0; v < nv; ++v) {
+        const uint32_t r = find_root(parent, v);
+        if ((*comp_of)[r] < 0) {
+            (*comp_of)[r] = static_cast<int>(comps->size());
+            comps->emplace_back();
+        }
+        (*comp_of)[v] = (*comp_of)[r];
+        (*comps)[static_cast<size_t>((*comp_of)[v])].push_back(v);
+    }
+    comp_rows->assign(comps->size(), {});
+    for (uint32_t r = 0; r < sys.rows.size(); ++r)
+        (*comp_rows)[static_cast<size_t>((*comp_of)[sys.rows[r].vars[0]])].push_back(r);
+}
+
+// One component of `sys` as a Problem in local indices (`local` receives each of its variables'
+// local index), without groups.
+static Problem component_problem(
+    const System &sys, const std::vector<uint32_t> &vars, const std::vector<uint32_t> &rows, std::vector<int> &local) {
+    const size_t K = sys.K;
+    Problem p;
+    p.K = K;
+    for (size_t i = 0; i < vars.size(); ++i) {
+        const uint32_t v = vars[i];
+        local[v] = static_cast<int>(i);
+        p.size.push_back(sys.size[v]);
+        for (size_t k = 0; k < K; ++k) {
+            p.lo.push_back(sys.lo[v * K + k]);
+            p.hi.push_back(sys.hi[v * K + k]);
+        }
+    }
+    for (uint32_t r : rows) {
+        Row row = sys.rows[r];
+        for (uint32_t &v : row.vars) v = static_cast<uint32_t>(local[v]);
+        p.rows.push_back(row);
+    }
+    return p;
+}
+
 // Memo entries kept before the memo is cleared (an unchanged component reuses its entry).
 static constexpr size_t MEMO_LIMIT = 512;
 
@@ -952,48 +1011,15 @@ Solution Solver::solve(const Network &net, const BoundStore &store, const std::v
     bool exact = !sys.contradiction;
 
     // Step 2: components.
-    std::vector<uint32_t> parent(nv);
-    std::iota(parent.begin(), parent.end(), 0u);
-    for (const Row &r : sys.rows)
-        for (size_t i = 1; i < r.vars.size(); ++i) {
-            const uint32_t a = find_root(parent, r.vars[0]), b = find_root(parent, r.vars[i]);
-            if (a != b) parent[std::max(a, b)] = std::min(a, b);
-        }
-    std::vector<int> comp_of(nv, -1);
-    std::vector<std::vector<uint32_t>> comps;
-    for (uint32_t v = 0; v < nv; ++v) {
-        const uint32_t r = find_root(parent, v);
-        if (comp_of[r] < 0) {
-            comp_of[r] = static_cast<int>(comps.size());
-            comps.emplace_back();
-        }
-        comp_of[v] = comp_of[r];
-        comps[static_cast<size_t>(comp_of[v])].push_back(v);
-    }
-    std::vector<std::vector<uint32_t>> comp_rows(comps.size());
-    for (uint32_t r = 0; r < sys.rows.size(); ++r)
-        comp_rows[static_cast<size_t>(comp_of[sys.rows[r].vars[0]])].push_back(r);
+    std::vector<std::vector<uint32_t>> comps, comp_rows;
+    std::vector<int> comp_of;
+    components(sys, &comps, &comp_of, &comp_rows);
 
     uint64_t used = 0;
     std::vector<int> local(nv, -1);
     for (size_t c = 0; c < comps.size(); ++c) {
         // Its Problem, in local indices, and the groups that meet it.
-        Problem p;
-        p.K = K;
-        for (size_t i = 0; i < comps[c].size(); ++i) {
-            const uint32_t v = comps[c][i];
-            local[v] = static_cast<int>(i);
-            p.size.push_back(sys.size[v]);
-            for (size_t k = 0; k < K; ++k) {
-                p.lo.push_back(sys.lo[v * K + k]);
-                p.hi.push_back(sys.hi[v * K + k]);
-            }
-        }
-        for (uint32_t r : comp_rows[c]) {
-            Row row = sys.rows[r];
-            for (uint32_t &v : row.vars) v = static_cast<uint32_t>(local[v]);
-            p.rows.push_back(row);
-        }
+        Problem p = component_problem(sys, comps[c], comp_rows[c], local);
         std::vector<size_t> group_ids;
         for (size_t g = 0; g < groups.size(); ++g) {
             std::vector<uint32_t> members;
@@ -1048,6 +1074,63 @@ Solution Solver::solve(const Network &net, const BoundStore &store, const std::v
         }
         out.groups.push_back(gb);
     }
+    return out;
+}
+
+Feasibility Solver::feasible(const Network &net, const BoundStore &store, uint64_t budget) const {
+    Feasibility out;
+    if (!store.contradiction().empty()) {
+        out.feasible = false;
+        out.exact = true;
+        return out;
+    }
+    // No group: compaction keeps no node (exact for whether a world exists). A node it keeps
+    // unchanged keeps its store bounds.
+    std::vector<NodeId> remap;
+    const Network work = compact_network(net, std::vector<uint8_t>(net.node_count(), 0), &remap);
+    std::vector<NodeId> origin(work.node_count(), NO_NODE);
+    for (size_t i = 0; i < remap.size(); ++i)
+        if (remap[i] != NO_NODE && work.node(remap[i]).size == net.node(static_cast<NodeId>(i)).size)
+            origin[remap[i]] = static_cast<NodeId>(i);
+    const System sys = build_system(work, store, origin, {});
+    if (sys.contradiction) {
+        out.feasible = false;
+        out.exact = true;
+        return out;
+    }
+    std::vector<std::vector<uint32_t>> comps, comp_rows;
+    std::vector<int> comp_of;
+    components(sys, &comps, &comp_of, &comp_rows);
+    std::vector<int> local(sys.size.size(), -1);
+    bool finished = true;
+    for (size_t c = 0; c < comps.size(); ++c) {
+        const Problem p = component_problem(sys, comps[c], comp_rows[c], local);
+        const uint64_t left = budget > out.steps ? budget - out.steps : 0;
+        const std::string key = problem_key(p);
+        auto it = feasible_memo_.find(key);
+        const bool reuse =
+            it != feasible_memo_.end() && (it->second.finished ? it->second.steps <= left : it->second.budget == left);
+        if (!reuse) {
+            Search search(p, left, true);
+            search.run();
+            Memo m;
+            m.finished = search.finished;
+            m.infeasible = search.infeasible;
+            m.steps = search.steps;
+            m.budget = left;
+            if (feasible_memo_.size() >= MEMO_LIMIT) feasible_memo_.clear();
+            it = feasible_memo_.insert_or_assign(key, m).first;
+        }
+        const Memo &m = it->second;
+        out.steps += std::min<uint64_t>(m.steps, left);
+        if (m.infeasible) {
+            out.feasible = false;
+            out.exact = true;
+            return out;
+        }
+        finished = finished && m.finished;
+    }
+    out.exact = finished;
     return out;
 }
 

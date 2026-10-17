@@ -83,8 +83,7 @@ static void write_record(const std::string &payload) {
 }
 
 static void write_match_frames(Zone::Ownership viewer) {
-    for (const std::string &payload :
-        {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer)}) {
+    for (const std::string &payload : encode_match_frames(viewer)) {
         knowledge_feed_match_frame(ObsConsumer::DUMP, viewer, payload);
         write_record(payload);
     }

@@ -9,7 +9,7 @@
 // the most nodes and junctions either player's network held, the largest and mean serialised state
 // (Knowledge::serialize) and the percentiles and histogram of k_meta's solver steps.
 // Reads RMSTATE records (an --rmstate-dump file, or a --machine-format rmstate stream), keeps the
-// chosen seat's frames (SCHEMA, CARDS, DECKLISTS, STATE) and runs the knowledge sidecar on them at
+// chosen seat's frames (SCHEMA, CARDS, DECKLISTS, METAGAME, STATE) and runs the knowledge sidecar on them at
 // --level (default expert). With several viewers in the stream --viewer picks one (default: the
 // stream's first frame's seat). A STATE frame's own k_* tables (the engine's, tables 90 and up)
 // are split off before it is fed, so the sidecar sees each frame exactly as the engine's instance
@@ -23,8 +23,9 @@
 // an `ERROR: knowledge…` line on stderr. --truth also checks every reported fact against the
 // omniscient viewer's frames of the same stream (a --rmstate-dump holds them): the true world must
 // satisfy each fact knowledge/truth.h lists (pool sizes, k_pool_card ranges, k_position cards and
-// candidates, k_known_hand counts, k_seen counts; face-down pools are not checked: the omniscient
-// frames' handles are not the seat's); a violation is an `ERROR: rmknow truth…` line. The last
+// candidates, k_known_hand counts, k_seen counts, the reference lists equal to a registered list and
+// their archetypes, from the omniscient DECKLISTS frame; face-down pools are not checked: the
+// omniscient frames' handles are not the seat's); a violation is an `ERROR: rmknow truth…` line. The last
 // stderr line is the summary
 //   RMKNOW: viewer=<A|B> frames=<n> errors=<n>[ truth_frames=<n> truth_facts=<n> truth_errors=<n>]
 // --isolation (implies --quiet unless --text) compares, for every STATE frame of the seat, the k_*
@@ -275,6 +276,8 @@ int main(int argc, char **argv) {
     rmstate::Schema omni_schema;
     bool have_omni_schema = false;
     knowledge::Codes omni_codes;
+    knowledge::Decklists omni_lists;  // both registered lists, from the omniscient DECKLISTS frame
+    bool have_omni_lists = false;
     size_t frames = 0, errors = 0, truth_frames = 0, truth_facts = 0, truth_errors = 0, isolation_errors = 0;
     knowledge::KRows last_rows;
     knowledge::Snapshot last_snap;
@@ -298,6 +301,13 @@ int main(int argc, char **argv) {
                                    knowledge::read_codes(omni_schema, &omni_codes, &err);
                 continue;
             }
+            if (kind == rmstate::FrameKind::DECKLISTS && have_omni_schema) {
+                rmstate::DecodedFrame frame;
+                std::string err;
+                have_omni_lists = rmstate::decode_frame(payload, omni_schema, &frame).ok() &&
+                                  knowledge::read_decklists(frame, omni_codes, &omni_lists, &err);
+                continue;
+            }
             if (kind != rmstate::FrameKind::STATE || !have_omni_schema || !have_last) continue;
             rmstate::DecodedFrame frame;
             knowledge::Snapshot omni;
@@ -315,6 +325,10 @@ int main(int argc, char **argv) {
             if (!knowledge::truth_from_snapshot(omni, &truth)) {
                 truth_error("the omniscient frame's library positions are not 0..n-1", omni, &truth_errors);
                 continue;
+            }
+            if (have_omni_lists) {
+                const bool visible[2] = {know.decklists().present[0], know.decklists().present[1]};
+                knowledge::set_truth_lists(know.metagame(), omni_lists, visible, &truth);
             }
             ++truth_frames;
             truth_errors += check_frame_truth(know, last_rows, truth, omni, &truth_facts);

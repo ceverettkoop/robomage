@@ -26,6 +26,10 @@ class TableReader {
             if (!table_ || col < 0) return 0;
             return table_->rows[row][static_cast<size_t>(col)].bits;
         }
+        std::string text(size_t row, int col) const {
+            if (!table_ || col < 0) return std::string();
+            return table_->rows[row][static_cast<size_t>(col)].text;
+        }
         const std::string &missing() const { return missing_; }
 
     private:
@@ -304,11 +308,13 @@ bool read_decklists(const rmstate::DecodedFrame &frame, const Codes &codes, Deck
     using rmstate::TableId;
     *out = Decklists{};
     TableReader d(frame, TableId::DECKLIST);
-    const int d_player = d.col("player");
+    const int d_player = d.col("player"), d_name = d.col("name");
     if (missing_columns(d, "decklist", err)) return false;
     for (size_t r = 0; r < d.rows(); ++r) {
         const int seat = seat_value(codes, d.u(r, d_player));
-        if (seat != NO_SEAT) out->present[seat] = true;
+        if (seat == NO_SEAT) continue;
+        out->present[seat] = true;
+        out->name[seat] = d.text(r, d_name);
     }
     TableReader c(frame, TableId::DECKLIST_CARD);
     const int c_player = c.col("player"), c_card = c.col("card"), c_main = c.col("main"), c_side = c.col("side");
@@ -320,6 +326,49 @@ bool read_decklists(const rmstate::DecodedFrame &frame, const Codes &codes, Deck
         e.main = static_cast<int>(c.u(r, c_main));
         e.side = static_cast<int>(c.u(r, c_side));
         out->cards.push_back(e);
+    }
+    return true;
+}
+
+bool read_metagame(const rmstate::DecodedFrame &frame, Metagame *out, std::string *err) {
+    using rmstate::TableId;
+    *out = Metagame{};
+    out->present = true;
+    TableReader a(frame, TableId::META_ARCHETYPE);
+    const int a_name = a.col("name");
+    if (missing_columns(a, "meta_archetype", err)) return false;
+    for (size_t r = 0; r < a.rows(); ++r) out->archetypes.push_back(a.text(r, a_name));
+    TableReader l(frame, TableId::META_LIST);
+    const int l_name = l.col("name"), l_arch = l.col("archetype");
+    if (missing_columns(l, "meta_list", err)) return false;
+    for (size_t r = 0; r < l.rows(); ++r) {
+        MetaList list;
+        list.name = l.text(r, l_name);
+        list.archetype = static_cast<int>(l.u(r, l_arch));
+        if (list.archetype >= static_cast<int>(out->archetypes.size())) {
+            *err = "meta_list row " + std::to_string(r) + " names no meta_archetype row";
+            return false;
+        }
+        out->lists.push_back(list);
+    }
+    TableReader c(frame, TableId::META_LIST_CARD);
+    const int c_list = c.col("list"), c_card = c.col("card"), c_main = c.col("main"), c_side = c.col("side");
+    if (missing_columns(c, "meta_list_card", err)) return false;
+    for (size_t r = 0; r < c.rows(); ++r) {
+        const uint64_t list = c.u(r, c_list);
+        const int card = card_value(c.u(r, c_card), 2);
+        if (list >= out->lists.size() || card == NO_CARD) {
+            *err = "meta_list_card row " + std::to_string(r) + " names no list or card";
+            return false;
+        }
+        MetaList &m = out->lists[list];
+        const int main = static_cast<int>(c.u(r, c_main)), side = static_cast<int>(c.u(r, c_side));
+        if (main > 0) m.main.emplace_back(card, main);
+        if (side > 0) m.side.emplace_back(card, side);
+    }
+    for (MetaList &m : out->lists) {
+        std::sort(m.main.begin(), m.main.end());
+        std::sort(m.side.begin(), m.side.end());
     }
     return true;
 }

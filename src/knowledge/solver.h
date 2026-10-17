@@ -75,12 +75,25 @@ struct Solution {
         uint64_t steps = 0;
 };
 
+// Whether a network has a world: `exact` when proven (a world found in every component, or a
+// component proven to have none); a search past its budget reports `feasible` (sound).
+struct Feasibility {
+        bool feasible = true;
+        bool exact = false;
+        uint64_t steps = 0;
+};
+
 class Solver {
     public:
         // The bounds of each of `groups` (live nodes of `net`) over the worlds of `net` (roots
         // constraining), seeded with `store`'s bounds, within `budget` steps.
         Solution solve(const Network &net, const BoundStore &store, const std::vector<std::vector<NodeId>> &groups,
             uint64_t budget) const;
+        // Whether `net` (roots constraining) has a world over the classes of `store`'s universe,
+        // within `budget` steps: the same system as solve() with no group, seeded with `store`'s
+        // bounds (a contradiction there is no world), each component searched for any leaf with
+        // worlds. Memoised per component like solve(), in a memo of its own.
+        Feasibility feasible(const Network &net, const BoundStore &store, uint64_t budget) const;
 
     private:
         struct Memo {
@@ -92,6 +105,7 @@ class Solver {
                 std::vector<uint8_t> settled;
         };
         mutable std::map<std::string, Memo> memo_;
+        mutable std::map<std::string, Memo> feasible_memo_;
 };
 
 }  // namespace knowledge

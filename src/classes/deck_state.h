@@ -1,6 +1,7 @@
 #ifndef DECK_STATE_H
 #define DECK_STATE_H
 
+#include <string>
 #include <vector>
 
 #include "../components/zone.h"
@@ -34,6 +35,10 @@ struct DecklistEntry {
     int vocab_idx;  // card vocab index (>= 0)
     int count;      // copies of that card in the block
 };
+
+// The vocab index of a DECK-FILE card name (punctuation-free deck spelling allowed, matched
+// through name_to_uid as card_db resolves it), or -1 for a name with no vocab entry.
+int deck_card_vocab(const std::string &name);
 
 // Set the REGISTERED (frozen, opponent-visible) list for `owner`. Call ONCE per
 // match, before game 1 — calling it again mid-match would leak the post-board

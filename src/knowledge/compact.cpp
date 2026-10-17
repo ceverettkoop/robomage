@@ -256,7 +256,12 @@ Network compact_network(const Network &net, const std::vector<uint8_t> &keep, st
         (*remap)[n] = id;
         if (x.root_kind == NO_ROOT) continue;
         const RootKind kind = static_cast<RootKind>(x.root_kind);
-        out.add_root_record(id, kind, x.root >= 0 ? net.roots()[static_cast<size_t>(x.root)].counts : CardCounts{});
+        if (x.root < 0) {
+            out.add_root_record(id, kind, CardCounts{});
+            continue;
+        }
+        const Root &old_root = net.roots()[static_cast<size_t>(x.root)];
+        out.add_root_record(id, kind, old_root.counts, old_root.part);
     }
     for (const WJunction &J : w.js) {
         if (!J.alive) continue;
