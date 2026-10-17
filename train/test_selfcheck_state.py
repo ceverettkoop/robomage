@@ -9,9 +9,10 @@ self-check failure is an ``ERROR:`` line on the engine's stderr, and each engine
   1. corpus     the replay corpus (``train/regression/replay_diff.py check``) with the self-checks
                 on, ``--selfcheck-knowledge`` included (the knowledge sidecar against the truth; the
                 ``knowledge`` tier, ``train/test_knowledge.py``, shares these runs): still
-                byte-identical (the self-checks change no transcript), no ``ERROR:`` line, and one
+                byte-identical (the self-checks change no transcript), no ``ERROR:`` line, one
                 ``errors=0`` ``SELFCHECK-STATE`` and one ``SELFCHECK-KNOWLEDGE`` summary per corpus
-                game;
+                game, and every ``SHADOW:`` line of the shadow comparison classified by
+                ``train/regression/knowledge_divergences.json`` (``test_knowledge.shadow_log_failures``);
   2. fuzz       explore-vs-explore games (``runner.run_match``) over league pairs chosen for the
                 state format's hard cases: face-down exile (reanimator), name-a-card menus
                 (wrb_energy's Cabal Therapy, bw_dnt's and wrb_energy's Disruptor Flute), bo1 and
@@ -163,9 +164,13 @@ def check_corpus(out_dir):
         fails.append(f"corpus: the replay corpus drifts with {' '.join(SELFCHECK_CORPUS)} on (exit {r.returncode}; "
                      f"see {out_path})")
     fails += scan_engine_log(err_path, "corpus", summaries=len(replay_diff.SCENARIOS), kinds=("STATE", "KNOWLEDGE"))
+    # The knowledge self-check's shadow comparison: every SHADOW line classified (the knowledge tier's
+    # classifier; imported here, as that module imports this one).
+    import test_knowledge
+    fails += test_knowledge.shadow_log_failures(err_path, "corpus", summaries=len(replay_diff.SCENARIOS))
     if not fails:
         print(f"  OK   corpus: {len(replay_diff.SCENARIOS)} games byte-identical, self-checks clean "
-              f"(state and knowledge)", flush=True)
+              f"(state and knowledge, shadow mismatches classified)", flush=True)
     return fails
 
 

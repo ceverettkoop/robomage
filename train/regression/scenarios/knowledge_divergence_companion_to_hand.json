@@ -1,0 +1,38 @@
+{
+  "name": "knowledge_divergence_companion_to_hand",
+  "why": "shadow divergence public_entry_untracked: B's companion Yorion, Sky Nomad is revealed from outside the game and put into B's hand by the companion special action, a move both players see (CR 702.139a, 116.2g); expert knows Yorion is in B's hand (k_known_hand), while the old vector marks a card entering a hand as known only from a public zone (Orderer::add_to_zone), not from the sideboard (step 1 T12 shadow comparison)",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "deck_b": "league/bw_dnt",
+  "battlefield_b": [
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:desc:Companion: pay"
+  ],
+  "max_decisions": 6,
+  "expect_dump_final": [
+    "^A d=\\d+ \\S+ \\S+ known_hand Yorion, Sky Nomad x1$"
+  ]
+}

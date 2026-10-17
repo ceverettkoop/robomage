@@ -55,6 +55,7 @@ extern Game cur_game;
 static int token_vocab_idx(Entity e);
 static int last_known_vocab_idx(Entity e);
 static int get_card_vocab_idx(Entity e);
+static bool opp_known_hand_card(Entity e, Zone::Ownership viewer);
 static int slot_ref_of(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
@@ -747,6 +748,20 @@ static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry
 
 // ── populate_gamestate ────────────────────────────────────────────────────────
 
+// Whether `e` is a card in the hand of `viewer`'s opponent whose identity the viewer has had
+// revealed (Zone::identity_known).
+static bool opp_known_hand_card(Entity e, Zone::Ownership viewer) {
+    const Zone &zone = global_coordinator.GetComponent<Zone>(e);
+    return zone.location == Zone::HAND && zone.owner != viewer && zone.identity_known;
+}
+
+std::vector<int> opp_known_hand_cards(Zone::Ownership viewer) {
+    std::vector<int> out;
+    for (Entity e : zoned_entities())
+        if (opp_known_hand_card(e, viewer)) out.push_back(get_card_vocab_idx(e));
+    return out;
+}
+
 void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     memset(gs, 0, sizeof(*gs));
 
@@ -976,7 +991,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                     gs->opponent.hand_ct++;
                     // Opponent-hand cards the viewer has had revealed are carried by
                     // their specific identity (not just the match-scoped multi-hot).
-                    if (zone.identity_known && opp_known_hand_idx < MAX_HAND_SLOTS)
+                    if (opp_known_hand_card(e, viewer) && opp_known_hand_idx < MAX_HAND_SLOTS)
                         gs->opp_known_hand[opp_known_hand_idx++] = get_card_vocab_idx(e);
                 }
                 break;

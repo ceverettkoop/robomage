@@ -1,0 +1,70 @@
+{
+  "name": "knowledge_divergence_put_back_leak",
+  "why": "docs/knowledge_store.md \u00a77 (the known Brainstorm put-back leak), shadow divergence put_back_leak: B's Cabal Therapy shows A's hand with Force of Will; A's Brainstorm keeps Force of Will and puts back Daze and Lightning Bolt, which B does not see. The old vector's opp_known_hand (Zone::identity_known, per physical card) still lists Force of Will, which tells B which cards went back; expert says Force of Will is in A's hand or in the top two (CR 401.2, 402.3; step 1 T12 shadow comparison)",
+  "hand_a": [
+    "Brainstorm",
+    "Force of Will",
+    "Daze",
+    "Lightning Bolt",
+    "Ponder",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Cabal Therapy",
+    "Thoughtseize",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Swamp",
+    "Swamp"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Cabal Therapy",
+    "B:target:Player A",
+    "B:choice:Ponder",
+    "A:cast:Brainstorm",
+    "A:pass",
+    "A:desc:Daze",
+    "A:desc:Lightning Bolt"
+  ],
+  "max_decisions": 21,
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=6: Daze 0-1, Force of Will 0-1, Island 3-5, Lightning Bolt 0-1$",
+    "^B d=\\d+ \\S+ \\S+ pool opp library top0\\+2 size=2: Daze 0-1, Force of Will 0-1, Island 0-2, Lightning Bolt 0-1$",
+    "^B d=\\d+ \\S+ \\S+ known_hand Island x3$"
+  ],
+  "expect_dump_final_not": [
+    "^B .* known_hand (Force of Will|Daze|Lightning Bolt) "
+  ]
+}

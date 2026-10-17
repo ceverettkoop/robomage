@@ -1,0 +1,69 @@
+{
+  "name": "knowledge_divergence_copy_leak",
+  "why": "shadow divergence copy_leak (docs/knowledge_store.md \u00a75 zone_move from a hand: copies are interchangeable): B's Cabal Therapy shows A's hand with one Lightning Bolt; A draws a second Bolt B does not see and casts one Bolt. B cannot tell which copy was cast, so expert no longer knows a Bolt is in A's hand (0-1); the old vector tracks the known card per physical copy (Zone::identity_known), so it still lists a Bolt in A's hand when the other copy was cast, which tells B the drawn card was a Bolt (CR 400.7, 401.2; step 1 T12 shadow comparison)",
+  "hand_a": [
+    "Lightning Bolt",
+    "Ponder",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Cabal Therapy",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Swamp"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Cabal Therapy",
+    "B:target:Player A",
+    "B:choice:Ponder",
+    "A:play:Island",
+    "A:#2",
+    "A:target:Player B"
+  ],
+  "max_decisions": 29,
+  "expect_dump": [
+    "^B d=\\d+ \\S+ \\S+ known_hand Lightning Bolt x1$"
+  ],
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=5: Island 4-5, Lightning Bolt 0-1$"
+  ],
+  "expect_dump_final_not": [
+    "^B .* known_hand Lightning Bolt "
+  ]
+}
