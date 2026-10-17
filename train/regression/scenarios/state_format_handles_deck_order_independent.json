@@ -1,6 +1,6 @@
 {
   "name": "state_format_handles_deck_order_independent",
-  "why": "docs/state_format.md §6: handles are issued in an order each viewer can derive (zone, seat, position, visible name, timestamp, seen arrival), never entity order; entity ids follow the decklist, so the same position built from decklists in another order (hands and presets listed differently) must give every viewer the identical handle tables and handle events (step 1 T2 handles, --trace-handles)",
+  "why": "docs/state_format.md §6: handles are issued in an order each viewer can derive (zone, seat, position, visible name, timestamp, seen arrival; with an event consumer on, event order), never entity order; entity ids follow the decklist, so the same game built from a decklist in another order must give the viewer that cannot see the reordered cards the identical handle table and handle trace: the opponent's hand listed differently for A, A's for B. Holds with and without an event consumer (step 1 T2 handles, T8, --trace-handles)",
   "engine_flags": ["--trace-handles"],
   "hand_a": ["Swamp", "Thoughtseize", "Island", "Duress"],
   "battlefield_a": ["Swamp", "Island"],
@@ -8,15 +8,19 @@
   "hand_b": ["Lightning Bolt", "Grizzly Bears", "Mountain", "Force of Will", "Lightning Bolt"],
   "battlefield_b": ["Mountain", "Grizzly Bears"],
   "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
-  "play": ["A:keep", "B:keep", "A:play:Swamp", "A:cast:Thoughtseize", "A:target:Player B",
-           "A:choice:Lightning Bolt", "A:cast:Duress", "A:target:Player B", "A:choice:Lightning Bolt"],
+  "play": ["A:keep", "B:keep", "A:play:Swamp", "A:cast:Thoughtseize", "A:target:Player B", "A:choice:Lightning Bolt",
+           "A:cast:Duress", "A:target:Player B", "A:choice:Lightning Bolt"],
   "max_decisions": 16,
   "variants": [
-    {"hand_a": ["Duress", "Island", "Thoughtseize", "Swamp"],
-     "battlefield_a": ["Island", "Swamp"],
-     "hand_b": ["Force of Will", "Lightning Bolt", "Mountain", "Lightning Bolt", "Grizzly Bears"],
-     "battlefield_b": ["Grizzly Bears", "Mountain"]}
+    {
+      "hand_b": ["Force of Will", "Lightning Bolt", "Mountain", "Lightning Bolt", "Grizzly Bears"],
+      "expect_same": ["^HANDLES: A ", "^HANDLE: \\w+ A "]
+    },
+    {
+      "hand_a": ["Duress", "Island", "Thoughtseize", "Swamp"],
+      "expect_same": ["^HANDLES: B ", "^HANDLE: \\w+ B "]
+    }
   ],
-  "expect_same": ["^HANDLES: ", "^HANDLE: "],
-  "expect": ["^HANDLES: A .*\\[h\\d+ hand:B Force of Will\\]", "^HANDLE: link A h\\d+ -> h\\d+ graveyard:B Lightning Bolt$"]
+  "expect": ["^HANDLES: A .*\\[h\\d+ hand:B Force of Will\\]",
+             "^HANDLE: link A h\\d+ -> h\\d+ graveyard:B Lightning Bolt$"]
 }

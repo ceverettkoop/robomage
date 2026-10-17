@@ -22,7 +22,8 @@ Scenario keys beyond the harness's own:
   expect_unique  regexes with capture groups: over all matching narrative lines, the matched
                  groups (joined) must be distinct (e.g. no handle issued twice)
   variants       a list of {harness key: value} overrides: the scenario is also run once per
-                 variant (e.g. the same position built from a different deck order)
+                 variant (e.g. the same position built from a different deck order); a variant
+                 may carry its own expect_same, which replaces the scenario's for that variant
   expect_same    regexes: the narrative lines matching any of them must be identical, in
                  order, between the scenario's run and each variant's run (needs variants)
   player_a / player_b  the seats' agents once the script runs out (default auto)
@@ -222,25 +223,29 @@ def load_scenario(path):
     for rx in scn.get("expect_unique", []):
         if re.compile(rx).groups < 1:
             raise ValueError(f"expect_unique /{rx}/ needs a capture group")
-    if bool(scn.get("variants")) != bool(scn.get("expect_same")):
-        raise ValueError("variants and expect_same go together")
+    if scn.get("expect_same") and not scn.get("variants"):
+        raise ValueError("expect_same needs variants")
     for variant in scn.get("variants", []):
-        bad = set(variant) - (_HARNESS_KEYS - {"name"})
+        bad = set(variant) - (_HARNESS_KEYS - {"name"}) - {"expect_same"}
         if bad:
             raise ValueError(f"variant overrides non-harness key(s) {sorted(bad)}")
+        if not variant.get("expect_same", scn.get("expect_same")):
+            raise ValueError("a variant needs an expect_same (its own or the scenario's)")
+        for rx in variant.get("expect_same", []):
+            re.compile(rx)
     return scn
 
 
-def same_lines(scn, text):
-    """The narrative lines of one run that expect_same compares."""
-    rxs = [re.compile(rx) for rx in scn.get("expect_same", [])]
+def same_lines(patterns, text):
+    """The narrative lines of one run that match any of the expect_same `patterns`."""
+    rxs = [re.compile(rx) for rx in patterns]
     return [ln for ln in split_output(text)[0] if any(rx.search(ln) for rx in rxs)]
 
 
 def run_variant(scn, variant, binary=None):
     """The harness output of `scn` with `variant`'s overrides applied."""
     merged = {k: v for k, v in scn.items() if k != "variants"}
-    merged.update(variant)
+    merged.update({k: v for k, v in variant.items() if k != "expect_same"})
     fd, path = tempfile.mkstemp(suffix=".json", prefix="scenario_variant_")
     try:
         with os.fdopen(fd, "w") as f:
@@ -256,10 +261,12 @@ def run_variant(scn, variant, binary=None):
 def check_variants(scn, text, binary=None):
     """Failure messages for the expect_same comparison of each variant against `text`."""
     fails = []
-    base = same_lines(scn, text)
-    if not base:
-        return ["expect_same matched no narrative line"]
     for i, variant in enumerate(scn.get("variants", [])):
+        patterns = variant.get("expect_same", scn.get("expect_same", []))
+        base = same_lines(patterns, text)
+        if not base:
+            fails.append(f"variant {i}: expect_same matched no narrative line")
+            continue
         try:
             out = run_variant(scn, variant, binary)
         except subprocess.TimeoutExpired:
@@ -267,7 +274,7 @@ def check_variants(scn, text, binary=None):
             continue
         fails += [f"variant {i}: {f}" for f in check_output(
             {k: v for k, v in scn.items() if k not in ("expect_same", "variants")}, out)]
-        got = same_lines(scn, out)
+        got = same_lines(patterns, out)
         if got != base:
             k = next((j for j, (a, b) in enumerate(zip(base, got)) if a != b),
                      min(len(base), len(got)))

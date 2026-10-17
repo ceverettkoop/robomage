@@ -296,6 +296,16 @@ issue, link and retirement (`HANDLE:`).
   (stack, graveyard and exile from the top; a library card in a window by its position); name when
   the identity is visible (a face-down object sorts first); battlefield timestamp; arrival order
   where the viewer saw the arrival (a public zone or their own hand).
+- **With an event consumer.** With a frame writer, `--selfcheck-state` or `--trace-events` on,
+  an object's handle is usually issued by the event that made it identifiable, so handle numbers
+  follow the event stream the viewer receives; with none, every handle is issued canonically at
+  the next frame. Both are functions of what the viewer saw: an event that shows several cards
+  lists them in an order the viewer can derive (`reveal_cards` / `look_at_cards`: owner, zone,
+  library position, then name, copies of one card tied by entity id as below), and draws and moves
+  issue in the order the viewer sees them happen. The deck-order scenarios
+  (`state_format_handles_deck_order_independent*.json`) build the same game from decklists in
+  another order and require the viewer who cannot see the reordered cards to get identical
+  handles, with and without an event consumer (and identical events under `--trace-events`).
 - **Ties.** Objects equal on every key are copies of one card in the same unordered place (two
   Islands in a revealed hand, two copies in a sideboard), with identical rows in everything the
   viewer sees. They are tied by entity id: swapping them changes nothing visible, and among copies

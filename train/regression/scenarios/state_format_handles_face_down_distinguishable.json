@@ -1,6 +1,6 @@
 {
   "name": "state_format_handles_face_down_distinguishable",
-  "why": "docs/state_format.md §6 / CR 708.6, 406.3: a card exiled face down stays an individually distinguishable public object, so the opponent holds a handle for it with its identity withheld, and keeps that handle when chapter II turns it face up in place (step 1 T2 handles, --trace-handles)",
+  "why": "docs/state_format.md §6 / CR 708.6, 406.3: a card exiled face down stays an individually distinguishable public object, so the opponent holds a handle for it with its identity withheld, and keeps that handle when chapter II turns it face up in place (step 1 T2 handles, --trace-handles; the handle is issued at the frame after the exile, or at the exile's own event when an event consumer is on, so the issue line is not ordered against the narration)",
   "engine_flags": ["--trace-handles"],
   "hand_a": ["Swamp", "The Creation of Avacyn", "Island", "Island", "Island", "Island", "Island"],
   "battlefield_a": ["Swamp", "Swamp", "Swamp"],
@@ -9,14 +9,10 @@
   "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
   "play": ["A:keep", "B:keep", "A:cast:Creation of Avacyn", "A:desc:Grizzly Bears"],
   "max_decisions": 14,
-  "expect_order": [
-    "^Player A exiles Grizzly Bears face down",
-    "^HANDLE: issue B h\\d+ exile:A Grizzly Bears \\(face down\\)$",
-    "^HANDLES: B .*\\[h\\d+ exile:A face-down\\]",
-    "^HANDLES: A .*\\[h\\d+ exile:A Grizzly Bears\\]",
-    "^Grizzly Bears is turned face up",
-    "^HANDLES: B .*\\[h\\d+ exile:A Grizzly Bears\\]"
-  ],
+  "expect_order": ["^Player A exiles Grizzly Bears face down", "^HANDLES: B .*\\[h\\d+ exile:A face-down\\]",
+                   "^HANDLES: A .*\\[h\\d+ exile:A Grizzly Bears\\]", "^Grizzly Bears is turned face up",
+                   "^HANDLES: B .*\\[h\\d+ exile:A Grizzly Bears\\]"],
   "expect_not": ["^HANDLE: retire (A|B) h\\d+ exile:A", "^HANDLE: issue B h\\d+ library:A"],
-  "expect_count": {"^HANDLE: issue B h\\d+ exile:A Grizzly Bears": 1}
+  "expect_count": {"^HANDLE: issue B h\\d+ exile:A Grizzly Bears": 1},
+  "expect": ["^HANDLE: issue B h\\d+ exile:A Grizzly Bears \\(face down\\)$"]
 }
