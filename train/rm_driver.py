@@ -466,11 +466,22 @@ class Engine:
             if line.startswith(_SIGNAL_PREFIXES):
                 continue
             if line.startswith(_DIAGNOSTIC_PREFIXES):
-                text = line.decode("utf-8", errors="replace")
-                self.diagnostics.append(text)
-                print(text, file=sys.stderr, flush=True)
+                self.diagnostics.append(line.decode("utf-8", errors="replace"))
+                _write_diagnostic(line)
                 continue
             self._on_line(line)
+
+
+def _write_diagnostic(line):
+    """One engine diagnostic line to this process's stderr in a single write, so lines from engines
+    run in parallel into one log never splice together."""
+    sys.stderr.flush()
+    try:
+        fd = sys.stderr.fileno()
+    except (AttributeError, OSError):  # a captured stderr with no descriptor (io.UnsupportedOperation)
+        sys.stderr.write(line.decode("utf-8", errors="replace") + "\n")
+        return
+    os.write(fd, line + b"\n")
 
 
 # ── One decision as the transcript reads it ─────────────────────────────────────────────────
