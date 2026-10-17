@@ -111,6 +111,9 @@ static int read_reply() {
 }
 
 int rmstate_stream_exchange(const std::vector<LegalAction> &actions) {
+    // Everything printed so far (on stdout, which points at stderr) reaches stderr before the
+    // frame, so a reader of both pipes sees each decision's narrative ahead of its frame.
+    std::fflush(stdout);
     const Zone::Ownership seat = rmstate_deciding_seat();
     stream_match_frames_once(seat);
     stream_state_frame(seat, actions, seat, false);
@@ -123,6 +126,7 @@ void rmstate_match_over() {
     rmstate_dump_match_over();
     selfcheck_state_match_over();
     if (!machine_format_rmstate) return;
+    std::fflush(stdout);
     for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         stream_match_frames_once(seat);
         stream_state_frame(seat, {}, Zone::UNKNOWN, true);

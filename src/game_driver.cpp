@@ -128,6 +128,9 @@ std::string rmstate_dump_path;
 // --machine-format rmstate: the deciding seat's RMSTATE frame replaces BQUERY on stdout, and
 // everything else the engine prints goes to stderr (state_format/stream.h).
 bool machine_format_rmstate = false;
+// --rmstate-card-scripts: every CARDS frame carries each card's raw script text in its front-face
+// row's `script` column, and each token's in its row (state_format/encode.cpp); off = empty.
+bool rmstate_card_scripts = false;
 // --state-dump json: every frame --rmstate-dump writes is also rendered as a JSON line into
 // FILE.jsonl, and --rmstate-read prints its stream as JSON lines (state_format/json.h).
 bool state_dump_json = false;

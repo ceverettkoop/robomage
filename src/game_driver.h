@@ -57,6 +57,7 @@ extern bool trace_events;
 extern bool closed_decklist;
 extern std::string rmstate_dump_path;
 extern bool machine_format_rmstate;
+extern bool rmstate_card_scripts;
 extern bool state_dump_json;
 extern std::string rmstate_read_path;
 extern int knowledge_level_a;

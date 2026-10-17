@@ -162,6 +162,8 @@ static const CliOption OPTIONS[] = {
             machine_mode = true;
         },
         nullptr},
+    // Every CARDS frame carries each card's and token's raw script text (its `script` column).
+    {"--rmstate-card-scripts", nullptr, false, false, [](const char *) { rmstate_card_scripts = true; }, nullptr},
     // Render the RMSTATE frames --rmstate-dump writes (or --rmstate-read reads) as JSON lines.
     {"--state-dump", nullptr, true, false,
         [](const char *v) {

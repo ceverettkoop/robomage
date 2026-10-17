@@ -19,6 +19,12 @@ Entity load_card(std::string card_name);
 // cards no deck holds (the whole vocab). nullptr when the card has no script.
 const CardData *card_data_by_name(const std::string &card_name);
 
+// The raw text of the script file load_card reads for `card_name` (a double-faced card's combined
+// script), or "" when there is none. `RESOURCE_DIR/tokenscripts/<stem>.txt` for a token script
+// stem through token_script_text.
+std::string card_script_text(const std::string &card_name);
+std::string token_script_text(const std::string &stem);
+
 //True when `card_name` names the back face of `cd` (a double-faced card loaded by
 //its back-face name) rather than its front face.
 bool names_back_face(const std::string& card_name, const CardData& cd);

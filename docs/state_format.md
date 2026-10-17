@@ -132,7 +132,8 @@ Sent once per match (not per snapshot):
   make. Each entry has the vocab id,
   name, uid, printed characteristics, the **oracle text** (always: `CardData::oracle_text`,
   parsed from the script's `Oracle:` line; token scripts carry one too), an ability list
-  (category, costs, timing, script line text) and, optionally, the raw script.
+  (category, costs, timing, script line text) and, on request (`--rmstate-card-scripts`, register
+  39), the raw script.
 - `DECKLISTS`: both registered lists with their deck names (only the viewer's own under
   `--closed-decklist`).
 - `METAGAME`: the reference metagame, the same for every viewer and every match (it is public):
@@ -424,6 +425,9 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
     `DECKLISTS` and `METAGAME` frames, then its `STATE` frame with the menu. Its events are those queued for it
     since its previous frame, so a seat that does not decide for a while gets them all in its
     next frame.
+  - Everything the engine prints before a frame (the decision's narrative, a `GAME_RESULT` line)
+    is flushed to stderr before the frame is written, so a reader of both pipes sees a decision's
+    narrative ahead of its frame (`train/rmstate_env.py`).
   - Menu row *i* is the action reply *i* selects: the menu as offered, after the
     interchangeable-choice collapse (register 17), the same list BQUERY indexes. `-1` is the
     last row. End of input or an unparseable line reads as `-1`, as for BQUERY.
@@ -618,6 +622,7 @@ in-process actor.
 | 36 | Events carry draw provenance: `turn` on every event, an opening-hand flag on `draw`, a hand subset (`drawn_this_turn`) on a `zone_move` out of a hand whose instruction is restricted to cards drawn this turn (Sylvan Library), and a draw link on a `reveal_start` that shows the card just drawn (Miracle). Both restrictions are explicit to both players, so the sidecar may use them | decided |
 | 37 | A reference metagame frame (`METAGAME`, once per match after `DECKLISTS`, the same for every viewer: archetype labels and reference lists from `bin/resources/decks/archetypes.json`) and the archetype tables `k_template` (per player and reference list: consistent, exact, registered) and `k_archetype` (per player and label: possible, exact) in `k_*`. Sound facts only (`knowledge_store.md` §10); a probabilistic layer is a later `b_*` level | decided |
 | 38 | A belief level `expert+belief` (per seat, `--knowledge-a/-b`; default stays `expert`) adds the `b_*` tables after `k_*`: `b_list` (per player and reference list: posterior probability in units of 10^-9, log-likelihood in milli-nats, exact) and `b_archetype` (per player and label: probability). A posterior under a uniform prior over the reference lists, with likelihood the weighted count of each list's hypothesis-network worlds (`knowledge_store.md` §10.6); probabilities, kept out of `k_*`, which stays sound facts. Zero exactly for the lists `k_template` excludes, at least one unit for the others, summing to 10^9 per player (or 0 when no list is consistent); a function of the seat's events like `k_*`. Absent below that level (fixed schema) | decided |
+| 39 | The raw card script travels in `CARDS` on request (`--rmstate-card-scripts`: the `script` column of a card's front row and of a token's row). The step-2 pass-1 parity adapter (`train/rmstate_adapter.py`) reads the scripted agent's card knowledge from it through the generators' own parsing, so it equals the generated tables (`card_props`, `card_costs`) card for card; pass 2 reads the structured columns instead | decided |
 
 ## Appendix A: column definitions
 
@@ -706,7 +711,7 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `power`, `toughness` | i16 | `signed` | printed |
 | | `loyalty` | u8 | `count` | |
 | | `oracle` | text | `text` | `CardData::oracle_text` (register 29) |
-| | `script` | text | `text` | raw script; empty unless requested |
+| | `script` | text | `text` | the raw script text under `--rmstate-card-scripts` (register 39): a card's file (a double-faced card's combined script) on its front row, a token's script on its row; empty otherwise |
 | `card_subtype` (11) | `card`, `face`, `subtype` | u16, u8, u16 | `card`, `enum:face`, `enum:subtype` | |
 | `card_keyword` (12) | `card`, `face` | u16, u8 | `card`, `enum:face` | |
 | | `kw` | u8 | `enum:keyword` | the longest `keyword` value the text starts with, followed by its end, `:` or a space (`Ward:2` → Ward, `Protection from blue` → Protection); 0xFF = none |
@@ -795,8 +800,8 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `attacking`, `blocking`, `blocked` | u8 | `bool` | details in `combat` |
 | | `damage` | u16 | `count` | |
 | | `deathtouch_damage` | u8 | `bool` | |
-| | `power`, `toughness` | i16 | `signed` | post-layer for a battlefield creature; printed (active face) elsewhere |
-| | `types` | u32 | `mask:card_type` | post-layer on the battlefield |
+| | `power`, `toughness` | i16 | `signed` | post-layer for a battlefield creature (a phased-out one's too); printed (active face) elsewhere |
+| | `types` | u32 | `mask:card_type` | post-layer on the battlefield, where Creature is set exactly while the permanent is a creature (an impending permanent with time counters and an attached reconfigure permanent keep the type in their type set but are not, CR 702.175d, 702.151b) |
 | | `supertypes` | u8 | `mask:supertype` | |
 | | `colors` | u8 | `mask:color` | `effective_colors` |
 | | `mana_value` | u8 | `count` | |

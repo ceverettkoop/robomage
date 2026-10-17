@@ -274,6 +274,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (\"RMSTATE <nbytes>\" + payload) replace BQUERY, a terminal\n");
     printf("                      frame per seat at match end; all other output goes to\n");
     printf("                      stderr. Incompatible with --search-server\n");
+    printf("  --rmstate-card-scripts  Every CARDS frame carries each card's raw script text\n");
+    printf("                      (its front-face row's script column; a token's in its row)\n");
     printf("  --rmstate-read <file>  Play no game: decode every record of an RMSTATE stream\n");
     printf("                      (- = stdin), re-encode it and compare the bytes; ERROR:\n");
     printf("                      lines and a summary on stderr, exit status 1 on any\n");

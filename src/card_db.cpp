@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 #include <vector>
 
 extern Coordinator global_coordinator;
@@ -20,6 +21,7 @@ static std::string script_face_name(const std::string& path, bool back);
 static std::string resolve_dfc_script_path(const std::string& dir, const std::string& uid);
 static std::string resolve_back_face_script_path(const std::string& uid);
 static std::string script_path_for(const std::string &uid);
+static std::string file_text(const std::string &path);
 
 Entity load_card(std::string card_name) {
     //search for card based on normalized name string
@@ -61,6 +63,24 @@ const CardData *card_data_by_name(const std::string &card_name) {
     const CardData *cd = script_file_exists(path) ? parsed_card_data(path) : nullptr;
     by_uid.emplace(uid, cd);
     return cd;
+}
+
+std::string card_script_text(const std::string &card_name) {
+    auto uid = name_to_uid(card_name);
+    return uid.empty() ? std::string() : file_text(script_path_for(uid));
+}
+
+std::string token_script_text(const std::string &stem) {
+    return file_text(RESOURCE_DIR + "/tokenscripts/" + stem + ".txt");
+}
+
+// The whole content of the file at `path`, or "" when it cannot be opened.
+static std::string file_text(const std::string &path) {
+    std::ifstream f(path, std::ios::binary);
+    if (!f.is_open()) return std::string();
+    std::ostringstream text;
+    text << f.rdbuf();
+    return text.str();
 }
 
 // The script file load_card reads for `uid`.

@@ -114,7 +114,8 @@ static void collect_card_tokens(const CardData &cd, std::set<std::string> &out);
 static bool token_script_exists(const std::string &stem);
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer);
 static bool sees_decklist(Zone::Ownership viewer, Zone::Ownership owner);
-static void write_card_face(FrameWriter &w, int card_id, const CardData &face, rmstate::Face which, int face_card);
+static void write_card_face(
+    FrameWriter &w, int card_id, const CardData &face, rmstate::Face which, int face_card, const std::string &script);
 static void write_card_abilities(FrameWriter &w, int card_id, const std::vector<CardAbility> &list, const CardData *cd);
 static void write_token_card(FrameWriter &w, int card_id, const Token &tok);
 static Zone::Ownership plays_first_seat();
@@ -433,7 +434,9 @@ static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     return std::vector<int>(ids.begin(), ids.end());
 }
 
-static void write_card_face(FrameWriter &w, int card_id, const CardData &face, rmstate::Face which, int face_card) {
+// `script` is the card's raw script text (--rmstate-card-scripts, on its front row), else "".
+static void write_card_face(
+    FrameWriter &w, int card_id, const CardData &face, rmstate::Face which, int face_card, const std::string &script) {
     const uint64_t f = static_cast<uint64_t>(which);
     {
         Row r = w.row(TableId::CARD);
@@ -448,7 +451,7 @@ static void write_card_face(FrameWriter &w, int card_id, const CardData &face, r
         r.i16(static_cast<int64_t>(face.power))
             .i16(static_cast<int64_t>(face.toughness))
             .u8(u8_count(face.starting_loyalty));
-        r.text(face.oracle_text).text("");
+        r.text(face.oracle_text).text(script);
     }
     for (int st : subtype_indices(face.types))
         w.row(TableId::CARD_SUBTYPE).u16(card_or_none(card_id)).u8(f).u16(static_cast<uint64_t>(st));
@@ -506,7 +509,7 @@ static void write_token_card(FrameWriter &w, int card_id, const Token &tok) {
         for (int i = 0; i < 8; ++i) r.u8(0);
         r.u8(color_mask(tok.explicit_colors)).u32(card_type_mask(tok.types)).u8(supertype_mask(tok.types));
         r.i16(static_cast<int64_t>(tok.power)).i16(static_cast<int64_t>(tok.toughness)).u8(0);
-        r.text(tok.oracle_text).text("");
+        r.text(tok.oracle_text).text(rmstate_card_scripts ? token_script_text(tok.script_name) : std::string());
     }
     for (int st : subtype_indices(tok.types))
         w.row(TableId::CARD_SUBTYPE)
@@ -658,9 +661,11 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         const CardData *face = cd ? &active_face(e, *cd) : nullptr;
         int power = face ? static_cast<int>(face->power) : tok ? static_cast<int>(tok->power) : 0;
         int toughness = face ? static_cast<int>(face->toughness) : tok ? static_cast<int>(tok->toughness) : 0;
+        // A battlefield creature's post-layer P/T (a phased-out one's too: effective_power treats
+        // it as gone, CR 702.26b, but it is included and flagged).
         if (cr) {
-            power = effective_power(e);
-            toughness = effective_toughness(e);
+            power = static_cast<int>(cr->power);
+            toughness = static_cast<int>(cr->toughness);
         }
         const std::set<Type> empty_types;
         const std::set<Type> &types = perm ? perm->types : face ? face->types : tok ? tok->types : empty_types;
@@ -670,7 +675,12 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         else if (tok)
             mv = tok->mana_value;
         r.i16(std::max(-32768, std::min(power, 32767))).i16(std::max(-32768, std::min(toughness, 32767)));
-        r.u32(card_type_mask(types)).u8(supertype_mask(types)).u8(color_mask(effective_colors(e))).u8(u8_count(mv));
+        uint32_t type_mask = card_type_mask(types);
+        // A permanent is a creature exactly while it has its Creature component: one that entered
+        // for its impending cost (while it has time counters) or an attached reconfigure permanent
+        // keeps Creature in its type set but is not one (CR 702.175d, 702.151b).
+        if (perm && !cr) type_mask &= ~(1u << card_type_index("Creature"));
+        r.u32(type_mask).u8(supertype_mask(types)).u8(color_mask(effective_colors(e))).u8(u8_count(mv));
     } else {
         r.i16(0).i16(0).u32(0).u8(0).u8(0).u8(0);
     }
@@ -1281,9 +1291,11 @@ std::string encode_cards_frame(Zone::Ownership viewer) {
         const CardData *found = loaded ? loaded : card_data_by_name(card_index_to_name(id));
         if (found == nullptr) continue;
         const CardData &cd = *found;
-        write_card_face(w, id, cd, rmstate::Face::FRONT, id);
+        write_card_face(w, id, cd, rmstate::Face::FRONT, id,
+            rmstate_card_scripts ? card_script_text(card_index_to_name(id)) : std::string());
         if (cd.backside)
-            write_card_face(w, id, *cd.backside, rmstate::Face::BACK, card_name_to_index(cd.backside->name));
+            write_card_face(
+                w, id, *cd.backside, rmstate::Face::BACK, card_name_to_index(cd.backside->name), std::string());
         write_card_abilities(w, id, card_ability_list(cd), &cd);
         collect_card_tokens(cd, token_scripts);
     }
