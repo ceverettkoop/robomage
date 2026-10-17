@@ -113,6 +113,18 @@ void knowledge_append_tables(
     if (!res.ok()) fatal_error("knowledge: the k_* tables do not append to the STATE frame: " + res.message);
 }
 
+const knowledge::Knowledge *knowledge_instance(ObsConsumer consumer, Zone::Ownership viewer) {
+    const int seat = seat_index(viewer);
+    if (seat < 0) return nullptr;
+    return channels[static_cast<int>(consumer)][seat].know.get();
+}
+
+std::string knowledge_state_blob() {
+    std::string blob;
+    save_state(blob);
+    return blob;
+}
+
 // ── Snapshot hooks ────────────────────────────────────────────────────────────────────────────
 
 static void put_u32(std::string &out, uint32_t v) {

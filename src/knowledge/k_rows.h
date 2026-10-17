@@ -2,8 +2,10 @@
 #define KNOWLEDGE_K_ROWS_H
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
+#include "../state_format/decode.h"
 #include "../state_format/schema.h"
 #include "frame_view.h"
 
@@ -66,6 +68,10 @@ struct KRows {
 
 // Appends `rows` to `w` for viewer seat `viewer`, with `codes` giving the seat enum values.
 void write_k_tables(rmstate::FrameWriter &w, const KRows &rows, const Codes &codes, int viewer);
+
+// The k_* tables a decoded STATE frame carries, read back into rows (the inverse of
+// write_k_tables); false (with `err`) when a table lacks a column or the frame has no k_meta row.
+bool read_k_tables(const rmstate::DecodedFrame &frame, const Codes &codes, KRows *out, std::string *err);
 
 }  // namespace knowledge
 

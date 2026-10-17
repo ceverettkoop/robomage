@@ -8,6 +8,10 @@
 #include "events.h"
 #include "schema.h"
 
+namespace knowledge {
+class Knowledge;
+}
+
 // ── The knowledge sidecar in the engine (docs/knowledge_store.md §2, §9.6) ────────────────────
 //
 // Every RMSTATE frame writer (ObsConsumer: --rmstate-dump, --machine-format rmstate,
@@ -47,5 +51,13 @@ void knowledge_feed_match_frame(ObsConsumer consumer, Zone::Ownership viewer, co
 // when given, else they are printed as ERROR: lines.
 void knowledge_append_tables(
     ObsConsumer consumer, Zone::Ownership viewer, std::string *payload, std::vector<std::string> *errors = nullptr);
+
+// `consumer`'s instance for seat `viewer`, or nullptr before its first frame (for checks:
+// state_format/selfcheck_knowledge.h).
+const knowledge::Knowledge *knowledge_instance(ObsConsumer consumer, Zone::Ownership viewer);
+
+// Every instance's state, as the snapshot hook saves it (per writer and seat: a presence byte, then
+// the serialised state with its length).
+std::string knowledge_state_blob();
 
 #endif /* STATE_FORMAT_KNOWLEDGE_FEED_H */

@@ -241,7 +241,9 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 
 - **Soundness (zero tolerance):** at every decision of the corpus, smoke and fuzz games,
   compare against the omniscient viewer's truth. The true world must satisfy every reported
-  fact: exact identities, candidate sets, min/max counts.
+  fact: exact identities, candidate sets, min/max counts. Built as the engine's
+  `--selfcheck-knowledge` (against the engine state itself) and `rmknow --truth` (against a dump's
+  omniscient frames), sharing `knowledge::check_truth` (section 9.5).
 - **Exactness (the solver):** on small synthetic and sculpted cases (≤ 15-card decks), a
   naive enumerator over the same pool/flow model, written independently of the solver,
   lists every consistent world. With `k_meta.exact` set, the reported min/max and candidate
@@ -446,9 +448,25 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
   viewer's own hand is exactly the model's pinned units; the own sideboard's counts are within
   bounds; every reveal row's card is the model's card at that position or handle; and neither the
   propagation nor the solver finds a contradiction. A mismatch is an `ERROR: knowledge[...]` line.
-- **`rmknow --truth`** checks every reported fact against the same dump's omniscient frames
-  (pool contents within min/max and no unlisted universe card, block pools included, exact
-  positions, known-hand counts, pool sizes, seen ≤ owned). On the 168 runs above: 0 errors.
+- **Soundness** (`knowledge::check_truth`, `src/knowledge/truth.h`): every reported fact against a
+  true world: each `k_pool` row's size (the opponent's hand, a sideboard, a library run or block,
+  a face-down card), each `k_pool_card` range and no unlisted universe card in a pool, each
+  `k_position` card (or, not exact, its true card among the candidates of the run it names), each
+  `k_known_hand` count, and each `k_seen` row (game at most the copies the player owns, match at least
+  game). Set-aside pools have no counterpart in the true world. Two drivers:
+  - **`--selfcheck-knowledge`** (engine; `src/state_format/selfcheck_knowledge.h`; implies
+    `--selfcheck-state`): at every decision, each seat's `k_*` tables read back from the
+    self-check's frame bytes (`read_k_tables`) against the true world built from the engine state
+    (every card object's identity by `card_identity`, hand, sideboard, library order, face-down
+    objects by the seat's handle, so face-down pools are checked too), and at the self-check's
+    snapshot restore every instance's serialised state against the one saved. Failures are `ERROR:
+    selfcheck-knowledge soundness|snapshot: …` lines; `SELFCHECK-KNOWLEDGE: decisions=… facts=…
+    errors=…` at match end. A reanimator vs uw_control bo3 fuzz match checks 179,079 facts over
+    588 decisions. Proved with temporary bugs: a pool's max one too low (10,859 errors), a known
+    position reported one place off (12) and a deserialise that dropped one player's copies seen
+    (28 snapshot errors, besides the frame comparison's) were each caught;
+  - **`rmknow --truth`** against the same dump's omniscient frames (face-down pools excluded: the
+    omniscient handles are not the seat's). On the 168 runs above: 0 errors.
 - **`rmknow --selftest`**: synthetic event streams (`tools/rmknow/selftest.cpp`): the section 7
   put-back example (the two put-back units, which nothing tells apart, are one run of the top two
   holding exactly one Force of Will and one Daze, exact), cut accounting, a scry range, a batch, drawn-this-turn, a draw link,

@@ -291,6 +291,11 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --search-server\n");
     printf("  --selfcheck-state-sample <n>\n");
     printf("                      Run the sampled self-checks every <n>th decision (default 8)\n");
+    printf("  --selfcheck-knowledge\n");
+    printf("                      Implies --selfcheck-state. Check every k_* fact of both\n");
+    printf("                      seats' frames against the true world at every decision,\n");
+    printf("                      and the knowledge state across the snapshot check's restore.\n");
+    printf("                      Failures print ERROR: lines; play is unchanged\n");
     printf("  --search-server     MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/\n");
     printf("                      RELEASE); implies --machine. Incompatible with\n");
     printf("                      --replay, --log-decisions and --player\n");
@@ -304,7 +309,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
     printf("                      --broadcast-steps, --trace-visibility, --trace-handles,\n");
     printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
-    printf("                      --knowledge-a/-b, --selfcheck-state)\n");
+    printf("                      --knowledge-a/-b, --selfcheck-state, --selfcheck-knowledge)\n");
     printf("                      still apply; --log-decisions has no effect\n");
     printf("\nTest setup (card lists are comma-separated; applied at the start of each game):\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");

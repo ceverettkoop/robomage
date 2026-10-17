@@ -22,10 +22,11 @@
 // Every model inconsistency (the per-frame consistency check, an event the model cannot apply) is
 // an `ERROR: knowledge…` line on stderr. --truth also checks every reported fact against the
 // omniscient viewer's frames of the same stream (a --rmstate-dump holds them): the true world must
-// satisfy each k_pool_card range, k_position card, k_known_hand count and pool size, and each
-// k_seen game count must not exceed the copies the player really has; a violation is an
-// `ERROR: rmknow truth…` line. The last stderr line is the summary
-//   RMKNOW: viewer=<A|B> frames=<n> errors=<n>[ truth_frames=<n> truth_errors=<n>]
+// satisfy each fact knowledge/truth.h lists (pool sizes, k_pool_card ranges, k_position cards and
+// candidates, k_known_hand counts, k_seen counts; face-down pools are not checked: the omniscient
+// frames' handles are not the seat's); a violation is an `ERROR: rmknow truth…` line. The last
+// stderr line is the summary
+//   RMKNOW: viewer=<A|B> frames=<n> errors=<n>[ truth_frames=<n> truth_facts=<n> truth_errors=<n>]
 // --isolation (implies --quiet unless --text) compares, for every STATE frame of the seat, the k_*
 // tables this run computes with the ones the frame carries, byte for byte (docs/knowledge_store.md
 // §7, isolation: the engine's instance is a pure function of the seat's frames from that writer).
@@ -47,6 +48,7 @@
 #include <vector>
 
 #include "../../src/knowledge/knowledge.h"
+#include "../../src/knowledge/truth.h"
 #include "../../src/state_format/decode.h"
 #include "../../src/state_format/schema.h"
 #include "selftest.h"
@@ -78,22 +80,12 @@ struct Stats {
         std::vector<uint32_t> steps;
 };
 
-// The true world of one decision, from the omniscient frame.
-struct Truth {
-        std::map<int, int> hand[2];
-        std::map<int, int> sideboard[2];
-        std::map<int, int> owned[2];  // every non-token card object of the player
-        std::vector<int> library[2];  // top first
-};
-
 }  // namespace
 
 static bool parse_args(int argc, char **argv, Options *opt);
-static bool read_truth(const knowledge::Snapshot &snap, Truth *out);
-static size_t check_truth(const knowledge::Knowledge &know, const knowledge::KRows &rows, const Truth &truth,
-    const knowledge::Snapshot &omni, size_t frame);
+static size_t check_frame_truth(const knowledge::Knowledge &know, const knowledge::KRows &rows,
+    const knowledge::Truth &truth, const knowledge::Snapshot &omni, size_t *facts);
 static void truth_error(const std::string &what, const knowledge::Snapshot &omni, size_t *errors);
-static int count_of(const std::map<int, int> &m, int card);
 static void add_stats(const knowledge::Knowledge &know, const knowledge::KRows &rows, Stats *st);
 static void print_stats(Stats *st);
 static std::string tables_frame(const std::string &blocks, uint32_t n, rmstate::Viewer viewer, uint64_t hash);
@@ -236,111 +228,21 @@ static void print_stats(Stats *st) {
         pct(0.99), v.empty() ? 0u : v.back(), hist[0], hist[1], hist[2], hist[3], hist[4], hist[5]);
 }
 
-static int count_of(const std::map<int, int> &m, int card) {
-    const auto it = m.find(card);
-    return it == m.end() ? 0 : it->second;
-}
-
-static bool read_truth(const knowledge::Snapshot &snap, Truth *out) {
-    *out = Truth{};
-    std::map<int, int> lib_pos[2];
-    for (const knowledge::SnapObject &o : snap.objects) {
-        if (o.owner == knowledge::NO_SEAT || o.token) continue;
-        if (o.card != knowledge::NO_CARD) ++out->owned[o.owner][o.card];
-        if (o.zone == knowledge::Zn::HAND) ++out->hand[o.owner][o.card];
-        if (o.zone == knowledge::Zn::SIDEBOARD) ++out->sideboard[o.owner][o.card];
-        if (o.zone == knowledge::Zn::LIBRARY) lib_pos[o.owner][o.pos] = o.card;
-    }
-    for (int p = 0; p < 2; ++p) {
-        for (const auto &e : lib_pos[p]) {
-            if (e.first != static_cast<int>(out->library[p].size())) return false;
-            out->library[p].push_back(e.second);
-        }
-    }
-    return true;
-}
-
 static void truth_error(const std::string &what, const knowledge::Snapshot &omni, size_t *errors) {
     ++*errors;
     if (*errors > 50) return;
     std::fprintf(stderr, "ERROR: rmknow truth: game %u decision %u: %s\n", omni.game, omni.decision, what.c_str());
 }
 
-// Every fact of `rows` holds in the true world. Returns the violations.
-static size_t check_truth(const knowledge::Knowledge &know, const knowledge::KRows &rows, const Truth &truth,
-    const knowledge::Snapshot &omni, size_t frame) {
-    (void)frame;
+// Every fact of `rows` holds in the true world (knowledge/truth.h). Returns the violations.
+static size_t check_frame_truth(const knowledge::Knowledge &know, const knowledge::KRows &rows,
+    const knowledge::Truth &truth, const knowledge::Snapshot &omni, size_t *facts) {
+    const knowledge::Universe *const universe[2] = {&know.player(0).full.universe, &know.player(1).full.universe};
+    knowledge::TruthCheck check;
+    knowledge::check_truth(rows, truth, know.viewer(), universe, &check);
+    *facts += check.facts;
     size_t errors = 0;
-    // The true contents of each pool.
-    std::vector<std::map<int, int>> contents(rows.pools.size());
-    std::vector<bool> checkable(rows.pools.size(), true);
-    for (size_t i = 0; i < rows.pools.size(); ++i) {
-        const knowledge::KPoolRow &pool = rows.pools[i];
-        const int p = pool.owner;
-        size_t true_size = 0;
-        switch (pool.kind) {
-            case rmstate::PoolKind::HAND:
-                contents[i] = truth.hand[p];
-                break;
-            case rmstate::PoolKind::SIDEBOARD:
-                contents[i] = truth.sideboard[p];
-                break;
-            case rmstate::PoolKind::LIBRARY_RANGE:
-                for (size_t k = pool.range.pos; k < static_cast<size_t>(pool.range.pos) + pool.size; ++k)
-                    if (k < truth.library[p].size()) ++contents[i][truth.library[p][k]];
-                break;
-            default:
-                checkable[i] = false;  // face-down and set-aside units: no handle shared with the truth
-                break;
-        }
-        if (!checkable[i]) continue;
-        for (const auto &c : contents[i]) true_size += static_cast<size_t>(c.second);
-        if (true_size != pool.size)
-            truth_error("pool " + std::to_string(i) + " has size " + std::to_string(pool.size) + ", truly " +
-                            std::to_string(true_size),
-                omni, &errors);
-    }
-    std::vector<std::map<int, bool>> listed(rows.pools.size());
-    for (const knowledge::KPoolCardRow &c : rows.pool_cards) {
-        if (c.pool >= rows.pools.size() || !checkable[c.pool]) continue;
-        listed[c.pool][c.card] = true;
-        const int n = count_of(contents[c.pool], c.card);
-        if (n < c.min || n > c.max)
-            truth_error("pool " + std::to_string(c.pool) + " holds " + std::to_string(n) + " of card " +
-                            std::to_string(c.card) + ", reported " + std::to_string(c.min) + "-" +
-                            std::to_string(c.max),
-                omni, &errors);
-    }
-    for (size_t i = 0; i < rows.pools.size(); ++i) {
-        if (!checkable[i]) continue;
-        const knowledge::Universe &uni = know.player(rows.pools[i].owner).full.universe;
-        for (const auto &c : contents[i])
-            if (!listed[i][c.first] && uni.contains(c.first))
-                truth_error(
-                    "pool " + std::to_string(i) + " holds card " + std::to_string(c.first) + ", reported impossible",
-                    omni, &errors);
-    }
-    for (const knowledge::KPositionRow &pos : rows.positions) {
-        if (pos.card == knowledge::NO_CARD) continue;
-        const std::vector<int> &lib = truth.library[pos.owner];
-        const int at = pos.at.pos;
-        if (at >= static_cast<int>(lib.size()) || lib[static_cast<size_t>(at)] != pos.card)
-            truth_error("library position " + std::to_string(at) + " is reported card " + std::to_string(pos.card) +
-                            ", truly " +
-                            (at < static_cast<int>(lib.size()) ? std::to_string(lib[static_cast<size_t>(at)]) : "none"),
-                omni, &errors);
-    }
-    const int opp = 1 - know.viewer();
-    for (const knowledge::KKnownHandRow &k : rows.known_hand)
-        if (count_of(truth.hand[opp], k.card) < k.copies)
-            truth_error("the opponent's hand is reported to hold " + std::to_string(k.copies) + " of card " +
-                            std::to_string(k.card) + ", truly " + std::to_string(count_of(truth.hand[opp], k.card)),
-                omni, &errors);
-    for (const knowledge::KSeenRow &s : rows.seen)
-        if (s.game > count_of(truth.owned[s.player], s.card))
-            truth_error("seen " + std::to_string(s.game) + " of card " + std::to_string(s.card) +
-                            " this game, the player has " + std::to_string(count_of(truth.owned[s.player], s.card)),
-                omni, &errors);
+    for (const std::string &e : check.errors) truth_error(e, omni, &errors);
     return errors;
 }
 
@@ -373,7 +275,7 @@ int main(int argc, char **argv) {
     rmstate::Schema omni_schema;
     bool have_omni_schema = false;
     knowledge::Codes omni_codes;
-    size_t frames = 0, errors = 0, truth_frames = 0, truth_errors = 0, isolation_errors = 0;
+    size_t frames = 0, errors = 0, truth_frames = 0, truth_facts = 0, truth_errors = 0, isolation_errors = 0;
     knowledge::KRows last_rows;
     knowledge::Snapshot last_snap;
     bool have_last = false;
@@ -409,13 +311,13 @@ int main(int argc, char **argv) {
             if (omni.game != last_snap.game || omni.sideboard_phase != last_snap.sideboard_phase ||
                 omni.decision != last_snap.decision || omni.terminal)
                 continue;
-            Truth truth;
-            if (!read_truth(omni, &truth)) {
+            knowledge::Truth truth;
+            if (!knowledge::truth_from_snapshot(omni, &truth)) {
                 truth_error("the omniscient frame's library positions are not 0..n-1", omni, &truth_errors);
                 continue;
             }
             ++truth_frames;
-            truth_errors += check_truth(know, last_rows, truth, omni, frames);
+            truth_errors += check_frame_truth(know, last_rows, truth, omni, &truth_facts);
             have_last = false;
             continue;
         }
@@ -487,7 +389,9 @@ int main(int argc, char **argv) {
         ++errors;
     }
     std::fprintf(stderr, "RMKNOW: viewer=%s frames=%zu errors=%zu", opt.viewer == 1 ? "B" : "A", frames, errors);
-    if (opt.truth) std::fprintf(stderr, " truth_frames=%zu truth_errors=%zu", truth_frames, truth_errors);
+    if (opt.truth)
+        std::fprintf(
+            stderr, " truth_frames=%zu truth_facts=%zu truth_errors=%zu", truth_frames, truth_facts, truth_errors);
     if (opt.isolation) std::fprintf(stderr, " isolation_frames=%zu isolation_errors=%zu", frames, isolation_errors);
     std::fprintf(stderr, "\n");
     if (opt.stats) print_stats(&stats);

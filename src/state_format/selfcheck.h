@@ -43,7 +43,8 @@
 // (state_format/knowledge_feed.h), whose k_* tables it carries for roundtrip, complete and snapshot;
 // the scramble and permutation comparisons use the frame as encoded, before them (the tables are a
 // function of the instance and those bytes). The instance's consistency errors are failures of the
-// `knowledge` check.
+// `knowledge` check. Under --selfcheck-knowledge the seats' frames are also checked against the truth
+// (state_format/selfcheck_knowledge.h).
 //
 // A failure prints an ERROR: line (non_fatal_error) naming the check, the viewer and the first
 // differing table cell. None of the checks changes play: everything they change is put back, the
@@ -90,5 +91,9 @@ void selfcheck_state_event(Zone::Ownership viewer, const ObsEvent &built, const 
 
 // Reports a failed check (an ERROR: line with the check, viewer and decision).
 void selfcheck_state_mismatch(const char *check, Zone::Ownership viewer, const std::string &detail);
+
+// Where the game is, for an ERROR: line: "decision N (game G, turn T, step S[, sideboarding])", the
+// decision as the frame header numbers it.
+std::string selfcheck_decision_context();
 
 #endif /* STATE_FORMAT_SELFCHECK_H */

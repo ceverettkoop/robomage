@@ -570,7 +570,10 @@ sections above are not repeated here.
 - `src/state_format/selfcheck.{h,cpp}` — `--selfcheck-state`: per-decision roundtrip, scramble
   (frames and events rebuilt with hidden identities rotated), complete and, sampled, permutation
   (hidden zones physically permuted) and snapshot (save → K decisions → exact restore) checks;
-  `ERROR:` lines, `SELFCHECK-STATE:` summary
+  `ERROR:` lines, `SELFCHECK-STATE:` summary; `selfcheck_knowledge.{h,cpp}` — `--selfcheck-knowledge`
+  (implies `--selfcheck-state`): every `k_*` fact of both seats against the true world built from
+  the engine state, and the knowledge state across the snapshot check's restore;
+  `SELFCHECK-KNOWLEDGE:` summary
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
   protocol
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;
@@ -581,8 +584,8 @@ sections above are not repeated here.
   sentinels
 - `src/card_vocab.h` — card name → vocab index (emitted as a normalized id float, not a one-hot)
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
-  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; std + `state_format/decode.h`/
-  `schema.h` only; `docs/knowledge_store.md` §9)
+  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; the shared soundness check
+  `truth.h`; std + `state_format/decode.h`/`schema.h` only; `docs/knowledge_store.md` §9)
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
   (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
   engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator)

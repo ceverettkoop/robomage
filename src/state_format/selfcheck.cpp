@@ -29,6 +29,7 @@
 #include "handles.h"
 #include "knowledge_feed.h"
 #include "schema.h"
+#include "selfcheck_knowledge.h"
 #include "stream.h"
 
 using rmstate::DecodedFrame;
@@ -160,6 +161,10 @@ static void report(const char *check, Zone::Ownership viewer, const std::string 
 
 void selfcheck_state_mismatch(const char *check, Zone::Ownership viewer, const std::string &detail) {
     report(check, viewer, detail);
+}
+
+std::string selfcheck_decision_context() {
+    return context();
 }
 
 bool selfcheck_state_enabled() {
@@ -766,6 +771,7 @@ static void finish_snapshot_check() {
     const std::vector<ActiveStatic> statics = g_active_statics;
     snapshot_save(RESUME_SLOT);
     snapshot_restore_exact(SAVED_SLOT);
+    selfcheck_knowledge_restored();
     g_active_statics = snap.statics;
     set_priority_window_open(snap.priority_window);
     std::string frames[3];
@@ -795,7 +801,10 @@ void selfcheck_state_decision(const std::vector<LegalAction> &actions) {
     // The match frames first, so that a snapshot saved at the first decision holds the knowledge
     // instances they start.
     check_match_frames();
-    if (start) snapshot_save(SAVED_SLOT);
+    if (start) {
+        snapshot_save(SAVED_SLOT);
+        selfcheck_knowledge_saved();
+    }
 
     const Zone::Ownership decider = rmstate_deciding_seat();
     const std::vector<Entity> keep = public_choice_cards(actions);
@@ -814,6 +823,7 @@ void selfcheck_state_decision(const std::vector<LegalAction> &actions) {
         check_scramble(viewer, actions, decider, events, keep, plain, false);
         if (sampled) check_permutation(viewer, actions, decider, events, keep, plain);
     }
+    selfcheck_knowledge_decision(frames[viewer_index(Zone::PLAYER_A)], frames[viewer_index(Zone::PLAYER_B)]);
     if (start)
         start_snapshot_check(actions, decider, frames);
     else if (snap.active && restorable && stats.decisions - snap.saved_at >= SNAPSHOT_K)
@@ -835,4 +845,5 @@ void selfcheck_state_match_over() {
         "SELFCHECK-STATE: decisions=%zu frames=%zu events=%zu permutations=%zu snapshots=%zu errors=%zu\n",
         stats.decisions, stats.frames, stats.events, stats.permutations, stats.snapshots, stats.errors);
     std::fflush(stderr);
+    selfcheck_knowledge_match_over();
 }

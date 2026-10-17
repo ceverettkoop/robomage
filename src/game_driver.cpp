@@ -143,6 +143,9 @@ bool selfcheck_state = false;
 // --selfcheck-state-sample N: the sampled self-checks (permutation leak, snapshot) start at every
 // Nth decision.
 int selfcheck_state_sample = 8;
+// --selfcheck-knowledge (implies --selfcheck-state): the knowledge sidecar's k_* tables are checked
+// against the true world at every decision (state_format/selfcheck_knowledge.h).
+bool selfcheck_knowledge = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;

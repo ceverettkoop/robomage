@@ -63,6 +63,7 @@ extern bool knowledge_expert_a;
 extern bool knowledge_expert_b;
 extern bool selfcheck_state;
 extern int selfcheck_state_sample;
+extern bool selfcheck_knowledge;
 extern std::vector<std::string> battlefield_a_cards;
 extern std::vector<std::string> battlefield_b_cards;
 extern std::vector<std::string> graveyard_a_cards;

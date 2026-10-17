@@ -180,6 +180,14 @@ static const CliOption OPTIONS[] = {
         nullptr},
     // Run the state format's self-checks at every decision (state_format/selfcheck.h).
     {"--selfcheck-state", nullptr, false, false, [](const char *) { selfcheck_state = true; }, nullptr},
+    // Check the knowledge sidecar against the truth at every decision (state_format/selfcheck_knowledge.h);
+    // implies --selfcheck-state, whose knowledge instances it checks.
+    {"--selfcheck-knowledge", nullptr, false, false,
+        [](const char *) {
+            selfcheck_knowledge = true;
+            selfcheck_state = true;
+        },
+        nullptr},
     // Start the sampled self-checks (permutation leak, snapshot) at every Nth decision.
     {"--selfcheck-state-sample", nullptr, true, false,
         [](const char *v) {

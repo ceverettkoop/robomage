@@ -462,7 +462,9 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **knowledge:** the sidecar's soundness, exactness, isolation and shadow checks
   (`knowledge_store.md` §7). The self-check below covers the knowledge tables as frame bytes
   (roundtrip, references, snapshot restore) and reports the sidecar's per-frame consistency
-  check; isolation is `rmknow --isolation`; the rest is T12's `--selfcheck-knowledge`.
+  check; isolation is `rmknow --isolation`; soundness against the engine state, and the knowledge
+  state across a snapshot restore, are `--selfcheck-knowledge` (`src/state_format/selfcheck_knowledge.h`,
+  `knowledge_store.md` §9.5), which implies `--selfcheck-state`.
 
 **Implementation** (`--selfcheck-state`, `src/state_format/selfcheck.{h,cpp}`). At every decision
 the self-check builds every viewer's STATE frame (A, B, omniscient) from a queue copy of its own
