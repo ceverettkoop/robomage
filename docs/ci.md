@@ -150,7 +150,11 @@ line of every engine a Python `RoboMageEnv` starts (`train/env.py`: the harness,
 scenario runner), e.g. `ROBOMAGE_ENGINE_FLAGS=--trace-visibility` to narrate reveal windows
 (`VISIBILITY:` lines). A scenario passes its own through its `engine_flags` key
 (`test_scenarios.py`). Leave it unset for `make check`: a flag that changes output changes
-transcripts.
+transcripts. `ROBOMAGE_ENGINE_FLAGS="--rmstate-dump /abs/dir/d_%p.rms --state-dump json"` writes
+every engine's RMSTATE frames (and their JSON lines) beside an unchanged run; check such dumps
+with `train/.venv/bin/python train/test_rmstate.py --dumps /abs/dir/d_*.rms` (engine re-encode byte
+identity, Python vs C++ JSON). `train/test_rmstate.py` alone plays its own fuzz games and
+`--machine-format rmstate` sessions (`run()` is the entry point for a gate tier).
 
 ## Intentionally changing behavior
 

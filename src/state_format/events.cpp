@@ -62,7 +62,7 @@ static int slot(Zone::Ownership viewer) {
 
 // Whether a frame writer drains the queues; under --trace-events alone events are only narrated.
 static bool queues_enabled() {
-    return !rmstate_dump_path.empty();
+    return !rmstate_dump_path.empty() || machine_format_rmstate;
 }
 
 bool rmstate_events_enabled() {
@@ -151,7 +151,9 @@ static uint32_t push(Zone::Ownership viewer, ObsEvent ev) {
     ev.turn = clamp16(cur_game.turn_state.turn);
     if (trace_events) trace_event(viewer, ev);
     const uint32_t seq = ev.seq;
-    if (queues_enabled()) q.events.push_back(std::move(ev));
+    // The stdout stream serves the seats only.
+    if (machine_format_rmstate && is_seat(viewer)) q.stream_events.push_back(ev);
+    if (!rmstate_dump_path.empty()) q.events.push_back(std::move(ev));
     return seq;
 }
 
@@ -568,9 +570,10 @@ void obs_match_end(int winner, int wins_a, int wins_b) {
     push_game_boundary(EventKind::MATCH_END, winner, wins_a, wins_b);
 }
 
-std::vector<ObsEvent> take_obs_events(Zone::Ownership viewer) {
+std::vector<ObsEvent> take_obs_events(Zone::Ownership viewer, ObsConsumer consumer) {
+    ObsEventQueue &q = cur_game.obs_events.queues[slot(viewer)];
     std::vector<ObsEvent> out;
-    out.swap(cur_game.obs_events.queues[slot(viewer)].events);
+    out.swap(consumer == ObsConsumer::STREAM ? q.stream_events : q.events);
     return out;
 }
 

@@ -149,6 +149,27 @@ static const CliOption OPTIONS[] = {
     {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
     // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
     {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
+    // The machine protocol's stdout format: bquery (the default) or rmstate (the deciding seat's
+    // RMSTATE frame, state_format/stream.h); either implies --machine.
+    {"--machine-format", nullptr, true, false,
+        [](const char *v) {
+            if (std::strcmp(v, "rmstate") == 0)
+                machine_format_rmstate = true;
+            else if (std::strcmp(v, "bquery") != 0)
+                fatal_error("--machine-format: expected bquery or rmstate, got '" + std::string(v) + "'");
+            machine_mode = true;
+        },
+        nullptr},
+    // Render the RMSTATE frames --rmstate-dump writes (or --rmstate-read reads) as JSON lines.
+    {"--state-dump", nullptr, true, false,
+        [](const char *v) {
+            if (std::strcmp(v, "json") != 0)
+                fatal_error("--state-dump: the only format is json, got '" + std::string(v) + "'");
+            state_dump_json = true;
+        },
+        nullptr},
+    // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
+    {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},
 };
 

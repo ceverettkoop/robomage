@@ -431,6 +431,9 @@ state, persisted across the per-game ECS reset; `src/classes/match_state.{h,cpp}
 `--machine`: at each decision the engine prints a `BQUERY` header + binary payload on stdout and
 reads one integer on stdin; other stdout lines are narrative. Emitter: `emit_machine_frame` in
 `src/cli_output.cpp` (layout comment at the top of `src/machine_io.h`).
+`--machine-format rmstate` instead writes the deciding seat's RMSTATE frames (`RMSTATE <nbytes>\n`
++ payload, `docs/state_format.md` §9) as the only stdout output (everything else goes to stderr),
+answered by the same one integer, plus a terminal frame per seat at match end; the default is unchanged.
 ```
 BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 float32[STATE_SIZE] state   (priority player's = "self" perspective)
@@ -547,6 +550,13 @@ sections above are not repeated here.
   keyword indices
 - `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
 - `src/state_format/dump.{h,cpp}` — `--rmstate-dump FILE`: every viewer's frames at each decision
+  (and `--state-dump json`'s `FILE.jsonl`)
+- `src/state_format/stream.{h,cpp}` — `--machine-format rmstate` (the deciding seat's frames on
+  stdout) and the per-decision / match-end bookkeeping both frame writers share
+- `src/state_format/decode.{h,cpp}` — RMSTATE bytes → plain structs (std + `schema.h` only): schema
+  from the SCHEMA frame, generic table decode, re-encode, stream record reader
+- `src/state_format/json.{h,cpp}` — `--state-dump json`: a decoded frame as one JSON line;
+  `recode.{h,cpp}` — `--rmstate-read FILE` (decode → re-encode byte check, JSON to stdout)
 - `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
   shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
   (match-long `seq`), drained into each STATE frame; `--trace-events`
@@ -582,6 +592,8 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `extractor.py` — `CardGameExtractor` policy trunk; `popart.py` — per-bucket value normalization
 - `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`)
 - `action_spec.py` — `--play` semantic spec resolver (see Test harness)
+- `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts / numpy
+  arrays, the `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
 
 **Training (`train/`)**
 - `train.py` — CLI for PPO (`train`, `league`, `exploiter`, …), `observe`, `baseline`, `curriculum`,
@@ -618,6 +630,8 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
+- `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
+  JSON, the `--machine-format rmstate` stream vs the dump
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),

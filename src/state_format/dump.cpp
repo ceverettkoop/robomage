@@ -8,15 +8,22 @@
 #include "../classes/game.h"
 #include "../error.h"
 #include "../game_driver.h"
-#include "../queries/players.h"
+#include "decode.h"
 #include "encode.h"
 #include "events.h"
+#include "json.h"
 #include "schema.h"
+#include "stream.h"
 
 static FILE *dump_file();
+static FILE *json_file();
 static std::string dump_path();
-static void write_record(FILE *f, const std::string &payload);
-static Zone::Ownership deciding_seat();
+static const rmstate::Schema &json_schema();
+static void write_record(const std::string &payload);
+static void write_match_frames(Zone::Ownership viewer);
+
+static const Zone::Ownership DUMP_VIEWERS[] = {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN};
+static bool match_frames_written = false;
 
 // --rmstate-dump's FILE with each "%p" replaced by the engine's process id, so engines started in
 // parallel with one flag (a test pool) write separate files.
@@ -38,32 +45,65 @@ static FILE *dump_file() {
     return f;
 }
 
-static void write_record(FILE *f, const std::string &payload) {
-    const std::string record = rmstate::frame_record(payload);
-    std::fwrite(record.data(), 1, record.size(), f);
+// --state-dump json's FILE.jsonl, opened with the dump.
+static FILE *json_file() {
+    static FILE *f = nullptr;
+    if (!f) {
+        const std::string path = dump_path() + ".jsonl";
+        f = std::fopen(path.c_str(), "wb");
+        if (!f) fatal_error("--state-dump json: cannot open " + path);
+    }
+    return f;
 }
 
-// The seat the decision belongs to: the sideboarding player between games, else the priority
-// holder (every mid-flow prompt seats priority at its chooser).
-static Zone::Ownership deciding_seat() {
-    if (sideboard_phase && sideboard_phase_player != Zone::UNKNOWN) return sideboard_phase_player;
-    return priority_seat();
+// The schema the JSON lines are rendered with, decoded from this engine's own SCHEMA frame.
+static const rmstate::Schema &json_schema() {
+    static rmstate::Schema schema;
+    static bool built = false;
+    if (!built) {
+        const rmstate::DecodeResult res = rmstate::decode_schema_frame(encode_schema_frame(Zone::UNKNOWN), &schema);
+        if (!res.ok()) fatal_error("--state-dump json: the SCHEMA frame does not decode: " + res.message);
+        built = true;
+    }
+    return schema;
+}
+
+static void write_record(const std::string &payload) {
+    const std::string record = rmstate::frame_record(payload);
+    std::fwrite(record.data(), 1, record.size(), dump_file());
+    if (!state_dump_json) return;
+    rmstate::DecodedFrame frame;
+    const rmstate::DecodeResult res = rmstate::decode_frame(payload, json_schema(), &frame);
+    if (!res.ok()) fatal_error("--state-dump json: a frame does not decode: " + res.message);
+    const std::string line = rmstate::frame_json(frame, json_schema()) + "\n";
+    std::fwrite(line.data(), 1, line.size(), json_file());
+}
+
+static void write_match_frames(Zone::Ownership viewer) {
+    write_record(encode_schema_frame(viewer));
+    write_record(encode_cards_frame(viewer));
+    write_record(encode_decklists_frame(viewer));
 }
 
 void rmstate_dump_decision(const std::vector<LegalAction> &actions) {
     if (rmstate_dump_path.empty()) return;
-    static bool match_frames_written = false;
-    FILE *f = dump_file();
-    ++cur_game.state_decisions;
-    const Zone::Ownership decider = deciding_seat();
-    for (Zone::Ownership viewer : {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN}) {
-        if (!match_frames_written) {
-            write_record(f, encode_schema_frame(viewer));
-            write_record(f, encode_cards_frame(viewer));
-            write_record(f, encode_decklists_frame(viewer));
-        }
-        write_record(f, encode_state_frame(viewer, actions, decider, take_obs_events(viewer)));
+    const Zone::Ownership decider = rmstate_deciding_seat();
+    for (Zone::Ownership viewer : DUMP_VIEWERS) {
+        if (!match_frames_written) write_match_frames(viewer);
+        write_record(encode_state_frame(viewer, actions, decider, take_obs_events(viewer, ObsConsumer::DUMP)));
     }
     match_frames_written = true;
-    std::fflush(f);
+    std::fflush(dump_file());
+    if (state_dump_json) std::fflush(json_file());
+}
+
+void rmstate_dump_match_over() {
+    if (rmstate_dump_path.empty()) return;
+    for (Zone::Ownership viewer : DUMP_VIEWERS) {
+        if (!match_frames_written) write_match_frames(viewer);
+        write_record(encode_state_frame(viewer, {}, Zone::UNKNOWN, take_obs_events(viewer, ObsConsumer::DUMP), true));
+    }
+    match_frames_written = true;
+    std::fflush(dump_file());
+    if (state_dump_json) std::fflush(json_file());
 }

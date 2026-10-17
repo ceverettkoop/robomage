@@ -814,7 +814,7 @@ struct Game {
         // Indexed by viewer: [Zone::UNKNOWN] the omniscient viewer, [Zone::PLAYER_A], [Zone::PLAYER_B].
         HandleTable handle_tables[3];
         // Decisions of this game the state format has encoded (the RMSTATE header's decision
-        // number, state_format/dump.h); counted only while frames are written.
+        // number, state_format/stream.h); counted only while frames are written.
         uint32_t state_decisions = 0;
         // The observation events channel (src/state_format/events.h): each viewer's queue of events
         // not yet delivered in a frame, with its match-long seq counter. Carried into the next

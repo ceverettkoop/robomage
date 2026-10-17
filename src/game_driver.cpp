@@ -36,6 +36,7 @@
 #include "search_server.h"
 #include "snapshot.h"
 #include "state_format/events.h"
+#include "state_format/stream.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
@@ -123,6 +124,15 @@ bool closed_decklist = false;
 // --rmstate-dump FILE: every viewer's state-format frames are written to FILE at each decision
 // (state_format/dump.h); empty = off.
 std::string rmstate_dump_path;
+// --machine-format rmstate: the deciding seat's RMSTATE frame replaces BQUERY on stdout, and
+// everything else the engine prints goes to stderr (state_format/stream.h).
+bool machine_format_rmstate = false;
+// --state-dump json: every frame --rmstate-dump writes is also rendered as a JSON line into
+// FILE.jsonl, and --rmstate-read prints its stream as JSON lines (state_format/json.h).
+bool state_dump_json = false;
+// --rmstate-read FILE: decode, re-encode and compare an RMSTATE stream instead of playing
+// (state_format/recode.h); empty = off.
+std::string rmstate_read_path;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;
@@ -641,8 +651,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             // --broadcast-steps: surface this forced pass to the machine driver as
             // a passive BSTATE frame (no stdin read, nothing recorded). Suppressed
             // while a search is simulating (snapshot live) or unwinding a restore —
-            // those lines are hypothetical and must not reach the observer.
-            if (machine_mode && broadcast_steps_mode && !search_restore_pending()
+            // those lines are hypothetical and must not reach the observer. Not under
+            // --machine-format rmstate, whose stdout carries RMSTATE records only.
+            if (machine_mode && broadcast_steps_mode && !machine_format_rmstate && !search_restore_pending()
                 && !search_any_snapshot_live()) {
                 Query q;
                 g_priority_window_open = true;
@@ -703,9 +714,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     concede_reset_unwind();
     obs_game_end(cur_game.winner);
     // A single game is a whole match (play_bo3_match reports a bo3 match's end).
-    if (match_game_number < 0)
+    if (match_game_number < 0) {
         obs_match_end(
             cur_game.winner, cur_game.winner == Zone::PLAYER_A ? 1 : 0, cur_game.winner == Zone::PLAYER_B ? 1 : 0);
+        rmstate_match_over();
+    }
     return cur_game.winner;
 }
 
@@ -1485,6 +1498,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                        : ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A
                                                  : Zone::PLAYER_B;
     obs_match_end(result, ctx.wins_a, ctx.wins_b);
+    rmstate_match_over();
     match_game_number = -1;
     ctx.active = false;
     return result;

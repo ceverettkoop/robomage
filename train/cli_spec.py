@@ -3370,8 +3370,17 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/az_inspect.py", subs=[
                          help="Top cards listed per unit (default: 6)")),
 ])
 
+# train/rmstate.py: the Python RMSTATE decoder's CLI (docs/state_format.md §9).
+RMSTATE_TOOL = Tool("rmstate", "train/rmstate.py", subs=[
+    Sub("dump", "Print an RMSTATE stream (an engine --rmstate-dump file, or a "
+                "--machine-format rmstate capture) as JSON lines, as the engine's "
+                "--state-dump json renders them",
+        items=[Arg("file", required=True, metavar="FILE",
+                   help="RMSTATE stream to decode (- = stdin)")]),
+])
+
 ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, AZ_INSPECT_TOOL,
-             PLAY_TOOL, HARNESS_TOOL]
+             PLAY_TOOL, HARNESS_TOOL, RMSTATE_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────

@@ -116,7 +116,7 @@ static void write_card_abilities(FrameWriter &w, int card_id, const std::vector<
 static void write_token_card(FrameWriter &w, int card_id, const Token &tok);
 static Zone::Ownership plays_first_seat();
 static int match_game_index();
-static void write_header(const Ctx &c);
+static void write_header(const Ctx &c, bool terminal);
 static void write_turn(const Ctx &c);
 static void write_players(const Ctx &c, const ZoneCounts counts[3]);
 static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos);
@@ -519,11 +519,12 @@ static Zone::Ownership plays_first_seat() {
     return a_first ? Zone::PLAYER_A : Zone::PLAYER_B;
 }
 
-static void write_header(const Ctx &c) {
+static void write_header(const Ctx &c, bool terminal) {
     c.w.row(TableId::HEADER)
         .u8(u8_count(match_game_index()))
         .u32(cur_game.state_decisions)
-        .u8(static_cast<uint64_t>(rmstate::KnowledgeLevel::OFF));
+        .u8(static_cast<uint64_t>(rmstate::KnowledgeLevel::OFF))
+        .u8(terminal ? 1 : 0);
 }
 
 static void write_turn(const Ctx &c) {
@@ -1301,7 +1302,7 @@ std::string encode_decklists_frame(Zone::Ownership viewer) {
 }
 
 std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
-    const std::vector<ObsEvent> &events) {
+    const std::vector<ObsEvent> &events, bool terminal) {
     const Zone::Ownership v = viewer_key(viewer);
     FrameWriter w(FrameKind::STATE, frame_viewer(v), rmstate_schema_hash());
     const Ctx c{v, is_seat(v) ? v : Zone::PLAYER_A, w};
@@ -1356,7 +1357,7 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
         if (std::find(battlefield.begin(), battlefield.end(), o.second) != battlefield.end())
             ordered_battlefield.push_back(o.second);
 
-    write_header(c);
+    write_header(c, terminal);
     write_turn(c);
     write_players(c, counts);
     for (const auto &o : objects) {

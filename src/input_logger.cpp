@@ -21,6 +21,7 @@
 #include "machine_io.h"
 #include "search_server.h"
 #include "state_format/dump.h"
+#include "state_format/stream.h"
 #include "state_format/handles.h"
 
 extern std::string RESOURCE_DIR;
@@ -305,6 +306,19 @@ void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int cho
     }
 }
 
+int InputLogger::accept_machine_choice(const std::vector<LegalAction> &actions, int choice) {
+    if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
+        commit_choice(actions, choice);
+        return apply_concede_input(choice);
+    }
+    if (choice == -1 && !actions.empty()) {
+        choice = static_cast<int>(actions.size()) - 1;
+    }
+    check_machine_choice(actions, choice);
+    commit_choice(actions, choice);
+    return choice;
+}
+
 // Two menu entries that make the same choice: the same kind of action on interchangeable objects
 // (two copies of a card in a graveyard or library — Surgical Extraction targeting one of several
 // copies, a search finding one) with the same label and cast / activation variant.
@@ -366,9 +380,13 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // --trace-handles: every viewer's handle table as of this decision (state_format/handles.h).
     if (trace_handles) trace_handle_tables();
 
-    // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h).
+    // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h),
+    // after the bookkeeping both RMSTATE writers share (state_format/stream.h).
     // Not while the search server unwinds to a restore: that decision is never made.
-    if (!search_restore_pending()) rmstate_dump_decision(actions);
+    if (!search_restore_pending()) {
+        rmstate_begin_decision();
+        rmstate_dump_decision(actions);
+    }
 
     if (replay_mode) {
         int choice;
@@ -416,21 +434,12 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
         // commit_choice the stdio path uses so the decision log stays complete. Unset in
         // bin/robomage, so this is a no-op there. The provider can consult
         // search_loop_safe() for restore-safety without any extra plumbing.
-        if (input_provider) {
-            int choice = input_provider(actions);
-            // Same concession sentinels the stdio path accepts.
-            if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
-                commit_choice(actions, choice);
-                return apply_concede_input(choice);
-            }
-            // Same -1 (confirm sentinel) → last-slot remap the stdio path applies.
-            if (choice == -1 && !actions.empty()) {
-                choice = static_cast<int>(actions.size()) - 1;
-            }
-            check_machine_choice(actions, choice);
-            commit_choice(actions, choice);
-            return choice;
-        }
+        // Same concession sentinels and -1 (confirm sentinel) → last-slot remap the stdio path
+        // applies.
+        if (input_provider) return accept_machine_choice(actions, input_provider(actions));
+        // --machine-format rmstate: the deciding seat's RMSTATE frame takes the place of BQUERY,
+        // answered by one integer line (state_format/stream.h).
+        if (rmstate_stream_enabled()) return accept_machine_choice(actions, rmstate_stream_exchange(actions));
         extern bool sideboard_phase;
         extern Zone::Ownership sideboard_phase_player;
         GameState gs;

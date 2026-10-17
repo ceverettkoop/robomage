@@ -1146,6 +1146,16 @@ def test_browse_source():
           "the analysis-tui tool is folded into analysis browse")
 
 
+def test_rmstate_entry():
+    print("rmstate.py builds its parser from cli_spec.RMSTATE_TOOL")
+    import rmstate
+    check(cli_spec.RMSTATE_TOOL in ALL_TOOLS, "RMSTATE_TOOL is registered in ALL_TOOLS")
+    ns = rmstate.build_parser().parse_args(["dump", "x.rms"])
+    check(ns.cmd == "dump" and ns.file == "x.rms", f"rmstate dump FILE parses: {ns}")
+    code, _err = parse_error(rmstate.build_parser(), ["dump"])
+    check(code == 2, "rmstate dump without FILE should be rejected")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -1172,6 +1182,7 @@ def main():
     test_play_boards()
     test_az_inspect_entry()
     test_browse_source()
+    test_rmstate_entry()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")
         return 1

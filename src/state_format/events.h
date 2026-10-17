@@ -91,10 +91,18 @@ struct ObsEvent {
         std::vector<ObsEventPlayer> players;
 };
 
+// The frame writers that drain the queues; each takes its own copy of every event, at its own
+// pace (the dump at every decision, the stdout stream at that viewer's decisions).
+enum class ObsConsumer : uint8_t {
+    DUMP,    // --rmstate-dump (state_format/dump.h)
+    STREAM,  // --machine-format rmstate (state_format/stream.h)
+};
+
 // One viewer's queue.
 struct ObsEventQueue {
         uint32_t next_seq = 1;
-        std::vector<ObsEvent> events;
+        std::vector<ObsEvent> events;         // not yet in a --rmstate-dump frame
+        std::vector<ObsEvent> stream_events;  // not yet in a --machine-format rmstate frame (seats only)
 };
 
 // The order-hidden batch an instruction is putting cards into a library with (§5): its cards'
@@ -124,8 +132,8 @@ struct ObsEventState {
         uint32_t miracle_draw_seq[3] = {0, 0, 0};
 };
 
-// Whether anyone consumes events (a frame writer or --trace-events). Every obs_* hook is a no-op
-// otherwise.
+// Whether anyone consumes events (a frame writer: --rmstate-dump or --machine-format rmstate; or
+// --trace-events). Every obs_* hook is a no-op otherwise.
 bool rmstate_events_enabled();
 
 // ── Zone moves (Orderer) ─────────────────────────────────────────────────────────────────────
@@ -244,7 +252,8 @@ void obs_match_end(int winner, int wins_a, int wins_b);
 
 // ── Draining ─────────────────────────────────────────────────────────────────────────────────
 
-// `viewer`'s queued events, in order, removing them from the queue (a frame is built from them).
-std::vector<ObsEvent> take_obs_events(Zone::Ownership viewer);
+// `viewer`'s events queued for `consumer`, in order, removing them from that consumer's queue (a
+// frame is built from them).
+std::vector<ObsEvent> take_obs_events(Zone::Ownership viewer, ObsConsumer consumer);
 
 #endif /* STATE_FORMAT_EVENTS_H */

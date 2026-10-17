@@ -367,11 +367,53 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **Framing on `--machine`.** `RMSTATE <nbytes>\n` followed by the payload on stdout. The reply
   is one line: an action index, `-1` (confirm), `-2` (concede game) or `-3` (concede match).
   Narrative goes to stderr or its own file descriptor, never interleaved with frames.
+  `--machine-format rmstate` (implies `--machine`; `src/state_format/stream.h`) is this
+  protocol:
+  - stdout carries only `RMSTATE` records. The engine moves stdout's descriptor aside for them
+    at startup and points stdout at stderr, so everything else it prints (narrative under
+    `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, a `--player` seat's CLI prompt) goes to
+    stderr. Passive `BSTATE` frames are not written; `--search-server` is refused.
+  - At each decision the deciding seat (the sideboarding player between games, else the
+    priority holder) gets, the first time it decides in the match, its `SCHEMA`, `CARDS` and
+    `DECKLISTS` frames, then its `STATE` frame with the menu. Its events are those queued for it
+    since its previous frame, so a seat that does not decide for a while gets them all in its
+    next frame.
+  - Menu row *i* is the action reply *i* selects: the menu as offered, after the
+    interchangeable-choice collapse (register 17), the same list BQUERY indexes. `-1` is the
+    last row. End of input or an unparseable line reads as `-1`, as for BQUERY.
+  - **Terminal frame.** Once the match is over (after its `match_end` event) each seat, A then B,
+    gets one more `STATE` frame with `header.terminal = 1`, no menu and no reply: it carries the
+    seat's last events (`game_end`, `match_end`). The engine then exits. `--rmstate-dump` ends
+    with the same terminal frame for each of its three viewers.
+  - The frames are the ones `--rmstate-dump` writes for that seat at that decision, apart from
+    the events: each writer drains its own copy of the queues. At every decision, while either
+    writer is on, every viewer's handles are issued canonically before any frame is built, so
+    handle numbers (and so the stream's bytes) do not depend on whether a dump is written.
 - **Versioning.** Every frame header carries the format version and schema hash; a decoder
   refuses a mismatch.
 - **Cadence.** A frame at each of the viewer's decisions. Pushed passive frames (a spectator or
   GUI stream) are deferred; batching events into the next frame is enough for agents.
-- **Debug view.** `--state-dump json`, rendered from the decoded binary (not a second encoder).
+- **Debug view.** `--state-dump json`, rendered from the decoded binary (not a second encoder):
+  every record `--rmstate-dump FILE` writes is decoded and written as one JSON line into
+  `FILE.jsonl`, and `--rmstate-read FILE --state-dump json` prints a stream's lines on stdout.
+  The renderer is `src/state_format/json.h` (rules there); `train/rmstate.py` renders the same
+  bytes. One object per frame, no whitespace, keys in a fixed order:
+  `{"frame":…,"viewer":…,"version":…,"schema_hash":"<16 hex>","tables":{"<table>":[{row},…],…}}`
+  (plus `"skipped":[ids]` when a block's id is unknown). Tables in ascending id with the string
+  pool left out; columns in schema order. Text renders as a string; `enum:<e>` as its name
+  (`null` for all ones); `mask:<e>` as the list of set bits' names; `bool` as `true`/`false`;
+  `card`, `index`, `row:` as a number or `null` for all ones; everything else (handles
+  included) as a number.
+- **Decoding.** `src/state_format/decode.h` (standard library and `schema.h` only) builds a
+  schema from a `SCHEMA` frame (reading tables 1-4 with `schema.h`'s layout, which the frame must
+  repeat, and checking its hash) and decodes any frame against it into tables of typed values;
+  `encode_frame` re-encodes them with the frame writer, byte-identical for the engine's frames.
+  It refuses a version or schema-hash mismatch, an unknown frame kind or viewer, a known table
+  with another row width or in a frame of another kind, and malformed framing; it skips unknown
+  table ids. `--rmstate-read FILE` (`src/state_format/recode.h`) decodes, re-encodes and compares
+  every record of a stream (`ERROR:` lines, exit status 1 on any difference).
+  `train/rmstate.py` is the Python decoder, built from the `SCHEMA` frame the same way (its
+  bootstrap is the frame and block headers and the layout of tables 1-4).
 
 ## 10. Verification
 
@@ -469,7 +511,7 @@ No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `
 | Frame header (24 B) | `magic` u32 (`RMSF`), `version` u16, `kind` u8 (`enum:frame_kind`), `viewer` u8 (`enum:viewer`), `schema_hash` u64, `n_tables` u32, reserved u32 (0) |
 | Table block | header (16 B): `table_id` u16, reserved u16, `row_width` u32, `row_count` u32, reserved u32; then `row_count × row_width` bytes, zero-padded to a multiple of 8 |
 | Order | blocks in ascending table id (so `strings`, id 1, comes first); a table with no rows is omitted; `n_tables` counts the blocks present |
-| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, then a `STATE` frame at every decision. `%p` in FILE is replaced by the process id |
+| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
 | Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
 | Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
 | Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `STATE` (snapshot 20–48, events 80–82, knowledge 90–95) |
@@ -557,6 +599,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | `header` (20) | `game` | u8 | `count` | 0-based game of the match (between games, the upcoming one); version, schema hash and viewer are in the frame header |
 | | `decision` | u32 | `count` | decision number in the game, from 1 (`Game::state_decisions`) |
 | | `knowledge` | u8 | `enum:knowledge_level` | this viewer's level; OFF until the sidecar lands (T11) |
+| | `terminal` | u8 | `bool` | the frame written once the match is over: no menu, no reply; it carries the last events (section 9) |
 | `turn` (21) | `turn` | u16 | `count` | |
 | | `step` | u8 | `enum:step` | |
 | | `active`, `priority` | seat | | |
