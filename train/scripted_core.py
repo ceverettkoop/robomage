@@ -70,6 +70,8 @@ import random
 from dataclasses import dataclass
 from enum import Enum
 
+from explore_agent import explore_choice
+
 
 # ── Engine enum names (the RMSTATE schema's string tables) ───────────────────
 _CAT_PASS = "PASS_PRIORITY"
@@ -135,7 +137,7 @@ class Skill(Enum):
                 per-game novelty boost for not-yet-chosen cast/activate cards.
                 Not meant to play well — meant so that sweeping a range of seeds
                 exercises as many distinct engine paths as possible
-                (see _explore_action).
+                (see explore_agent.py).
     """
     RANDOM = "random"
     GREEDY = "greedy"
@@ -159,7 +161,7 @@ class AgentConfig:
     enable_combo_lines: bool = True     # keep deck-specific combo logic (Doomsday etc.)
     rng_seed: int | None = None         # seed for RANDOM's generator (reproducible)
     explore_profile: str = "default"    # EXPLORE weight profile: "default" (coverage)
-                                        # or "patient" (big-mana; _EXPLORE_PATIENT_WEIGHTS)
+                                        # or "patient" (big-mana; explore_agent.py)
 
 
 # The "hard" configuration: heuristic play with combat simulation, evaluation-based
@@ -185,7 +187,7 @@ _PRESETS: dict[str, AgentConfig] = {
     # never collapses into a fixed deck-specific line — it fans out across cards.
     "explore":   AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
     "fuzz":      AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
-    # Big-mana explore variant (see _EXPLORE_PATIENT_WEIGHTS): develops mana and
+    # Big-mana explore variant (see explore_agent._EXPLORE_PATIENT_WEIGHTS): develops mana and
     # holds expensive cards until they are castable. Plain explore never even sees
     # a 7-drop as a LEGAL option — this profile exists to create that availability.
     "explore:patient": AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False,
@@ -206,7 +208,7 @@ def preset_config(spec: str = "scripted") -> AgentConfig:
     (Skill.EXPLORE) — vary the game ``--seed`` to fan it across engine paths.
     ``explore:patient`` (or bare ``patient``; ``scripted:explore:patient`` also
     resolves) is the fuzzer's big-mana profile: it develops mana and holds
-    expensive cards until they are castable (see ``_EXPLORE_PATIENT_WEIGHTS``).
+    expensive cards until they are castable (see ``explore_agent._EXPLORE_PATIENT_WEIGHTS``).
     """
     s = (spec or "scripted").strip().lower()
     suffix = s.split(":", 1)[1] if s.startswith("scripted:") else s
@@ -218,104 +220,6 @@ def preset_config(spec: str = "scripted") -> AgentConfig:
             f"valid suffixes: {sorted(_PRESETS)}"
         )
     return _PRESETS[suffix]
-
-
-# Per-action-category weights for the EXPLORE tier (_explore_action). Higher weight =
-# more likely to be chosen. The bias is toward the categories that exercise the most
-# engine code (casting, activating, combat), with PASS kept low-but-nonzero so the game
-# still advances, and the "finish this phase" confirms (attackers/blockers/sideboard)
-# kept below their per-item counterparts so a few items get declared before confirming.
-# Any category not listed (targets, X, modes, mana, search, dig, discard, sacrifice,
-# name-a-card, ...) uses _EXPLORE_DEFAULT_WEIGHT — a plain uniform pick among that
-# decision's options, so which target / X / mode is taken varies freely across seeds
-# (one exception: the SEARCH_LIBRARY fail-to-find slot, see
-# _EXPLORE_SEARCH_FAIL_WEIGHT).
-_EXPLORE_DEFAULT_WEIGHT = 2.0
-_EXPLORE_WEIGHTS: dict[str, float] = {
-    _CAT_CAST:     8.0,   # cast a spell — stack, resolution, effects, triggers, SBAs
-    _CAT_ACTIVATE: 6.0,   # activated abilities (mana, sacrifice, ETB-independent effects)
-    _CAT_LAND:     4.0,   # play a land (fuels casts; land ETBs / fetch / man-lands)
-    _CAT_SEL_ATK:  3.0,   # declare an attacker — combat triggers, damage, first strike
-    _CAT_SEL_BLK:  3.0,   # declare a blocker — blocking, combat damage assignment
-    _CAT_PASS:     1.0,   # advance priority / the game (low, but never zero)
-    _CAT_CONF_ATK: 0.6,   # finish declaring attackers (declare a few first)
-    _CAT_CONF_BLK: 0.6,   # finish declaring blockers
-    _CAT_SB_DONE:  0.6,   # finish sideboarding (swap a few cards first, bo3)
-    _CAT_COMPANION: 8.0,  # once-per-game and rarely offered — take it when legal so
-                          # the companion machinery (and the card itself) gets fuzzed
-}
-
-# Novelty bias for the EXPLORE tier: a CAST_SPELL / ACTIVATE_ABILITY option whose
-# card this agent has NOT yet chosen this game gets its category weight
-# multiplied by this factor. Without it, expensive cards sharing a deck with
-# cheaper lines were NEVER cast across a whole seed sweep (e.g. Meteor Sword,
-# hard-cast Lorien Revealed) — the weighted draw kept landing on the cheap
-# alternatives. First-time options winning ~3x more often fixes that while the
-# already-seen cards keep their normal weight. Tracked per game in
-# ``ScriptedCore._explore_seen`` (see ``new_game``).
-_EXPLORE_NOVELTY_FACTOR = 3.0
-
-# SEARCH_LIBRARY fail-to-find de-weight (relative to 1.0 per real pick; applies to
-# BOTH explore profiles — a category-level tweak, not a patient one). A library
-# search menu offers "Fail to find" alongside the real picks at the same uniform
-# default weight, so a uniform draw failed ~1,200 tutors across a 441-game fuzz
-# campaign — wasting coverage of the ChangeZone search/shuffle/ETB paths behind
-# every fetch land and tutor. 0.3 keeps the fail branch reachable (the
-# shuffle-without-find path still wants occasional fuzzing) while a real pick wins
-# the large majority of searches. The fail slot is identified by its missing card,
-# not by index: the engine builds it from Entity(0) — no card — while every real
-# pick is a library card. Mandatory searches simply have no such slot, and a
-# fail-only menu is a 1-choice decision handled before weighting.
-_EXPLORE_SEARCH_FAIL_WEIGHT = 0.3
-
-# ── "Patient" big-mana EXPLORE profile (explore:patient) ────────────────────
-# The plain-explore weight draw only picks among LEGAL actions, and empirically
-# (130+ explore games) expensive cards never became legal: explore never develops
-# enough mana for a 7-drop, and cheap alternate lines with the same card (e.g.
-# islandcycling Lorien Revealed) remove the card from hand long before it could be
-# hard-cast. No weighting among legal options fixes availability — this profile
-# does, by developing mana and holding expensive cards. Shares all the EXPLORE
-# machinery (novelty bias on casts, seed-mixed global-random draw); only the
-# weights below differ. Plain "explore" reads only _EXPLORE_WEIGHTS and is
-# untouched by this table.
-_EXPLORE_PATIENT_WEIGHTS: dict[str, float] = {
-    _CAT_CAST:     8.0,   # base; scaled up by mana value (_PATIENT_CAST_MV_FACTOR)
-                          # so a legal expensive cast dominates the draw
-    _CAT_ACTIVATE: 1.0,   # demoted hard: cheap activations (cycling, sac lines)
-                          # are what strip expensive cards from hand early
-    _CAT_LAND:     100.0, # near-always take the land drop — mana development is
-                          # the whole point of this profile
-    _CAT_SEL_ATK:  3.0,   # keep combat as in plain explore so games stay decisive
-    _CAT_SEL_BLK:  3.0,
-    _CAT_PASS:     6.0,   # bank mana-development turns: an early cheap ACTIVATE
-                          # now competes with a strong PASS instead of winning
-    _CAT_CONF_ATK: 0.6,   # confirms below their per-item counterparts, as in
-    _CAT_CONF_BLK: 0.6,   # _EXPLORE_WEIGHTS, so a few get declared first
-    _CAT_SB_DONE:  0.6,
-    _CAT_COMPANION: 8.0,  # as in _EXPLORE_WEIGHTS: once-per-game, take it when legal
-}
-
-# Patient-only CAST scaling: weight *= (1 + mana_value * factor). A legal MV-7
-# cast gets 8x the pull of an MV-0 one, so once the mana finally exists the big
-# card is cast almost immediately instead of losing the draw to cheap spells.
-_PATIENT_CAST_MV_FACTOR = 1.0
-
-# Patient mode gives NO novelty boost to ACTIVATE options. The novelty factor is
-# what makes plain explore eagerly try an unseen islandcycle/sac activation the
-# first turn it appears — exactly the card-stripping behaviour this profile must
-# suppress. Casts keep the boost (a novel expensive cast should win the draw).
-_PATIENT_ACTIVATE_NOVELTY = False
-
-# Patient-only "hold" scaling for card-consuming activations: an ACTIVATE whose
-# card is still in the acting player's HAND (cycling, Talon Gates-style
-# from-hand lines) gets its weight DIVIDED by (1 + mana_value * factor) — the
-# mirror image of the CAST scaling. A flat ACTIVATE demotion is not enough: the
-# option reappears at every priority window, so even a small per-window pick
-# probability compounds into "always cycled before turn 5" over a game. Scaling
-# the demotion by MV holds exactly the cards this profile exists to hard-cast
-# while leaving cheap from-hand activations barely affected. Battlefield
-# activations (Wasteland, equip, ...) are untouched — their card is not in hand.
-_PATIENT_HOLD_MV_FACTOR = 1.0
 
 
 # ── The cards the rules key on (card names, as the card vocabulary spells them) ─
@@ -1457,7 +1361,7 @@ def _is_miracle_reveal(v) -> bool:
 # search-to-top-of-library, CHOOSE_CARD for non-library picks (e.g. Aether
 # Vial's put-a-creature-from-hand). When such a menu offers ONLY the
 # "Fail to find" slot (a single choice with no card — the engine builds it from
-# Entity(0), see _EXPLORE_SEARCH_FAIL_WEIGHT), the search cannot succeed. If the
+# Entity(0), see explore_agent._EXPLORE_SEARCH_FAIL_WEIGHT), the search cannot succeed. If the
 # resolving item on top of the stack is a self-controlled ability, re-activating
 # its source card right now would just fail again, so the hard tier records the
 # fail against the card and skips its ACTIVATE for the rest of the TURN —
@@ -3473,98 +3377,6 @@ class ScriptedCore:
         return self._random_index(num_choices)
 
     def _explore_action(self, v) -> int:
-        """Coverage fuzzer: a game-seed-deterministic, coverage-biased weighted choice.
-
-        Goal: sweeping a range of seeds should touch as many distinct engine paths as
-        possible — the opposite of GREEDY/HEURISTIC, which converge on one strong line
-        per state. Three ingredients:
-
-        * **Coverage bias.** Each legal action is weighted by its category
-          (``_EXPLORE_WEIGHTS``) so the pick leans toward the actions that drive the
-          most engine code — casting spells, activating abilities, attacking/blocking —
-          while still passing often enough to advance the game. Same-category menus
-          (targets, X values, modes, search/dig picks) get uniform weight, so *which*
-          target/mode/X is taken varies freely across seeds — except a library
-          search's "Fail to find" slot, which is de-weighted to
-          ``_EXPLORE_SEARCH_FAIL_WEIGHT`` so tutors/fetches usually complete.
-
-        * **Novelty bias.** A cast/activate option whose card this agent has not
-          yet chosen this game gets its weight multiplied by
-          ``_EXPLORE_NOVELTY_FACTOR``, so expensive cards with cheaper alternatives
-          in the same deck still get cast somewhere in a seed sweep instead of losing
-          the draw every time. Options with no card are non-novel (no
-          boost). Chosen cast/activate cards are recorded in ``_explore_seen``,
-          which is per game: ``new_game()`` clears it, and the pregame mulligan
-          decision clears it too as a safety net for agent instances reused across
-          games without a ``new_game()`` call.
-
-        * **Determinism, tied to the GAME seed.** The weighted draw comes from Python's
-          global ``random`` — the same source GREEDY breaks ties with — which
-          ``runner.run_games`` (and the test harness) seed to the engine ``--seed``
-          before each game (``random.seed(seed)``). So the whole explore trajectory is
-          reproducible for a given seed, and a different seed reshuffles both the deck
-          (a different view at every step) and this draw, branching into a
-          different line. No separate per-agent seed; the only cross-call state is the
-          per-game novelty set, itself a deterministic function of the trajectory.
-
-        Not a strong opponent — combo lines are off (see the "explore" preset), so it
-        fans out across cards instead of collapsing into a deck's known line.
-
-        The ``explore:patient`` preset (``AgentConfig.explore_profile ==
-        "patient"``) runs this same machinery with a big-mana weight profile —
-        land drops near-mandatory, PASS boosted over cheap activations, CAST
-        weight scaled by mana value — so expensive cards that plain explore never
-        even sees as legal options get developed toward and hard-cast (see
-        ``_EXPLORE_PATIENT_WEIGHTS``).
-        """
-        num_choices = v.n
-        if num_choices <= 1:
-            return 0
-        cats = v.cats
-        # A game always opens with a mulligan query, so seeing one means a new game
-        # started: clear the novelty set even when nobody called new_game() (e.g. a
-        # scripted opponent reused across vec-env episodes). Repeated clears during
-        # London mulligans are harmless — nothing is cast pregame.
-        if any(c == _CAT_MULLIGAN for c in cats):
-            self._explore_seen.clear()
-        # The "patient" profile swaps in the big-mana weight table, scales CAST
-        # weight by mana value, and withholds the novelty boost from ACTIVATE
-        # (see the _EXPLORE_PATIENT_* constants). The default profile takes the
-        # exact same code path with the original table, so plain explore
-        # behaviour (and its RNG consumption) is unchanged.
-        patient = self.config.explore_profile == "patient"
-        table = _EXPLORE_PATIENT_WEIGHTS if patient else _EXPLORE_WEIGHTS
-        weights = []
-        for i, c in enumerate(cats):
-            w = table.get(c, _EXPLORE_DEFAULT_WEIGHT)
-            # De-weight a search's "Fail to find" (the card-less slot) so the
-            # tutor/fetch usually finds — see _EXPLORE_SEARCH_FAIL_WEIGHT.
-            if c == _CAT_SEARCH and v.card(i) is None:
-                w *= _EXPLORE_SEARCH_FAIL_WEIGHT
-            if c in (_CAT_CAST, _CAT_ACTIVATE):
-                card = v.card(i)
-                if card is not None and card not in self._explore_seen:
-                    if c == _CAT_CAST or not patient or _PATIENT_ACTIVATE_NOVELTY:
-                        w *= _EXPLORE_NOVELTY_FACTOR
-                if patient and card is not None:
-                    if c == _CAT_CAST:
-                        w *= 1.0 + _card_mana_value(v, card) * _PATIENT_CAST_MV_FACTOR
-                    elif _hand_has_card(v, card):
-                        # Card-consuming from-hand activation (cycling etc.):
-                        # hold the card — see _PATIENT_HOLD_MV_FACTOR.
-                        w /= 1.0 + _card_mana_value(v, card) * _PATIENT_HOLD_MV_FACTOR
-            weights.append(w)
-        # Mulligan is a 2-way [keep, mulligan] choice — bias toward keeping (index 0)
-        # so most games actually start, but still mulligan ~1/4 of the time to exercise
-        # the mulligan + London-bottoming paths.
-        if num_choices == 2 and all(c == _CAT_MULLIGAN for c in cats):
-            weights = [3.0, 1.0]
-        if sum(weights) <= 0:
-            weights = [1.0] * num_choices
-        choice = int(random.choices(range(num_choices), weights=weights, k=1)[0])
-        # Record the chosen card so this game's later draws treat it as non-novel.
-        if cats[choice] in (_CAT_CAST, _CAT_ACTIVATE):
-            card = v.card(choice)
-            if card is not None:
-                self._explore_seen.add(card)
-        return choice
+        """The EXPLORE tiers' choice: ``explore_agent.explore_choice`` with this agent's per-game
+        novelty set and its weight profile."""
+        return explore_choice(v, self._explore_seen, patient=self.config.explore_profile == "patient")

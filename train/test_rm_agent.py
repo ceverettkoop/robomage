@@ -62,7 +62,7 @@ _QUESTIONS = ("mana_value", "cost_colors", "is_land", "power", "is_delve", "is_e
               "has_miracle", "is_legendary", "land_colors", "deals_damage", "has_nonmana_activation",
               "is_artifact_or_enchantment")
 # The core's module constants that are not card names.
-_NOT_CARDS = ("_PRESETS", "_EXPLORE_WEIGHTS", "_EXPLORE_PATIENT_WEIGHTS", "_MANA_CATS",
+_NOT_CARDS = ("_PRESETS", "_MANA_CATS",
               "_SEARCH_MENU_CATS", "_HARD_CONFIG", "_FILTERED")
 
 CLOSED_GAMES = (("league/wubg_doomsday", "league/burn", 41), ("league/bw_dnt", "league/wrb_energy", 42),
