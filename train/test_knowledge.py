@@ -32,7 +32,18 @@ instance (``src/state_format/knowledge_feed.h``, ``docs/knowledge_store.md`` §7
                 disagree: known library tops, known opponent hand cards, cards seen this match) must
                 match a signature of ``train/regression/knowledge_divergences.json`` (``classify``);
                 and every signature's regression scenario, run with ``--selfcheck-knowledge``, must
-                pass and print a ``SHADOW:`` line that signature classifies.
+                pass and print a ``SHADOW:`` line that signature classifies;
+  6. archetype  archetype inference (``docs/knowledge_store.md`` §10): ``--machine-format rmstate``
+                sessions (``ARCHETYPE_GAMES``) whose METAGAME frame must list every deck
+                ``archetypes.json`` tags, with the labels of ``archetypes.ARCHETYPES`` plus unknown;
+                at every seat frame the true registered list is consistent and no other archetype
+                is exact; a list the seat sees (its own, the other's with open decklists) is exactly
+                consistent and classified registered from the first frame; under
+                ``--closed-decklist`` the other seat's hidden list is classified as nothing, before
+                any of its cards is seen every label of a list that can hold the library and
+                sideboard the game started with is possible, no consistent list lacks a
+                card it was seen to own, the archetype is exact once the cards seen leave one
+                label, and it becomes exact during the session.
 
 The replay corpus runs under ``--selfcheck-knowledge`` in the ``rmstate`` tier's corpus part
 (``train/test_selfcheck_state.py``), which shares those engine runs and classifies their ``SHADOW:``
@@ -110,7 +121,17 @@ STREAM_GAMES = [
     ("league/bug", "league/wubg_doomsday", True, 33, SELFCHECK_KNOWLEDGE + ["--closed-decklist"]),
 ]
 
-PARTS = ["selftest", "fuzz", "isolation", "truth", "shadow"]
+# Archetype-inference sessions (--machine-format rmstate, no dump): (deck_a, deck_b, bo3, seed,
+# extra engine flags). Under --closed-decklist each seat's view of the other's reference lists
+# narrows as cards are seen; with open decklists it is exact from the first frame.
+ARCHETYPE_GAMES = [
+    ("league/bug", "delver", False, 41, ["--closed-decklist"]),
+    ("league/ur_delver", "league/lands", True, 42, ["--closed-decklist"]),
+    ("league/burn", "league/bw_dnt", False, 43, ["--closed-decklist"]),
+    ("league/uw_control", "league/reanimator", False, 44, []),
+]
+
+PARTS = ["selftest", "fuzz", "isolation", "truth", "shadow", "archetype"]
 
 DIVERGENCES_PATH = os.path.join(_TRAIN, "regression", "knowledge_divergences.json")
 CLASSIFICATIONS = ("old-vector leak", "old-vector quirk")
@@ -396,6 +417,156 @@ def check_shadow(binary, logs):
     return fails
 
 
+# ── 6. archetype ───────────────────────────────────────────────────────────────────────────────
+
+def _metagame_of(payloads):
+    """(list names, list labels, list counts {name: Counter of card → main + side}, archetype labels,
+    list sizes [(main, side)]) from the first METAGAME frame of a stream."""
+    dec = rmstate.StreamDecoder()
+    for p in payloads:
+        f = dec.feed(p)
+        if f.kind != "METAGAME":
+            continue
+        labels = [r["name"] for r in f.tables.get("meta_archetype", [])]
+        lists = f.tables.get("meta_list", [])
+        names = [r["name"] for r in lists]
+        counts = {n: collections.Counter() for n in names}
+        for r in f.tables.get("meta_list_card", []):
+            counts[names[r["list"]]][r["card"]] += r["main"] + r["side"]
+        return names, [labels[r["archetype"]] for r in lists], counts, labels, [(r["main"], r["side"]) for r in lists]
+    return None
+
+
+def check_metagame(payloads, label):
+    """The METAGAME frame lists every deck archetypes.json tags (all exist and are implemented), with
+    its label, and the labels are ARCHETYPES plus unknown in index order."""
+    import archetypes
+    meta = _metagame_of(payloads)
+    if meta is None:
+        return [f"{label}: no METAGAME frame"]
+    names, list_labels, _counts, labels, _sizes = meta
+    fails = []
+    if labels != archetypes.ARCHETYPES + [archetypes.UNKNOWN_NAME]:
+        fails.append(f"{label}: METAGAME labels {labels}, archetypes.py has {archetypes.ARCHETYPES} + unknown")
+    tagged = archetypes.mapping()
+    missing = sorted(set(tagged) - set(names))
+    if missing:
+        fails.append(f"{label}: tagged deck(s) {missing} are not reference lists (missing .dk or unimplemented cards)")
+    for n, lab in zip(names, list_labels):
+        if tagged.get(n) != lab:
+            fails.append(f"{label}: reference list {n} has label {lab}, archetypes.json {tagged.get(n)}")
+    return fails
+
+
+def _archetype_session(task):
+    """One archetype session (a process-pool task): (failure messages, summary)."""
+    game, binary, out_dir = task
+    deck_a, deck_b, bo3, seed, flags = game
+    closed = "--closed-decklist" in flags
+    label = (f"archetype {os.path.basename(deck_a)} vs {os.path.basename(deck_b)} {'bo3' if bo3 else 'bo1'} "
+             f"seed {seed}{' closed' if closed else ''}")
+    err = os.path.join(out_dir, f"archetype_{seed}.err")
+    try:
+        payloads = test_rmstate.run_stream(binary, deck_a, deck_b, bo3, seed, err_path=err, flags=flags)
+    except (rmstate.RMStateError, subprocess.TimeoutExpired) as exc:
+        return [f"{label}: {exc} (see {err})"], None
+    fails = test_selfcheck_state.scan_engine_log(err, label)
+    fails += check_metagame(payloads, label)
+    meta = _metagame_of(payloads)
+    if meta is None:
+        return fails, None
+    names, list_labels, counts, labels, sizes = meta
+    deck = {"A": deck_a, "B": deck_b}
+    started = {}  # seat → the other seat's (library, sideboard) at its latest game_start
+    dec = rmstate.StreamDecoder()
+    frames = {"A": 0, "B": 0}
+    exact_at = {}
+    first_possible = {}
+    game_start = None
+    unproven = 0
+    for p in payloads:
+        f = dec.feed(p)
+        if game_start is None:
+            game_start = dec.schema.enums["event_kind"].index("GAME_START")
+        if f.kind != "STATE" or f.viewer not in deck:
+            continue
+        seat, other = f.viewer, "B" if f.viewer == "A" else "A"
+        frames[seat] += 1
+        for r in f.tables.get("event_player", []):
+            if r["player_rel"] == 2 and f.tables["event"][r["event"]]["kind"] == game_start:
+                started[seat] = (r["library"], r["sideboard"])
+        where = f"{label}: {seat} frame {frames[seat]}"
+        rows = {(r["player_rel"], r["list"]): r for r in f.tables.get("k_template", [])}
+        arch = {(r["player_rel"], r["archetype"]): r for r in f.tables.get("k_archetype", [])}
+        if len(rows) != 2 * len(names) or len(arch) != 2 * len(labels):
+            fails.append(f"{where}: {len(rows)} k_template / {len(arch)} k_archetype rows")
+            continue
+        unproven += sum(1 for r in rows.values() if not r["exact"])
+        for rel, who in ((1, seat), (2, other)):
+            true_list = names.index(deck[who]) if deck[who] in names else None
+            true_label = labels.index(list_labels[true_list]) if true_list is not None else None
+            consistent = [lst for lst in range(len(names)) if rows[(rel, lst)]["consistent"]]
+            registered = [lst for lst in range(len(names)) if rows[(rel, lst)]["registered"]]
+            if true_list is not None and true_list not in consistent:
+                fails.append(f"{where}: {who}'s true list {deck[who]} is reported inconsistent")
+            exact = [a for a in range(len(labels)) if arch[(rel, a)]["exact"]]
+            if exact and exact != [true_label]:
+                fails.append(f"{where}: {who}'s archetype reported exactly {labels[exact[0]]}")
+            visible = rel == 1 or not closed
+            if visible:
+                # The list is explicit: exactly the true list, classified as itself, from the first frame.
+                if consistent != [true_list] or registered != [true_list] or exact != [true_label]:
+                    fails.append(f"{where}: {who}'s open list: consistent {consistent}, registered {registered}, "
+                                 f"exact archetype {exact}")
+                continue
+            if registered:
+                fails.append(f"{where}: {who}'s hidden list is classified as {registered}")
+            # At least as sharp as counting the cards seen: no consistent list lacks a card the
+            # opponent was seen to own, and when every list holding them shares a label, it is exact.
+            seen = collections.Counter({r["card"]: r["match"] for r in f.tables.get("k_seen", [])
+                                        if r["player_rel"] == 2 and r["match"] > 0})
+            fits = [lst for lst in range(len(names)) if all(counts[names[lst]][c] >= n for c, n in seen.items())]
+            if set(consistent) - set(fits):
+                fails.append(f"{where}: lists {sorted(set(consistent) - set(fits))} are consistent but lack a seen card")
+            fit_labels = {list_labels[lst] for lst in fits}
+            if len(fit_labels) == 1 and true_list in fits and exact != [true_label]:
+                fails.append(f"{where}: the cards seen leave only {fit_labels}, not reported exact")
+            if frames[seat] == 1 and not seen:
+                # Before any card is seen, every label of a list that can hold the library and
+                # sideboard the game started with.
+                lib, side = started.get(seat, (0, 0))
+                want = {list_labels[lst] for lst in range(len(names)) if sizes[lst][0] >= lib and sizes[lst][1] >= side}
+                got = {labels[a] for a in range(len(labels)) if arch[(rel, a)]["possible"]}
+                if got != want:
+                    fails.append(f"{where}: before any card of {who} is seen, possible {sorted(got)}, "
+                                 f"the list sizes allow {sorted(want)}")
+                first_possible[who] = len(got)
+            if exact and who not in exact_at:
+                exact_at[who] = (frames[seat], sorted(seen))
+    if closed:
+        for who in ("A", "B"):
+            if who not in exact_at:
+                fails.append(f"{label}: {who}'s archetype never became exact for the other seat")
+    summary = None
+    if not fails:
+        when = "; ".join(f"{who}: {first_possible.get(who, '?')} labels possible at first, exact at the other "
+                         f"seat's frame {fr}" for who, (fr, _s) in sorted(exact_at.items()))
+        summary = (f"{label}: {sum(frames.values())} seat frames, {unproven} unproven row(s)"
+                   f"{'; ' + when if when else ''}")
+    return fails, summary
+
+
+def check_archetypes(binary, out_dir):
+    tasks = [(g, binary, out_dir) for g in ARCHETYPE_GAMES]
+    fails = []
+    with ProcessPoolExecutor(max_workers=_workers(len(tasks))) as ex:
+        for got, summary in ex.map(_archetype_session, tasks):
+            fails += got
+            if summary:
+                print(f"  OK   {summary}", flush=True)
+    return fails
+
+
 def run(binary=BINARY, out_dir=None, parts=None, fuzz_seeds=None):
     """The tier; returns failure messages (empty = pass). `parts` (default PARTS) selects parts; the
     truth and shadow parts reuse the fuzz and isolation parts' dumps and logs (and run those parts
@@ -426,6 +597,8 @@ def run(binary=BINARY, out_dir=None, parts=None, fuzz_seeds=None):
         elif part == "shadow":
             logs = sorted(glob.glob(os.path.join(out_dir, "fuzz_*.err")) + glob.glob(os.path.join(out_dir, "stream_*.err")))
             fails += check_shadow(binary, logs)
+        elif part == "archetype":
+            fails += check_archetypes(binary, out_dir)
         times.append((part, time.monotonic() - t0))
     print("knowledge: " + ", ".join(f"{p} {dt:.0f}s" for p, dt in times), flush=True)
     # The dumps and saved streams are large; once checked (pass or fail: the failure names the game
