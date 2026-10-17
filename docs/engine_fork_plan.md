@@ -230,8 +230,16 @@ the fields of the event it consumes, which is the completeness check on the even
   fixed: a departed stack target's `lki` row (register 40).
 - **Explore.** The `explore` tiers in the same file move with the rest; step 3 decides whether
   they also get a C++ port.
+  **Status: done** (`state_format_agent_map.md` §9). The rule is `train/explore_agent.py` on the
+  shared core's view, its rules listed for the C++ port; the `fuzz` tier (and the nightly fuzz)
+  plays it on RMSTATE through the driver: the same games as on BQUERY.
 - **Driver.** A minimal driver (engine subprocess, frame read, reply write) replaces `env.py`
   / `runner.py` / `opponents.py` for agent games. **Fork here.**
+  **Status: done** (`state_format_agent_map.md` §9). `train/rm_driver.py`, stdlib only: the
+  scripted tiers, explore, `first`, `actions:`; corpus-format transcripts (the replay corpus is
+  unchanged); the `replay`, `smoke` and `fuzz` tiers and the `rmagent` tier's games run on it.
+  `play:` stays on `runner.py` until 3a. Release, scripted hard vs hard: ~530 decisions/s (BQUERY
+  ~1,100).
 
 ## Step 3 — C++ gate, then strip the RL stack
 

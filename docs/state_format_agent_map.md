@@ -10,7 +10,9 @@ completeness checklist for the step-2 port and the specification of the pass-1 p
 BQUERY games, except listed and classified old-vector leaks and quirks. Pass 2 is built (section 8):
 the agent's decisions are one view-independent core read through a decoded-frame view
 (`train/rm_agent.py`) on RMSTATE and through the vector view on BQUERY; the replay corpus holds its
-RMSTATE games.
+RMSTATE games. Step 2 is complete (section 9): the stdlib-only RMSTATE driver
+(`train/rm_driver.py`) plays the scripted tiers and the explore fuzzer, and the `replay`, `smoke`
+and `fuzz` gate tiers run on it.
 
 **Legend for "served by":**
 
@@ -369,5 +371,65 @@ none in pass 1's favour).
 1,050 decisions/s; RMSTATE pass 1 about 390; pass 2 about 450. On pass 2 the engine's frames and
 knowledge sidecar are about 45% of the time, the Python decode about 25%, the agent about 13%.
 
-**numpy:** `scripted_core.py` and `rm_agent.py` import none; the driver (`env.py`, `runner.py`,
-`opponents.py`, the adapter) still does, until the minimal driver replaces it.
+**numpy:** `scripted_core.py` and `rm_agent.py` import none; nor does the RMSTATE driver
+(section 9). The BQUERY driver (`env.py`, `runner.py`, `opponents.py`) and the pass-1 adapter do.
+
+## 9. The driver and the explore tier (plan step 2, end)
+
+**Driver.** `train/rm_driver.py` replaces `env.py` / `runner.py` / `opponents.py` for agent games
+on RMSTATE. It imports the standard library, `rmstate.py`, `rm_agent.py` and the agent modules
+only (the `rmagent` tier's `driver` part runs a game in a subprocess and fails on any module of the
+RL stack in `sys.modules`). Its parts:
+
+- `Engine`: the subprocess (`--machine-format rmstate`, the engine's cwd `bin/`), records read from
+  stdout and lines from stderr under one `select` loop (the engine flushes a decision's narrative
+  before its frame, so a non-blocking drain after the frame has all of it), every frame fed to its
+  seat's `rm_agent.SeatFrames`, decision frames returned, replies written; diagnostics to the
+  driver's stderr; a nonzero exit raises.
+- agents (`make_agent`): the scripted tiers and explore (`ScriptedCore` through `rm_agent.decide`),
+  `first` / `auto`, `actions:`; `play:` stays on `runner.py` until step 3a's C++ resolver.
+- `play_game` (one game or match: `random.seed`, `new_game`, the decision loop, the confirm-row
+  `-1` remap of attacker/blocker declarations, concessions, `GAME_RESULT` scoring) and `run_games`
+  (transcripts, results, draw logs, the bo3 per-game split).
+- its CLI: a flag table of its own (`CLI_FLAGS`, Arg fields as dicts) built with `argparse`;
+  `cli_spec.DRIVER_TOOL` registers the same table, so the parser needs no `cli_spec`.
+
+What it reads from the frames besides the agent's view: `header` (terminal, sideboarding),
+`menu` (category, description, ordinal: the transcript and the reply), `turn` (turn, step, active
+seat), `match.plays_first`, own `HAND` `object` rows and the `CARDS` names (the hand lines).
+
+**Corpus format: unchanged.** The verbose transcript reproduces `runner.run_games`' RMSTATE
+transcript byte for byte, so the replay corpus is identical (all 64 games) and was not re-recorded.
+What that took: the engine seed of game seed *s* is the one the gymnasium env draws
+(`np.random.Generator(PCG64(SeedSequence(s))).integers(0, 2**31 - 1)`, `rm_driver.engine_seed`,
+pure Python: numpy's seed-sequence hash, PCG64 XSL-RR and its 32-bit Lemire draw); the hand lines
+keep the adapter's order (token, owner, front-face name, handle), cap (10) and names (the card
+vocabulary's: accents folded, a split card's halves joined by "/"), and while sideboarding the
+masked observation's readings (no hand, "Player" the other seat). Over 80 bo3 matches and bo1
+games (scripted hard, explore, explore:patient, every league deck) the two drivers wrote identical
+transcripts; three of those stay in the `rmagent` tier. The compact transcript names categories
+and steps by the schema's enum names (not pinned by any tier).
+
+**Explore.** The tier already decided on the shared core's view (pass 2); its rule now lives in
+`train/explore_agent.py` (`explore_choice`, called by `ScriptedCore`), with the rules listed in its
+docstring for the step-3a C++ port (weights by category, the fail-to-find de-weight, the novelty
+and patient factors, the draw by Python's `random.choices`). It reads `n`, `cats`, `card(i)`,
+`hand` and `cards.mana_value` only, so its games are the same on both protocols: the `fuzz` tier,
+moved to the driver, plays the same 80 games as on BQUERY (transcripts equal but for the board
+block). Moving the code changed no BQUERY explore game either.
+
+**Gate tiers on the driver** (debug build, 4 cores): `replay` 21.6 s → 20.5 s; `smoke` 13.5 s →
+12.7 s (transcripts byte-identical); `fuzz` 21 s on BQUERY → 37 s on RMSTATE (the debug engine's
+frames and knowledge sidecar; the sidecar alone is about a third of it); the `rmagent` tier's
+`closed` part runs on the driver, and with its new `driver` part the tier takes about 13 s (10 s
+before). `agentparity` stays on `runner.py`: every part needs the pass-1 adapter or BQUERY.
+
+**Performance** (release, one process, 20 league matchups, bo1, no narrative, quiet): scripted hard
+vs hard: BQUERY 1,116 decisions/s, RMSTATE through `runner.py` 491, through the driver 533; explore
+vs explore: 1,194, 447, 477. Under the driver about half the time is the engine (frames, knowledge
+sidecar), a quarter the Python decode (`rmstate.Schema.decode`), a sixth the agent.
+
+**What still needs the old stack for agent games:** `play:` specs and the test harness (`--play`,
+zone presets; step 3a ports the resolver and adds engine presets), `human` seats and the model
+specs (deleted in 3b), the `agentparity` tier (the pass-1 adapter), and `train.py observe` /
+`runner.run_match` callers that are not tiers.

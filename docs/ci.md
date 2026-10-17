@@ -50,20 +50,22 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `plansearch` | sideboard plan search (`mcts.run_plan_search` + `IncrementalPlanSearch`): coverage, accounting, determinism, memo (`test_plan_search.py`) | needs the engine |
 | `mirror` | world-parallel mirror-pool search: bit-identical visits vs serial, bo3 lockstep, pool disable on drift (`test_mirror_search.py`) | needs the engine |
 | `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
-| `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed; the scripted agent (hard, both seats) on its RMSTATE frame view (`--machine-format rmstate`, `train/rm_agent.py`), so a transcript has no decoded board block | any transcript drift |
+| `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed; the scripted agent (hard, both seats) on its RMSTATE frame view (`--machine-format rmstate`, `train/rm_agent.py`), played by the RMSTATE driver (`train/rm_driver.py`, its verbose transcript: no decoded board block) | any transcript drift; ~20 s on 4 cores |
 | `rmstate` | the RMSTATE state format (`test_selfcheck_state.py`, below): the engine's `--selfcheck-state` checks over the replay corpus, a short explore fuzz and every scenario, with each seat's knowledge sidecar (`k_*` tables) on at level expert; the Python-vs-C++ decode comparison, decoder refusals and `--machine-format rmstate` sessions (`test_rmstate.py`'s parts); name-a-card candidates with open and closed decklists; the knowledge-side include isolation | needs the engine; ~3 min on 4 cores (2.5 min before the knowledge sidecar). Engine stderr in `ci_out/rmstate/` |
 | `knowledge` | the knowledge sidecar (`test_knowledge.py`, below): `rmknow --selftest` / `--exactness`; an explore fuzz under `--selfcheck-knowledge` (soundness against the engine state, knowledge state across snapshot restores); `--machine-format rmstate` sessions each with a `--rmstate-dump`, stream frames equal to the dump's `k_*` tables included, `rmknow --isolation` on each writer's frames; `rmknow --truth` on every dump; archetype inference against the true lists and the cards seen; the belief layer's structure, calibration and exactness. The replay corpus runs under `--selfcheck-knowledge` in the `rmstate` tier | needs the engine and `rmknow`; ~100 s on 4 cores. Engine stderr in `ci_out/knowledge/` |
 | `agentparity` | the scripted agent's vector view on RMSTATE through the pass-1 parity adapter (`test_agent_parity.py`, below): its card knowledge from a `CARDS` frame equals the generated tables'; the light corpus set's BQUERY games equal their frozen transcripts and their RMSTATE games equal those; smoke games (two bo3) equal on both protocols; listed divergences against their re-recorded baselines | needs the engine; ~20 s on 4 cores (`--full`: every corpus and smoke-tier game and a bo3 match per mirror, ~75 s) |
-| `rmagent` | the scripted agent's RMSTATE frame view (`test_rm_agent.py`): every card the decision rules name is a `CARDS` card; the structured `CARDS` columns' card knowledge (`rm_agent.FrameCards`) answers as the generated tables do on every vocab card except the listed, rules-correct differences; scripted-hard bo3 matches under `--closed-decklist` finish | needs the engine; ~10 s |
-| `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup), on its RMSTATE frame view (`--machine-format rmstate`) | see classification below |
-| `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
+| `rmagent` | the scripted agent's RMSTATE frame view and the RMSTATE driver (`test_rm_agent.py`, below): every card the decision rules name is a `CARDS` card; the structured `CARDS` columns' card knowledge (`rm_agent.FrameCards`) answers as the generated tables do on every vocab card except the listed, rules-correct differences; scripted-hard bo3 matches under `--closed-decklist` finish; the driver's seeds, card names, transcripts, imports and concessions | needs the engine; ~15 s |
+| `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup), on its RMSTATE frame view | see classification below; ~13 s on 4 cores |
+| `fuzz` | the `explore` fuzzer (`--mode`, `train/explore_agent.py`) over the league mirrors (`--fuzz-games`, default 8 per matchup), on its RMSTATE frame view | see classification below; ~37 s on 4 cores (21 s on BQUERY: the debug engine's frames and knowledge sidecar) |
 
-`smoke`/`fuzz` play through `runner.run_games`; game `i` of matchup `k` uses seed
-`--seed + 1000·k + i`. Every game is its own process-pool task (games are independent: own
-engine process, seed and fresh controllers), and each matchup's games are reassembled in game
-order into `ci_out/<tier>_<a>__<b>.txt` (per game: a `--- Game i/N [mode] seed S ---` header,
-Python output plus that game's engine stderr). A draw's saved log lands next to it as
-`<tier>_<a>__<b>_g<i>_draw_<stamp>.txt`.
+`smoke`/`fuzz` play through the RMSTATE driver (`rm_driver.run_games`, `--machine-format
+rmstate`); game `i` of matchup `k` uses seed `--seed + 1000·k + i` (the same games
+`runner.run_games` plays for that seed: the driver derives the engine seed as the gymnasium env
+does). Every game is its own process-pool task (games are independent: own engine process, seed and
+fresh agents), and each matchup's games are reassembled in game order into
+`ci_out/<tier>_<a>__<b>.txt` (per game: a `--- Game i/N [mode] seed S ---` header, the driver's
+verbose transcript plus the engine's diagnostic lines it copied to stderr). A draw's saved log
+lands next to it as `<tier>_<a>__<b>_g<i>_draw_<stamp>.txt`.
 
 ### The `rmstate` tier
 
@@ -179,15 +181,16 @@ train/.venv/bin/python train/test_agent_parity.py --lockstep match/bw_dnt__wrb_e
 
 ### The `rmagent` tier
 
-`train/test_rm_agent.py` (plan step 2, pass 2; `run()` is the tier, `--part` runs one part) checks
-the scripted agent's RMSTATE frame view (`train/rm_agent.py`) where the replay corpus, which pins its
-games, cannot:
+`train/test_rm_agent.py` (plan step 2; `run()` is the tier, `--part` runs one part) checks the
+scripted agent's RMSTATE frame view (`train/rm_agent.py`) and the RMSTATE driver
+(`train/rm_driver.py`) where the replay corpus, which pins their games, cannot:
 
 | Part | Runs | Fails on |
 |---|---|---|
 | `names` | a `--closed-decklist` CARDS frame (every vocab card) against every card name constant of `train/scripted_core.py` | a name no `CARDS` row has (a misspelt or renamed card silently disables its rule) |
 | `cards` | `rm_agent.FrameCards` (the structured `CARDS` columns) against the generated tables read by name (`scripted_agent._NameCardKnowledge`) on every vocab card face: mana value, pip colours, land, printed power, Delve, Equipment, Miracle, legendary, basic land types, damage to a chosen target, non-mana activations (lands), artifact / enchantment | a difference not listed in `EXPECTED_CARD_DIFFERENCES` (each listed one with its reason: hybrid and Phyrexian pips, split halves, a two-digit generic cost, damage with no chosen target), or a listed one that no longer differs |
-| `closed` | `CLOSED_GAMES`: scripted-hard bo3 matches under `--closed-decklist` (the opponent's list withheld: the agent reads the lists it can be on from `k_template`) | no winner, an `ERROR:` / `FATAL` line or a traceback |
+| `closed` | `CLOSED_GAMES`: scripted-hard bo3 matches under `--closed-decklist` (the opponent's list withheld: the agent reads the lists it can be on from `k_template`), played by the driver | no winner, an `ERROR:` / `FATAL` line or a traceback |
+| `driver` | the RMSTATE driver (`train/rm_driver.py`): `engine_seed` against pinned values and numpy's draw (when installed); its hand-line names against the card vocabulary on every card of a `--closed-decklist` CARDS frame; `TRANSCRIPT_MATCHES` (bo3: scripted hard, explore, explore:patient) played by the driver and by `runner.run_games` on `--machine-format rmstate`; a game in a subprocess; concessions (`actions:` with `-2` / `-3`, bo1 and bo3) | a seed or name that differs, a transcript line that differs, a module of `DRIVER_FORBIDDEN` (numpy, gymnasium, `env`, `runner`, `opponents`, `decode`, `cli_spec`, …) imported by a game, a concession scored otherwise |
 
 ```bash
 train/.venv/bin/python train/test_rm_agent.py --part cards
@@ -255,7 +258,7 @@ warning are the `ignored_keys` set in `src/parse.cpp`; their review is tracked i
   inputs). Three jobs:
   - `fuzz` — the `fuzz` tier over **all** league matchups, once with `explore` and once with
     `explore:patient`, 40 games per matchup, with a **rotating** seed (run number × 100000
-    unless given). The job summary prints the exact local reproduce command; artifact
+    unless given), on RMSTATE through the driver as the tier is. The job summary prints the exact local reproduce command; artifact
     `nightly-fuzz-explore[-patient]-<run>`.
   - `actor-parity` — installs CPU torch (pinned `torch==2.10.*`, matching the dev venv; later
     headers need C++20) and the SB3 stack, builds `make actor`, runs `--tier actor`.

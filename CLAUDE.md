@@ -617,6 +617,12 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `rm_agent.py` — the agent on RMSTATE (step-2 pass 2): one seat's decoded frames and `k_*` tables
   as the core's view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns
   (`FrameCards`); the default `scripted` view on `--machine-format rmstate`
+- `explore_agent.py` — the `explore` / `explore:patient` coverage fuzzer's decision rule
+  (`explore_choice`, called by `ScriptedCore`; its rules listed in the docstring for a port)
+- `rm_driver.py` — the stdlib-only agent-game driver on `--machine-format rmstate` (step 2):
+  engine subprocess, frame read, reply write; scripted tiers, explore, `first`, `actions:`;
+  `run_games` / `play_game`, the corpus-format transcripts; its own CLI (`CLI_FLAGS`, registered
+  as `cli_spec.DRIVER_TOOL`); runs the `replay`, `smoke` and `fuzz` tiers (`docs/game_running.md`)
 - `runner.py` — `drive_game` / `run_games` / `run_match` (see `docs/game_running.md`)
 - `opponents.py` — `Controller`, `make_controller` spec grammar, training pools, and THE model-spec
   resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator` / `load_spec_net` /
@@ -680,7 +686,8 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   games frozen in `regression/agent_parity/bquery_corpus/`; listed divergences in
   `regression/agent_parity_divergences.json`; `--lockstep GAME` attributes one)
 - `test_rm_agent.py` — tier `rmagent`: the agent's RMSTATE frame view (card names, `FrameCards`
-  against the generated tables, `--closed-decklist` games)
+  against the generated tables, `--closed-decklist` games) and the RMSTATE driver (engine seeds,
+  card names, transcripts equal to `runner.run_games`', no RL-stack import, concessions)
 - `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
   JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
 - `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the

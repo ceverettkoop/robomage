@@ -30,6 +30,7 @@ step pacing).
 | Agents | `opponents.py` (`Controller`, `make_controller`) | every agent kind below |
 | Loop | `runner.py` (`drive_game`) | THE decision loop: priority seat → controller, step, hooks |
 | Orchestration | `runner.py` (`run_games`, `run_match`) | env per game, transcripts, tallies, records |
+| RMSTATE driver | `rm_driver.py` (`run_games`, `play_game`) | stdlib-only agent games on `--machine-format rmstate` (scripted tiers, explore, `first`, `actions:`), [below](#the-rmstate-driver-rm_driverpy) |
 
 ## Agent specs (one grammar everywhere)
 
@@ -155,6 +156,51 @@ you have reset (and will close). `on_query(d)` / `on_action(d, action)` receive 
 returns a `GameRecord`. There is no other decision loop outside the training wrappers and the
 play boards.
 
+## The RMSTATE driver: `rm_driver.py`
+
+`train/rm_driver.py` plays agent games on `--machine-format rmstate` with the standard library
+only: no numpy, gymnasium, `env.py`, `runner.py`, `opponents.py` or `decode.py` (plan step 2's
+"Driver"; it is the game runner that remains after the RL stack is stripped). It reads each seat's
+frames with `rmstate.py` into `rm_agent.SeatFrames` and answers the deciding seat's frame with one
+integer.
+
+| Spec | Agent |
+|---|---|
+| `scripted` (`hard`, `heuristic`), `scripted:easy` / `greedy`, `scripted:random` | `scripted_core.ScriptedCore` on the seat's decoded frame (`rm_agent.decide`) |
+| `explore` (`fuzz`), `explore:patient` (`patient`) | the coverage fuzzer (`explore_agent.py`; its rules in that docstring) the same way |
+| `first`, `auto` | action 0 |
+| `actions:<i,i,…>` | this seat's replies in order (`-2` / `-3` concede), then action 0 |
+
+`play:` scripts stay on `runner.run_games` (`machine_format="rmstate"` there) until the `--play`
+resolver moves to C++ (plan step 3a).
+
+```bash
+train/.venv/bin/python train/rm_driver.py --player-a scripted --player-b explore \
+  --deck-a league/bug --deck-b league/burn --format bo1 --games 5 --verbose
+```
+
+Flags (`rm_driver.CLI_FLAGS`, registered as `cli_spec.DRIVER_TOOL`): observe's `--player-a/-b`,
+`--deck-a/-b`, `--format`, `--games`, `--seed` (default 1), `--verbose` / `--quiet` / `--out FILE`,
+`--max-decisions`, `--timing`, plus `--on-the-play a|b|random` (side b swaps the two sides' agents
+and decks between the engine seats, since engine seat A starts game 1), the engine's
+`--closed-decklist`, `--selfcheck-state`, `--selfcheck-knowledge`, `--rmstate-dump FILE`
+(`FILE.<i>` per match when `--games > 1`), `--knowledge-a/-b`, and `--engine-flags "…"` for any
+other engine flag ($ROBOMAGE_ENGINE_FLAGS is added too). The default binary is
+`bin/$ROBOMAGE_BUILD/robomage`, debug when unset.
+
+From Python: `rm_driver.run_games(agent_a, agent_b, *, deck_a, deck_b, n_games=1, bo3=False,
+seed=None, transcript="compact|verbose|quiet", out=None, max_decisions=None, narrative=True,
+engine_flags=(), on_game_end=None, dump=None, binary=…, label_a=, label_b=)` returns
+`(wins, losses, draws)` and hands each `GameRecord` (`reward`, `decisions`, `capped`, `actions`,
+`engine_seed`, `game_results` as `(winner, a_on_play)`, `diagnostics`) to `on_game_end`;
+`rm_driver.play_game` is one game or match with `on_narrative` / `on_decision(d)` /
+`on_action(d, action)` hooks. Game *i* uses seed `seed + i`: Python's `random` is seeded with it and
+the engine gets `engine_seed(seed + i)`, the seed the gymnasium env draws for it, so a seed names
+the same game as on `runner.run_games`. The verbose transcript is `runner.run_games`' RMSTATE
+transcript byte for byte (the replay corpus format); draws are announced and logged to
+`draw_<stamp>.txt` as there. Engine diagnostic lines (`WARNING:`, `ERROR:`, `FATAL`, the self-check
+summaries, `SHADOW:` lines) go to the driver's stderr; an engine that exits nonzero raises.
+
 ## The tools and where they sit
 
 Every tool that plays games takes `--format bo1|bo3` (default **bo3**). A count is always
@@ -181,7 +227,8 @@ training runs (az-selfplay, az-train, az, az-league); `play.py` is random unless
   `--board text` = `run_games` with a human seat (index or semantic spec; `concede` /
   `concede:match` resign); `--board tui|gui` (default gui) = the GameDriver boards.
 - **`ci_check.py`** — the `make check` gate; `smoke`/`fuzz` tiers and the `replay` corpus
-  (`regression/replay_diff.py`) run through `run_games`. See [`ci.md`](ci.md).
+  (`regression/replay_diff.py`) run through the RMSTATE driver (`rm_driver.run_games`), the
+  `rmagent` tier's closed-decklist matches too. See [`ci.md`](ci.md).
 - **`analysis.py`** — trace collection and counterfactual rollouts on `drive_game` hooks, replayed
   from a recorded engine seed + action log; `gui_session_io.py` replays saved sessions the same
   way.
