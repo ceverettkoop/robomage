@@ -1,13 +1,17 @@
-"""The engine on the RMSTATE protocol, seen through the pass-1 parity adapter.
+"""The engine on the RMSTATE protocol.
 
 ``RMStateNarrativeEnv`` is a ``env.NarrativeEnv`` whose engine runs with
-``--machine-format rmstate`` (plus ``--rmstate-card-scripts``): stdout carries only RMSTATE
-records, everything else the engine prints (narrative, ``GAME_RESULT`` / ``MATCH_RESULT``) goes
-to stderr. Each seat's frames feed that seat's ``rmstate_adapter.SeatAdapter``; at every decision
-the deciding seat's frame becomes the observation and side-channels a BQUERY env would give, so
-``runner.drive_game`` and the controllers that read only what the adapter rebuilds (the scripted
-agent in every tier, ``auto``, ``actions:``, ``play:``) run on it unchanged. The BQUERY vector is
-not available in this mode: the engine never writes it.
+``--machine-format rmstate``: stdout carries only RMSTATE records, everything else the engine
+prints (narrative, ``GAME_RESULT`` / ``MATCH_RESULT``) goes to stderr. Each seat's frames feed
+that seat's ``rm_agent.SeatFrames`` (the scripted agent's RMSTATE view, ``frame`` and
+``seat_frames`` at each decision) and its pass-1 parity adapter (``rmstate_adapter.SeatAdapter``),
+which turns the deciding seat's frame into the observation and side-channels a BQUERY env would
+give, so ``runner.drive_game`` and the controllers that read only the menu (``auto``,
+``actions:``, ``play:``) run on it unchanged. With ``full_vector`` the adapter rebuilds every
+part of the old observation the scripted agent reads (the pass-1 path: the agent on the vector
+view, ``scripted?view=vector``; the engine then also puts the raw scripts into CARDS,
+``--rmstate-card-scripts``); without it, only what the driver and those controllers read. The
+BQUERY vector is not available in this mode: the engine never writes it.
 
 The engine prints a decision's narrative before its frame (it flushes stdout, which points at
 stderr, first) and then blocks on stdin, so once a decision frame is read, a non-blocking drain of
@@ -25,14 +29,19 @@ import sys
 import numpy as np
 
 from env import (DRAW_REWARD, GAME_LOSS_REWARD, GAME_WIN_REWARD, MATCH_LOSS_REWARD,
-                 MATCH_WIN_REWARD, OBS_SIZE, NarrativeEnv)
+                 MATCH_WIN_REWARD, MAX_ACTIONS, OBS_SIZE, NarrativeEnv)
 import rmstate
-from rmstate_adapter import ADAPTER_TABLES, SeatAdapter
+from rm_agent import FRAME_TABLES, SeatFrames
+from rmstate_adapter import ADAPTER_TABLES, LIGHT_TABLES, SeatAdapter
 
-# Engine flags that select the RMSTATE protocol and put the raw scripts into CARDS.
+# Engine flags that select the RMSTATE protocol and put the raw scripts into CARDS (the pass-1
+# adapter's card knowledge reads them).
 RMSTATE_ENGINE_FLAGS = ["--machine-format", "rmstate", "--rmstate-card-scripts"]
-# Engine stderr lines that are diagnostics, not narrative.
-_DIAGNOSTIC_PREFIXES = (b"WARNING:", b"ERROR:", b"FATAL:")
+# Engine stderr lines that are diagnostics, not narrative: what a BQUERY engine writes to its own
+# stderr (errors and warnings, crash reports, the self-checks' summaries and shadow lines).
+_DIAGNOSTIC_PREFIXES = (b"WARNING:", b"ERROR:", b"FATAL", b"error:", b"CRASH:", b"Backtrace:",
+                        b"SELFCHECK-STATE:", b"SELFCHECK-KNOWLEDGE:", b"SHADOW:", b"SHADOW-KNOWLEDGE:",
+                        b"parse_card_script:")
 _READ_CHUNK = 1 << 16
 
 
@@ -41,19 +50,28 @@ class RMStateNarrativeEnv(NarrativeEnv):
 
     obs_partial = True
 
-    def __init__(self, **kwargs):
+    def __init__(self, full_vector=True, **kwargs):
         super().__init__(**kwargs)
         import subprocess
         self.engine_stderr = subprocess.PIPE
+        self.full_vector = full_vector
+        self._tables = (ADAPTER_TABLES if full_vector else LIGHT_TABLES) | FRAME_TABLES
         self._adapters = {}
+        self._seat_frames = {}
         self._decoder = None
+        self._menu_side = None
         self.frame = None              # the decision frame (rmstate.Frame) of the current decision
         self.seat = None               # its seat, "A" / "B"
         self.decisions = 0
         self.diagnostics = []          # engine WARNING/ERROR/FATAL lines
 
     def _extra_engine_flags(self) -> list:
-        return list(RMSTATE_ENGINE_FLAGS)
+        return list(RMSTATE_ENGINE_FLAGS if self.full_vector else RMSTATE_ENGINE_FLAGS[:2])
+
+    @property
+    def seat_frames(self):
+        """The deciding seat's rm_agent.SeatFrames."""
+        return self._seat_frames.get(self.seat)
 
     # The match's card knowledge and deck names, as the scripted agent reads them.
     @property
@@ -70,6 +88,7 @@ class RMStateNarrativeEnv(NarrativeEnv):
 
     def reset(self, *, seed=None, options=None):
         self._adapters = {"A": SeatAdapter("A"), "B": SeatAdapter("B")}
+        self._seat_frames = {"A": SeatFrames("A"), "B": SeatFrames("B")}
         self._decoder = rmstate.StreamDecoder()
         self._out = bytearray()
         self._err = bytearray()
@@ -86,16 +105,17 @@ class RMStateNarrativeEnv(NarrativeEnv):
         while True:
             payload = self._next_record()
             if payload is not None:
-                frame = self._decoder.feed(payload, ADAPTER_TABLES)
+                frame = self._decoder.feed(payload, self._tables)
                 seat = frame.viewer
                 ad = self._adapters.get(seat)
                 if ad is None:
                     continue
                 ad.feed(frame, self._decoder.schema)
+                self._seat_frames[seat].feed(frame, self._decoder.schema)
                 if frame.kind != "STATE" or frame.tables["header"][0]["terminal"] or "menu" not in frame.tables:
                     continue
                 self._drain_stderr(err_fd, info, block=False)
-                obs, side = ad.observation(frame)
+                obs, side = ad.observation(frame, light=not self.full_vector)
                 self.frame, self.seat = frame, seat
                 self.decisions += 1
                 self._set_side_channels(obs, side)
@@ -200,7 +220,11 @@ class RMStateNarrativeEnv(NarrativeEnv):
             self._print_narrative_line(line.decode("utf-8", errors="replace"))
 
     def _set_side_channels(self, obs, side):
+        if self.full_vector and side["num_choices"] > MAX_ACTIONS:
+            raise RuntimeError(f"a {side['num_choices']}-row menu: the vector view holds {MAX_ACTIONS} "
+                               "(the pass-1 path cannot play --closed-decklist's name-a-card menus)")
         self._obs[:] = obs
+        self._menu_side = side
         self._num_choices = side["num_choices"]
         self._action_cats = side["cats"]
         self._action_ordinals = side["ords"]
@@ -209,6 +233,22 @@ class RMStateNarrativeEnv(NarrativeEnv):
         self._perm_counters = None
         self._perm_token_names = None
         self._pending_confirm = side["pending_confirm"]
+
+    def menu_categories(self) -> list:
+        """The decision's action categories, every row (the menu is unbounded)."""
+        return [int(c) for c in self._menu_side["cats"][:self._num_choices]]
+
+    def decoded_menu(self) -> list:
+        """The decision's menu as ``decode.decode_actions`` gives it, every row."""
+        import decode
+        side = self._menu_side
+        n = self._num_choices
+        if "ids" not in side:
+            return decode.decode_actions_from_obs(self._obs, n, self._action_public,
+                                                  descriptions=self._action_descriptions)
+        return decode.decode_actions(side["cats"], side["ids"], side["ctrl"], n, side["public"],
+                                     descriptions=self._action_descriptions, zone_refs=side["zone"],
+                                     slot_refs=side["refs"], ordinals=side["ords"])
 
     def _kill_proc(self):
         if self._proc is not None and self._proc.stderr is not None:

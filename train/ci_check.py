@@ -185,8 +185,16 @@ fails, so one invocation reports every finding):
           regression/agent_parity_divergences.json (a classified old-vector
           leak or quirk) is compared with its re-recorded RMSTATE baseline.
           Needs bin/robomage; ~2 min.
+  rmagent The scripted agent's RMSTATE view (train/test_rm_agent.py, plan step 2
+          pass 2): every card the decision rules name is a CARDS card; the card
+          knowledge of a closed-decklist CARDS frame's structured columns
+          (rm_agent.FrameCards) answers as the generated tables do on every
+          vocab card except the listed, rules-correct differences; scripted-hard
+          bo3 matches under --closed-decklist finish. Needs bin/robomage; ~10s.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
-          lines) across the league mirrors + a ring of crosses. Fixed seeds.
+          lines) across the league mirrors + a ring of crosses, played over
+          --machine-format rmstate (the agent's frame view, rm_agent.py). Fixed
+          seeds.
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league
           mirrors. Fixed seeds on PR (a red run is the diff's fault); the nightly
           workflow rotates the seed and widens to every matchup.
@@ -282,7 +290,8 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", 
              "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
-             "mirror", "xwsearch", "replay", "rmstate", "knowledge", "agentparity", "smoke", "fuzz"]
+             "mirror", "xwsearch", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "smoke",
+             "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -916,6 +925,21 @@ def tier_agentparity(rep, out_dir):
               "[--lockstep GAME]", flush=True)
 
 
+def tier_rmagent(rep, out_dir):
+    """The scripted agent's RMSTATE view (test_rm_agent.py)."""
+    r = subprocess.run([sys.executable, "train/test_rm_agent.py", "--binary", runner.BINARY],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    with open(os.path.join(out_dir, "rmagent.err"), "w") as f:
+        f.write(r.stderr)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_rm_agent.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("rmagent", msg)
+        print("  reproduce: train/.venv/bin/python train/test_rm_agent.py [--part names|cards|closed]",
+              flush=True)
+
+
 def _run_capturing(out_path, run_fn):
     """Run run_fn() capturing both Python stdout AND the engine subprocess's
     stderr (fd 2, which NarrativeEnv inherits) into out_path. Returns whatever
@@ -957,7 +981,7 @@ def _play_game(task):
     Returns (wins, losses, draws), the crash message (None if the engine didn't
     crash) and the path of the game's transcript (Python output plus engine
     stderr), a hidden file in out_dir that _write_matchup_transcript consumes."""
-    tier, deck_a, deck_b, mode, game_idx, seed, out_dir = task
+    tier, deck_a, deck_b, mode, game_idx, seed, out_dir, machine_format = task
     stem = _matchup_stem(tier, deck_a, deck_b)
     game_path = os.path.join(out_dir, f".{stem}_g{game_idx + 1}.txt")
     work_dir = tempfile.mkdtemp(prefix=f".{stem}_g{game_idx + 1}_", dir=out_dir)
@@ -969,7 +993,7 @@ def _play_game(task):
             make_controller(mode), make_controller(mode),
             label_a=f"A:{mode}", label_b=f"B:{mode}",
             deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed,
-            verbose=True)
+            verbose=True, machine_format=machine_format)
 
     crashed = None
     try:
@@ -1015,15 +1039,16 @@ def _write_matchup_transcript(out_path, games, base_seed, mode):
     return (wins, losses, draws), crashes
 
 
-def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
-    """Run each matchup as scripted games, classify draws, scan transcripts.
+def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir, machine_format="bquery"):
+    """Run each matchup as scripted games (over ``machine_format``), classify draws, scan
+    transcripts.
 
     Matchup k's game i uses seed base_seed + 1000*k + i. Every game is
     independent (own engine process and seed), so all of them run in one
     process pool; each matchup's transcript is reassembled in game order and
     the report is made in matchup order."""
     seeds = [base_seed + 1000 * k for k in range(len(pairs))]
-    tasks = [(tier, deck_a, deck_b, mode, i, seed + i, out_dir)
+    tasks = [(tier, deck_a, deck_b, mode, i, seed + i, out_dir, machine_format)
              for (deck_a, deck_b), seed in zip(pairs, seeds)
              for i in range(n_games)]
     workers = max(1, min(len(tasks), os.cpu_count() or 4))
@@ -1060,9 +1085,10 @@ def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
 
 
 def tier_smoke(rep, args, out_dir):
-    """Deterministic league smoke with the scripted hard agent."""
+    """Deterministic league smoke with the scripted hard agent, on its RMSTATE frame view."""
     pairs = _matchups(args.matchups or "mirrors+ring")
-    _run_matchups(rep, "smoke", pairs, "scripted", args.smoke_games, args.seed, out_dir)
+    _run_matchups(rep, "smoke", pairs, "scripted", args.smoke_games, args.seed, out_dir,
+                  machine_format="rmstate")
 
 
 def tier_fuzz(rep, args, out_dir):
@@ -1292,6 +1318,7 @@ _TIER_FNS = {
     "rmstate": lambda rep, args, out_dir: tier_rmstate(rep, out_dir),
     "knowledge": lambda rep, args, out_dir: tier_knowledge(rep, out_dir),
     "agentparity": lambda rep, args, out_dir: tier_agentparity(rep, out_dir),
+    "rmagent": lambda rep, args, out_dir: tier_rmagent(rep, out_dir),
     "smoke": tier_smoke,
     "fuzz": tier_fuzz,
     "actor": lambda rep, args, out_dir: tier_actor(rep),
@@ -1334,14 +1361,16 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "agentparity", "scenarios", "obsinv",
+    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios",
+                  "obsinv",
                   "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "scenarios", "obsinv", "snapshot",
+    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios", "obsinv",
+        "snapshot",
         "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")

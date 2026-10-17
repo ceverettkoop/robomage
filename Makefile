@@ -145,14 +145,16 @@ check: all
 
 # Regenerate every derived artifact after an intentional C++ change: provision
 # the card set (codegen reads card scripts), then re-record the replay corpus with
-# the fresh binary. Run this when `make check` reports corpus drift, then commit the
-# results. `all` already regenerates all codegen unconditionally (the `pygen` target),
+# the fresh binary, and the scripted agent's BQUERY-pinned games and re-recorded
+# divergences (train/test_agent_parity.py --record). Run this when `make check`
+# reports corpus drift, then commit the results. `all` already regenerates all codegen unconditionally (the `pygen` target),
 # so provisioning first — which may fetch changed scripts — guarantees the codegen it
 # produces reflects the current card set before the corpus is recorded against it.
 regen:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) all
 	$(PYTHON) train/regression/replay_diff.py record
+	$(PYTHON) train/test_agent_parity.py --record
 
 # Force a clean re-fetch of every Forge card/token script, then VALIDATE the fresh
 # scripts against the COMMITTED replay corpus. Deletes the gitignored local scripts

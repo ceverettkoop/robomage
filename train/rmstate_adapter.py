@@ -246,6 +246,11 @@ ADAPTER_TABLES = frozenset({
     "object_link", "combat", "stack", "stack_mode", "stack_target", "lki", "play_permission", "pending",
     "menu", "match", "own_deck", "event", "event_card", "k_position", "k_known_hand",
 })
+# The tables of a light observation (SeatAdapter.observation(light=True)).
+LIGHT_TABLES = frozenset({
+    "schema_table", "schema_column", "schema_enum", "card", "decklist", "decklist_card",
+    "header", "turn", "player", "player_counter", "object", "stack", "menu", "match",
+})
 
 
 class SeatAdapter:
@@ -326,18 +331,20 @@ class SeatAdapter:
                 self._preset.add(c["handle_after"])
 
     # ── the observation ────────────────────────────────────────────────────────────────────
-    def observation(self, frame):
+    def observation(self, frame, light=False):
         """(obs, side) for a decision frame: the OBS_SIZE float32 vector and a dict of the
         BQUERY side-channels (``num_choices``, ``cats``, ``ords``, ``public``, ``descriptions``,
-        ``pending_confirm``)."""
+        ``pending_confirm``). ``light`` writes only what the game driver and the menu-reading
+        controllers read (``LIGHT_TABLES``): the header flags and step, the turn and match
+        context, the hand, who plays first and the per-action blocks (with no entity slots)."""
         t = frame.tables
-        b = _Build(self, frame)
+        b = _Build(self, frame, light)
         state = b.state
         if t["header"][0]["sideboarding"]:
             np.copyto(state, E._SB_MASK_FILL, where=~E._SB_MASK_KEEP)
         obs = np.zeros(E.OBS_SIZE, dtype=np.float32)
         obs[:E.STATE_SIZE] = state
-        side = b.menu(obs)
+        side = b.menu(obs, cap=not light)
         self_deck = self.deck_names.get(_SEAT_A if self.seat == "A" else _SEAT_B)
         opp_deck = self.deck_names.get(_SEAT_B if self.seat == "A" else _SEAT_A)
         E.write_matchup_tail(obs, self_deck, opp_deck)
@@ -360,7 +367,7 @@ class SeatAdapter:
 class _Build:
     """The state vector of one decision frame (a helper of SeatAdapter.observation)."""
 
-    def __init__(self, ad: SeatAdapter, frame):
+    def __init__(self, ad: SeatAdapter, frame, light=False):
         self.ad = ad
         self.t = t = frame.tables
         self.cards = ad.cards
@@ -380,6 +387,12 @@ class _Build:
         self.players = {p["player_rel"]: p for p in t.get("player", [])}
         self.slot = {}                     # handle -> unified reference slot
         self._header()
+        if light:
+            self.stack_by_handle = {r["handle"]: r for r in t.get("stack", [])}
+            self._hand()
+            self._context()
+            self._extras()
+            return
         self._battlefield()
         self._stack()
         self._zones()
@@ -791,22 +804,27 @@ class _Build:
                 s[start + E._PT_COLORS_START + c] = 1.0 if p["colors_cast_turn"] & (1 << c) else 0.0
 
     # ── the menu: per-action arrays ────────────────────────────────────────────────────────
-    def menu(self, obs):
+    def menu(self, obs, cap=True):
         """Fills the per-action blocks of ``obs`` from the ``menu`` table and returns the
         side-channels. Per action, as machine_io.cpp's populate_query gives them for its
         source: the category, the card id (action_card_vocab_idx: a permanent's face, a back
         face played or cast as it), controller-is-self (the null sentinel when it has no zone
         reference), the zone reference, the entity slot, the option ordinal; the card-is-public
-        flag and the description (cut to MAX_CHOICE_DESC - 1 bytes) ride beside them."""
+        flag and the description (cut to MAX_CHOICE_DESC - 1 bytes) ride beside them. With
+        ``cap`` the menu is cut to MAX_ACTIONS rows as the vector holds them; without it the
+        side-channels hold every row (an RMSTATE menu is unbounded: ``--closed-decklist``'s
+        name-a-card menus) and ``obs`` its first MAX_ACTIONS."""
         rows = self.t.get("menu", [])
-        n = min(len(rows), E.MAX_ACTIONS)
-        cats = np.zeros(E.MAX_ACTIONS, dtype=np.int32)
-        ids = np.full(E.MAX_ACTIONS, _norm_id(-1), dtype=np.float32)
-        ctrl = np.full(E.MAX_ACTIONS, _norm_id(-1), dtype=np.float32)
-        pub = np.zeros(E.MAX_ACTIONS, dtype=np.float32)
-        zone = np.zeros(E.MAX_ACTIONS, dtype=np.int32)
-        refs = np.full(E.MAX_ACTIONS, -1, dtype=np.int32)
-        ords = np.full(E.MAX_ACTIONS, -1, dtype=np.int32)
+        n = min(len(rows), E.MAX_ACTIONS) if cap else len(rows)
+        width = max(n, E.MAX_ACTIONS)
+        null = _norm_id(-1)
+        cats = [0] * width
+        ids = [null] * width
+        ctrl = [null] * width
+        pub = [0.0] * width
+        zone = [0] * width
+        refs = [-1] * width
+        ords = [-1] * width
         descs = []
         z = self.ad._zone
         back = self.ad._variant_bit["BACK_FACE"]
@@ -843,12 +861,21 @@ class _Build:
             ords[i] = r["ordinal"]
             descs.append(r["description"].encode("utf-8", "surrogateescape")[:E.MAX_CHOICE_DESC - 1]
                          .decode("utf-8", errors="replace"))
-        descs += [""] * (E.MAX_ACTIONS - len(descs))
-        obs[E.ACT_CATS_START:E.ACT_CATS_START + E.MAX_ACTIONS] = cats / E.ACTION_CATEGORY_MAX
-        obs[E.ACT_IDS_START:E.ACT_IDS_START + E.MAX_ACTIONS] = ids
-        obs[E.ACT_CTRL_START:E.ACT_CTRL_START + E.MAX_ACTIONS] = ctrl
-        obs[E.ACT_ZONE_START:E.ACT_ZONE_START + E.MAX_ACTIONS] = zone / E.REF_ZONE_MAX
-        obs[E.ACT_REFS_START:E.ACT_REFS_START + E.MAX_ACTIONS] = (refs + 1) / E.N_ENTITY_REF_SLOTS
-        obs[E.ACT_ORDS_START:E.ACT_ORDS_START + E.MAX_ACTIONS] = (ords + 1) / (E.OPTION_ORDINAL_MAX + 1)
-        return {"num_choices": n, "cats": cats, "ords": ords, "public": pub, "descriptions": descs,
+        descs += [""] * (width - len(descs))
+        m = E.MAX_ACTIONS
+        cats_v = np.array(cats[:m], dtype=np.int32)
+        refs_v = np.array(refs[:m], dtype=np.int32)
+        ords_v = np.array(ords[:m], dtype=np.int32)
+        obs[E.ACT_CATS_START:E.ACT_CATS_START + m] = cats_v / E.ACTION_CATEGORY_MAX
+        obs[E.ACT_IDS_START:E.ACT_IDS_START + m] = np.array(ids[:m], dtype=np.float32)
+        obs[E.ACT_CTRL_START:E.ACT_CTRL_START + m] = np.array(ctrl[:m], dtype=np.float32)
+        obs[E.ACT_ZONE_START:E.ACT_ZONE_START + m] = np.array(zone[:m], dtype=np.int32) / E.REF_ZONE_MAX
+        obs[E.ACT_REFS_START:E.ACT_REFS_START + m] = (refs_v + 1) / E.N_ENTITY_REF_SLOTS
+        obs[E.ACT_ORDS_START:E.ACT_ORDS_START + m] = (ords_v + 1) / (E.OPTION_ORDINAL_MAX + 1)
+        side = {"num_choices": n, "descriptions": descs,
                 "pending_confirm": any(int(c) in E.MANDATORY_CATS for c in cats[:n])}
+        if cap:
+            side.update(cats=cats_v, ords=ords_v, public=np.array(pub[:m], dtype=np.float32))
+        else:
+            side.update(cats=cats, ords=ords, public=pub, ids=ids, ctrl=ctrl, zone=zone, refs=refs)
+        return side

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The ``agentparity`` gate tier: the scripted agent on RMSTATE plays the games it plays on BQUERY.
+"""The ``agentparity`` gate tier: the scripted agent's vector view on RMSTATE plays its BQUERY games.
 
 Plan step 2, pass 1 (``docs/engine_fork_plan.md``): the scripted agent reads the old observation
 rebuilt from RMSTATE frames by the parity adapter (``train/rmstate_adapter.py``, driven by
@@ -20,8 +20,11 @@ Parts:
              the cast-cost row, the land flag, all property columns, the face's script lines and
              type line.
   2. corpus  replay-corpus scenarios (``regression/replay_diff.py``: scripted hard on both seats,
-             its frozen seed) played over ``--machine-format rmstate``; the projection must equal
-             the committed corpus transcript's (``CORPUS_GAMES``; ``--full``: all of them).
+             its frozen seed; ``CORPUS_GAMES``; ``--full``: all of them) on both protocols: a game
+             of the light set is played on BQUERY and must equal its frozen transcript
+             (``regression/agent_parity/bquery_corpus/``: the replay corpus itself is the agent's
+             frame-view games, so the vector view keeps these pinned until plan step 3b), and its
+             RMSTATE projection must equal the BQUERY game's.
   3. smoke   scripted-hard league games (``SMOKE_GAMES``: smoke-tier games and two bo3 matches, and
              ``DIVERGENT_GAMES``; ``--full``: every smoke-tier game, a bo3 match per mirror and every
              listed divergence) played on both protocols; the projections must be equal.
@@ -68,6 +71,10 @@ PARTS = ("cards", "corpus", "smoke")
 DIVERGENCES_PATH = os.path.join(_HERE, "regression", "agent_parity_divergences.json")
 BASELINE_DIR = os.path.join(_HERE, "regression", "agent_parity")
 CORPUS_DIR = os.path.join(_HERE, "regression", "corpus")
+# The BQUERY transcripts of the light corpus set, frozen: the replay corpus itself is the scripted
+# agent's games on its RMSTATE frame view (replay_diff.py), so the agent's vector view keeps its
+# own pinned games here until the BQUERY path goes (plan step 3b).
+BQUERY_CORPUS_DIR = os.path.join(_HERE, "regression", "agent_parity", "bquery_corpus")
 LEAGUE = ("bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator", "ur_delver", "uw_control",
           "wrb_energy", "wubg_doomsday")
 # The light corpus set: a curated scenario per legacy deck, and league games covering tokens and
@@ -115,14 +122,21 @@ def game_setup(key):
     return f"league/{a}", f"league/{b}", int(seed), kind == "match"
 
 
+# The scripted agent on each protocol: on RMSTATE through the pass-1 parity adapter (the vector
+# view of its rebuilt observation), not the frame view the plain spec reads there.
+AGENT_SPEC = {"bquery": "scripted", "rmstate": "scripted?view=vector"}
+
+
 def play(key, machine_format, binary=BINARY):
-    """The verbose transcript of one scripted-hard game (as replay_diff records the corpus)."""
+    """The verbose transcript of one scripted-hard game (as replay_diff records the corpus), the
+    agent on the vector view (AGENT_SPEC)."""
     import runner
     from opponents import make_controller
     deck_a, deck_b, seed, bo3 = game_setup(key)
+    spec = AGENT_SPEC[machine_format]
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
-        runner.run_games(make_controller("scripted"), make_controller("scripted"), label_a="A", label_b="B",
+        runner.run_games(make_controller(spec), make_controller(spec), label_a="A", label_b="B",
                          binary_path=binary, deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed, bo3=bo3,
                          verbose=True, machine_format=machine_format)
     return buf.getvalue()
@@ -186,14 +200,20 @@ def load_divergences(path=DIVERGENCES_PATH):
 
 
 def _compare_task(task):
-    """One game's check (a process-pool task): (key, failure or None, note)."""
+    """One game's check (a process-pool task): (key, failure or None, note). A game with a
+    frozen BQUERY transcript (``reference``) is also played on BQUERY and must equal it."""
     key, binary, reference, listed = task
     rm = project(play(key, "rmstate", binary))
-    ref = project(reference if reference is not None else play(key, "bquery", binary))
+    bq = play(key, "bquery", binary)
+    if reference is not None and bq != reference:
+        line, e, a, decision = first_difference(reference.splitlines(), bq.splitlines())
+        return key, (f"{key}: the BQUERY game differs from its frozen transcript at line {line} "
+                     f"(decision {decision}): {e!r} vs {a!r} (re-record with --record when intended)"), None
+    ref = project(bq)
     diff = first_difference(ref, rm)
     if listed is None:
         if diff is None:
-            return key, None, f"{len(rm)} lines identical"
+            return key, None, f"{len(rm)} lines identical" + (", BQUERY frozen" if reference is not None else "")
         line, e, a, decision = diff
         return key, (f"{key}: first differs at line {line} (decision {decision}): bquery {e!r}, rmstate {a!r} "
                      f"(attribute it: test_agent_parity.py --lockstep {key})"), None
@@ -213,14 +233,19 @@ def _compare_task(task):
     return key, "; ".join(fails) or None, f"re-recorded divergence ({listed['classification']}, decision {listed['decision']})"
 
 
+def bquery_corpus_path(name):
+    return os.path.join(BQUERY_CORPUS_DIR, name + ".txt")
+
+
 def check_games(keys, binary, references=None, workers=None):
-    """Failure messages for the games `keys` (corpus games compare with their committed transcript)."""
+    """Failure messages for the games `keys` (a corpus game with a frozen BQUERY transcript
+    compares with it)."""
     listed = load_divergences()
     tasks = []
     for key in keys:
         ref = None
-        if key.startswith("corpus/"):
-            with open(os.path.join(CORPUS_DIR, key[len("corpus/"):] + ".txt")) as f:
+        if key.startswith("corpus/") and os.path.exists(bquery_corpus_path(key[len("corpus/"):])):
+            with open(bquery_corpus_path(key[len("corpus/"):])) as f:
                 ref = f.read()
         tasks.append((key, binary, ref, listed.get(key)))
     fails = []
@@ -233,7 +258,13 @@ def check_games(keys, binary, references=None, workers=None):
 
 
 def record(binary):
-    """Rewrites the baseline of every listed divergence."""
+    """Rewrites the baseline of every listed divergence and the frozen BQUERY transcripts of the
+    light corpus set."""
+    os.makedirs(BQUERY_CORPUS_DIR, exist_ok=True)
+    for name in CORPUS_GAMES:
+        with open(bquery_corpus_path(name), "w") as f:
+            f.write(play(f"corpus/{name}", "bquery", binary))
+        print(f"  recorded {bquery_corpus_path(name)}", flush=True)
     os.makedirs(BASELINE_DIR, exist_ok=True)
     for key in load_divergences():
         with open(baseline_path(key), "w") as f:
@@ -407,7 +438,8 @@ def lockstep(key, binary=BINARY, show=3):
     os.dup2(err_fd, 2)
     try:
         with contextlib.redirect_stdout(io.StringIO()):
-            runner.run_games(make_controller("scripted"), make_controller("scripted"), deck_a=deck_a, deck_b=deck_b,
+            runner.run_games(make_controller(AGENT_SPEC["bquery"]), make_controller(AGENT_SPEC["bquery"]),
+                             deck_a=deck_a, deck_b=deck_b,
                              n_games=1, seed=seed, bo3=bo3, transcript="quiet", binary_path=binary,
                              on_query=lambda d: records.append((d.obs.copy(), d.num_choices, d.priority_is_a,
                                                                 list(d.env._action_descriptions or []))))
@@ -509,7 +541,8 @@ def main(argv=None):
     ap.add_argument("--games", nargs="+", metavar="GAME",
                     help="check only these games (corpus/<scenario>, smoke/<a>__<b>/<seed>, match/<a>__<b>/<seed>)")
     ap.add_argument("--record", action="store_true",
-                    help="re-record the RMSTATE baseline of every listed divergence")
+                    help="re-record the RMSTATE baseline of every listed divergence and the frozen "
+                         "BQUERY transcripts of the light corpus set")
     ap.add_argument("--lockstep", nargs="+", metavar="GAME",
                     help="the diagnostic: per-decision adapter observation and choice against the BQUERY game")
     ap.add_argument("--show", type=int, default=3, help="--lockstep: decisions with differing blocks to print")

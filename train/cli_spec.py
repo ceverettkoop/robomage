@@ -510,9 +510,10 @@ def format_name(bo3: bool) -> str:
 
 # ── Machine protocol (--machine-format bquery|rmstate) ────────────────────────
 # Which engine protocol a game-running tool drives: the BQUERY state vector, or
-# RMSTATE frames read through the pass-1 parity adapter (rmstate_env.py,
-# rmstate_adapter.py), on which only the scripted tiers, auto, actions: and
-# play: can play (runner.require_rmstate_capable).
+# RMSTATE frames (rmstate_env.py), on which only the scripted tiers (the decoded
+# frame, rm_agent.py; the pass-1 parity adapter's rebuilt vector with
+# `scripted?view=vector`), auto, actions: and play: can play
+# (runner.require_rmstate_capable).
 
 MACHINE_FORMAT_CHOICES = ("bquery", "rmstate")
 DEFAULT_MACHINE_FORMAT = "bquery"
@@ -1048,9 +1049,10 @@ def machine_format_arg() -> Arg:
     return Arg("--machine-format", "choice", choices=MACHINE_FORMAT_CHOICES,
                default=DEFAULT_MACHINE_FORMAT,
                help="Engine protocol: bquery (the state vector) or rmstate (RMSTATE "
-                    "frames through the pass-1 parity adapter; the scripted tiers, "
-                    "auto, actions: and play: only; the verbose transcript has no "
-                    f"board block) (default {DEFAULT_MACHINE_FORMAT})")
+                    "frames; the scripted tiers read the decoded frame, or with "
+                    "'scripted?view=vector' the pass-1 parity adapter's rebuilt "
+                    "vector; auto, actions: and play: play too; the verbose "
+                    f"transcript has no board block) (default {DEFAULT_MACHINE_FORMAT})")
 
 
 def common_args(binary_default=BINARY):
