@@ -31,17 +31,22 @@ guard — see ``ScriptedCore``).
   ``PLAYER_OPP``, ...); ``ordinal(i)``; ``ref(i)`` (an identity key of the action's object);
   ``ref_perm(i)`` (that object as a battlefield permanent, or None);
   ``is_keyword_ability(i, keyword)`` (the action activates the ability a keyword built:
-  ``Ninjutsu``, ``Equip``, ``Reconfigure``'s attach);
+  ``Ninjutsu``, ``Equip``, ``Reconfigure``'s attach); ``cast_variants(i)`` (the cast variant
+  names a cast uses: ``ALT_COST``, ``FLASHBACK``, ``EVOKE``, ...); ``ability_category(i)`` (the
+  effect category of the ability it activates, e.g. ``AddMana``); ``life_cost(i)`` (the life it
+  pays as a cost: an ability's, a spell's additional / alternative / flashback cost, a Phyrexian
+  pip, an "unless" or "as it enters" life payment, an X life payment's X);
 - players and turn: ``seat_is_a``, ``life``, ``opp_life``, ``library``, ``turn``, ``is_active``,
   ``in_main``, ``step``, ``pool(color)`` / ``pool_total`` (W, U, B, R, G, C), ``mulligans``;
-- the pending decision's source: ``pending`` (its card name) and ``pending_perm`` (it as a
-  battlefield permanent, when the view can say);
+- the pending decision's source: ``pending`` (its card name), ``pending_perm`` (it as a
+  battlefield permanent, when the view can say) and ``pending_is_cast`` (a cast-time prompt of
+  the spell being cast);
 - objects: ``hand`` (own hand card names); ``my_perms`` / ``opp_perms`` (battlefield
   permanents, phased-out ones left out, CR 702.26b) and ``my_perms_all`` (phased-out included),
   each a ``Perm``-like object (``card``, ``token``, ``tapped``, ``sick``, ``creature``, ``land``,
   ``power``, ``toughness``, ``attacking``, ``blocking``, ``blocked``, ``loyalty``,
   ``other_counters``, ``attached``, ``has_attachment``, ``keywords``, ``mana_value``,
-  ``art_ench`` (an artifact or an enchantment), ``legendary``); ``stack`` (stack objects
+  ``art_ench`` (an artifact or an enchantment), ``legendary``, ``basic``); ``stack`` (stack objects
   with a card, top first: ``card``, ``mine``, ``spell``), ``stack_top`` (the top object, or
   None) and ``stack_empty``; ``graveyard_cards`` (both graveyards' card names), ``opp_graveyard``,
   ``opp_exile``, ``opp_exile_counters`` (``(name, counters)`` per opposing exiled card);
@@ -55,10 +60,35 @@ guard — see ``ScriptedCore``).
   None when unknown);
 - ``cards``: card knowledge by name (``mana_value``, ``cost_colors``, ``is_land``, ``power``,
   ``is_delve``, ``is_equipment``, ``has_miracle``, ``is_legendary``, ``land_colors``,
-  ``deals_damage``, ``has_nonmana_activation``, ``is_artifact_or_enchantment``).
+  ``deals_damage``, ``has_nonmana_activation``, ``is_artifact_or_enchantment``, ``is_creature``,
+  ``phyrexian_pips``, ``life_effects`` — what the card's oracle text and costs do to life,
+  ``rm_agent.LifeEffects``).
 
 ``exact_refs`` is true when the view joins an action to its own object (RMSTATE handles); a view
 without it joins by card name (the first permanent with that card).
+
+**The self-lethal guard** (GREEDY and HEURISTIC; ``ScriptedCore._avoid_self_kill``): the agent
+never chooses an action whose known effect on its own life would put it at 0 or less (CR 704.5a),
+whatever the action does to the opponent (a Price of Progress that kills both players is a draw,
+CR 104.4a, and is not taken either). When the rules' choice is such an action, they choose again
+on the menu without it; only when every row is lethal does the choice stand. The known effect of
+a row (``_life_loss``) is read from the card knowledge, not from card names:
+
+- life costs (``life_cost``): fetch lands, painlands, Griselbrand, cycling, Force of Will's or
+  Snuff Out's alternative cost, flashback, Phyrexian pips (and, at the cast, the pips the
+  untapped lands of their colour cannot pay), Ward—Pay N life, Toxic Deluge's X, an
+  "as it enters, you may pay N life" land;
+- cast triggers on either battlefield that damage the caster (Eidolon of the Great Revel's mana
+  value cap, Roiling Vortex's no-mana-spent cast), at the cast and at its cast-time choices;
+- an instant's or sorcery's resolution: "you lose N life" (Thoughtseize), "you lose half your
+  life" (Doomsday), damage or life loss to each player, damage per nonbasic land a player controls
+  (Price of Progress, counted on our own lands), "you lose life equal to its mana value"
+  (Reanimate: the cheapest creature card in a graveyard at the cast, the target's at the target);
+- damage to ourselves as a target, and a mana ability's "deals N damage to you" (Ancient Tomb).
+
+Not covered: poison (no card in the vocabulary gives its own controller poison counters), drawing
+from an empty library (guarded by the draw rules themselves), triggers of permanents' own
+abilities, and opponents' instant-speed responses.
 """
 
 import random
@@ -2564,6 +2594,153 @@ def _opponent_stack_has_any(v, cards) -> bool:
 _BURN_DAMAGE = {_GOBLIN_BOMBARDMENT: 1, "Fireblast": 4, "Exquisite Firecraft": 4}
 
 
+# ── The self-lethal guard (ScriptedCore._avoid_self_kill) ───────────────────
+# Cast variants that spend mana the way the printed cost does (a cast with none of them, of a
+# mana value 0 card, spends no mana).
+_MANA_CAST_VARIANTS = frozenset({"FLASHBACK", "ESCAPE", "OFFSPRING", "IMPENDING", "WARP", "BACK_FACE",
+                                 "IMPULSE", "SUSPEND"})
+class _MenuSubset:
+    """The view with some menu rows left out: row ``i`` here is row ``keep[i]`` of the view, in
+    menu order; everything else reads through to the view."""
+
+    def __init__(self, v, keep):
+        self._v = v
+        self._keep = keep
+        self.n = len(keep)
+        self.cats = [v.cats[k] for k in keep]
+
+    def __getattr__(self, name):
+        return getattr(self._v, name)
+
+    def card(self, i):
+        return self._v.card(self._keep[i])
+
+    def nonnull_card(self, i) -> bool:
+        return self._v.nonnull_card(self._keep[i])
+
+    def same_card(self, i, j) -> bool:
+        return self._v.same_card(self._keep[i], self._keep[j])
+
+    def ctrl(self, i) -> int:
+        return self._v.ctrl(self._keep[i])
+
+    def zone(self, i) -> str:
+        return self._v.zone(self._keep[i])
+
+    def ordinal(self, i) -> int:
+        return self._v.ordinal(self._keep[i])
+
+    def ref(self, i):
+        return self._v.ref(self._keep[i])
+
+    def ref_perm(self, i):
+        return self._v.ref_perm(self._keep[i])
+
+    def is_keyword_ability(self, i, keyword) -> bool:
+        return self._v.is_keyword_ability(self._keep[i], keyword)
+
+    def cast_variants(self, i) -> frozenset:
+        return self._v.cast_variants(self._keep[i])
+
+    def ability_category(self, i):
+        return self._v.ability_category(self._keep[i])
+
+    def life_cost(self, i) -> int:
+        return self._v.life_cost(self._keep[i])
+
+
+def _nonbasic_land_count(perms) -> int:
+    return sum(1 for p in perms if p.land and not p.basic)
+
+
+def _min_graveyard_creature_mv(v) -> int:
+    """The smallest mana value among the creature cards in the graveyards (0 for none)."""
+    mvs = [_card_mana_value(v, c) for c in v.graveyard_cards if c is not None and v.cards.is_creature(c)]
+    return int(min(mvs)) if mvs else 0
+
+
+def _cast_trigger_damage(v, card, variants) -> int:
+    """The damage casting ``card`` with cast ``variants`` deals us through the battlefield's cast
+    triggers (Eidolon of the Great Revel, Roiling Vortex): each permanent's, by whose casts it
+    watches, the spell's mana value and whether the cast spends mana (an alternative or evoke cost
+    with no mana symbol, or a mana value 0 card cast for its printed cost, spends none)."""
+    mv = _card_mana_value(v, card)
+    fx = v.cards.life_effects(card)
+    no_mana = (("ALT_COST" in variants and fx.alt_no_mana) or ("EVOKE" in variants and fx.evoke_no_mana)
+               or (mv == 0 and not variants & _MANA_CAST_VARIANTS and "ALT_COST" not in variants))
+    total = 0
+    for p in v.my_perms + v.opp_perms:
+        trigger = v.cards.life_effects(p.card).cast_damage if p.card is not None else None
+        if trigger is None:
+            continue
+        who, damage, max_mv, no_mana_only = trigger
+        if (who == "opponent" and p.mine) or (who == "you" and not p.mine):
+            continue
+        if (max_mv is not None and mv > max_mv) or (no_mana_only and not no_mana):
+            continue
+        total += damage
+    return total
+
+
+def _phyrexian_life_needed(v, card) -> int:
+    """The life ``card``'s Phyrexian pips will take (CR 107.4f): 2 for each pip beyond the
+    untapped lands (by basic land type) and floating mana of its colour we control."""
+    need = 0
+    pips = {}
+    for colors in v.cards.phyrexian_pips(card):
+        if colors:
+            pips[min(colors)] = pips.get(min(colors), 0) + 1
+    for color, count in pips.items():
+        have = v.pool(color) + sum(1 for p in v.my_perms
+                                   if p.land and not p.tapped and color in v.cards.land_colors(p.card))
+        need += 2 * max(0, count - have)
+    return need
+
+
+def _resolution_life_loss(v, fx, life) -> int:
+    """Our life loss when a spell with LifeEffects ``fx`` resolves, at our ``life`` then: its own
+    "you lose" and the damage / life loss it deals each player (per nonbasic land each controls
+    for Price of Progress)."""
+    loss = fx.lose + fx.each_loss + fx.each_nonbasic_damage * _nonbasic_land_count(v.my_perms)
+    if fx.lose_half is not None:
+        left = max(0, life - loss)
+        loss += (left + 1) // 2 if fx.lose_half == "up" else left // 2
+    return loss
+
+
+def _life_loss(v, i) -> int:
+    """The life choosing menu row ``i`` is known to cost us: its life costs, the cast triggers it
+    sets off and what its effect does to our life (``_self_lethal``)."""
+    cat = v.cats[i]
+    card = v.card(i)
+    loss = v.life_cost(i)
+    if cat == _CAT_CAST and card is not None:
+        fx = v.cards.life_effects(card)
+        loss += _cast_trigger_damage(v, card, v.cast_variants(i)) + _phyrexian_life_needed(v, card)
+        loss += _resolution_life_loss(v, fx, v.life - loss)
+        if fx.lose_target_mv:
+            loss += _min_graveyard_creature_mv(v)
+        return loss
+    if cat == _CAT_TARGET:
+        fx = v.cards.life_effects(v.pending)
+        if v.zone(i) == _REF_PLAYER_SELF:
+            loss += fx.target_damage
+        if fx.lose_target_mv and card is not None:
+            loss += int(_card_mana_value(v, card))
+    elif card is not None and v.ability_category(i) == "AddMana":
+        loss += v.cards.life_effects(card).you_damage
+    if loss and v.pending_is_cast and v.pending is not None:
+        # A cast-time choice of the spell being cast: its cast triggers are still to come.
+        loss += _cast_trigger_damage(v, v.pending, frozenset())
+    return loss
+
+
+def _self_lethal(v, i) -> bool:
+    """Choosing menu row ``i`` would put our life at 0 or less (CR 704.5a) through what the action
+    is known to do: whatever it does to the opponent, the agent never chooses it."""
+    return _life_loss(v, i) >= v.life > 0
+
+
 class ScriptedCore:
     """A stateless rule-based agent parameterised by an AgentConfig.
 
@@ -2709,9 +2886,28 @@ class ScriptedCore:
             turn = v.turn
             fruitless = {card for card, (n, t) in seat_fails.items()
                          if n >= _FRUITLESS_ACTIVATION_LIMIT or t == turn}
+        return self._avoid_self_kill(v, self._tier_action(v, fruitless), fruitless)
+
+    def _tier_action(self, v, fruitless: set | None) -> int:
+        """The GREEDY / HEURISTIC rules' choice for the view."""
         if self.config.skill is Skill.HEURISTIC:
             return self._heuristic_action(v, fruitless)
         return _greedy_action(v, fruitless, doomsday=self._deck_is_doomsday(v))
+
+    def _avoid_self_kill(self, v, choice: int, fruitless: set | None) -> int:
+        """The self-lethal guard: when the rules' ``choice`` would kill us (``_self_lethal``), the
+        rules choose again on the menu without it, until a choice is not lethal; when every row
+        is, the original choice stands (nothing else is legal)."""
+        first = choice
+        forbidden = set()
+        while _self_lethal(v, choice):
+            forbidden.add(choice)
+            keep = [i for i in range(v.n) if i not in forbidden]
+            if not keep:
+                return first
+            pick = self._tier_action(_MenuSubset(v, keep), fruitless)
+            choice = keep[pick] if 0 <= pick < len(keep) else keep[0]
+        return choice
 
     # ------------------------------------------------------------------
     # HEURISTIC decision points (everything else falls back to GREEDY).

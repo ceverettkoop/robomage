@@ -7,7 +7,8 @@ from the seat's decoded frames (``python/rmstate.py``) and the knowledge sidecar
 enum names come from the stream's SCHEMA frame, cards from its CARDS frame. No numpy.
 
 - :class:`FrameCards` is the core's card knowledge, from the match's ``CARDS`` frame's structured
-  columns (printed characteristics, keywords, subtypes, ability lists; no raw scripts).
+  columns (printed characteristics, keywords, subtypes, ability lists and their costs; no raw
+  scripts), with :class:`LifeEffects`, what a card's oracle text and costs do to life.
 - :class:`SeatFrames` follows one seat's frames in stream order (SCHEMA, CARDS, DECKLISTS,
   METAGAME, then STATE) and keeps what the view needs across them: the schema's enums, the card
   knowledge, the registered lists and the reference metagame.
@@ -15,7 +16,8 @@ enum names come from the stream's SCHEMA frame, cards from its CARDS frame. No n
 - :func:`decide` asks an agent (a ``ScriptedCore``) for a decision frame's action.
 
 What the view reads (``docs/state_format.md`` Appendix A): ``header``, ``turn``, ``player``,
-``object`` with ``object_keyword`` / ``object_counter``, ``stack``, ``pending``, ``menu``,
+``object`` with ``object_keyword`` / ``object_counter``, ``stack``, ``pending`` with
+``pending_cost`` / ``pending_cost_pip`` (the life a payment row pays), ``menu``,
 ``k_position`` / ``k_pool`` / ``k_pool_card`` / ``k_known_hand`` (memory), ``k_template`` (the
 opponent's possible lists under ``--closed-decklist``). It has no caps (every permanent, hand
 card, graveyard and exile card and stack object is there), reads summoning sickness as the rule
@@ -38,6 +40,27 @@ _PIP_COLORS = ("WHITE", "BLUE", "BLACK", "RED", "GREEN")    # the cost colours, 
 # Oracle text of an effect that deals damage to a chosen target (a charm's or a sub-ability's,
 # which the ability list's top-level categories do not show).
 _TARGETED_DAMAGE = re.compile(r"\bdeals?\b[^.]*\bdamage\b[^.]*\b(any|targets?)\b", re.IGNORECASE)
+# A life payment in a cost (the ``card_ability.cost`` notation): ``PayLife<N>`` / ``PayLife<X>``.
+_PAY_LIFE = re.compile(r"PayLife<(\d+|X)>")
+# Oracle sentences of what a card does to life (``LifeEffects``). The resolution ones are read
+# from an instant's or sorcery's text only (a permanent's "you lose" sits in a trigger).
+_LOSE_LIFE = re.compile(r"\byou lose (\d+) life\b", re.IGNORECASE)
+_LOSE_HALF = re.compile(r"\byou lose half your life, rounded (up|down)\b", re.IGNORECASE)
+_LOSE_TARGET_MV = re.compile(r"\byou lose life equal to its mana value\b", re.IGNORECASE)
+_EACH_DAMAGE = re.compile(r"\bdeals (\d+) damage to each (?:creature and each )?player\b", re.IGNORECASE)
+_EACH_LOSE = re.compile(r"\beach player loses (\d+) life\b", re.IGNORECASE)
+_EACH_NONBASIC_DAMAGE = re.compile(r"\bdeals damage to each player equal to (twice )?the number of nonbasic "
+                                   r"lands that player controls\b", re.IGNORECASE)
+_YOU_DAMAGE = re.compile(r"\bdeals (\d+) damage to you\b", re.IGNORECASE)
+_TARGET_DAMAGE_AMOUNT = re.compile(r"\bdeals (\d+) damage to (?:any target|target player\b|target creature or "
+                                   r"player|target player or planeswalker)", re.IGNORECASE)
+_ALT_COST = re.compile(r"\byou may ([^.]*?) rather than pay this spell's mana cost", re.IGNORECASE)
+_KEYWORD_COST = re.compile(r"\b(Evoke|Flashback)\u2014([^(\n]*)")
+_PAY_N_LIFE = re.compile(r"\bpay (\d+) life\b", re.IGNORECASE)
+_ENTERS_PAY_LIFE = re.compile(r"\byou may pay (\d+) life\. If you don't", re.IGNORECASE)
+_CAST_DAMAGE = re.compile(r"\bWhenever (a player|an opponent|you) casts? an? spell(?: with mana value (\d+) or "
+                          r"less)?(, if no mana was spent to cast (?:that spell|it))?, [^.]*?\bdeals (\d+) damage "
+                          r"to (?:that player|them|you)\b")
 
 # Every table the view reads, of every frame kind (a driver may decode only these).
 FRAME_TABLES = frozenset({
@@ -45,7 +68,8 @@ FRAME_TABLES = frozenset({
     "card", "card_subtype", "card_keyword", "card_ability", "card_pip",
     "decklist", "decklist_card", "meta_list", "meta_list_card",
     "header", "turn", "player", "object", "object_keyword", "object_counter", "stack", "pending",
-    "menu", "match", "k_position", "k_pool", "k_pool_card", "k_known_hand", "k_template",
+    "pending_cost", "pending_cost_pip", "menu", "match", "k_position", "k_pool", "k_pool_card",
+    "k_known_hand", "k_template",
 })
 
 
@@ -69,7 +93,7 @@ def _bit(names, name):
 # ── Card knowledge from the CARDS frame ─────────────────────────────────────────────────────
 
 class _Face:
-    __slots__ = ("row", "keywords", "subtypes", "abilities", "pip_colors")
+    __slots__ = ("row", "keywords", "subtypes", "abilities", "pip_colors", "phyrexian", "spell_cost", "life")
 
     def __init__(self, row):
         self.row = row
@@ -77,6 +101,78 @@ class _Face:
         self.subtypes = set()
         self.abilities = []          # (ability_kind name, category name)
         self.pip_colors = set()      # colours (0-4) of the hybrid and Phyrexian pips
+        self.phyrexian = []          # each Phyrexian pip's colours (0-4)
+        self.spell_cost = ""         # the spell ability's cost (its additional costs)
+        self.life = None             # LifeEffects, built on first use
+
+
+def _life_amount(cost):
+    """(fixed life, whether an X life payment) a cost text pays."""
+    fixed, has_x = 0, False
+    for m in _PAY_LIFE.finditer(cost or ""):
+        if m.group(1) == "X":
+            has_x = True
+        else:
+            fixed += int(m.group(1))
+    return fixed, has_x
+
+
+def _first_int(rx, text, default=0):
+    m = rx.search(text)
+    return int(m.group(1)) if m else default
+
+
+class LifeEffects:
+    """What a card's printed text does to life, from its oracle text and its spell ability's cost
+    (the scripted core's self-lethal guard, ``scripted_core`` docstring).
+
+    - Costs: ``spell_life`` / ``spell_life_x`` (an additional cost's fixed life / an X life
+      payment, Toxic Deluge), ``alt_life`` and ``alt_no_mana`` (the "rather than pay this spell's
+      mana cost" alternative: the life it pays, whether it spends no mana), ``evoke_no_mana``,
+      ``flashback_life``, ``enters_life`` (an "as it enters, you may pay N life" land).
+    - An instant's or sorcery's resolution: ``lose`` (you lose N life), ``lose_half`` (``"up"`` /
+      ``"down"``: you lose half your life), ``lose_target_mv`` (you lose life equal to its target's
+      mana value, Reanimate), ``each_loss`` (damage or life loss to each player),
+      ``each_nonbasic_damage`` (damage to each player per nonbasic land they control: the
+      multiplier, Price of Progress).
+    - ``you_damage`` (an ability's "deals N damage to you", Ancient Tomb), ``target_damage`` (the
+      damage it deals to a chosen target), ``cast_damage`` (a cast trigger that damages the
+      caster, Eidolon of the Great Revel / Roiling Vortex: (whose casts — ``"player"``,
+      ``"opponent"`` or ``"you"`` —, damage, the most mana value it triggers on or None, whether
+      only on a spell no mana was spent on), or None)."""
+
+    __slots__ = ("spell_life", "spell_life_x", "alt_life", "alt_no_mana", "evoke_no_mana", "flashback_life",
+                 "enters_life", "lose", "lose_half", "lose_target_mv", "each_loss", "each_nonbasic_damage",
+                 "you_damage", "target_damage", "cast_damage")
+
+    def __init__(self, oracle, spell_cost, resolves_once):
+        self.spell_life, self.spell_life_x = _life_amount(spell_cost)
+        alt = _ALT_COST.search(oracle)
+        self.alt_life = _first_int(_PAY_N_LIFE, alt.group(1)) if alt else 0
+        self.alt_no_mana = alt is not None and "{" not in alt.group(1)
+        keyword_costs = {m.group(1): m.group(2) for m in _KEYWORD_COST.finditer(oracle)}
+        self.evoke_no_mana = "Evoke" in keyword_costs and "{" not in keyword_costs["Evoke"]
+        self.flashback_life = _first_int(_PAY_N_LIFE, keyword_costs.get("Flashback", ""))
+        self.enters_life = _first_int(_ENTERS_PAY_LIFE, oracle)
+        text = oracle if resolves_once else ""
+        self.lose = _first_int(_LOSE_LIFE, text)
+        half = _LOSE_HALF.search(text)
+        self.lose_half = half.group(1).lower() if half else None
+        self.lose_target_mv = bool(_LOSE_TARGET_MV.search(text))
+        self.each_loss = _first_int(_EACH_DAMAGE, text) + _first_int(_EACH_LOSE, text)
+        nonbasic = _EACH_NONBASIC_DAMAGE.search(text)
+        self.each_nonbasic_damage = (2 if nonbasic.group(1) else 1) if nonbasic else 0
+        self.you_damage = _first_int(_YOU_DAMAGE, oracle)
+        self.target_damage = _first_int(_TARGET_DAMAGE_AMOUNT, oracle)
+        cast = _CAST_DAMAGE.search(oracle)
+        self.cast_damage = None
+        if cast:
+            who = {"a player": "player", "an opponent": "opponent", "you": "you"}[cast.group(1)]
+            self.cast_damage = (who, int(cast.group(4)), int(cast.group(2)) if cast.group(2) else None,
+                                bool(cast.group(3)))
+
+
+_NO_LIFE_EFFECTS = LifeEffects("", "", False)
 
 
 class FrameCards:
@@ -92,6 +188,8 @@ class FrameCards:
         en = schema.enums
         types, supers = en["card_type"], en["supertype"]
         self._land_bit = _bit(types, "Land")
+        self._creature_bit = _bit(types, "Creature")
+        self._one_shot_bits = _bit(types, "Instant") | _bit(types, "Sorcery")
         self._art_ench_bits = _bit(types, "Artifact") | _bit(types, "Enchantment")
         self._legendary_bit = _bit(supers, "Legendary")
         kw_names, sub_names = en["keyword"], en["subtype"]
@@ -102,6 +200,7 @@ class FrameCards:
         self.token = {}              # card id -> is a token
         faces = {}                   # (card id, face) -> _Face
         self._by_name = {}           # name -> _Face (the first face row with the name)
+        self._ability_cost = {}      # (card id, ability index) -> (category name, cost text)
         for r in t.get("card", []):
             name = fold_name(r["name"])
             face = _Face(r)
@@ -121,13 +220,21 @@ class FrameCards:
             f = faces.get((r["card"], r["face"]))
             if f is not None:
                 cat = effect_kinds[r["category"]] if r["category"] < len(effect_kinds) else None
-                f.abilities.append((ab_kinds[r["ability_kind"]], cat))
+                kind = ab_kinds[r["ability_kind"]]
+                f.abilities.append((kind, cat))
+                if kind == "SPELL" and not f.spell_cost:
+                    f.spell_cost = r["cost"]
+            self._ability_cost[(r["card"], r["index"])] = (cat, r["cost"])
         colors = en["color"]
         pip_bits = [(k, _bit(colors, c)) for k, c in enumerate(_PIP_COLORS)]
+        phyrexian = en["pip_kind"].index("PHYREXIAN")
         for r in t.get("card_pip", []):
             f = faces.get((r["card"], r["face"]))
             if f is not None:
-                f.pip_colors |= {k for k, b in pip_bits if r["colors"] & b}
+                pip = {k for k, b in pip_bits if r["colors"] & b}
+                f.pip_colors |= pip
+                if r["kind"] == phyrexian:
+                    f.phyrexian.append(pip)
 
     def name(self, cid, back=False):
         """The name of card ``cid``'s front (or back) face; None for no card."""
@@ -197,6 +304,28 @@ class FrameCards:
         f = self._face(name)
         return f is not None and bool(f.row["types"] & self._art_ench_bits)
 
+    def is_creature(self, name) -> bool:
+        f = self._face(name)
+        return f is not None and bool(f.row["types"] & self._creature_bit)
+
+    def phyrexian_pips(self, name) -> list:
+        """Each Phyrexian pip of the card's cost, as its set of colours (0-4)."""
+        f = self._face(name)
+        return f.phyrexian if f is not None else []
+
+    def life_effects(self, name) -> LifeEffects:
+        """The card's ``LifeEffects`` (all zero for an unknown card)."""
+        f = self._face(name)
+        if f is None:
+            return _NO_LIFE_EFFECTS
+        if f.life is None:
+            f.life = LifeEffects(f.row["oracle"], f.spell_cost, bool(f.row["types"] & self._one_shot_bits))
+        return f.life
+
+    def ability(self, cid, index):
+        """(category name, cost text) of card ``cid``'s ability ``index``; None for none."""
+        return self._ability_cost.get((cid, index))
+
 
 # ── One seat's frames ───────────────────────────────────────────────────────────────────────
 
@@ -260,7 +389,7 @@ class _Perm:
     __slots__ = ("card", "token", "tapped", "sick", "creature", "land", "power", "toughness",
                  "attacking", "blocking", "blocked", "loyalty", "other_counters", "attached",
                  "has_attachment", "keywords", "phased", "mana_value", "art_ench", "legendary",
-                 "handle", "mine")
+                 "basic", "handle", "mine")
 
 
 class _StackItem:
@@ -329,7 +458,7 @@ class FrameView:
         types, supers = en["card_type"], en["supertype"]
         creature_bit, land_bit = _bit(types, "Creature"), _bit(types, "Land")
         art_ench_bits = _bit(types, "Artifact") | _bit(types, "Enchantment")
-        legendary_bit = _bit(supers, "Legendary")
+        legendary_bit, basic_bit = _bit(supers, "Legendary"), _bit(supers, "Basic")
         kw_names = en["keyword"]
         bf = self._zones.index("BATTLEFIELD")
         perms = {}
@@ -356,6 +485,7 @@ class FrameView:
             p.mana_value = o["mana_value"]
             p.art_ench = bool(o["types"] & art_ench_bits)
             p.legendary = bool(o["supertypes"] & legendary_bit)
+            p.basic = bool(o["supertypes"] & basic_bit)
             perms[p.handle] = p
         for o in self.t.get("object", []):
             host = perms.get(o["attached_to"]) if o["attached_to"] else None
@@ -517,6 +647,13 @@ class FrameView:
         return self.cards.name(_card(p["source_card"]))
 
     @property
+    def pending_is_cast(self) -> bool:
+        """The pending decision is a cast-time prompt (a target, X, a payment of the spell being
+        cast, CR 601.2)."""
+        p = self._pending_row
+        return p is not None and self._s.en["pending_tag"][p["tag"]] == "CAST"
+
+    @property
     def pending_perm(self):
         p = self._pending_row
         return self._perms.get(p["source"]) if p is not None and p["source"] else None
@@ -589,6 +726,55 @@ class FrameView:
 
     def is_keyword_ability(self, i, keyword) -> bool:
         return self.menu_rows[i]["ab_key"] == keyword
+
+    def cast_variants(self, i) -> frozenset:
+        """The cast variants (``cast_variant`` names: ``ALT_COST``, ``FLASHBACK``, ``EVOKE``, ...)
+        the action casts with."""
+        mask = self.menu_rows[i]["variant"]
+        return frozenset(n for k, n in enumerate(self._s.en["cast_variant"]) if mask >> k & 1)
+
+    def ability_category(self, i):
+        """The effect category of the ability the action activates; None for none."""
+        r = self.menu_rows[i]
+        ab = self.cards.ability(r["ab_card"], r["ab_index"]) if r["ab_card"] != _NONE16 else None
+        return ab[0] if ab else None
+
+    @cached_property
+    def _pending_cost(self):
+        rows = self.t.get("pending_cost")
+        return rows[0] if rows else None
+
+    def life_cost(self, i) -> int:
+        """The life the action pays as a cost (CR 119.4): its ability's ``PayLife`` cost, a spell's
+        additional, alternative (``ALT_COST``) or flashback life cost, a Phyrexian pip's 2 life (the
+        mana-less ordinal-0 payment row while the cost has a Phyrexian pip), an "unless" life
+        payment's Pay, an X life payment's X (the CHOOSE_X row's ordinal), and the accept of an
+        "as it enters, you may pay N life" choice. 0 when none (an X still to choose counts 0)."""
+        r = self.menu_rows[i]
+        cat = self.cats[i]
+        if r["ab_card"] != _NONE16:
+            ab = self.cards.ability(r["ab_card"], r["ab_index"])
+            return _life_amount(ab[1])[0] if ab else 0
+        if cat == "CAST_SPELL":
+            fx = self.cards.life_effects(self.card(i))
+            variants = self.cast_variants(i)
+            return (fx.spell_life + (fx.alt_life if "ALT_COST" in variants else 0)
+                    + (fx.flashback_life if "FLASHBACK" in variants else 0))
+        pc = self._pending_cost
+        if cat == "PAYING_COSTS":
+            phyrexian = self._s.en["pip_kind"].index("PHYREXIAN")
+            if (pc is not None and r["ordinal"] == 0 and not r["source"] and r["source_card"] == _NONE16
+                    and any(p["kind"] == phyrexian for p in self.t.get("pending_cost_pip", []))):
+                return 2
+            return 0
+        if cat == "PAY_UNLESS":
+            unless = self._s.en["cost_part"].index("UNLESS")
+            return pc["rem_life"] if pc is not None and pc["part"] == unless and r["ordinal"] == 1 else 0
+        if cat == "CHOOSE_X":
+            return max(0, r["ordinal"]) if self.cards.life_effects(self.pending).spell_life_x else 0
+        if cat == "OPTIONAL_YESNO" and self.n == 2 and i == 1:
+            return self.cards.life_effects(self.pending).enters_life
+        return 0
 
     # ── memory: the knowledge sidecar's tables ──────────────────────────────────────────────
     @cached_property

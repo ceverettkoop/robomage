@@ -14,6 +14,11 @@ playing does not:
             hash, an unknown frame kind, a known table at another row width) is refused by both
             decoders; an unknown table block is skipped by both, with the same JSON (listed under
             ``"skipped"``).
+  selfkill  the scripted agent's self-lethal guard (``scripted_core`` docstring) in sculpted
+            positions: at 2 life it does not cast a Price of Progress that would deal it 2 (also
+            when it would kill the opponent too, while the opponent's board has it dead next
+            turn), nor a Dismember whose Phyrexian pip only life can pay; at 3 life it casts the
+            same Price of Progress (the position does tempt it).
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -22,7 +27,7 @@ playing does not:
 Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: …`` line per finding;
 exit 1 on any finding::
 
-    python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,driver]
+    python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,selfkill,driver]
 """
 from __future__ import annotations
 
@@ -41,7 +46,7 @@ if _HERE not in sys.path:
 import rm_driver  # noqa: E402
 import rmstate  # noqa: E402
 
-PARTS = ("decode", "refusals", "driver")
+PARTS = ("decode", "refusals", "selfkill", "driver")
 _TIMEOUT_S = 900
 # The in-process agents' dumps: (deck_a, deck_b, bo3, game seed).
 ENGINE_DUMPS = (("league/ur_delver", "league/gw_maverick", False, 41),
@@ -230,6 +235,62 @@ def check_refusals(binary, dump_path, work):
     return fails
 
 
+# ── selfkill: the scripted agent's self-lethal guard ─────────────────────────────────────────
+
+# A burn hand whose only other spells have no target: Price of Progress deals Player A 2 (its
+# Fiery Islet) and Player B 4 (two Underground Seas, at 4 life).
+_POP_POSITION = {"--deck-a": "league/burn", "--deck-b": "league/reanimator",
+                 "--hand-a": "Price of Progress,Mountain,Mountain,Searing Blood,Searing Blood,"
+                             "Smash to Smithereens,Smash to Smithereens",
+                 "--library-a": "Mountain", "--battlefield-a": "Mountain,Mountain,Fiery Islet",
+                 "--battlefield-b": "Underground Sea,Underground Sea", "--life-b": "4",
+                 "--hand-b": "Island,Island,Island,Brainstorm,Ponder,Ponder,Brainstorm", "--library-b": "Island"}
+# Dismember ({1}{B/P}{B/P}) with one black source: one pip is 2 life.
+_DISMEMBER_POSITION = {"--deck-a": "league/bug", "--deck-b": "league/burn",
+                       "--hand-a": "Dismember,Uro Titan of Natures Wrath,Island,Island,Ponder,Ponder,Ponder", "--library-a": "Island",
+                       "--battlefield-a": "Island,Swamp", "--battlefield-b": "Goblin Guide,Mountain",
+                       "--hand-b": "Mountain,Mountain,Mountain,Lightning Bolt,Lightning Bolt,Lightning Bolt,"
+                                   "Lightning Bolt", "--library-b": "Mountain"}
+# (label, position, overrides, the narrative line Player A's first turn must (not) show, shown).
+SELFKILL_CASES = (
+    ("Price of Progress at 2 life", _POP_POSITION, {"--life-a": "2"}, "Player A casts Price of Progress", False),
+    ("Price of Progress at 2 life, killing both, dead on board", _POP_POSITION,
+     {"--life-a": "2", "--battlefield-b": "Underground Sea,Underground Sea,Griselbrand"},
+     "Player A casts Price of Progress", False),
+    ("Dismember at 2 life, one black source", _DISMEMBER_POSITION, {"--life-a": "2"}, "Player A casts Dismember",
+     False),
+    ("Price of Progress at 3 life", _POP_POSITION, {"--life-a": "3"}, "Player A casts Price of Progress", True),
+)
+_SELFKILL_DECISIONS = 6     # the keeps and Player A's first-turn main phase
+
+
+def check_selfkill(binary, work):
+    """The selfkill part: each SELFKILL_CASES position, Player A's scripted agent deciding;
+    returns failures."""
+    fails = []
+    cwd = os.getcwd()
+    os.chdir(work)  # a draw's saved log stays in the scratch directory
+    try:
+        for label, position, overrides, line, shown in SELFKILL_CASES:
+            opts = dict(position, **overrides)
+            deck_a, deck_b = opts.pop("--deck-a"), opts.pop("--deck-b")
+            flags = [x for kv in opts.items() for x in kv]
+            narrative = []
+            rec = rm_driver.play_game(rm_driver.make_agent("scripted"), rm_driver.make_agent("scripted"),
+                                      binary=binary, deck_a=deck_a, deck_b=deck_b, seed=1,
+                                      max_decisions=_SELFKILL_DECISIONS, engine_flags=flags,
+                                      on_narrative=narrative.extend)
+            seen = any(ln.strip().startswith(line) for ln in narrative)
+            if seen != shown:
+                fails.append(f"selfkill {label}: the narrative {'lacks' if shown else 'shows'} {line!r} "
+                             f"(results {rec.game_results})")
+    finally:
+        os.chdir(cwd)
+    if not fails:
+        print(f"  OK   selfkill: {len(SELFKILL_CASES)} positions", flush=True)
+    return fails
+
+
 # ── the driver ────────────────────────────────────────────────────────────────────────────────
 
 def check_driver(binary, work):
@@ -269,6 +330,8 @@ def run(binary, out_dir=None, parts=PARTS):
                     first_dump = path
                 if first_dump:
                     fails += check_refusals(binary, first_dump, work)
+        if "selfkill" in parts:
+            fails += check_selfkill(binary, work)
         if "driver" in parts:
             fails += check_driver(binary, work)
     finally:
