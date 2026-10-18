@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "../cli/human.h"
 #include "../error.h"
 #include "../game_driver.h"
 #include "../input_logger.h"
@@ -21,6 +22,7 @@ namespace {
 struct AgentRun {
         agents::PyRandom rng;
         std::unique_ptr<agents::Agent> seat_agent[2];
+        std::unique_ptr<agents::Agent> human[2];  // a human seat's CLI (cli/human.h)
         std::unique_ptr<agents::Agent> first[2];  // a seat's player under a script when it has no agent
         std::unique_ptr<agents::Agent> script;    // --play / --actions
         agents::PlayScript *play = nullptr;       // `script` when it is a --play script
@@ -63,7 +65,8 @@ static void print_line(const std::string &line) {
 void agents_install(unsigned int engine_seed) {
     const bool scripted = play_script_given || actions_script_given;
     const bool any_agent = !agent_a_spec.empty() || !agent_b_spec.empty() || scripted;
-    if (!any_agent && !trace_decisions) return;
+    const bool any_human = human_seat[0] || human_seat[1];
+    if (!any_agent && !any_human && !trace_decisions) return;
     if (any_agent && replay_mode)
         fatal_error("--agent-a/--agent-b, --play and --actions cannot be combined with --replay (the log decides)");
     if (play_script_given && actions_script_given) fatal_error("--play and --actions are exclusive");
@@ -73,16 +76,16 @@ void agents_install(unsigned int engine_seed) {
     const char *flags[2] = {"--agent-a", "--agent-b"};
     for (int s = 0; s < 2; ++s) {
         if (!specs[s]->empty()) run->seat_agent[s] = agent_for(*specs[s], flags[s]);
-        run->decides[s] = scripted || run->seat_agent[s];
-        if (run->decides[s] && has_human_player && human_player_is_a == (s == 0))
-            fatal_error(std::string("--player ") + (s == 0 ? "A" : "B") + " is a human seat; it cannot also have " +
-                        (scripted ? "a --play / --actions script" : flags[s]));
+        if (human_seat[s]) run->human[s].reset(new cli::HumanAgent(human_seat[0] && human_seat[1]));
+        run->decides[s] = scripted || run->seat_agent[s] || run->human[s];
     }
     if (scripted) {
         agents::Agent *players[2];
         for (int s = 0; s < 2; ++s) {
-            if (!run->seat_agent[s]) run->first[s] = agent_for("first", flags[s]);
-            players[s] = run->seat_agent[s] ? run->seat_agent[s].get() : run->first[s].get();
+            if (!run->seat_agent[s] && !run->human[s]) run->first[s] = agent_for("first", flags[s]);
+            players[s] = run->seat_agent[s] ? run->seat_agent[s].get()
+                         : run->human[s]    ? run->human[s].get()
+                                            : run->first[s].get();
         }
         if (play_script_given) {
             run->play = new agents::PlayScript(agents::parse_spec_list(play_script_specs), players[0], players[1]);
@@ -99,6 +102,10 @@ void agents_install(unsigned int engine_seed) {
         if (run->decides[s] || trace_decisions) agent_feed_serve(s == 0 ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run->decides[0] || run->decides[1])
         InputLogger::instance().set_input_provider(decide, run->decides[0], run->decides[1], true);
+    if (any_human && !InputLogger::instance().log_file_name().empty()) {
+        print_line("Decision log: " + InputLogger::instance().log_file_name());
+        std::fflush(stdout);
+    }
 }
 
 bool agents_begin_decision(const std::vector<LegalAction> &actions, size_t number) {
@@ -138,7 +145,9 @@ static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions)
     (void)actions;
     const int s = seat_index(seat);
     if (s < 0 || !run->view || run->seat != s) fatal_error("in-process agent: no frame was built for this decision");
-    agents::Agent *agent = run->script ? run->script.get() : run->seat_agent[s].get();
+    agents::Agent *agent = run->script          ? run->script.get()
+                           : run->seat_agent[s] ? run->seat_agent[s].get()
+                                                : run->human[s].get();
     const agents::Decision d{*run->view, run->number > 0 ? run->number - 1 : 0};
     const int choice = agent->decide(d);
     if (choice == agents::AGENT_FAILED) fatal_error(agent->failure());

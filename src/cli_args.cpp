@@ -48,6 +48,7 @@ static const CliOption *find_header_option(const std::string &key);
 static std::string header_key(const CliOption &option);
 static void apply_parsed(const std::vector<ParsedOption> &parsed, bool setup);
 static void warn_ignored_in_replay(const std::vector<ParsedOption> &parsed);
+static void resolve_human_seats();
 
 // Options carried in the FLAGS line are listed first, in the order they are written there.
 static const CliOption OPTIONS[] = {
@@ -162,6 +163,7 @@ static const CliOption OPTIONS[] = {
             replay_file_path = v;
         },
         nullptr},
+    // A human seat (resolve_human_seats).
     {"--player", nullptr, true, false,
         [](const char *v) {
             has_human_player = true;
@@ -403,7 +405,40 @@ CliParseResult parse_command_line(int argc, char const *argv[]) {
     } else {
         apply_parsed(parsed, true);
     }
+    resolve_human_seats();
     return CliParseResult::RUN;
+}
+
+// The human seats (the C++ CLI, cli/human.h). Outside --replay, a seat with no in-process agent
+// is a human seat when it is the --player seat, or when --machine is not given (every agent and
+// script implies it): a plain run is hotseat, `--player A --agent-b explore` a human against an
+// agent, and `--player A` with --play the human taking over once the script runs out. A human seat
+// decides on its frames like the agents, so it turns machine mode on (no narrative unless
+// --narrative), and the decision log, which a human game always writes. It reads stdin, so no
+// other seat may read the RMSTATE stream (a seat with neither an agent nor a script would).
+static void resolve_human_seats() {
+    if (replay_mode) return;
+    const bool scripted = play_script_given || actions_script_given;
+    const std::string *specs[2] = {&agent_a_spec, &agent_b_spec};
+    const char *flags[2] = {"--agent-a", "--agent-b"};
+    bool any = false;
+    for (int s = 0; s < 2; ++s) {
+        const bool player_seat = has_human_player && human_player_is_a == (s == 0);
+        if (player_seat && !specs[s]->empty())
+            fatal_error(
+                std::string("--player ") + (s == 0 ? "A" : "B") + " is a human seat; it cannot also have " + flags[s]);
+        human_seat[s] = specs[s]->empty() && (player_seat || !machine_mode);
+        any = any || human_seat[s];
+    }
+    if (!any) return;
+    for (int s = 0; s < 2; ++s)
+        if (!human_seat[s] && specs[s]->empty() && !scripted)
+            fatal_error(std::string("Player ") + (s == 0 ? "A" : "B") +
+                        " has no in-process agent, so it would read the RMSTATE stream on stdin, which the human "
+                        "seat reads; give it one (" +
+                        flags[s] + " explore, ...) or drop --machine for hotseat");
+    machine_mode = true;
+    log_decisions_flag = true;
 }
 
 void record_header_flags(DecisionLogHeader &header) {

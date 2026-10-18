@@ -17,9 +17,10 @@
 //
 // The stream is the machine protocol (--machine, or its spelling --machine-format rmstate): it is
 // on when a machine run (not --replay, which reads every decision from its log) has a seat with
-// no in-process agent or script that is not the --player seat. stdout then carries only RMSTATE
-// records ("RMSTATE <nbytes>\n" + payload); everything else the engine prints (narrative under
-// --narrative, GAME_RESULT / MATCH_RESULT, the CLI prompt of a --player seat) goes to stderr. At
+// no in-process agent or script that is not a human seat (a run with a human seat has none:
+// cli_args.cpp). stdout then carries only RMSTATE records ("RMSTATE <nbytes>\n" + payload);
+// everything else the engine prints (narrative under --narrative, GAME_RESULT / MATCH_RESULT) goes
+// to stderr. At
 // each such seat's decision the deciding seat (the sideboarding player between games, else the
 // priority holder) gets, the first time it decides in the match, its SCHEMA, CARDS, DECKLISTS
 // and METAGAME frames, then its STATE frame with the menu (ending with the k_* tables of the

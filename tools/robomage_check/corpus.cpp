@@ -2,14 +2,23 @@
 
 #include "util.h"
 
+static bool trace_menu_row(const std::string &line);
 static bool trace_board_line(const std::string &line);
+
+// A --trace-decisions menu row: ^\|   \d+: (as split_engine_output reads them).
+static bool trace_menu_row(const std::string &line) {
+    if (!rmcheck::starts_with(line, "|   ")) return false;
+    size_t i = 4;
+    while (i < line.size() && line[i] >= '0' && line[i] <= '9') ++i;
+    return i > 4 && line.compare(i, 2, ": ") == 0;
+}
 
 // A --trace-decisions line of the board (every trace line but the decision header, the menu and
 // the choice).
 static bool trace_board_line(const std::string &line) {
     if (!rmcheck::starts_with(line, "| ")) return false;
     return !rmcheck::starts_with(line, "| decision ") && !rmcheck::starts_with(line, "| menu:") &&
-           !rmcheck::starts_with(line, "|   ") && !rmcheck::starts_with(line, "| >> ");
+           !trace_menu_row(line) && !rmcheck::starts_with(line, "| >> ");
 }
 
 namespace rmcheck {

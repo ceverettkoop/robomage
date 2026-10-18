@@ -142,20 +142,29 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      registered decklist (default: both lists are open);\n");
     printf("                      name-a-card then offers every vocab card\n");
     printf("\nInput and output:\n");
-    printf("  --player <A|B>      Designate a human seat (any value other than A/a means\n");
-    printf("                      B); hidden information is shown from that seat's view.\n");
-    printf("                      With --machine only that seat is prompted at the\n");
-    printf("                      terminal; without it every decision is prompted there\n");
+    printf("  (no option)         Hotseat: every seat without an in-process agent is a human\n");
+    printf("                      seat at the terminal (the C++ CLI), each decision shown from\n");
+    printf("                      the deciding seat's RMSTATE frame; type help at its prompt\n");
+    printf("                      for the commands. A human game always writes its decision\n");
+    printf("                      log and prints no narrative unless --narrative is given\n");
+    printf("  --player <A|B>      Make that seat a human seat (any value other than A/a means\n");
+    printf("                      B), e.g. --player A --agent-b explore: a human against an\n");
+    printf("                      in-process agent (with --play: the human takes over once the\n");
+    printf("                      script runs out). With --machine every other seat needs an\n");
+    printf("                      agent or a script (the human seat reads stdin). Under\n");
+    printf("                      --replay: the seat whose view --narrative's one-sided lines\n");
+    printf("                      are limited to\n");
     printf("  --machine           Machine mode (speak RMSTATE; the decisions are the same\n");
-    printf("                      as at the terminal). Outside\n");
+    printf("                      for every consumer). Outside\n");
     printf("                      --replay, each seat that has no in-process agent and is\n");
-    printf("                      not the --player seat decides over the RMSTATE stream:\n");
+    printf("                      not a human seat decides over the RMSTATE stream:\n");
     printf("                      its frames (\"RMSTATE <nbytes>\" + payload) on stdout, one\n");
     printf("                      integer reply per decision on stdin, a terminal frame per\n");
     printf("                      seat at match end; all other output then goes to stderr.\n");
     printf("                      Narrative is silenced unless --narrative is given\n");
-    printf("  --narrative         In machine mode, also print the game narrative (perfect\n");
-    printf("                      information)\n");
+    printf("  --narrative         In machine mode (and with a human seat), also print the\n");
+    printf("                      engine's game narrative (perfect information, but for the\n");
+    printf("                      lines limited to a --player / --log-viewer seat's view)\n");
     printf("  --log-viewer <A|B>  Restrict one-sided narrative to that seat's view\n");
     printf("                      (any value other than A/a means B)\n");
     printf("  --trace-visibility  Narrate each reveal/look window as it opens and closes\n");
@@ -198,9 +207,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      seats' frames against the true world at every decision,\n");
     printf("                      and the knowledge state across the snapshot check's restore.\n");
     printf("                      Failures print ERROR: lines; play is unchanged\n");
-    printf("  --trace-decisions   Print every decision's board and menu, as the deciding seat's\n");
-    printf("                      RMSTATE frame shows them, and the choice made (lines starting\n");
-    printf("                      \"| \" in the game log)\n");
+    printf("  --trace-decisions   Print every decision's board, pending decision and menu, as\n");
+    printf("                      the CLI renders the deciding seat's RMSTATE frame, and the\n");
+    printf("                      choice made (lines starting \"| \" in the game log)\n");
     printf("  --check-decks       Play no game: check that every card of the top-level and\n");
     printf("                      league/ decks loads and is in the card vocabulary; one line\n");
     printf("                      per missing card, exit status 1 when any is missing\n");
@@ -227,7 +236,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      seat's RMSTATE frames: first (row 0), random, explore,\n");
     printf("                      explore:patient, actions:<i,i,...> (then row 0) or\n");
     printf("                      play:<specs> (then row 0). A seat without one keeps its\n");
-    printf("                      input path (the RMSTATE stream, or --player)\n");
+    printf("                      input path (the RMSTATE stream, or a --player human seat)\n");
     printf("  --play <specs>      One --play script for both seats: comma-separated semantic\n");
     printf("                      specs (cast:<card>, target:<card>@opp, A:attack:<card>, ...),\n");
     printf("                      each resolved against its decision's menu; once it runs out\n");
@@ -275,10 +284,6 @@ void cli_print_turn_header(size_t turn, bool player_a_turn) {
     // Game::turn_state.turn counts from 0; display 1-based so the first header reads "TURN 1"
     // (never "TURN 0"). Display-only — the 0-based counter itself is untouched.
     game_log("\n-------- TURN %zu (%s) --------\n", turn + 1, name);
-}
-
-void cli_print_invalid_action() {
-    game_log("Invalid action\n");
 }
 
 // ── Game state display ────────────────────────────────────────────────────────
@@ -394,17 +399,6 @@ void print_game_state(const GameState* gs) {
             game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
         }
         if (hand_empty) game_log("  (empty)\n");
-    }
-}
-
-// ── Choice display ────────────────────────────────────────────────────────────
-
-void print_query(const std::vector<LegalAction>& actions, bool player_a_has_priority) {
-    if (InputLogger::instance().is_machine_mode()) return;
-    const char* pname = player_a_has_priority ? "Player A" : "Player B";
-    game_log("\n%s has priority. Legal actions:\n", pname);
-    for (size_t i = 0; i < actions.size(); i++) {
-        game_log("  %zu: %s\n", i, actions[i].description.c_str());
     }
 }
 

@@ -9,24 +9,23 @@
 
 // ── --trace-decisions: the board and menu at every decision, from the deciding seat's frame ───
 //
-// Rendered from the decoded STATE frame the deciding seat receives (so it shows what that seat
-// may see, nothing more). Every line starts with "| ", which no narrative line does, so a reader
-// of the game log can tell the trace from the narrative:
+// Rendered from the decoded STATE frame the deciding seat receives, by the CLI's renderer
+// (cli/board.h: so it shows what that seat may see, nothing more, as the human seat sees it).
+// Every line starts with "| ", which no narrative line does, so a reader of the game log can tell
+// the trace from the narrative:
 //
 //   | decision <n>: Player <X> (game <g>, turn <t>, <STEP>, Player <Y> active)   [or: sideboarding]
-//   | Player <X>: life <l>, hand <h>, library <k>, graveyard <g>, exile <e>[, pool <W..C>]
-//   | Player <X> battlefield: <name>[ <p>/<t>][ (tapped, sick, attacking, ..., <counter> x<n>)], ...
-//   | stack: <name> (Player <X>), ...                       (top first)
-//   | Player <X> hand: <name>, ...                           (the deciding seat's own hand)
-//   | Player <X> graveyard: <name>, ...
+//   | <board>                     cli::board_lines, then cli::pending_lines
 //   | menu:
-//   |   <i>: <description>                                   (one line per menu row)
+//   |   <i>: <description>        one line per menu row
 //
 // then, once the decision is made:
 //
 //   | >> Player <X>: <i> (<description>)     or     | >> Player <X>: -2 (concede game) / -3 (concede match)
 //
-// <n> counts the run's decisions from 1.
+// <n> counts the run's decisions from 1; <g> and <t> are the frame's 0-based game and turn. The
+// header, menu and choice lines keep this exact shape (the gate reads them: a menu row is "|   "
+// then the index and ": "); the board's lines never take the shape of a menu row.
 
 namespace agents {
 

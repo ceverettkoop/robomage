@@ -33,6 +33,9 @@ extern Deck DEFAULT_DECK_TWO;
 extern Game cur_game;
 extern bool has_human_player;
 extern bool human_player_is_a;
+// The human seats (the C++ CLI, cli/human.h), [0] = Player A: set once the options are parsed
+// (cli_args.cpp).
+extern bool human_seat[2];
 extern bool log_viewer_set;
 extern Zone::Ownership log_viewer_owner;
 

@@ -28,7 +28,6 @@ extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static int get_int_input();
 static Zone::Ownership deciding_player();
 static int apply_concede_input(int choice);
 static void check_machine_choice(const std::vector<LegalAction> &actions, int choice);
@@ -37,37 +36,6 @@ static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
 static std::string read_header_field(std::ifstream &file, const std::string &key);
 static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
-
-static int get_int_input() {
-    int c;
-    while ((c = getchar()) == ' ' || c == '\t');
-    // End of input can never answer the prompt, so it quits like 'q' instead of asking again forever.
-    if (c == EOF) {
-        game_log("Input closed; quitting.\n");
-        exit(0);
-    }
-    if (c == '\n') return -1;
-    if (c == 'q' || c == 'Q') {
-        game_log("Quitting.\n");
-        exit(0);
-    }
-    if (c == 'z' || c == 'Z') {
-        while ((c = getchar()) != '\n' && c != EOF);
-        return PASS_TURN_CMD;
-    }
-    ungetc(c, stdin);
-    int choice = -1;
-    if (scanf("%d", &choice) != 1) {
-        while ((c = getchar()) != '\n' && c != EOF);
-        if (c == EOF) {
-            game_log("Input closed; quitting.\n");
-            exit(0);
-        }
-        return -1;
-    }
-    while ((c = getchar()) != '\n' && c != EOF);
-    return choice;
-}
 
 // The seat a decision belongs to — i.e. who a concession read at it is
 // attributed to. Normally the priority holder (every mid-resolution prompt
@@ -276,6 +244,11 @@ unsigned int InputLogger::get_replay_seed() const {
     return replay_seed;
 }
 
+const std::string &InputLogger::log_file_name() const {
+    static const std::string none;
+    return log_file.is_open() ? log_path : none;
+}
+
 const DecisionLogHeader &InputLogger::get_replay_header() const {
     return replay_header;
 }
@@ -413,10 +386,6 @@ bool InputLogger::provider_decides(Zone::Ownership seat) const {
 }
 
 int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat) {
-    extern bool has_human_player;
-    extern bool human_player_is_a;
-    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.priority.player_a_has_priority);
-
     if (replay_mode) {
         int choice;
         if (!(replay_file >> choice)) {
@@ -447,63 +416,17 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
         return choice;
     }
 
-    if (machine_mode && !human_has_priority) {
-        // In-process decision hook: when a provider covers the deciding seat, take the
-        // choice directly from it — no frame is written and stdin/stdout are not
-        // touched. The choice goes through accept_machine_choice (concession sentinels,
-        // -1 → last-slot remap, commit_choice), as the stream's does, so the decision log
-        // stays complete. The provider can consult snapshot_loop_safe() for restore-safety
-        // without any extra plumbing.
-        if (provider_decides(seat)) return accept_machine_choice(actions, input_provider(seat, actions));
-        // Every other machine seat decides over the RMSTATE stream: its frame, answered by
-        // one integer line (state_format/stream.h).
-        if (!rmstate_stream_enabled()) fatal_error("a machine decision with no input path (no agent, no stream)");
-        return accept_machine_choice(actions, rmstate_stream_exchange(actions));
-    }
-
-    // Auto-pass mode: return 0 until we reach the target turn
-    if (auto_pass_until_turn >= 0) {
-        if (cur_game.turn_state.step == DECLARE_ATTACKERS) {
-            auto_pass_until_turn = -1;
-        } else if ((int)cur_game.turn_state.turn < auto_pass_until_turn) {
-            commit_choice(actions, 0);
-            return 0;
-        }
-        auto_pass_until_turn = -1;
-    }
-
-    // CLI input loop: print query, validate, log
-    while (true) {
-        print_query(actions, cur_game.priority.player_a_has_priority);
-        int choice = get_int_input();
-        // handling flagged choices
-        switch (choice) {
-            case PASS_TURN_CMD:
-                game_log("Auto-passing turn.\n");
-                auto_pass_until_turn = (int)cur_game.turn_state.turn + 1;
-                commit_choice(actions, 0);
-                return 0;
-                break;
-            case FLAG_QUIT:
-                exit(0);
-                break;
-            case CONCEDE_GAME:
-            case CONCEDE_MATCH:
-                // Typed at the prompt: same concession the machine protocol
-                // takes, logged the same way so the game replays.
-                commit_choice(actions, choice);
-                return apply_concede_input(choice);
-            default:
-                break;
-        }
-        // other input checked against choices
-        if (choice < 0 || choice >= static_cast<int>(actions.size())) {
-            cli_print_invalid_action();
-            continue;
-        }
-        commit_choice(actions, choice);
-        return choice;
-    }
+    // In-process decision hook (an agent or a human seat of the CLI): the choice comes straight
+    // from the provider, no frame is written and the engine reads no stdin. The choice goes
+    // through accept_machine_choice (concession sentinels, -1 → last-slot remap, commit_choice), as
+    // the stream's does, so the decision log stays complete. The provider can consult
+    // snapshot_loop_safe() for restore-safety without any extra plumbing.
+    if (provider_decides(seat)) return accept_machine_choice(actions, input_provider(seat, actions));
+    // Every other seat decides over the RMSTATE stream: its frame, answered by one integer line
+    // (state_format/stream.h).
+    if (!machine_mode || !rmstate_stream_enabled())
+        fatal_error("a decision with no input path (no agent, no human seat, no stream)");
+    return accept_machine_choice(actions, rmstate_stream_exchange(actions));
 }
 
 bool request_optional_yesno(Zone::Ownership chooser, const std::string& prompt) {

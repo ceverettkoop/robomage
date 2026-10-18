@@ -81,13 +81,15 @@ Deck DEFAULT_DECK_TWO;
 Game cur_game;
 bool has_human_player = false;
 bool human_player_is_a = false;
+bool human_seat[2] = {false, false};
 // Narrative spectator: pins game_log_private output to one player's view even
 // when both seats are driven over the machine protocol (the TUI play mode wants
 // one-sided narrative without routing input through the human-keyboard path).
 bool log_viewer_set = false;
 Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
 
-// The CLI board (print_game_state) of the current decision.
+// The board print_game_state prints for a --replay without --machine (every other run is in
+// machine mode: a human seat renders its own frames, cli/board.h).
 static GameState gs;
 std::string replay_file_path;
 bool replay_mode = false;
@@ -688,7 +690,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             continue;
         }
 
-        // The CLI board (machine mode prints none).
+        // The board of a --replay without --machine (machine mode prints none).
         g_priority_window_open = true;
         if (!machine_mode) {
             populate_gamestate(&gs, viewer);
