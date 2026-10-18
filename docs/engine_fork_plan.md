@@ -395,6 +395,44 @@ baselines hold no BQUERY bytes, but their command is `--replay LOG --machine --n
 the BQUERY deletion unchanged (or the corpus command change must be byte-neutral); the `concede`
 tier's two BQUERY legs are marked in `tier_concede.cpp`.
 
+**Status: part B done** (the engine-side strip; one commit per item, each built debug and release
+without warnings and passing `make check` with the corpus byte-identical; ~11,700 lines deleted).
+(1) `src/actor/` keeps only `az_evaluator.{h,cpp}` (its layout includes now name
+`src/actor/az_layout.h`, which freezes the 6922-float input width the existing checkpoints were
+exported with, and `card_vocab.h` for `N_CARD_TYPES`) and the Makefile's `ACTOR_*` plumbing;
+`make actor` compiles the actor objects (the step-5 binary links `$(ENGINE_OBJ_NO_MAIN)
+$(ACTOR_OBJ) $(ACTOR_LDFLAGS)`), `actor-syntax` is gone (no torch-free actor TU is left).
+(2) `pygen`, `train/gen_*.py`, `gen_util.py`, `src/gen/`, `sb_dead_rules.json`, `train/_enums.py`
+and the untracked outputs' ignore lines are gone; `archetypes.json` stays.
+(3) `src/search_server.*` and its hooks are gone, with the determinizer's helpers
+(`collect_pending_pins`, `deck_state_resplit_live`); the loop-safe marker moved to `snapshot.h`
+(the snapshot self-check saves only at a loop-safe decision).
+(4) **`--machine` now means RMSTATE**: outside `--replay`, every seat with no in-process agent
+that is not the `--player` seat decides over the RMSTATE stream (stdout the frames, all other
+output on stderr); `--replay … --machine` reads every decision from the log, writes no stream and
+prints exactly what it did. The decision schedule `--machine` selects (`is_machine_mode`,
+`is_machine_schedule`, the RMLOG `machine` marker) is untouched — 4a's to change.
+`--machine-format rmstate` stays as a spelling of `--machine`; `--machine-format bquery`,
+`--broadcast-steps` and `--search-server` fail with "was removed" (a removed-option table in
+`cli_args.cpp`). The BQUERY payload, `populate_query` / `Query`, `serialize_state`, the layout
+constants and `OFFSET_CHAIN` are gone; `machine_io.{h,cpp}` is the CLI board's slimmed
+`populate_gamestate` / `GameState` (until 4b) and `action_card_vocab_idx`; `N_CARD_TYPES` lives in
+`card_vocab.h`. (5) `MANA_WASTED` / `MULLIGAN_PENALTY` are gone (no baseline held them).
+(6) **Done exactly, not moved to 4a.** The menu collapse read only whether the library owner's
+opponent knew the card at each of the top five positions (`by_opponent[p] != -1`); it now reads
+`Game::OppKnownLibraryTop`, one bool per position, kept by the same push / remove / note / move /
+clear operations at the same sites with each written value mapped to `v != -1` — the same
+predicate by construction. Deleted: `KnownLibraryTop`, `Zone::identity_known`, the match revealed
+bits, the `opp_known_hand` pass and the shadow comparison (`shadow_knowledge.*`, `SHADOW:` lines,
+the gate's classifier and shadow part, `knowledge_divergences.json`; the five
+`knowledge_divergence_*` scenarios stay, their assertions being `k_*` sharpness facts).
+`mark_card_revealed` moved to `classes/reveals.{h,cpp}` with its library part only. Evidence
+besides the corpus: 3,030 C++ explore games (bo1 `explore` and bo3 `explore:patient`, the ten
+league mirrors and 20 crosses, 100 seeds each; 448,878 decisions) give byte-identical decision
+logs, and identical stdout and stderr but for the deleted shaping lines, before part B and after
+items 6 and 4. (7) The `concede` tier's BQUERY leg pipes the answered session's replies, unread,
+into plain `--machine` and checks the frames are byte-identical (140 checks, was 134).
+
 ## Step 4 — One decision schedule, then the C++ CLI
 
 ### 4a. One rules-faithful decision schedule (intentional; re-record)
@@ -407,7 +445,7 @@ tier's two BQUERY legs are marked in `tier_concede.cpp`.
 | `game_driver.cpp:1212` | caps sideboard swaps per player | keep as an always-on safety limit |
 | `game_driver.cpp:538`, `cli_output.cpp` guards | output only | fold into the output mode |
 | `name_card_choices.cpp:54` | truncates name-a-card menus to `MAX_ACTIONS` | lift (menus are unbounded) |
-| `queries/zones.cpp:123-128` (`interchangeable_cards`) | keeps two identical library cards apart when one sits at a position the other player knows (engine memory) | redefine on currently explicit information: a card in a live reveal window is distinguishable, a remembered one is not |
+| `queries/zones.cpp` (`interchangeable_cards`) | keeps two identical library cards apart when one sits at a position the other player knows (engine memory: `Game::OppKnownLibraryTop`, kept by 3b for this reader alone) | redefine on currently explicit information: a card in a live reveal window is distinguishable, a remembered one is not; `OppKnownLibraryTop` then goes |
 
 - **`auto-mana` is on by default for everyone:** CLI, scripted agent and machine agents.
   - With it on, ordinary mana abilities stay hidden at priority and the greedy payer
