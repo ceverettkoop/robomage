@@ -48,6 +48,10 @@ class InputLogger {
     void init_replay(const std::string& log_path);
     void init_machine(unsigned int seed, const std::string& resource_dir, bool enable_log,
                       const DecisionLogHeader& header);
+    // --decision-log FILE: the decision log init_logging / init_machine open is FILE instead of
+    // resources/logs/game_<seed>.log, and no "Logging inputs to" line is printed (the caller
+    // named the file). Call before either init.
+    void set_log_path(const std::string& path);
     bool is_replay_mode() const;
     bool is_machine_mode() const;
     // True when the game must follow the machine-mode DECISION SCHEDULE: machine mode
@@ -113,6 +117,11 @@ class InputLogger {
     std::ofstream log_file;
     std::ifstream replay_file;
     std::string log_path;
+    // Set by set_log_path; empty = the seed-named default.
+    std::string named_log_path;
+    // Opens the decision log (the named path, else the default under resource_dir) and writes its
+    // header; false when it cannot be opened.
+    bool open_log(unsigned int seed, const std::string& resource_dir, const DecisionLogHeader& header);
     DecisionLogHeader replay_header;
     Deck replay_deck_a;
     Deck replay_deck_b;

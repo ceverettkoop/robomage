@@ -107,6 +107,9 @@ bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training
 // runs millions of episodes). CLI/interactive games always log — it's their save-game.
 bool log_decisions_flag = false;
+// --decision-log FILE: the decision log's path (implies --log-decisions); empty = the default,
+// resources/logs/game_<seed>.log.
+std::string decision_log_path;
 // --broadcast-steps: at every forced auto-pass (a priority window whose only
 // legal action is pass), emit a passive BSTATE frame — the BQUERY payload with
 // no stdin read — so an observing front end can render each step instead of

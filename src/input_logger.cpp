@@ -189,16 +189,25 @@ void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &heade
     log_file.flush();
 }
 
-void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
-    log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
+void InputLogger::set_log_path(const std::string &path) {
+    named_log_path = path;
+}
+
+bool InputLogger::open_log(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
+    log_path = named_log_path.empty() ? resource_dir + "/logs/game_" + std::to_string(seed) + ".log" : named_log_path;
     log_file.open(log_path);
     if (!log_file.is_open()) {
         non_fatal_error("Failed to open log file: " + log_path);
-        return;
+        return false;
     }
     write_header(seed, header);
+    return true;
+}
+
+void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
+    if (!open_log(seed, resource_dir, header)) return;
     replay_mode = false;
-    game_log("Logging inputs to: %s\n", log_path.c_str());
+    if (named_log_path.empty()) game_log("Logging inputs to: %s\n", log_path.c_str());
 }
 
 void InputLogger::init_replay(const std::string &replay_path) {
@@ -251,14 +260,8 @@ void InputLogger::init_machine(unsigned int seed, const std::string &resource_di
     // Machine mode (RL training / test harness) writes no decision log unless
     // --log-decisions is given — training runs millions of episodes.
     if (!enable_log) return;
-    log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
-    log_file.open(log_path);
-    if (!log_file.is_open()) {
-        non_fatal_error("Failed to open log file: " + log_path);
-        return;
-    }
-    write_header(seed, header);
-    game_log("Logging inputs to: %s\n", log_path.c_str());
+    if (!open_log(seed, resource_dir, header)) return;
+    if (named_log_path.empty()) game_log("Logging inputs to: %s\n", log_path.c_str());
 }
 
 bool InputLogger::is_replay_mode() const {

@@ -50,6 +50,7 @@ extern bool offer_cast_cancel;
 extern bool narrative_mode;
 extern bool bo3_mode;
 extern bool log_decisions_flag;
+extern std::string decision_log_path;
 extern bool broadcast_steps_mode;
 extern bool trace_visibility;
 extern bool trace_handles;

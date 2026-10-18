@@ -207,6 +207,12 @@ static const CliOption OPTIONS[] = {
     {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
     {"--narrative", nullptr, false, false, [](const char *) { narrative_mode = true; }, nullptr},
     {"--log-decisions", nullptr, false, false, [](const char *) { log_decisions_flag = true; }, nullptr},
+    {"--decision-log", nullptr, true, false,
+        [](const char *v) {
+            decision_log_path = v;
+            log_decisions_flag = true;
+        },
+        nullptr},
     // Passive BSTATE frames at forced auto-pass windows (machine mode observers only; no stdin
     // response expected, nothing recorded).
     {"--broadcast-steps", nullptr, false, false, [](const char *) { broadcast_steps_mode = true; }, nullptr},

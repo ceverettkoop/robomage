@@ -57,6 +57,7 @@ static void game_loop() {
         // the log replays without re-supplying decks or flags.
         DecisionLogHeader hdr;
         record_header_flags(hdr);
+        if (!decision_log_path.empty()) InputLogger::instance().set_log_path(decision_log_path);
         hdr.deck_a_name = deck_a_name;
         hdr.deck_a_text = DEFAULT_DECK_ONE.raw_text;
         hdr.deck_b_name = deck_b_name;
