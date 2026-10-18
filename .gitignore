@@ -12,19 +12,13 @@ bin/resources/cardsfolder/*/*.txt
 bin/resources/logs/**
 src/classes/game.cpp
 logs/**
-train/.venv/**
-train/.venv
-train/__pycache__/**
 **/__pycache__/**
-train/logs/**
 checkpoints/*.zip
 replays/*.txt
-train/checkpoints/*
 *.ts.pt
 .cache/*
 bin/resources/tokenscripts/*.txt
 resources/logs/*
-train/analysis_out/*
 bin/resources/decks/temp/*
 .claude/settings.local.json
 diag_draw_*.txt
@@ -32,7 +26,6 @@ obj/*/*.d
 obj/*/*/*.d
 obj/*/*/*/*.d
 obj/*.d
-train/replays/*
 corpus/
 # ...but the replay-regression corpus IS tracked (the CI replay tier diffs
 # against it); without this exception new scenario files stay silently
@@ -40,24 +33,17 @@ corpus/
 !tests/corpus/
 !tests/corpus/**
 
-# robomage_check transcript/draw-log output directory, and stray draw logs runner.py
-# writes to cwd on a stall.
+# robomage_check transcript/draw-log output directory, and the draw logs rm_driver.py
+# writes to cwd.
 ci_out/
 draw_*.txt
-
-# Game recordings (.rmrec) — recording subsystem removed; never commit these
-train/recordings/
-
-# AlphaZero self-play shards (Phase C artifacts) — regenerate, never commit
-train/az_data/
 
 # In-process AlphaZero actor binary (Phase D) — built by `make actor`
 bin/*/az_actor
 
-# Cached Scryfall card art for the PySide6 board (train/scryfall_cache.py) —
-# downloaded on demand, never committed. Delete misses.json to retry lookups.
+# Cached Scryfall card art of the PySide6 board (archived on branch archive/rl-stack) —
+# downloaded on demand, never committed.
 bin/resources/card_images/
-train/az/*
 bin/az_actor
 bin/robomage
 archive/*

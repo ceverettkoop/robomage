@@ -1,24 +1,20 @@
 #!/bin/bash
 # SessionStart hook — provision the cloud environment so the engine builds and
-# the test harness / training env run out of the box.
-#
-# What it sets up (all idempotent, safe to re-run):
-#   1. Python venv (train/.venv) with the harness/env deps (numpy, gymnasium).
-#   2. Forge card scripts for the playable decks. These live under
-#      bin/resources/cardsfolder/ but are .gitignored and fetched on demand
-#      from Card-Forge/forge, so a fresh clone has none and the engine asserts
-#      the moment it tries to load a card.
+# runs out of the box: the Forge card scripts for the playable decks. These live
+# under bin/resources/cardsfolder/ but are .gitignored and fetched on demand from
+# Card-Forge/forge, so a fresh clone has none and the engine asserts the moment
+# it tries to load a card. Idempotent, safe to re-run; stdlib python3 only.
 #
 # It does NOT build the engine — building is left to the user (`make` →
 # bin/debug/robomage, `make BUILD=RELEASE` → bin/release/robomage) so the hook
-# can't clobber a binary that a running training/league job is exec'ing (a
-# mid-session rebuild races the workers and fails them with EACCES).
+# can't clobber a binary that a running job is exec'ing (a mid-session rebuild
+# races the workers and fails them with EACCES).
 set -euo pipefail
 
 # Only provision when running in a Claude Code remote (cloud) environment.
 # CLAUDE_CODE_REMOTE is set by the remote runner and absent on a local CLI
-# session — locally the user's own machine already has these deps set up
-# (or manages them themselves), so skip the (slow) fetch/install work.
+# session — locally the user's own machine already has the scripts (or manages
+# them themselves), so skip the (slow) fetch work.
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
   echo "[session-start] Not a remote environment (CLAUDE_CODE_REMOTE unset) — skipping provisioning."
   exit 0
@@ -26,18 +22,6 @@ fi
 
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 cd "$ROOT"
-
-VENV_PY="train/.venv/bin/python"
-
-echo "[session-start] Setting up Python venv + harness deps..."
-if [ ! -x "$VENV_PY" ]; then
-  python3 -m venv train/.venv
-fi
-"$VENV_PY" -m pip install --quiet --upgrade pip
-# numpy + gymnasium are all the test harness / NarrativeEnv import chain needs.
-# (torch / stable-baselines3 are only needed for PPO training; install those
-# manually when you actually train — they are large and slow to fetch.)
-"$VENV_PY" -m pip install --quiet numpy gymnasium
 
 echo "[session-start] Fetching Forge card + token scripts for the playable decks..."
 # provision_decks.py is the single provisioning entry point (shared with CI): it
@@ -47,6 +31,6 @@ echo "[session-start] Fetching Forge card + token scripts for the playable decks
 # Amass / Investigate / Mobilize tokens, mapped by its keyword_tokens table) and
 # fetches those too. Add-only and non-fatal — a card missing from Forge just needs
 # hand-authoring and never aborts the hook.
-"$VENV_PY" tools/forge_fetch/provision_decks.py
+python3 tools/forge_fetch/provision_decks.py
 
 echo "[session-start] Done."

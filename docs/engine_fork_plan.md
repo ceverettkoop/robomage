@@ -433,6 +433,18 @@ logs, and identical stdout and stderr but for the deleted shaping lines, before 
 items 6 and 4. (7) The `concede` tier's BQUERY leg pipes the answered session's replies, unread,
 into plain `--machine` and checks the frames are byte-identical (140 checks, was 134).
 
+**Status: part C done** (Python and infrastructure). `train/` is gone: 97 files (~75,000 lines)
+deleted with `tui.sh` / `gui.sh` (all on branch `archive/rl-stack`), and the seven kept files moved
+to `python/` (stdlib only, run with `python3`; `rmstate.py` builds its own CLI parser and lost its
+numpy `Schema.arrays`, `rm_driver.py` runs plain `--machine`, `pycheck.py`'s driver check fails on
+any module from outside the standard library and `python/`). `robomage_check` runs
+`python/rm_driver.py` / `python/pycheck.py` with the first `python3` on `PATH` (no venv); `make
+regen` runs `python/record_corpus.py`, `PYTHON ?= python3`, and `make actor` finds libtorch through
+`$(PYTHON) -c 'import torch'`. The SessionStart hook only runs `python3
+tools/forge_fetch/provision_decks.py`; `.claude/settings.json` lost its two `train/` permissions;
+`.gitignore` its `train/` entries. CLAUDE.md got the minimal fixes (no deleted command left);
+README, `docs/ci.md`, `docs/game_running.md` and the rest of CLAUDE.md wait for the docs rewrite.
+
 ## Step 4 — One decision schedule, then the C++ CLI
 
 ### 4a. One rules-faithful decision schedule (intentional; re-record)

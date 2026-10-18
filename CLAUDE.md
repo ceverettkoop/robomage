@@ -30,23 +30,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`; only the libtorch actor TUs in `src/actor/` enable them)
-- Two interactive front ends, both Python, both sitting on the shared driver in
-  `train/game_driver.py`: the Textual TUI (`train/tui_game.py`) and the PySide6 GUI
-  (`train/gui_main.py` app shell over the `train/gui_game.py` board, with its analysis window in
-  `train/gui_analysis.py`), plus a plain text board (`play.py --board text`). There is NO C++
-  front end (the old raylib GUI was removed); the engine is always a `--machine` subprocess.
+- The kept Python (`python/`: the RMSTATE agent driver, the scripted agent, the decoder, the corpus
+  recorder and their checks) is stdlib only. The RL stack and the Python front ends (TUI, GUI,
+  `play.py`) are archived on branch `archive/rl-stack` (plan step 3b); a C++ front end comes in
+  plan step 4b. Flags use one vocabulary: `--format bo1|bo3`, a seat's deck `--deck-a` /
+  `--deck-b`, a seat's agent `--player-a` / `--player-b` (driver) or `--agent-a` / `--agent-b`
+  (the engine's in-process agents).
 - Uses clang-format configuration in `.clang-format`
-- Every Python CLI flag lives in `train/cli_spec.py` (the TUI/GUI forms are built from it). The
-  match format is one flag everywhere, `--format bo1|bo3` (default bo3, PPO training included).
-  Seats use one vocabulary everywhere: a single seat's deck is `--deck-a` / `--deck-b` (multi-deck
-  pools stay `--decks` / `--opponents`) and a seat's agent (an `opponents.make_controller` spec)
-  is `--player-a` / `--player-b` — the interactive human is just the spec `human`. Where one side
-  is "under test" (analysis, baseline, training) it is player A.
-  When a flag is renamed or removed, add the old spelling to
-  `cli_spec.REMOVED_FLAGS` (global or scoped to a tool / `tool/sub`) so it errors with
-  "`--old` was removed; use …" instead of vanishing — parsers built with `apply_to_parser` pick the
-  table up automatically, a standalone argparse calls `add_removed_flags(parser, scope)`. A removed
-  environment variable goes in `cli_spec.REMOVED_ENV_VARS` (enforced by `check_removed_env`).
 - DO NOT MODIFY CARD SCRIPTS
 - When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
   and use subagents for each one. Instruct the subagents to not spawn additional agents. 
@@ -79,23 +69,18 @@ update it when you knowingly deviate or leave a rules gap.
 
 - `make` — debug build: `bin/debug/robomage`, `rmknow`, `robomage_check`. `make actor` compiles
   the libtorch TUs of `src/actor/` (the TorchScript evaluator; no binary until plan step 5; needs
-  torch in `train/.venv`, not part of plain `make`)
+  a torch importable by `python3`, or `LIBTORCH_DIR=…`; not part of plain `make`)
 - `make BUILD=RELEASE` — same into `bin/release/` (separate obj/bin
   trees per config, so switching `BUILD` never needs `make clean`)
 - `make clean` · `make check` (the test gate, below) · `make regen` (re-record the replay corpus
   after an intentional behavior change; see `docs/ci.md`)
 
-**Which binary the Python tooling runs is independent of which one you just built.** Each tool
-has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one config, and
-`--binary <path>` overrides one invocation:
+**Which binary the tooling runs is independent of which one you just built.** The gate
+(`robomage_check`), `python/rm_driver.py` and `python/record_corpus.py` default to the debug build
+(`bin/debug/robomage`; assertions, `-D_GLIBCXX_ASSERTIONS`, no `-O2`); `ROBOMAGE_BUILD=release`
+moves the driver onto `bin/release/robomage`, and `--binary <path>` overrides one invocation.
 
-- **Debug** (`bin/debug/robomage`; assertions, `-D_GLIBCXX_ASSERTIONS`, no `-O2`): the test
-  harness, `make check` (`robomage_check`), `train.py observe`, and `train.py baseline`'s Python fallback.
-- **Release** (`bin/release/robomage`): `play.py` (every board),
-  `analysis.py` (browse/report), every PPO/AZ training and `bench-*` subcommand, and `baseline`'s
-  default C++-actor path.
-
-**There is no codegen** (plan step 3b deleted `pygen`, `train/gen_*.py` and `src/gen/`).
+**There is no codegen** (plan step 3b deleted `pygen`, its generators and `src/gen/`).
 `bin/resources/decks/archetypes.json` is read directly (its `_archetypes` key is the canonical
 label list; `src/state_format/metagame.cpp`).
 
@@ -112,45 +97,37 @@ background** and make the live output inspectable by the user:
 - **The standard gate is `make check`** (build + every tier of the C++ gate
   `bin/debug/robomage_check`: vocab, concede, rules scenarios, byte-identical replay corpus
   (`tests/corpus/`), state-format and knowledge self-checks, explore fuzz, bench, and the smoke
-  tier through the Python driver plus `train/pycheck.py`). It must pass before pushing, and CI
+  tier through the Python driver plus `python/pycheck.py`). It must pass before pushing, and CI
   runs exactly it. Tiers, reproducing a CI failure, re-recording the corpus: [`docs/ci.md`](docs/ci.md).
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
 - Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
-- **Every game-running tool sits on `runner.drive_game` — do not hand-roll decision loops.**
-  From Python use `runner.run_match(agent_a, agent_b, deck_a=…, deck_b=…, games=, bo3=True,
-  seed=1, transcript="compact|verbose|narrative|quiet", out=…)`. Agent specs
-  (`opponents.make_controller`, one grammar everywhere): `scripted` (= the **hard** tier: smart
-  mulligan, combat simulation, combo lines), `scripted:easy`/`greedy`, `scripted:random`,
-  `explore` / `explore:patient` (coverage fuzzer; big-mana mode), `auto`, `human`,
-  `play:<specs>`, `actions:<ints>`, `gen` / `az:gen` / `azraw:gen` / `mcts:gen`, or a checkpoint
-  path. Details: [`docs/game_running.md`](docs/game_running.md).
-- **`train.py observe`** runs N games of one matchup between any two agents — the quick check of a
-  new build. bo3 by default (`--format bo1` for single games); game i uses seed `--seed`+i.
-  `--games N` (per-game results + W/L/D), `--verbose` (per-decision board + menu + narrative),
-  `--out FILE` (transcript to FILE, one-line summary to stdout), `--quiet`, `--max-decisions N`.
-  Choose `--deck-a/-b` that exercise what you changed (decks relative to `bin/resources/decks/`).
-  - **Fuzz campaign** (any draw is a finding; also saved to `draw_<stamp>.txt`):
-    `observe --player-a explore --player-b explore --deck-a league/ur_delver --deck-b league/gw_maverick --games 100 --verbose --out out.txt`
-  - **Engine throughput:** `observe --format bo1 --games 40 --max-decisions 4000 --quiet --timing`
+- **Agent games** (the quick check of a new build): `python3 python/rm_driver.py --player-a
+  scripted --player-b explore --deck-a league/bug --deck-b league/burn --format bo1 --games N`
+  (bo3 by default; game i uses seed `--seed`+i; `--verbose` per-decision narrative + menu, `--out
+  FILE`, `--quiet`, `--max-decisions N`; `--help` lists all). Agents: `scripted` (= the **hard**
+  tier: smart mulligan, combat simulation, combo lines), `scripted:easy` / `greedy` / `random`,
+  `explore` / `explore:patient` (coverage fuzzer; big-mana mode), `first` (= `auto`),
+  `actions:<ints>`. Choose `--deck-a/-b` that exercise what you changed (decks relative to
+  `bin/resources/decks/`). Details: [`docs/game_running.md`](docs/game_running.md).
+  - **Fuzz campaign** (any draw is a finding): `bin/debug/robomage_check --tier fuzz --matchups
+    all --fuzz-games 100 [--mode explore:patient] [--seed N]` (the engine's C++ explore agents,
+    transcripts under `ci_out/`)
+  - **Engine throughput:** `bin/release/robomage_check --tier bench`
 
 ### Test harness for card behavior verification
 
-`train/test_harness.py` runs the engine with `--machine --narrative` (narrative = the
-perfect-information game log). At every decision it prints the narrative, the decoded board
-state, and the numbered **Available actions** menu. Flags live in `cli_spec.HARNESS_TOOL`;
-`--help` lists them all (zone presets `--battlefield/graveyard/exile/sideboard-a/-b`,
-`--life-a/-b`, `--scenario`, `--merge-sideboard`, `--coverage-json`, `--log-decisions`, …).
+The engine itself sculpts and scripts a game. Run it from `bin/` (`cd bin && ./debug/robomage
+…`) with `--narrative --trace-decisions` (the perfect-information game log, plus every decision's
+board, numbered menu and the choice made, `| ` lines), the test-setup presets and `--play`;
+`--help` lists every flag (zone presets `--battlefield/graveyard/exile/sideboard-a/-b`,
+`--life-a/-b`, `--game-seed`, `--max-decisions`, `--decision-log`, …).
 
-- **Format:** bo3 by default — once the script runs out play auto-continues through games 2–3
-  and sideboarding up to `--max-decisions` (default 1500). Sculpted scenarios usually want
-  `--format bo1` (cap 500; required by `--merge-sideboard`).
-- **Setting up cards:** `--hand-a/-b` + `--library-a/-b` build a stacked temp deck in
-  `bin/resources/decks/temp/` (hand first; padded to 15 cards with the last library card; deleted
-  at exit). `--battlefield-a/-b` permanents start in play without summoning sickness. Otherwise
-  `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`). For an exact small
-  library (e.g. Thassa's Oracle) write your own `1 CardName`-per-line `.dk` in `decks/temp/`
-  (hand cards first, plus `--no-shuffle`); hand-made files there are not auto-deleted.
+- **Format:** one game by default; `--bo3` plays a match with sideboarding. Cap the run with
+  `--max-decisions N`.
+- **Setting up cards:** `--hand-a/-b` + `--library-a/-b` build a stacked deck (hand first; padded
+  to 15 cards with its last card). `--battlefield-a/-b` permanents start in play without summoning
+  sickness. Otherwise `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`).
 - **Shuffling:** libraries shuffle with the seeded RNG unless `--no-shuffle` (deck-file order =
   draw order; first 7 = opening hand). Any `--hand-a/-b` implies `--no-shuffle` for both seats.
 - **No commas in card names.** List flags (`--play`, `--hand-*`, `--library-*`, zone presets)
@@ -158,12 +135,12 @@ state, and the numbered **Available actions** menu. Flags live in `cli_spec.HARN
   `--play`, a unique comma-free substring such as `cast:thalia`). Apostrophes are optional.
 - **Who decides:** `--play` (semantic specs; preferred) or `--actions` (positional indices;
   fragile) is ONE global script for both seats. It makes every decision until it runs out; then
-  each seat's `--player-a/-b` agent decides (default `auto` = action 0, so the game
-  auto-advances; e.g. `scripted` to hand over to the hard tier). **Claude cannot use `human`**
-  (no TTY) — use `--play`. A `--play` run prints `resolved --actions: …` for exact replay; keep
-  `--seed` fixed (default 1) while extending a line.
+  each seat's `--agent-a/-b` agent decides (default `first` = action 0, so the game
+  auto-advances; e.g. `explore`). **Claude cannot play a seat interactively** (no TTY; a seat
+  without `--play`, `--actions` or an agent reads stdin) — use `--play`. A `--play` run prints
+  `resolved --actions: …` for exact replay; keep `--game-seed` fixed while extending a line.
 
-**`--play` grammar** (full list in the `train/action_spec.py` docstring). Each spec is resolved
+**`--play` grammar** (full list in `src/agents/play_spec.h`). Each spec is resolved
 against *that* decision's live menu by intent, so it survives menu reordering; an unmatched or
 ambiguous spec **fails loudly with the legal menu**.
 
@@ -189,7 +166,7 @@ ambiguous — pin them with `@own`/`@opp`, `desc:`, or `#<n>`. Start a sculpted-
 **Seat keys** (`A:`/`B:`, case-insensitive; independent of `@own`/`@opp`) let you write each
 player's line without hand-sequencing priority passes. If the next spec is keyed to the seat
 lacking priority, the priority holder auto-passes (its mandatory choices, e.g. cleanup discard, go
-to its `--player-a/-b` agent) until the keyed seat is on the clock. A keyed spec also passes its
+to its `--agent-a/-b` agent) until the keyed seat is on the clock. A keyed spec also passes its
 own seat forward through priority windows until the action is legal (e.g. `A:attack:X` written in
 main phase waits for declare-attackers); a typo'd/ambiguous spec, or one that hits a mandatory
 choice it doesn't match, still fails loudly. Unkeyed specs apply to whoever has priority, with no
@@ -197,21 +174,22 @@ auto-advance. **The engine never asks a seat whose only legal action is a pass**
 only where that seat could do something else.
 
 ```bash
-# Sculpted hands, script the opening, then scripted agents play on
-train/.venv/bin/python train/test_harness.py --format bo1 \
+cd bin
+# Sculpted hands, script the opening, then the explore agents play on
+./debug/robomage --narrative --trace-decisions --game-seed 1 --max-decisions 30 \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --hand-b "Forest,Grizzly Bears" --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
-  --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 30
+  --play "keep,keep" --agent-a explore --agent-b explore
 
 # Bolt a bear already in play, seat-keyed (B has no response, so it gets no decision)
-train/.venv/bin/python train/test_harness.py --format bo1 \
+./debug/robomage --narrative --trace-decisions --game-seed 1 --max-decisions 10 \
   --hand-a "Lightning Bolt" --battlefield-a "Mountain" --battlefield-b "Grizzly Bears" \
   --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
 **Rules-regression scenarios.** When you fix a rules bug, save the harness line that shows it as
-`tests/scenarios/<cr-rule>_<what>.json` (a `--scenario` file plus a `"why"` line citing
+`tests/scenarios/<cr-rule>_<what>.json` (a JSON scenario plus a `"why"` line citing
 the CR rule and the commit, and assertions on the rules outcome: `expect` / `expect_not` /
 `expect_order` regexes over the narrative, `expect_menu` / `expect_menu_not` over offered actions,
 `expect_result`; keys in `tools/robomage_check/scenarios.h`). Keep `max_decisions` just past the
@@ -219,13 +197,14 @@ asserted event, check it passes (`bin/debug/robomage_check --tier scenarios --sc
 `--show narrative` to see what the assertions match) and fails without the fix; the
 `scenarios` tier of `make check` runs them all.
 
-`train.py observe --player-a "play:<specs>"` drives one seat by specs against any agent (each list
+`--agent-a "play:<specs>"` drives one seat by specs against the other seat's agent (each list
 drives only its seat, so leave specs unkeyed there).
 
-**JSON scenarios** (`--scenario FILE`) capture a reproducible setup: keys `name`, `hand_a/b`,
-`library_a/b`, `battlefield_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`,
-`play` (spec list) or `actions`, `seed`, `max_decisions`. Command-line flags override scenario
-values; format and players come only from the command line.
+**JSON scenarios** (`tests/scenarios/*.json`, run by `robomage_check --tier scenarios --scenario
+<glob>`) capture a reproducible setup: keys `name`, `hand_a/b`, `library_a/b`, `deck_a/b`,
+`battlefield_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`, `play` (spec list)
+or `actions`, `seed` (the `--game-seed`), `max_decisions`, `format`, `engine_flags`, plus the
+assertions (`tools/robomage_check/scenarios.h`).
 ```json
 {"name": "bolt_kills_bear", "hand_a": ["Mountain", "Lightning Bolt"],
  "battlefield_b": ["Grizzly Bears"],
@@ -392,27 +371,17 @@ meaning. In limited cases it is acceptable to *ignore* an irrelevant tag when th
 functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtPrompt$`, or a
 `ChangeNum$` count-SVar when the effect already moves all matching cards); repurposing a tag is not.
 
-## Reinforcement Learning
+## Python and the archived RL stack
 
-`train/` holds the Python side: gymnasium env, PPO (`MaskablePPO`, sb3-contrib) and AlphaZero
-training, analysis and front ends. Venv: `train/.venv/` (invoke `train/.venv/bin/python`).
+`python/` holds the kept, stdlib-only Python (see Key files); run it with `python3`, no venv. The
+PPO / AlphaZero training, analysis and front ends are archived on branch `archive/rl-stack`
+(`docs/engine_fork_plan.md` step 3b; steps 5–7 rebuild them on the C++ side).
 
-**Engine result lines (machine mode):** `GAME_RESULT: N Player A|B wins` — or `GAME_RESULT: N draw`
+**Engine result lines:** `GAME_RESULT: N Player A|B wins` — or `GAME_RESULT: N draw`
 when both players lose at once (CR 104.4a) — after every game, bo1 and bo3 (`print_game_result`);
 `MATCH_RESULT: Player A|B wins X-Y` ends a bo3 match. A drawn bo3 game counts for neither player:
 the match plays on until someone has won two games (fatal past `MAX_MATCH_GAMES`), and the player
 who went first in the drawn game goes first again. Every game end goes through `Game::end_game`.
-
-**Reward (Player A's perspective, per game):** ±1.0 per game (`GAME_WIN_REWARD`/`GAME_LOSS_REWARD`,
-`train/env.py`), 0.0 for a drawn game (`DRAW_REWARD`; AZ z = 0); it lands at every `GAME_RESULT`.
-The match reward (`MATCH_WIN_REWARD`/`MATCH_LOSS_REWARD`) is 0.0 — `MATCH_RESULT` only ends the
-episode. Per-game rewards match the
-AlphaZero outcome target, so a PPO checkpoint warm-starting an AZ net (`az_net.from_ppo`) hands
-over a calibrated critic; AZ trains value on `(1 - q_mix) * z + q_mix * td_q` (n-step TD target;
-`--td-n` / `--q-mix`, see `cli_spec.py`). Shaping is capped per game (`SHAPING_EPISODE_CAP`).
-PopArt (`train/popart.py`) normalizes each archetype bucket's value targets, on by default;
-`--no-popart` disables it and `--stock-head` implies `--no-popart`. Its stats live in policy
-buffers and updates are output-preserving, so checkpoints resume under either setting.
 
 ### Machine mode protocol
 
@@ -433,42 +402,9 @@ selects the last row.
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
 decision is read (machine, `--replay`, actor, CLI); the pending-decision seat loses via the
 ordinary `Game::player_loses` path, and the sentinel is logged so it replays. `-3` also ends the
-match (even from the sideboard phase, where `-2` is a no-op). Python constants in `train/env.py`;
-`GameDriver.concede(match=…)`; regression tier `concede`.
+match (even from the sideboard phase, where `-2` is a no-op). Python constants in
+`python/rm_driver.py` (`CONCEDE_GAME` / `CONCEDE_MATCH`); regression tier `concede`.
 
-
-**No action history in the obs** (it leaked hidden picks). What it carried is now explicit fields:
-pass flags / `is_priority_window` / mulligan state, per-turn counters, per-permanent turn statuses,
-pending delayed triggers, player effects, zone play permissions, and the pending-decision source.
-
-### Interactive front ends: TUI, GUI, and the analysis window
-
-`./tui.sh` (`train/tui.py`) is the Textual control panel (decks, training, league, observe, play).
-`train/play.py` is the one play entry point (`--help` lists flags; defaults: `--board gui`
-(falls back to tui without PySide6), human on A vs `az:gen` on B, `league/bug` vs
-`league/ur_delver`, `--on-the-play a|b|random` via `cli_spec.resolve_on_the_play`/`seat_play_sides`).
-Exactly one seat is `human`. A flag a board cannot honour errors. The gui/tui boards share
-`train/game_driver.py` (`GameDriver`, `build_session`); `--board text` uses `runner.run_games` with
-a `HumanController`. `./gui.sh` opens the GUI app's welcome pane.
-
-- **The GUI mirrors the CLI.** Play/Analysis dialog fields are `play.py` / `analysis.py browse`
-  flags with the same dests and cli_spec defaults, tabled in `train/launcher_config.py`
-  (`test_cli_spec.py` asserts field ↔ flag parity); settings in `~/.robomage/gui_launcher.json`.
-  A new GUI knob gets a cli_spec flag first, then a field. The search-knob → `az:`/`mcts:` spec
-  fold is `cli_spec.search_knob_pairs` / `apply_search_knobs`, shared by every caller.
-- **Analysis browser** (`analysis.py browse`, `--board tui|gui`): `--source` (`cli_spec.browse_source_kind`)
-  is `simulate` (default), a `shard_*.npz` dir, or a `.rmtrace`; flags invalid for the kind error
-  (`cli_spec.BROWSE_SOURCE_DESTS`). `--games 0` on shards is refused past
-  `shard_replay.MAX_UNBOUNDED_SHARD_BYTES` — training pools like `az_data/gen` are ~100 GB.
-  Both boards (`tui_analysis.py`, `gui_browser.py`) sit on `train/browse_session.py`: **a new
-  browser feature goes there first**, boards add only rendering. Tier `browser`.
-- **Headless smokes:** `ROBOMAGE_SMOKE=<legs>` — see `docs/ci.md` (`gui` tier). Never point
-  `browser`/`tree` legs at a training pool.
-- **Analysis window** (GUI play board, live MCTS on a detached engine): `train/gui_analysis.py` over
-  the Qt-free `train/analysis_session.py`; opt-in tier `analysis`.
-- **Shard recording** (`play.py --record-shards`): `train/shard_record.py` (exactly replayable via
-  `.rmplay` sidecars); exact search-tree rebuild `tree_rebuild.py` / `tree_cache.py`; net probes
-  `shard_probes.py`. Search-vs-net KL / top-1 numbers all come from `decode.search_net_divergence`.
 
 ### Key files
 
@@ -568,67 +504,18 @@ sections above are not repeated here.
 and evaluation, the base of the step-5 evaluator; `az_layout.h` its frozen input width). No binary
 until step 5 adds a main.
 
-**Python core (`train/`)**
-- `env.py` — `RoboMageEnv` / `ModelVsScriptedEnv` / `SelfPlayEnv`; obs offsets; re-exports
-  `scripted_action` (back-compat)
+**Python (`python/`, stdlib only)**
 - `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
-  tiers) over an abstract view of a decision (card names, engine enum names; no numpy)
-- `scripted_agent.py` — the agent on the BQUERY vector: `VectorView`, `ScriptedAgent.act(obs, n)`,
-  `make_agent`, `scripted_action`, the vocab card knowledge (`use_card_knowledge`)
-- `rm_agent.py` — the agent on RMSTATE (step-2 pass 2): one seat's decoded frames and `k_*` tables
-  as the core's view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns
-  (`FrameCards`); the default `scripted` view on `--machine-format rmstate`
+  tiers) over an abstract view of a decision (card names, engine enum names)
+- `rm_agent.py` — the agent on RMSTATE: one seat's decoded frames and `k_*` tables as the core's
+  view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns (`FrameCards`)
 - `explore_agent.py` — the `explore` / `explore:patient` coverage fuzzer's decision rule
-  (`explore_choice`, called by `ScriptedCore`; its rules listed in the docstring for a port)
-- `rm_driver.py` — the stdlib-only agent-game driver on `--machine-format rmstate` (step 2):
-  engine subprocess, frame read, reply write; scripted tiers, explore, `first`, `actions:`;
-  `run_games` / `play_game`, the corpus-format transcripts; its own CLI (`CLI_FLAGS`, registered
-  as `cli_spec.DRIVER_TOOL`); runs the `replay`, `smoke` and `fuzz` tiers (`docs/game_running.md`)
-- `runner.py` — `drive_game` / `run_games` / `run_match` (see `docs/game_running.md`)
-- `opponents.py` — `Controller`, `make_controller` spec grammar, training pools, and THE model-spec
-  resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator` / `load_spec_net` /
-  `load_spec_value_model`: bare / `mcts:` = the PPO checkpoint, `az:`/`azraw:`/`.pt` = the AZ
-  warm-start ladder); use it instead of stripping prefixes/knobs by hand
-- `decode.py` — obs/action decoders shared by every front end (torch-free)
-- `cli_spec.py` — every CLI flag and `Tool`/subcommand definition (stdlib-only)
-- `extractor.py` — `CardGameExtractor` policy trunk; `popart.py` — per-bucket value normalization
-- `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`,
-  also the engine's reference metagame source)
-- `action_spec.py` — `--play` semantic spec resolver (see Test harness)
-- `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts / numpy
-  arrays, the `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
-- `rmstate_adapter.py` — the step-2 pass-1 parity adapter: the old observation the scripted agent
-  reads, rebuilt from one seat's RMSTATE frames and `k_*` tables (`SeatAdapter`), and its card
-  knowledge from `CARDS` / `DECKLISTS` (`FrameCardKnowledge`; the agent reads cards through
-  `scripted_agent.use_card_knowledge`)
-- `rmstate_env.py` — `RMStateNarrativeEnv`: the engine on `--machine-format rmstate`, each seat's
-  frames into `rm_agent.SeatFrames` and the adapter (whole observation only for
-  `scripted?view=vector`); `runner.run_games(machine_format="rmstate")` / `--machine-format
-  rmstate` (observe, the harness) select it, for `rmstate_capable` controllers (scripted tiers,
-  auto, actions:, play:)
-
-**Training (`train/`)**
-- `train.py` — CLI for PPO (`train`, `league`, `exploiter`, …), `observe`, `baseline`, `curriculum`,
-  the `az-*` drivers and `bench-*`
-- `curriculum.py` — multi-phase plan schema + runner (stdlib-only); `progress_io.py` — atomic JSON
-  resume sidecars
-- `mcts.py` — determinized PUCT (`run_search`, `run_search_parallel`, `IncrementalSearch`);
-  duplicate-edge merge on by default (`merge_dupes`), dead-sideboard-IN pruning (`sb_dead_mask`)
-- `az_net.py` (AZNet, `from_ppo` warm start), `az_selfplay.py` (self-play shards), `az_train.py`
-  (`train_az`, `az_eval` gate, `az_league`), `gate_sprt.py` (gate SPRT)
-- `az_eval_server.py` — batched GPU inference server for the actor fleet; `scripted_oracle.py` —
-  scripted:hard over a socket for the actor
-- `az_baseline.py` — engine of `train.py baseline`
-- `search_env.py` — `SearchRoboMageEnv` (snapshot-protocol client, mirror pool)
-
-**Analysis / inspection (`train/`)**
-- `analysis.py` — `browse` (analysis browser) and `report` (HTML battery); `viz.py` — its chart helpers
-- `az_inspect.py` — static AZ-checkpoint views, a subcommand each (list in its docstring); `tui` →
-  `tui_az_inspect.py`
-- `shard_replay.py` — rebuilds browsable matches (and `.rmplay` replays) from shards
-
-**Deck tools (`train/`)**
-- `missing_cards.py` — deck cards absent from `src/card_vocab.h`
+  (`explore_choice`, called by `ScriptedCore`; ported to C++ as `src/agents/explore.h`)
+- `rm_driver.py` — the agent-game driver on `--machine`: engine subprocess, frame read, reply
+  write; scripted tiers, explore, `first`, `actions:`; `run_games` / `play_game`; its own CLI
+  (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
+- `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the
+  `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
 
 **Tests / CI**
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
@@ -636,9 +523,8 @@ until step 5 adds a main.
   no engine TU); tiers `vocab`, `concede`, `scenarios` (`tests/scenarios/*.json`), `replay` (the
   corpus's `tests/corpus/*.rmlog` decision logs against their `.replay` baselines; `--record`
   rewrites them), `state`, `knowledge`, `fuzz`, `bench`, `smoke` (Python driver and
-  `train/pycheck.py`); `--tier`, `-j`, `--seed`, `--scenario GLOB --show output|narrative|dump`
-- `train/record_corpus.py` — re-records the replay corpus with the live scripted agent (`make regen`)
-- `train/pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
+  `python/pycheck.py`); `--tier`, `-j`, `--seed`, `--scenario GLOB --show output|narrative|dump`
+- `python/record_corpus.py` — re-records the replay corpus with the live scripted agent (`make regen`)
+- `python/pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
   driver's imports), run by the `smoke` tier
-- `train/test_harness.py` — card-behavior harness (see Test harness)
-- Fuzz campaigns are `train.py observe --player-a explore --player-b explore` (see Testing guidelines)
+- Fuzz campaigns are `robomage_check --tier fuzz` (see Testing guidelines)

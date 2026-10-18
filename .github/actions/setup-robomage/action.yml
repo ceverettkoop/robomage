@@ -24,7 +24,7 @@ runs:
     # the pin-scoped restore-keys prefix no longer matches any prior cache, so the
     # restore is empty and provisioning re-fetches the whole set at the NEW pin —
     # otherwise the broad fallback would restore old-pin scripts that add-only never
-    # overwrites, silently shipping stale card content into codegen and the engine.
+    # overwrites, silently shipping stale card content into the engine.
     - name: Restore card scripts cache
       id: cards-cache
       uses: actions/cache/restore@v4
