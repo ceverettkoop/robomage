@@ -1,8 +1,8 @@
 # Running games: agents, drivers, scripts and logs
 
-How a RoboMage game is run: who decides each seat, the engine's in-process agents, the Python
-driver for the scripted agent, `--play` / `--actions` scripts, the machine protocol for an
-external agent, and decision logs. Every engine command runs from `bin/` (the engine finds
+How a RoboMage game is run: who decides each seat, the engine's in-process agents, playing as a
+human at the terminal, the Python driver for the scripted agent, `--play` / `--actions` scripts,
+the machine protocol for an external agent, and decision logs. Every engine command runs from `bin/` (the engine finds
 `resources/` relative to its working directory); `./debug/robomage --help` lists every flag.
 
 ## Who decides a seat
@@ -15,17 +15,17 @@ games). In order of precedence it goes to:
    runs out.
 3. **The seat's in-process agent** — `--agent-a <spec>` / `--agent-b <spec>`; when a script is
    given, a seat without one takes `first`.
-4. **The terminal** — the CLI prompt: without `--machine` every decision is prompted there
-   (`--player A|B` shows hidden information from that seat's view only); a `--player` seat under
-   `--machine` is prompted there too, but without its menu printed (a human seat against an agent
-   is plan step 4b's C++ CLI).
+4. **A human seat** — the C++ CLI at the terminal (below): the `--player A|B` seat, and without
+   `--machine` every seat that has no agent (so a plain run is hotseat). A human seat takes over a
+   script's seat once the script runs out.
 5. **The RMSTATE stream** — under `--machine`, every other seat: its frames on stdout, one integer
    reply per decision on stdin. This is how an external agent (such as the Python driver) plays.
 
 `--agent-a/-b`, `--play` and `--actions` imply `--machine` and cannot be combined with `--replay`
-or with an agent on the `--player` seat. `--machine` changes only how decisions are read and
-written: the decisions themselves (which are asked, what each menu offers) are the same for every
-consumer — terminal, stream, in-process agent or replay.
+or with an agent on the `--player` seat. A human seat reads stdin, so with one no seat may be left
+to the stream (`--player A --machine` with no agent for B is refused). `--machine` changes only
+how decisions are read and written: the decisions themselves (which are asked, what each menu
+offers) are the same for every consumer — human seat, stream, in-process agent or replay.
 
 **Auto-mana** is on by default for all of them: ordinary mana abilities are not offered at
 priority (instant-speed sources and sources targeted by removal on the stack are, so mana can be
@@ -37,6 +37,41 @@ cancels the payment and reverses the spell or ability. The flag is recorded in t
 Whatever decides, every game prints `GAME_RESULT: N Player A|B wins` (or `GAME_RESULT: N draw`,
 CR 104.4a) and a bo3 match ends with `MATCH_RESULT: Player A|B wins X-Y`. Under the stream those
 lines, like all other output, go to stderr.
+
+## Playing as a human: the C++ CLI
+
+```bash
+cd bin
+./debug/robomage --player A --agent-b explore --deck-a league/burn --deck-b league/bug   # vs an agent
+./debug/robomage --deck-a league/burn --deck-b league/bug --bo3                          # hotseat
+```
+
+A human seat (`src/cli/human.h`) is an in-process agent like the others: it is handed its seat's
+RMSTATE frames (knowledge tables included) and renders only those, decoded (`src/cli/board.h`),
+so it shows exactly what that seat may see. No perfect-information narrative is printed unless
+`--narrative` is given (with `--player`, its one-sided lines are limited to that seat's view); a
+human game always writes its decision log (`Decision log: <path>` is printed at the start; replay
+it with `--replay`). At each decision the seat sees what happened since its previous decision
+(its frames' events, life changes), the board when it changed (players, battlefields with P/T,
+statuses, counters, attachments and combat, the stack top first with targets, its hand,
+graveyards, exile, open reveals, effects, a "You know" knowledge summary), the pending decision
+(with what a cost still owes, by pip, during payment) and the numbered menu. Objects are labelled
+`#<handle>`, the handle of the seat's frame. Hotseat prints a `==== Player X to decide ====`
+banner before each decision. Commands at the prompt:
+
+| Command | |
+|---|---|
+| `<n>` | menu row *n*; `-1` is the last row (an attacker / blocker declaration's confirm, marked `(or -1)`) |
+| `concede` / `concede match` | concede the game (`-2`) / the match (`-3`) |
+| `board` | the board and menu again |
+| `zone <name> [opp]` | one zone, yours or the opponent's: `hand`, `library`, `graveyard`, `exile`, `battlefield`, `stack`, `sideboard`; a hidden zone shows its size, the cards the frame shows in it and what the knowledge tables say |
+| `card <#n\|name>` | a card's details from the `CARDS` frame (cost, type line, P/T, oracle text): an object of the board by handle, or a card of the match by name |
+| `know` | the knowledge panel in full: pools with each card's least and most copies, known library positions, copies seen, consistent reference lists, archetypes (and beliefs at `expert+belief`); off under `--knowledge-a/-b off` |
+| `log [n\|all]` | what this seat saw happen this match (its events), the last *n* lines (default 30) |
+| `help`, `quit` | |
+
+Anything else re-prompts; end of input ends the run (exit status 0). `--trace-decisions` prints
+the same board, pending decision and menu for every decision as `| ` lines.
 
 ## The engine's in-process agents (`--agent-a/-b`)
 
@@ -70,8 +105,8 @@ cd bin
 
 `--narrative` prints the perfect-information game log (under `--machine` it is silent without
 it); `--log-viewer A|B` restricts the one-sided lines to one seat's view. `--trace-decisions`
-prints each decision's board and menu as the deciding seat's frame shows them, and the choice
-made, on lines starting `| `. `--max-decisions N` stops the run before decision N+1
+prints each decision's board, pending decision and menu as the CLI renders the deciding seat's
+frame (`src/cli/board.h`), and the choice made, on lines starting `| `. `--max-decisions N` stops the run before decision N+1
 (`MAX_DECISIONS:` line, exit status 0, no result for that game).
 
 ## Scripts: `--play` and `--actions`

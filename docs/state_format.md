@@ -408,11 +408,12 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   is one line: an action index, `-1` (confirm), `-2` (concede game) or `-3` (concede match).
   Narrative goes to stderr or its own file descriptor, never interleaved with frames.
   `--machine` (also spelled `--machine-format rmstate`; `src/state_format/stream.h`) is this
-  protocol, for each seat with no in-process agent that is not the `--player` seat (under
-  `--replay` the log supplies every decision and no stream is written):
+  protocol, for each seat with no in-process agent that is not a human seat (a run with a human
+  seat, the C++ CLI, has no stream seat; under `--replay` the log supplies every decision and no
+  stream is written):
   - stdout carries only `RMSTATE` records. The engine moves stdout's descriptor aside for them
     at startup and points stdout at stderr, so everything else it prints (narrative under
-    `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, a `--player` seat's CLI prompt) goes to
+    `--narrative`, `GAME_RESULT` / `MATCH_RESULT`) goes to
     stderr. (`--broadcast-steps`' passive `BSTATE` frames and `--search-server` went with
     BQUERY; both flags are refused.)
   - The menu is unbounded: `--closed-decklist`'s name-a-card menus offer every vocab card

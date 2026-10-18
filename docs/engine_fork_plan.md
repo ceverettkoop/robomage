@@ -557,6 +557,33 @@ games and about 13 s of the debug gate on 4 cores; the nightly sweep plays 40 pe
   `src/machine_io.*`. `--trace-decisions` switches to the new renderer.
 - **Test (tier `cli`):** golden transcripts of scripted stdin sessions.
 
+**Status: part 1 done** (the CLI on the decoder). A human seat is an in-process agent
+(`cli::HumanAgent`, `src/cli/human.h`) handed its seat's frames by the in-process frame writer
+(`state_format/agent_feed.h`) exactly as the C++ agents are; it renders them, decoded, with
+`src/cli/board.h` (standard library and the agents' frame reader only) and reads its commands from
+stdin. Seating (`cli_args.cpp`): the `--player` seat is human, and so is every seat without an agent
+when `--machine` is not given, so a plain run is hotseat; a human seat may take over a `--play` /
+`--actions` script's seat once it runs out. A human seat turns machine mode on (no narrative
+without `--narrative`) and always writes the decision log; no seat may be left to the RMSTATE
+stream beside it (decided: no second channel, so no human against the external Python agent). The
+board shows the players (life, zone sizes, pool, counters, designations), both battlefields (P/T,
+statuses, counters, attachments, combat; identical permanents merged), the stack with targets,
+the seat's hand (cost, type line), graveyards, exile, open reveals, effects and delayed triggers,
+a "You know" summary from the `k_*` tables (cards known in the opponent's hand, known library
+positions, the opponent's archetype; nothing under `--knowledge off`), the pending decision with
+`pending_cost`'s remaining pips, and the menu (row *i* = reply *i*, a confirm last row marked as
+`-1`'s). Objects are labelled by their frame handle. Commands: a row, `concede` / `concede match`,
+`board`, `zone <name> [opp]`, `card <#handle|name>` (the `CARDS` frame), `know` (every `k_*` and
+`b_*` fact), `log [n|all]` (the seat's own events since match start, rendered from its frames, and
+life changes between its frames), `help`, `quit`; end of input quits. The terminal path of
+`InputLogger` (`print_query`, `get_int_input`, the `z` auto-pass and `q` keys) is gone: every
+decision outside `--replay` is the provider's or the stream's. `--trace-decisions` prints the same
+board and pending lines; its header, `| menu:`, menu-row and choice lines keep their shape, and the
+corpus baseline filter recognises a menu row exactly (`|   <i>: `), so the corpus replays
+byte-identical and the scenarios pass unchanged. Left for part 2: `GameState` /
+`populate_gamestate` / `print_game_state` now serve only the board a `--replay` without
+`--machine` prints; the `cli` tier.
+
 **Exit:** the C++ engine, RMSTATE with knowledge tables, the C++ CLI, the C++ gate, and the
 kept Python below.
 
@@ -699,7 +726,8 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 4. ~~**C++ `explore` port**~~ **Decided and done** (3a): `fuzz` is Python-free and in-process,
    playing the Python tier's games for the same seeds.
 5. ~~**`robomage_check` with exceptions on**~~ **Decided:** built with `-fno-exceptions` (3a).
-6. **Human vs Python agent in the CLI** (4b): whether to add the second channel now.
+6. ~~**Human vs Python agent in the CLI** (4b)~~ **Decided:** no second channel; a human plays
+   the in-process agents or hotseat.
 7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small
    384-d encoder), and how its weights are provisioned and pinned.
 8. **Learner** (after step 5): language (PyTorch vs libtorch) and algorithm. A learner is

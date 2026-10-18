@@ -52,8 +52,8 @@ no multiplayer-only machinery.
 Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
 
 Players and agents drive the engine through its in-process agents (`--agent-a/-b`, `--play`), its
-terminal prompt (the CLI; a human seat against an agent is plan step 4b's), or the machine
-protocol (`--machine`): **RMSTATE**, an exhaustive
+C++ CLI (human seats: `--player A --agent-b explore`, or hotseat by default; it renders only the
+seat's decoded frames, `src/cli/`), or the machine protocol (`--machine`): **RMSTATE**, an exhaustive
 binary game state per viewer with hidden information withheld (`docs/state_format.md`), each
 seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and sound deduction,
 `docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
@@ -152,7 +152,8 @@ background** and make the live output inspectable by the user:
 
 The engine itself sculpts and scripts a game. Run it from `bin/` (`cd bin && ./debug/robomage
 …`) with `--narrative --trace-decisions` (the perfect-information game log, plus every decision's
-board, numbered menu and the choice made, as the deciding seat's frame shows them: `| ` lines),
+board, pending decision, numbered menu and the choice made, as the CLI renders the deciding seat's
+frame: `| ` lines),
 the test-setup presets and `--play`; `--help` lists every flag (zone presets
 `--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
 `--decision-log`, …).
@@ -431,7 +432,7 @@ functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtP
 ### Machine protocol, state format and knowledge sidecar
 
 `--machine` (also spelled `--machine-format rmstate`) selects, for each seat with no in-process
-agent that is not the `--player` seat, the RMSTATE stream (`src/state_format/stream.h`,
+agent that is not a human seat, the RMSTATE stream (`src/state_format/stream.h`,
 `docs/state_format.md` §9); it changes I/O only, never which decisions are asked or what a menu
 offers. Mana payment is the match-wide **auto-mana** option, on by default for every consumer
 (ordinary mana abilities hidden at priority, costs auto-paid, hybrid pips auto-resolved);
@@ -544,13 +545,19 @@ sections above are not repeated here.
   the engine state, and the knowledge state across the snapshot check's restore;
   `SELFCHECK-KNOWLEDGE:` summary
 - `src/snapshot.{h,cpp}` — in-process state snapshot/restore and the loop-safe decision marker
-- `src/machine_io.{h,cpp}` — the CLI board's source (`populate_gamestate` / `GameState`,
-  `src/classes/gamestate.h`, until plan step 4b) and `action_card_vocab_idx`;
-  `src/cli_output.cpp` — the CLI printer and `cli_print_help`
+- `src/machine_io.{h,cpp}` — the board a `--replay` without `--machine` prints (`populate_gamestate`
+  / `GameState`, `src/classes/gamestate.h`; goes in plan step 4b part 2) and `action_card_vocab_idx`;
+  `src/cli_output.cpp` — `game_log`, that board's printer and `cli_print_help`
+- `src/cli/` — the C++ CLI: `board.h` renders one seat's decoded frames as text (board, pending
+  decision and cost, menu, knowledge panel, zones, card details, events; also `--trace-decisions`),
+  `human.h` the human seat (an in-process agent reading stdin: menu rows and the `board` / `zone` /
+  `card` / `know` / `log` / `concede` / `help` commands); std + the agents' frame reader only
 - `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, removed-flag
-  errors, replay-header flags); keep `cli_print_help` in `src/cli_output.cpp` in sync
-- `src/input_logger.cpp` — decision input (machine stream, `--replay`, CLI, the in-process provider
-  of the agents), the interchangeable-choice collapse, RMLOG, concede sentinels, `--max-decisions`
+  errors, replay-header flags, which seats are human); keep `cli_print_help` in
+  `src/cli_output.cpp` in sync
+- `src/input_logger.cpp` — decision input (machine stream, `--replay`, the in-process provider of
+  the agents and human seats), the interchangeable-choice collapse, RMLOG, concede sentinels,
+  `--max-decisions`
 - `src/card_vocab.h` — card name → vocab index (the implemented-card registry; the card id of the
   state format's `card` columns), `N_CARD_TYPES`, the token band
 - `src/name_card_choices.{h,cpp}` — the name-a-card candidate set
@@ -570,7 +577,7 @@ sections above are not repeated here.
   `random.Random` bit for bit; `game_seed.h`: the driver's engine seed of a game seed;
   `explore.h`: `python/explore_agent.py` ported, same games; `play_spec.h`: the `--play` resolver
   and its global script; `trace.h`: `--trace-decisions`). `driver.h` is the engine side:
-  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the provider, the trace
+  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace
 
 **libtorch plumbing (`src/actor/`, `make actor`)** — `az_evaluator.{h,cpp}` (TorchScript loading
 and evaluation, frozen as the base of the step-5 evaluator; its comments still name the archived
