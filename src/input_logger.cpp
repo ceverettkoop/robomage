@@ -41,7 +41,12 @@ static std::string read_embedded_deck(std::ifstream &file, const std::string &de
 static int get_int_input() {
     int c;
     while ((c = getchar()) == ' ' || c == '\t');
-    if (c == EOF || c == '\n') return -1;
+    // End of input can never answer the prompt, so it quits like 'q' instead of asking again forever.
+    if (c == EOF) {
+        game_log("Input closed; quitting.\n");
+        exit(0);
+    }
+    if (c == '\n') return -1;
     if (c == 'q' || c == 'Q') {
         game_log("Quitting.\n");
         exit(0);
@@ -54,6 +59,10 @@ static int get_int_input() {
     int choice = -1;
     if (scanf("%d", &choice) != 1) {
         while ((c = getchar()) != '\n' && c != EOF);
+        if (c == EOF) {
+            game_log("Input closed; quitting.\n");
+            exit(0);
+        }
         return -1;
     }
     while ((c = getchar()) != '\n' && c != EOF);
