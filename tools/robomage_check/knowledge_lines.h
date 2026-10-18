@@ -7,8 +7,8 @@
 
 // ── robomage_check: the seats' knowledge tables as text lines (the expect_dump* assertions) ────
 //
-// train/test_scenarios.py's knowledge_frames, read from the binary --rmstate-dump instead of its
-// JSON rendering (the same values: state_format/json.h's rules). Every seat STATE frame's k_*
+// Read from the binary --rmstate-dump (the values its JSON rendering shows: state_format/json.h's
+// rules). Every seat STATE frame's k_*
 // tables, one fact per line, prefixed by the seat and the frame:
 //
 //   <A|B> d=<decision> g<game> <t<turn>|sb> <fact>

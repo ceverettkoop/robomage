@@ -96,12 +96,11 @@ struct StreamRun {
 // a decision frame without a menu.
 StreamRun run_stream(const ProcSpec &spec, const std::function<int(const StreamDecision &)> &reply);
 
-// The replies train/test_rmstate.py's run_stream makes, from Python's random.Random(seed): the
-// game is conceded (-2) past decision `cap`; else -1 (the confirm row) with probability 0.05, else a
-// uniform menu row.
+// Random replies from Python's random.Random(seed) (py_random.h): the game is conceded (-2) past
+// decision `cap`; else -1 (the confirm row) with probability 0.05, else a uniform menu row.
 std::function<int(const StreamDecision &)> random_replies(uint64_t seed, uint64_t cap);
 
-// train/test_rmstate.py's check_stream: every stream frame against the dump written alongside it
+// Every stream frame against the dump written alongside it
 // (`dump`): the match frames equal, each STATE frame equal to the dump's for its (viewer, game,
 // sideboarding, decision, terminal) apart from the event tables, each seat's events equal in
 // order, no frame number twice, the match frames before a seat's first STATE frame, the terminal

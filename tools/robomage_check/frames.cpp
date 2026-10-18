@@ -64,7 +64,7 @@ static std::string cells_text(const std::vector<rmstate::Value> &cells, int skip
 }
 
 // One line per event of the frame: its row, then its cards' and players' rows with their event
-// links dropped (train/test_rmstate.py's _events).
+// links dropped.
 static void append_events(
     const rmstate::DecodedFrame &f, const rmstate::Schema &schema, std::vector<std::string> *out) {
     const rmcheck::Rows events(f, schema, "event"), cards(f, schema, "event_card"), players(f, schema, "event_player");

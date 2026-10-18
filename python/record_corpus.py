@@ -17,7 +17,7 @@ change's review. ``make regen`` runs it.
 
 Usage (from the repo root; stdlib only)::
 
-  python3 train/record_corpus.py [--binary bin/debug/robomage]
+  python3 python/record_corpus.py [--binary bin/debug/robomage]
 """
 
 import argparse

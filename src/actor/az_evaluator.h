@@ -1,7 +1,8 @@
 #ifndef ACTOR_AZ_EVALUATOR_H
 #define ACTOR_AZ_EVALUATOR_H
 
-// Thin wrapper around a TorchScript-exported AZNet (train/az_net.py). Loads the
+// Thin wrapper around a TorchScript-exported AZNet (train/az_net.py, archived on
+// branch archive/rl-stack with its Python twins named below). Loads the
 // serialized module (`<ckpt>.ts.pt`), verifies the sibling `.ts.meta.json`
 // layout handshake against the engine's compile-time constants, and evaluates
 // the net for a single decision. EVERY libtorch call is wrapped in try/catch and

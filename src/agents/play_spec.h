@@ -7,7 +7,7 @@
 
 #include "agent.h"
 
-// ── The --play resolver: semantic action specs, train/action_spec.py ported ──────────────────
+// ── The --play resolver: semantic action specs ───────────────────────────────────────────────
 //
 // A spec names an action by intent ("cast:Lightning Bolt", "target:Grizzly Bears@opp", "pass");
 // it is resolved against the live menu of the decision it is applied to, so it survives menu

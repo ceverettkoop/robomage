@@ -11,7 +11,7 @@
 //
 // Each corpus game is a decision log, <name>.rmlog (RMLOG v2: the seed, the setup flags, both
 // decklists and every decision), recorded from the scripted agent's games by
-// train/record_corpus.py, and a baseline, <name>.replay: the engine's
+// python/record_corpus.py, and a baseline, <name>.replay: the engine's
 //
 //   robomage --replay <name>.rmlog --machine --narrative --trace-decisions
 //

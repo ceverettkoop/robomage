@@ -6,14 +6,14 @@
 
 #include "agent.h"
 
-// ── The explore tiers: the coverage fuzzer, train/explore_agent.py ported ─────────────────────
+// ── The explore tiers: the coverage fuzzer, python/explore_agent.py ported ────────────────────
 //
 // The decision rules are explore_agent.py's (its module docstring), applied to the same view
 // (DecisionView: category names, card(i), the own hand, the CARDS frame's mana values) with the
 // same weights in the same floating-point order, and the row drawn as Python's
 // random.choices(range(n), weights, k=1) on the shared PyRandom. For the same frames and the
 // same generator state it therefore picks the same row as the Python tier: a game seeded the same
-// way (--game-seed N here; seed N on train/rm_driver.py) plays the same game.
+// way (--game-seed N here; seed N on python/rm_driver.py) plays the same game.
 //
 //   1. A menu of one row (or none) is answered 0 with no draw.
 //   2. A menu holding a MULLIGAN row starts a game: the novelty set is cleared.

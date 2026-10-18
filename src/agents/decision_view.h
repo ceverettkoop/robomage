@@ -15,7 +15,7 @@
 // read with the seat's SeatStream. Menu row i is the reply i selects. Besides raw table access
 // (frame(), table()) the view answers what the ported agents ask:
 //
-// - the explore tier (agents/explore.h) reads, like train/rm_agent.py's FrameView: each row's
+// - the explore tier (agents/explore.h) reads, like python/rm_agent.py's FrameView: each row's
 //   category name, its card (card(i): the action's object's name as it is now, a stack object's
 //   card, a back face played or cast as it, a named card; none for a player or a card-less
 //   choice), the own hand's card names and the CARDS frame's mana values;

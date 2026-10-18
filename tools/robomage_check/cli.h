@@ -26,8 +26,8 @@
 //   fuzz       C++ explore vs explore over league matchups (bo1, and bo3 explore:patient matches);
 //              draws are findings
 //   bench      decisions per second of a fixed explore workload
-//   smoke      scripted hard vs hard league games through the Python driver (train/rm_driver.py)
-//              and the kept Python's own checks (train/pycheck.py: the Python decoder against the
+//   smoke      scripted hard vs hard league games through the Python driver (python/rm_driver.py)
+//              and the kept Python's own checks (python/pycheck.py: the Python decoder against the
 //              engine's, the driver's imports); skipped with a notice when no Python interpreter is
 //              found
 //

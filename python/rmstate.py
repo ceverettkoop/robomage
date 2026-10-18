@@ -23,7 +23,7 @@ API (stdlib only):
 - ``frame_json(frame, schema)``: the same JSON line the engine's ``--state-dump json`` writes
   (``src/state_format/json.h``), byte for byte once encoded as UTF-8 with ``surrogateescape``.
 
-CLI: ``python3 train/rmstate.py dump FILE`` prints FILE's frames as JSON lines (``-`` = stdin).
+CLI: ``python3 python/rmstate.py dump FILE`` prints FILE's frames as JSON lines (``-`` = stdin).
 """
 from __future__ import annotations
 

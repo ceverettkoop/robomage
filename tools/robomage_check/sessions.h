@@ -12,9 +12,8 @@
 
 namespace rmcheck {
 
-// An explore-vs-explore game under the self-checks (train/test_selfcheck_state.py's and
-// train/test_knowledge.py's FUZZ_GAMES): the C++ explore tier in-process, --game-seed `seed` (the
-// Python tier's runner.run_match game for that seed), at most 2500 decisions.
+// An explore-vs-explore game under the self-checks: the C++ explore tier in-process, --game-seed
+// `seed`, at most 2500 decisions.
 struct FuzzGame {
         std::string deck_a, deck_b;
         bool bo3 = false;
@@ -33,9 +32,8 @@ std::string fuzz_label(const FuzzGame &g);
 // Plays `g` (its stderr kept as <dir>/fuzz_<seed>.err, its dump as <dir>/fuzz_<seed>.rms).
 FuzzOutcome play_fuzz_game(const Options &opt, const FuzzGame &g, const std::string &dir);
 
-// A --machine-format rmstate session (train/test_rmstate.py's run_stream): --seed `seed` (the
-// engine seed itself), random replies from Python's random.Random(seed), a game conceded past
-// decision `cap`.
+// A --machine-format rmstate session: --seed `seed` (the engine seed itself), random replies from
+// Python's random.Random(seed), a game conceded past decision `cap`.
 struct StreamGame {
         std::string deck_a, deck_b;
         bool bo3 = false;

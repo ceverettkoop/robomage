@@ -8,7 +8,7 @@
 #include "scan.h"
 #include "util.h"
 
-// The concede tier's checks, reported as they are made (train/test_concede.py's check()).
+// The concede tier's checks, reported as they are made.
 struct ConcedeChecks {
         rmcheck::Report *rep;
         int passed = 0;
@@ -375,8 +375,7 @@ static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
 
 namespace rmcheck {
 
-// The concede tier: train/test_concede.py's engine checks (1-4 and 7; its checks 5 and 6 test the
-// Python front end's GameDriver) on the engine alone.
+// The concede tier: the concession checks on the engine alone.
 void tier_concede(const Options &opt, Report &rep) {
     ConcedeChecks c{&rep};
     natural_lines(opt, c);

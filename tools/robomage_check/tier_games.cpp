@@ -128,7 +128,7 @@ static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, c
     }
 }
 
-// The kept Python's own checks (train/pycheck.py: its decoder against the engine's, the
+// The kept Python's own checks (python/pycheck.py: its decoder against the engine's, the
 // decoders' refusals, the driver's seeds and imports), run beside the smoke games.
 static void report_pycheck(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ProcResult &r) {
     const std::string path = rmcheck::path_join(opt.out(""), "smoke_pycheck.txt");
@@ -144,7 +144,7 @@ static void report_pycheck(const rmcheck::Options &opt, rmcheck::Report &rep, co
         }
     }
     if (!r.ok() && fails == 0)
-        rep.error("smoke", "pycheck: train/pycheck.py failed (" + r.status_text() + ", see " + path + ")");
+        rep.error("smoke", "pycheck: python/pycheck.py failed (" + r.status_text() + ", see " + path + ")");
     std::vector<rmcheck::ScanLine> errs, warns;
     rmcheck::scan_transcript(r.out, &errs, &warns);
     if (!errs.empty())
@@ -248,13 +248,13 @@ void tier_bench(const Options &opt, Report &rep) {
              ")");
 }
 
-// The smoke tier: scripted hard vs hard (the Python agent: train/rm_driver.py, one process per
+// The smoke tier: scripted hard vs hard (the Python agent: python/rm_driver.py, one process per
 // matchup) over the league mirrors and the ring (--smoke-games per matchup, game i of matchup k
-// with seed seed + 1000k + i), and beside them the kept Python's own checks (train/pycheck.py).
+// with seed seed + 1000k + i), and beside them the kept Python's own checks (python/pycheck.py).
 // Skipped with a notice when no Python interpreter is found.
 void tier_smoke(const Options &opt, Report &rep) {
     if (opt.python.empty()) {
-        rep.info("smoke: skipped (no Python interpreter: train/.venv/bin/python or python3)");
+        rep.info("smoke: skipped (no python3 interpreter on PATH)");
         return;
     }
     const std::vector<std::pair<std::string, std::string>> pairs =
@@ -267,7 +267,7 @@ void tier_smoke(const Options &opt, Report &rep) {
     parallel_for(pairs.size() + 1, opt.jobs, [&](size_t job) {
         ProcSpec spec;
         if (job == 0) {
-            spec.argv = {opt.python, opt.repo + "/train/pycheck.py", "--binary", opt.binary, "--out-dir", out_dir};
+            spec.argv = {opt.python, opt.repo + "/python/pycheck.py", "--binary", opt.binary, "--out-dir", out_dir};
             spec.cwd = opt.repo;
             spec.timeout_s = 3600;
             spec.merge_stderr = true;
@@ -276,7 +276,7 @@ void tier_smoke(const Options &opt, Report &rep) {
         }
         const size_t k = job - 1;
         work[k] = make_temp_dir(out_dir, ".smoke_");
-        spec.argv = {opt.python, opt.repo + "/train/rm_driver.py", "--player-a", "scripted", "--player-b", "scripted",
+        spec.argv = {opt.python, opt.repo + "/python/rm_driver.py", "--player-a", "scripted", "--player-b", "scripted",
             "--deck-a", pairs[k].first, "--deck-b", pairs[k].second, "--format", "bo1", "--games",
             std::to_string(opt.smoke_games), "--seed", std::to_string(opt.seed + 1000 * static_cast<long>(k)),
             "--verbose", "--binary", opt.binary};

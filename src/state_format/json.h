@@ -9,7 +9,7 @@
 // ── --state-dump json: a decoded frame as one line of JSON (docs/state_format.md §9) ──────────
 //
 // Rendered from the decoded binary (decode.h), never from the engine, with no whitespace and a
-// fixed key order, so the same frame always renders to the same bytes (train/rmstate.py renders
+// fixed key order, so the same frame always renders to the same bytes (python/rmstate.py renders
 // it identically):
 //
 //   {"frame":<kind>,"viewer":<viewer>,"version":<n>,"schema_hash":"<16 hex digits>",

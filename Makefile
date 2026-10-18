@@ -32,9 +32,8 @@ DEPFLAGS = -MMD -MP
 BINDIR=bin/$(CONFIG)
 BINNAME=robomage
 
-# Python for card-script provisioning and the corpus recorder. Prefer the project venv; fall back
-# to python3.
-PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
+# Python for card-script provisioning and the corpus recorder (stdlib only).
+PYTHON ?= python3
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -110,12 +109,12 @@ check: all
 
 # Re-record the replay corpus after an intentional behavior change: provision the card set, build,
 # then play the scripted agent's corpus games with the fresh binary (each game's decision log and,
-# through robomage_check --tier replay --record, its replay baseline; train/record_corpus.py). Run
+# through robomage_check --tier replay --record, its replay baseline; python/record_corpus.py). Run
 # this when `make check` reports corpus drift, then commit the results.
 regen:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) all
-	$(PYTHON) train/record_corpus.py
+	$(PYTHON) python/record_corpus.py
 
 # Force a clean re-fetch of every Forge card/token script, then VALIDATE the fresh
 # scripts against the COMMITTED replay corpus. Deletes the gitignored local scripts
@@ -137,14 +136,14 @@ refetch:
 # src/actor/ holds the TorchScript evaluator (az_evaluator.cpp), compiled with exceptions ON
 # against libtorch. There is no actor binary until plan step 5 adds a main: `make actor` compiles
 # the actor objects, and that binary will link $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS).
-# Auto-detect libtorch from the project venv; override with `make actor LIBTORCH_DIR=/path`.
-LIBTORCH_DIR ?= $(shell ls -d train/.venv/lib/python3*/site-packages/torch 2>/dev/null | head -1)
-
-# Fail early (with a clear message) only when actually asked to build the actor.
+# Auto-detect libtorch from the torch package $(PYTHON) imports (an active venv's included), only
+# when asked to build the actor; override with `make actor LIBTORCH_DIR=/path`. Fail early (with a
+# clear message) when there is none.
 ifneq (,$(filter actor,$(MAKECMDGOALS)))
+LIBTORCH_DIR ?= $(shell $(PYTHON) -c 'import os, torch; print(os.path.dirname(torch.__file__))' 2>/dev/null)
 ifeq ($(strip $(LIBTORCH_DIR)),)
-$(error LIBTORCH_DIR is empty: could not find train/.venv/.../site-packages/torch. \
-Install torch into the venv, or pass LIBTORCH_DIR=/path/to/torch)
+$(error LIBTORCH_DIR is empty: $(PYTHON) cannot import torch. \
+Install torch for it, or pass LIBTORCH_DIR=/path/to/torch)
 endif
 endif
 
@@ -153,19 +152,19 @@ ACTOR_OBJ := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(ACTOR_SRCS))
 ENGINE_OBJ_NO_MAIN := $(filter-out $(ODIR)/main.o,$(C_OBJ) $(CXX_OBJ))
 
 # torch headers are noisy under -Wconversion etc.; -isystem silences them. ABI is
-# 1 in this venv (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
+# 1 in the pip torch builds (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
 TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/include/torch/csrc/api/include
 # Same base flags as the engine MINUS -fno-exceptions (torch throws), PLUS torch
 # includes and -I$(SRCDIR) (actor TUs use non-relative engine includes).
 ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
-# When the venv torch is a ROCm build (libtorch_hip.so present), link the HIP
+# When the torch is a ROCm build (libtorch_hip.so present), link the HIP
 # backend too so a `--device cuda` evaluator can reach the Radeon. The libs must be
 # wrapped in --no-as-needed: nothing references their symbols directly (the
 # backend registers itself via static initializers), so without it the linker
 # drops them and the device silently never exists — the same gotcha as CUDA's
-# torch_cuda. CPU-only venvs link without them.
+# torch_cuda. CPU-only torch builds link without them.
 ACTOR_TORCH_LIBS := -ltorch -ltorch_cpu -lc10
 ifneq (,$(wildcard $(LIBTORCH_DIR)/lib/libtorch_hip.so))
 ACTOR_TORCH_LIBS += -Wl,--no-as-needed -ltorch_hip -lc10_hip -Wl,--as-needed

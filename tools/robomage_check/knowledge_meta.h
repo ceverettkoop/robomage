@@ -7,11 +7,9 @@
 
 // ── robomage_check: the knowledge tier's reference-metagame parts ─────────────────────────────
 //
-// train/test_knowledge.py's archetype part (archetype inference, docs/knowledge_store.md §10) and
-// its belief calibration report (§10.6), on --machine-format rmstate sessions answered with the
-// Python tier's random replies, so they read the same frames. The reference lists' tags come from
-// bin/resources/decks/archetypes.json (its `_archetypes` labels and deck keys), as
-// train/archetypes.py reads them.
+// Archetype inference (docs/knowledge_store.md §10) and the belief calibration report (§10.6), on
+// --machine-format rmstate sessions answered with random replies (frames.h). The reference lists'
+// tags come from bin/resources/decks/archetypes.json (its `_archetypes` labels and deck keys).
 
 namespace rmcheck {
 

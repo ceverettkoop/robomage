@@ -9,10 +9,9 @@
 // ── The reference metagame (docs/state_format.md §4, the METAGAME frame) ───────────────────────
 //
 // A set of named reference decklists, each with an archetype label, that the engine sends every
-// viewer once per match. Source: bin/resources/decks/archetypes.json, the same file the Python
-// side's train/archetypes.py reads:
+// viewer once per match. Source: bin/resources/decks/archetypes.json:
 //   - `_archetypes`: the canonical archetype labels in index order; the label list is these plus
-//     the fallback `unknown` (archetypes.UNKNOWN_NAME) last;
+//     the fallback `unknown` last;
 //   - every other key not starting with `_`: a deck stem (relative to decks/) tagged with its
 //     label. Each tagged deck whose .dk file exists, whose label is listed and whose every card has
 //     a vocab entry is a reference list; the others are left out (`skipped` says why).

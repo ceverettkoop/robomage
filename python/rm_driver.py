@@ -38,7 +38,7 @@ with the menu as offered and ``>> label/seat: i (description)``, then the result
 writes the narrative and one line per decision (the engine's category and step names); ``quiet``
 nothing (a draw is still announced and its log saved to ``draw_<stamp>.txt``).
 
-CLI: ``python3 train/rm_driver.py --player-a scripted --player-b explore --deck-a league/bug ...``
+CLI: ``python3 python/rm_driver.py --player-a scripted --player-b explore --deck-a league/bug ...``
 (``--help``). Its flags are ``CLI_FLAGS`` below; the parser is built from them with ``argparse``.
 """
 from __future__ import annotations

@@ -6,12 +6,12 @@
 
 // ── robomage_check: what the gate looks for in engine output ──────────────────────────────────
 //
-// The transcript scan (train/ci_check.py's scan_transcript): an ERROR is a line starting "ERROR:"
+// The transcript scan: an ERROR is a line starting "ERROR:"
 // or "FATAL:", or holding "Traceback (most recent call last)", "Segmentation fault",
 // "Assertion … failed", the word "Aborted" or "core dumped"; a WARNING is a line starting
 // "WARNING:" other than the routine "Unrecognized ability param" parse notice.
 //
-// The self-check summaries (train/test_selfcheck_state.py's scan_engine_log): every
+// The self-check summaries: every
 // "SELFCHECK-STATE: decisions=… errors=N" / "SELFCHECK-KNOWLEDGE: …" line must say errors=0.
 
 namespace rmcheck {

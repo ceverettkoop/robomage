@@ -27,7 +27,7 @@
 //                       sentinel -2 / -3 is sent as is), then row 0
 //   play:<specs>        the --play resolver (agents/play_spec.h) on this seat's decisions only,
 //                       then row 0
-//   explore             the coverage fuzzer, train/explore_agent.py ported (agents/explore.h)
+//   explore             the coverage fuzzer, python/explore_agent.py ported (agents/explore.h)
 //   explore:patient     its big-mana profile
 //
 // The shared generator: every agent of the process draws from one PyRandom, seeded once before

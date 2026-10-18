@@ -35,7 +35,7 @@ static bool has_flag(const std::vector<std::string> &flags, const char *flag) {
     return false;
 }
 
-// train/test_knowledge.py's FUZZ_GAMES.
+// The knowledge tier's fuzz games.
 static std::vector<FuzzGame> fuzz_games() {
     struct Row {
             const char *a, *b;
@@ -65,7 +65,7 @@ static std::vector<FuzzGame> fuzz_games() {
     return out;
 }
 
-// train/test_knowledge.py's STREAM_GAMES and BELIEF_STREAM_GAMES.
+// The knowledge tier's RMSTATE sessions (expert, and expert+belief).
 static std::vector<KnowledgeSession> sessions() {
     struct Row {
             const char *a, *b;
@@ -179,7 +179,7 @@ static void play_session(const rmcheck::Options &opt, const std::string &dir, Kn
 
 namespace rmcheck {
 
-// The knowledge tier: train/test_knowledge.py's parts on the engine and rmknow — selftest (rmknow
+// The knowledge tier, on the engine and rmknow: selftest (rmknow
 // --selftest, --exactness 40, --belief-exactness 10), fuzz (explore games under
 // --selfcheck-knowledge), isolation (RMSTATE sessions against their dumps, k_* tables included,
 // and rmknow --isolation on every dump and saved stream), truth (rmknow --truth on every dump),

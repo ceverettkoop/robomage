@@ -43,7 +43,7 @@ static std::vector<std::string> selfcheck_flags(bool every_decision) {
     return {"--selfcheck-state"};
 }
 
-// train/test_selfcheck_state.py's FUZZ_GAMES.
+// The state tier's fuzz games.
 static std::vector<FuzzGame> fuzz_games() {
     struct Row {
             const char *a, *b;
@@ -88,7 +88,7 @@ static std::vector<FuzzGame> fuzz_games() {
     return out;
 }
 
-// train/test_selfcheck_state.py's STREAM_GAMES.
+// The state tier's RMSTATE sessions.
 static std::vector<StreamGame> stream_games() {
     StreamGame a;
     a.deck_a = "league/ur_delver";
@@ -536,8 +536,7 @@ static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
 
 namespace rmcheck {
 
-// The state tier: the step-1b self-checks (train/test_selfcheck_state.py's rmstate tier, its
-// engine-side parts) over the replayed corpus, explore fuzz games and the scenarios; the dumps'
+// The state tier: the step-1b self-checks over the replayed corpus, explore fuzz games and the scenarios; the dumps'
 // re-encoding and the decoders' refusals; RMSTATE sessions against their dumps; the name-a-card
 // candidate menus; the knowledge-side include isolation.
 void tier_state(const Options &opt, Report &rep) {

@@ -4,7 +4,7 @@
 The smoke games test the scripted agent and the RMSTATE driver by playing; these checks test what
 playing does not:
 
-  decode    ``train/rmstate.py``'s decode of three ``--rmstate-dump`` files renders exactly the
+  decode    ``python/rmstate.py``'s decode of three ``--rmstate-dump`` files renders exactly the
             JSON lines the engine renders for them (``--rmstate-read DUMP --state-dump json``),
             byte for byte, and both equal the ``DUMP.jsonl`` the engine wrote live with
             ``--state-dump json``. The dumps: a bo1 game and a bo3 match of the engine's
@@ -22,7 +22,7 @@ playing does not:
 Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: …`` line per finding;
 exit 1 on any finding::
 
-    python3 train/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,driver]
+    python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,driver]
 """
 from __future__ import annotations
 

@@ -4,7 +4,7 @@ Standalone scraper that pulls the current top Legacy metagame decks from
 [MTGTop8](https://mtgtop8.com) and writes them as robomage `.dk` deck files.
 
 It depends **only on the Python standard library** and imports nothing from the
-robomage engine or `train/`, so it can run with any Python 3.
+robomage engine or `python/`, so it can run with any Python 3.
 
 ## Usage
 
@@ -53,8 +53,8 @@ script the name is left as-is.
 - Some archetypes are 80-card **companion** (e.g. Yorion) builds — an 80-card
   mainboard is expected for those, not a parsing error.
 - Card names that are not yet in `src/card_vocab.h` are still written to the
-  deck file; `train/missing_cards.py --decks-dir bin/resources/decks/meta`
-  lists which ones need implementing (without `--decks-dir` it scans the league
-  roster in `decks/league/`).
+  deck file; `cd bin && ./debug/robomage --check-decks --check-decks-dir meta`
+  lists which ones need implementing (without `--check-decks-dir` it checks the
+  top-level and `league/` decks).
 - If MTGTop8 changes its HTML and parsing returns nothing, the tool exits with a
   clear error rather than writing empty decks.

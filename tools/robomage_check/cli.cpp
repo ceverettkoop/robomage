@@ -31,7 +31,7 @@ static const TierEntry TIERS[] = {
 };
 
 static std::string self_dir();
-static std::string find_python(const std::string &repo);
+static std::string find_python();
 static const TierEntry *find_tier(const std::string &name);
 static std::string all_tier_names();
 static void usage();
@@ -46,11 +46,9 @@ static std::string self_dir() {
     return rmcheck::dirname_of(buf);
 }
 
-// The interpreter for the smoke tier: the project venv's, else the first python3 on $PATH, else a
-// system one.
-static std::string find_python(const std::string &repo) {
-    const std::string venv = repo + "/train/.venv/bin/python";
-    if (access(venv.c_str(), X_OK) == 0) return venv;
+// The interpreter for the smoke tier (the kept Python is stdlib only): the first python3 on $PATH,
+// else a system one.
+static std::string find_python() {
     std::vector<std::string> dirs;
     if (const char *path = std::getenv("PATH"))
         for (const std::string &d : rmcheck::split(path, ':'))
@@ -153,7 +151,7 @@ int gate_main(int argc, char **argv) {
         if (getcwd(cwd, sizeof cwd)) opt.out_dir = rmcheck::path_join(cwd, opt.out_dir);
     }
     opt.rmknow = rmcheck::path_join(rmcheck::dirname_of(opt.binary), "rmknow");
-    opt.python = find_python(opt.repo);
+    opt.python = find_python();
     std::vector<const TierEntry *> tiers;
     for (const std::string &name : rmcheck::split(tiers_arg, ',')) {
         const std::string t = rmcheck::trim(name);
