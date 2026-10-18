@@ -197,6 +197,11 @@ Deck load_launch_deck(Zone::Ownership seat);
 // 0 (no GAME_RESULT for the unfinished game).
 [[noreturn]] void end_run_at_decision_cap(size_t decisions);
 
+// --replay of a decision log whose session quit (its QUIT_MARKER line, input_logger.h): ends the
+// run at that decision, `decision` (1-based), before it is decided: prints "QUIT: the recorded
+// session quit at decision <n> (no result)" and exits with status 0.
+[[noreturn]] void end_run_at_recorded_quit(size_t decision);
+
 // A best-of-three match that reaches this many games without a match winner is a fatal error
 // (only drawn games, which count for neither player, can lengthen a match past three).
 constexpr int MAX_MATCH_GAMES = 10;

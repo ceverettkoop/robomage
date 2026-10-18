@@ -248,5 +248,4 @@ Player A [0-4, help]> (8 earlier lines: log all)
   T2: Player B's Flow State: hand -> graveyard
   life: Player B 20 -> 18
   T3: Player A draws a card: Mountain
-Player A [0-4, help]> 
-Input closed; quitting.
+Player A [0-4, help]> Quitting.

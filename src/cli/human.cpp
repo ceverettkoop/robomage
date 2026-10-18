@@ -151,10 +151,10 @@ void HumanAgent::print_help() {
         LOG_DEFAULT);
 }
 
-void HumanAgent::quit(const char *why) {
+int HumanAgent::quit(const char *why) {
     std::printf("%s\n", why);
     std::fflush(stdout);
-    std::exit(0);
+    return agents::AGENT_QUIT;
 }
 
 std::vector<std::string> HumanAgent::take_news(const agents::DecisionView &v) {
@@ -281,7 +281,10 @@ bool HumanAgent::run_command(const std::string &line, const agents::DecisionView
         print_help();
         return false;
     }
-    if (cmd == "quit" || cmd == "q" || cmd == "exit") quit("Quitting.");
+    if (cmd == "quit" || cmd == "q" || cmd == "exit") {
+        *reply = quit("Quitting.");
+        return true;
+    }
     std::printf("Unknown command '%s' (type help).\n", w[0].c_str());
     return false;
 }
@@ -316,7 +319,7 @@ int HumanAgent::decide(const agents::Decision &d) {
         std::string line;
         if (!std::getline(std::cin, line)) {
             std::printf("\n");
-            quit("Input closed; quitting.");
+            return quit("Input closed; quitting.");
         }
         int reply = 0;
         if (run_command(line, v, &reply)) return reply;

@@ -17,8 +17,10 @@
 // and <name>.out, its golden transcript. The gate runs `robomage <args> --decision-log
 // <out>/cli/<name>.rmlog` from bin/ with the input lines on stdin (then end of input) and compares
 // its stdout, the decision log's path in the "Decision log: " line replaced by <name>.rmlog, with
-// <name>.out byte for byte. The engine must exit 0 with nothing on stderr. --record writes the
-// goldens instead.
+// <name>.out byte for byte. The engine must exit 0 with nothing on stderr, and `robomage --replay`
+// of the session's decision log must exit 0 with no error, ending at the session's quit (its QUIT
+// line, "QUIT: ..." in the replay's output) when the session ended by quitting. --record writes the
+// goldens instead (the replay is still checked).
 
 namespace {
 
@@ -32,6 +34,7 @@ struct CliSession {
 static bool load_session(const std::string &path, CliSession *out, std::string *err);
 static bool string_list(const rmcheck::Json &doc, const char *key, std::vector<std::string> *out, std::string *err);
 static std::string golden_text(const std::string &out, const std::string &log_path, const std::string &name);
+static std::string replay_problem(const rmcheck::Options &opt, const std::string &log);
 
 // Reads and validates one session file.
 static bool load_session(const std::string &path, CliSession *out, std::string *err) {
@@ -91,6 +94,29 @@ static std::string golden_text(const std::string &out, const std::string &log_pa
     return text;
 }
 
+// What is wrong with `robomage --replay` of a session's decision log; empty when it replays cleanly.
+static std::string replay_problem(const rmcheck::Options &opt, const std::string &log) {
+    std::string text;
+    if (!rmcheck::read_file(log, &text)) return "no decision log " + log;
+    const std::vector<std::string> lines = rmcheck::split_lines(text);
+    const bool quit = !lines.empty() && rmcheck::trim(lines.back()) == "QUIT";
+    rmcheck::ProcSpec spec;
+    spec.argv = {opt.binary, "--replay", log};
+    spec.cwd = opt.bin_dir;
+    spec.timeout_s = 120;
+    const rmcheck::ProcResult r = rmcheck::run_process(spec);
+    std::vector<rmcheck::ScanLine> errors;
+    rmcheck::scan_transcript(r.out + r.err, &errors, nullptr);
+    if (!r.ok() || !errors.empty() || rmcheck::contains(r.out + r.err, "FATAL")) {
+        const std::vector<std::string> err_lines = rmcheck::split_lines(r.err);
+        const std::string first = !errors.empty() ? errors[0].line : err_lines.empty() ? "" : err_lines[0];
+        return "--replay failed (" + r.status_text() + ")" + (first.empty() ? "" : ": " + first);
+    }
+    if (quit && !rmcheck::contains(r.out, "QUIT: the recorded session quit at decision"))
+        return "--replay did not stop at the session's quit";
+    return "";
+}
+
 namespace rmcheck {
 
 void tier_cli(const Options &opt, Report &rep) {
@@ -127,6 +153,11 @@ void tier_cli(const Options &opt, Report &rep) {
             rep.error("cli", s.name + ": the session failed (" + r.status_text() + ")" +
                                  (first.empty() ? "" : ": " + first) + " (see " + path_join(out_dir, s.name + ".out") +
                                  ")");
+            return;
+        }
+        const std::string replay = replay_problem(opt, log);
+        if (!replay.empty()) {
+            rep.error("cli", s.name + ": " + replay + " (log: " + log + ")");
             return;
         }
         const std::string text = golden_text(r.out, log, s.name);

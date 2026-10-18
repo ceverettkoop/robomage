@@ -151,6 +151,7 @@ static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions)
     const agents::Decision d{*run->view, run->number > 0 ? run->number - 1 : 0};
     const int choice = agent->decide(d);
     if (choice == agents::AGENT_FAILED) fatal_error(agent->failure());
+    if (choice == agents::AGENT_QUIT) InputLogger::instance().end_run_by_quit();
     return choice;
 }
 

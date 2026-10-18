@@ -20,6 +20,10 @@
 #define CONCEDE_GAME -2
 #define CONCEDE_MATCH -3
 
+// The decision log's last line when a seat's in-process decider ended the run mid-decision with
+// no result (a human seat's quit, or the end of its input): --replay stops cleanly there.
+#define QUIT_MARKER "QUIT"
+
 // Everything the RMLOG v2 decision-log header records beyond the seed: the
 // state-affecting launch flags and both decklists (verbatim file text), so a
 // log is a self-contained replay — `--replay <file>` needs no other arguments.
@@ -82,6 +86,12 @@ class InputLogger {
     void set_input_provider(
         InputProvider provider, bool covers_a = true, bool covers_b = true, bool real_decisions = false);
     void clear_input_provider();
+
+    // The in-process decider of the decision being read ended the run there, with no result (a
+    // human seat's quit or the end of its input): writes QUIT_MARKER as the decision log's last
+    // line, so --replay of the log stops cleanly at this decision (end_run_at_recorded_quit), and
+    // exits with status 0.
+    [[noreturn]] void end_run_by_quit();
 
    private:
     InputLogger() = default;

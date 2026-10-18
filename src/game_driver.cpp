@@ -74,6 +74,7 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 static std::vector<std::string> padded_library(
     const std::vector<std::string> &hand, const std::vector<std::string> &library);
 static std::string deck_line_name(const std::string &card);
+[[noreturn]] static void end_run_without_result(const std::string &line);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -936,11 +937,21 @@ Deck load_launch_deck(Zone::Ownership seat) {
     return Deck::from_string(text);
 }
 
-[[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+// Ends the run before the decision at hand is decided, `line` its last line of output.
+[[noreturn]] static void end_run_without_result(const std::string &line) {
     std::fflush(stdout);
-    std::printf("MAX_DECISIONS: stopped after %zu decisions (--max-decisions; no result)\n", decisions);
+    std::printf("%s\n", line.c_str());
     std::fflush(stdout);
     std::exit(0);
+}
+
+[[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+    end_run_without_result(
+        "MAX_DECISIONS: stopped after " + std::to_string(decisions) + " decisions (--max-decisions; no result)");
+}
+
+[[noreturn]] void end_run_at_recorded_quit(size_t decision) {
+    end_run_without_result("QUIT: the recorded session quit at decision " + std::to_string(decision) + " (no result)");
 }
 
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {

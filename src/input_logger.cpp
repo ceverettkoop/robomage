@@ -36,6 +36,7 @@ static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
 static std::string read_header_field(std::ifstream &file, const std::string &key);
 static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
+static bool parse_logged_choice(const std::string &token, int *choice);
 
 // The seat a decision belongs to — i.e. who a concession read at it is
 // attributed to. Normally the priority holder (every mid-resolution prompt
@@ -281,6 +282,24 @@ static void check_machine_choice(const std::vector<LegalAction> &actions, int ch
                 std::string(step_to_string(cur_game.turn_state.step)) + ")" + menu);
 }
 
+// A decision line of the log: a whole-token integer (a menu index or a sentinel).
+static bool parse_logged_choice(const std::string &token, int *choice) {
+    char *end = nullptr;
+    const long v = std::strtol(token.c_str(), &end, 10);
+    if (end == token.c_str() || *end != '\0') return false;
+    *choice = static_cast<int>(v);
+    return true;
+}
+
+void InputLogger::end_run_by_quit() {
+    if (log_file.is_open()) {
+        log_file << QUIT_MARKER << std::endl;
+        log_file.flush();
+    }
+    std::fflush(stdout);
+    std::exit(0);
+}
+
 void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int choice) {
     if (log_file.is_open()) {
         log_file << choice << std::endl;
@@ -387,10 +406,14 @@ bool InputLogger::provider_decides(Zone::Ownership seat) const {
 
 int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat) {
     if (replay_mode) {
+        std::string token;
+        if (!(replay_file >> token)) fatal_error("Replay file ended unexpectedly");
+        // The recorded session quit at this decision: the replay ends here, with no result.
+        if (token == QUIT_MARKER) end_run_at_recorded_quit(replay_decision_no + 1);
         int choice;
-        if (!(replay_file >> choice)) {
-            fatal_error("Replay file ended unexpectedly");
-        }
+        if (!parse_logged_choice(token, &choice))
+            fatal_error("Replay file: '" + token + "' where decision " + std::to_string(replay_decision_no + 1) +
+                        " was expected");
         replay_decision_no++;
         // A logged concession replays as a concession, from the same seat.
         if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {

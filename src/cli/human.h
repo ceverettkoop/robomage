@@ -37,7 +37,8 @@
 //   help                    the commands
 //   quit                    end the run
 //
-// Anything else re-prompts. End of input ends the run (exit status 0), as quit does.
+// Anything else re-prompts. End of input ends the run (exit status 0), as quit does; either is the
+// reply AGENT_QUIT, which the decision log records, so the log replays up to that decision.
 //
 // Auto-pass reads only the frames: the turn table's game, turn and active player, the menu's
 // PASS_PRIORITY row and the stack's handles and controllers. It is given only at a plain priority
@@ -82,7 +83,8 @@ class HumanAgent : public agents::Agent {
         static int pass_row(const agents::DecisionView &v);
         static void print(const std::vector<std::string> &lines, const char *indent);
         static void print_help();
-        [[noreturn]] static void quit(const char *why);
+        // Prints `why` and returns the reply that ends the run (AGENT_QUIT).
+        static int quit(const char *why);
 
         // Auto-pass (the z command): the game and turn it was given in, and the opponent's stack
         // objects at the seat's previous decision.

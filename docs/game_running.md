@@ -76,7 +76,9 @@ no pending decision or cost) and stops, prompting as usual, at the first decisio
 waits for, at any other decision (a mandatory choice, attackers or blockers, a target, a payment, a
 mulligan, ...) and when the opponent puts a new object on the stack, so the seat can respond.
 
-Anything else re-prompts; end of input ends the run (exit status 0). `--trace-decisions` prints
+Anything else re-prompts; end of input ends the run (exit status 0), as `quit` does. The decision
+log then ends with a `QUIT` line, so `--replay` of it stops at that decision with
+`QUIT: the recorded session quit at decision N (no result)` and exit status 0. `--trace-decisions` prints
 the same board, pending decision and menu for every decision as `| ` lines.
 
 ## The engine's in-process agents (`--agent-a/-b`)
@@ -262,7 +264,9 @@ setup (decks, seed, `--bo3`, `--no-shuffle`, `--no-auto-mana`, the test-setup pr
 self-checks, …) still apply. A plain `--replay` prints the narrative and each replayed input (no
 board); under `--machine` it prints only what the output flags ask for. `--player` / `--log-viewer`
 limit the narrative's one-sided lines to that seat's view (a replay has no human seat). A replay
-whose logged index is outside the live menu stops with `replay diverged at decision N`.
+whose logged index is outside the live menu stops with `replay diverged at decision N`; a log that
+ends before the game does is fatal (`Replay file ended unexpectedly`) unless it ends with the
+`QUIT` line of a human seat's quit, where the replay stops cleanly (`QUIT: ...`, exit status 0).
 
 ```bash
 cd bin
