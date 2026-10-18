@@ -62,7 +62,6 @@ struct ParkedScript {
 
 static rmcheck::ProcSpec stream_spec(const rmcheck::Options &opt, const std::vector<std::string> &flags);
 static std::vector<std::string> result_lines(const std::string &text);
-static std::string bquery_text(const std::string &out);
 static std::string other(const std::string &seat);
 static std::string seat_of(int viewer);
 static void natural_lines(const rmcheck::Options &opt, ConcedeChecks &c);
@@ -86,30 +85,6 @@ static std::vector<std::string> result_lines(const std::string &text) {
     for (const std::string &l : rmcheck::split_lines(text))
         if (rmcheck::starts_with(l, "GAME_RESULT: ") || rmcheck::starts_with(l, "MATCH_RESULT: ")) out.push_back(l);
     return out;
-}
-
-// A BQUERY --machine stdout without its frames ("BQUERY: <n> <state size> <max actions>" + the
-// binary payload of 4 × (state size + 7 × max actions) bytes, without --narrative): its text lines.
-// BQUERY leg: goes with the BQUERY payload (plan step 3b, part B), as does parked()'s BQUERY run.
-static std::string bquery_text(const std::string &out) {
-    std::string text;
-    size_t at = 0;
-    while (at < out.size()) {
-        if (out.compare(at, 8, "BQUERY: ") == 0) {
-            const size_t nl = out.find('\n', at);
-            long n = 0, state = 0, max_actions = 0;
-            if (nl == std::string::npos ||
-                std::sscanf(out.substr(at, nl - at).c_str(), "BQUERY: %ld %ld %ld", &n, &state, &max_actions) != 3)
-                break;
-            at = nl + 1 + static_cast<size_t>(4 * (state + 7 * max_actions));
-            continue;
-        }
-        size_t nl = out.find('\n', at);
-        if (nl == std::string::npos) nl = out.size();
-        text += out.substr(at, nl - at) + "\n";
-        at = nl + 1;
-    }
-    return text;
 }
 
 static std::string other(const std::string &seat) {
@@ -297,7 +272,8 @@ static void check_parked_replay(const rmcheck::Options &opt, ConcedeChecks &c, c
 
 // test_concede.py's check 7: a concession at a parked query (Brainstorm's put-back, mid-resolution;
 // Cavern of Souls' ETB creature type, an SBE-pass prompt) ends the game at once, over the RMSTATE
-// stream (driven by its frames) and BQUERY (the same replies piped), and the logs replay to it.
+// stream driven by its frames and over a second session the same replies are piped into unread
+// (no --narrative), which writes the same frames; the logs replay to it.
 static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
     const std::string temp = opt.decks_dir() + "/temp";
     rmcheck::make_dirs(temp);
@@ -369,11 +345,10 @@ static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
                     tag + ": the match concession credited Player B");
             }
             check_parked_replay(opt, c, tag, log, results, pc.announce, sentinel);
-            // BQUERY: the same replies piped into --machine. BQUERY leg: drop it (or retarget it to the
-            // RMSTATE --machine) with the BQUERY payload (plan step 3b, part B).
-            const std::string blog = rmcheck::path_join(dir, "bquery_" + std::to_string(seed) + ".rmlog");
+            // Piped: the same replies written up front, the frames not read.
+            const std::string blog = rmcheck::path_join(dir, "piped_" + std::to_string(seed) + ".rmlog");
             rmcheck::ProcSpec spec;
-            spec.argv = {opt.binary, "--machine"};
+            spec.argv = {opt.binary, "--machine-format", "rmstate"};
             spec.argv.insert(spec.argv.end(), flags.begin(), flags.end());
             spec.argv.push_back("--decision-log");
             spec.argv.push_back(blog);
@@ -381,11 +356,16 @@ static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
             spec.timeout_s = 300;
             for (int r : run.replies) spec.stdin_data += std::to_string(r) + "\n";
             const rmcheck::ProcResult b = rmcheck::run_process(spec);
-            const std::string btext = bquery_text(b.out) + b.err;
-            const std::string btag = label + ", bquery";
-            c.check(b.ok() && !rmcheck::contains(btext, "FATAL"),
+            const std::string btag = label + ", piped";
+            c.check(b.ok() && !rmcheck::contains(b.err, "FATAL"),
                 btag + ": engine exit 0, no FATAL (" + b.status_text() + ")");
-            c.check(result_lines(btext) == results, btag + ": the same results as the RMSTATE session");
+            const std::string frames_path = rmcheck::path_join(dir, "piped_" + std::to_string(seed) + ".rms");
+            std::vector<std::string> payloads;
+            std::string err;
+            c.check(rmcheck::write_file(frames_path, b.out) && rmcheck::read_records(frames_path, &payloads, &err) &&
+                        payloads == run.payloads,
+                btag + ": the same frames as the RMSTATE session " + err);
+            c.check(result_lines(b.err) == results, btag + ": the same results as the RMSTATE session");
             check_parked_replay(opt, c, btag, blog, results, pc.announce, sentinel);
         }
     for (const auto &d : decks) std::remove((temp + "/" + d.first + ".dk").c_str());
