@@ -617,58 +617,386 @@ No creatures eligible to attack.
 |   1: Cast Swords to Plowshares
 |   2: Cast Swords to Plowshares
 |   3: Activate Keen-Eyed Curator (ChangeZone)
-(REPLAY) [T9 | Upkeep | Player B] Input: 1
-| >> Player B: 1 (Cast Swords to Plowshares)
-Choose target for Swords to Plowshares:
-| decision 55: Player B (game 0, turn 9, UPKEEP, Player B active)
-| menu:
-|   0: Eidolon of the Great Revel
-|   1: Badgermole Cub
-|   2: Birds of Paradise
-|   3: Dryad Arbor
-|   4: Keen-Eyed Curator
-|   5: Scythecat Cub
-|   6: Thalia, Guardian of Thraben
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Eidolon of the Great Revel)
-Targeting choice 0
-Badgermole Cub adds an additional 1(G).
-Player B activated Birds of Paradise for 1(W)
-Player B casts Swords to Plowshares targeting Eidolon of the Great Revel
-Eidolon of the Great Revel triggered
-| decision 56: Player B (game 0, turn 9, UPKEEP, Player B active)
+| >> Player B: 0 (Pass priority)
+Player B draws Plains
+| decision 55: Player B (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
-|   2: Activate Keen-Eyed Curator (ChangeZone)
-(REPLAY) [T9 | Upkeep | Player B] Input: 1
-| >> Player B: 1 (Cast Swords to Plowshares)
-Choose target for Swords to Plowshares:
-| decision 57: Player B (game 0, turn 9, UPKEEP, Player B active)
+|   2: Cast Swords to Plowshares
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 56: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
-|   0: Eidolon of the Great Revel
-|   1: Badgermole Cub
-|   2: Birds of Paradise
-|   3: Dryad Arbor
-|   4: Keen-Eyed Curator
-|   5: Scythecat Cub
-|   6: Thalia, Guardian of Thraben
-(REPLAY) [T9 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Eidolon of the Great Revel)
+|   0: Pass priority
+|   1: Play Plains
+|   2: Cast Swords to Plowshares
+|   3: Cast Swords to Plowshares
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+Choose target for Scythecat Cub:
+| decision 57: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Badgermole Cub
+|   1: Birds of Paradise
+|   2: Dryad Arbor
+|   3: Keen-Eyed Curator
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Keen-Eyed Curator)
+Targeting choice 3
+Scythecat Cub triggered
+| decision 58: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 4/4).
+Resolving ability (category: MultiplyCounter)
+| decision 59: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 60: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exquisite Firecraft
+|   1: Fiery Islet
+|   2: Price of Progress
+|   3: Rift Bolt
+|   4: Misty Rainforest
+|   5: Once Upon a Time
+|   6: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exquisite Firecraft)
 Targeting choice 0
-Player B activated Savannah for 1(W)
 Badgermole Cub adds an additional 1(G).
 Player B activated Dryad Arbor for 1(G)
-Player B casts Swords to Plowshares targeting Eidolon of the Great Revel
-Eidolon of the Great Revel triggered
-| decision 58: Player B (game 0, turn 9, UPKEEP, Player B active)
+Player B's Keen-Eyed Curator ability targeting Exquisite Firecraft is on the stack
+| decision 61: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Exquisite Firecraft is moved to exile
+| decision 62: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 63: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fiery Islet
+|   1: Price of Progress
+|   2: Rift Bolt
+|   3: Misty Rainforest
+|   4: Once Upon a Time
+|   5: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Fiery Islet)
+Targeting choice 0
+Player B's Keen-Eyed Curator ability targeting Fiery Islet is on the stack
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Fiery Islet is moved to exile
+| decision 65: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Price of Progress
+|   1: Rift Bolt
+|   2: Misty Rainforest
+|   3: Once Upon a Time
+|   4: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Price of Progress)
+Targeting choice 0
+Badgermole Cub adds an additional 1(G).
+Player B activated Birds of Paradise for 1(W)
+Player B's Keen-Eyed Curator ability targeting Price of Progress is on the stack
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Price of Progress is moved to exile
+| decision 68: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Rift Bolt
+|   1: Misty Rainforest
+|   2: Once Upon a Time
+|   3: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Rift Bolt)
+Targeting choice 0
+Player B's Keen-Eyed Curator ability targeting Rift Bolt is on the stack
+| decision 70: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Rift Bolt is moved to exile
+| decision 71: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 72: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Rift Bolt
+|   1: Misty Rainforest
+|   2: Once Upon a Time
+|   3: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Rift Bolt)
+Targeting choice 0
+Player B activated Plains for 1(W)
+Player B's Keen-Eyed Curator ability targeting Rift Bolt is on the stack
+| decision 73: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
-(REPLAY) [T9 | Upkeep | Player B] Input: 0
+(REPLAY) [T9 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-Resolving ability (category: DealDamage, amount: 2)
-Eidolon of the Great Revel deals 2 damage to Player B (now at 0 life)
+Resolving ability (category: ChangeZone)
+Rift Bolt is moved to exile
+| decision 74: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 75: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Misty Rainforest
+|   1: Once Upon a Time
+|   2: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Misty Rainforest)
+Targeting choice 0
+Player B activated Savannah for 1(G)
+Player B's Keen-Eyed Curator ability targeting Misty Rainforest is on the stack
+Resolving ability (category: ChangeZone)
+Misty Rainforest is moved to exile
 
-Player B has 0 life - Player A wins!
+--- Declare Attackers (Player B) ---
+| decision 76: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Keen-Eyed Curator [4/4]
+|   2: Scythecat Cub [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+|   4: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Badgermole Cub [2/2])
+Badgermole Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Badgermole Cub [2/2] -> Player A
+| decision 77: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [4/4]
+|   1: Scythecat Cub [2/2]
+|   2: Thalia, Guardian of Thraben [2/1]
+|   3: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [4/4])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Badgermole Cub [2/2] -> Player A
+  [attacking] Keen-Eyed Curator [4/4] -> Player A
+| decision 78: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Badgermole Cub [2/2] -> Player A
+  [attacking] Keen-Eyed Curator [4/4] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+| decision 79: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Badgermole Cub [2/2] -> Player A
+  [attacking] Keen-Eyed Curator [4/4] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 80: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player A
+  Keen-Eyed Curator -> Player A
+  Scythecat Cub -> Player A
+  Thalia, Guardian of Thraben -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Badgermole Cub [2/2]
+  1: Keen-Eyed Curator [4/4]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+| decision 81: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Eidolon of the Great Revel [2/2]
+|   1: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Eidolon of the Great Revel [2/2])
+Select attacker for Eidolon of the Great Revel to block:
+| decision 82: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Keen-Eyed Curator [4/4]
+|   2: Scythecat Cub [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Keen-Eyed Curator [4/4])
+Eidolon of the Great Revel blocking Keen-Eyed Curator.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Badgermole Cub [2/2]
+  1: Keen-Eyed Curator [4/4]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+  (assigned) Eidolon of the Great Revel [2/2] blocking Keen-Eyed Curator
+| decision 83: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Confirm blockers)
+
+Blockers declared:
+  Eidolon of the Great Revel blocking Keen-Eyed Curator
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A (now at 8 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Player A (now at 6 life)
+  Eidolon of the Great Revel deals 2 damage to Keen-Eyed Curator
+  Keen-Eyed Curator deals 4 damage to Eidolon of the Great Revel
+  Scythecat Cub deals 2 damage to Player A (now at 4 life)
+--- End Combat Damage ---
+
+Eidolon of the Great Revel is destroyed (lethal damage)
+
+-------- TURN 11 (Player A) --------
+Player A draws Chain Lightning
+| decision 84: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Chain Lightning
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 85: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (2 life)
+|   1: Player A (4 life)
+|   2: Badgermole Cub
+|   3: Birds of Paradise
+|   4: Dryad Arbor
+|   5: Keen-Eyed Curator
+|   6: Scythecat Cub
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (2 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Chain Lightning targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at -1 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| decision 86: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
+
+Player B has -1 life - Player A wins!
 GAME_RESULT: 1 Player A wins

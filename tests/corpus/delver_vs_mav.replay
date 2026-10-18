@@ -1605,11 +1605,308 @@ Player A played Scalding Tarn
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
-(REPLAY) [T16 | First Main | Player A] Input: 1
-| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
-Player A pays 1 life
-Player A sacrifices Scalding Tarn
-Player A's Scalding Tarn ability is on the stack
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 151: Player A (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 152: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Delver of Secrets [1/1] -> Player B
+| decision 153: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player B
+| decision 154: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 155: Player A (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player B (now at 17 life)
+--- End Combat Damage ---
+
+| decision 156: Player A (game 0, turn 16, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 157: Player A (game 0, turn 16, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 158: Player A (game 0, turn 16, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 159: Player A (game 0, turn 16, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 18 (Player B) --------
+| decision 160: Player A (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 161: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T17 | Draw | Player B] Input: 1
+| >> Player B: 1 (Dredge Life from the Loam (mill 3))
+Player B mills Birds of Paradise.
+Player B mills Keen-Eyed Curator.
+Player B mills Swords to Plowshares.
+Player B dredges Life from the Loam (milled 3)
+| decision 162: Player A (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 163: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Play Wasteland
+|   4: Play Windswept Heath
+|   5: Play Wooded Foothills
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 164: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Activate Knight of the Reliquary (ChangeZone)
+|   3: Activate Scryb Ranger (Untap)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 165: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Savannah
+|   2: Talon Gates of Madara
+|   3: Windswept Heath
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(G)
+Player B activated Savannah for 1(G)
+Player B casts Life from the Loam
+| decision 166: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 167: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Savannah)
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+| decision 168: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 169: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Gaea's Cradle
+|   4: Horizon Canopy
+|   5: Karakas
+|   6: Plains
+|   7: Wasteland
+|   8: Windswept Heath
+|   9: Wooded Foothills
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Dryad Arbor)
+Player B shuffles their library
+Player B puts Dryad Arbor to the battlefield
+| decision 170: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 171: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+|   1: Dryad Arbor
+|   2: Endurance
+|   3: Knight of the Reliquary
+|   4: Noble Hierarch
+|   5: Scryb Ranger
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets)
+Targeting choice 0
+| decision 172: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Dryad Arbor to hand
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Dryad Arbor to hand)
+Player B returns Dryad Arbor to hand
+Player B's Scryb Ranger ability targeting Delver of Secrets is on the stack
+| decision 173: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Untap)
+Delver of Secrets untaps
+| decision 174: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+| decision 175: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 176: Player A (game 0, turn 17, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 177: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Endurance [3/4]
+|   1: Scryb Ranger [1/1]
+|   2: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Endurance [3/4])
+Endurance attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+| decision 178: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 179: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Endurance -> Player A
+  Scryb Ranger -> Player A
+| decision 180: Player A (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Endurance [3/4]
+  1: Scryb Ranger [1/1]
+Your creatures:
+| decision 181: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Delver of Secrets [1/1])
+Select attacker for Delver of Secrets to block:
+| decision 182: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Endurance [3/4]
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Endurance [3/4])
+Delver of Secrets blocking Endurance.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Endurance [3/4]
+  1: Scryb Ranger [1/1]
+Your creatures:
+  (assigned) Delver of Secrets [1/1] blocking Endurance
+| decision 183: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Confirm blockers)
+
+Blockers declared:
+  Delver of Secrets blocking Endurance
+| decision 184: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Endurance
+  Endurance deals 3 damage to Delver of Secrets
+  Scryb Ranger deals 1 damage to Player A (now at 0 life)
+--- End Combat Damage ---
+
 
 Player A has 0 life - Player B wins!
 GAME_RESULT: 1 Player B wins

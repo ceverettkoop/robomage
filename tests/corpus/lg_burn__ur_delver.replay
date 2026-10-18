@@ -571,26 +571,27 @@ Eidolon of the Great Revel triggered
 | menu:
 |   0: Pass priority
 |   1: Cast Into the Flood Maw
-(REPLAY) [T8 | First Main | Player B] Input: 1
-| >> Player B: 1 (Cast Into the Flood Maw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player A (now at 6 life)
 | decision 54: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
-|   0: Decline: promise a tapped Fish to your opponent
-|   1: Accept: promise a tapped Fish to your opponent
+|   0: Pass priority
+|   1: Cast Into the Flood Maw
 (REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Decline: promise a tapped Fish to your opponent)
-Choose target for Into the Flood Maw:
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at -2 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
 | decision 55: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
-|   0: Eidolon of the Great Revel
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Eidolon of the Great Revel)
-Targeting choice 0
-Player B activated Volcanic Island for 1(U)
-Player B casts Into the Flood Maw targeting Eidolon of the Great Revel
-Eidolon of the Great Revel triggered
-Resolving ability (category: DealDamage, amount: 2)
-Eidolon of the Great Revel deals 2 damage to Player B (now at -1 life)
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T8 | First Main | Player B] Input: 2
+| >> Player B: 2 (Don't pay (Chain Lightning is not copied))
 
-Player B has -1 life - Player A wins!
+Player B has -2 life - Player A wins!
 GAME_RESULT: 1 Player A wins

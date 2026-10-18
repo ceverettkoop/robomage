@@ -574,24 +574,73 @@ Player B draws Thoughtseize
 |   1: Cast Thoughtseize
 |   2: Cast Thoughtseize
 |   3: Cast Voice of Victory
-(REPLAY) [T7 | First Main | Player B] Input: 1
-| >> Player B: 1 (Cast Thoughtseize)
-Choose target for Thoughtseize:
-| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Player A (19 life)
-|   1: Player B (1 life)
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Player A (19 life))
-Targeting choice 0
-Player B activated Badlands for 1(B)
-Player B casts Thoughtseize targeting Player A
-Resolving ability (category: Discard)
-Player A reveals their hand:
-  Mountain
-No valid cards to discard.
-Resolving ability (category: LoseLife, amount: 2)
-Player B loses 2 life (now at -1)
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Voice of Victory)
+Player B activated Scrubland for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Voice of Victory
+Voice of Victory enters the battlefield
 
-Player B has -1 life - Player A wins!
+--- Declare Attackers (Player B) ---
+| decision 51: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 52: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Amped Raptor -> Player A
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 17 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 9 (Player A) --------
+Player A draws Chain Lightning
+| decision 53: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Cast Chain Lightning
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (1 life)
+|   1: Player A (17 life)
+|   2: Amped Raptor
+|   3: Voice of Victory
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (1 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A casts Chain Lightning targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at -2 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| decision 55: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
+
+Player B has -2 life - Player A wins!
 GAME_RESULT: 1 Player A wins

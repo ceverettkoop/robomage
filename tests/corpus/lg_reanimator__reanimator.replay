@@ -1859,31 +1859,1861 @@ Resolving ability (category: Cleanup)
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 |   3: Activate Griselbrand (Draw)
-(REPLAY) [T28 | First Main | Player A] Input: 2
-| >> Player A: 2 (Cast Reanimate)
-Choose target for Reanimate:
-| decision 204: Player A (game 0, turn 28, FIRST_MAIN, Player A active)
-| menu:
-|   0: Raph & Mikey, Troublemakers
-|   1: Atraxa, Grand Unifier
-|   2: Raph & Mikey, Troublemakers
-(REPLAY) [T28 | First Main | Player A] Input: 1
-| >> Player A: 1 (Atraxa, Grand Unifier)
-Targeting choice 1
-Player A activated Underground Sea for 1(B)
-Player A casts Reanimate targeting Atraxa, Grand Unifier
-| decision 205: Player A (game 0, turn 28, FIRST_MAIN, Player A active)
+(REPLAY) [T28 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 204: Player A (game 0, turn 28, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Activate Griselbrand (Draw)
-(REPLAY) [T28 | First Main | Player A] Input: 0
+(REPLAY) [T28 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 205: Player A (game 0, turn 28, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T28 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 206: Player A (game 0, turn 28, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T28 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 207: Player A (game 0, turn 28, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Reanimate
+|   3: Activate Griselbrand (Draw)
+(REPLAY) [T28 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 208: Player A (game 0, turn 28, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T28 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 30 (Player B) --------
+| decision 209: Player A (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Dark Ritual
+| decision 210: Player B (game 0, turn 29, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T29 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 211: Player A (game 0, turn 29, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 212: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Animate Dead
+|   3: Cast Dark Ritual
+|   4: Cast Reanimate
+|   5: Cast Reanimate
+|   6: Cast Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Animate Dead)
+Choose target for Animate Dead:
+| decision 213: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Raph & Mikey, Troublemakers
+|   2: Raph & Mikey, Troublemakers
+(REPLAY) [T29 | First Main | Player B] Input: 2
+| >> Player B: 2 (Raph & Mikey, Troublemakers)
+Targeting choice 2
+Player B casts Animate Dead enchanting Raph & Mikey, Troublemakers
+Player B activated Undercity Sewers for 1(B)
+Player B activated Island for 1(U)
+Player B casts Animate Dead
+| decision 214: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 215: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Animate Dead enters the battlefield
+Animate Dead triggered
+| decision 216: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 217: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Raph & Mikey, Troublemakers is moved to the battlefield
+Resolving ability (category: Animate)
+Resolving ability (category: Attach)
+Equipment will attach once the creature finishes entering.
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
+Equipment attached.
+Raph & Mikey, Troublemakers gains -1/0 (always)
+| decision 218: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+|   5: Cast Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Animate Dead)
+Choose target for Animate Dead:
+| decision 219: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Raph & Mikey, Troublemakers
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Atraxa, Grand Unifier)
+Targeting choice 0
+Player B casts Animate Dead enchanting Atraxa, Grand Unifier
+Player B activated Undercity Sewers for 1(B)
+Player B activated Underground Sea for 1(U)
+Player B casts Animate Dead
+| decision 220: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 221: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Animate Dead enters the battlefield
+Animate Dead triggered
+| decision 222: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 223: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Atraxa, Grand Unifier is moved to the battlefield
-Resolving ability (category: LoseLife, amount: 7)
-Player A loses 7 life (now at 0)
+Resolving ability (category: Animate)
+Resolving ability (category: Attach)
+Equipment will attach once the creature finishes entering.
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
+Equipment attached.
+Atraxa, Grand Unifier gains -1/0 (always)
+Atraxa, Grand Unifier triggered
+| decision 224: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 225: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player B reveals Careful Study from the top of their library
+Player B reveals Atraxa, Grand Unifier from the top of their library
+Player B reveals Lotus Petal from the top of their library
+Player B reveals Flooded Strand from the top of their library
+Player B reveals Polluted Delta from the top of their library
+Player B reveals Flow State from the top of their library
+Player B reveals Archon of Cruelty from the top of their library
+Player B reveals Polluted Delta from the top of their library
+Player B reveals Force of Will from the top of their library
+Player B reveals Brainstorm from the top of their library
+Resolving ability (category: RepeatEach)
+Resolving ability (category: ChooseCard)
+Player B may put a Artifact card from among the revealed cards into their hand:
+| decision 226: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lotus Petal (Artifact) into hand
+|   1: Put no Artifact card into hand
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Lotus Petal (Artifact) into hand)
+Player B chooses Lotus Petal
+Resolving ability (category: ChooseCard)
+Player B may put a Creature card from among the revealed cards into their hand:
+| decision 227: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Atraxa, Grand Unifier (Creature) into hand
+|   1: Put Archon of Cruelty (Creature) into hand
+|   2: Put no Creature card into hand
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Atraxa, Grand Unifier (Creature) into hand)
+Player B chooses Atraxa, Grand Unifier
+Resolving ability (category: ChooseCard)
+Player B may put a Instant card from among the revealed cards into their hand:
+| decision 228: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Force of Will (Instant) into hand
+|   1: Put Brainstorm (Instant) into hand
+|   2: Put no Instant card into hand
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Force of Will (Instant) into hand)
+Player B chooses Force of Will
+Resolving ability (category: ChooseCard)
+Player B may put a Land card from among the revealed cards into their hand:
+| decision 229: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Flooded Strand (Land) into hand
+|   1: Put Polluted Delta (Land) into hand
+|   2: Put Polluted Delta (Land) into hand
+|   3: Put no Land card into hand
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Flooded Strand (Land) into hand)
+Player B chooses Flooded Strand
+Resolving ability (category: ChooseCard)
+Player B may put a Sorcery card from among the revealed cards into their hand:
+| decision 230: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Careful Study (Sorcery) into hand
+|   1: Put Flow State (Sorcery) into hand
+|   2: Put no Sorcery card into hand
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Careful Study (Sorcery) into hand)
+Player B chooses Careful Study
+Resolving ability (category: ChangeZone)
+Lotus Petal is moved to hand
+Atraxa, Grand Unifier is moved to hand
+Force of Will is moved to hand
+Flooded Strand is moved to hand
+Careful Study is moved to hand
+Resolving ability (category: ChangeZoneAll)
+Player B moves Archon of Cruelty to the bottom of their library
+Player B moves Polluted Delta to the bottom of their library
+Player B moves Flow State to the bottom of their library
+Player B moves Brainstorm to the bottom of their library
+Player B moves Polluted Delta to the bottom of their library
+Player B moves 5 card(s) to the bottom of their library
 Resolving ability (category: Cleanup)
+| decision 231: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Careful Study
+|   3: Cast Dark Ritual
+|   4: Cast Lotus Petal
+|   5: Cast Reanimate
+|   6: Cast Reanimate
+|   7: Cast Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Careful Study)
+Player B activated Underground Sea for 1(U)
+Player B casts Careful Study
+| decision 232: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 233: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 2)
+Player B draws Flow State
+Player B draws Reanimate
+Resolving ability (category: Discard)
+Player B chooses a card to discard:
+| decision 234: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Atraxa, Grand Unifier
+|   2: Atraxa, Grand Unifier
+|   3: Dark Ritual
+|   4: Flooded Strand
+|   5: Flow State
+|   6: Force of Will
+|   7: Lotus Petal
+|   8: Reanimate
+|   9: Reanimate
+|   10: Reanimate
+|   11: Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Archon of Cruelty)
+Player B discards Archon of Cruelty
+Player B chooses a card to discard:
+| decision 235: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Atraxa, Grand Unifier
+|   2: Dark Ritual
+|   3: Flooded Strand
+|   4: Flow State
+|   5: Force of Will
+|   6: Lotus Petal
+|   7: Reanimate
+|   8: Reanimate
+|   9: Reanimate
+|   10: Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Atraxa, Grand Unifier)
+Player B discards Atraxa, Grand Unifier
+| decision 236: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Dark Ritual
+|   3: Cast Flow State
+|   4: Cast Lotus Petal
+|   5: Cast Reanimate
+|   6: Cast Reanimate
+|   7: Cast Reanimate
+|   8: Cast Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Flow State)
+Player B activated Underground Sea for 1(U)
+Player B sacrifices Lotus Petal
+Player B activated Lotus Petal for 1(W)
+Player B casts Flow State
+| decision 237: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 238: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 239: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+|   1: Otherworldly Gaze
+|   2: Ponder
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Otherworldly Gaze)
+| decision 240: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+|   1: Ponder
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Ponder)
+Player B puts Otherworldly Gaze into hand.
+Player B puts Ponder into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 241: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Lotus Petal
+(REPLAY) [T29 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Lotus Petal)
+Player B casts Lotus Petal
+| decision 242: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 243: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Lotus Petal enters the battlefield
+| decision 244: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Dark Ritual
+|   3: Cast Otherworldly Gaze
+|   4: Cast Ponder
+|   5: Cast Reanimate
+|   6: Cast Reanimate
+|   7: Cast Reanimate
+|   8: Cast Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Otherworldly Gaze)
+Player B sacrifices Lotus Petal
+Player B activated Lotus Petal for 1(U)
+Player B casts Otherworldly Gaze
+| decision 245: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 246: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Griselbrand
+Surveil: looking at Lotus Petal
+Surveil: looking at Atraxa, Grand Unifier
+| decision 247: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Griselbrand on top of library
+|   1: Put Lotus Petal on top of library
+|   2: Put Atraxa, Grand Unifier on top of library
+|   3: Put Griselbrand into graveyard
+|   4: Put Lotus Petal into graveyard
+|   5: Put Atraxa, Grand Unifier into graveyard
+(REPLAY) [T29 | First Main | Player B] Input: 3
+| >> Player B: 3 (Put Griselbrand into graveyard)
+Player B puts Griselbrand into their graveyard.
+| decision 248: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Atraxa, Grand Unifier on top of library
+|   2: Put Lotus Petal into graveyard
+|   3: Put Atraxa, Grand Unifier into graveyard
+(REPLAY) [T29 | First Main | Player B] Input: 3
+| >> Player B: 3 (Put Atraxa, Grand Unifier into graveyard)
+Player B puts Atraxa, Grand Unifier into their graveyard.
+| decision 249: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Lotus Petal into graveyard
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Lotus Petal on top of library)
+| decision 250: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 251: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+| decision 252: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 253: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Underground Sea
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 254: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Ponder
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+|   5: Cast Reanimate
+|   6: Cast Reanimate
+(REPLAY) [T29 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Ponder)
+Player B activated Underground Sea for 1(U)
+Player B casts Ponder
+| decision 255: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 256: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 257: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Otherworldly Gaze
+|   1: Archon of Cruelty
+|   2: Brainstorm
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Otherworldly Gaze)
+Choose which card goes 2 from top:
+| decision 258: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Brainstorm
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Brainstorm)
+| decision 259: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T29 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Archon of Cruelty
+| decision 260: Player A (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 261: Player A (game 0, turn 29, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
 
-Player A has 0 life - Player B wins!
-GAME_RESULT: 1 Player B wins
+--- Declare Attackers (Player B) ---
+| decision 262: Player B (game 0, turn 29, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Raph & Mikey, Troublemakers [6/7]
+|   1: Confirm attackers
+(REPLAY) [T29 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 263: Player A (game 0, turn 29, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 264: Player A (game 0, turn 29, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 265: Player A (game 0, turn 29, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 266: Player A (game 0, turn 29, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T29 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 267: Player B (game 0, turn 29, CLEANUP, Player B active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Atraxa, Grand Unifier
+|   2: Dark Ritual
+|   3: Force of Will
+|   4: Reanimate
+|   5: Reanimate
+|   6: Reanimate
+|   7: Reanimate
+(REPLAY) [T29 | Cleanup | Player B] Input: 0
+| >> Player B: 0 (Archon of Cruelty)
+Player B discards Archon of Cruelty.
+
+-------- TURN 31 (Player A) --------
+| decision 268: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Otherworldly Gaze
+| decision 269: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Otherworldly Gaze
+|   3: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Draw | Player A] Input: 2
+| >> Player A: 2 (Cast Otherworldly Gaze)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Otherworldly Gaze
+| decision 270: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 271: Player B (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T30 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player A surveils 3.
+Surveil: looking at Reanimate
+Surveil: looking at Animate Dead
+Surveil: looking at Brainstorm
+| decision 272: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Put Reanimate on top of library
+|   1: Put Animate Dead on top of library
+|   2: Put Brainstorm on top of library
+|   3: Put Reanimate into graveyard
+|   4: Put Animate Dead into graveyard
+|   5: Put Brainstorm into graveyard
+(REPLAY) [T30 | Draw | Player A] Input: 1
+| >> Player A: 1 (Put Animate Dead on top of library)
+| decision 273: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Put Reanimate on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Reanimate into graveyard
+|   3: Put Brainstorm into graveyard
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Reanimate on top of library)
+| decision 274: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm into graveyard
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Brainstorm on top of library)
+| decision 275: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Otherworldly Gaze (flashback)
+|   3: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Draw | Player A] Input: 2
+| >> Player A: 2 (Cast Otherworldly Gaze (flashback))
+Player A activated Undercity Sewers for 1(U)
+Player A activated Underground Sea for 1(U)
+Player A casts Otherworldly Gaze
+| decision 276: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 277: Player B (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T30 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player A surveils 3.
+Surveil: looking at Animate Dead
+Surveil: looking at Reanimate
+Surveil: looking at Brainstorm
+| decision 278: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Put Animate Dead on top of library
+|   1: Put Reanimate on top of library
+|   2: Put Brainstorm on top of library
+|   3: Put Animate Dead into graveyard
+|   4: Put Reanimate into graveyard
+|   5: Put Brainstorm into graveyard
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Animate Dead on top of library)
+| decision 279: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Put Reanimate on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Reanimate into graveyard
+|   3: Put Brainstorm into graveyard
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Reanimate on top of library)
+| decision 280: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm into graveyard
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Brainstorm on top of library)
+Otherworldly Gaze is exiled (flashback)
+| decision 281: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 282: Player A (game 0, turn 30, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Reanimate
+|   3: Activate Griselbrand (Draw)
+(REPLAY) [T30 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 283: Player A (game 0, turn 30, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 284: Player A (game 0, turn 30, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Griselbrand [7/7]
+|   1: Confirm attackers
+(REPLAY) [T30 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Griselbrand [7/7])
+Griselbrand attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Griselbrand [7/7] -> Player B
+| decision 285: Player A (game 0, turn 30, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T30 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Griselbrand -> Player B
+| decision 286: Player A (game 0, turn 30, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Griselbrand [7/7]
+Your creatures:
+| decision 287: Player B (game 0, turn 30, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Atraxa, Grand Unifier [6/7]
+|   1: Confirm blockers
+(REPLAY) [T30 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 288: Player A (game 0, turn 30, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Griselbrand deals 7 damage to Player B (now at 3 life)
+  Player A gains 7 life (lifelink)
+--- End Combat Damage ---
+
+| decision 289: Player A (game 0, turn 30, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 290: Player A (game 0, turn 30, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 291: Player A (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Reanimate
+|   3: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Second Main | Player A] Input: 2
+| >> Player A: 2 (Cast Reanimate)
+Choose target for Reanimate:
+| decision 292: Player A (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Atraxa, Grand Unifier
+|   2: Griselbrand
+|   3: Raph & Mikey, Troublemakers
+(REPLAY) [T30 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Archon of Cruelty)
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A casts Reanimate targeting Archon of Cruelty
+| decision 293: Player A (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 294: Player B (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T30 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 295: Player B (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Reanimate
+(REPLAY) [T30 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Reanimate)
+Targeting choice 0
+| decision 296: Player B (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Exile Atraxa, Grand Unifier
+(REPLAY) [T30 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Exile Atraxa, Grand Unifier)
+Player B pays 1 life
+Player B exiles Atraxa, Grand Unifier
+Player B casts Force of Will targeting Reanimate
+| decision 297: Player A (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Counter)
+Reanimate is countered
+| decision 298: Player A (game 0, turn 30, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 299: Player A (game 0, turn 30, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T30 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 32 (Player B) --------
+| decision 300: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Otherworldly Gaze (flashback)
+(REPLAY) [T31 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Cast Otherworldly Gaze (flashback))
+Player B activated Island for 1(U)
+Player B activated Undercity Sewers for 1(U)
+Player B casts Otherworldly Gaze
+| decision 301: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 302: Player A (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Brainstorm
+Surveil: looking at Otherworldly Gaze
+Surveil: looking at Polluted Delta
+| decision 303: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Otherworldly Gaze on top of library
+|   2: Put Polluted Delta on top of library
+|   3: Put Brainstorm into graveyard
+|   4: Put Otherworldly Gaze into graveyard
+|   5: Put Polluted Delta into graveyard
+(REPLAY) [T31 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Put Polluted Delta into graveyard)
+Player B puts Polluted Delta into their graveyard.
+| decision 304: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Otherworldly Gaze on top of library
+|   2: Put Brainstorm into graveyard
+|   3: Put Otherworldly Gaze into graveyard
+(REPLAY) [T31 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+| decision 305: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Put Otherworldly Gaze on top of library
+|   1: Put Otherworldly Gaze into graveyard
+(REPLAY) [T31 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Otherworldly Gaze on top of library)
+Otherworldly Gaze is exiled (flashback)
+| decision 306: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 307: Player A (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Brainstorm
+| decision 308: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Dark Ritual
+(REPLAY) [T31 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Undercity Sewers for 1(U)
+Player B casts Brainstorm
+| decision 309: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 310: Player A (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Otherworldly Gaze
+Player B draws Otherworldly Gaze
+Player B draws Swamp
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 311: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Otherworldly Gaze
+|   2: Otherworldly Gaze
+|   3: Reanimate
+|   4: Reanimate
+|   5: Reanimate
+|   6: Reanimate
+|   7: Swamp
+(REPLAY) [T31 | Draw | Player B] Input: 7
+| >> Player B: 7 (Swamp)
+Player B puts Swamp to top of library
+Player B chooses a card from Player B hand:
+| decision 312: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Otherworldly Gaze
+|   2: Otherworldly Gaze
+|   3: Reanimate
+|   4: Reanimate
+|   5: Reanimate
+|   6: Reanimate
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Dark Ritual)
+Player B puts Dark Ritual to top of library
+| decision 313: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze
+|   2: Cast Otherworldly Gaze
+(REPLAY) [T31 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Otherworldly Gaze)
+Player B activated Underground Sea for 1(U)
+Player B casts Otherworldly Gaze
+| decision 314: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze
+(REPLAY) [T31 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Otherworldly Gaze)
+Player B activated Underground Sea for 1(U)
+Player B casts Otherworldly Gaze
+| decision 315: Player A (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Dark Ritual
+Surveil: looking at Swamp
+Surveil: looking at Lotus Petal
+| decision 316: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Dark Ritual on top of library
+|   1: Put Swamp on top of library
+|   2: Put Lotus Petal on top of library
+|   3: Put Dark Ritual into graveyard
+|   4: Put Swamp into graveyard
+|   5: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 4
+| >> Player B: 4 (Put Swamp into graveyard)
+Player B puts Swamp into their graveyard.
+| decision 317: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Dark Ritual on top of library
+|   1: Put Lotus Petal on top of library
+|   2: Put Dark Ritual into graveyard
+|   3: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Dark Ritual on top of library)
+| decision 318: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Lotus Petal on top of library)
+| decision 319: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze (flashback)
+(REPLAY) [T31 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Otherworldly Gaze (flashback))
+Player B activated Underground Sea for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B casts Otherworldly Gaze
+| decision 320: Player A (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Dark Ritual
+Surveil: looking at Lotus Petal
+Surveil: looking at Brainstorm
+| decision 321: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Dark Ritual on top of library
+|   1: Put Lotus Petal on top of library
+|   2: Put Brainstorm on top of library
+|   3: Put Dark Ritual into graveyard
+|   4: Put Lotus Petal into graveyard
+|   5: Put Brainstorm into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Dark Ritual on top of library)
+| decision 322: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Lotus Petal into graveyard
+|   3: Put Brainstorm into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 1
+| >> Player B: 1 (Put Brainstorm on top of library)
+| decision 323: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Lotus Petal on top of library)
+Otherworldly Gaze is exiled (flashback)
+| decision 324: Player A (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Dark Ritual
+Surveil: looking at Brainstorm
+Surveil: looking at Lotus Petal
+| decision 325: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Dark Ritual on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Lotus Petal on top of library
+|   3: Put Dark Ritual into graveyard
+|   4: Put Brainstorm into graveyard
+|   5: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Dark Ritual on top of library)
+| decision 326: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Lotus Petal on top of library
+|   2: Put Brainstorm into graveyard
+|   3: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+| decision 327: Player B (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Lotus Petal into graveyard
+(REPLAY) [T31 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Lotus Petal on top of library)
+| decision 328: Player A (game 0, turn 31, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 329: Player A (game 0, turn 31, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 330: Player A (game 0, turn 31, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 331: Player B (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier [6/7]
+|   1: Raph & Mikey, Troublemakers [6/7]
+|   2: Confirm attackers
+(REPLAY) [T31 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Atraxa, Grand Unifier [6/7])
+Atraxa, Grand Unifier attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Atraxa, Grand Unifier [6/7] -> Player A
+| decision 332: Player B (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Raph & Mikey, Troublemakers [6/7]
+|   1: Confirm attackers
+(REPLAY) [T31 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Raph & Mikey, Troublemakers [6/7])
+Raph & Mikey, Troublemakers attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Atraxa, Grand Unifier [6/7] -> Player A
+  [attacking] Raph & Mikey, Troublemakers [6/7] -> Player A
+| decision 333: Player B (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T31 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Atraxa, Grand Unifier -> Player A
+  Raph & Mikey, Troublemakers -> Player A
+Raph & Mikey, Troublemakers triggered
+| decision 334: Player A (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: DigUntil)
+Player B reveals Dark Ritual.
+Player B reveals Brainstorm.
+Player B reveals Lotus Petal.
+Player B reveals Polluted Delta.
+Player B reveals Flow State.
+Player B reveals Polluted Delta.
+Player B reveals Thoughtseize.
+Player B reveals Force of Will.
+Player B reveals Brainstorm.
+Player B reveals Careful Study.
+Player B reveals Brainstorm.
+Player B's library is empty; the dig finds no match.
+| decision 335: Player A (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 336: Player A (game 0, turn 31, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Griselbrand (Draw)
+(REPLAY) [T31 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Atraxa, Grand Unifier deals 6 damage to Player A (now at 8 life)
+  Player B gains 6 life (lifelink)
+  Raph & Mikey, Troublemakers deals 6 damage to Player A (now at 2 life)
+--- End Combat Damage ---
+
+| decision 337: Player A (game 0, turn 31, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 338: Player A (game 0, turn 31, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 339: Player A (game 0, turn 31, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 340: Player A (game 0, turn 31, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T31 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 33 (Player A) --------
+| decision 341: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Animate Dead
+| decision 342: Player A (game 0, turn 32, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 343: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+(REPLAY) [T32 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Animate Dead)
+Choose target for Animate Dead:
+| decision 344: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Atraxa, Grand Unifier
+|   2: Griselbrand
+|   3: Raph & Mikey, Troublemakers
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Archon of Cruelty)
+Targeting choice 0
+Player A casts Animate Dead enchanting Archon of Cruelty
+Player A activated Undercity Sewers for 1(B)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Animate Dead
+| decision 345: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Animate Dead enters the battlefield
+Animate Dead triggered
+| decision 346: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Archon of Cruelty is moved to the battlefield
+Resolving ability (category: Animate)
+Resolving ability (category: Attach)
+Equipment will attach once the creature finishes entering.
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
+Equipment attached.
+Archon of Cruelty gains -1/0 (always)
+Choose target for Archon of Cruelty:
+| decision 347: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (8 life)
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Targeting choice 0
+Archon of Cruelty triggered
+| decision 348: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Sacrifice)
+| decision 349: Player B (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sacrifice Atraxa, Grand Unifier
+|   1: Sacrifice Raph & Mikey, Troublemakers
+(REPLAY) [T32 | First Main | Player B] Input: 1
+| >> Player B: 1 (Sacrifice Raph & Mikey, Troublemakers)
+Player B sacrifices Raph & Mikey, Troublemakers.
+Resolving ability (category: Discard)
+Player B chooses a card to discard:
+| decision 350: Player B (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Reanimate
+|   1: Reanimate
+|   2: Reanimate
+|   3: Reanimate
+(REPLAY) [T32 | First Main | Player B] Input: 3
+| >> Player B: 3 (Reanimate)
+Player B discards Reanimate
+Resolving ability (category: LoseLife, amount: 3)
+Player B loses 3 life (now at 5)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Reanimate
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 5)
+Animate Dead is put into the graveyard (Aura not attached to a legal object)
+Resolving ability (category: Cleanup)
+Delayed trigger fires.
+| decision 351: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: SacrificeAll)
+| decision 352: Player A (game 0, turn 32, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Reanimate
+(REPLAY) [T32 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 353: Player A (game 0, turn 32, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 354: Player A (game 0, turn 32, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Griselbrand [7/7]
+|   1: Confirm attackers
+(REPLAY) [T32 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Griselbrand [7/7])
+Griselbrand attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Griselbrand [7/7] -> Player B
+| decision 355: Player A (game 0, turn 32, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T32 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Griselbrand -> Player B
+| decision 356: Player A (game 0, turn 32, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Griselbrand [7/7]
+Your creatures:
+| decision 357: Player B (game 0, turn 32, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Atraxa, Grand Unifier [6/7]
+|   1: Confirm blockers
+(REPLAY) [T32 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Atraxa, Grand Unifier [6/7])
+Select attacker for Atraxa, Grand Unifier to block:
+| decision 358: Player B (game 0, turn 32, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Griselbrand [7/7]
+(REPLAY) [T32 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Griselbrand [7/7])
+Atraxa, Grand Unifier blocking Griselbrand.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Griselbrand [7/7]
+Your creatures:
+  (assigned) Atraxa, Grand Unifier [6/7] blocking Griselbrand
+| decision 359: Player B (game 0, turn 32, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T32 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Confirm blockers)
+
+Blockers declared:
+  Atraxa, Grand Unifier blocking Griselbrand
+| decision 360: Player A (game 0, turn 32, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Atraxa, Grand Unifier deals 6 damage to Griselbrand
+  Player B gains 6 life (lifelink)
+  Griselbrand deals 7 damage to Atraxa, Grand Unifier
+  Player A gains 7 life (lifelink)
+--- End Combat Damage ---
+
+Atraxa, Grand Unifier is destroyed (lethal damage)
+Griselbrand is destroyed (lethal damage)
+Animate Dead is put into the graveyard (Aura not attached to a legal object)
+Resolving ability (category: Cleanup)
+Delayed trigger fires.
+| decision 361: Player A (game 0, turn 32, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: SacrificeAll)
+| decision 362: Player A (game 0, turn 32, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 363: Player A (game 0, turn 32, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 364: Player A (game 0, turn 32, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Reanimate
+(REPLAY) [T32 | Second Main | Player A] Input: 2
+| >> Player A: 2 (Cast Reanimate)
+Choose target for Reanimate:
+| decision 365: Player A (game 0, turn 32, SECOND_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Atraxa, Grand Unifier
+|   2: Griselbrand
+|   3: Raph & Mikey, Troublemakers
+|   4: Atraxa, Grand Unifier
+|   5: Griselbrand
+|   6: Raph & Mikey, Troublemakers
+(REPLAY) [T32 | Second Main | Player A] Input: 5
+| >> Player A: 5 (Griselbrand)
+Targeting choice 6
+Player A activated Underground Sea for 1(B)
+Player A casts Reanimate targeting Griselbrand
+| decision 366: Player A (game 0, turn 32, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Griselbrand is moved to the battlefield
+Resolving ability (category: LoseLife, amount: 8)
+Player A loses 8 life (now at 4)
+Resolving ability (category: Cleanup)
+| decision 367: Player A (game 0, turn 32, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 368: Player A (game 0, turn 32, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T32 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 34 (Player B) --------
+| decision 369: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze (flashback)
+(REPLAY) [T33 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Otherworldly Gaze (flashback))
+Player B activated Island for 1(U)
+Player B activated Undercity Sewers for 1(U)
+Player B casts Otherworldly Gaze
+| decision 370: Player A (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T33 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Lotus Petal
+Surveil: looking at Thoughtseize
+Surveil: looking at Polluted Delta
+| decision 371: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Thoughtseize on top of library
+|   2: Put Polluted Delta on top of library
+|   3: Put Lotus Petal into graveyard
+|   4: Put Thoughtseize into graveyard
+|   5: Put Polluted Delta into graveyard
+(REPLAY) [T33 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Put Polluted Delta into graveyard)
+Player B puts Polluted Delta into their graveyard.
+| decision 372: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Thoughtseize on top of library
+|   2: Put Lotus Petal into graveyard
+|   3: Put Thoughtseize into graveyard
+(REPLAY) [T33 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Put Thoughtseize on top of library)
+| decision 373: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Put Lotus Petal on top of library
+|   1: Put Lotus Petal into graveyard
+(REPLAY) [T33 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Lotus Petal on top of library)
+Otherworldly Gaze is exiled (flashback)
+| decision 374: Player A (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T33 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Thoughtseize
+| decision 375: Player A (game 0, turn 33, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T33 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 376: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Reanimate
+|   3: Cast Reanimate
+|   4: Cast Thoughtseize
+(REPLAY) [T33 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Reanimate)
+Choose target for Reanimate:
+| decision 377: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Raph & Mikey, Troublemakers
+|   2: Archon of Cruelty
+|   3: Atraxa, Grand Unifier
+|   4: Griselbrand
+|   5: Raph & Mikey, Troublemakers
+(REPLAY) [T33 | First Main | Player B] Input: 2
+| >> Player B: 2 (Archon of Cruelty)
+Targeting choice 2
+Player B activated Undercity Sewers for 1(B)
+Player B casts Reanimate targeting Archon of Cruelty
+| decision 378: Player A (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T33 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Archon of Cruelty is moved to the battlefield
+Resolving ability (category: LoseLife, amount: 8)
+Player B loses 8 life (now at 3)
+Resolving ability (category: Cleanup)
+Choose target for Archon of Cruelty:
+| decision 379: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (4 life)
+(REPLAY) [T33 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (4 life))
+Targeting choice 0
+Archon of Cruelty triggered
+| decision 380: Player A (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T33 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Sacrifice)
+| decision 381: Player A (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Griselbrand
+|   1: Sacrifice Archon of Cruelty
+(REPLAY) [T33 | First Main | Player A] Input: 1
+| >> Player A: 1 (Sacrifice Archon of Cruelty)
+Player A sacrifices Archon of Cruelty.
+Resolving ability (category: Discard)
+Player A chooses a card to discard:
+| decision 382: Player A (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual
+(REPLAY) [T33 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dark Ritual)
+Player A discards Dark Ritual
+Resolving ability (category: LoseLife, amount: 3)
+Player A loses 3 life (now at 1)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Lotus Petal
+Resolving ability (category: GainLife, amount: 3)
+Player B gains 3 life (now at 6)
+Animate Dead is put into the graveyard (Aura not attached to a legal object)
+Resolving ability (category: Cleanup)
+Delayed trigger fires.
+Resolving ability (category: SacrificeAll)
+| decision 383: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lotus Petal
+|   2: Cast Reanimate
+|   3: Cast Reanimate
+|   4: Cast Thoughtseize
+(REPLAY) [T33 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Lotus Petal)
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+| decision 384: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Reanimate
+|   3: Cast Thoughtseize
+(REPLAY) [T33 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 385: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (1 life)
+|   1: Player B (6 life)
+(REPLAY) [T33 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (1 life))
+Targeting choice 0
+Player B activated Underground Sea for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 4)
+| decision 386: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Reanimate
+(REPLAY) [T33 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 387: Player B (game 0, turn 33, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Reanimate
+(REPLAY) [T33 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 35 (Player A) --------
+Player A draws Brainstorm
+| decision 388: Player A (game 0, turn 34, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T34 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Animate Dead
+Player A draws Flooded Strand
+Player A draws Reanimate
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 389: Player A (game 0, turn 34, DRAW, Player A active)
+| menu:
+|   0: Animate Dead
+|   1: Flooded Strand
+|   2: Reanimate
+(REPLAY) [T34 | Draw | Player A] Input: 1
+| >> Player A: 1 (Flooded Strand)
+Player A puts Flooded Strand to top of library
+Player A chooses a card from Player A hand:
+| decision 390: Player A (game 0, turn 34, DRAW, Player A active)
+| menu:
+|   0: Animate Dead
+|   1: Reanimate
+(REPLAY) [T34 | Draw | Player A] Input: 1
+| >> Player A: 1 (Reanimate)
+Player A puts Reanimate to top of library
+| decision 391: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+(REPLAY) [T34 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Animate Dead)
+Choose target for Animate Dead:
+| decision 392: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Atraxa, Grand Unifier
+|   2: Griselbrand
+|   3: Raph & Mikey, Troublemakers
+|   4: Atraxa, Grand Unifier
+|   5: Raph & Mikey, Troublemakers
+(REPLAY) [T34 | First Main | Player A] Input: 0
+| >> Player A: 0 (Archon of Cruelty)
+Targeting choice 0
+Player A casts Animate Dead enchanting Archon of Cruelty
+Player A activated Undercity Sewers for 1(B)
+Player A activated Underground Sea for 1(U)
+Player A casts Animate Dead
+Animate Dead enters the battlefield
+Animate Dead triggered
+Resolving ability (category: ChangeZone)
+Archon of Cruelty is moved to the battlefield
+Resolving ability (category: Animate)
+Resolving ability (category: Attach)
+Equipment will attach once the creature finishes entering.
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
+Equipment attached.
+Archon of Cruelty gains -1/0 (always)
+Choose target for Archon of Cruelty:
+| decision 393: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (4 life)
+(REPLAY) [T34 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (4 life))
+Targeting choice 0
+Archon of Cruelty triggered
+Resolving ability (category: Sacrifice)
+| decision 394: Player B (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sacrifice Archon of Cruelty
+(REPLAY) [T34 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Archon of Cruelty)
+Player B sacrifices Archon of Cruelty.
+Resolving ability (category: Discard)
+Player B chooses a card to discard:
+| decision 395: Player B (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Reanimate
+|   1: Reanimate
+(REPLAY) [T34 | First Main | Player B] Input: 1
+| >> Player B: 1 (Reanimate)
+Player B discards Reanimate
+Resolving ability (category: LoseLife, amount: 3)
+Player B loses 3 life (now at 1)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Reanimate
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 4)
+| decision 396: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+(REPLAY) [T34 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 397: Player A (game 0, turn 34, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Griselbrand [7/7]
+|   1: Confirm attackers
+(REPLAY) [T34 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Griselbrand [7/7])
+Griselbrand attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Griselbrand [7/7] -> Player B
+| decision 398: Player A (game 0, turn 34, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T34 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Griselbrand -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Griselbrand deals 7 damage to Player B (now at -6 life)
+  Player A gains 7 life (lifelink)
+--- End Combat Damage ---
+
+
+Player B has -6 life - Player A wins!
+GAME_RESULT: 1 Player A wins

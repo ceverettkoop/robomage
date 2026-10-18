@@ -750,30 +750,154 @@ Player B draws Thoughtseize
 |   0: Pass priority
 |   1: Play Underground Sea
 |   2: Cast Thoughtseize
-(REPLAY) [T7 | First Main | Player B] Input: 2
-| >> Player B: 2 (Cast Thoughtseize)
-Choose target for Thoughtseize:
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Underground Sea)
+Player B played Underground Sea
 | decision 73: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
-|   0: Player A (17 life)
-|   1: Player B (2 life)
+|   0: Pass priority
+|   1: Cast Thoughtseize
 (REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Player A (17 life))
-Targeting choice 0
-Player B activated Underground Sea for 1(B)
-Player B casts Thoughtseize targeting Player A
-Resolving ability (category: Discard)
-Player A reveals their hand:
-  Pre-War Formalwear
-Player B chooses a card to discard:
-| decision 74: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 74: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
 | menu:
-|   0: Pre-War Formalwear
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pre-War Formalwear)
-Player A discards Pre-War Formalwear
-Resolving ability (category: LoseLife, amount: 2)
-Player B loses 2 life (now at 0)
+|   0: Pass priority
+|   1: Cast Thoughtseize
+(REPLAY) [T7 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+Aether Vial triggered
+| decision 75: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 76: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 77: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws White Orchid Phantom
+| decision 78: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 79: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Pre-War Formalwear
+|   3: Cast White Orchid Phantom
+|   4: Activate Aether Vial (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Pre-War Formalwear)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Wasteland for 1(C)
+Player A activated Scrubland for 1(W)
+Player A casts Pre-War Formalwear
+| decision 80: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 81: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A fails to find
+Pre-War Formalwear enters the battlefield
+Choose target for Pre-War Formalwear:
+| decision 82: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd)
+Targeting choice 0
+Pre-War Formalwear triggered
+Resolving ability (category: ChangeZone)
+Phelia, Exuberant Shepherd is moved to the battlefield
+Resolving ability (category: Attach)
+Equipment will attach once the creature finishes entering.
+Resolving ability (category: Cleanup)
+Equipment attached.
+Phelia, Exuberant Shepherd gains 2/2 Vigilance (always)
+
+--- Declare Attackers (Player A) ---
+| decision 83: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: White Orchid Phantom [2/2]
+|   2: Orc Army token [6/6]
+|   3: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 84: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: White Orchid Phantom [2/2]
+|   1: Orc Army token [6/6]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom [2/2])
+White Orchid Phantom attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] White Orchid Phantom [2/2] -> Player B
+| decision 85: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [6/6]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [6/6])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] White Orchid Phantom [2/2] -> Player B
+  [attacking] Orc Army token [6/6] -> Player B
+| decision 86: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  White Orchid Phantom -> Player B
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Player B (now at 0 life)
+--- End First Strike Combat Damage ---
+
 
 Player B has 0 life - Player A wins!
 GAME_RESULT: 1 Player A wins
