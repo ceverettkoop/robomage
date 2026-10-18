@@ -17,7 +17,7 @@
 #include <vector>
 
 // torch is confined to az_evaluator.cpp via the pimpl (Impl) below — this header
-// stays torch-free so the rest of the actor (obs_builder, main) never sees it.
+// stays torch-free so the code that calls the evaluator never sees torch.
 
 struct AZEvalResult {
     std::vector<float> priors;  // softmax over the first num_choices logits

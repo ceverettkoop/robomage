@@ -77,9 +77,10 @@ update it when you knowingly deviate or leave a rules gap.
 
 ## Build Commands
 
-- `make && make actor` — debug build: `bin/debug/robomage` + `bin/debug/az_actor` (the libtorch
-  actor; `make actor` needs torch in `train/.venv` and is not part of plain `make`)
-- `make BUILD=RELEASE && make actor BUILD=RELEASE` — same into `bin/release/` (separate obj/bin
+- `make` — debug build: `bin/debug/robomage`, `rmknow`, `robomage_check`. `make actor` compiles
+  the libtorch TUs of `src/actor/` (the TorchScript evaluator; no binary until plan step 5; needs
+  torch in `train/.venv`, not part of plain `make`)
+- `make BUILD=RELEASE` — same into `bin/release/` (separate obj/bin
   trees per config, so switching `BUILD` never needs `make clean`)
 - `make clean` · `make check` (the test gate, below) · `make regen` (re-record the replay corpus
   after an intentional behavior change; see `docs/ci.md`)
@@ -90,12 +91,12 @@ has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one co
 
 - **Debug** (`bin/debug/robomage`; assertions, `-D_GLIBCXX_ASSERTIONS`, no `-O2`): the test
   harness, `make check` (`robomage_check`), `train.py observe`, and `train.py baseline`'s Python fallback.
-- **Release** (`bin/release/robomage`, `bin/release/az_actor`): `play.py` (every board),
+- **Release** (`bin/release/robomage`): `play.py` (every board),
   `analysis.py` (browse/report), every PPO/AZ training and `bench-*` subcommand, and `baseline`'s
   default C++-actor path.
 
-**Codegen is part of `make actor`** (no longer of `make`: only `src/actor/` and the Python RL stack
-read it; plan step 3b deletes it). `make pygen` / `make actor` run `pygen` (`train/gen_enums.py`,
+**Codegen is `make pygen`** (no longer of `make`: only the Python RL stack
+reads it; plan step 3b deletes it). `make pygen` runs (`train/gen_enums.py`,
 `gen_card_costs.py`, `gen_card_props.py`, `gen_archetypes.py`, `gen_sb_rules.py`; write-if-changed
 via `train/gen_util.py`, so unchanged outputs force no recompile).
 - **Committed** (derived from tracked sources):
@@ -283,7 +284,7 @@ flags), `combat`, `pending` (every suspended-decision state), `resolved_effects`
 belong to no permanent, emblems), `rng`, `identity` (object stamps), plus the timestamp, delayed
 triggers and last-known information; `reset_turn_counters` is the one turn-end reset of "this
 turn" counts. `main.cpp` only parses flags; the loop is `play_single_game` in
-`src/game_driver.cpp` (shared with `az_actor`; bo3 sequencing is `play_bo3_match`). Each
+`src/game_driver.cpp` (bo3 sequencing is `play_bo3_match`). Each
 iteration: emit a parked `pending.query` → pregame stage
 → turn-based actions → mandatory choice (`proc_mandatory_choice`) → SBEs → `advance_step` (resolve
 top of stack / next step once both players pass) → SBEs → `determine_legal_actions` (a lone pass is
@@ -526,7 +527,7 @@ sections above are not repeated here.
 
 **Engine (`src/`)**
 - `src/game_driver.cpp` — the per-game decision loop (`play_single_game`, `play_bo3_match`), ECS init,
-  concession; shared by `main.cpp` and `az_actor`
+  concession
 - `src/action_processor.cpp` — executes a chosen action (`process_action`), cast/activation/targeting
   flows, `proc_mandatory_choice`
 - `src/systems/state_manager*.cpp` — SBAs + `determine_legal_actions`, split by concern (`_actions`,
@@ -614,13 +615,9 @@ sections above are not repeated here.
   `PlayController` ported; `trace.h`: `--trace-decisions`). `driver.h` is the engine side:
   `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the provider, the trace
 
-**AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
-Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):
-- `obs_builder.cpp` ↔ `env.py` obs (+ `extractor.py`, `az_net.ScriptTrunk`); `az_mcts.cpp` ↔
-  `mcts.run_search`; `menu_merge.h` ↔ `decode.menu_merge_reps`; `sb_rules.h` ↔ `mcts.sb_dead_mask`;
-  `td_targets.cpp` ↔ `az_selfplay.compute_td_targets`; `root_diag.h` ↔ `shard_record` diag
-- `az_evaluator.cpp` (TorchScript AZNet), `oracle_client.cpp` (↔ `train/scripted_oracle.py`),
-  `npz_writer.cpp` (shards)
+**libtorch plumbing (`src/actor/`, `make actor`)** — `az_evaluator.cpp` (TorchScript AZNet loading
+and evaluation, the base of the step-5 evaluator; `az_layout.h` its frozen input width). No binary
+until step 5 adds a main.
 
 **Python core (`train/`)**
 - `env.py` — `RoboMageEnv` / `ModelVsScriptedEnv` / `SelfPlayEnv`; obs offsets; re-exports

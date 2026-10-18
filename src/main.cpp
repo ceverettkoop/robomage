@@ -74,7 +74,7 @@ static void game_loop() {
 
     if (bo3_mode) {
         // The full bo3 match sequencing lives in game_driver's play_bo3_match so
-        // main.cpp and bin/az_actor share ONE implementation (game boundaries,
+        // every in-process driver shares ONE implementation (game boundaries,
         // loser-on-the-play, revealed accumulator, sideboarding between games).
         play_bo3_match(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, seed);
     } else {
