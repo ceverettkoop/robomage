@@ -78,8 +78,8 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 **Reveal windows.**
 - A reveal shows a card to all players for as long as the revealing effect needs it (CR
   701.20a). A look is the same, shown only to the specified player (CR 701.20e).
-- The engine keeps one per-viewer **reveal-window** set. It generalises today's
-  `Game::revealed_in_library` to hands and looks. Implemented in `src/queries/visibility.{h,cpp}`
+- The engine keeps one per-viewer **reveal-window** set, over reveals and looks in libraries,
+  hands, the sideboard and face-down exile. Implemented in `src/queries/visibility.{h,cpp}`
   (`identity_visible`, `order_visible`, `reveal_windows_for`) over `Game::reveal_windows`;
   `--trace-visibility` narrates each window opening and closing.
 - A window ends when the effect finishes with the card, when the card changes zones, or when
@@ -378,11 +378,11 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   classified: the persistent knowledge bookkeeping that existed only for the observation
   (`Game::KnownLibraryTop`, `Zone::identity_known`, the match revealed bits, the `opp_known_hand`
   pass), with the search server and its determinizer.
-- **Menu collapse.** `interchangeable_cards` (`src/queries/zones.cpp`) refuses to merge two
-  identical library cards when one is at a position the other player knows; since 3b it reads
-  `Game::OppKnownLibraryTop` (one bool per top position, kept for this reader alone). That rule
-  must be redefined on currently explicit information (a card in a live reveal window is
-  distinguishable; memory is not). It changes the decision schedule, so it belongs with step 4a.
+- **Menu collapse** (step 4a, done). `interchangeable_cards` (`src/queries/zones.cpp`) merges two
+  identical cards in one library only when each seat sees both of them or neither right now
+  (`identity_visible`: a live reveal window); what a seat remembers of a closed window is not
+  read. `Game::OppKnownLibraryTop`, `Game::revealed_in_library` and `mark_card_revealed` are
+  gone.
 
 ## 9. Encoding and protocol
 

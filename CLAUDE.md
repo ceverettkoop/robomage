@@ -450,8 +450,9 @@ interactive payment loop (`prompt_mana_payment`):
   is written.
 
 Every menu goes through `InputLogger::get_input`, which leaves out a choice interchangeable with
-an earlier one (two identical cards in the same graveyard or library — `interchangeable_cards`,
-`src/queries/zones.cpp`); menu row *i* is reply *i*.
+an earlier one (two identical cards in the same graveyard, or in the same library when each seat
+sees both or neither right now — `interchangeable_cards`, `src/queries/zones.cpp`); menu row *i*
+is reply *i*.
 
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
 decision is read (machine, `--replay`, in-process agents, CLI); the pending-decision seat loses via
@@ -505,8 +506,7 @@ sections above are not repeated here.
   decision, `CostPaymentScope`)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
-- `src/classes/reveals.{h,cpp}` — `mark_card_revealed`; `src/classes/match_context.h`,
-  `deck_state.h` — the bo3 state kept across the per-game ECS reset
+- `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
 - `src/stable_rng.h` — every gameplay random draw (platform-portable; never `std::shuffle` /
   `std::uniform_int_distribution` / `rand()` on the game RNG)
 - `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on

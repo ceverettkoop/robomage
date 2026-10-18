@@ -11,8 +11,7 @@
 //
 // A viewer is a seat (Zone::PLAYER_A / PLAYER_B); any other value is the omniscient viewer, who
 // sees everything. These answer what is explicit to the viewer at this instant, never what they
-// remember (each seat's memory is its knowledge sidecar's, docs/knowledge_store.md; the menu
-// collapse's opponent-knowledge record, Game::OppKnownLibraryTop, is separate and unaffected).
+// remember (each seat's memory is its knowledge sidecar's, docs/knowledge_store.md).
 
 // Whether `viewer` can see `entity`'s identity: everything in a public zone except a face-down
 // object (CR 400.2); their own hand and sideboard (CR 402.3); a face-down permanent or spell they

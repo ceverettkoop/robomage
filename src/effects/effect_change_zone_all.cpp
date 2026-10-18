@@ -156,10 +156,6 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                                                                             : "the top of their library")
                                                                : "zone";
 
-    // Cards put into a library in a random order land in positions no player knows (Triumph of
-    // Saint Katherine's shuffled pile), so the known-top record keeps them unknown.
-    const LibraryTopView top_view =
-        ab.def->rest_random_order ? LibraryTopView::NOBODY : LibraryTopView::OWNER;
     // Cards put into a library together land in an order only their owner chose (or, in a random
     // order, nobody saw).
     ObsLibraryBatch batch(owner, ab.def->rest_random_order ? Zone::UNKNOWN : owner);
@@ -181,7 +177,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             }
         }
         if (ab.def->destination != Zone::BATTLEFIELD)
-            orderer->add_to_zone(on_bottom, entity, ab.def->destination, top_view);
+            orderer->add_to_zone(on_bottom, entity, ab.def->destination);
         // RememberChanged$ True: stash every moved card in the remembered set, mirroring the
         // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
         // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each
@@ -193,8 +189,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);
 
     // Shuffle$ True (Emrakul's death trigger: "shuffle their graveyard into their library"): after
-    // moving the cards into the library, shuffle it. shuffle_library also clears the known-top-of-
-    // library tracking for that player (CR 701.20).
+    // moving the cards into the library, shuffle it.
     if (ab.def->shuffle_after && ab.def->destination == Zone::LIBRARY) {
         orderer->shuffle_library(owner);
         game_log("%s shuffles their library.\n", player_name(owner).c_str());

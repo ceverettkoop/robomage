@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "../classes/game.h"
-#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -140,7 +139,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     // consumed when its Permanent is built, or dropped if the move is replaced elsewhere.
     if (dest == Zone::BATTLEFIELD && enters_transformed) entry_info(e).enters_transformed = true;
     const bool exile_face_down = ab.def->exile_face_down && dest == Zone::EXILE;
-    orderer->add_to_zone(false, e, dest, LibraryTopView::OWNER, exile_face_down);
+    orderer->add_to_zone(false, e, dest, exile_face_down);
     return global_coordinator.GetComponent<Zone>(e).location;
 }
 
@@ -630,10 +629,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined
             Entity chosen = cands[static_cast<size_t>(choice)];
             Zone::ZoneValue card_origin = global_coordinator.GetComponent<Zone>(chosen).location;
-            Zone::Ownership card_owner = global_coordinator.GetComponent<Zone>(chosen).owner;
             std::string cname = global_coordinator.GetComponent<CardData>(chosen).name;
             change_zone_move(orderer, FrameCtx::blocking(), ab, chosen, ab.def->destination);
-            mark_card_revealed(chosen, card_owner);
             game_log("%s exiles %s\n", player_name(ab.controller).c_str(), cname.c_str());
             if (ab.def->duration_until_host_leaves)
                 register_exile_until_host_leaves(ab.source.get(), chosen, card_origin);
@@ -885,8 +882,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 game_log("%s puts %s to %s\n", player_name(chooser).c_str(), chosen_name.c_str(), dest_str);
             } else if (reveal) {
                 // Hidden destination, but the card was revealed — it's public knowledge.
-                // The orderer reveal hook only fires for public zones, so mark it here.
-                mark_card_revealed(chosen, owner);
                 game_log("%s reveals %s and puts it to %s\n", player_name(chooser).c_str(), chosen_name.c_str(),
                     dest_str);
             } else {
@@ -963,8 +958,8 @@ bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string
 //
 // Quantity follows the agreed simplification: an "up to N" / count-SVar / ChangeZoneAll
 // quantity moves the maximum available (force_all, an empty amount_svar with a numeric
-// cap moves min(cap, found)). Searching an opponent's hand/library reveals those zones
-// (mark_card_revealed).
+// cap moves min(cap, found)). Searching an opponent's hand/library reveals those zones to the
+// searcher (CR 701.23a).
 bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all) {
     // The reference card whose name we match: the target (Targeted.sameName) or the
     // remembered object (Remembered.sameName, set by RememberTargets/RememberObjects).
@@ -1029,19 +1024,10 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
         Zone::ZoneValue landed = change_zone_move(orderer, FrameCtx::blocking(), ab, matches[i], ab.def->destination);
         if (landed == Zone::BATTLEFIELD)
             global_coordinator.GetComponent<Zone>(matches[i]).controller = caster;
-        mark_card_revealed(matches[i], searched);  // moved card is now public / revealed
     }
     game_log("%s moves %zu card(s) named %s from %s's %s to %s\n", player_name(caster).c_str(),
         cap, name.c_str(), player_name(searched).c_str(),
         zones.size() > 1 ? "zones" : "zone", dest_str);
-
-    // Searching an opponent's hidden zones reveals their full contents to the searcher; record a
-    // searched library's (mark_card_revealed: a revealed hand leaves nothing to record).
-    if (searched != caster) {
-        for (auto z : zones) {
-            if (z == Zone::LIBRARY) for (auto e : orderer->get_library_contents(searched)) mark_card_revealed(e, searched);
-        }
-    }
 
     if (searched_library) {
         orderer->shuffle_library(searched);

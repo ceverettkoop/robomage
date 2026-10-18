@@ -50,7 +50,7 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 
 ### 1.6 Interchangeable choices are collapsed; the sideboard menu is capped at 64 actions
 - **CR** none (an action-encoding limit)
-- **Engine:** before a menu is emitted, entries that make the same choice on interchangeable objects are dropped (for example, two copies of a card in a graveyard). The RMSTATE menu has no width limit. `MAX_ACTIONS` (64) still bounds one menu: a sideboarding menu wider than 64 is a fatal error (the swap locks keep it far smaller).
+- **Engine:** before a menu is emitted, entries that make the same choice on interchangeable objects are dropped (for example, two copies of a card in a graveyard, or in a library when each seat sees both of them or neither in a live reveal window). The RMSTATE menu has no width limit. `MAX_ACTIONS` (64) still bounds one menu: a sideboarding menu wider than 64 is a fatal error (the swap locks keep it far smaller).
 - **Code:** `src/input_logger.cpp`: `interchangeable_choices`, `distinct_choice_indices`; `src/queries/zones.cpp`: `interchangeable_cards`; `src/game_driver.cpp` (the sideboard menu); `src/classes/gamestate.h`.
 
 ### 1.7 Some prompts block and are never search roots

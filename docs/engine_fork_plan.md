@@ -495,7 +495,7 @@ paths corrected.
 - Re-record the corpus with the live agent, and add explore games with `--no-auto-mana` so
   manual mana payment is covered.
 
-**Status: part 1 done** (the schedule; the corpus re-record and `interchangeable_cards` are
+**Status: parts 1 and 2 done** (the schedule; `interchangeable_cards`; the corpus re-record is
 still to do). `machine_masks_conditional_destroy` is deleted: a Fatal Push-style spell is
 offered whenever it has a legal target (CR 601.2c) and its condition is checked on resolution.
 `auto-mana` is the match-wide launch option `auto_mana` (`game_driver.h`), on unless
@@ -514,7 +514,22 @@ name-a-card menu is no longer truncated. Scenarios `cr608_2c_fatal_push_*`,
 C++ explore games with `--no-auto-mana --selfcheck-knowledge` over the ten league mirrors and
 crosses (100 bo1 `explore`, 60 bo1 and 60 bo3 `explore:patient`) end with no error and no draw.
 Of the corpus only `lg_bug__reanimator` drifts (Fatal Push is now offered against a lone
-Atraxa); the re-record follows.
+Atraxa); the re-record follows. Part 2: `interchangeable_cards` keeps two identical library cards
+apart only while some seat sees one of them and not the other (`identity_visible` per seat: a live
+reveal window); what a seat remembers of a closed window is its sidecar's. `Game::OppKnownLibraryTop`
+and its orderer bookkeeping (`LibraryTopView`, `note_library_card_known`), `Game::revealed_in_library`
+and `mark_card_revealed` (`classes/reveals.*`), which only fed the collapse, are deleted. Scenarios
+`menu_collapse_remembered_library_copy` (a Bauble look that has ended no longer splits two Forests)
+and `menu_collapse_revealed_library_copies` (two copies both players see in a reveal merge). With
+the current card pool no library menu meets a one-sided live window (library windows last one
+resolution), so the "kept apart" branch has no scenario. Corpus drift from part 2:
+`doomsday_mirror` (Doomsday's rearrange: a Street Wraith that came from the graveyard and one from
+the library merge) and `lg_gw_maverick__reanimator`, `lg_reanimator__reanimator` (Atraxa's reveal:
+two revealed copies merge). Evidence: 240 C++ explore games with `--selfcheck-knowledge` (eight matchups
+of the Doomsday, reanimator, BUG, Lands, Delver, control and Maverick decks; 10 seeds each, bo1
+`explore`, bo3 `explore:patient` and bo1 `--no-auto-mana`; 95,604 decisions) end with no error and
+no draw; the 43 whose decision log differs from part 1's first diverge at a menu that lost a
+duplicate row.
 
 ### 4b. C++ CLI on the decoder
 

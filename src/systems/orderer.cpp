@@ -8,7 +8,6 @@
 #include "../stable_rng.h"
 
 #include "../card_db.h"
-#include "../card_vocab.h"
 #include "../classes/deck.h"
 #include "../classes/game.h"
 #include "../classes/action.h"
@@ -44,8 +43,6 @@
 
 // --- file-local helpers (forward declarations) ---
 static void restore_printed_card(Entity target);
-static int card_vocab_of(Entity target);
-static bool identity_public_leaving(Entity target, Zone::ZoneValue origin);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -97,13 +94,12 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     obs_object_created(target);
 }
 
-void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                          LibraryTopView top_view, bool exile_face_down) {
-    move_object(on_bottom, target, destination, top_view, exile_face_down, MoveOptions{});
+void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down) {
+    move_object(on_bottom, target, destination, exile_face_down, MoveOptions{});
 }
 
-void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destination, LibraryTopView top_view,
-    bool exile_face_down, const MoveOptions &opts) {
+void Orderer::move_object(
+    bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down, const MoveOptions &opts) {
     size_t back = 0;
     bool destination_occupied = false;  // the owner's destination zone holds another card (bottom placement)
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
@@ -256,7 +252,6 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
     Zone::ZoneValue origin = target_zone.location;
-    const bool public_identity = identity_public_leaving(target, origin);
     // The card's reveal windows end as it leaves (CR 400.7). Whoever could see it in a hidden zone
     // may keep looking at it if it is being exiled face down (CR 406.3).
     const HiddenViewers saw_hidden =
@@ -271,16 +266,6 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     if (!on_bottom) {
         target_zone.distance_from_top = 0;
-    }
-
-    // A card placed on top of a library becomes the new top of the opponent-knowledge record
-    // (Game::OppKnownLibraryTop). The push is unconditional: the entries below must shift one
-    // position deeper. The owner's opponent knows the new top only if they saw it (a public
-    // identity, their own fateseal), not at a Brainstorm put-back or a random-order placement.
-    if (!on_bottom && destination == Zone::LIBRARY) {
-        const bool seen = top_view != LibraryTopView::NOBODY;
-        const bool opp_knows = seen && (public_identity || top_view == LibraryTopView::OPPONENT);
-        cur_game.opp_known_top_push(target_zone.owner, opp_knows && card_vocab_of(target) != -1);
     }
 
     for (auto &&card : mEntities) {
@@ -333,15 +318,13 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
         strip_permanent_components(target, mEntities);
     }
 
-    cur_game.revealed_in_library.erase(target);
-    // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
+    // A face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
     if (target_zone.is_face_down) open_face_down_windows(target, saw_hidden);
 
-    // put_in_library_at_depth: the card put on top sinks below the `library_depth` cards above it,
-    // carrying its known-top entry down with it. A replacement that redirected the move leaves
-    // nothing to sink.
+    // put_in_library_at_depth: the card put on top sinks below the `library_depth` cards above it.
+    // A replacement that redirected the move leaves nothing to sink.
     if (opts.library_depth > 0 && target_zone.location == Zone::LIBRARY && target_zone.distance_from_top == 0) {
         size_t sunk_to = 0;
         for (auto &&other : mEntities) {
@@ -354,7 +337,6 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
             }
         }
         target_zone.distance_from_top = sunk_to;
-        cur_game.opp_known_top_move(target_zone.owner, 0, static_cast<int>(sunk_to));
     }
     handles_end_move(handle_move, target);
     ObsMoveInfo obs_info;
@@ -385,12 +367,6 @@ void Orderer::close_zone_gap(Entity target) {
         if (cmp_zone.distance_from_top > departing_pos) {
             cmp_zone.distance_from_top--;
         }
-    }
-
-    // If a card left the library within the tracked top window, drop it
-    // from the opponent-knowledge record and shift the rest up.
-    if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
-        cur_game.opp_known_top_remove_pos(owner, static_cast<int>(departing_pos));
     }
 }
 
@@ -423,7 +399,7 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const Zone origin = z;
     // Every cast-offering path casts from a hand, graveyard or exile; nothing is cast from a
-    // library, whose known-top record the rewind would also have to restore.
+    // library.
     if (origin.location != Zone::HAND && origin.location != Zone::GRAVEYARD &&
         origin.location != Zone::EXILE)
         fatal_error("begin_cast_move: a card can't be cast from zone " +
@@ -527,16 +503,10 @@ std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
     return contents;
 }
 
-void Orderer::note_library_card_known(Entity card, Zone::Ownership knower) {
-    const auto &zone = global_coordinator.GetComponent<Zone>(card);
-    if (zone.location != Zone::LIBRARY || knower == zone.owner) return;
-    cur_game.opp_known_top_set(zone.owner, static_cast<int>(zone.distance_from_top), card_vocab_of(card) != -1);
-}
-
 void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
     MoveOptions opts;
     opts.library_depth = depth;
-    move_object(false, card, Zone::LIBRARY, LibraryTopView::OWNER, false, opts);
+    move_object(false, card, Zone::LIBRARY, false, opts);
 }
 
 void Orderer::shuffle_library(Zone::Ownership owner) {
@@ -556,30 +526,10 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
         i++;
     }
 
-    // Shuffling destroys any knowledge of which cards are on top of the library, and a revealed
-    // card that is reordered stops being revealed (CR 701.20d).
-    cur_game.clear_opp_known_top(owner);
-    for (auto &&card : contents) cur_game.revealed_in_library.erase(card);
     obs_shuffle(owner);
 }
 
 extern bool no_shuffle;
-
-// Whether both players know the identity of `target` as it leaves `origin`: it was in a public
-// zone (the battlefield, the stack, a graveyard, or face up in exile — CR 400.2, 406.3), or it
-// was revealed where it sat in a library (CR 701.20a).
-static bool identity_public_leaving(Entity target, Zone::ZoneValue origin) {
-    if (origin == Zone::BATTLEFIELD || origin == Zone::STACK || origin == Zone::GRAVEYARD)
-        return true;
-    if (origin == Zone::EXILE) return !global_coordinator.GetComponent<Zone>(target).is_face_down;
-    return cur_game.revealed_in_library.count(target) > 0;
-}
-
-// The card's vocab index, or -1 when it has no CardData (a token).
-static int card_vocab_of(Entity target) {
-    if (!global_coordinator.entity_has_component<CardData>(target)) return -1;
-    return card_name_to_index(global_coordinator.GetComponent<CardData>(target).name);
-}
 
 // Undo an in-place copy effect on a permanent leaving the battlefield: put the stashed printed
 // CardData back on the card and its printed name/types on the (about-to-be-stripped) Permanent,
@@ -781,12 +731,12 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
              global_coordinator.GetComponent<CardData>(top).name.c_str());
     game_log_redacted(player, "%s draws a card\n", player_name(player).c_str());
-    // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
-    // closes the library gap, and updates the known-top-of-library cache.
+    // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE
+    // and closes the library gap.
     MoveOptions draw_opts;
     draw_opts.draw = true;
     draw_opts.opening_draw = !fire_draw_event;
-    move_object(false, top, Zone::HAND, LibraryTopView::OWNER, false, draw_opts);
+    move_object(false, top, Zone::HAND, false, draw_opts);
     // Count this card as "drawn this turn" only for a real in-game draw. The opening hand /
     // mulligan draws (draw_hands, fire_draw_event=false) happen during setup, not during a turn
     // (CR 103.5 / 702.94a), so they must not seed cards_drawn_this_turn — otherwise on turn 1 the
@@ -851,7 +801,7 @@ std::vector<Entity> Orderer::mill(Zone::Ownership player, size_t ct) {
         std::string cname = global_coordinator.entity_has_component<CardData>(lib[i])
                                 ? global_coordinator.GetComponent<CardData>(lib[i]).name
                                 : "card";
-        // add_to_zone keeps distance_from_top and the known-top-of-library cache correct.
+        // add_to_zone keeps distance_from_top correct.
         add_to_zone(false, lib[i], Zone::GRAVEYARD);
         game_log("%s mills %s.\n", player_name(player).c_str(), cname.c_str());
         milled.push_back(lib[i]);

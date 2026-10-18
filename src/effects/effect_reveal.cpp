@@ -23,8 +23,7 @@ namespace effects {
 
 // AB$/DB$ Reveal with Random$ True (Urza's Bauble): the ability's controller looks at one
 // card chosen uniformly at random from the target/defined player's HAND (CR 701.16 "look
-// at" — the card is seen privately by the controller only; it is NOT a public reveal, so it is
-// not recorded with mark_card_revealed). The look-at has no game-state effect, but it is observable in
+// at" — the card is seen privately by the controller only; it is NOT a public reveal). The look-at has no game-state effect, but it is observable in
 // perfect-information / narrative mode via game_log_private, so it is no longer a silent
 // no-op. Subabilities (the slowtrip DelayedTrigger draw) still chain afterward.
 HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {

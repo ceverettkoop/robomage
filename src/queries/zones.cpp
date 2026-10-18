@@ -11,6 +11,7 @@
 #include "../systems/rules_modifying.h"
 #include "players.h"
 #include "types.h"
+#include "visibility.h"
 
 // The set zoned_entities() returns: a system's mEntities, owned by the ECS. A snapshot restore
 // assigns into that same set, so the binding holds until the next init_ecs rebinds it.
@@ -120,9 +121,9 @@ bool interchangeable_cards(Entity a, Entity b) {
         return true;
     }
     if (za.location == Zone::LIBRARY) {
-        for (const Zone *z : {&za, &zb})
-            if (cur_game.opp_knows_library_pos(za.owner, z->distance_from_top)) return false;
-        return !cur_game.revealed_in_library.count(a) && !cur_game.revealed_in_library.count(b);
+        for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B})
+            if (identity_visible(a, seat) != identity_visible(b, seat)) return false;
+        return true;
     }
     return false;
 }

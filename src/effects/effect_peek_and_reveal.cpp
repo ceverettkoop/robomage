@@ -6,7 +6,6 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -48,8 +47,6 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log_private(ab.controller, "%s looks at top of %s's library: %s\n",
                     player_name(ab.controller).c_str(), player_name(peek_owner).c_str(), cd.name.c_str());
-                // The looker now knows these cards, in whichever library they are.
-                orderer->note_library_card_known(e, ab.controller);
             }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
@@ -73,7 +70,6 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 cur_game.resolution.memory.imprinted.push_back(ObjectRef::of(e));
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
-                mark_card_revealed(e, owner);
                 game_log("%s reveals %s from the top of their library\n",
                          player_name(owner).c_str(), cd.name.c_str());
             }
@@ -106,7 +102,6 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // Arm-only peek line: the resume rebuilds the same menu without re-logging.
     if (!ctx.resuming()) {
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
-        orderer->note_library_card_known(top_card, ab.controller);
         look_at_card(top_card, ab.controller);
     }
     int reveal_choice = 1;
@@ -125,7 +120,6 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     if (reveal_choice == 1) {
         game_log("Revealed: %s\n", top_cd.name.c_str());
         // Shown to all players (CR 701.20a).
-        mark_card_revealed(top_card, ab.controller);
         reveal_card(top_card);
         bool is_instant_or_sorcery = false;
         for (auto &t : top_cd.types) {
