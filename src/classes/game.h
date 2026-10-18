@@ -766,9 +766,8 @@ struct Game {
             bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
         };
         // Cards revealed while in a library (CR 701.20a: shown to all players for as long as the
-        // revealing effect needs them). A revealed card the effect puts into a hand stays known to
-        // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
-        // its library is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
+        // revealing effect needs them). An entry ends when the card changes zones or its library
+        // is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
         ObjectSet revealed_in_library;
         // A reveal window (src/queries/visibility.h): a card in a hidden zone (a library, a hand,
         // the sideboard, or face down in exile) whose identity `audience` may see right now. A
@@ -902,18 +901,16 @@ struct Game {
         // "enters tapped unless you control a basic land"). Cleared when the pass completes.
         std::set<Entity> entering_together;
 
-        // Known top-of-library cards of one library, per player who knows them. Index 0 is the
-        // top of the library; -1 = unknown (default). `by_owner` is what the library's owner
-        // knows (their Brainstorm put-backs, a scry keep, Delver's look), `by_opponent` what the
-        // owner's opponent knows (their fateseal or Mishra's Bauble look at it); a card revealed
-        // there (CR 701.20a) or put there from a public zone is known to both. The entries follow
-        // the cards as cards are placed on or removed from the top, and are cleared on shuffle.
-        struct KnownLibraryTop {
-            int by_owner[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
-            int by_opponent[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+        // Which of the top KNOWN_TOP_LIBRARY_SIZE cards of one library the library owner's
+        // opponent knows at its place (index 0 is the top): one they looked at there (a fateseal,
+        // Mishra's Bauble), one revealed there (CR 701.20a) or put there from a public zone. The
+        // entries follow the cards as cards are placed on or removed from the top, and are cleared
+        // on shuffle. Read only by the menu collapse (interchangeable_cards, queries/zones.h).
+        struct OppKnownLibraryTop {
+                bool known[KNOWN_TOP_LIBRARY_SIZE] = {};
         };
-        KnownLibraryTop known_top_library_a;  // Player A's library
-        KnownLibraryTop known_top_library_b;  // Player B's library
+        OppKnownLibraryTop opp_known_top_a;  // Player A's library
+        OppKnownLibraryTop opp_known_top_b;  // Player B's library
 
         // CR 725: make `player` the monarch. The previous monarch (if any) ceases to be the
         // monarch (725.3). No-op if `player` is already the monarch. Sourceless inherent monarch
@@ -942,25 +939,21 @@ struct Game {
         // player loses.
         void players_lose(bool a_loses, bool b_loses, const std::string &reason);
 
-        // The known-top record of `library_owner`'s library.
-        KnownLibraryTop &known_top_library(Zone::Ownership library_owner);
-        const KnownLibraryTop &known_top_library(Zone::Ownership library_owner) const;
-        // What `viewer` knows about the top of `library_owner`'s library (KNOWN_TOP_LIBRARY_SIZE
-        // vocab ids, -1 = unknown).
-        const int *known_top_library_seen_by(Zone::Ownership library_owner,
-                                             Zone::Ownership viewer) const;
-        void clear_known_top_library(Zone::Ownership library_owner);
-        // A card was placed on top of the library: every known entry moves one deeper, and the new
-        // top is known to the owner as `owner_idx` and to the opponent as `opp_idx` (-1 = unseen).
-        void known_top_library_push(Zone::Ownership library_owner, int owner_idx, int opp_idx);
+        // Whether the opponent of `library_owner` knows the card at `pos` from the top of that
+        // library (OppKnownLibraryTop); false outside the window.
+        bool opp_knows_library_pos(Zone::Ownership library_owner, size_t pos) const;
+        void clear_opp_known_top(Zone::Ownership library_owner);
+        // A card was placed on top of the library: every entry moves one deeper, and the new top
+        // is known to the opponent as `known` says.
+        void opp_known_top_push(Zone::Ownership library_owner, bool known);
         // The card at `pos` left the library: the entries below it move up one.
-        void known_top_library_remove_pos(Zone::Ownership library_owner, int pos);
-        // `knower` learned the card sitting at `pos` (no card moves). No-op outside the window.
-        void known_top_library_note(Zone::Ownership library_owner, int pos, int card_vocab_idx,
-                                    Zone::Ownership knower);
+        void opp_known_top_remove_pos(Zone::Ownership library_owner, int pos);
+        // The opponent now knows the card sitting at `pos` (`known`), or no longer does (no card
+        // moves). No-op outside the window.
+        void opp_known_top_set(Zone::Ownership library_owner, int pos, bool known);
         // The card at `from` moved to depth `to` (the cards in between shift to close the gap),
-        // carrying both players' knowledge of it. Positions outside the window are unknown.
-        void known_top_library_move(Zone::Ownership library_owner, int from, int to);
+        // carrying whether the opponent knows it. Positions outside the window are unknown.
+        void opp_known_top_move(Zone::Ownership library_owner, int from, int to);
 
         bool ready_to_resolve();
         // CR 514.2: all damage marked on permanents is removed and all "until end of turn" and

@@ -104,19 +104,12 @@ static std::vector<StreamGame> stream_games() {
     return {a, b};
 }
 
-// The corpus replayed with --selfcheck-knowledge: the same output as its baseline, a clean
-// SELFCHECK-STATE and SELFCHECK-KNOWLEDGE summary and one SHADOW-KNOWLEDGE line per game, every
-// SHADOW line classified.
+// The corpus replayed with --selfcheck-knowledge: the same output as its baseline and a clean
+// SELFCHECK-STATE and SELFCHECK-KNOWLEDGE summary per game.
 static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     const std::vector<std::string> names = rmcheck::corpus_names(opt);
     if (names.empty()) {
         rep.error("state", "corpus: no decision log in " + opt.corpus_dir());
-        return;
-    }
-    rmcheck::ShadowSignatures sigs;
-    std::string err;
-    if (!sigs.load(opt.repo + "/tests/knowledge_divergences.json", opt.scenario_dir(), &err)) {
-        rep.error("state", "corpus: " + err);
         return;
     }
     const std::string dir = opt.out("state");
@@ -137,16 +130,13 @@ static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
         for (const std::string &f :
             rmcheck::selfcheck_failures(r.err, err_path, "corpus " + name, 1, {"STATE", "KNOWLEDGE"}))
             fails.push_back(f);
-        for (const std::string &f : sigs.log_failures(r.err, err_path, "corpus " + name, 1, nullptr))
-            fails.push_back(f);
         for (const std::string &f : fails) rep.error("state", f);
         ok[i] = fails.empty();
     });
     size_t n = 0;
     for (int o : ok) n += static_cast<size_t>(o);
-    rep.info(
-        "corpus: " + std::to_string(n) + "/" + std::to_string(names.size()) +
-        " games replay byte-identical with the self-checks clean (state and knowledge, shadow mismatches classified)");
+    rep.info("corpus: " + std::to_string(n) + "/" + std::to_string(names.size()) +
+             " games replay byte-identical with the self-checks clean (state and knowledge)");
 }
 
 // The fuzz games; returns their dumps.

@@ -8,7 +8,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../classes/match_state.h"
+#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/player.h"
@@ -147,9 +147,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
 
         // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
-        // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
-        // multi-hot so the non-owner's observation carries the revealed identity, regardless of
-        // where each card subsequently goes (hand if it matches, else back on top).
+        // reveal publicly (visible to both seats, not redacted) and record it (mark_card_revealed),
+        // wherever each card subsequently goes (hand if it matches, else back on top).
         if (ab.def->dig_reveal) {
             reveal_cards(rt.lib);
             for (auto e : rt.lib) {
@@ -235,8 +234,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     const bool blind = dig_is_blind(ab);
     const bool chosen_revealed = dig_chosen_revealed(ab, chosen_dest);
     for (Entity chosen : rt.chosen) {
-        // A revealed card is recorded in the opponent's belief state before it moves, so it
-        // stays known if it lands in a hand (CR 701.20a).
+        // A revealed card is recorded as revealed before it moves, so the move into a hand is a
+        // public one (CR 701.20a).
         if (chosen_revealed) {
             mark_card_revealed(chosen, dig_owner);
             reveal_card(chosen);

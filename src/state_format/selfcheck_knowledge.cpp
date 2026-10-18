@@ -23,7 +23,6 @@
 #include "knowledge_feed.h"
 #include "schema.h"
 #include "selfcheck.h"
-#include "shadow_knowledge.h"
 
 namespace {
 
@@ -128,8 +127,7 @@ static knowledge::Decklists registered_lists() {
     return lists;
 }
 
-// One seat's frame: its k_* tables read back and checked against the truth, then compared with the old
-// vector (state_format/shadow_knowledge.h).
+// One seat's frame: its k_* tables read back and checked against the truth.
 static void check_seat(Zone::Ownership viewer, const std::string &frame) {
     const knowledge::Knowledge *know = knowledge_instance(ObsConsumer::SELFCHECK, viewer);
     if (!know || !know->started()) {
@@ -157,12 +155,6 @@ static void check_seat(Zone::Ownership viewer, const std::string &frame) {
     knowledge::check_truth(rows, truth, viewer == Zone::PLAYER_A ? 0 : 1, universe, &check);
     stats.facts += check.facts;
     for (const std::string &e : check.errors) report("soundness", viewer, e);
-    knowledge::Snapshot snap;
-    if (!knowledge::read_snapshot(decoded, know->codes(), &snap, &err)) {
-        report("shadow", viewer, "the frame's events do not read back: " + err);
-        return;
-    }
-    shadow_knowledge_seat(viewer, rows, snap, truth);
 }
 
 void selfcheck_knowledge_decision(const std::string &frame_a, const std::string &frame_b) {
@@ -192,5 +184,4 @@ void selfcheck_knowledge_match_over() {
     std::fprintf(stderr, "SELFCHECK-KNOWLEDGE: decisions=%zu facts=%zu errors=%zu\n", stats.decisions, stats.facts,
         stats.errors);
     std::fflush(stderr);
-    shadow_knowledge_match_over();
 }

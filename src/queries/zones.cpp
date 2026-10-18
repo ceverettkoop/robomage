@@ -120,11 +120,8 @@ bool interchangeable_cards(Entity a, Entity b) {
         return true;
     }
     if (za.location == Zone::LIBRARY) {
-        const int *opp_knows = cur_game.known_top_library_seen_by(za.owner, opponent_of(za.owner));
         for (const Zone *z : {&za, &zb})
-            if (z->distance_from_top < KNOWN_TOP_LIBRARY_SIZE &&
-                opp_knows[z->distance_from_top] != -1)
-                return false;
+            if (cur_game.opp_knows_library_pos(za.owner, z->distance_from_top)) return false;
         return !cur_game.revealed_in_library.count(a) && !cur_game.revealed_in_library.count(b);
     }
     return false;

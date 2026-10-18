@@ -414,13 +414,6 @@ PopArt (`train/popart.py`) normalizes each archetype bucket's value targets, on 
 `--no-popart` disables it and `--stock-head` implies `--no-popart`. Its stats live in policy
 buffers and updates are output-preserving, so checkpoints resume under either setting.
 
-**Bo3 state-vector fields** (indices in the `src/machine_io.h` layout block): match context
-(`game_number` / `MATCH_GAME_NORMALIZER`, match wins, `is_sideboard_phase`; all 0.0 in bo1),
-library counts, the known top-5 cards of each library as the viewer knows them (per-player
-knowledge in `Game::KnownLibraryTop`: own looks, the opponent's reveals, a fateseal), and a
-match-scoped `revealed` bit per opponent registered-decklist slot (the deterministic belief
-state, persisted across the per-game ECS reset; `src/classes/match_state.{h,cpp}`).
-
 ### Machine mode protocol
 
 `--machine`: at each decision the engine prints a `BQUERY` header + binary payload on stdout and

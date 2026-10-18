@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../classes/game.h"
-#include "../classes/match_state.h"
+#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -111,8 +111,7 @@ static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, F
 // suspendable context must re-reach this same move on resume without repeating earlier work,
 // and returns SUSPENDED when decision_suspended() is set after the call; any other caller passes
 // FrameCtx::blocking(). A move into exile by an ExileFaceDown$ True ability (`ab`) exiles the
-// card face down (CR 406.3): add_to_zone stamps Zone::is_face_down and withholds the card from
-// its owner's public revealed multi-hot.
+// card face down (CR 406.3): add_to_zone stamps Zone::is_face_down.
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx,
                                         const Ability &ab, Entity e, Zone::ZoneValue dest,
                                         bool enters_transformed) {
@@ -795,7 +794,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // (Thought-Knot Seer: you pick a nonland card from the targeted opponent's revealed hand to
     // exile). The searched cards are public knowledge there (the hand was revealed by the parent
     // RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's identity
-    // is shown even into a hidden destination and recorded in the belief state.
+    // is shown even into a hidden destination.
     const Zone::Ownership chooser = ab.def->chooser_is_controller ? ab.controller : owner;
     cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
     if (ab.def->chooser_is_controller) reveal = true;
@@ -964,9 +963,8 @@ bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string
 //
 // Quantity follows the agreed simplification: an "up to N" / count-SVar / ChangeZoneAll
 // quantity moves the maximum available (force_all, an empty amount_svar with a numeric
-// cap moves min(cap, found)). Searching an opponent's hand/library reveals those zones,
-// recorded into the match-scoped belief state (mark_card_revealed) — the only
-// opponent-card-identity channel in the observation.
+// cap moves min(cap, found)). Searching an opponent's hand/library reveals those zones
+// (mark_card_revealed).
 bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all) {
     // The reference card whose name we match: the target (Targeted.sameName) or the
     // remembered object (Remembered.sameName, set by RememberTargets/RememberObjects).
@@ -1037,11 +1035,10 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
         cap, name.c_str(), player_name(searched).c_str(),
         zones.size() > 1 ? "zones" : "zone", dest_str);
 
-    // Searching an opponent's hidden zones reveals their full contents to the searcher;
-    // record them into the belief state.
+    // Searching an opponent's hidden zones reveals their full contents to the searcher; record a
+    // searched library's (mark_card_revealed: a revealed hand leaves nothing to record).
     if (searched != caster) {
         for (auto z : zones) {
-            if (z == Zone::HAND)    for (auto e : orderer->get_hand(searched))             mark_card_revealed(e, searched);
             if (z == Zone::LIBRARY) for (auto e : orderer->get_library_contents(searched)) mark_card_revealed(e, searched);
         }
     }

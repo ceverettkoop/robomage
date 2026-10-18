@@ -4,7 +4,6 @@
 #include <cstdio>
 
 #include "announce.h"
-#include "classes/match_state.h"
 #include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
@@ -3347,7 +3346,7 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // reveal it "as they draw it" — a PRIVATE special action taken off the stack (the opponent is not
 // told a miracle card was drawn unless it is revealed). This forced yes/no is presented to the
 // OWNER (who need not hold priority) before they proceed. On decline the card stays hidden in hand.
-// On accept the card becomes public (belief state + log) and the linked "when you reveal this card
+// On accept the card becomes public (a reveal, logged) and the linked "when you reveal this card
 // this way, you may cast it" triggered ability is synthesized onto the stack (opponent now sees the
 // revealed card and gets a response window); the owner decides whether to cast it as that trigger
 // resolves (effect_miracle.cpp).
@@ -3395,9 +3394,8 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
 
     if (choice != 1) return;  // declined — the card stays hidden in hand, no cast opportunity
 
-    // Revealed (CR 702.94a/702.94b): the card is now public. Record the reveal in the belief state
-    // and log it, then put the linked "you may cast it" triggered ability on the stack.
-    mark_card_revealed(card, owner);
+    // Revealed (CR 702.94a/702.94b): the card is now public. Log it, then put the linked "you may
+    // cast it" triggered ability on the stack.
     game_log("%s reveals %s for its miracle cost.\n", player_name(owner).c_str(), nm.c_str());
     Ability trig(triggered_effect_def("MiracleCast"));
     trig.source = ObjectRef::of(card);

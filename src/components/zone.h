@@ -32,10 +32,6 @@ struct Zone {
         uint64_t obj_gen = 0;
         Ownership owner = UNKNOWN;
         Ownership controller = UNKNOWN; //only relevant for battlefield
-        // The card's identity is known to its non-owner while in a hidden zone
-        // (e.g. revealed in hand by Duress/Thoughtseize, or a revealed tutor target
-        // placed into hand). Reset on every zone change; only meaningful in HAND.
-        bool identity_known = false;
         // A card exiled FACE DOWN (CR 708 / 701.35 — e.g. The Creation of Avacyn chapter I
         // "exile it face down"). While face down in exile its characteristics are hidden; a
         // later effect (a SetState$ TurnFaceUp) turns it face up by clearing this flag. Reset

@@ -4,7 +4,7 @@
 #include <string>
 
 // In-process deep-copy snapshot/restore of the complete per-game state
-// (cur_game + ECS + card_db + match revealed arrays), for search agents and the
+// (cur_game + ECS + card_db + the match stores), for search agents and the
 // --selfcheck-state snapshot check.
 //
 // A snapshot has a SCOPE. A GAME snapshot is the usual in-game search root; it

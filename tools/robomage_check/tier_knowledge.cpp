@@ -1,12 +1,8 @@
-#include <map>
-#include <set>
-
 #include "frames.h"
 #include "gate.h"
 #include "knowledge_meta.h"
 #include "proc.h"
 #include "scan.h"
-#include "scenarios.h"
 #include "sessions.h"
 #include "util.h"
 
@@ -26,7 +22,6 @@ static std::vector<FuzzGame> fuzz_games();
 static std::vector<KnowledgeSession> sessions();
 static void selftest_part(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void play_session(const rmcheck::Options &opt, const std::string &dir, KnowledgeSession *s);
-static void shadow_part(const rmcheck::Options &opt, rmcheck::Report &rep, const std::vector<std::string> &logs);
 static bool has_flag(const std::vector<std::string> &flags, const char *flag);
 
 static std::vector<std::string> knowledge_flags(bool every_decision) {
@@ -182,84 +177,13 @@ static void play_session(const rmcheck::Options &opt, const std::string &dir, Kn
             s->fails.push_back(s->label + ": " + f);
 }
 
-// Every SHADOW line of the fuzz and stream sessions' engines classified, and every signature
-// shown by its scenario under --selfcheck-knowledge.
-static void shadow_part(const rmcheck::Options &opt, rmcheck::Report &rep, const std::vector<std::string> &logs) {
-    rmcheck::ShadowSignatures sigs;
-    std::string err;
-    if (!sigs.load(opt.repo + "/tests/knowledge_divergences.json", opt.scenario_dir(), &err)) {
-        rep.error("knowledge", "shadow: " + err);
-        return;
-    }
-    std::map<std::string, int> counts;
-    size_t fails = 0;
-    for (const std::string &path : logs) {
-        std::string text;
-        rmcheck::read_file(path, &text);
-        for (const std::string &f :
-            sigs.log_failures(text, path, "shadow " + rmcheck::basename_of(path), -1, &counts)) {
-            ++fails;
-            rep.error("knowledge", f);
-        }
-    }
-    if (logs.empty()) rep.error("knowledge", "shadow: no engine log to classify");
-    std::vector<std::string> scenarios;
-    for (const auto &s : sigs.signatures())
-        if (std::find(scenarios.begin(), scenarios.end(), s.scenario) == scenarios.end())
-            scenarios.push_back(s.scenario);
-    std::sort(scenarios.begin(), scenarios.end());
-    std::vector<std::string> paths;
-    for (const std::string &name : scenarios) paths.push_back(rmcheck::path_join(opt.scenario_dir(), name + ".json"));
-    rmcheck::prevalidate_scenarios(paths);
-    std::vector<rmcheck::ScenarioRun> runs(scenarios.size());
-    std::vector<std::set<std::string>> shown(scenarios.size());
-    rmcheck::parallel_for(scenarios.size(), opt.jobs, [&](size_t i) {
-        runs[i] = rmcheck::run_scenario(opt, paths[i], {"--selfcheck-knowledge"});
-        for (const std::string &line : rmcheck::split_lines(runs[i].output)) {
-            if (!rmcheck::starts_with(line, "SHADOW:")) continue;
-            const std::string name = sigs.classify(line);
-            if (name.empty())
-                runs[i].fails.push_back("unclassified shadow mismatch: " + line);
-            else
-                shown[i].insert(name);
-        }
-    });
-    for (size_t i = 0; i < runs.size(); ++i)
-        for (const std::string &f : runs[i].fails) {
-            ++fails;
-            rep.error("knowledge", "shadow scenario " + scenarios[i] + ": " + f);
-        }
-    for (const auto &s : sigs.signatures()) {
-        const size_t i =
-            static_cast<size_t>(std::find(scenarios.begin(), scenarios.end(), s.scenario) - scenarios.begin());
-        if (!shown[i].count(s.name)) {
-            ++fails;
-            rep.error("knowledge", "shadow: scenario " + s.scenario + " prints no SHADOW line classified " + s.name +
-                                       " (with --selfcheck-knowledge)");
-        }
-    }
-    if (!fails) {
-        int total = 0;
-        std::string tally;
-        for (const auto &s : sigs.signatures())
-            if (counts[s.name]) {
-                total += counts[s.name];
-                tally += (tally.empty() ? "" : ", ") + s.name + " " + std::to_string(counts[s.name]);
-            }
-        rep.info("OK   shadow: " + std::to_string(total) + " mismatch line(s) in " + std::to_string(logs.size()) +
-                 " log(s), all classified (" + tally + "); " + std::to_string(sigs.signatures().size()) +
-                 " signatures demonstrated by " + std::to_string(scenarios.size()) + " scenarios");
-    }
-}
-
 namespace rmcheck {
 
 // The knowledge tier: train/test_knowledge.py's parts on the engine and rmknow — selftest (rmknow
 // --selftest, --exactness 40, --belief-exactness 10), fuzz (explore games under
 // --selfcheck-knowledge), isolation (RMSTATE sessions against their dumps, k_* tables included,
 // and rmknow --isolation on every dump and saved stream), truth (rmknow --truth on every dump),
-// shadow (the SHADOW lines classified, every signature's scenario) and the belief layer's
-// structure (expert+belief sessions: stream against dump, isolation and truth at that level),
+// the belief layer's structure (expert+belief sessions: stream against dump, isolation and truth at that level),
 // archetype inference and the belief calibration report (knowledge_meta.h).
 void tier_knowledge(const Options &opt, Report &rep) {
     const std::string dir = opt.out("knowledge");
@@ -276,7 +200,7 @@ void tier_knowledge(const Options &opt, Report &rep) {
             play_session(opt, dir, &sess[i - games.size()]);
     });
     const double t1 = now_seconds();
-    std::vector<std::string> dumps, isolation_files, logs;
+    std::vector<std::string> dumps, isolation_files;
     for (const FuzzOutcome &o : outs) {
         std::vector<std::string> fails;
         if (!o.result.ok())
@@ -292,7 +216,6 @@ void tier_knowledge(const Options &opt, Report &rep) {
                 fails.push_back(o.label + ": no --rmstate-dump file was written");
             }
         }
-        logs.push_back(o.err_path);
         for (const std::string &f : fails) rep.error("knowledge", f);
         if (fails.empty())
             rep.info("OK   " + o.label + (o.finished ? "" : " (stopped at the decision cap)") + ": " +
@@ -305,7 +228,6 @@ void tier_knowledge(const Options &opt, Report &rep) {
         dumps.push_back(s.dump);
         isolation_files.push_back(s.dump);
         isolation_files.push_back(s.saved);
-        logs.push_back(s.err_path);
     }
     // rmknow --isolation on every dump and saved stream, --truth on every dump.
     struct Job {
@@ -331,8 +253,6 @@ void tier_knowledge(const Options &opt, Report &rep) {
     }
     if (isolation_files.empty()) rep.error("knowledge", "isolation: no dump or saved stream to check");
     const double t2 = now_seconds();
-    shadow_part(opt, rep, logs);
-    const double t3 = now_seconds();
     archetype_part(opt, rep, dir);
     calibration_part(opt, rep, dir);
     for (const KnowledgeSession &s : sess) {
@@ -341,8 +261,8 @@ void tier_knowledge(const Options &opt, Report &rep) {
     }
     for (const FuzzOutcome &o : outs)
         if (!o.dump.empty()) remove_tree(o.dump);
-    rep.info("knowledge: selftest + games " + fmt1(t1 - t0) + "s, isolation + truth " + fmt1(t2 - t1) + "s, shadow " +
-             fmt1(t3 - t2) + "s, archetype + calibration " + fmt1(now_seconds() - t3) + "s");
+    rep.info("knowledge: selftest + games " + fmt1(t1 - t0) + "s, isolation + truth " + fmt1(t2 - t1) +
+             "s, archetype + calibration " + fmt1(now_seconds() - t2) + "s");
 }
 
 }  // namespace rmcheck

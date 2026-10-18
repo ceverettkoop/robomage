@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -37,10 +36,6 @@ static void set_object_state(const Ability &ab, Entity subject) {
     if (ab.def->set_state_mode == "TurnFaceUp") {
         if (z.is_face_down) {
             z.is_face_down = false;
-            // Turning it face up makes its identity public knowledge (CR 708.2) — record it in the
-            // owner's revealed multi-hot so the belief-state observation now reflects the reveal (the
-            // face-down exile deliberately withheld it).
-            mark_card_revealed(subject, z.owner);
             close_windows_on_face_up(subject);
             obs_face_turned(subject, true);
             game_log("%s is turned face up.\n", entity_name(subject).c_str());

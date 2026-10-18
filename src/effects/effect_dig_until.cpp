@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../classes/game.h"
-#include "../classes/match_state.h"
+#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"

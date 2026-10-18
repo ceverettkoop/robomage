@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "classes/action.h"
-#include "classes/match_state.h"
 #include "cli_output.h"
 #include "components/carddata.h"
 #include "components/player.h"
@@ -85,8 +84,6 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         game_log("%s discards %s — %s\n", player_name(controller).c_str(), cd.name.c_str(),
                  unless_outcome_text(subject, /*paid=*/true).c_str());
-        // The discarded card enters a public zone — record its identity in the belief state.
-        mark_card_revealed(chosen, controller);
         orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
     }
     return false;  // paid

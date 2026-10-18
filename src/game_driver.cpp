@@ -14,7 +14,6 @@
 #include "classes/deck_state.h"
 #include "classes/game.h"
 #include "classes/match_context.h"
-#include "classes/match_state.h"
 #include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
@@ -1451,7 +1450,6 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     match_wins_b = 0;
     g_match_conceded = false;  // concessions never carry across matches
     g_match_conceder = Zone::UNKNOWN;
-    match_reset_revealed();  // clear revealed-cards accumulator for the whole match
     // Drop the previous match's decklists so neither store can bleed across
     // matches; game 1's play_single_game repopulates both.
     deck_state_reset();

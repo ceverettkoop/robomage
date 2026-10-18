@@ -21,7 +21,7 @@
 //              scenarios; dump re-encoding, decoder refusals, RMSTATE sessions, name-a-card menus
 //   knowledge  rmknow --selftest / --exactness / --belief-exactness; explore games under
 //              --selfcheck-knowledge; RMSTATE sessions against their dumps; rmknow --isolation and
-//              --truth; the shadow classification and its scenarios; the belief layer's structure;
+//              --truth; the belief layer's structure;
 //              archetype inference; the belief calibration report
 //   fuzz       C++ explore vs explore over league matchups (bo1, and bo3 explore:patient matches);
 //              draws are findings

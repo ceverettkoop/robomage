@@ -74,7 +74,7 @@ enum class LookSplitRest { LIBRARY_BOTTOM, GRAVEYARD };
 // rt.remaining: one interactive loop in which `looker` picks any remaining card and sends it to
 // the top of their library or to `rest`, until none remain. The order cards are sent to the top
 // fixes the final library order (the FIRST one ends up topmost); each is put at its final depth
-// the moment it is chosen, so it sits on the known-top cache for the remaining choices. Cards sent
+// the moment it is chosen, so it sits on top for the remaining choices. Cards sent
 // to the bottom go under the ones bottomed before them, so both piles are in any order the looker
 // wants. Menu: "Put X on top of library" (TOP_LIBRARY, option_ordinal = the depth it will sit at)
 // for each remaining card, then one `rest` option per card (BOTTOM_DECK_CARD / CHOOSE_CARD) — the

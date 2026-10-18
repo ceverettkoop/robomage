@@ -217,9 +217,9 @@ void print_game_result(int game_number, int winner);
 // phases (unless the match is already decided). A drawn game counts for neither
 // player (`after_game` gets winner 0): the match plays on until a player has won
 // two games, and the player who went first in the drawn game goes first again. `deck_a`/`deck_b` are taken BY
-// VALUE because sideboarding mutates them across games. `match_reset_revealed()`
-// is called once at match start (the revealed accumulator spans the whole match).
-// Callers must `std::srand(seed)` before calling (main.cpp does) — the per-game engine RNG is seeded from `seed + game_num` inside.
+// VALUE because sideboarding mutates them across games.
+// Callers must `std::srand(seed)` before calling (main.cpp does) — the per-game
+// engine RNG is seeded from `seed + game_num` inside.
 // `before_game`/`after_game` may be empty. Returns the match winner
 // (Zone::PLAYER_A or Zone::PLAYER_B).
 int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,

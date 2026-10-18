@@ -7,7 +7,6 @@
 #include "agents/driver.h"
 #include "classes/deck.h"
 #include "classes/game.h"
-#include "classes/match_state.h"
 #include "cli_args.h"
 #include "cli_output.h"
 #include "error.h"
@@ -74,10 +73,9 @@ static void game_loop() {
     if (bo3_mode) {
         // The full bo3 match sequencing lives in game_driver's play_bo3_match so
         // every in-process driver shares ONE implementation (game boundaries,
-        // loser-on-the-play, revealed accumulator, sideboarding between games).
+        // loser-on-the-play, sideboarding between games).
         play_bo3_match(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, seed);
     } else {
-        match_reset_revealed();  // accumulator works in single-game mode too
         auto sys = init_ecs();
         print_game_result(1, play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed));
     }

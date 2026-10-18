@@ -1,6 +1,7 @@
 #include "scan.h"
 
-#include "json.h"
+#include <map>
+
 #include "util.h"
 
 static bool is_word_char(char c);
@@ -95,140 +96,6 @@ std::string knowledge_summary(const std::string &text) {
     for (const std::string &line : split_lines(text))
         if (starts_with(line, "SELFCHECK-KNOWLEDGE:")) last = trim(line);
     return last.empty() ? "no SELFCHECK-KNOWLEDGE summary" : last;
-}
-
-bool ShadowSignatures::load(const std::string &path, const std::string &scenario_dir, std::string *err) {
-    sigs_.clear();
-    std::string text;
-    if (!read_file(path, &text)) {
-        *err = path + ": cannot read";
-        return false;
-    }
-    Json doc;
-    if (!Json::parse(text, &doc, err)) {
-        *err = path + ": " + *err;
-        return false;
-    }
-    if (!doc.is_array() || doc.items().empty()) {
-        *err = path + ": expected a non-empty list of signatures";
-        return false;
-    }
-    static const std::set<std::string> keys = {
-        "name", "kind", "direction", "owner", "pattern", "classification", "why", "scenario"};
-    std::set<std::string> names;
-    for (size_t i = 0; i < doc.items().size(); ++i) {
-        const Json &sig = doc.items()[i];
-        const Json *name = sig.get("name");
-        const std::string where = path + ": signature " + std::to_string(i) + " (" +
-                                  (name && name->is_string() ? name->as_string() : "?") + ")";
-        if (!sig.is_object()) {
-            *err = where + ": not an object";
-            return false;
-        }
-        for (const auto &m : sig.members())
-            if (!keys.count(m.first)) {
-                *err = where + ": unknown key " + m.first;
-                return false;
-            }
-        for (const std::string &k : keys)
-            if (k != "owner" && !sig.has(k)) {
-                *err = where + ": missing " + k;
-                return false;
-            }
-        Signature s;
-        s.name = sig.get("name")->as_string();
-        if (!names.insert(s.name).second) {
-            *err = where + ": duplicate name";
-            return false;
-        }
-        const Json &kind = *sig.get("kind");
-        if (kind.is_array()) {
-            for (const Json &k : kind.items()) s.kinds.insert(k.as_string());
-        } else {
-            s.kinds.insert(kind.as_string());
-        }
-        for (const std::string &k : s.kinds)
-            if (k != "top" && k != "hand" && k != "seen") s.kinds.clear();
-        if (s.kinds.empty()) {
-            *err = where + ": kind must be top, hand, seen or a list of them";
-            return false;
-        }
-        s.direction = sig.get("direction")->as_string();
-        if (s.direction != "old_more" && s.direction != "new_more" && s.direction != "conflict") {
-            *err = where + ": direction must be old_more, new_more or conflict";
-            return false;
-        }
-        if (const Json *owner = sig.get("owner")) {
-            s.owner = owner->as_string();
-            if (s.owner != "self" && s.owner != "opp") {
-                *err = where + ": owner must be self or opp";
-                return false;
-            }
-        }
-        const std::string cls = sig.get("classification")->as_string();
-        if (cls != "old-vector leak" && cls != "old-vector quirk") {
-            *err = where + ": classification must be old-vector leak or old-vector quirk";
-            return false;
-        }
-        s.scenario = sig.get("scenario")->as_string();
-        if (!file_exists(scenario_dir + "/" + s.scenario + ".json")) {
-            *err = where + ": no scenario " + s.scenario;
-            return false;
-        }
-        const std::string pattern = sig.get("pattern")->as_string();
-        if (first_bad_regex({pattern}) != std::string::npos) {
-            *err = where + ": invalid pattern /" + pattern + "/";
-            return false;
-        }
-        s.regex = std::regex(pattern);
-        sigs_.push_back(std::move(s));
-    }
-    return true;
-}
-
-std::string ShadowSignatures::classify(const std::string &line) const {
-    // ^SHADOW: (top|hand|seen) (old_more|new_more|conflict) viewer=[AB] owner=(self|opp)
-    if (!starts_with(line, "SHADOW: ")) return "";
-    const std::vector<std::string> f = split(line.substr(8), ' ');
-    if (f.size() < 5) return "";
-    const std::string &kind = f[0], &direction = f[1];
-    if (kind != "top" && kind != "hand" && kind != "seen") return "";
-    if (direction != "old_more" && direction != "new_more" && direction != "conflict") return "";
-    if (f[2] != "viewer=A" && f[2] != "viewer=B") return "";
-    if (f[3] != "owner=self" && f[3] != "owner=opp") return "";
-    const std::string owner = f[3].substr(6);
-    for (const Signature &s : sigs_)
-        if (s.kinds.count(kind) && s.direction == direction && (s.owner.empty() || s.owner == owner) &&
-            std::regex_search(line, s.regex))
-            return s.name;
-    return "";
-}
-
-std::vector<std::string> ShadowSignatures::log_failures(const std::string &text, const std::string &where,
-    const std::string &label, int summaries, std::map<std::string, int> *counts) const {
-    std::vector<std::string> fails;
-    int unclassified = 0, found = 0;
-    const std::vector<std::string> lines = split_lines(text);
-    for (size_t i = 0; i < lines.size(); ++i) {
-        const std::string &line = lines[i];
-        if (starts_with(line, "SHADOW-KNOWLEDGE:")) ++found;
-        if (!starts_with(line, "SHADOW:")) continue;
-        const std::string name = classify(line);
-        if (name.empty()) {
-            if (++unclassified <= 10)
-                fails.push_back(
-                    label + ": unclassified shadow mismatch " + where + ":" + std::to_string(i + 1) + ": " + line);
-        } else if (counts) {
-            ++(*counts)[name];
-        }
-    }
-    if (unclassified > 10)
-        fails.push_back(
-            label + ": " + std::to_string(unclassified - 10) + " more unclassified shadow mismatch(es) in " + where);
-    if (summaries >= 0 && found != summaries)
-        fails.push_back(label + ": " + std::to_string(found) + " SHADOW-KNOWLEDGE: summary line(s) in " + where +
-                        ", expected " + std::to_string(summaries));
-    return fails;
 }
 
 }  // namespace rmcheck

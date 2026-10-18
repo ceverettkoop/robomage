@@ -15,7 +15,6 @@
 #include "classes/deck_state.h"
 #include "classes/game.h"
 #include "classes/match_context.h"
-#include "classes/match_state.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/token.h"
@@ -55,7 +54,6 @@ extern Game cur_game;
 static int token_vocab_idx(Entity e);
 static int last_known_vocab_idx(Entity e);
 static int get_card_vocab_idx(Entity e);
-static bool opp_known_hand_card(Entity e, Zone::Ownership viewer);
 static int slot_ref_of(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
@@ -86,8 +84,6 @@ static void push_zone_card(std::vector<float>& out, const ZoneCardEntry& z, bool
 static void fill_decklist_block(int* ids, int* counts, int n_slots,
                                 const std::vector<DecklistEntry>& entries,
                                 const char* block_name);
-static int revealed_card_identity(int vocab_idx);
-static void fill_opp_revealed_bits(GameState* gs, const unsigned char* opp_revealed);
 
 // ── Entity → reference-slot map ───────────────────────────────────────────────
 // Maps every serialized entity to its slot in the unified viewer-relative
@@ -545,62 +541,6 @@ static void fill_decklist_block(int* ids, int* counts, int n_slots,
     }
 }
 
-// The vocab index of the physical card a revealed name belongs to: the name's
-// card_db entry (DFC back faces are aliased onto the card's one entity) resolved
-// through that entity's CardData name, i.e. the front face a decklist registers.
-// -1 when the name has no loaded card.
-static int revealed_card_identity(int vocab_idx) {
-    auto it = card_db.find(name_to_uid(card_index_to_name(vocab_idx)));
-    if (it == card_db.end() || !global_coordinator.entity_has_component<CardData>(it->second))
-        return -1;
-    return card_name_to_index(global_coordinator.GetComponent<CardData>(it->second).name);
-}
-
-// Project the opponent's match-scoped reveal set (indexed by vocab id) onto the
-// filled opp registered-decklist slots. A slot is revealed when its card's own
-// name was revealed or, for a double-faced card, when its back face was (a
-// transformed permanent, an MDFC played back face up). A revealed name with no
-// slot even then is dropped; debug builds print a stderr WARNING once per vocab
-// id per process.
-static void fill_opp_revealed_bits(GameState* gs, const unsigned char* opp_revealed) {
-    // Slot of each registered card: main slots as i, side slots as MAIN + i.
-    int slot_of[REVEALED_SIZE];
-    for (int id = 0; id < REVEALED_SIZE; id++) slot_of[id] = -1;
-    for (int i = 0; i < DECKLIST_MAIN_SLOTS; i++) {
-        int id = gs->opp_deck_main_id[i];
-        if (id >= 0 && id < REVEALED_SIZE) slot_of[id] = i;
-    }
-    for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
-        int id = gs->opp_deck_side_id[i];
-        if (id >= 0 && id < REVEALED_SIZE) slot_of[id] = DECKLIST_MAIN_SLOTS + i;
-    }
-    for (int id = 0; id < REVEALED_SIZE; id++) {
-        if (!opp_revealed[id]) continue;
-        int slot = slot_of[id];
-        if (slot < 0) {
-            int card = revealed_card_identity(id);
-            if (card >= 0 && card < REVEALED_SIZE) slot = slot_of[card];
-        }
-        if (slot < 0) {
-#ifndef NDEBUG
-            static unsigned char warned[REVEALED_SIZE] = {};
-            if (!warned[id]) {
-                warned[id] = 1;
-                fprintf(stderr,
-                        "WARNING: opponent revealed card vocab id %d (%s), which is not in "
-                        "their registered 75; the observation has no decklist slot for it\n",
-                        id, card_index_to_name(id));
-            }
-#endif
-            continue;
-        }
-        if (slot < DECKLIST_MAIN_SLOTS)
-            gs->opp_deck_main_revealed[slot] = 1;
-        else
-            gs->opp_deck_side_revealed[slot - DECKLIST_MAIN_SLOTS] = 1;
-    }
-}
-
 // Slot ref of `e` restricted to the battlefield part of the ref space (-1 otherwise).
 static int battlefield_slot_ref_of(Entity e) {
     int r = slot_ref_of(e);
@@ -748,20 +688,6 @@ static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry
 
 // ── populate_gamestate ────────────────────────────────────────────────────────
 
-// Whether `e` is a card in the hand of `viewer`'s opponent whose identity the viewer has had
-// revealed (Zone::identity_known).
-static bool opp_known_hand_card(Entity e, Zone::Ownership viewer) {
-    const Zone &zone = global_coordinator.GetComponent<Zone>(e);
-    return zone.location == Zone::HAND && zone.owner != viewer && zone.identity_known;
-}
-
-std::vector<int> opp_known_hand_cards(Zone::Ownership viewer) {
-    std::vector<int> out;
-    for (Entity e : zoned_entities())
-        if (opp_known_hand_card(e, viewer)) out.push_back(get_card_vocab_idx(e));
-    return out;
-}
-
 void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     memset(gs, 0, sizeof(*gs));
 
@@ -863,14 +789,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->sideboard_swaps_made = sideboard_phase_state ? sideboard_phase_state->sb_swaps : 0;
     gs->sideboard_delta      = sideboard_phase_state ? sideboard_phase_state->delta : 0;
 
-    // What the viewer knows about the top of each library.
-    const int* viewer_known = cur_game.known_top_library_seen_by(viewer, viewer);
-    const int* viewer_known_opp = cur_game.known_top_library_seen_by(opponent_of(viewer), viewer);
-    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) {
-        gs->known_top_library_self[i] = viewer_known[i];
-        gs->known_top_library_opp[i] = viewer_known_opp[i];
-    }
-
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
         auto& p = global_coordinator.GetComponent<Player>(ent);
@@ -966,7 +884,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     Entity opp_ents[MAX_BATTLEFIELD_SLOTS];
     int self_bf = 0, opp_bf = 0;
     int self_hand_idx = 0;
-    int opp_known_hand_idx = 0;
     // Stack objects that are fired delayed triggers (any depth, not only the displayed 12).
     std::vector<Entity> stack_delayed;
 
@@ -989,10 +906,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                         gs->self_hand[self_hand_idx++] = get_card_vocab_idx(e);
                 } else {
                     gs->opponent.hand_ct++;
-                    // Opponent-hand cards the viewer has had revealed are carried by
-                    // their specific identity (not just the match-scoped multi-hot).
-                    if (opp_known_hand_card(e, viewer) && opp_known_hand_idx < MAX_HAND_SLOTS)
-                        gs->opp_known_hand[opp_known_hand_idx++] = get_card_vocab_idx(e);
                 }
                 break;
 
@@ -1138,8 +1051,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     fill_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
                         DECKLIST_SIDE_SLOTS, deck_state_registered_side(opp_owner),
                         "opp sideboard");
-    // Opponent-of-viewer's match-scoped reveal set, projected onto those slots.
-    fill_opp_revealed_bits(gs, (viewer == Zone::PLAYER_A) ? g_revealed_by_b : g_revealed_by_a);
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────
