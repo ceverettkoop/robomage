@@ -107,9 +107,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
 
     // The revealed slice, the filtered pool, and the resolved take count are
     // computed ONCE (frozen) and persist in the frame rt so a suspended pick
-    // resumes against the identical pool; the whole slice is pinned against
-    // determinize by pinned_entities() (revealed cards must stay in place for
-    // the pool AND the to-bottom epilogue below).
+    // resumes against the identical pool (the pool AND the to-bottom epilogue
+    // below read the whole slice).
     DigRt local_rt;
     DigRt &rt = ctx.can_suspend() ? ctx.rt<DigRt>() : local_rt;
     if (!rt.init) {

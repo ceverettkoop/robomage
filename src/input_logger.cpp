@@ -20,7 +20,6 @@
 #include "queries/players.h"
 #include "queries/zones.h"
 #include "machine_io.h"
-#include "search_server.h"
 #include "state_format/dump.h"
 #include "state_format/selfcheck.h"
 #include "state_format/stream.h"
@@ -388,13 +387,11 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     if (trace_handles) trace_handle_tables();
 
     const Zone::Ownership seat = rmstate_deciding_seat();
-    // Not while the search server unwinds to a restore: that decision is never made.
-    if (search_restore_pending()) return read_choice(actions, seat);
 
     // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h),
     // after the bookkeeping every RMSTATE writer shares (state_format/stream.h), then the
     // --selfcheck-state checks of this decision's frames (state_format/selfcheck.h; not for the
-    // decisions of a provider that also answers simulated ones, the C++ actor's).
+    // decisions of a provider that also answers simulated ones, a search agent's).
     rmstate_begin_decision();
     rmstate_dump_decision(actions);
     if (!provider_decides(seat) || provider_real_decisions) selfcheck_state_decision(actions);
@@ -452,22 +449,13 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
     }
 
     if (machine_mode && !human_has_priority) {
-        // Cooperative unwind (search server): a RESTORE command arrived at an
-        // earlier decision. Hand back the first choice at every decision --
-        // emitting no query, consuming no stdin, committing nothing -- until
-        // control returns to the main loop, which applies the pending restore
-        // and overwrites everything these auto-choices mutate.
-        if (search_restore_pending()) {
-            return search_unwind_choice();
-        }
         // In-process decision hook: when a provider covers the deciding seat, take the
         // choice directly from it — no query is emitted and stdin/stdout are not
-        // touched. Runs AFTER the cooperative-unwind short-circuit above and BEFORE
-        // the GameState/Query population + stdio loop. Falls through to the same
-        // commit_choice the stdio path uses so the decision log stays complete. The
-        // provider can consult search_loop_safe() for restore-safety without any extra
-        // plumbing. Same concession sentinels and -1 (confirm sentinel) → last-slot remap
-        // the stdio path applies.
+        // touched. Runs BEFORE the GameState/Query population + stdio loop. Falls through
+        // to the same commit_choice the stdio path uses so the decision log stays complete.
+        // The provider can consult snapshot_loop_safe() for restore-safety without any
+        // extra plumbing. Same concession sentinels and -1 (confirm sentinel) → last-slot
+        // remap the stdio path applies.
         if (provider_decides(seat)) return accept_machine_choice(actions, input_provider(seat, actions));
         // --machine-format rmstate: the deciding seat's RMSTATE frame takes the place of BQUERY,
         // answered by one integer line (state_format/stream.h).
@@ -481,54 +469,21 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
         // [34] (self_is_player_a) correctly identifies the sideboarding side.
         Zone::Ownership viewer = sideboard_phase ? sideboard_phase_player : Zone::UNKNOWN;
 
-        int choice = -1;
-        while (true) {
-            populate_gamestate(&gs, viewer);
-            populate_query(&q, actions);
-            // Loop-safety marker for the search driver: SNAPSHOT/DETERMINIZE are
-            // legal only at decisions the main loop can re-derive from restored
-            // data. Plain pre-BQUERY text line; stock drivers ignore it.
-            if (search_server_mode) {
-                printf("SEARCHINFO safe=%d\n", search_loop_safe() ? 1 : 0);
-            }
-#ifndef NDEBUG
-            // Emission-side counterpart of the [dec] commit trace: log the menu as
-            // queried while a search snapshot is live, so a root re-derived after a
-            // RESTORE (whose action is never committed when the driver detects a
-            // divergence) is still visible for diffing.
-            if (search_server_mode && search_any_snapshot_live()) {
-                std::string menu;
-                for (const auto &a : actions) {
-                    menu += a.description;
-                    menu += '|';
-                }
-                fprintf(stderr, "[emit] t=%zu s=%d n=%zu %s\n", cur_game.turn_state.turn,
-                        static_cast<int>(cur_game.turn_state.step), actions.size(),
-                        menu.c_str());
-            }
-#endif
-            cli_emit_machine_query(&q, &gs);
+        populate_gamestate(&gs, viewer);
+        populate_query(&q, actions);
+        cli_emit_machine_query(&q, &gs);
 
-            char line[128];
-            if (!fgets(line, sizeof(line), stdin)) break;  // EOF: legacy confirm fallback
+        // End of input or an unparseable line: the legacy confirm fallback (choice stays -1).
+        int choice = -1;
+        char line[128];
+        if (fgets(line, sizeof(line), stdin)) {
             if (!strchr(line, '\n')) {
                 int c;
                 while ((c = getchar()) != '\n' && c != EOF);
             }
             char *end = nullptr;
             long parsed = strtol(line, &end, 10);
-            if (end != line) {
-                choice = static_cast<int>(parsed);
-                break;
-            }
-            if (search_server_mode && search_handle_command(line)) {
-                // RESTORE begins the cooperative unwind at this very decision:
-                // hand back the first choice uncommitted; the main loop applies
-                // the restore and re-emits the restored decision's query.
-                if (search_restore_pending()) return search_unwind_choice();
-                continue;  // SNAPSHOT/DETERMINIZE/RELEASE handled: re-emit the query
-            }
-            break;  // unparseable input: legacy confirm fallback (choice stays -1)
+            if (end != line) choice = static_cast<int>(parsed);
         }
 
         // Concession sentinels (CR 104.3a): logged verbatim so --replay
@@ -543,21 +498,6 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
             choice = static_cast<int>(actions.size()) - 1;
         }
         check_machine_choice(actions, choice);
-#ifndef NDEBUG
-        // Per-decision search trace (debug builds): one line per committed decision
-        // while a search sim is running, so two sims' transcripts can be diffed to
-        // find the first divergent menu after a world-consistency break.
-        if (search_server_mode && search_any_snapshot_live()) {
-            std::string menu;
-            for (const auto &a : actions) {
-                menu += a.description;
-                menu += '|';
-            }
-            fprintf(stderr, "[dec] t=%zu s=%d n=%zu c=%d %s\n", cur_game.turn_state.turn,
-                    static_cast<int>(cur_game.turn_state.step), actions.size(), choice,
-                    menu.c_str());
-        }
-#endif
         commit_choice(actions, choice);
         return choice;
     }

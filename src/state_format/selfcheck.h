@@ -48,11 +48,10 @@
 //
 // A failure prints an ERROR: line (non_fatal_error) naming the check, the viewer and the first
 // differing table cell. None of the checks changes play: everything they change is put back, the
-// RNG is never drawn, and nothing is written to stdout. The self-check is off under
-// --search-server (whose cooperative unwind returns from InputLogger::choose before a decision is
-// made) and for the in-process actor's decisions.
+// RNG is never drawn, and nothing is written to stdout. The self-check is off for the decisions
+// of an input provider that also answers simulated ones (InputLogger::set_input_provider).
 
-// Whether --selfcheck-state is in effect (the flag, and not --search-server).
+// Whether --selfcheck-state is in effect.
 bool selfcheck_state_enabled();
 
 // Called as each decision is read (InputLogger::choose), after the RMSTATE writers'

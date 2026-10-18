@@ -103,8 +103,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         return HandlerResult::DONE_NO_SUBS;
     }
     auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-    // Arm-only peek line: the resume rebuilds the same menu (the top card is
-    // pinned against determinize by collect_pending_pins) without re-logging.
+    // Arm-only peek line: the resume rebuilds the same menu without re-logging.
     if (!ctx.resuming()) {
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
         orderer->note_library_card_known(top_card, ab.controller);

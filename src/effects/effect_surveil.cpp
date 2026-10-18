@@ -27,9 +27,8 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     Zone::Ownership controller = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
     // The looked-at slice is frozen once; the shrinking `remaining` pool and the
-    // `to_top` list of already-placed kept cards persist in the frame rt (both
-    // pinned against determinize) so a suspended pick resumes against the
-    // identical pool.
+    // `to_top` list of already-placed kept cards persist in the frame rt so a
+    // suspended pick resumes against the identical pool.
     LookSplitRt local_rt;
     LookSplitRt &rt = ctx.can_suspend() ? ctx.rt<LookSplitRt>() : local_rt;
     if (!rt.init) {

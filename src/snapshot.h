@@ -4,7 +4,8 @@
 #include <string>
 
 // In-process deep-copy snapshot/restore of the complete per-game state
-// (cur_game + ECS + card_db + match revealed arrays), for MCTS search.
+// (cur_game + ECS + card_db + match revealed arrays), for search agents and the
+// --selfcheck-state snapshot check.
 //
 // A snapshot has a SCOPE. A GAME snapshot is the usual in-game search root; it
 // rolls back within the current game. A MATCH snapshot is taken at a bo3
@@ -27,6 +28,16 @@ void snapshot_release_all();        // drop all snapshots
 // Debug builds print a [save] / [restore] trace line on stderr for every save and restore; off
 // while `quiet` is set (the --selfcheck-state snapshot check saves and restores at decisions).
 void snapshot_set_quiet(bool quiet);
+
+// Loop-safety marker, set around the loop-safe get_input call sites: a decision is loop-safe when
+// the whole game state lives in cur_game and the ECS, and re-entering the main loop from that data
+// re-derives the identical decision — the priority decision in play_single_game, the pregame and
+// sideboard decisions, a parked pending query, the attacker/blocker SELECT prompts and the cleanup
+// discard. Mid-resolution prompts that sit above live C++ stack frames are not. A snapshot saved
+// at a loop-safe decision can be restored there (the --selfcheck-state snapshot check saves only
+// at one).
+void snapshot_set_loop_safe(bool safe);
+bool snapshot_loop_safe();
 
 // Post-restore hook, run at the end of every successful snapshot_restore().
 // The snapshot covers only AUTHORITATIVE state; DERIVED global state

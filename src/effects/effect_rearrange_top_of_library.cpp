@@ -36,8 +36,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     PendingDecisionScope pending_scope(ab.source.lki_entity());
     Zone::Ownership owner = ab.controller;  // "your library" = the ability's controller's (CR 109.5)
 
-    // The looked-at slice is frozen once into the frame rt (pinned against
-    // determinize). Slots are filled deepest first and each chosen card is put
+    // The looked-at slice is frozen once into the frame rt. Slots are filled deepest first and each chosen card is put
     // on top of the library the moment it is chosen, so every later placement
     // lands above it and the final order is the slot order; the chosen card is
     // on the known-top cache (and so in the observation) for the remaining

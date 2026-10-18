@@ -4,7 +4,6 @@
 #include <deque>
 #include <functional>
 #include <memory>
-#include <set>
 #include <string>
 #include <variant>
 #include <vector>
@@ -51,13 +50,9 @@ struct ChooseCardRt {
 // ── Batch 4: frozen-pool multi-pick loops (Shape B) ─────────────────────────
 // Each rt persists the pool/counters its handler computed ONCE before its ask
 // loop, so a resume re-enters the suspended pick against the exact same pool.
-// The library slices these rts hold are what pinned_entities() feeds into
-// determinization pinning: a world sampled at a suspended root must keep every
-// revealed/looked-at card exactly where the resumed handler (and its epilogue)
-// will look for it.
 struct DigRt {
     bool init = false;            // slice/pool/counts computed + pre-loop log emitted
-    std::vector<Entity> lib;      // the WHOLE revealed slice (picked + to-bottom); all pinned
+    std::vector<Entity> lib;      // the WHOLE revealed slice (picked + to-bottom)
     std::vector<Entity> pool;     // filter-matching candidates not yet picked
     std::vector<Entity> chosen;   // picks so far, in pick order
     size_t pick = 0;              // next pick index
@@ -67,12 +62,12 @@ struct DigRt {
 // Scry and surveil (effects::look_and_split).
 struct LookSplitRt {
     bool init = false;            // slice fetched + look logs emitted
-    std::vector<Entity> remaining;  // looked-at cards not yet assigned; pinned
-    std::vector<Entity> to_top;     // kept on top, in choice order, each placed; pinned
+    std::vector<Entity> remaining;  // looked-at cards not yet assigned
+    std::vector<Entity> to_top;     // kept on top, in choice order, each placed
 };
 struct RearrangeRt {
     bool init = false;            // slice fetched + look log emitted
-    std::vector<Entity> lib;      // looked-at slice, top-first; all pinned
+    std::vector<Entity> lib;      // looked-at slice, top-first
     std::vector<Entity> remaining;    // not yet slotted; still in the library below the placed ones
     std::vector<Entity> chosen_order; // slot picks so far (deepest first), each already on top
     size_t pick = 0;              // next slot pick
@@ -81,8 +76,8 @@ struct RearrangeRt {
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done
     size_t draws_done = 0;        // draw-2 progress (a dredge question may suspend mid-batch)
-    std::vector<Entity> drawn_in_hand;  // choose-from candidates; pinned
-    std::vector<Entity> chosen;         // the (up to) 2 chosen cards; pinned
+    std::vector<Entity> drawn_in_hand;  // choose-from candidates
+    std::vector<Entity> chosen;         // the (up to) 2 chosen cards
     size_t to_choose = 0;         // how many to choose (resolved once)
     size_t pick = 0;              // next choose-a-card pick
     size_t resolved = 0;          // next pay-4-life-or-top decision
@@ -233,7 +228,7 @@ struct DrawRt {
 // player decides in APNAP order (CR 101.4 / 405.6, active player first); only the loop index
 // persists across a suspension, with the chosen card while its Aura enchant pick is parked — the
 // per-player candidate menu is re-derived from that player's live hand every pass (a live-menu
-// loop; the parked menu pins cover the hand cards, and the chosen card is pinned from here).
+// loop).
 struct EachPlayerPutRt {
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
     Entity chosen = 0;            // the current player's chosen card, parked on its Aura enchant pick (CR 303.4f)
@@ -468,14 +463,5 @@ class ResolutionTargetAsker final : public TargetAsker {
         FrameCtx &ctx;
         Zone::Ownership chooser = Zone::UNKNOWN;  // UNKNOWN = the ambient priority seat
 };
-
-// Entities a suspended decision references, which determinization must pin in
-// place (a DETERMINIZE at a suspended root must not shuffle a card the parked
-// menu / the resolving ability refers to). The union of: pending query menu
-// entities, each FrameLevel's in-flight work targets/source (plus the ROOT
-// ability component's), cur_game.resolution.memory.remembered, and each level's
-// EffectRuntime pool slices (dig/scry/surveil/rearrange lib slices, sylvan's
-// drawn/chosen set) via the per-handler visitor in resolution_frame.cpp.
-std::set<Entity> collect_pending_pins();
 
 #endif /* RESOLUTION_FRAME_H */

@@ -84,11 +84,9 @@ class InputLogger {
     // an action index (with the same -1 → last-slot confirm remap and concession sentinels the
     // stdio path accepts); the choice still flows through commit_choice so the decision log stays
     // complete. A seat it does not cover keeps the stdio path. Set by the in-process agents
-    // (agents/driver.h) and the C++ actor binary; unset by default. `real_decisions` is false for a
-    // provider that also answers decisions no game makes (the actor's search simulations): the
-    // --selfcheck-state checks skip every decision such a provider covers. The
-    // cooperative-unwind short-circuit (search_restore_pending) runs BEFORE this hook, so search
-    // RESTORE semantics are unaffected.
+    // (agents/driver.h); unset by default. `real_decisions` is false for a provider that also
+    // answers decisions no game makes (a search agent's simulations): the --selfcheck-state checks
+    // skip every decision such a provider covers.
     using InputProvider = std::function<int(Zone::Ownership seat, const std::vector<LegalAction> &)>;
     void set_input_provider(
         InputProvider provider, bool covers_a = true, bool covers_b = true, bool real_decisions = false);

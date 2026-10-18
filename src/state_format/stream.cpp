@@ -12,7 +12,6 @@
 #include "../error.h"
 #include "../game_driver.h"
 #include "../queries/players.h"
-#include "../search_server.h"
 #include "agent_feed.h"
 #include "dump.h"
 #include "encode.h"
@@ -38,14 +37,13 @@ void rmstate_outputs_init() {
     if (state_dump_json && rmstate_dump_path.empty() && rmstate_read_path.empty())
         cli_warning("--state-dump json renders the --rmstate-dump or --rmstate-read stream; neither is given");
     // A closed decklist's name-a-card menus offer the whole vocab, more than the MAX_ACTIONS a
-    // BQUERY (or search-server) query can carry; only the RMSTATE stream's menu is unbounded.
+    // BQUERY query can carry; only the RMSTATE stream's menu is unbounded.
     if (closed_decklist && machine_mode && !machine_format_rmstate)
         fatal_error(
             "--closed-decklist on a machine run needs --machine-format rmstate: its name-a-card menus "
             "offer every vocab card, more than BQUERY's MAX_ACTIONS=" +
             std::to_string(MAX_ACTIONS));
     if (!machine_format_rmstate) return;
-    if (search_server_mode) fatal_error("--machine-format rmstate is incompatible with --search-server");
     std::fflush(stdout);
     const int frames_fd = dup(STDOUT_FILENO);
     if (frames_fd < 0) fatal_error("--machine-format rmstate: cannot duplicate stdout");
@@ -124,7 +122,6 @@ int rmstate_stream_exchange(const std::vector<LegalAction> &actions) {
 }
 
 void rmstate_match_over() {
-    if (search_server_mode) return;
     rmstate_dump_match_over();
     selfcheck_state_match_over();
     if (!machine_format_rmstate) return;

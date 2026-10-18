@@ -38,8 +38,8 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     else
         owner = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
-    // The looked-at slice is frozen once into the frame rt (pinned against determinize by
-    // pinned_entities()), with the cards already placed, so a resume re-enters the suspended pick.
+    // The looked-at slice is frozen once into the frame rt, with the cards already placed, so a
+    // resume re-enters the suspended pick.
     LookSplitRt local_rt;
     LookSplitRt &rt = ctx.can_suspend() ? ctx.rt<LookSplitRt>() : local_rt;
     if (!rt.init) {

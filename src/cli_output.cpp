@@ -279,7 +279,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      bquery). rmstate: the deciding seat's RMSTATE frames\n");
     printf("                      (\"RMSTATE <nbytes>\" + payload) replace BQUERY, a terminal\n");
     printf("                      frame per seat at match end; all other output goes to\n");
-    printf("                      stderr. Incompatible with --search-server\n");
+    printf("                      stderr\n");
     printf("  --rmstate-card-scripts  Every CARDS frame carries each card's raw script text\n");
     printf("                      (its front-face row's script column; a token's in its row)\n");
     printf("  --rmstate-read <file>  Play no game: decode every record of an RMSTATE stream\n");
@@ -296,8 +296,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      re-encode byte-identical, no hidden identity read (frames\n");
     printf("                      and events rebuilt with hidden cards substituted), complete\n");
     printf("                      tables; sampled: hidden zones permuted, snapshot restore.\n");
-    printf("                      Failures print ERROR: lines; play is unchanged. Off under\n");
-    printf("                      --search-server\n");
+    printf("                      Failures print ERROR: lines; play is unchanged\n");
     printf("  --selfcheck-state-sample <n>\n");
     printf("                      Run the sampled self-checks every <n>th decision (default 8)\n");
     printf("  --selfcheck-knowledge\n");
@@ -313,9 +312,6 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      per missing card, exit status 1 when any is missing\n");
     printf("  --check-decks-dir <dir>  With --check-decks: check this directory (relative to\n");
     printf("                      resources/decks/) instead; repeatable\n");
-    printf("  --search-server     MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/\n");
-    printf("                      RELEASE); implies --machine. Incompatible with\n");
-    printf("                      --replay, --log-decisions and --player\n");
     printf("  --log-decisions     Write the decision log in machine mode (off by default\n");
     printf("                      there; CLI/interactive games always log) to\n");
     printf("                      resources/logs/game_<seed>.log\n");
@@ -330,8 +326,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
     printf("                      --knowledge-a/-b, --selfcheck-state, --selfcheck-knowledge)\n");
     printf("                      still apply; --log-decisions has no effect\n");
-    printf("\nIn-process agents (each option implies --machine; incompatible with --replay,\n");
-    printf("--search-server and an agent on a --player seat):\n");
+    printf("\nIn-process agents (each option implies --machine; incompatible with --replay\n");
+    printf("and an agent on a --player seat):\n");
     printf("  --agent-a <spec>    --agent-b <spec>\n");
     printf("                      That seat's decisions go to an in-process agent reading the\n");
     printf("                      seat's RMSTATE frames: first (row 0), random, explore,\n");

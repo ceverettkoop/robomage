@@ -144,7 +144,7 @@ void set_priority_window_open(bool open);
 // path (Game::player_loses — the same one the life/deck-out state-based actions
 // use), so everything downstream (GAME_RESULT, loser-on-the-play, sideboarding,
 // the RL reward) behaves exactly as for any other loss. It then arms a
-// COOPERATIVE UNWIND modelled on the search-server RESTORE unwind: the engine
+// COOPERATIVE UNWIND: the engine
 // cannot unwind the C++ stack (-fno-exceptions), so every get_input below the
 // concede hands back choice 0 — emitting no query, consuming no stdin,
 // committing nothing — until control returns to the main loop. Those

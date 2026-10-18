@@ -165,8 +165,7 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
     bool show_fail_to_find = !search.mandatory || choices.empty();
 
-    // Arm-only log: the resume rebuilds the identical menu (the candidates are
-    // covered by the parked menu's determinize pins) without re-logging.
+    // Arm-only log: the resume rebuilds the identical menu without re-logging.
     if (!ctx.resuming()) log_search(search);
 
     ActionCategory cat = search_menu_category(search);

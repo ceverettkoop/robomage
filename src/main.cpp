@@ -15,7 +15,6 @@
 #include "deck_check.h"
 #include "game_driver.h"
 #include "input_logger.h"
-#include "search_server.h"
 #include "state_format/recode.h"
 #include "state_format/stream.h"
 
@@ -92,13 +91,6 @@ int main(int argc, char const *argv[]) {
     if (parse_command_line(argc, argv) == CliParseResult::SHOW_HELP) {
         cli_print_help(argv[0], VERSION_NUMBER);
         return 0;
-    }
-
-    // Search commands would interleave into (or replay out of sync with) the
-    // deterministic decision record, and the cooperative unwind cannot route
-    // through a human prompt.
-    if (search_server_mode && (replay_mode || log_decisions_flag || has_human_player)) {
-        fatal_error("--search-server is incompatible with --replay, --log-decisions, and --player");
     }
 
     // --check-decks: the decks' cards against the vocabulary; no game is played.

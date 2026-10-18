@@ -572,8 +572,7 @@ sections above are not repeated here.
   (implies `--selfcheck-state`): every `k_*` fact of both seats against the true world built from
   the engine state, and the knowledge state across the snapshot check's restore;
   `SELFCHECK-KNOWLEDGE:` summary
-- `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
-  protocol
+- `src/snapshot.cpp` — in-process state snapshot/restore and the loop-safe decision marker
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;
   `src/cli_output.cpp` writes the BQUERY frame
 - `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, replay-header

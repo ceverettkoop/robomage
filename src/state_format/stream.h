@@ -27,11 +27,10 @@
 // (the menu as offered, after the interchangeable-choice collapse). When the match is over each
 // seat (A, then B) gets a terminal STATE frame (header.terminal = 1, no menu) carrying its last
 // events (game_end, match_end); no reply is read. Passive BSTATE frames (--broadcast-steps) are
-// not written in this mode, and it cannot be combined with --search-server.
+// not written in this mode.
 
 // Called once at startup, before anything is printed: under --machine-format rmstate, moves
-// stdout's descriptor aside for the frames and points stdout at stderr. Fatal with
-// --search-server.
+// stdout's descriptor aside for the frames and points stdout at stderr.
 void rmstate_outputs_init();
 
 // Whether --machine-format rmstate is on.

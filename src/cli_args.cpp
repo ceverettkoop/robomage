@@ -8,7 +8,6 @@
 #include "components/zone.h"
 #include "error.h"
 #include "game_driver.h"
-#include "search_server.h"
 
 // One command-line option. The option table below is the single definition of which flags
 // exist, which take a value, which shape the game's setup, and which the log header records.
@@ -33,7 +32,14 @@ struct ParsedOption {
     const char *value;
 };
 
+// A removed option: giving it is fatal, with a hint at what replaces it.
+struct RemovedOption {
+        const char *name;
+        const char *hint;
+};
+
 static std::vector<std::string> split_card_list(const std::string &csv);
+static const RemovedOption *find_removed_option(const std::string &name);
 static bool is_seat_a(const char *value);
 static int knowledge_level_value(const char *value);
 static long non_negative_value(const char *flag, const char *value);
@@ -148,14 +154,6 @@ static const CliOption OPTIONS[] = {
         [](const char *v) {
             replay_mode = true;
             replay_file_path = v;
-        },
-        nullptr},
-    // MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/RELEASE); a machine-mode extension, so it
-    // implies --machine.
-    {"--search-server", nullptr, false, false,
-        [](const char *) {
-            search_server_mode = true;
-            machine_mode = true;
         },
         nullptr},
     {"--player", nullptr, true, false,
@@ -318,6 +316,17 @@ static long non_negative_value(const char *flag, const char *value) {
     return static_cast<long>(n);
 }
 
+static const RemovedOption REMOVED_OPTIONS[] = {
+    {"--search-server", "the MCTS search protocol is gone; snapshots stay in-process (snapshot.h)"},
+};
+
+static const RemovedOption *find_removed_option(const std::string &name) {
+    for (const RemovedOption &option : REMOVED_OPTIONS) {
+        if (name == option.name) return &option;
+    }
+    return nullptr;
+}
+
 static const CliOption *find_option(const std::string &name) {
     for (const CliOption &option : OPTIONS) {
         if (name == option.name || (option.alias && name == option.alias)) return &option;
@@ -360,6 +369,8 @@ CliParseResult parse_command_line(int argc, char const *argv[]) {
     std::vector<ParsedOption> parsed;
     bool show_help = false;
     for (int i = 1; i < argc; i++) {
+        if (const RemovedOption *removed = find_removed_option(argv[i]))
+            fatal_error(std::string(removed->name) + " was removed: " + removed->hint);
         const CliOption *option = find_option(argv[i]);
         if (!option) {
             cli_warning("unrecognized option '" + std::string(argv[i]) + "' (ignored); see --help");

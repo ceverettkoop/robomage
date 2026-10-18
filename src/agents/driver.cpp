@@ -9,7 +9,6 @@
 #include "../error.h"
 #include "../game_driver.h"
 #include "../input_logger.h"
-#include "../search_server.h"
 #include "../state_format/agent_feed.h"
 #include "../state_format/stream.h"
 #include "agent.h"
@@ -67,9 +66,6 @@ void agents_install(unsigned int engine_seed) {
     if (!any_agent && !trace_decisions) return;
     if (any_agent && replay_mode)
         fatal_error("--agent-a/--agent-b, --play and --actions cannot be combined with --replay (the log decides)");
-    if ((any_agent || trace_decisions) && search_server_mode)
-        fatal_error(
-            "--agent-a/--agent-b, --play, --actions and --trace-decisions are incompatible with --search-server");
     if (play_script_given && actions_script_given) fatal_error("--play and --actions are exclusive");
     run = new AgentRun();
     run->rng.seed_int(game_seed_given ? game_seed_value : engine_seed);
