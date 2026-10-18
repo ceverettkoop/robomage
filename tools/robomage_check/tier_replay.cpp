@@ -12,7 +12,7 @@ void tier_replay(const Options &opt, Report &rep) {
     const std::vector<std::string> names = corpus_names(opt);
     if (names.empty()) {
         rep.error("replay", "no decision log (*.rmlog) in " + opt.corpus_dir() +
-                                " (record them: train/regression/replay_diff.py record)");
+                                " (record them: train/record_corpus.py)");
         return;
     }
     for (const std::string &f : list_dir(opt.corpus_dir(), ".replay")) {

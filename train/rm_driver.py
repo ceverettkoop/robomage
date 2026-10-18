@@ -33,8 +33,7 @@ remaps it), or a concession sentinel. Terminal frames are fed to the seats and e
 sign of the sum. Engine diagnostics (``WARNING:``, ``ERROR:``, ``FATAL``, the self-check and shadow
 lines, …) go to this process's stderr, not the narrative; an engine that exits nonzero raises.
 
-**Transcripts** (``run_games``): ``verbose`` is the replay corpus's format (``regression/
-replay_diff.py``): each decision's engine narrative in a ``--- Narrative ---`` block, ``--- Pregame
+**Transcripts** (``run_games``): ``verbose`` (the smoke tier's transcripts): each decision's engine narrative in a ``--- Narrative ---`` block, ``--- Pregame
 ---`` / ``--- Turn N (Player X) ---`` markers with the ``PA:`` / ``PB:`` hand lines (each seat's
 hand as of its last decision, at most 10 cards, in (token, name, handle) order, empty while
 sideboarding), ``--- Decision N ---`` with the menu as offered and ``>> label/seat: i (description)``,

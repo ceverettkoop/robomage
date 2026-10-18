@@ -7,11 +7,11 @@
 #include "gate.h"
 #include "proc.h"
 
-// ── robomage_check: the replay corpus (train/regression/corpus/) ──────────────────────────────
+// ── robomage_check: the replay corpus (tests/corpus/) ─────────────────────────────────────────
 //
 // Each corpus game is a decision log, <name>.rmlog (RMLOG v2: the seed, the setup flags, both
 // decklists and every decision), recorded from the scripted agent's games by
-// train/regression/replay_diff.py record, and a baseline, <name>.replay: the engine's
+// train/record_corpus.py, and a baseline, <name>.replay: the engine's
 //
 //   robomage --replay <name>.rmlog --machine --narrative --trace-decisions
 //

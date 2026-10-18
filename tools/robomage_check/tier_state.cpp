@@ -115,7 +115,7 @@ static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     }
     rmcheck::ShadowSignatures sigs;
     std::string err;
-    if (!sigs.load(opt.repo + "/train/regression/knowledge_divergences.json", opt.scenario_dir(), &err)) {
+    if (!sigs.load(opt.repo + "/tests/knowledge_divergences.json", opt.scenario_dir(), &err)) {
         rep.error("state", "corpus: " + err);
         return;
     }

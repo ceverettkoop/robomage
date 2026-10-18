@@ -23,7 +23,7 @@
 //         card.
 //
 // A mismatch is not an engine error: train/test_knowledge.py classifies it against
-// train/regression/knowledge_divergences.json. A mismatch is printed to stderr when it appears
+// tests/knowledge_divergences.json. A mismatch is printed to stderr when it appears
 // (one already there at the seat's previous decision, with the same kind, direction, owner and
 // card, is only counted, whatever its values now are), as one line:
 //

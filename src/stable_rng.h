@@ -13,7 +13,7 @@
 // libstdc++ (Linux / CI) and libc++ (macOS) map the same stream to DIFFERENT
 // permutations and draws. Every gameplay use of cur_game.rng.engine must go through
 // these helpers instead, so a seed reproduces the identical game on every
-// platform — replay logs, the regression corpus (train/regression/), and
+// platform — replay logs, the regression corpus (tests/corpus/), and
 // bug-repro seeds stay portable between Mac and Linux.
 
 // Unbiased draw in [0, n) consuming raw 32-bit mt19937 outputs (rejection

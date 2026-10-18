@@ -14,8 +14,8 @@
 //   vocab      the engine's --check-decks over the top-level and league/ decks
 //   concede    the CR 104.3a concession sentinels (-2 / -3) piped at bo1 / bo3 decisions over the
 //              RMSTATE stream and BQUERY, results and --replay of the logged decisions
-//   scenarios  every rules-regression scenario (train/regression/scenarios/*.json)
-//   replay     the replay corpus: each decision log (train/regression/corpus/<name>.rmlog) replayed,
+//   scenarios  every rules-regression scenario (tests/scenarios/*.json)
+//   replay     the replay corpus: each decision log (tests/corpus/<name>.rmlog) replayed,
 //              its output against <name>.replay byte for byte (--record rewrites the baselines)
 //   state      the state format's self-checks over the replayed corpus, explore fuzz games and the
 //              scenarios; dump re-encoding, decoder refusals, RMSTATE sessions, name-a-card menus

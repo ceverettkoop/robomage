@@ -139,12 +139,12 @@ check: all
 
 # Re-record the replay corpus after an intentional behavior change: provision the card set, build,
 # then play the scripted agent's corpus games with the fresh binary (each game's decision log and,
-# through robomage_check --tier replay --record, its replay baseline; train/regression/replay_diff.py record). Run
+# through robomage_check --tier replay --record, its replay baseline; train/record_corpus.py). Run
 # this when `make check` reports corpus drift, then commit the results.
 regen:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) all
-	$(PYTHON) train/regression/replay_diff.py record
+	$(PYTHON) train/record_corpus.py
 
 # Force a clean re-fetch of every Forge card/token script, then VALIDATE the fresh
 # scripts against the COMMITTED replay corpus. Deletes the gitignored local scripts

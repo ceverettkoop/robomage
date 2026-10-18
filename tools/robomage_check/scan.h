@@ -19,7 +19,7 @@
 // "SELFCHECK-STATE: decisions=… errors=N" / "SELFCHECK-KNOWLEDGE: …" line must say errors=0.
 //
 // The shadow classifier (train/test_knowledge.py's classify): the signatures of
-// train/regression/knowledge_divergences.json, tried in order.
+// tests/knowledge_divergences.json, tried in order.
 
 namespace rmcheck {
 

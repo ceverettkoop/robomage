@@ -187,7 +187,7 @@ static void play_session(const rmcheck::Options &opt, const std::string &dir, Kn
 static void shadow_part(const rmcheck::Options &opt, rmcheck::Report &rep, const std::vector<std::string> &logs) {
     rmcheck::ShadowSignatures sigs;
     std::string err;
-    if (!sigs.load(opt.repo + "/train/regression/knowledge_divergences.json", opt.scenario_dir(), &err)) {
+    if (!sigs.load(opt.repo + "/tests/knowledge_divergences.json", opt.scenario_dir(), &err)) {
         rep.error("knowledge", "shadow: " + err);
         return;
     }

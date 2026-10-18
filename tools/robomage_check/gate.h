@@ -27,8 +27,8 @@ struct Options {
         std::vector<std::string> scenario_patterns;  // scenarios: name globs ("" = all)
         std::string show;  // scenarios: print each run's output | narrative | dump (knowledge lines)
 
-        std::string corpus_dir() const { return repo + "/train/regression/corpus"; }
-        std::string scenario_dir() const { return repo + "/train/regression/scenarios"; }
+        std::string corpus_dir() const { return repo + "/tests/corpus"; }
+        std::string scenario_dir() const { return repo + "/tests/scenarios"; }
         std::string decks_dir() const { return bin_dir + "/resources/decks"; }
         // <out_dir>/<sub>, created.
         std::string out(const std::string &sub) const;
