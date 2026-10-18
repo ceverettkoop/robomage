@@ -240,9 +240,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     // "dead_gone" lets a "1 Dead/Gone" decklist serialize — and is also the uid the engine loads
     // the script under (cardsfolder/d/dead_gone.txt, Forge's underscore-joined split-card
     // filename). The in-game observation matches by ascii_fold (case/punctuation-preserving), so
-    // the loaded front name "Dead" and the back-face cast name "Gone" each resolve to 328. The
-    // cost / property codegen reads 328 as the whole card, both halves combined (CR 709.4;
-    // gen_util.card_row_lines), whichever of the three names it resolves.
+    // the loaded front name "Dead" and the back-face cast name "Gone" each resolve to 328.
     {"Dead", 328},
     {"Gone", 328},
     {"Dead/Gone", 328},

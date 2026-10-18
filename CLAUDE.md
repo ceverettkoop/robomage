@@ -95,17 +95,9 @@ has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one co
   `analysis.py` (browse/report), every PPO/AZ training and `bench-*` subcommand, and `baseline`'s
   default C++-actor path.
 
-**Codegen is `make pygen`** (no longer of `make`: only the Python RL stack
-reads it; plan step 3b deletes it). `make pygen` runs (`train/gen_enums.py`,
-`gen_card_costs.py`, `gen_card_props.py`, `gen_archetypes.py`, `gen_sb_rules.py`; write-if-changed
-via `train/gen_util.py`, so unchanged outputs force no recompile).
-- **Committed** (derived from tracked sources):
-  `train/_enums.py` (C++ headers) and `src/gen/archetypes_gen.h` (`train/archetypes.py` +
-  `bin/resources/decks/archetypes.json`, whose `_archetypes` key is the canonical label list).
-- **Untracked**, rebuilt locally by every `pygen`: `train/card_costs.py`, `train/card_props.py`,
-  `src/gen/card_costs_gen.h` (from gitignored, Forge-fetched card-script content) and
-  `train/sb_rules.py` + `src/gen/sb_rules_gen.h` (from `train/sb_dead_rules.json`). A vocab
-  change + `make pygen` keeps them in sync with nothing to commit.
+**There is no codegen** (plan step 3b deleted `pygen`, `train/gen_*.py` and `src/gen/`).
+`bin/resources/decks/archetypes.json` is read directly (its `_archetypes` key is the canonical
+label list; `src/state_format/metagame.cpp`).
 
 ## Long-running commands (Claude)
 
@@ -388,10 +380,7 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 1. Append `{"Card Name", N}` (next free index) to `card_vocab_entries` in `src/card_vocab.h`;
    `N_CARD_TYPES` (`src/machine_io.h`) must exceed the highest index. Tokens are a separate band
    (`token_vocab_entries`, from index 900).
-2. Provision the script, then `make` (and `make pygen` for the untracked
-   `train/card_costs.py`, `train/card_props.py`, `src/gen/card_costs_gen.h`, which only the actor
-   and the Python RL stack read). Nothing to commit; a new card only adds
-   a property row, so the network shape and checkpoints are unaffected.
+2. Provision the script, then `make`.
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
@@ -665,8 +654,6 @@ until step 5 adds a main.
   resume sidecars
 - `mcts.py` — determinized PUCT (`run_search`, `run_search_parallel`, `IncrementalSearch`);
   duplicate-edge merge on by default (`merge_dupes`), dead-sideboard-IN pruning (`sb_dead_mask`)
-- `sb_dead_rules.json` — hand-edited dead-sideboard-card rules, compiled by `gen_sb_rules.py`;
-  self-play boards by net prior (`--sb-selfplay-mode prior`), gates/eval/play by plan search
 - `az_net.py` (AZNet, `from_ppo` warm start), `az_selfplay.py` (self-play shards), `az_train.py`
   (`train_az`, `az_eval` gate, `az_league`), `gate_sprt.py` (gate SPRT)
 - `az_eval_server.py` — batched GPU inference server for the actor fleet; `scripted_oracle.py` —
@@ -680,12 +667,7 @@ until step 5 adds a main.
   `tui_az_inspect.py`
 - `shard_replay.py` — rebuilds browsable matches (and `.rmplay` replays) from shards
 
-**Codegen (`train/`, run by `make`)**
-- `gen_enums.py` → `_enums.py`; `gen_archetypes.py` → `src/gen/archetypes_gen.h`; `gen_sb_rules.py` →
-  `sb_rules.py` + `src/gen/sb_rules_gen.h`
-- `gen_card_costs.py` → `card_costs.py` + `src/gen/card_costs_gen.h`; `gen_card_props.py` →
-  `card_props.py` (103 frozen property columns, concatenated with the 32-dim learned embedding).
-  Never hand-edit the outputs.
+**Deck tools (`train/`)**
 - `missing_cards.py` — deck cards absent from `src/card_vocab.h`
 
 **Tests / CI**

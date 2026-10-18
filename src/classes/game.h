@@ -163,7 +163,6 @@ enum MandatoryChoice {
 // Width of the MandatoryChoice one-hot in the serialized state vector. Derived
 // from the enum's last value, so adding a choice kind widens the one-hot (and
 // shifts every later block via machine_io.h's offset chain) automatically.
-// Mirrored into Python by train/gen_enums.py, which counts the enum's members.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 
 // An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
