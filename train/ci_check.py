@@ -106,6 +106,12 @@ fails, so one invocation reports every finding):
           same games as explore_agent.py over rm_driver.py (same replies, same
           narrative) on a few seeded bo1 and bo3 games. Needs bin/robomage;
           ~30s.
+  cppgate The C++ gate (bin/<config>/robomage_check, plan step 3a): its
+          Python-free tiers (vocab, concede, scenarios, replay — the corpus's
+          decision logs replayed against their baselines —, state, knowledge,
+          fuzz, bench; not smoke, which this gate's smoke tier plays), so CI
+          runs both gates until step 3b makes robomage_check the gate. Its
+          transcripts land in <out-dir>/cpp/. Needs bin/robomage_check.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -304,7 +310,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
-             "menus", "browser", "modelspec", "concede", "scenarios", "cppagents", "obsinv",
+             "menus", "browser", "modelspec", "concede", "scenarios", "cppagents", "cppgate", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "smoke",
@@ -472,6 +478,35 @@ def tier_cppagents(rep):
         if r.returncode != 0:
             rep.error("cppagents", f"C++ {what} differs from the Python one ({script} exit "
                                    f"{r.returncode}):\n{r.stdout}{r.stderr}")
+
+
+# The robomage_check tiers the cppgate tier runs (every one but smoke) and its fuzz games per matchup.
+CPPGATE_TIERS = "vocab,concede,scenarios,replay,state,knowledge,fuzz,bench"
+CPPGATE_FUZZ_GAMES = 2
+
+
+def tier_cppgate(rep, args, out_dir):
+    """The C++ gate (bin/<config>/robomage_check): its Python-free tiers, its own report and exit."""
+    gate = os.path.join(os.path.dirname(runner.BINARY), "robomage_check")
+    if not os.path.exists(gate):
+        rep.error("cppgate", f"{gate} not found — run `make`")
+        return
+    cmd = [gate, "--tier", CPPGATE_TIERS, "--binary", runner.BINARY, "--seed", str(args.seed),
+           "--fuzz-games", str(CPPGATE_FUZZ_GAMES), "--out-dir", os.path.join(out_dir, "cpp")]
+    r = subprocess.run(cmd, cwd=_REPO_ROOT, capture_output=True, text=True)
+    log = os.path.join(out_dir, "cpp", "robomage_check.txt")
+    with open(log, "w") as fh:
+        fh.write(r.stdout + r.stderr)
+    lines = r.stdout.splitlines()
+    # Its tier banners, per-tier verdicts and findings (the full output is in `log`).
+    for ln in lines:
+        if ln.startswith(("=== tier:", "  (", "  [ERROR]", "  [WARN]")):
+            print(f"  {ln}", flush=True)
+    if r.returncode != 0:
+        errors = [ln.strip() for ln in lines if ln.strip().startswith("ERROR   [")] or lines[-20:]
+        rep.error("cppgate", f"robomage_check exit {r.returncode} (see {log}):\n" + "\n".join(errors) + "\n" +
+                  r.stderr[-2000:])
+    print(f"  reproduce: {' '.join(cmd)}", flush=True)
 
 
 def tier_scenarios(rep):
@@ -1345,6 +1380,7 @@ _TIER_FNS = {
     "concede": lambda rep, args, out_dir: tier_concede(rep),
     "scenarios": lambda rep, args, out_dir: tier_scenarios(rep),
     "cppagents": lambda rep, args, out_dir: tier_cppagents(rep),
+    "cppgate": tier_cppgate,
     "obsinv": lambda rep, args, out_dir: tier_obsinv(rep),
     "actorobs": lambda rep, args, out_dir: tier_actorobs(rep),
     "snapshot": lambda rep, args, out_dir: tier_snapshot(rep),
@@ -1402,7 +1438,7 @@ def main(argv=None):
 
     # Game tiers need a built binary and provisioned card scripts.
     game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios",
-                  "cppagents", "vocab",
+                  "cppagents", "cppgate", "vocab",
                   "obsinv",
                   "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
@@ -1410,7 +1446,7 @@ def main(argv=None):
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios", "cppagents",
+    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios", "cppagents", "cppgate",
         "obsinv",
         "snapshot",
         "sbselfplay",

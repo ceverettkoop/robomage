@@ -690,7 +690,13 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 
 **Tests / CI (`train/`)**
 - `ci_check.py` — `make check` driver; default `ALL_TIERS` vs `OPT_IN_TIERS` (`actor`, `analysis`,
-  `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
+  `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`;
+  tier `cppgate` runs `robomage_check`
+- `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check-cpp` runs it):
+  the C++ gate (plan step 3a), engine subprocesses only (links the std-only decoder and frame reader,
+  no engine TU); tiers `vocab`, `concede`, `scenarios`, `replay` (the corpus's `.rmlog` decision logs
+  against their `.replay` baselines; `--record` rewrites them), `state`, `knowledge`, `fuzz`, `bench`,
+  `smoke` (Python driver); `--tier`, `-j`, `--seed`, `--scenario GLOB --show output|narrative|dump`
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
 - `compare_cpp_agents.py` — tier `cppagents`: the C++ `--play` resolver on every scenario against the

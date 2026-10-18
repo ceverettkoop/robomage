@@ -273,8 +273,8 @@ the fields of the event it consumes, which is the completeness check on the even
   flags. Gate tier `cppagents` (`train/compare_cpp_agents.py`). Release: C++ explore in-process
   ~750 decisions/s (4.6 games/s; ~1,090 with `--knowledge-a/-b off`) vs Python explore over the
   driver ~470 (2.9 games/s); the frame encoding and the knowledge sidecar are most of the cost.
-- **Gate driver `robomage_check`.** A separate C++ binary that links no engine TUs and so may
-  enable exceptions (needs a CLAUDE.md exemption beside the actor's). It runs engine
+- **Gate driver `robomage_check`.** A separate C++ binary that links no engine TUs (built with
+  `-fno-exceptions` like the engine: decided, no exemption). It runs engine
   subprocesses in parallel. It reads the existing 70 scenario JSONs unchanged: their schema is
   flat, and all 271 regexes use no Python-only syntax, so `std::regex` applies. It also ports
   the transcript scan (`train/ci_check.py:265`).
@@ -295,9 +295,38 @@ the fields of the event it consumes, which is the completeness check on the even
   games, with the engine's `--replay` output as baseline. Checking it needs no Python;
   re-recording it uses the live agent.
 
+  **Status: part 2 done** (the gate driver; `docs/ci.md`, "The C++ gate"). `tools/robomage_check/`
+  → `bin/<config>/robomage_check`, part of `make`, built like the engine with `-fno-exceptions` (no
+  exemption: a scenario regex is compiled in a forked child first, so a malformed one is reported,
+  not an abort); it links only the std-only decoder, schema, frame reader and `PyRandom`. All nine
+  tiers are implemented; every one but `smoke` (the Python driver, skipped without an interpreter)
+  is Python-free. Parity with the Python tiers: all 98 scenarios pass on both runners, and of 21
+  mutated scenarios (every assertion key, variants, a `--play` typo, malformed files, controls) both
+  give the same verdict on 20; the other is a difference of the engine runs, not of the runners (a
+  seat's own hand handles follow the event order when an event consumer is on, the in-process
+  agents being one; `docs/state_format.md` §6). The C++ explore and stream sessions play the Python
+  tiers' games: the `knowledge` and `state` parts report the same decisions, facts, records,
+  isolation frames, truth facts, shadow tallies, name-a-card candidates, archetype summaries and
+  calibration figures as the Python ones, and the `fuzz` tier the same results. The
+  corpus is now `train/regression/corpus/<name>.rmlog` (recorded by `replay_diff.py record` through
+  the new output flag `--decision-log FILE`) and `<name>.replay` (`--replay --machine --narrative
+  --trace-decisions`, the log path and the trace's board lines left out; ~3.4 MB for 64 games),
+  identical from the debug and release builds; the Python transcripts stay beside them until 3b.
+  `make check` runs the C++ gate as the Python gate's tier `cppgate` (every tier but `smoke`, fuzz at
+  2 games per mirror; ~4.5 min of `make check`'s ~13.5); `make check-cpp` runs it alone. Not
+  ported, as they test Python code: the Python decoder's own checks (`rmstate`'s Python-vs-C++ JSON
+  and refusals), `test_concede.py`'s `GameDriver` checks and the tiers comparing Python with C++
+  (`cppagents`, `agentparity`, `rmagent`).
+
 ### 3b. Strip
 
 The corpus must stay byte-identical across 3b.
+
+- Switch the gate: `make check` runs `robomage_check` (every tier; `smoke` through the Python
+  driver), and `train/ci_check.py`, `regression/replay_diff.py`'s `check` mode and the corpus
+  transcripts `<name>.txt` go (`record` stays: it writes the decision logs and baselines with the
+  live agent). The `.rmlog` / `.replay` files move with the corpus (the baselines name only the
+  log's file name, so the move changes no byte).
 
 - Delete `src/actor/`'s old-observation code (`obs_builder`, `az_mcts`, `menu_merge`,
   `sb_rules`, `td_targets`, `root_diag`, `npz_writer`, `oracle_client`, `az_actor_main`).
@@ -524,7 +553,7 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 3. **`tools/meta_scraper`**: keep or drop.
 4. **C++ `explore` port** (3a): makes `fuzz` Python-free and fast in-process; otherwise fuzz
    runs through the Python driver.
-5. **`robomage_check` with exceptions on** (3a): needs a CLAUDE.md exemption.
+5. ~~**`robomage_check` with exceptions on**~~ **Decided:** built with `-fno-exceptions` (3a).
 6. **Human vs Python agent in the CLI** (4b): whether to add the second channel now.
 7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small
    384-d encoder), and how its weights are provisioned and pinned.

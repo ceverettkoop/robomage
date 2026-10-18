@@ -42,6 +42,7 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `concede` | CR 104.3a concession sentinels (`test_concede.py`): bo1 / bo3-game / match concede outcomes, the sentinel replays via `--replay`, and a concession at a parked query (Brainstorm's put-back, Cavern of Souls' ETB type; BQUERY and `--machine-format rmstate`) ends the game with nothing parked | needs the engine |
 | `scenarios` | rules-regression scenarios (`test_scenarios.py`): every `train/regression/scenarios/*.json` sculpted harness game (bo1 unless its `format` says bo3, parallel) still shows its asserted rules outcome — narrative lines present / absent / in order, actions offered or withheld, the game result, and (`expect_dump*`, the `knowledge_*` sharpness scenarios) the deductions on the seats' knowledge tables, rendered as text lines from a `--rmstate-dump --state-dump json` run | needs the engine; ~2 s. A failure names the missing / forbidden line; `test_scenarios.py --narrative <name>` (`--dump <name>` for the knowledge lines) prints what the assertions match against |
 | `cppagents` | the C++ in-process agents (`src/agents/`, plan step 3a) against their Python originals (`compare_cpp_agents.py`): every rules scenario resolves to the same `resolved --actions` list on the engine's `--play` resolver (presets as engine flags: `--hand-*`, `--library-*`, `--game-seed`, `--max-decisions`, `--trace-decisions`) as on `test_harness.py`, its assertions passing on both outputs; the C++ explore tier plays the same games as `explore_agent.py` over `rm_driver.py` (same replies and narrative; bo1 explore, bo3 explore:patient) | needs the engine; ~40 s. `compare_cpp_agents.py explore --games N` widens the explore sweep |
+| `cppgate` | the C++ gate `bin/<config>/robomage_check` (below) on its Python-free tiers (`vocab`, `concede`, `scenarios`, `replay`, `state`, `knowledge`, `fuzz` at 2 games per mirror, `bench`), so CI runs both gates until plan step 3b makes it the gate | needs `make`'s `robomage_check`; ~4.5 min on 4 cores (`make check` ~13.5 min in all). Its output: `ci_out/cpp/robomage_check.txt`, transcripts and engine stderr under `ci_out/cpp/` |
 | `obsinv` | per-decision structural invariants on the raw observation over seeded scripted games (`test_obs_invariants.py`) — see its docstring for the list | prints the violated invariant (decision, seat, block, slot, value) |
 | `actorobs` | `make actor-syntax` (`-fsyntax-only` over the actor's libtorch-free TUs, firing the obs-layout `static_assert`s in `src/actor/obs_builder.{h,cpp}`), plus a generated TU asserting `machine_io.h`'s `OFFSET_CHAIN` equals `env.py`'s offsets block by block | compiler only |
 | `pergame` | bo3 per-game-index win-rate split: seat-flip consistency, tally merging, a live bo3 (`test_per_game_split.py`) | needs the engine |
@@ -197,6 +198,45 @@ scripted agent's RMSTATE frame view (`train/rm_agent.py`) and the RMSTATE driver
 train/.venv/bin/python train/test_rm_agent.py --part cards
 ```
 
+### The C++ gate: `robomage_check`
+
+`tools/robomage_check/` builds `bin/<config>/robomage_check` (part of `make`; `make check-cpp` runs
+every tier). It runs the engine as subprocesses, in parallel (`-j N`, default the cores), and links
+no engine translation unit: only the std-only RMSTATE decoder (`src/state_format/decode.*`,
+`schema.*`) and the agents' frame reader and Python-compatible generator (`src/agents/seat_frames.*`,
+`py_random.*`). It is built like the engine (`-fno-exceptions`). Every requested tier runs; the run
+ends with each tier's PASS/FAIL, a wall-time table and a `Reproduce:` line, and exits 1 on any error
+(warnings alone pass; the same error / warning classification as above, the transcript scan ported
+in `scan.cpp`). Flags: `--tier a,b`, `-j N`, `--seed N` (fuzz and smoke), `--binary PATH` (default
+the engine beside it), `--out-dir DIR` (default `ci_out/cpp/`), `--fuzz-games N`, `--smoke-games N`,
+`--matchups PRESET`, `--mode explore|explore:patient`, `--scenario GLOB` (repeatable) with
+`--show output|narrative|dump`, `--record` (the replay baselines).
+
+| Tier | Checks | Python counterpart | Time (debug, 4 cores) |
+|---|---|---|---|
+| `vocab` | `robomage --check-decks` over the top-level and `league/` decks | `vocab` | <1 s |
+| `concede` | the concession sentinels over `--machine-format rmstate` sessions it answers itself (bo1 `-2`, bo3 `-2` into sideboarding and game 2, `-3`, the sentinels between games, same seed same frames and `--replay` of the logged concession) and at parked queries (Brainstorm's put-back, Cavern of Souls' ETB type; `-2` bo1 / bo3 and `-3`), each also piped into BQUERY `--machine` with the same replies; results, narrative and `--replay` of each decision log | `concede` (its checks 1-4 and 7; 5 and 6 test the Python `GameDriver`) | ~3 s |
+| `scenarios` | every scenario on the engine alone (the `--play` resolver, presets as engine flags), every assertion key of `test_scenarios.py` with its failure messages; the knowledge lines read from the binary dump | `scenarios` | ~5 s |
+| `replay` | each corpus decision log replayed: `robomage --replay <name>.rmlog --machine --narrative --trace-decisions`, its stdout (the log path in the replay banner as the file name, the trace's board lines left out) against `<name>.replay` byte for byte | `replay` (which plays the live agent) | ~20 s |
+| `state` | the corpus replayed under `--selfcheck-knowledge` (same output; clean summaries; shadow lines classified), the `rmstate` tier's 16 fuzz games with the C++ explore agents, every scenario at `--selfcheck-state-sample 1`, `--rmstate-read` on the dumps, the decoder's refusals, two RMSTATE sessions against their dumps (with and without one), the name-a-card menus, the include isolation | `rmstate` (its engine-side parts; the Python decoder's comparisons stay there) | ~2.5 min |
+| `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; the `knowledge` tier's 6 fuzz games under `--selfcheck-knowledge`; its 3 stream sessions and the 2 belief-structure sessions against their dumps; `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; the shadow lines classified and every signature's scenario; the 4 archetype-inference sessions against `archetypes.json`; the 13 belief calibration sessions and their report | `knowledge` (every part) | ~85 s |
+| `fuzz` | C++ explore vs explore (`--agent-a/-b`, the Python explore tier's games) over the league mirrors, `--fuzz-games` per matchup (matchup `k` game `i`: game seed `seed + 1000k + i`), and one bo3 `explore:patient` match per ring matchup; transcripts `ci_out/cpp/fuzz_<a>__<b>.txt`, draws saved beside them | `fuzz` | ~45 s |
+| `bench` | decisions/s of explore vs explore over three pairings × three games, one engine at a time (no threshold) | `train/bench_engine.py` | ~10 s |
+| `smoke` | scripted hard vs hard through `train/rm_driver.py` (one process per matchup, the `smoke` tier's games); skipped with a notice without a Python interpreter | `smoke` | ~15 s |
+
+**The replay corpus** (`train/regression/corpus/`): each game's decision log `<name>.rmlog`
+(RMLOG v2: seed, setup flags, both decklists, every decision) and its replay baseline
+`<name>.replay`, beside the Python tier's transcript `<name>.txt`. `replay_diff.py record` (`make
+regen`) plays the scripted agent with `--decision-log <name>.rmlog` (which changes no transcript
+line), then runs `robomage_check --tier replay --record` for the baselines. Checking needs no
+Python; re-recording needs the agent.
+
+```bash
+bin/debug/robomage_check --tier scenarios --scenario 'ward*' --show narrative
+bin/debug/robomage_check --tier replay          # one tier; --record rewrites the baselines
+make check-cpp                                  # every tier
+```
+
 ### Opt-in tiers (valid for `--tier`, not in the default run)
 
 | Tier | Checks | Needs |
@@ -313,7 +353,7 @@ changed files. What it covers:
 
 - **`replay` drift** from a deliberate engine / agent / card-data change: re-record and commit.
   ```bash
-  train/.venv/bin/python train/regression/replay_diff.py record
+  train/.venv/bin/python train/regression/replay_diff.py record   # transcripts, decision logs, replay baselines
   train/.venv/bin/python train/test_agent_parity.py --record   # the agentparity tier's pinned games
   ```
   The corpus is **platform-portable**: all gameplay randomness goes through `src/stable_rng.h`
