@@ -22,8 +22,17 @@ games). In order of precedence it goes to:
 5. **The RMSTATE stream** — under `--machine`, every other seat: its frames on stdout, one integer
    reply per decision on stdin. This is how an external agent (such as the Python driver) plays.
 
-`--agent-a/-b`, `--play` and `--actions` imply `--machine` (the machine decision schedule) and
-cannot be combined with `--replay` or with an agent on the `--player` seat.
+`--agent-a/-b`, `--play` and `--actions` imply `--machine` and cannot be combined with `--replay`
+or with an agent on the `--player` seat. `--machine` changes only how decisions are read and
+written: the decisions themselves (which are asked, what each menu offers) are the same for every
+consumer — terminal, stream, in-process agent or replay.
+
+**Auto-mana** is on by default for all of them: ordinary mana abilities are not offered at
+priority (instant-speed sources and sources targeted by removal on the stack are, so mana can be
+floated), costs are paid by the greedy payer and hybrid pips resolve automatically.
+`--no-auto-mana` turns it off for the whole match: every mana ability is offered at priority and a
+cost the pool doesn't cover is paid by choosing sources one at a time, with a last row that
+cancels the payment and reverses the spell or ability. The flag is recorded in the decision log.
 
 Whatever decides, every game prints `GAME_RESULT: N Player A|B wins` (or `GAME_RESULT: N draw`,
 CR 104.4a) and a bo3 match ends with `MATCH_RESULT: Player A|B wins X-Y`. Under the stream those
@@ -206,10 +215,11 @@ Every decision is logged as an integer. `--decision-log FILE` writes the RMLOG v
 `FLAGS` — the setup flags that change the game — both decklists, then every decision, concession
 sentinels included); `--log-decisions` writes it to `resources/logs/game_<seed>.log` (interactive
 games always log there). `--replay FILE` replays it deterministically: the header alone fixes the
-setup (decks, seed, `--bo3`, `--no-shuffle`, the test-setup presets, `--max-decisions`), setup
-flags given alongside are ignored with a warning, and output flags (`--machine`, `--narrative`,
-`--trace-decisions`, `--rmstate-dump`, `--knowledge-a/-b`, the self-checks, …) still apply. A
-replay whose logged index is outside the live menu stops with `replay diverged at decision N`.
+setup (decks, seed, `--bo3`, `--no-shuffle`, `--no-auto-mana`, the test-setup presets,
+`--max-decisions`), setup flags given alongside are ignored with a warning, and output flags
+(`--machine`, `--narrative`, `--trace-decisions`, `--rmstate-dump`, `--knowledge-a/-b`, the
+self-checks, …) still apply. A replay whose logged index is outside the live menu stops with
+`replay diverged at decision N`.
 
 ```bash
 cd bin

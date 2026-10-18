@@ -254,7 +254,7 @@ struct Game {
             bool player_a_has_priority = true;
             bool a_has_passed = false;
             bool b_has_passed = false;
-            // Machine mode: block casting a spell or activating an ability after 2 failed payments
+            // Block casting a spell or activating an ability after 2 failed payments
             // for it since the last action taken. Keyed by the card or source as the object it is at
             // its origin: a cancelled cast returns the card there as its restored object.
             ObjectMap<int> payment_fail_counts;

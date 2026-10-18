@@ -248,12 +248,6 @@ void InputLogger::init_replay(const std::string &replay_path) {
     read_header_field(replay_file, "DECISIONS");
     replay_deck_a = Deck::from_string(replay_header.deck_a_text);
     replay_deck_b = Deck::from_string(replay_header.deck_b_text);
-    // A machine-mode log's decision schedule differs from the interactive one (auto-paid
-    // mana, hidden mana-source menu entries, ...); replaying it must follow the machine
-    // schedule or the logged indices land on the wrong menus.
-    for (const std::string &tok : replay_flags) {
-        if (tok == "machine") replay_machine_schedule = true;
-    }
     replay_mode = true;
     game_log("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
     game_log("REPLAY MODE: Using embedded decks '%s' / '%s' (command-line deck args ignored)\n",
@@ -276,9 +270,6 @@ bool InputLogger::is_replay_mode() const {
 }
 bool InputLogger::is_machine_mode() const {
     return machine_mode;
-}
-bool InputLogger::is_machine_schedule() const {
-    return machine_mode || replay_machine_schedule;
 }
 
 unsigned int InputLogger::get_replay_seed() const {

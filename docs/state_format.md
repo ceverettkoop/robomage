@@ -610,7 +610,7 @@ that also answers simulated ones (a search agent's).
 | 29 | `CARDS` always carries oracle text, for cards and tokens; text embeddings for learned models are built from it | decided |
 | 30 | Every schema column carries a semantic tag and, where defined, a value range (section 9) | decided |
 | 31 | Every row with an owner/controller/player column also carries it relative to the viewer (self/opponent) | decided |
-| 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off (per seat with `-a`/`-b` if needed); recorded in the RMLOG header. Lands with the other schedule changes in plan step 4a; until then the existing machine/interactive split stands | decided |
+| 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off for the match (match-wide; no per-seat variant); recorded in the RMLOG header. Done in plan step 4a | decided |
 | 33 | Every cost-payment decision's frame carries `pending_cost`: what is being paid for and the remaining cost by pip type (section 4) | decided |
 | 34 | Counter kinds travel as `text` (no engine enum; they are script strings) | decided |
 | 35 | Face-down exiled cards follow CR 406.3: a per-player look window, opened for whoever looked at the card before it was exiled face down or is allowed to look, lasting until the card leaves exile | decided |

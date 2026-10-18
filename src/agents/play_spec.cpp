@@ -133,6 +133,10 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         "ORDER_TRIGGERS", "CHOOSE_REPLACEMENT", "ATTACK_TARGET", "BLOCK_TARGET", "OPTIONAL_YESNO", "SYLVAN_CHOICE",
         "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD"};
     static const std::set<std::string> mana = {"MANA_W", "MANA_U", "MANA_B", "MANA_R", "MANA_G", "MANA_C"};
+    // tap:<card> also picks a source in the mana payment loop (--no-auto-mana), whose rows are
+    // PAYING_COSTS.
+    static const std::set<std::string> tap = {
+        "MANA_W", "MANA_U", "MANA_B", "MANA_R", "MANA_G", "MANA_C", "PAYING_COSTS"};
     static const std::map<std::string, std::set<std::string>> table = {
         {"pass", {"PASS_PRIORITY"}},
         {"cast", {"CAST_SPELL"}},
@@ -143,7 +147,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"attack", {"SELECT_ATTACKER", "CONFIRM_ATTACKERS"}},
         {"block", {"SELECT_BLOCKER", "CONFIRM_BLOCKERS"}},
         {"mana", mana},
-        {"tap", mana},
+        {"tap", tap},
         {"search", {"SEARCH_LIBRARY", "CHOOSE_CARD"}},
         {"top", {"TOP_LIBRARY"}},
         {"bottom", {"BOTTOM_DECK_CARD"}},

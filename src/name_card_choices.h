@@ -34,17 +34,16 @@
 // Each returned LegalAction carries a representative owner-owned entity for the
 // named card (so the per-action card id encodes the candidate), category
 // NAME_CARD, and card_is_public = true. The list is ordered by copy count
-// descending then name ascending (deterministic for replay) and capped at
-// MAX_ACTIONS. The names parallel-array (chosen[i] is the name for choice i) is
-// returned via `out_names` so the caller can record the picked name in its own
-// field (cur_game.resolution.memory.named_card vs Permanent::chosen_name).
+// descending then name ascending (deterministic for replay), uncapped. The names
+// parallel-array (chosen[i] is the name for choice i) is returned via `out_names`
+// so the caller can record the picked name in its own field
+// (cur_game.resolution.memory.named_card vs Permanent::chosen_name).
 //
 // Under --closed-decklist the decks are not the candidate source (the opponent's
 // list is hidden; docs/state_format.md register 11a): every vocab card passing
 // `valid_filter` is offered, whatever `scope` and `owner` say, in name order and
 // uncapped, each choice with no representative entity (source_entity 0) and its
-// card in LegalAction::named_card. Such a menu is wider than MAX_ACTIONS, which
-// is why --closed-decklist needs the RMSTATE stream on a machine run.
+// card in LegalAction::named_card.
 enum class NameCardScope { CHOOSER_ONLY, BOTH_PLAYERS };
 
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,

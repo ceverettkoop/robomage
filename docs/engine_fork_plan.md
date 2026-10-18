@@ -478,7 +478,7 @@ paths corrected.
   - With it on, ordinary mana abilities stay hidden at priority and the greedy payer
     (`auto_pay_mana`) pays costs and resolves hybrid pips. Two kinds stay offered so mana can
     still be floated: instant-speed sources, and sources targeted by removal on the stack.
-  - `--no-auto-mana` turns it off for the match; it can be per seat (`-a`/`-b`) if needed.
+  - `--no-auto-mana` turns it off for the match (match-wide; no per-seat variant).
     With it off, every mana ability is listed at priority and costs are paid through the
     interactive payment loop, for any consumer.
   - The setting is recorded in the RMLOG header (`record_header_flags`, `src/cli_args.h`), so
@@ -494,6 +494,27 @@ paths corrected.
   the agent.
 - Re-record the corpus with the live agent, and add explore games with `--no-auto-mana` so
   manual mana payment is covered.
+
+**Status: part 1 done** (the schedule; the corpus re-record and `interchangeable_cards` are
+still to do). `machine_masks_conditional_destroy` is deleted: a Fatal Push-style spell is
+offered whenever it has a legal target (CR 601.2c) and its condition is checked on resolution.
+`auto-mana` is the match-wide launch option `auto_mana` (`game_driver.h`), on unless
+`--no-auto-mana` (a setup option in the `cli_args.cpp` table, so the RMLOG `FLAGS` line carries
+`no-auto-mana` and a header without it replays with auto-mana on); it gates the priority-menu
+mana abilities, `auto_pay_mana` in `prompt_mana_payment` and the hybrid pips. With it off, the
+payment loop's last row "Cancel casting" is offered to every consumer (it reverses the spell or
+ability and counts toward the `payment_blocked` guard, now also for suspend and the companion
+special action), and a cost-bearing source is offered there only while the pool covers its
+activation cost, so every other row makes progress. The sideboard-swap cap is always on.
+`InputLogger::is_machine_schedule` and the replay's `machine` reading are gone; the RMLOG
+`machine` marker is still written and is informational only, and `is_machine_mode` gates only
+I/O (the stream, the agents' provider, the CLI board and prompt output). The open-decklist
+name-a-card menu is no longer truncated. Scenarios `cr608_2c_fatal_push_*`,
+`cr605_3a_no_auto_mana_manual_payment`, `cr605_3a_auto_mana_hides_land_mana_ability`. Evidence:
+C++ explore games with `--no-auto-mana --selfcheck-knowledge` over the ten league mirrors and
+crosses (100 bo1 `explore`, 60 bo1 and 60 bo3 `explore:patient`) end with no error and no draw.
+Of the corpus only `lg_bug__reanimator` drifts (Fatal Push is now offered against a lone
+Atraxa); the re-record follows.
 
 ### 4b. C++ CLI on the decoder
 

@@ -1,0 +1,16 @@
+{
+  "name": "cr605_3a_auto_mana_hides_land_mana_ability",
+  "why": "Plan step 4a, auto-mana (on by default for every consumer): a land's ordinary mana ability is not on the priority menu and Lightning Bolt's cost is paid with no payment decision",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Grizzly Bears@opp"],
+  "max_decisions": 5,
+  "expect_menu": ["^Cast Lightning Bolt$"],
+  "expect_menu_not": ["^Tap Mountain", "^Cancel casting$"],
+  "expect_not": ["Pay mana costs"],
+  "expect": ["Grizzly Bears is destroyed"]
+}

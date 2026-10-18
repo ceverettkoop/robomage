@@ -22,6 +22,7 @@
 #include "ecs/events.h"
 #include "effects/effects.h"
 #include "error.h"
+#include "game_driver.h"
 #include "input_logger.h"
 #include "queries/activation.h"
 #include "queries/battlefield.h"
@@ -1544,13 +1545,11 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         return true;
     }
 
-    bool is_machine = InputLogger::instance().is_machine_schedule();
-
     // Drain existing pool toward the cost first
     ManaValue remaining = pay_partial(controller, cost);
 
-    // Machine mode: auto-select mana sources (no interactive prompts)
-    if (is_machine) {
+    // Auto-mana: the greedy payer selects the mana sources (no decisions)
+    if (auto_mana) {
         return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
                              has_improvise);
     }
@@ -1574,6 +1573,10 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         // Mana abilities
         auto mana_actions = collect_mana_legal_actions(controller, orderer, paid_for);
         for (auto &la : mana_actions) {
+            // A cost-bearing source (Talon Gates' {1}{T}) is offered only while the pool covers
+            // its activation cost, so every offered row makes progress and an agent that keeps
+            // picking the same row can't spin here.
+            if (!can_afford_pool(player.mana, la.ability.def->activation_mana_cost)) continue;
             la.category = ActionCategory::PAYING_COSTS;
             pay_actions.push_back(la);
         }
@@ -1606,12 +1609,13 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
             return false;
         }
 
-        // Add cancel option in non-machine mode
-        if (!is_machine) {
-            LegalAction cancel(PASS_PRIORITY, "Cancel casting");
-            cancel.category = ActionCategory::PAYING_COSTS;
-            pay_actions.push_back(cancel);
-        }
+        // The last row cancels the payment, for every consumer: the sources chosen so far may
+        // no longer cover the rest of the cost, and a cancelled payment reverses the spell or
+        // ability (the caller's rewind) and counts against it for the offer gate's
+        // payment_blocked guard, which stops an agent from retrying it forever.
+        LegalAction cancel(PASS_PRIORITY, "Cancel casting");
+        cancel.category = ActionCategory::PAYING_COSTS;
+        pay_actions.push_back(cancel);
 
         // Show remaining cost
         game_log("Pay mana costs (");
@@ -1632,15 +1636,14 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         }
 
         // Check for cancel
-        if (!is_machine && choice == static_cast<int>(pay_actions.size()) - 1) {
+        if (choice == static_cast<int>(pay_actions.size()) - 1) {
             return false;
         }
 
         auto &chosen = pay_actions[static_cast<size_t>(choice)];
 
         size_t uchoice = static_cast<size_t>(choice);
-        if (has_improvise && uchoice >= improvise_action_start &&
-            uchoice < pay_actions.size() - (is_machine ? 0 : 1)) {
+        if (has_improvise && uchoice >= improvise_action_start && uchoice < pay_actions.size() - 1) {
             // Improvise: tap the chosen artifact to pay one generic.
             improvise_tap_one(chosen.source_entity, controller, remaining);
         } else if (has_delve && uchoice >= delve_action_start &&
@@ -1650,9 +1653,9 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         } else {
             // Mana ability activation — same core sequence as the auto-payer. The interactive
             // payer always commits to real state, so pool == the player's real mana pool.
-            // A cost-bearing source (Talon Gates' {1}{T}) refuses to activate while the pool
-            // can't cover its activation cost: nothing is tapped and no mana is produced, and
-            // the loop re-prompts so the player can float mana from another source first.
+            // A source that refuses to activate (the offer above already requires its
+            // activation cost in the pool) taps nothing and produces no mana, and the loop
+            // re-prompts.
             if (!activate_mana_source(chosen.source_entity, chosen.ability, controller, orderer,
                                       player.mana, player, /*commit=*/true,
                                       ManaLogStyle::ACTIVATED))

@@ -430,10 +430,13 @@ functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtP
 
 ### Machine protocol, state format and knowledge sidecar
 
-`--machine` (also spelled `--machine-format rmstate`) selects the machine decision schedule (see
-plan step 4a for how it differs from the CLI's) and, for each seat with no in-process agent that
-is not the `--player` seat, the RMSTATE stream (`src/state_format/stream.h`,
-`docs/state_format.md` §9):
+`--machine` (also spelled `--machine-format rmstate`) selects, for each seat with no in-process
+agent that is not the `--player` seat, the RMSTATE stream (`src/state_format/stream.h`,
+`docs/state_format.md` §9); it changes I/O only, never which decisions are asked or what a menu
+offers. Mana payment is the match-wide **auto-mana** option, on by default for every consumer
+(ordinary mana abilities hidden at priority, costs auto-paid, hybrid pips auto-resolved);
+`--no-auto-mana` (recorded in the RMLOG header) lists every mana ability and pays costs through the
+interactive payment loop (`prompt_mana_payment`):
 
 - stdout carries only `RMSTATE <nbytes>\n` + payload records; everything else (narrative under
   `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, diagnostics) goes to stderr.

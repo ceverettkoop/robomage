@@ -132,6 +132,12 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --offer-cancel      Offer \"Cancel\" at every cast and activation prompt; it\n");
     printf("                      reverses the spell or ability being proposed (CR 733.1).\n");
     printf("                      A testing aid (default: off)\n");
+    printf("  --no-auto-mana      Turn auto-mana off for the match: every mana ability is\n");
+    printf("                      offered at priority and costs are paid by choosing mana\n");
+    printf("                      sources, for every seat and agent. By default ordinary\n");
+    printf("                      mana abilities are hidden and costs are paid automatically\n");
+    printf("                      (instant-speed sources and sources targeted by removal\n");
+    printf("                      on the stack stay offered). Recorded in the decision log\n");
     printf("  --closed-decklist   Each seat's state-format frames carry only its own\n");
     printf("                      registered decklist (default: both lists are open);\n");
     printf("                      name-a-card then offers every vocab card\n");
@@ -140,7 +146,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      B); hidden information is shown from that seat's view.\n");
     printf("                      With --machine only that seat is prompted at the\n");
     printf("                      terminal; without it every decision is prompted there\n");
-    printf("  --machine           Machine mode (the machine decision schedule). Outside\n");
+    printf("  --machine           Machine mode (speak RMSTATE; the decisions are the same\n");
+    printf("                      as at the terminal). Outside\n");
     printf("                      --replay, each seat that has no in-process agent and is\n");
     printf("                      not the --player seat decides over the RMSTATE stream:\n");
     printf("                      its frames (\"RMSTATE <nbytes>\" + payload) on stdout, one\n");

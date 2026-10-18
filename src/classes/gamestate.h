@@ -10,8 +10,7 @@
 #define MAX_BATTLEFIELD_SLOTS 48  // permanents shown per player
 #define MAX_STACK_DISPLAY 12      // stack objects shown, top first
 #define MAX_HAND_SLOTS 10         // hand cards shown
-// The widest menu a capped decision offers: a sideboard menu (game_driver.cpp, fatal past it) and
-// an open-decklist name-a-card menu (name_card_choices.cpp, truncated).
+// The widest sideboard menu (game_driver.cpp, fatal past it).
 #define MAX_ACTIONS 64
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width
 

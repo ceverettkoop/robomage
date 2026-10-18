@@ -53,16 +53,10 @@ class InputLogger {
     // named the file). Call before either init.
     void set_log_path(const std::string& path);
     bool is_replay_mode() const;
+    // Machine mode is an I/O mode only (the RMSTATE stream, the in-process agents, output
+    // suppression): the decision schedule — which decisions are queried and what each menu
+    // contains — is the same for every consumer, so nothing that shapes a menu may read this.
     bool is_machine_mode() const;
-    // True when the game must follow the machine-mode DECISION SCHEDULE: machine mode
-    // itself, or a replay of a log recorded in machine mode (FLAGS token "machine").
-    // Machine mode auto-resolves some choices (mana payment, hybrid pips) and masks
-    // some menu entries that the CLI path presents interactively, so a machine log
-    // only replays faithfully when those same code paths are taken. Use this (not
-    // is_machine_mode) in any conditional that changes WHICH decisions are queried
-    // or WHAT the menu contains; keep is_machine_mode for I/O concerns (output
-    // suppression).
-    bool is_machine_schedule() const;
     unsigned int get_replay_seed() const;
     // Parsed from the RMLOG v2 header (valid after init_replay)
     const DecisionLogHeader& get_replay_header() const;
@@ -107,8 +101,6 @@ class InputLogger {
     int choose(const std::vector<LegalAction>& actions);
     bool replay_mode = false;
     bool machine_mode = false;
-    // Replayed log was recorded in machine mode (see is_machine_schedule)
-    bool replay_machine_schedule = false;
     // 1-based count of decisions read from the replay log (for divergence reports)
     size_t replay_decision_no = 0;
     unsigned int replay_seed = 0;

@@ -1,0 +1,17 @@
+{
+  "name": "cr608_2c_fatal_push_offered_condition_checked_on_resolution",
+  "why": "CR 601.2c / 608.2c: Fatal Push targets any creature, so it is castable at a lone mana-value-5 Air Elemental; its mana-value condition is checked only on resolution, which destroys nothing (plan step 4a: the machine-only conditional-destroy mask is gone)",
+  "hand_a": ["Fatal Push"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Air Elemental"],
+  "play": ["A:keep", "B:keep", "A:cast:Fatal Push", "A:target:Air Elemental@opp"],
+  "max_decisions": 5,
+  "expect_order": [
+    "Player A casts Fatal Push targeting Air Elemental",
+    "Air Elemental has mana value 5 \\(threshold 2\\) .* not destroyed"
+  ],
+  "expect_not": ["Air Elemental is destroyed"]
+}

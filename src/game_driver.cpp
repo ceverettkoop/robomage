@@ -101,6 +101,12 @@ bool no_shuffle = false;
 // the proposal (CR 733.1). A testing aid for the rewind; off by default, so the machine action
 // space is unchanged.
 bool offer_cast_cancel = false;
+// auto-mana (on unless --no-auto-mana), match-wide for every consumer: ordinary mana abilities stay
+// off the priority menu, the greedy payer (auto_pay_mana) pays the part of a cost the pool doesn't
+// cover, and hybrid pips resolve to the first payable assignment. Off, every mana ability is
+// offered at priority and costs are paid through the interactive payment loop
+// (prompt_mana_payment). Recorded in the RMLOG header.
+bool auto_mana = true;
 bool narrative_mode = false;
 bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training
@@ -1296,15 +1302,13 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
                         " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
                         " — choices beyond that would be unreachable");
 
-        // Cap completed swaps in machine mode so a runaway agent cannot spin here
-        // (schedule-affecting, so a replayed machine log must apply the same cap).
+        // Cap completed swaps, for every consumer, so a runaway agent cannot spin here.
         // Checked only while balanced: interrupting mid-move would strand the deck
         // off-size. It can also pre-empt the Done-only menu a forced cut sets up —
         // if the stranding swap was the SIDEBOARD_SWAP_CAP'th one this fires first.
         // The deck is balanced on either path, so the worst-case decision count is
         // unchanged (Done is simply replaced by the auto-finish).
-        if (balanced && InputLogger::instance().is_machine_schedule() &&
-            st.sb_swaps >= SIDEBOARD_SWAP_CAP) {
+        if (balanced && st.sb_swaps >= SIDEBOARD_SWAP_CAP) {
             game_log("%s hit sideboard swap limit (%d), auto-finishing.\n",
                      player_name, SIDEBOARD_SWAP_CAP);
             break;

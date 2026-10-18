@@ -21,7 +21,8 @@
 //   target:<card|text>[@side]    choose a target                           (SELECT_TARGET)
 //   attack:<card> | attack:done  declare an attacker / confirm             (SELECT_/CONFIRM_ATTACKERS)
 //   block:<card> | block:done    declare a blocker / confirm               (SELECT_/CONFIRM_BLOCKERS)
-//   mana:<w|u|b|r|g|c> | tap:<land>   tap for mana                         (MANA_*)
+//   mana:<w|u|b|r|g|c> | tap:<land>   tap for mana                         (MANA_*; tap: also the
+//                                     payment loop's sources, PAYING_COSTS)
 //   search:<card> | search:fail  library / exile / sideboard search        (SEARCH_LIBRARY, CHOOSE_CARD)
 //   top:<card>  bottom:<card>  dig:<card>                                  (TOP_LIBRARY, BOTTOM_DECK_CARD, DIG_CHOICE)
 //   mulligan | keep              the mulligan decision                     (MULLIGAN, KEEP_HAND)
