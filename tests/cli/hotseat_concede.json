@@ -1,0 +1,4 @@
+{"name": "hotseat_concede",
+ "why": "hotseat (no agent: both seats human, a banner per decision): Player A bolts a creature with a target choice, board, Player B concedes the game",
+ "args": ["--game-seed", "1", "--hand-a", "Lightning Bolt,Mountain", "--library-a", "Mountain", "--battlefield-a", "Mountain", "--hand-b", "Forest,Grizzly Bears", "--library-b", "Forest", "--battlefield-b", "Grizzly Bears,Forest"],
+ "input": ["0", "0", "1", "board", "2", "1", "1", "concede"]}

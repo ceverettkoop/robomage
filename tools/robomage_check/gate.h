@@ -24,12 +24,13 @@ struct Options {
         int smoke_games = 2;
         std::string matchups;  // fuzz / smoke matchup preset ("" = the tier's default)
         std::string mode = "explore";
-        bool record = false;                         // replay: write the baselines instead of checking them
+        bool record = false;                         // replay, cli: write the baselines instead of checking them
         std::vector<std::string> scenario_patterns;  // scenarios: name globs ("" = all)
         std::string show;  // scenarios: print each run's output | narrative | dump (knowledge lines)
 
         std::string corpus_dir() const { return repo + "/tests/corpus"; }
         std::string scenario_dir() const { return repo + "/tests/scenarios"; }
+        std::string cli_dir() const { return repo + "/tests/cli"; }
         std::string decks_dir() const { return bin_dir + "/resources/decks"; }
         // <out_dir>/<sub>, created.
         std::string out(const std::string &sub) const;
@@ -63,6 +64,7 @@ std::string deck_stem(const std::string &spec);
 void tier_vocab(const Options &opt, Report &rep);
 void tier_concede(const Options &opt, Report &rep);
 void tier_scenarios(const Options &opt, Report &rep);
+void tier_cli(const Options &opt, Report &rep);
 void tier_replay(const Options &opt, Report &rep);
 void tier_state(const Options &opt, Report &rep);
 void tier_knowledge(const Options &opt, Report &rep);

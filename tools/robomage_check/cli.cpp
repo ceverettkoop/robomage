@@ -22,6 +22,7 @@ static const TierEntry TIERS[] = {
     {"vocab", rmcheck::tier_vocab},
     {"concede", rmcheck::tier_concede},
     {"scenarios", rmcheck::tier_scenarios},
+    {"cli", rmcheck::tier_cli},
     {"replay", rmcheck::tier_replay},
     {"state", rmcheck::tier_state},
     {"knowledge", rmcheck::tier_knowledge},

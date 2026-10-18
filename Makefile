@@ -100,8 +100,9 @@ program:$(C_OBJ) $(CXX_OBJ)
 
 # Standardized engine test gate — the single command CI and developers run. Builds first (via
 # `all`), then runs every tier of the C++ gate bin/<config>/robomage_check (docs/ci.md: vocab,
-# concede, rules scenarios, byte-identical replay corpus, state-format and knowledge self-checks,
-# explore fuzz, bench, and the smoke tier through the Python driver). Exits nonzero on any finding.
+# concede, rules scenarios, the human CLI's golden transcripts, byte-identical replay corpus,
+# state-format and knowledge self-checks, explore fuzz, bench, and the smoke tier through the
+# Python driver). Exits nonzero on any finding.
 # Requires the card scripts to be provisioned first (tools/forge_fetch/provision_decks.py; the
 # SessionStart hook does this).
 check: all
