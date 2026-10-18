@@ -24,6 +24,7 @@ static std::string stamp();
 static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
     const std::vector<std::pair<std::string, std::string>> &pairs, std::vector<GameJob> &jobs, int per_matchup);
 static std::vector<std::string> engine_game_args(const GameJob &job);
+static void report_pycheck(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ProcResult &r);
 
 // The games' winners from the engine's GAME_RESULT / MATCH_RESULT lines. A bo1 game is drawn
 // when its GAME_RESULT says so, and a game with no result (a stall) counts as a draw too; a bo3
@@ -127,6 +128,32 @@ static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, c
     }
 }
 
+// The kept Python's own checks (train/pycheck.py: its decoder against the engine's, the
+// decoders' refusals, the driver's seeds and imports), run beside the smoke games.
+static void report_pycheck(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ProcResult &r) {
+    const std::string path = rmcheck::path_join(opt.out(""), "smoke_pycheck.txt");
+    rmcheck::write_file(path, r.out);
+    size_t fails = 0;
+    for (const std::string &line : rmcheck::split_lines(r.out)) {
+        const std::string t = rmcheck::trim(line);
+        if (rmcheck::starts_with(t, "FAIL: ")) {
+            ++fails;
+            rep.error("smoke", "pycheck: " + t.substr(6));
+        } else if (rmcheck::starts_with(t, "OK   ")) {
+            rep.info("pycheck: " + t.substr(5));
+        }
+    }
+    if (!r.ok() && fails == 0)
+        rep.error("smoke", "pycheck: train/pycheck.py failed (" + r.status_text() + ", see " + path + ")");
+    std::vector<rmcheck::ScanLine> errs, warns;
+    rmcheck::scan_transcript(r.out, &errs, &warns);
+    if (!errs.empty())
+        rep.error("smoke", "pycheck: " + std::to_string(errs.size()) + " error line(s), first at " + path + ":" +
+                               std::to_string(errs[0].lineno) + ": " + rmcheck::quoted(errs[0].line));
+    if (!warns.empty())
+        rep.warn("smoke", "pycheck: " + std::to_string(warns.size()) + " engine WARNING line(s) — review " + path);
+}
+
 namespace rmcheck {
 
 // The fuzz tier: C++ explore vs explore in-process (--agent-a/-b <mode>, the Python explore tier's
@@ -223,8 +250,8 @@ void tier_bench(const Options &opt, Report &rep) {
 
 // The smoke tier: scripted hard vs hard (the Python agent: train/rm_driver.py, one process per
 // matchup) over the league mirrors and the ring (--smoke-games per matchup, game i of matchup k
-// with seed seed + 1000k + i: train/ci_check.py's smoke games). Skipped with a notice when no
-// Python interpreter is found.
+// with seed seed + 1000k + i), and beside them the kept Python's own checks (train/pycheck.py).
+// Skipped with a notice when no Python interpreter is found.
 void tier_smoke(const Options &opt, Report &rep) {
     if (opt.python.empty()) {
         rep.info("smoke: skipped (no Python interpreter: train/.venv/bin/python or python3)");
@@ -235,9 +262,20 @@ void tier_smoke(const Options &opt, Report &rep) {
     const std::string out_dir = opt.out("");
     std::vector<ProcResult> results(pairs.size());
     std::vector<std::string> work(pairs.size());
-    parallel_for(pairs.size(), opt.jobs, [&](size_t k) {
-        work[k] = make_temp_dir(out_dir, ".smoke_");
+    ProcResult pycheck;
+    // Job 0 is the Python checks (the longest job), job k + 1 matchup k.
+    parallel_for(pairs.size() + 1, opt.jobs, [&](size_t job) {
         ProcSpec spec;
+        if (job == 0) {
+            spec.argv = {opt.python, opt.repo + "/train/pycheck.py", "--binary", opt.binary, "--out-dir", out_dir};
+            spec.cwd = opt.repo;
+            spec.timeout_s = 3600;
+            spec.merge_stderr = true;
+            pycheck = run_process(spec);
+            return;
+        }
+        const size_t k = job - 1;
+        work[k] = make_temp_dir(out_dir, ".smoke_");
         spec.argv = {opt.python, opt.repo + "/train/rm_driver.py", "--player-a", "scripted", "--player-b", "scripted",
             "--deck-a", pairs[k].first, "--deck-b", pairs[k].second, "--format", "bo1", "--games",
             std::to_string(opt.smoke_games), "--seed", std::to_string(opt.seed + 1000 * static_cast<long>(k)),
@@ -295,6 +333,7 @@ void tier_smoke(const Options &opt, Report &rep) {
             rep.warn("smoke", label + ": " + std::to_string(warns.size()) + " engine WARNING line(s) — review " + path);
         rep.info(label + ": " + summary + " -> " + path);
     }
+    report_pycheck(opt, rep, pycheck);
 }
 
 }  // namespace rmcheck

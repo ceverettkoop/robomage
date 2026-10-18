@@ -90,6 +90,7 @@ static std::vector<std::string> result_lines(const std::string &text) {
 
 // A BQUERY --machine stdout without its frames ("BQUERY: <n> <state size> <max actions>" + the
 // binary payload of 4 × (state size + 7 × max actions) bytes, without --narrative): its text lines.
+// BQUERY leg: goes with the BQUERY payload (plan step 3b, part B), as does parked()'s BQUERY run.
 static std::string bquery_text(const std::string &out) {
     std::string text;
     size_t at = 0;
@@ -368,7 +369,8 @@ static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
                     tag + ": the match concession credited Player B");
             }
             check_parked_replay(opt, c, tag, log, results, pc.announce, sentinel);
-            // BQUERY: the same replies piped into --machine.
+            // BQUERY: the same replies piped into --machine. BQUERY leg: drop it (or retarget it to the
+            // RMSTATE --machine) with the BQUERY payload (plan step 3b, part B).
             const std::string blog = rmcheck::path_join(dir, "bquery_" + std::to_string(seed) + ".rmlog");
             rmcheck::ProcSpec spec;
             spec.argv = {opt.binary, "--machine"};

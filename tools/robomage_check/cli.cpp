@@ -46,11 +46,18 @@ static std::string self_dir() {
     return rmcheck::dirname_of(buf);
 }
 
+// The interpreter for the smoke tier: the project venv's, else the first python3 on $PATH, else a
+// system one.
 static std::string find_python(const std::string &repo) {
     const std::string venv = repo + "/train/.venv/bin/python";
     if (access(venv.c_str(), X_OK) == 0) return venv;
-    for (const char *dir : {"/usr/bin", "/usr/local/bin", "/bin"}) {
-        const std::string p = std::string(dir) + "/python3";
+    std::vector<std::string> dirs;
+    if (const char *path = std::getenv("PATH"))
+        for (const std::string &d : rmcheck::split(path, ':'))
+            if (!d.empty()) dirs.push_back(d);
+    for (const char *d : {"/usr/bin", "/usr/local/bin", "/bin"}) dirs.push_back(d);
+    for (const std::string &dir : dirs) {
+        const std::string p = dir + "/python3";
         if (access(p.c_str(), X_OK) == 0) return p;
     }
     return "";
@@ -92,7 +99,7 @@ int gate_main(int argc, char **argv) {
     opt.repo = rmcheck::dirname_of(rmcheck::dirname_of(here));
     opt.bin_dir = opt.repo + "/bin";
     opt.binary = here + "/robomage";
-    opt.out_dir = opt.repo + "/ci_out/cpp";
+    opt.out_dir = opt.repo + "/ci_out";
     const unsigned hw = std::thread::hardware_concurrency();
     opt.jobs = hw ? static_cast<int>(hw) : 4;
     std::string tiers_arg = all_tier_names();
