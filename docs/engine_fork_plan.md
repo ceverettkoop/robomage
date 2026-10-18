@@ -8,8 +8,8 @@ the Python front ends. It is archived in place, not forked: branch `archive/rl-s
 `rl-stack-final`, if created) ends at `cf7f97f`, the last commit with both stacks, and
 development continues on `main` in this repository.
 
-**Status: steps 1–3 are done** (each step's status paragraphs below are its history); steps 4
-and 5 are the plan forward. Paths under `train/` in those paragraphs name files deleted in step
+**Status: steps 1–4 are done** (each step's status paragraphs below are its history); step 5
+is the plan forward. Paths under `train/` in those paragraphs name files deleted in step
 3b (they are on `archive/rl-stack`), except the seven kept Python files, which moved to `python/`
 and are written here with their current paths.
 
@@ -478,7 +478,7 @@ paths corrected.
   - With it on, ordinary mana abilities stay hidden at priority and the greedy payer
     (`auto_pay_mana`) pays costs and resolves hybrid pips. Two kinds stay offered so mana can
     still be floated: instant-speed sources, and sources targeted by removal on the stack.
-  - `--no-auto-mana` turns it off for the match; it can be per seat (`-a`/`-b`) if needed.
+  - `--no-auto-mana` turns it off for the match (match-wide; no per-seat variant).
     With it off, every mana ability is listed at priority and costs are paid through the
     interactive payment loop, for any consumer.
   - The setting is recorded in the RMLOG header (`record_header_flags`, `src/cli_args.h`), so
@@ -494,6 +494,50 @@ paths corrected.
   the agent.
 - Re-record the corpus with the live agent, and add explore games with `--no-auto-mana` so
   manual mana payment is covered.
+
+**Status: done** (part 1 the schedule, part 2 `interchangeable_cards`, part 3 the corpus
+re-record and the manual-payment coverage). `machine_masks_conditional_destroy` is deleted: a Fatal Push-style spell is
+offered whenever it has a legal target (CR 601.2c) and its condition is checked on resolution.
+`auto-mana` is the match-wide launch option `auto_mana` (`game_driver.h`), on unless
+`--no-auto-mana` (a setup option in the `cli_args.cpp` table, so the RMLOG `FLAGS` line carries
+`no-auto-mana` and a header without it replays with auto-mana on); it gates the priority-menu
+mana abilities, `auto_pay_mana` in `prompt_mana_payment` and the hybrid pips. With it off, the
+payment loop's last row "Cancel casting" is offered to every consumer (it reverses the spell or
+ability and counts toward the `payment_blocked` guard, now also for suspend and the companion
+special action), and a cost-bearing source is offered there only while the pool covers its
+activation cost, so every other row makes progress. The sideboard-swap cap is always on.
+`InputLogger::is_machine_schedule` and the replay's `machine` reading are gone; the RMLOG
+`machine` marker is still written and is informational only, and `is_machine_mode` gates only
+I/O (the stream, the agents' provider, the CLI board and prompt output). The open-decklist
+name-a-card menu is no longer truncated. Scenarios `cr608_2c_fatal_push_*`,
+`cr605_3a_no_auto_mana_manual_payment`, `cr605_3a_auto_mana_hides_land_mana_ability`. Evidence:
+C++ explore games with `--no-auto-mana --selfcheck-knowledge` over the ten league mirrors and
+crosses (100 bo1 `explore`, 60 bo1 and 60 bo3 `explore:patient`) end with no error and no draw.
+Of the corpus only `lg_bug__reanimator` drifts (Fatal Push is now offered against a lone
+Atraxa); the re-record follows. Part 2: `interchangeable_cards` keeps two identical library cards
+apart only while some seat sees one of them and not the other (`identity_visible` per seat: a live
+reveal window); what a seat remembers of a closed window is its sidecar's. `Game::OppKnownLibraryTop`
+and its orderer bookkeeping (`LibraryTopView`, `note_library_card_known`), `Game::revealed_in_library`
+and `mark_card_revealed` (`classes/reveals.*`), which only fed the collapse, are deleted. Scenarios
+`menu_collapse_remembered_library_copy` (a Bauble look that has ended no longer splits two Forests)
+and `menu_collapse_revealed_library_copies` (two copies both players see in a reveal merge). With
+the current card pool no library menu meets a one-sided live window (library windows last one
+resolution), so the "kept apart" branch has no scenario. Corpus drift from part 2:
+`doomsday_mirror` (Doomsday's rearrange: a Street Wraith that came from the graveyard and one from
+the library merge) and `lg_gw_maverick__reanimator`, `lg_reanimator__reanimator` (Atraxa's reveal:
+two revealed copies merge). Evidence: 240 C++ explore games with `--selfcheck-knowledge` (eight matchups
+of the Doomsday, reanimator, BUG, Lands, Delver, control and Maverick decks; 10 seeds each, bo1
+`explore`, bo3 `explore:patient` and bo1 `--no-auto-mana`; 95,604 decisions) end with no error and
+no draw; the 43 whose decision log differs from part 1's first diverge at a menu that lost a
+duplicate row. Part 3: the corpus re-recorded with the live agent (`make regen`) changes exactly
+the four drifting games, no result: the baselines of `lg_bug__reanimator` (the two Fatal Pushes in
+the menu), `lg_gw_maverick__reanimator` and `lg_reanimator__reanimator` (the merged reveal rows),
+and one logged decision of `doomsday_mirror` (Thassa's Oracle one row up). Manual payment is
+covered by two corpus games recorded explore vs explore with `--no-auto-mana`
+(`manual_doomsday_vs_delver`, `manual_mav_mirror`; the scripted agent pays with the payment loop's
+first row, often the wrong colour of a dual, so it records none) and by the `fuzz` tier's
+`--no-auto-mana` leg: `--manual-mana-games` (default 2) bo1 `--mode` games per ring matchup, 20
+games and about 13 s of the debug gate on 4 cores; the nightly sweep plays 40 per ring matchup.
 
 ### 4b. C++ CLI on the decoder
 
@@ -512,6 +556,47 @@ paths corrected.
 - **Delete:** `GameState`, `populate_gamestate`, `print_game_state` and the remains of
   `src/machine_io.*`. `--trace-decisions` switches to the new renderer.
 - **Test (tier `cli`):** golden transcripts of scripted stdin sessions.
+
+**Status: part 1 done** (the CLI on the decoder). A human seat is an in-process agent
+(`cli::HumanAgent`, `src/cli/human.h`) handed its seat's frames by the in-process frame writer
+(`state_format/agent_feed.h`) exactly as the C++ agents are; it renders them, decoded, with
+`src/cli/board.h` (standard library and the agents' frame reader only) and reads its commands from
+stdin. Seating (`cli_args.cpp`): the `--player` seat is human, and so is every seat without an agent
+when `--machine` is not given, so a plain run is hotseat; a human seat may take over a `--play` /
+`--actions` script's seat once it runs out. A human seat turns machine mode on (no narrative
+without `--narrative`) and always writes the decision log; no seat may be left to the RMSTATE
+stream beside it (decided: no second channel, so no human against the external Python agent). The
+board shows the players (life, zone sizes, pool, counters, designations), both battlefields (P/T,
+statuses, counters, attachments, combat; identical permanents merged), the stack with targets,
+the seat's hand (cost, type line), graveyards, exile, open reveals, effects and delayed triggers,
+a "You know" summary from the `k_*` tables (cards known in the opponent's hand, known library
+positions, the opponent's archetype; nothing under `--knowledge off`), the pending decision with
+`pending_cost`'s remaining pips, and the menu (row *i* = reply *i*, a confirm last row marked as
+`-1`'s). Objects are labelled by their frame handle. Commands: a row, `concede` / `concede match`,
+`board`, `zone <name> [opp]`, `card <#handle|name>` (the `CARDS` frame), `know` (every `k_*` and
+`b_*` fact), `log [n|all]` (the seat's own events since match start, rendered from its frames, and
+life changes between its frames), `help`, `quit`; end of input quits. The terminal path of
+`InputLogger` (`print_query`, `get_int_input`, the `z` auto-pass and `q` keys) is gone: every
+decision outside `--replay` is the provider's or the stream's. `--trace-decisions` prints the same
+board and pending lines; its header, `| menu:`, menu-row and choice lines keep their shape, and the
+corpus baseline filter recognises a menu row exactly (`|   <i>: `), so the corpus replays
+byte-identical and the scenarios pass unchanged. Left for part 2: `GameState` /
+`populate_gamestate` / `print_game_state` now serve only the board a `--replay` without
+`--machine` prints; the `cli` tier.
+
+**Status: part 2 done; 4b and step 4 are done.** `GameState`, `populate_gamestate`,
+`print_game_state` and `src/machine_io.*` are deleted. A plain `--replay` prints the narrative and
+the replayed inputs, no board (its output is the output flags'); the corpus replays under
+`--machine`, so its baselines are unchanged. What they still provided moved to its users:
+`source_vocab_idx` (`queries/characteristics.h`), `SIDEBOARD_MENU_LIMIT` (`game_driver.cpp`) and
+`ACTOR_MAX_ACTIONS` (`actor/az_layout.h`). Auto-pass is back as a frame-only command: `z` (`pass
+turn`) answers the pass row until the next turn begins, `z mine` until the seat's own next turn;
+it starts only at a plain priority decision and stops at the first decision of that turn, at any
+other decision (mandatory choices, attackers, blockers, targets, payments, mulligans) and when the
+opponent puts a new object on the stack. The gate's `cli` tier (`tools/robomage_check/tier_cli.cpp`)
+plays the scripted stdin sessions of `tests/cli/<name>.json` and compares each stdout with
+`<name>.out` byte for byte (`--record` rewrites them): human vs explore, hotseat, manual payment,
+auto-pass and a bo3 match conceded.
 
 **Exit:** the C++ engine, RMSTATE with knowledge tables, the C++ CLI, the C++ gate, and the
 kept Python below.
@@ -655,7 +740,8 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 4. ~~**C++ `explore` port**~~ **Decided and done** (3a): `fuzz` is Python-free and in-process,
    playing the Python tier's games for the same seeds.
 5. ~~**`robomage_check` with exceptions on**~~ **Decided:** built with `-fno-exceptions` (3a).
-6. **Human vs Python agent in the CLI** (4b): whether to add the second channel now.
+6. ~~**Human vs Python agent in the CLI** (4b)~~ **Decided:** no second channel; a human plays
+   the in-process agents or hotseat.
 7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small
    384-d encoder), and how its weights are provisioned and pinned.
 8. **Learner** (after step 5): language (PyTorch vs libtorch) and algorithm. A learner is

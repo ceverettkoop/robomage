@@ -12,6 +12,7 @@ struct GameJob {
         std::string deck_a, deck_b;
         long seed = 0;
         bool bo3 = false;
+        bool no_auto_mana = false;  // --no-auto-mana: mana paid source by source
         std::string mode;
         rmcheck::ProcResult result;
         std::string transcript;  // what the per-matchup file gets for this game
@@ -21,8 +22,9 @@ struct GameJob {
 
 static void count_results(GameJob *job);
 static std::string stamp();
-static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
+static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier, const char *leg,
     const std::vector<std::pair<std::string, std::string>> &pairs, std::vector<GameJob> &jobs, int per_matchup);
+static std::string job_tags(const GameJob &job);
 static std::vector<std::string> engine_game_args(const GameJob &job);
 static void report_pycheck(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ProcResult &r);
 
@@ -64,29 +66,35 @@ static std::vector<std::string> engine_game_args(const GameJob &job) {
     std::vector<std::string> a = {"--agent-a", job.mode, "--agent-b", job.mode, "--game-seed", std::to_string(job.seed),
         "--deck-a", job.deck_a, "--deck-b", job.deck_b, "--narrative", "--trace-decisions"};
     if (job.bo3) a.push_back("--bo3");
+    if (job.no_auto_mana) a.push_back("--no-auto-mana");
     return a;
 }
 
-// Writes each matchup's transcript (<out>/<tier>_<a>__<b>.txt) and reports its crashes, missing
-// results, error and warning lines and draws (a drawn game's transcript also saved as
-// <tier>_<a>__<b>_g<i>_draw_<stamp>.txt). jobs[k * per_matchup + i] is game i of matchup k.
-static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
+// A game's agent and format as its report lines show them ("explore:patient bo3").
+static std::string job_tags(const GameJob &job) {
+    return job.mode + (job.bo3 ? " bo3" : "") + (job.no_auto_mana ? " no-auto-mana" : "");
+}
+
+// Writes each matchup's transcript (<out>/<leg>_<a>__<b>.txt) and reports, under the tier, its
+// crashes, missing results, error and warning lines and draws (a drawn game's transcript also saved
+// as <leg>_<a>__<b>_g<i>_draw_<stamp>.txt). jobs[k * per_matchup + i] is game i of matchup k.
+static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier, const char *leg,
     const std::vector<std::pair<std::string, std::string>> &pairs, std::vector<GameJob> &jobs, int per_matchup) {
     const std::string out_dir = opt.out("");
     for (size_t k = 0; k < pairs.size(); ++k) {
         const std::string stem =
-            std::string(tier) + "_" + rmcheck::deck_stem(pairs[k].first) + "__" + rmcheck::deck_stem(pairs[k].second);
+            std::string(leg) + "_" + rmcheck::deck_stem(pairs[k].first) + "__" + rmcheck::deck_stem(pairs[k].second);
         const std::string path = rmcheck::path_join(out_dir, stem + ".txt");
         std::string file;
         int w = 0, l = 0, d = 0;
         const GameJob *first = per_matchup ? &jobs[k * static_cast<size_t>(per_matchup)] : nullptr;
         const std::string label = rmcheck::deck_stem(pairs[k].first) + " vs " + rmcheck::deck_stem(pairs[k].second) +
-                                  " [" + (first ? first->mode : opt.mode) + (first && first->bo3 ? " bo3" : "") +
-                                  "] seed " + std::to_string(first ? first->seed : 0);
+                                  " [" + (first ? job_tags(*first) : opt.mode) + "] seed " +
+                                  std::to_string(first ? first->seed : 0);
         size_t crashes = 0;
         for (int i = 0; i < per_matchup; ++i) {
             GameJob &job = jobs[k * static_cast<size_t>(per_matchup) + static_cast<size_t>(i)];
-            file += "--- Game " + std::to_string(i + 1) + "/" + std::to_string(per_matchup) + " [" + job.mode +
+            file += "--- Game " + std::to_string(i + 1) + "/" + std::to_string(per_matchup) + " [" + job_tags(job) +
                     "] seed " + std::to_string(job.seed) + " ---\n" + job.transcript + "\n";
             if (!job.result.ok()) {
                 ++crashes;
@@ -159,12 +167,13 @@ namespace rmcheck {
 // The fuzz tier: C++ explore vs explore in-process (--agent-a/-b <mode>, the Python explore tier's
 // games for the same seeds), bo1 over the matchups (default the league mirrors, --fuzz-games per
 // matchup; matchup k's game i has game seed seed + 1000k + i), then one bo3 explore:patient match
-// per ring matchup (seed + 500000 + k).
+// per ring matchup (seed + 500000 + k), then --manual-mana-games bo1 <mode> games per ring matchup
+// under --no-auto-mana (ring matchup k's game i: seed + 700000 + 1000k + i).
 void tier_fuzz(const Options &opt, Report &rep) {
     const std::vector<std::pair<std::string, std::string>> pairs =
         matchups(opt, opt.matchups.empty() ? "mirrors" : opt.matchups);
     const std::vector<std::pair<std::string, std::string>> ring = matchups(opt, "ring");
-    std::vector<GameJob> bo1, bo3;
+    std::vector<GameJob> bo1, bo3, manual;
     for (size_t k = 0; k < pairs.size(); ++k)
         for (int i = 0; i < opt.fuzz_games; ++i) {
             GameJob j;
@@ -183,9 +192,20 @@ void tier_fuzz(const Options &opt, Report &rep) {
         j.bo3 = true;
         bo3.push_back(j);
     }
+    for (size_t k = 0; k < ring.size(); ++k)
+        for (int i = 0; i < opt.manual_mana_games; ++i) {
+            GameJob j;
+            j.deck_a = ring[k].first;
+            j.deck_b = ring[k].second;
+            j.seed = opt.seed + 700000 + 1000 * static_cast<long>(k) + i;
+            j.mode = opt.mode;
+            j.no_auto_mana = true;
+            manual.push_back(j);
+        }
     std::vector<GameJob *> all;
     for (GameJob &j : bo1) all.push_back(&j);
     for (GameJob &j : bo3) all.push_back(&j);
+    for (GameJob &j : manual) all.push_back(&j);
     parallel_for(all.size(), opt.jobs, [&](size_t i) {
         GameJob &job = *all[i];
         ProcSpec spec;
@@ -198,8 +218,10 @@ void tier_fuzz(const Options &opt, Report &rep) {
             job.result.out + (trim(job.result.err).empty() ? "" : "\n=== engine stderr ===\n" + job.result.err);
         count_results(&job);
     });
-    report_matchups(opt, rep, "fuzz", pairs, bo1, opt.fuzz_games);
-    report_matchups(opt, rep, "fuzz_bo3", ring, bo3, 1);
+    report_matchups(opt, rep, "fuzz", "fuzz", pairs, bo1, opt.fuzz_games);
+    report_matchups(opt, rep, "fuzz", "fuzz_bo3", ring, bo3, 1);
+    if (opt.manual_mana_games > 0)
+        report_matchups(opt, rep, "fuzz", "fuzz_manual", ring, manual, opt.manual_mana_games);
     size_t decisions = 0;
     double cpu = 0;
     for (const GameJob *j : all) {

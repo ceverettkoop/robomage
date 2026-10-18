@@ -44,6 +44,11 @@ int Table::card(size_t row, int col) const {
     return rmstate::value_is_all_ones(v, def_->columns[col].storage) ? -1 : static_cast<int>(v.bits);
 }
 
+bool Table::none(size_t row, int col) const {
+    if (!table_ || col < 0) return true;
+    return rmstate::value_is_all_ones(table_->rows[row][static_cast<size_t>(col)], def_->columns[col].storage);
+}
+
 void CardNames::read(const rmstate::DecodedFrame &cards, const rmstate::Schema &schema) {
     front_.clear();
     back_.clear();
@@ -113,7 +118,14 @@ bool SeatStream::feed_match_frame(const std::string &payload, std::string *err) 
         *err = "a match frame does not decode: " + res.message;
         return false;
     }
-    if (frame.header.kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS)) cards_.read(frame, schema_);
+    if (frame.header.kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS)) {
+        cards_.read(frame, schema_);
+        cards_frame_ = std::move(frame);
+    } else if (frame.header.kind == static_cast<uint8_t>(rmstate::FrameKind::DECKLISTS)) {
+        decklists_frame_ = std::move(frame);
+    } else if (frame.header.kind == static_cast<uint8_t>(rmstate::FrameKind::METAGAME)) {
+        metagame_frame_ = std::move(frame);
+    }
     return true;
 }
 

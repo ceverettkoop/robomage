@@ -274,7 +274,8 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   to the in-process run, per writer (the dump's seat frames, a saved stream); and the stream's
   `k_*` tables equal the dump's at every seat and decision (section 9.6).
 - **Shadow comparison with the engine's old memory** (step 1 to step 3b; deleted with that
-  memory, its findings kept in section 9.7): while the old vector was still emitted, at
+  memory, its findings kept in section 9.7; its last part, `Game::OppKnownLibraryTop`, kept for
+  the menu collapse alone, went in step 4a, the collapse now reading only live reveal windows): while the old vector was still emitted, at
   every decision compare `expert`'s implied view (own exact positions 0–4; definitely-in-hand
   opponent cards; cards seen this match) with the engine's `known_top_library_*`,
   `opp_known_hand` and revealed bits. Every mismatch is classified as either:

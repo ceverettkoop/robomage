@@ -1,0 +1,5164 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from manual_mav_mirror.rmlog
+REPLAY MODE: Using embedded decks 'mav' / 'mav' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Horizon Canopy
+Player A draws Windswept Heath
+Player A draws Windswept Heath
+Player A draws Savannah
+Player A draws Wasteland
+Player A draws Savannah
+Player A draws Swords to Plowshares
+Player B draws Savannah
+Player B draws Swords to Plowshares
+Player B draws Windswept Heath
+Player B draws Talon Gates of Madara
+Player B draws Keen-Eyed Curator
+Player B draws Green Sun's Zenith
+Player B draws Once Upon a Time
+Player A hand:
+Horizon Canopy
+Savannah
+Savannah
+Swords to Plowshares
+Wasteland
+Windswept Heath
+Windswept Heath
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Talon Gates of Madara
+Player A draws Green Sun's Zenith
+Player A draws Forest
+Player A draws Green Sun's Zenith
+Player A draws Thalia, Guardian of Thraben
+Player A draws Scythecat Cub
+Player A draws Keen-Eyed Curator
+Player B hand:
+Green Sun's Zenith
+Keen-Eyed Curator
+Once Upon a Time
+Savannah
+Swords to Plowshares
+Talon Gates of Madara
+Windswept Heath
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Green Sun's Zenith
+Player B draws Thalia, Guardian of Thraben
+Player B draws Knight of the Reliquary
+Player B draws Keen-Eyed Curator
+Player B draws Scryb Ranger
+Player B draws Windswept Heath
+Player B draws Scythecat Cub
+Player A hand:
+Forest
+Green Sun's Zenith
+Green Sun's Zenith
+Keen-Eyed Curator
+Scythecat Cub
+Talon Gates of Madara
+Thalia, Guardian of Thraben
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Forest
+|   1: Green Sun's Zenith
+|   2: Green Sun's Zenith
+|   3: Keen-Eyed Curator
+|   4: Scythecat Cub
+|   5: Talon Gates of Madara
+|   6: Thalia, Guardian of Thraben
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Forest)
+Player B hand:
+Green Sun's Zenith
+Keen-Eyed Curator
+Knight of the Reliquary
+Scryb Ranger
+Scythecat Cub
+Thalia, Guardian of Thraben
+Windswept Heath
+| decision 5: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Knight of the Reliquary
+Player B draws Swords to Plowshares
+Player B draws Sylvan Library
+Player B draws Keen-Eyed Curator
+Player B draws Thalia, Guardian of Thraben
+Player B draws Noble Hierarch
+Player B draws Birds of Paradise
+Player B hand:
+Birds of Paradise
+Keen-Eyed Curator
+Knight of the Reliquary
+Noble Hierarch
+Swords to Plowshares
+Sylvan Library
+Thalia, Guardian of Thraben
+| decision 6: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Thalia, Guardian of Thraben
+Player B draws Horizon Canopy
+Player B draws Scythecat Cub
+Player B draws Noble Hierarch
+Player B draws Savannah
+Player B draws Ignoble Hierarch
+Player B draws Forest
+Player B hand:
+Forest
+Horizon Canopy
+Ignoble Hierarch
+Noble Hierarch
+Savannah
+Scythecat Cub
+Thalia, Guardian of Thraben
+| decision 7: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 4-card hand.
+Player B: Choose card to put on library bottom (3 remaining):
+| decision 8: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Forest
+|   1: Horizon Canopy
+|   2: Ignoble Hierarch
+|   3: Noble Hierarch
+|   4: Savannah
+|   5: Scythecat Cub
+|   6: Thalia, Guardian of Thraben
+(REPLAY) [T0 | Untap | Player B] Input: 2
+| >> Player B: 2 (Ignoble Hierarch)
+Player B: Choose card to put on library bottom (2 remaining):
+| decision 9: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Forest
+|   1: Horizon Canopy
+|   2: Noble Hierarch
+|   3: Savannah
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Forest)
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 10: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Horizon Canopy
+|   1: Noble Hierarch
+|   2: Savannah
+|   3: Scythecat Cub
+|   4: Thalia, Guardian of Thraben
+(REPLAY) [T0 | Untap | Player B] Input: 4
+| >> Player B: 4 (Thalia, Guardian of Thraben)
+
+-------- TURN 1 (Player A) --------
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Talon Gates of Madara
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Talon Gates of Madara)
+Player A played Talon Gates of Madara
+Choose target for Talon Gates of Madara:
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (No target)
+Targeting choice 0
+Talon Gates of Madara triggered
+| decision 13: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+Resolving ability (category: Phases)
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Windswept Heath
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Horizon Canopy
+|   2: Play Savannah
+|   3: Play Windswept Heath
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Horizon Canopy)
+Player B played Horizon Canopy
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Tap Horizon Canopy for (G)
+|   3: Tap Horizon Canopy for (W)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Noble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Horizon Canopy for (G)
+|   1: Tap Horizon Canopy for (W)
+|   2: Cancel casting
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cancel casting)
+Payment cancelled.
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Tap Horizon Canopy for (G)
+|   3: Tap Horizon Canopy for (W)
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tap Horizon Canopy for (W))
+Player B pays 1 life
+Player B tapped Horizon Canopy for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 18: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+Player A draws Once Upon a Time
+| decision 19: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time (alternate cost))
+Player A casts for free (alternate cost)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 20: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Collector Ouphe
+|   3: Noble Hierarch
+(REPLAY) [T2 | Draw | Player A] Input: 2
+| >> Player A: 2 (Collector Ouphe)
+Player A reveals Collector Ouphe and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+| decision 21: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Horizon Canopy for (G)
+|   2: Tap Horizon Canopy for (W)
+(REPLAY) [T3 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Horizon Canopy for (W))
+Player B pays 1 life
+Player B tapped Horizon Canopy for 1(W)
+Player B draws Knight of the Reliquary
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Windswept Heath
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Play Windswept Heath)
+Player B played Windswept Heath
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Windswept Heath (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Plains
+|   4: Savannah
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Plains)
+Player B shuffles their library
+Player B puts Plains to the battlefield
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tap Plains for (W))
+Player B tapped Plains for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+Player A draws Noble Hierarch
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 27: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Horizon Canopy (Draw)
+|   2: Tap Horizon Canopy for (G)
+|   3: Tap Horizon Canopy for (W)
+|   4: Tap Plains for (W)
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Horizon Canopy (Draw))
+Pay mana costs ((?) remaining):
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Tap Plains for (W)
+|   1: Cancel casting
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Tap Plains for (W))
+Player B activated Plains for 1(W)
+Player B sacrifices Horizon Canopy
+Player B's Horizon Canopy ability is on the stack
+Resolving ability (category: Draw, amount: 1)
+Player B draws Keen-Eyed Curator
+Player B draws Knight of the Reliquary
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Noble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cancel casting)
+Payment cancelled.
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tap Savannah for (W))
+Player B tapped Savannah for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 33: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+Player A draws Karakas
+| decision 34: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 35: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+(REPLAY) [T6 | Second Main | Player A] Input: 1
+| >> Player A: 1 (Play Karakas)
+Player A played Karakas
+| decision 36: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+(REPLAY) [T6 | Second Main | Player A] Input: 1
+| >> Player A: 1 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+
+-------- TURN 8 (Player B) --------
+| decision 37: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Noble Hierarch
+| decision 38: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T7 | Draw | Player B] Input: 2
+| >> Player B: 2 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 39: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T7 | Draw | Player B] Input: 1
+| >> Player B: 1 (Tap Plains for (W))
+Player B tapped Plains for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+| decision 40: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T8 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Tap Talon Gates of Madara for (U))
+Pay mana costs ((?) remaining):
+| decision 41: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Karakas for (W)
+|   1: Cancel casting
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 42: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T8 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Talon Gates of Madara for (G))
+Pay mana costs ((?) remaining):
+| decision 43: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Karakas for (W)
+|   1: Cancel casting
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 44: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T8 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Talon Gates of Madara for (G))
+Pay mana costs ((?) remaining):
+| decision 45: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Karakas for (W)
+|   1: Cancel casting
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 46: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T8 | Upkeep | Player A] Input: 6
+| >> Player A: 6 (Tap Talon Gates of Madara for (R))
+Pay mana costs ((?) remaining):
+| decision 47: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Karakas for (W)
+|   1: Cancel casting
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 48: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 49: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+|   2: Tap Talon Gates of Madara for (W)
+|   3: Tap Talon Gates of Madara for (U)
+|   4: Tap Talon Gates of Madara for (B)
+|   5: Tap Talon Gates of Madara for (R)
+|   6: Tap Talon Gates of Madara for (G)
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+Player A draws Life from the Loam
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 50: Player A (game 0, turn 8, CLEANUP, Player A active)
+| menu:
+|   0: Collector Ouphe
+|   1: Green Sun's Zenith
+|   2: Green Sun's Zenith
+|   3: Life from the Loam
+|   4: Keen-Eyed Curator
+|   5: Noble Hierarch
+|   6: Scythecat Cub
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T8 | Cleanup | Player A] Input: 7
+| >> Player A: 7 (Thalia, Guardian of Thraben)
+Player A discards Thalia, Guardian of Thraben.
+
+-------- TURN 10 (Player B) --------
+| decision 51: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T9 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 52: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Windswept Heath
+| decision 53: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 54: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Tap Plains for (W)
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Tap Plains for (W))
+Player B tapped Plains for 1(W)
+| decision 55: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Windswept Heath)
+Player B played Windswept Heath
+| decision 56: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Windswept Heath (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 57: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Savannah
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 58: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Cast Noble Hierarch
+|   3: Cast Scythecat Cub
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Scythecat Cub)
+Pay mana costs ((G) remaining):
+| decision 59: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cancel casting)
+Payment cancelled.
+| decision 60: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Cast Noble Hierarch
+|   3: Cast Scythecat Cub
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T9 | First Main | Player B] Input: 5
+| >> Player B: 5 (Tap Savannah for (W))
+Player B tapped Savannah for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+| decision 61: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T10 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Talon Gates of Madara for (W))
+Pay mana costs ((?) remaining):
+| decision 62: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Karakas for (W)
+|   1: Cancel casting
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Karakas for (W))
+Player A activated Karakas for 1(W)
+Player A tapped Talon Gates of Madara for 1(W)
+Player A draws Wooded Foothills
+| decision 63: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wooded Foothills
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wooded Foothills)
+Player A played Wooded Foothills
+| decision 64: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wooded Foothills (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wooded Foothills (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Wooded Foothills
+Player A's Wooded Foothills ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 65: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Savannah
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Forest)
+Player A shuffles their library
+Player A puts Forest to the battlefield
+| decision 66: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Green Sun's Zenith
+|   3: Cast Noble Hierarch
+|   4: Tap Forest for (G)
+(REPLAY) [T10 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Noble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 67: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Cancel casting
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tap Forest for (G))
+Player A activated Forest for 1(G)
+Player A casts Noble Hierarch
+Noble Hierarch enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+| decision 68: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T11 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 69: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Plains for (W))
+Player B tapped Plains for 1(W)
+| decision 70: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+(REPLAY) [T11 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Savannah for (W))
+Player B tapped Savannah for 1(W)
+Player B draws Scythecat Cub
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+| decision 71: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T12 | Upkeep | Player A] Input: 9
+| >> Player A: 9 (Tap Talon Gates of Madara for (B))
+Pay mana costs ((?) remaining):
+| decision 72: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Karakas for (W)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Cancel casting
+(REPLAY) [T12 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Noble Hierarch for (W))
+Player A activated Noble Hierarch for 1(W)
+Player A tapped Talon Gates of Madara for 1(B)
+| decision 73: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Green Sun's Zenith
+| decision 74: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+(REPLAY) [T12 | Draw | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 75: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+(REPLAY) [T12 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+No creatures eligible to attack.
+
+-------- TURN 14 (Player B) --------
+| decision 76: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Forest
+| decision 77: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 78: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Cast Keen-Eyed Curator
+|   3: Cast Knight of the Reliquary
+|   4: Cast Knight of the Reliquary
+|   5: Cast Noble Hierarch
+|   6: Cast Noble Hierarch
+|   7: Cast Scythecat Cub
+|   8: Cast Scythecat Cub
+|   9: Tap Plains for (W)
+|   10: Tap Savannah for (G)
+|   11: Tap Savannah for (W)
+|   12: Tap Savannah for (G)
+|   13: Tap Savannah for (W)
+(REPLAY) [T13 | First Main | Player B] Input: 5
+| >> Player B: 5 (Cast Noble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 79: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Plains for (W)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Cancel casting
+(REPLAY) [T13 | First Main | Player B] Input: 5
+| >> Player B: 5 (Cancel casting)
+Payment cancelled.
+| decision 80: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Cast Keen-Eyed Curator
+|   3: Cast Knight of the Reliquary
+|   4: Cast Knight of the Reliquary
+|   5: Cast Noble Hierarch
+|   6: Cast Noble Hierarch
+|   7: Cast Scythecat Cub
+|   8: Cast Scythecat Cub
+|   9: Tap Plains for (W)
+|   10: Tap Savannah for (G)
+|   11: Tap Savannah for (W)
+|   12: Tap Savannah for (G)
+|   13: Tap Savannah for (W)
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Knight of the Reliquary)
+Pay mana costs ((W),(G),(?) remaining):
+| decision 81: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Plains for (W)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Cancel casting
+(REPLAY) [T13 | First Main | Player B] Input: 4
+| >> Player B: 4 (Tap Savannah for (W))
+Player B activated Savannah for 1(W)
+Pay mana costs ((W),(G),(?) remaining):
+| decision 82: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Plains for (W)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Cancel casting
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tap Savannah for (G))
+Player B activated Savannah for 1(G)
+Pay mana costs ((W),(G),(?) remaining):
+| decision 83: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Plains for (W)
+|   1: Cancel casting
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tap Plains for (W))
+Player B activated Plains for 1(W)
+Player B casts Knight of the Reliquary
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+| decision 84: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Forest)
+Player B played Forest
+| decision 85: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Cast Noble Hierarch
+|   3: Tap Forest for (G)
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tap Forest for (G))
+Player B tapped Forest for 1(G)
+| decision 86: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Cast Noble Hierarch
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+
+-------- TURN 15 (Player A) --------
+| decision 87: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T14 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 88: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Talon Gates of Madara for (C)
+|   6: Tap Talon Gates of Madara for (W)
+|   7: Tap Talon Gates of Madara for (U)
+|   8: Tap Talon Gates of Madara for (B)
+|   9: Tap Talon Gates of Madara for (R)
+|   10: Tap Talon Gates of Madara for (G)
+(REPLAY) [T14 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Talon Gates of Madara for (U))
+Player A tapped Talon Gates of Madara for 1(U)
+| decision 89: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+(REPLAY) [T14 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Noble Hierarch for (U))
+Player A tapped Noble Hierarch for 1(U)
+| decision 90: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Plains
+| decision 91: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 92: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Cast Green Sun's Zenith
+|   3: Cast Green Sun's Zenith
+|   4: Cast Green Sun's Zenith
+|   5: Tap Forest for (G)
+(REPLAY) [T14 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Green Sun's Zenith)
+Choose X value (0-0):
+| decision 93: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (X = 0)
+Player A chooses X = 0
+Pay mana costs ((G) remaining):
+| decision 94: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Cancel casting
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 95: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Cast Green Sun's Zenith
+|   3: Cast Green Sun's Zenith
+|   4: Cast Green Sun's Zenith
+|   5: Tap Forest for (G)
+(REPLAY) [T14 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Green Sun's Zenith)
+Choose X value (0-0):
+| decision 96: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (X = 0)
+Player A chooses X = 0
+Pay mana costs ((G) remaining):
+| decision 97: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Cancel casting
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tap Forest for (G))
+Player A activated Forest for 1(G)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 98: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A shuffles their library
+Player A fails to find
+Green Sun's Zenith is shuffled into its owner's library
+| decision 99: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Plains)
+Player A played Plains
+| decision 100: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 101: Player A (game 0, turn 14, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T14 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 102: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+
+-------- TURN 16 (Player B) --------
+| decision 103: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T15 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 104: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice Forest
+|   1: Sacrifice Plains
+|   2: Sacrifice Savannah
+|   3: Sacrifice Savannah
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Forest)
+Player B sacrifices Forest
+Player B's Knight of the Reliquary ability is on the stack
+| decision 105: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T15 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 106: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T15 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 107: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 108: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Gaea's Cradle
+|   3: Karakas
+|   4: Savannah
+|   5: Talon Gates of Madara
+|   6: Wasteland
+|   7: Windswept Heath
+|   8: Wooded Foothills
+(REPLAY) [T15 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Gaea's Cradle)
+Player B shuffles their library
+Player B puts Gaea's Cradle to the battlefield
+| decision 109: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Noble Hierarch
+| decision 110: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T15 | Draw | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 1(G)
+| decision 111: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T15 | Draw | Player B] Input: 1
+| >> Player B: 1 (Tap Plains for (W))
+Player B tapped Plains for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 17 (Player A) --------
+| decision 112: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Talon Gates of Madara for (C)
+|   8: Tap Talon Gates of Madara for (W)
+|   9: Tap Talon Gates of Madara for (U)
+|   10: Tap Talon Gates of Madara for (B)
+|   11: Tap Talon Gates of Madara for (R)
+|   12: Tap Talon Gates of Madara for (G)
+(REPLAY) [T16 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Tap Noble Hierarch for (G))
+Player A tapped Noble Hierarch for 1(G)
+| decision 113: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Plains for (W)
+|   4: Tap Talon Gates of Madara for (C)
+|   5: Tap Talon Gates of Madara for (W)
+|   6: Tap Talon Gates of Madara for (U)
+|   7: Tap Talon Gates of Madara for (B)
+|   8: Tap Talon Gates of Madara for (R)
+|   9: Tap Talon Gates of Madara for (G)
+(REPLAY) [T16 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+| decision 114: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Plains for (W)
+(REPLAY) [T16 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 115: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 116: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+Player A draws Keen-Eyed Curator
+No creatures eligible to attack.
+
+-------- TURN 18 (Player B) --------
+| decision 117: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Plains for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 118: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice Plains
+|   1: Sacrifice Savannah
+|   2: Sacrifice Savannah
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Plains)
+Player B sacrifices Plains
+Player B's Knight of the Reliquary ability is on the stack
+| decision 119: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 120: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Karakas
+|   3: Savannah
+|   4: Talon Gates of Madara
+|   5: Wasteland
+|   6: Windswept Heath
+|   7: Wooded Foothills
+(REPLAY) [T17 | Upkeep | Player B] Input: 7
+| >> Player B: 7 (Wooded Foothills)
+Player B shuffles their library
+Player B puts Wooded Foothills to the battlefield
+| decision 121: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wooded Foothills (ChangeZone)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Wooded Foothills (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Wooded Foothills
+Player B's Wooded Foothills ability is on the stack
+| decision 122: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T17 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 123: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T17 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Savannah for (W))
+Player B tapped Savannah for 1(W)
+| decision 124: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 1(G)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 125: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Savannah
+(REPLAY) [T17 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 126: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+Player B draws Once Upon a Time
+No creatures eligible to attack.
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 127: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Keen-Eyed Curator
+|   1: Knight of the Reliquary
+|   2: Noble Hierarch
+|   3: Noble Hierarch
+|   4: Noble Hierarch
+|   5: Once Upon a Time
+|   6: Scythecat Cub
+|   7: Scythecat Cub
+(REPLAY) [T17 | Cleanup | Player B] Input: 5
+| >> Player B: 5 (Once Upon a Time)
+Player B discards Once Upon a Time.
+
+-------- TURN 19 (Player A) --------
+| decision 128: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Talon Gates of Madara for (C)
+|   8: Tap Talon Gates of Madara for (W)
+|   9: Tap Talon Gates of Madara for (U)
+|   10: Tap Talon Gates of Madara for (B)
+|   11: Tap Talon Gates of Madara for (R)
+|   12: Tap Talon Gates of Madara for (G)
+(REPLAY) [T18 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 129: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T18 | Upkeep | Player A] Input: 9
+| >> Player A: 9 (Tap Talon Gates of Madara for (B))
+Player A tapped Talon Gates of Madara for 1(B)
+| decision 130: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+(REPLAY) [T18 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 131: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+|   4: Tap Plains for (W)
+(REPLAY) [T18 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Noble Hierarch for (U))
+Player A tapped Noble Hierarch for 1(U)
+| decision 132: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T18 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+Player A draws Wasteland
+| decision 133: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 134: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Tap Wasteland for (C)
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 135: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Savannah
+|   2: Savannah
+|   3: Savannah
+|   4: Karakas
+|   5: Talon Gates of Madara
+|   6: Wasteland
+(REPLAY) [T18 | First Main | Player A] Input: 6
+| >> Player A: 6 (Wasteland)
+Targeting choice 6
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Wasteland is on the stack
+Destroy fizzles
+No creatures eligible to attack.
+
+-------- TURN 20 (Player B) --------
+| decision 136: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+(REPLAY) [T19 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Savannah for (W))
+Player B tapped Savannah for 1(W)
+| decision 137: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+(REPLAY) [T19 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 138: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T19 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 139: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Tap Gaea's Cradle for (G)
+(REPLAY) [T19 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 140: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+|   1: Sacrifice Savannah
+|   2: Sacrifice Savannah
+(REPLAY) [T19 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Sacrifice Savannah)
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+| decision 141: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T19 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 1(G)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 142: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Karakas
+|   3: Savannah
+|   4: Talon Gates of Madara
+|   5: Wasteland
+|   6: Windswept Heath
+|   7: Wooded Foothills
+(REPLAY) [T19 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Talon Gates of Madara)
+Player B shuffles their library
+Player B puts Talon Gates of Madara to the battlefield
+Choose target for Talon Gates of Madara:
+| decision 143: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: No target
+|   1: Noble Hierarch
+|   2: Knight of the Reliquary
+(REPLAY) [T19 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Knight of the Reliquary)
+Targeting choice 2
+Talon Gates of Madara triggered
+| decision 144: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+|   2: Tap Talon Gates of Madara for (W)
+|   3: Tap Talon Gates of Madara for (U)
+|   4: Tap Talon Gates of Madara for (B)
+|   5: Tap Talon Gates of Madara for (R)
+|   6: Tap Talon Gates of Madara for (G)
+(REPLAY) [T19 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Talon Gates of Madara for (C))
+Player B tapped Talon Gates of Madara for 1(C)
+Resolving ability (category: Phases)
+Knight of the Reliquary phases out
+Player B draws Swords to Plowshares
+No creatures eligible to attack.
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 145: Player B (game 0, turn 19, CLEANUP, Player B active)
+| menu:
+|   0: Keen-Eyed Curator
+|   1: Knight of the Reliquary
+|   2: Noble Hierarch
+|   3: Noble Hierarch
+|   4: Noble Hierarch
+|   5: Scythecat Cub
+|   6: Scythecat Cub
+|   7: Swords to Plowshares
+(REPLAY) [T19 | Cleanup | Player B] Input: 4
+| >> Player B: 4 (Noble Hierarch)
+Player B discards Noble Hierarch.
+
+-------- TURN 21 (Player A) --------
+| decision 146: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Talon Gates of Madara for (C)
+|   8: Tap Talon Gates of Madara for (W)
+|   9: Tap Talon Gates of Madara for (U)
+|   10: Tap Talon Gates of Madara for (B)
+|   11: Tap Talon Gates of Madara for (R)
+|   12: Tap Talon Gates of Madara for (G)
+(REPLAY) [T20 | Upkeep | Player A] Input: 12
+| >> Player A: 12 (Tap Talon Gates of Madara for (G))
+Pay mana costs ((?) remaining):
+| decision 147: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Karakas for (W)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Cancel casting
+(REPLAY) [T20 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Tap Noble Hierarch for (G))
+Player A activated Noble Hierarch for 1(G)
+Player A tapped Talon Gates of Madara for 1(G)
+| decision 148: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Plains for (W)
+(REPLAY) [T20 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Noble Hierarch
+| decision 149: Player A (game 0, turn 20, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Plains for (W)
+(REPLAY) [T20 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 150: Player A (game 0, turn 20, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Plains for (W)
+(REPLAY) [T20 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 151: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Plains for (W)
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 152: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 153: Player A (game 0, turn 20, CLEANUP, Player A active)
+| menu:
+|   0: Collector Ouphe
+|   1: Green Sun's Zenith
+|   2: Green Sun's Zenith
+|   3: Life from the Loam
+|   4: Keen-Eyed Curator
+|   5: Keen-Eyed Curator
+|   6: Noble Hierarch
+|   7: Scythecat Cub
+(REPLAY) [T20 | Cleanup | Player A] Input: 6
+| >> Player A: 6 (Noble Hierarch)
+Player A discards Noble Hierarch.
+
+-------- TURN 22 (Player B) --------
+Knight of the Reliquary phases in
+| decision 154: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Knight of the Reliquary (ChangeZone)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Talon Gates of Madara for (C)
+|   9: Tap Talon Gates of Madara for (W)
+|   10: Tap Talon Gates of Madara for (U)
+|   11: Tap Talon Gates of Madara for (B)
+|   12: Tap Talon Gates of Madara for (R)
+|   13: Tap Talon Gates of Madara for (G)
+(REPLAY) [T21 | Upkeep | Player B] Input: 12
+| >> Player B: 12 (Tap Talon Gates of Madara for (R))
+Pay mana costs ((?) remaining):
+| decision 155: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Cancel casting
+(REPLAY) [T21 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Savannah for (W))
+Player B activated Savannah for 1(W)
+Player B tapped Talon Gates of Madara for 1(R)
+| decision 156: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Knight of the Reliquary (ChangeZone)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T21 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate Knight of the Reliquary (ChangeZone))
+| decision 157: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+|   1: Sacrifice Savannah
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Sacrifice Savannah)
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+| decision 158: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 159: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Noble Hierarch
+|   1: Knight of the Reliquary
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Knight of the Reliquary)
+Targeting choice 1
+Pay mana costs ((W) remaining):
+| decision 160: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Cancel casting
+(REPLAY) [T21 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Savannah for (W))
+Player B activated Savannah for 1(W)
+Player B casts Swords to Plowshares targeting Knight of the Reliquary
+| decision 161: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 1(G)
+Resolving ability (category: ChangeZone)
+Knight of the Reliquary is moved to exile
+Resolving ability (category: GainLife, amount: 10)
+Player B gains 10 life (now at 25)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 162: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Karakas
+|   3: Savannah
+|   4: Wasteland
+|   5: Windswept Heath
+|   6: Wooded Foothills
+(REPLAY) [T21 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Windswept Heath)
+Player B shuffles their library
+Player B puts Windswept Heath to the battlefield
+| decision 163: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Windswept Heath (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 164: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Savannah
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Dryad Arbor)
+Player B shuffles their library
+Player B puts Dryad Arbor to the battlefield
+Player B draws Knight of the Reliquary
+No creatures eligible to attack.
+
+-------- TURN 23 (Player A) --------
+| decision 165: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Talon Gates of Madara for (C)
+|   8: Tap Talon Gates of Madara for (W)
+|   9: Tap Talon Gates of Madara for (U)
+|   10: Tap Talon Gates of Madara for (B)
+|   11: Tap Talon Gates of Madara for (R)
+|   12: Tap Talon Gates of Madara for (G)
+(REPLAY) [T22 | Upkeep | Player A] Input: 6
+| >> Player A: 6 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 166: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T22 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Talon Gates of Madara for (W))
+Player A tapped Talon Gates of Madara for 1(W)
+| decision 167: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+(REPLAY) [T22 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 168: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+(REPLAY) [T22 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Noble Hierarch for (W))
+Player A tapped Noble Hierarch for 1(W)
+| decision 169: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+(REPLAY) [T22 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Savannah
+| decision 170: Player A (game 0, turn 22, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+(REPLAY) [T22 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 171: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T22 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Savannah)
+Player A played Savannah
+| decision 172: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Green Sun's Zenith
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T22 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Green Sun's Zenith)
+Choose X value (0-0):
+| decision 173: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (X = 0)
+Player A chooses X = 0
+Pay mana costs ((G) remaining):
+| decision 174: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T22 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cancel casting)
+Payment cancelled.
+| decision 175: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Green Sun's Zenith
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T22 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Green Sun's Zenith)
+Choose X value (0-0):
+| decision 176: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (X = 0)
+Player A chooses X = 0
+Pay mana costs ((G) remaining):
+| decision 177: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T22 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cancel casting)
+Payment cancelled.
+| decision 178: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Green Sun's Zenith
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T22 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Green Sun's Zenith)
+Choose X value (0-0):
+| decision 179: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (X = 0)
+Player A chooses X = 0
+Pay mana costs ((G) remaining):
+| decision 180: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tap Savannah for (G))
+Player A activated Savannah for 1(G)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 181: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A shuffles their library
+Player A fails to find
+Green Sun's Zenith is shuffled into its owner's library
+No creatures eligible to attack.
+
+-------- TURN 24 (Player B) --------
+| decision 182: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Talon Gates of Madara for (C)
+|   6: Tap Talon Gates of Madara for (W)
+|   7: Tap Talon Gates of Madara for (U)
+|   8: Tap Talon Gates of Madara for (B)
+|   9: Tap Talon Gates of Madara for (R)
+|   10: Tap Talon Gates of Madara for (G)
+(REPLAY) [T23 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 183: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Talon Gates of Madara for (C)
+|   4: Tap Talon Gates of Madara for (W)
+|   5: Tap Talon Gates of Madara for (U)
+|   6: Tap Talon Gates of Madara for (B)
+|   7: Tap Talon Gates of Madara for (R)
+|   8: Tap Talon Gates of Madara for (G)
+(REPLAY) [T23 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 1(G)
+| decision 184: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T23 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Talon Gates of Madara for (W))
+Player B tapped Talon Gates of Madara for 1(W)
+| decision 185: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T23 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Dryad Arbor for (G))
+Player B tapped Dryad Arbor for 1(G)
+Player B draws Karakas
+| decision 186: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Karakas)
+Player B played Karakas
+| decision 187: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+No creatures eligible to attack.
+
+-------- TURN 25 (Player A) --------
+| decision 188: Player A (game 0, turn 24, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T24 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 189: Player A (game 0, turn 24, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Talon Gates of Madara for (C)
+|   9: Tap Talon Gates of Madara for (W)
+|   10: Tap Talon Gates of Madara for (U)
+|   11: Tap Talon Gates of Madara for (B)
+|   12: Tap Talon Gates of Madara for (R)
+|   13: Tap Talon Gates of Madara for (G)
+(REPLAY) [T24 | Upkeep | Player A] Input: 9
+| >> Player A: 9 (Tap Talon Gates of Madara for (W))
+Player A tapped Talon Gates of Madara for 1(W)
+| decision 190: Player A (game 0, turn 24, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T24 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Tap Noble Hierarch for (G))
+Player A tapped Noble Hierarch for 1(G)
+| decision 191: Player A (game 0, turn 24, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Plains for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T24 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 192: Player A (game 0, turn 24, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T24 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Windswept Heath
+| decision 193: Player A (game 0, turn 24, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T24 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 194: Player A (game 0, turn 24, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+(REPLAY) [T24 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 195: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Windswept Heath)
+Player A played Windswept Heath
+| decision 196: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T24 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 197: Player A (game 0, turn 24, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T24 | Begin Combat | Player A] Input: 1
+| >> Player A: 1 (Activate Windswept Heath (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 198: Player A (game 0, turn 24, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Savannah
+(REPLAY) [T24 | Begin Combat | Player A] Input: 1
+| >> Player A: 1 (Dryad Arbor)
+Player A shuffles their library
+Player A puts Dryad Arbor to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 26 (Player B) --------
+| decision 199: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T25 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 200: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Talon Gates of Madara for (C)
+|   5: Tap Talon Gates of Madara for (W)
+|   6: Tap Talon Gates of Madara for (U)
+|   7: Tap Talon Gates of Madara for (B)
+|   8: Tap Talon Gates of Madara for (R)
+|   9: Tap Talon Gates of Madara for (G)
+(REPLAY) [T25 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+| decision 201: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Talon Gates of Madara for (C)
+|   4: Tap Talon Gates of Madara for (W)
+|   5: Tap Talon Gates of Madara for (U)
+|   6: Tap Talon Gates of Madara for (B)
+|   7: Tap Talon Gates of Madara for (R)
+|   8: Tap Talon Gates of Madara for (G)
+(REPLAY) [T25 | Upkeep | Player B] Input: 8
+| >> Player B: 8 (Tap Talon Gates of Madara for (G))
+Player B tapped Talon Gates of Madara for 1(G)
+| decision 202: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Gaea's Cradle for (G)
+(REPLAY) [T25 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 1(G)
+| decision 203: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T25 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Scryb Ranger
+| decision 204: Player B (game 0, turn 25, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T25 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 205: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Cast Noble Hierarch
+|   3: Tap Dryad Arbor for (G)
+(REPLAY) [T25 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Noble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 206: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Cancel casting
+(REPLAY) [T25 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tap Dryad Arbor for (G))
+Player B activated Dryad Arbor for 1(G)
+Player B casts Noble Hierarch
+Noble Hierarch enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 27 (Player A) --------
+| decision 207: Player A (game 0, turn 26, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Plains for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Talon Gates of Madara for (C)
+|   11: Tap Talon Gates of Madara for (W)
+|   12: Tap Talon Gates of Madara for (U)
+|   13: Tap Talon Gates of Madara for (B)
+|   14: Tap Talon Gates of Madara for (R)
+|   15: Tap Talon Gates of Madara for (G)
+(REPLAY) [T26 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Knight of the Reliquary
+| decision 208: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Plains for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Talon Gates of Madara for (C)
+|   11: Tap Talon Gates of Madara for (W)
+|   12: Tap Talon Gates of Madara for (U)
+|   13: Tap Talon Gates of Madara for (B)
+|   14: Tap Talon Gates of Madara for (R)
+|   15: Tap Talon Gates of Madara for (G)
+(REPLAY) [T26 | Draw | Player A] Input: 15
+| >> Player A: 15 (Tap Talon Gates of Madara for (G))
+Pay mana costs ((?) remaining):
+| decision 209: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Cancel casting
+(REPLAY) [T26 | Draw | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A activated Karakas for 1(W)
+Player A tapped Talon Gates of Madara for 1(G)
+| decision 210: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+(REPLAY) [T26 | Draw | Player A] Input: 2
+| >> Player A: 2 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 211: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T26 | Draw | Player A] Input: 6
+| >> Player A: 6 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 212: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+(REPLAY) [T26 | Draw | Player A] Input: 4
+| >> Player A: 4 (Tap Noble Hierarch for (G))
+Player A tapped Noble Hierarch for 1(G)
+| decision 213: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T26 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 214: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Collector Ouphe
+|   2: Cast Green Sun's Zenith
+|   3: Cast Life from the Loam
+|   4: Cast Scythecat Cub
+|   5: Tap Dryad Arbor for (G)
+|   6: Tap Plains for (W)
+(REPLAY) [T26 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Scythecat Cub)
+Pay mana costs ((G),(?) remaining):
+| decision 215: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Plains for (W)
+|   2: Cancel casting
+(REPLAY) [T26 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cancel casting)
+Payment cancelled.
+| decision 216: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Collector Ouphe
+|   2: Cast Green Sun's Zenith
+|   3: Cast Life from the Loam
+|   4: Cast Scythecat Cub
+|   5: Tap Dryad Arbor for (G)
+|   6: Tap Plains for (W)
+(REPLAY) [T26 | First Main | Player A] Input: 5
+| >> Player A: 5 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+| decision 217: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Collector Ouphe
+|   2: Cast Green Sun's Zenith
+|   3: Cast Life from the Loam
+|   4: Cast Scythecat Cub
+|   5: Tap Plains for (W)
+(REPLAY) [T26 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 218: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Wasteland
+|   2: Windswept Heath
+|   3: Wooded Foothills
+(REPLAY) [T26 | First Main | Player A] Input: 2
+| >> Player A: 2 (Windswept Heath)
+Targeting choice 2
+Choose target for Life from the Loam:
+| decision 219: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Wasteland
+|   2: Wooded Foothills
+(REPLAY) [T26 | First Main | Player A] Input: 2
+| >> Player A: 2 (Wooded Foothills)
+Targeting choice 2
+Choose target for Life from the Loam:
+| decision 220: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Wasteland
+(REPLAY) [T26 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Pay mana costs ((?) remaining):
+| decision 221: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Plains for (W)
+|   1: Cancel casting
+(REPLAY) [T26 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tap Plains for (W))
+Player A activated Plains for 1(W)
+Player A casts Life from the Loam targeting Windswept Heath
+Resolving ability (category: ChangeZone)
+Windswept Heath is moved to hand
+Wooded Foothills is moved to hand
+| decision 222: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Play Wooded Foothills
+(REPLAY) [T26 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Windswept Heath)
+Player A played Windswept Heath
+| decision 223: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T26 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Windswept Heath (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 224: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Savannah
+(REPLAY) [T26 | First Main | Player A] Input: 1
+| >> Player A: 1 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+| decision 225: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T26 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 226: Player A (game 0, turn 26, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+(REPLAY) [T26 | Begin Combat | Player A] Input: 1
+| >> Player A: 1 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+No creatures eligible to attack.
+
+-------- TURN 28 (Player B) --------
+| decision 227: Player B (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scryb Ranger
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Karakas for (W)
+|   5: Tap Noble Hierarch for (W)
+|   6: Tap Noble Hierarch for (U)
+|   7: Tap Noble Hierarch for (G)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Talon Gates of Madara for (C)
+|   11: Tap Talon Gates of Madara for (W)
+|   12: Tap Talon Gates of Madara for (U)
+|   13: Tap Talon Gates of Madara for (B)
+|   14: Tap Talon Gates of Madara for (R)
+|   15: Tap Talon Gates of Madara for (G)
+(REPLAY) [T27 | Upkeep | Player B] Input: 12
+| >> Player B: 12 (Tap Talon Gates of Madara for (U))
+Pay mana costs ((?) remaining):
+| decision 228: Player B (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Cancel casting
+(REPLAY) [T27 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Karakas for (W))
+Player B activated Karakas for 1(W)
+Player B tapped Talon Gates of Madara for 1(U)
+| decision 229: Player B (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scryb Ranger
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+(REPLAY) [T27 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Thalia, Guardian of Thraben
+| decision 230: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scryb Ranger
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+(REPLAY) [T27 | Draw | Player B] Input: 3
+| >> Player B: 3 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 2(G)
+| decision 231: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scryb Ranger
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T27 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Scryb Ranger)
+Player B casts Scryb Ranger
+| decision 232: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+(REPLAY) [T27 | Draw | Player B] Input: 1
+| >> Player B: 1 (Tap Dryad Arbor for (G))
+Player B tapped Dryad Arbor for 1(G)
+| decision 233: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T27 | Draw | Player B] Input: 5
+| >> Player B: 5 (Tap Savannah for (W))
+Player B tapped Savannah for 1(W)
+| decision 234: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T27 | Draw | Player B] Input: 3
+| >> Player B: 3 (Tap Noble Hierarch for (G))
+Player B tapped Noble Hierarch for 1(G)
+Scryb Ranger enters the battlefield
+| decision 235: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T27 | Draw | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 236: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T27 | Draw | Player B] Input: 3
+| >> Player B: 3 (Noble Hierarch)
+Targeting choice 3
+| decision 237: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Return Dryad Arbor to hand
+|   1: Return Savannah to hand
+(REPLAY) [T27 | Draw | Player B] Input: 0
+| >> Player B: 0 (Return Dryad Arbor to hand)
+Player B returns Dryad Arbor to hand
+Player B's Scryb Ranger ability targeting Noble Hierarch is on the stack
+Resolving ability (category: Untap)
+Noble Hierarch untaps
+| decision 238: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T27 | Draw | Player B] Input: 2
+| >> Player B: 2 (Tap Noble Hierarch for (U))
+Player B tapped Noble Hierarch for 1(U)
+| decision 239: Player B (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dryad Arbor
+(REPLAY) [T27 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dryad Arbor)
+Player B played Dryad Arbor
+No creatures eligible to attack.
+
+-------- TURN 29 (Player A) --------
+| decision 240: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Plains for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Savannah for (G)
+|   11: Tap Savannah for (W)
+|   12: Tap Talon Gates of Madara for (C)
+|   13: Tap Talon Gates of Madara for (W)
+|   14: Tap Talon Gates of Madara for (U)
+|   15: Tap Talon Gates of Madara for (B)
+|   16: Tap Talon Gates of Madara for (R)
+|   17: Tap Talon Gates of Madara for (G)
+(REPLAY) [T28 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 241: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+|   11: Tap Talon Gates of Madara for (C)
+|   12: Tap Talon Gates of Madara for (W)
+|   13: Tap Talon Gates of Madara for (U)
+|   14: Tap Talon Gates of Madara for (B)
+|   15: Tap Talon Gates of Madara for (R)
+|   16: Tap Talon Gates of Madara for (G)
+(REPLAY) [T28 | Upkeep | Player A] Input: 11
+| >> Player A: 11 (Tap Talon Gates of Madara for (C))
+Player A tapped Talon Gates of Madara for 1(C)
+| decision 242: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Tap Noble Hierarch for (U))
+Player A tapped Noble Hierarch for 1(U)
+| decision 243: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+| decision 244: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 245: Player B (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T28 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 246: Player B (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T28 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Noble Hierarch)
+Targeting choice 3
+| decision 247: Player B (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Return Dryad Arbor to hand
+|   1: Return Savannah to hand
+(REPLAY) [T28 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Noble Hierarch is on the stack
+| decision 248: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Untap)
+Noble Hierarch untaps
+| decision 249: Player B (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T28 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 250: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+|   5: Tap Savannah for (G)
+|   6: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 251: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 252: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 253: Player A (game 0, turn 28, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+(REPLAY) [T28 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Karakas for (W))
+Player A tapped Karakas for 1(W)
+| decision 254: Player A (game 0, turn 28, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T28 | Draw | Player A] Input: 0
+| >> Player A: 0 (Draw a card)
+Player A draws Wasteland
+| decision 255: Player B (game 0, turn 28, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T28 | Draw | Player B] Input: 1
+| >> Player B: 1 (Tap Noble Hierarch for (W))
+Player B tapped Noble Hierarch for 1(W)
+| decision 256: Player A (game 0, turn 28, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wooded Foothills
+(REPLAY) [T28 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 257: Player A (game 0, turn 28, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wooded Foothills
+(REPLAY) [T28 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 258: Player A (game 0, turn 28, CLEANUP, Player A active)
+| menu:
+|   0: Collector Ouphe
+|   1: Green Sun's Zenith
+|   2: Keen-Eyed Curator
+|   3: Keen-Eyed Curator
+|   4: Knight of the Reliquary
+|   5: Scythecat Cub
+|   6: Wasteland
+|   7: Wooded Foothills
+(REPLAY) [T28 | Cleanup | Player A] Input: 7
+| >> Player A: 7 (Wooded Foothills)
+Player A discards Wooded Foothills.
+
+-------- TURN 30 (Player B) --------
+| decision 259: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Karakas for (W)
+|   5: Tap Noble Hierarch for (W)
+|   6: Tap Noble Hierarch for (U)
+|   7: Tap Noble Hierarch for (G)
+|   8: Tap Talon Gates of Madara for (C)
+|   9: Tap Talon Gates of Madara for (W)
+|   10: Tap Talon Gates of Madara for (U)
+|   11: Tap Talon Gates of Madara for (B)
+|   12: Tap Talon Gates of Madara for (R)
+|   13: Tap Talon Gates of Madara for (G)
+(REPLAY) [T29 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Tap Noble Hierarch for (W))
+Player B tapped Noble Hierarch for 1(W)
+| decision 260: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Karakas for (W)
+|   5: Tap Talon Gates of Madara for (C)
+|   6: Tap Talon Gates of Madara for (W)
+|   7: Tap Talon Gates of Madara for (U)
+|   8: Tap Talon Gates of Madara for (B)
+|   9: Tap Talon Gates of Madara for (R)
+|   10: Tap Talon Gates of Madara for (G)
+(REPLAY) [T29 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+| decision 261: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+|   4: Tap Talon Gates of Madara for (C)
+|   5: Tap Talon Gates of Madara for (W)
+|   6: Tap Talon Gates of Madara for (U)
+|   7: Tap Talon Gates of Madara for (B)
+|   8: Tap Talon Gates of Madara for (R)
+|   9: Tap Talon Gates of Madara for (G)
+(REPLAY) [T29 | Upkeep | Player B] Input: 9
+| >> Player B: 9 (Tap Talon Gates of Madara for (G))
+Player B tapped Talon Gates of Madara for 1(G)
+| decision 262: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+|   2: Tap Dryad Arbor for (G)
+|   3: Tap Gaea's Cradle for (G)
+(REPLAY) [T29 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 263: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T29 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dryad Arbor)
+Targeting choice 0
+| decision 264: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Return Dryad Arbor to hand
+(REPLAY) [T29 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Return Dryad Arbor to hand)
+Player B returns Dryad Arbor to hand
+Player B's Scryb Ranger ability targeting Dryad Arbor is on the stack
+| decision 265: Player B (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T29 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 2(G)
+Resolving ability (category: Untap)
+Dryad Arbor untaps
+| decision 266: Player A (game 0, turn 29, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T29 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 267: Player A (game 0, turn 29, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T29 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+| decision 268: Player B (game 0, turn 29, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dryad Arbor
+|   2: Play Savannah
+(REPLAY) [T29 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dryad Arbor)
+Player B played Dryad Arbor
+
+--- Declare Attackers (Player B) ---
+| decision 269: Player B (game 0, turn 29, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T29 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 270: Player B (game 0, turn 29, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T29 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 2 damage to Player A (now at 15 life)
+--- End Combat Damage ---
+
+
+--- Discard to hand size (Player B) ---
+Hand (9 cards, must discard to 7):
+| decision 271: Player B (game 0, turn 29, CLEANUP, Player B active)
+| menu:
+|   0: Keen-Eyed Curator
+|   1: Knight of the Reliquary
+|   2: Knight of the Reliquary
+|   3: Noble Hierarch
+|   4: Savannah
+|   5: Scythecat Cub
+|   6: Scythecat Cub
+|   7: Swords to Plowshares
+|   8: Thalia, Guardian of Thraben
+(REPLAY) [T29 | Cleanup | Player B] Input: 2
+| >> Player B: 2 (Knight of the Reliquary)
+Player B discards Knight of the Reliquary.
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 272: Player B (game 0, turn 29, CLEANUP, Player B active)
+| menu:
+|   0: Keen-Eyed Curator
+|   1: Knight of the Reliquary
+|   2: Noble Hierarch
+|   3: Savannah
+|   4: Scythecat Cub
+|   5: Scythecat Cub
+|   6: Swords to Plowshares
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T29 | Cleanup | Player B] Input: 6
+| >> Player B: 6 (Swords to Plowshares)
+Player B discards Swords to Plowshares.
+
+-------- TURN 31 (Player A) --------
+| decision 273: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Plains for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Savannah for (G)
+|   11: Tap Savannah for (W)
+|   12: Tap Talon Gates of Madara for (C)
+|   13: Tap Talon Gates of Madara for (W)
+|   14: Tap Talon Gates of Madara for (U)
+|   15: Tap Talon Gates of Madara for (B)
+|   16: Tap Talon Gates of Madara for (R)
+|   17: Tap Talon Gates of Madara for (G)
+(REPLAY) [T30 | Upkeep | Player A] Input: 15
+| >> Player A: 15 (Tap Talon Gates of Madara for (B))
+Pay mana costs ((?) remaining):
+| decision 274: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Forest for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+|   11: Cancel casting
+(REPLAY) [T30 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Karakas for (W))
+Player A activated Karakas for 1(W)
+Player A tapped Talon Gates of Madara for 1(B)
+| decision 275: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+(REPLAY) [T30 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Tap Noble Hierarch for (G))
+Player A tapped Noble Hierarch for 1(G)
+| decision 276: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T30 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 277: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T30 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 278: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+(REPLAY) [T30 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 279: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T30 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+| decision 280: Player A (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T30 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 281: Player B (game 0, turn 30, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T30 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 282: Player A (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T30 | Draw | Player A] Input: 0
+| >> Player A: 0 (Draw a card)
+Player A draws Birds of Paradise
+| decision 283: Player B (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T30 | Draw | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 284: Player B (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T30 | Draw | Player B] Input: 2
+| >> Player B: 2 (Dryad Arbor)
+Targeting choice 2
+| decision 285: Player B (game 0, turn 30, DRAW, Player A active)
+| menu:
+|   0: Return Dryad Arbor to hand
+(REPLAY) [T30 | Draw | Player B] Input: 0
+| >> Player B: 0 (Return Dryad Arbor to hand)
+Player B returns Dryad Arbor to hand
+Player B's Scryb Ranger ability targeting Dryad Arbor is on the stack
+Untap fizzles
+| decision 286: Player A (game 0, turn 30, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T30 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 287: Player A (game 0, turn 30, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Tap Wasteland for (C)
+(REPLAY) [T30 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 288: Player A (game 0, turn 30, FIRST_MAIN, Player A active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Karakas
+|   2: Talon Gates of Madara
+|   3: Dryad Arbor
+|   4: Karakas
+|   5: Savannah
+|   6: Savannah
+|   7: Talon Gates of Madara
+|   8: Wasteland
+(REPLAY) [T30 | First Main | Player A] Input: 4
+| >> Player A: 4 (Karakas)
+Targeting choice 4
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Karakas is on the stack
+Resolving ability (category: Destroy)
+Karakas is destroyed
+No creatures eligible to attack.
+
+-------- TURN 32 (Player B) --------
+| decision 289: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T31 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Tap Noble Hierarch for (G))
+Player B tapped Noble Hierarch for 1(G)
+| decision 290: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Talon Gates of Madara for (C)
+|   4: Tap Talon Gates of Madara for (W)
+|   5: Tap Talon Gates of Madara for (U)
+|   6: Tap Talon Gates of Madara for (B)
+|   7: Tap Talon Gates of Madara for (R)
+|   8: Tap Talon Gates of Madara for (G)
+(REPLAY) [T31 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 2(G)
+| decision 291: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Talon Gates of Madara for (C)
+|   3: Tap Talon Gates of Madara for (W)
+|   4: Tap Talon Gates of Madara for (U)
+|   5: Tap Talon Gates of Madara for (B)
+|   6: Tap Talon Gates of Madara for (R)
+|   7: Tap Talon Gates of Madara for (G)
+(REPLAY) [T31 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Tap Talon Gates of Madara for (B))
+Player B tapped Talon Gates of Madara for 1(B)
+| decision 292: Player B (game 0, turn 31, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+(REPLAY) [T31 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+Player B draws Green Sun's Zenith
+| decision 293: Player B (game 0, turn 31, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dryad Arbor
+|   2: Play Savannah
+(REPLAY) [T31 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dryad Arbor)
+Player B played Dryad Arbor
+| decision 294: Player B (game 0, turn 31, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T31 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 295: Player B (game 0, turn 31, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T31 | Begin Combat | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 296: Player B (game 0, turn 31, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T31 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Dryad Arbor)
+Targeting choice 0
+| decision 297: Player B (game 0, turn 31, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Return Dryad Arbor to hand
+(REPLAY) [T31 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Return Dryad Arbor to hand)
+Player B returns Dryad Arbor to hand
+Player B's Scryb Ranger ability targeting Dryad Arbor is on the stack
+Resolving ability (category: Untap)
+Dryad Arbor untaps
+| decision 298: Player A (game 0, turn 31, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T31 | Begin Combat | Player A] Input: 1
+| >> Player A: 1 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+
+--- Declare Attackers (Player B) ---
+| decision 299: Player B (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T31 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 300: Player B (game 0, turn 31, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T31 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 2 damage to Player A (now at 13 life)
+--- End Combat Damage ---
+
+
+--- Discard to hand size (Player B) ---
+Hand (9 cards, must discard to 7):
+| decision 301: Player B (game 0, turn 31, CLEANUP, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Green Sun's Zenith
+|   2: Keen-Eyed Curator
+|   3: Knight of the Reliquary
+|   4: Noble Hierarch
+|   5: Savannah
+|   6: Scythecat Cub
+|   7: Scythecat Cub
+|   8: Thalia, Guardian of Thraben
+(REPLAY) [T31 | Cleanup | Player B] Input: 8
+| >> Player B: 8 (Thalia, Guardian of Thraben)
+Player B discards Thalia, Guardian of Thraben.
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 302: Player B (game 0, turn 31, CLEANUP, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Green Sun's Zenith
+|   2: Keen-Eyed Curator
+|   3: Knight of the Reliquary
+|   4: Noble Hierarch
+|   5: Savannah
+|   6: Scythecat Cub
+|   7: Scythecat Cub
+(REPLAY) [T31 | Cleanup | Player B] Input: 0
+| >> Player B: 0 (Dryad Arbor)
+Player B discards Dryad Arbor.
+
+-------- TURN 33 (Player A) --------
+| decision 303: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+|   11: Tap Talon Gates of Madara for (C)
+|   12: Tap Talon Gates of Madara for (W)
+|   13: Tap Talon Gates of Madara for (U)
+|   14: Tap Talon Gates of Madara for (B)
+|   15: Tap Talon Gates of Madara for (R)
+|   16: Tap Talon Gates of Madara for (G)
+(REPLAY) [T32 | Upkeep | Player A] Input: 12
+| >> Player A: 12 (Tap Talon Gates of Madara for (W))
+Pay mana costs ((?) remaining):
+| decision 304: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Cancel casting
+(REPLAY) [T32 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Dryad Arbor for (G))
+Player A activated Dryad Arbor for 1(G)
+Player A tapped Talon Gates of Madara for 1(W)
+| decision 305: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+(REPLAY) [T32 | Upkeep | Player A] Input: 6
+| >> Player A: 6 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 306: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T32 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 307: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+(REPLAY) [T32 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 308: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+|   4: Tap Plains for (W)
+(REPLAY) [T32 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Noble Hierarch for (G))
+Player A tapped Noble Hierarch for 1(G)
+| decision 309: Player A (game 0, turn 32, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T32 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 310: Player A (game 0, turn 32, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T32 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Once Upon a Time.
+Player A mills Scythecat Cub.
+Player A mills Endurance.
+Player A dredges Life from the Loam (milled 3)
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 311: Player A (game 0, turn 32, CLEANUP, Player A active)
+| menu:
+|   0: Birds of Paradise
+|   1: Collector Ouphe
+|   2: Green Sun's Zenith
+|   3: Life from the Loam
+|   4: Keen-Eyed Curator
+|   5: Keen-Eyed Curator
+|   6: Knight of the Reliquary
+|   7: Scythecat Cub
+(REPLAY) [T32 | Cleanup | Player A] Input: 0
+| >> Player A: 0 (Birds of Paradise)
+Player A discards Birds of Paradise.
+
+-------- TURN 34 (Player B) --------
+| decision 312: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T33 | Upkeep | Player B] Input: 7
+| >> Player B: 7 (Tap Talon Gates of Madara for (W))
+Pay mana costs ((?) remaining):
+| decision 313: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Tap Karakas for (W)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Cancel casting
+(REPLAY) [T33 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Noble Hierarch for (W))
+Player B activated Noble Hierarch for 1(W)
+Player B tapped Talon Gates of Madara for 1(W)
+| decision 314: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+(REPLAY) [T33 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+| decision 315: Player B (game 0, turn 33, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T33 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 2(G)
+Player B draws Once Upon a Time
+| decision 316: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T33 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 317: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Noble Hierarch
+|   3: Activate Scryb Ranger (Untap)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T33 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Noble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 318: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T33 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tap Savannah for (G))
+Player B activated Savannah for 1(G)
+Player B casts Noble Hierarch
+| decision 319: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T33 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 320: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Noble Hierarch
+|   3: Scryb Ranger
+(REPLAY) [T33 | First Main | Player B] Input: 2
+| >> Player B: 2 (Noble Hierarch)
+Targeting choice 2
+| decision 321: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T33 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Noble Hierarch is on the stack
+Resolving ability (category: Untap)
+Noble Hierarch untaps
+| decision 322: Player B (game 0, turn 33, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T33 | First Main | Player B] Input: 2
+| >> Player B: 2 (Tap Noble Hierarch for (U))
+Player B tapped Noble Hierarch for 1(U)
+Noble Hierarch enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 323: Player B (game 0, turn 33, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T33 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 324: Player B (game 0, turn 33, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T33 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 325: Player B (game 0, turn 33, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T33 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Noble Hierarch (ExaltedBonus))
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 3 damage to Player A (now at 10 life)
+--- End Combat Damage ---
+
+
+-------- TURN 35 (Player A) --------
+| decision 326: Player A (game 0, turn 34, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+|   11: Tap Talon Gates of Madara for (C)
+|   12: Tap Talon Gates of Madara for (W)
+|   13: Tap Talon Gates of Madara for (U)
+|   14: Tap Talon Gates of Madara for (B)
+|   15: Tap Talon Gates of Madara for (R)
+|   16: Tap Talon Gates of Madara for (G)
+(REPLAY) [T34 | Upkeep | Player A] Input: 8
+| >> Player A: 8 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 327: Player A (game 0, turn 34, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T34 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Noble Hierarch for (W))
+Player A tapped Noble Hierarch for 1(W)
+| decision 328: Player A (game 0, turn 34, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T34 | Upkeep | Player A] Input: 10
+| >> Player A: 10 (Tap Talon Gates of Madara for (R))
+Player A tapped Talon Gates of Madara for 1(R)
+| decision 329: Player A (game 0, turn 34, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+|   4: Tap Savannah for (G)
+|   5: Tap Savannah for (W)
+(REPLAY) [T34 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 330: Player A (game 0, turn 34, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+(REPLAY) [T34 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Thalia, Guardian of Thraben
+| decision 331: Player A (game 0, turn 34, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+(REPLAY) [T34 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 332: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Collector Ouphe
+|   2: Cast Green Sun's Zenith
+|   3: Cast Life from the Loam
+|   4: Cast Keen-Eyed Curator
+|   5: Cast Keen-Eyed Curator
+|   6: Cast Knight of the Reliquary
+|   7: Cast Scythecat Cub
+|   8: Cast Thalia, Guardian of Thraben
+|   9: Tap Dryad Arbor for (G)
+|   10: Tap Forest for (G)
+|   11: Tap Plains for (W)
+(REPLAY) [T34 | First Main | Player A] Input: 7
+| >> Player A: 7 (Cast Scythecat Cub)
+Pay mana costs ((G),(?) remaining):
+| decision 333: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Forest for (G)
+|   2: Tap Plains for (W)
+|   3: Cancel casting
+(REPLAY) [T34 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A activated Forest for 1(G)
+Pay mana costs ((G),(?) remaining):
+| decision 334: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Dryad Arbor for (G)
+|   1: Tap Plains for (W)
+|   2: Cancel casting
+(REPLAY) [T34 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tap Dryad Arbor for (G))
+Player A activated Dryad Arbor for 1(G)
+Player A casts Scythecat Cub
+| decision 335: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T34 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Scythecat Cub enters the battlefield
+| decision 336: Player A (game 0, turn 34, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T34 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 337: Player A (game 0, turn 34, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T34 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 338: Player A (game 0, turn 34, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T34 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+
+-------- TURN 36 (Player B) --------
+| decision 339: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Tap Gaea's Cradle for (G)
+|   3: Tap Karakas for (W)
+|   4: Tap Noble Hierarch for (W)
+|   5: Tap Noble Hierarch for (U)
+|   6: Tap Noble Hierarch for (G)
+|   7: Tap Noble Hierarch for (W)
+|   8: Tap Noble Hierarch for (U)
+|   9: Tap Noble Hierarch for (G)
+|   10: Tap Talon Gates of Madara for (C)
+|   11: Tap Talon Gates of Madara for (W)
+|   12: Tap Talon Gates of Madara for (U)
+|   13: Tap Talon Gates of Madara for (B)
+|   14: Tap Talon Gates of Madara for (R)
+|   15: Tap Talon Gates of Madara for (G)
+(REPLAY) [T35 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 3(G)
+| decision 340: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T35 | Upkeep | Player B] Input: 11
+| >> Player B: 11 (Tap Talon Gates of Madara for (U))
+Player B tapped Talon Gates of Madara for 1(U)
+| decision 341: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+(REPLAY) [T35 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Once Upon a Time)
+Player B casts Once Upon a Time
+| decision 342: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Noble Hierarch for (W)
+|   6: Tap Noble Hierarch for (U)
+|   7: Tap Noble Hierarch for (G)
+(REPLAY) [T35 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Noble Hierarch for (G))
+Player B tapped Noble Hierarch for 1(G)
+| decision 343: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+(REPLAY) [T35 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+| decision 344: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T35 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Noble Hierarch for (G))
+Player B tapped Noble Hierarch for 1(G)
+Resolving ability (category: Dig)
+Player B looks at the top 5 card(s) of their library.
+| decision 345: Player B (game 0, turn 35, UPKEEP, Player B active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Wasteland
+|   2: Scythecat Cub
+|   3: Knight of the Reliquary
+|   4: Savannah
+|   5: Wooded Foothills
+(REPLAY) [T35 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Scythecat Cub)
+Player B reveals Scythecat Cub and puts it into hand.
+Player B puts 4 card(s) on the bottom of their library.
+Player B draws Life from the Loam
+| decision 346: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T35 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 347: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Activate Scryb Ranger (Untap)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T35 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tap Savannah for (G))
+Player B tapped Savannah for 1(G)
+| decision 348: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T35 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Green Sun's Zenith)
+Choose X value (0-0):
+| decision 349: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+(REPLAY) [T35 | First Main | Player B] Input: 0
+| >> Player B: 0 (X = 0)
+Player B chooses X = 0
+Player B casts Green Sun's Zenith
+| decision 350: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T35 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 351: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Scythecat Cub
+|   3: Noble Hierarch
+|   4: Noble Hierarch
+|   5: Scryb Ranger
+(REPLAY) [T35 | First Main | Player B] Input: 1
+| >> Player B: 1 (Noble Hierarch)
+Targeting choice 1
+| decision 352: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T35 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Noble Hierarch is on the stack
+Resolving ability (category: Untap)
+Noble Hierarch untaps
+| decision 353: Player A (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T35 | First Main | Player A] Input: 3
+| >> Player A: 3 (Tap Noble Hierarch for (G))
+Player A tapped Noble Hierarch for 1(G)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 354: Player B (game 0, turn 35, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T35 | First Main | Player B] Input: 0
+| >> Player B: 0 (Fail to find)
+Player B shuffles their library
+Player B fails to find
+Green Sun's Zenith is shuffled into its owner's library
+
+--- Declare Attackers (Player B) ---
+| decision 355: Player B (game 0, turn 35, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T35 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 356: Player B (game 0, turn 35, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T35 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 357: Player B (game 0, turn 35, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T35 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Noble Hierarch (ExaltedBonus))
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 3 damage to Player A (now at 7 life)
+--- End Combat Damage ---
+
+
+-------- TURN 37 (Player A) --------
+| decision 358: Player A (game 0, turn 36, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+|   11: Tap Talon Gates of Madara for (C)
+|   12: Tap Talon Gates of Madara for (W)
+|   13: Tap Talon Gates of Madara for (U)
+|   14: Tap Talon Gates of Madara for (B)
+|   15: Tap Talon Gates of Madara for (R)
+|   16: Tap Talon Gates of Madara for (G)
+(REPLAY) [T36 | Upkeep | Player A] Input: 10
+| >> Player A: 10 (Tap Savannah for (W))
+Player A tapped Savannah for 1(W)
+| decision 359: Player A (game 0, turn 36, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T36 | Upkeep | Player A] Input: 7
+| >> Player A: 7 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 360: Player A (game 0, turn 36, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Talon Gates of Madara for (C)
+|   8: Tap Talon Gates of Madara for (W)
+|   9: Tap Talon Gates of Madara for (U)
+|   10: Tap Talon Gates of Madara for (B)
+|   11: Tap Talon Gates of Madara for (R)
+|   12: Tap Talon Gates of Madara for (G)
+(REPLAY) [T36 | Upkeep | Player A] Input: 12
+| >> Player A: 12 (Tap Talon Gates of Madara for (G))
+Player A tapped Talon Gates of Madara for 1(G)
+| decision 361: Player A (game 0, turn 36, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+(REPLAY) [T36 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Tap Noble Hierarch for (U))
+Player A tapped Noble Hierarch for 1(U)
+| decision 362: Player A (game 0, turn 36, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+(REPLAY) [T36 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Scythecat Cub
+| decision 363: Player A (game 0, turn 36, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Plains for (W)
+(REPLAY) [T36 | Draw | Player A] Input: 2
+| >> Player A: 2 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 364: Player A (game 0, turn 36, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T36 | Draw | Player A] Input: 2
+| >> Player A: 2 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 365: Player A (game 0, turn 36, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+(REPLAY) [T36 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+
+--- Declare Attackers (Player A) ---
+| decision 366: Player A (game 0, turn 36, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T36 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Scythecat Cub [2/2] -> Player B
+| decision 367: Player A (game 0, turn 36, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T36 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Scythecat Cub -> Player B
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scythecat Cub gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scythecat Cub deals 3 damage to Player B (now at 21 life)
+--- End Combat Damage ---
+
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 368: Player A (game 0, turn 36, CLEANUP, Player A active)
+| menu:
+|   0: Collector Ouphe
+|   1: Green Sun's Zenith
+|   2: Life from the Loam
+|   3: Keen-Eyed Curator
+|   4: Keen-Eyed Curator
+|   5: Knight of the Reliquary
+|   6: Scythecat Cub
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T36 | Cleanup | Player A] Input: 1
+| >> Player A: 1 (Green Sun's Zenith)
+Player A discards Green Sun's Zenith.
+
+-------- TURN 38 (Player B) --------
+| decision 369: Player B (game 0, turn 37, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T37 | Upkeep | Player B] Input: 12
+| >> Player B: 12 (Tap Talon Gates of Madara for (B))
+Pay mana costs ((?) remaining):
+| decision 370: Player B (game 0, turn 37, UPKEEP, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Tap Karakas for (W)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Noble Hierarch for (W)
+|   6: Tap Noble Hierarch for (U)
+|   7: Tap Noble Hierarch for (G)
+|   8: Cancel casting
+(REPLAY) [T37 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Noble Hierarch for (U))
+Player B activated Noble Hierarch for 1(U)
+Player B tapped Talon Gates of Madara for 1(B)
+| decision 371: Player B (game 0, turn 37, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+(REPLAY) [T37 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Noble Hierarch for (W))
+Player B tapped Noble Hierarch for 1(W)
+| decision 372: Player B (game 0, turn 37, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+(REPLAY) [T37 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+| decision 373: Player B (game 0, turn 37, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T37 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 3(G)
+Player B draws Sylvan Library
+| decision 374: Player B (game 0, turn 37, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T37 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 375: Player B (game 0, turn 37, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T37 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 376: Player B (game 0, turn 37, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Scythecat Cub
+|   3: Noble Hierarch
+|   4: Noble Hierarch
+|   5: Scryb Ranger
+(REPLAY) [T37 | First Main | Player B] Input: 1
+| >> Player B: 1 (Noble Hierarch)
+Targeting choice 1
+| decision 377: Player B (game 0, turn 37, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T37 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Noble Hierarch is on the stack
+Resolving ability (category: Untap)
+Noble Hierarch untaps
+| decision 378: Player A (game 0, turn 37, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T37 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tap Noble Hierarch for (U))
+Player A tapped Noble Hierarch for 1(U)
+
+--- Declare Attackers (Player B) ---
+| decision 379: Player B (game 0, turn 37, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T37 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 380: Player B (game 0, turn 37, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T37 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 381: Player B (game 0, turn 37, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T37 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Noble Hierarch (ExaltedBonus))
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 3 damage to Player A (now at 4 life)
+--- End Combat Damage ---
+
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 382: Player B (game 0, turn 37, CLEANUP, Player B active)
+| menu:
+|   0: Life from the Loam
+|   1: Keen-Eyed Curator
+|   2: Knight of the Reliquary
+|   3: Savannah
+|   4: Scythecat Cub
+|   5: Scythecat Cub
+|   6: Scythecat Cub
+|   7: Sylvan Library
+(REPLAY) [T37 | Cleanup | Player B] Input: 4
+| >> Player B: 4 (Scythecat Cub)
+Player B discards Scythecat Cub.
+
+-------- TURN 39 (Player A) --------
+| decision 383: Player A (game 0, turn 38, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Dryad Arbor for (G)
+|   2: Tap Forest for (G)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Plains for (W)
+|   7: Tap Savannah for (G)
+|   8: Tap Savannah for (W)
+|   9: Tap Savannah for (G)
+|   10: Tap Savannah for (W)
+|   11: Tap Talon Gates of Madara for (C)
+|   12: Tap Talon Gates of Madara for (W)
+|   13: Tap Talon Gates of Madara for (U)
+|   14: Tap Talon Gates of Madara for (B)
+|   15: Tap Talon Gates of Madara for (R)
+|   16: Tap Talon Gates of Madara for (G)
+(REPLAY) [T38 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Dryad Arbor for (G))
+Player A tapped Dryad Arbor for 1(G)
+| decision 384: Player A (game 0, turn 38, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Talon Gates of Madara for (C)
+|   11: Tap Talon Gates of Madara for (W)
+|   12: Tap Talon Gates of Madara for (U)
+|   13: Tap Talon Gates of Madara for (B)
+|   14: Tap Talon Gates of Madara for (R)
+|   15: Tap Talon Gates of Madara for (G)
+(REPLAY) [T38 | Upkeep | Player A] Input: 11
+| >> Player A: 11 (Tap Talon Gates of Madara for (W))
+Player A tapped Talon Gates of Madara for 1(W)
+| decision 385: Player A (game 0, turn 38, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+(REPLAY) [T38 | Upkeep | Player A] Input: 6
+| >> Player A: 6 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 386: Player A (game 0, turn 38, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T38 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Wasteland
+| decision 387: Player A (game 0, turn 38, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T38 | Draw | Player A] Input: 2
+| >> Player A: 2 (Tap Noble Hierarch for (W))
+Player A tapped Noble Hierarch for 1(W)
+| decision 388: Player A (game 0, turn 38, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Plains for (W)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T38 | Draw | Player A] Input: 3
+| >> Player A: 3 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 389: Player A (game 0, turn 38, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T38 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 390: Player A (game 0, turn 38, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T38 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 391: Player A (game 0, turn 38, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Tap Plains for (W)
+(REPLAY) [T38 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+| decision 392: Player A (game 0, turn 38, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T38 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+Choose target for Scythecat Cub:
+| decision 393: Player A (game 0, turn 38, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dryad Arbor
+|   1: Noble Hierarch
+|   2: Scythecat Cub
+(REPLAY) [T38 | First Main | Player A] Input: 2
+| >> Player A: 2 (Scythecat Cub)
+Targeting choice 2
+Scythecat Cub triggered
+| decision 394: Player A (game 0, turn 38, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Tap Wasteland for (C)
+(REPLAY) [T38 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 395: Player A (game 0, turn 38, FIRST_MAIN, Player A active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Karakas
+|   2: Talon Gates of Madara
+|   3: Dryad Arbor
+|   4: Savannah
+|   5: Savannah
+|   6: Talon Gates of Madara
+|   7: Wasteland
+(REPLAY) [T38 | First Main | Player A] Input: 3
+| >> Player A: 3 (Dryad Arbor)
+Targeting choice 3
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Dryad Arbor is on the stack
+Resolving ability (category: Destroy)
+Dryad Arbor is destroyed
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 3/3).
+Resolving ability (category: MultiplyCounter)
+
+--- Declare Attackers (Player A) ---
+| decision 396: Player A (game 0, turn 38, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Scythecat Cub [3/3]
+|   1: Confirm attackers
+(REPLAY) [T38 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Scythecat Cub [3/3])
+Scythecat Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Scythecat Cub [3/3] -> Player B
+| decision 397: Player A (game 0, turn 38, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T38 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Scythecat Cub -> Player B
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scythecat Cub gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scythecat Cub deals 4 damage to Player B (now at 17 life)
+--- End Combat Damage ---
+
+
+-------- TURN 40 (Player B) --------
+| decision 398: Player B (game 0, turn 39, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T39 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Tap Noble Hierarch for (W))
+Player B tapped Noble Hierarch for 1(W)
+| decision 399: Player B (game 0, turn 39, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Noble Hierarch for (W)
+|   4: Tap Noble Hierarch for (U)
+|   5: Tap Noble Hierarch for (G)
+|   6: Tap Talon Gates of Madara for (C)
+|   7: Tap Talon Gates of Madara for (W)
+|   8: Tap Talon Gates of Madara for (U)
+|   9: Tap Talon Gates of Madara for (B)
+|   10: Tap Talon Gates of Madara for (R)
+|   11: Tap Talon Gates of Madara for (G)
+(REPLAY) [T39 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Tap Noble Hierarch for (G))
+Player B tapped Noble Hierarch for 1(G)
+| decision 400: Player B (game 0, turn 39, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+|   3: Tap Talon Gates of Madara for (C)
+|   4: Tap Talon Gates of Madara for (W)
+|   5: Tap Talon Gates of Madara for (U)
+|   6: Tap Talon Gates of Madara for (B)
+|   7: Tap Talon Gates of Madara for (R)
+|   8: Tap Talon Gates of Madara for (G)
+(REPLAY) [T39 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Tap Talon Gates of Madara for (W))
+Player B tapped Talon Gates of Madara for 1(W)
+| decision 401: Player B (game 0, turn 39, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Karakas for (W)
+(REPLAY) [T39 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Gaea's Cradle for (G))
+Player B tapped Gaea's Cradle for 3(G)
+| decision 402: Player B (game 0, turn 39, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+(REPLAY) [T39 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+Player B draws Ignoble Hierarch
+| decision 403: Player B (game 0, turn 39, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T39 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 404: Player B (game 0, turn 39, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T39 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 405: Player B (game 0, turn 39, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T39 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 406: Player B (game 0, turn 39, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T39 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Noble Hierarch (ExaltedBonus))
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 3 damage to Player A (now at 1 life)
+--- End Combat Damage ---
+
+| decision 407: Player B (game 0, turn 39, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T39 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 408: Player B (game 0, turn 39, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ignoble Hierarch
+|   2: Activate Scryb Ranger (Untap)
+|   3: Tap Savannah for (G)
+|   4: Tap Savannah for (W)
+(REPLAY) [T39 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ignoble Hierarch)
+Pay mana costs ((G) remaining):
+| decision 409: Player B (game 0, turn 39, SECOND_MAIN, Player B active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Cancel casting
+(REPLAY) [T39 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Tap Savannah for (G))
+Player B activated Savannah for 1(G)
+Player B casts Ignoble Hierarch
+| decision 410: Player B (game 0, turn 39, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T39 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 411: Player B (game 0, turn 39, SECOND_MAIN, Player B active)
+| menu:
+|   0: Noble Hierarch
+|   1: Scythecat Cub
+|   2: Noble Hierarch
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T39 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Scythecat Cub)
+Targeting choice 1
+| decision 412: Player B (game 0, turn 39, SECOND_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T39 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Scythecat Cub is on the stack
+Resolving ability (category: Untap)
+Scythecat Cub untaps
+Ignoble Hierarch enters the battlefield
+
+-------- TURN 41 (Player A) --------
+| decision 413: Player A (game 0, turn 40, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Savannah for (G)
+|   9: Tap Savannah for (W)
+|   10: Tap Talon Gates of Madara for (C)
+|   11: Tap Talon Gates of Madara for (W)
+|   12: Tap Talon Gates of Madara for (U)
+|   13: Tap Talon Gates of Madara for (B)
+|   14: Tap Talon Gates of Madara for (R)
+|   15: Tap Talon Gates of Madara for (G)
+(REPLAY) [T40 | Upkeep | Player A] Input: 6
+| >> Player A: 6 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 414: Player A (game 0, turn 40, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Talon Gates of Madara for (C)
+|   9: Tap Talon Gates of Madara for (W)
+|   10: Tap Talon Gates of Madara for (U)
+|   11: Tap Talon Gates of Madara for (B)
+|   12: Tap Talon Gates of Madara for (R)
+|   13: Tap Talon Gates of Madara for (G)
+(REPLAY) [T40 | Upkeep | Player A] Input: 10
+| >> Player A: 10 (Tap Talon Gates of Madara for (U))
+Player A tapped Talon Gates of Madara for 1(U)
+| decision 415: Player A (game 0, turn 40, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+(REPLAY) [T40 | Upkeep | Player A] Input: 6
+| >> Player A: 6 (Tap Savannah for (G))
+Player A tapped Savannah for 1(G)
+| decision 416: Player A (game 0, turn 40, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Noble Hierarch for (W)
+|   3: Tap Noble Hierarch for (U)
+|   4: Tap Noble Hierarch for (G)
+|   5: Tap Plains for (W)
+(REPLAY) [T40 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Tap Noble Hierarch for (U))
+Player A tapped Noble Hierarch for 1(U)
+| decision 417: Player A (game 0, turn 40, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Forest for (G)
+|   2: Tap Plains for (W)
+(REPLAY) [T40 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Forest for (G))
+Player A tapped Forest for 1(G)
+| decision 418: Player A (game 0, turn 40, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Plains for (W)
+(REPLAY) [T40 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Plains for (W))
+Player A tapped Plains for 1(W)
+Player A draws Green Sun's Zenith
+
+--- Declare Attackers (Player A) ---
+| decision 419: Player A (game 0, turn 40, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Scythecat Cub [3/3]
+|   1: Confirm attackers
+(REPLAY) [T40 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 420: Player A (game 0, turn 40, CLEANUP, Player A active)
+| menu:
+|   0: Collector Ouphe
+|   1: Green Sun's Zenith
+|   2: Life from the Loam
+|   3: Keen-Eyed Curator
+|   4: Keen-Eyed Curator
+|   5: Knight of the Reliquary
+|   6: Scythecat Cub
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T40 | Cleanup | Player A] Input: 0
+| >> Player A: 0 (Collector Ouphe)
+Player A discards Collector Ouphe.
+
+-------- TURN 42 (Player B) --------
+| decision 421: Player B (game 0, turn 41, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Ignoble Hierarch for (B)
+|   3: Tap Ignoble Hierarch for (R)
+|   4: Tap Ignoble Hierarch for (G)
+|   5: Tap Karakas for (W)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+|   9: Tap Noble Hierarch for (W)
+|   10: Tap Noble Hierarch for (U)
+|   11: Tap Noble Hierarch for (G)
+|   12: Tap Talon Gates of Madara for (C)
+|   13: Tap Talon Gates of Madara for (W)
+|   14: Tap Talon Gates of Madara for (U)
+|   15: Tap Talon Gates of Madara for (B)
+|   16: Tap Talon Gates of Madara for (R)
+|   17: Tap Talon Gates of Madara for (G)
+(REPLAY) [T41 | Upkeep | Player B] Input: 9
+| >> Player B: 9 (Tap Noble Hierarch for (W))
+Player B tapped Noble Hierarch for 1(W)
+| decision 422: Player B (game 0, turn 41, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Ignoble Hierarch for (B)
+|   3: Tap Ignoble Hierarch for (R)
+|   4: Tap Ignoble Hierarch for (G)
+|   5: Tap Karakas for (W)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+|   9: Tap Talon Gates of Madara for (C)
+|   10: Tap Talon Gates of Madara for (W)
+|   11: Tap Talon Gates of Madara for (U)
+|   12: Tap Talon Gates of Madara for (B)
+|   13: Tap Talon Gates of Madara for (R)
+|   14: Tap Talon Gates of Madara for (G)
+(REPLAY) [T41 | Upkeep | Player B] Input: 14
+| >> Player B: 14 (Tap Talon Gates of Madara for (G))
+Player B tapped Talon Gates of Madara for 1(G)
+| decision 423: Player B (game 0, turn 41, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Ignoble Hierarch for (B)
+|   3: Tap Ignoble Hierarch for (R)
+|   4: Tap Ignoble Hierarch for (G)
+|   5: Tap Karakas for (W)
+|   6: Tap Noble Hierarch for (W)
+|   7: Tap Noble Hierarch for (U)
+|   8: Tap Noble Hierarch for (G)
+(REPLAY) [T41 | Upkeep | Player B] Input: 6
+| >> Player B: 6 (Tap Noble Hierarch for (W))
+Player B tapped Noble Hierarch for 1(W)
+| decision 424: Player B (game 0, turn 41, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Ignoble Hierarch for (B)
+|   3: Tap Ignoble Hierarch for (R)
+|   4: Tap Ignoble Hierarch for (G)
+|   5: Tap Karakas for (W)
+(REPLAY) [T41 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wasteland
+| decision 425: Player B (game 0, turn 41, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Ignoble Hierarch for (B)
+|   3: Tap Ignoble Hierarch for (R)
+|   4: Tap Ignoble Hierarch for (G)
+|   5: Tap Karakas for (W)
+(REPLAY) [T41 | Draw | Player B] Input: 5
+| >> Player B: 5 (Tap Karakas for (W))
+Player B tapped Karakas for 1(W)
+| decision 426: Player B (game 0, turn 41, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+|   2: Tap Ignoble Hierarch for (B)
+|   3: Tap Ignoble Hierarch for (R)
+|   4: Tap Ignoble Hierarch for (G)
+(REPLAY) [T41 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 427: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Cast Life from the Loam
+|   4: Cast Keen-Eyed Curator
+|   5: Cast Scythecat Cub
+|   6: Cast Scythecat Cub
+|   7: Cast Sylvan Library
+|   8: Tap Gaea's Cradle for (G)
+|   9: Tap Ignoble Hierarch for (B)
+|   10: Tap Ignoble Hierarch for (R)
+|   11: Tap Ignoble Hierarch for (G)
+(REPLAY) [T41 | First Main | Player B] Input: 7
+| >> Player B: 7 (Cast Sylvan Library)
+Pay mana costs ((G),(?) remaining):
+| decision 428: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Tap Ignoble Hierarch for (B)
+|   2: Tap Ignoble Hierarch for (R)
+|   3: Tap Ignoble Hierarch for (G)
+|   4: Cancel casting
+(REPLAY) [T41 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tap Ignoble Hierarch for (G))
+Player B activated Ignoble Hierarch for 1(G)
+Pay mana costs ((G),(?) remaining):
+| decision 429: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Cancel casting
+(REPLAY) [T41 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cancel casting)
+Payment cancelled.
+| decision 430: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Cast Life from the Loam
+|   4: Cast Keen-Eyed Curator
+|   5: Cast Scythecat Cub
+|   6: Cast Scythecat Cub
+|   7: Cast Sylvan Library
+|   8: Tap Gaea's Cradle for (G)
+|   9: Tap Ignoble Hierarch for (B)
+|   10: Tap Ignoble Hierarch for (R)
+|   11: Tap Ignoble Hierarch for (G)
+(REPLAY) [T41 | First Main | Player B] Input: 5
+| >> Player B: 5 (Cast Scythecat Cub)
+Pay mana costs ((G),(?) remaining):
+| decision 431: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Gaea's Cradle for (G)
+|   1: Tap Ignoble Hierarch for (B)
+|   2: Tap Ignoble Hierarch for (R)
+|   3: Tap Ignoble Hierarch for (G)
+|   4: Cancel casting
+(REPLAY) [T41 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tap Gaea's Cradle for (G))
+Player B activated Gaea's Cradle for 4(G)
+Player B casts Scythecat Cub
+| decision 432: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Ignoble Hierarch for (B)
+|   2: Tap Ignoble Hierarch for (R)
+|   3: Tap Ignoble Hierarch for (G)
+(REPLAY) [T41 | First Main | Player B] Input: 2
+| >> Player B: 2 (Tap Ignoble Hierarch for (R))
+Player B tapped Ignoble Hierarch for 1(R)
+Scythecat Cub enters the battlefield
+| decision 433: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Cast Life from the Loam
+|   4: Cast Keen-Eyed Curator
+|   5: Cast Scythecat Cub
+|   6: Cast Sylvan Library
+(REPLAY) [T41 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 434: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Horizon Canopy
+|   4: Plains
+|   5: Savannah
+|   6: Windswept Heath
+|   7: Wooded Foothills
+(REPLAY) [T41 | First Main | Player B] Input: 1
+| >> Player B: 1 (Dryad Arbor)
+Targeting choice 1
+Choose target for Life from the Loam:
+| decision 435: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Forest
+|   2: Horizon Canopy
+|   3: Plains
+|   4: Savannah
+|   5: Windswept Heath
+|   6: Wooded Foothills
+(REPLAY) [T41 | First Main | Player B] Input: 4
+| >> Player B: 4 (Savannah)
+Targeting choice 4
+Choose target for Life from the Loam:
+| decision 436: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Forest
+|   2: Horizon Canopy
+|   3: Plains
+|   4: Savannah
+|   5: Windswept Heath
+|   6: Wooded Foothills
+(REPLAY) [T41 | First Main | Player B] Input: 4
+| >> Player B: 4 (Savannah)
+Targeting choice 4
+Player B casts Life from the Loam targeting Dryad Arbor
+Resolving ability (category: ChangeZone)
+Dryad Arbor is moved to hand
+Savannah is moved to hand
+Savannah is moved to hand
+| decision 437: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dryad Arbor
+|   2: Play Savannah
+|   3: Play Savannah
+|   4: Play Savannah
+|   5: Play Wasteland
+(REPLAY) [T41 | First Main | Player B] Input: 2
+| >> Player B: 2 (Play Savannah)
+Player B played Savannah
+Choose target for Scythecat Cub:
+| decision 438: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ignoble Hierarch
+|   1: Noble Hierarch
+|   2: Noble Hierarch
+|   3: Scryb Ranger
+|   4: Scythecat Cub
+(REPLAY) [T41 | First Main | Player B] Input: 3
+| >> Player B: 3 (Scryb Ranger)
+Targeting choice 3
+Scythecat Cub triggered
+| decision 439: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+|   2: Tap Savannah for (G)
+|   3: Tap Savannah for (W)
+(REPLAY) [T41 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 440: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Noble Hierarch
+|   1: Scythecat Cub
+|   2: Ignoble Hierarch
+|   3: Noble Hierarch
+|   4: Noble Hierarch
+|   5: Scryb Ranger
+|   6: Scythecat Cub
+(REPLAY) [T41 | First Main | Player B] Input: 3
+| >> Player B: 3 (Noble Hierarch)
+Targeting choice 3
+| decision 441: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T41 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Noble Hierarch is on the stack
+Resolving ability (category: Untap)
+Noble Hierarch untaps
+| decision 442: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Noble Hierarch for (W)
+|   2: Tap Noble Hierarch for (U)
+|   3: Tap Noble Hierarch for (G)
+(REPLAY) [T41 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tap Noble Hierarch for (G))
+Player B tapped Noble Hierarch for 1(G)
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 2/2).
+Resolving ability (category: MultiplyCounter)
+| decision 443: Player B (game 0, turn 41, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Keen-Eyed Curator
+|   2: Cast Scythecat Cub
+|   3: Cast Sylvan Library
+(REPLAY) [T41 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Keen-Eyed Curator)
+Player B casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 444: Player B (game 0, turn 41, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [2/2]
+|   1: Confirm attackers
+(REPLAY) [T41 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [2/2])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Scryb Ranger [2/2] -> Player A
+| decision 445: Player B (game 0, turn 41, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T41 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Scryb Ranger -> Player A
+Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 446: Player B (game 0, turn 41, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ignoble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+|   2: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T41 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ignoble Hierarch (ExaltedBonus))
+Ignoble Hierarch triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 447: Player B (game 0, turn 41, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T41 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Noble Hierarch (ExaltedBonus))
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus)
+Exalted (Ignoble Hierarch): Scryb Ranger gets +1/+1 until end of turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Scryb Ranger deals 5 damage to Player A (now at -4 life)
+--- End Combat Damage ---
+
+
+Player A has -4 life - Player B wins!
+GAME_RESULT: 1 Player B wins

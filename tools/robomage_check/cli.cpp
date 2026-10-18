@@ -22,6 +22,7 @@ static const TierEntry TIERS[] = {
     {"vocab", rmcheck::tier_vocab},
     {"concede", rmcheck::tier_concede},
     {"scenarios", rmcheck::tier_scenarios},
+    {"cli", rmcheck::tier_cli},
     {"replay", rmcheck::tier_replay},
     {"state", rmcheck::tier_state},
     {"knowledge", rmcheck::tier_knowledge},
@@ -76,8 +77,8 @@ static std::string all_tier_names() {
 static void usage() {
     std::printf(
         "usage: robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR]\n"
-        "                      [--fuzz-games N] [--smoke-games N] [--matchups PRESET] [--mode MODE]\n"
-        "                      [--scenario GLOB ...] [--show output|narrative|dump] [--record]\n"
+        "                      [--fuzz-games N] [--manual-mana-games N] [--smoke-games N] [--matchups PRESET]\n"
+        "                      [--mode MODE] [--scenario GLOB ...] [--show output|narrative|dump] [--record]\n"
         "tiers: %s\n",
         all_tier_names().c_str());
 }
@@ -122,6 +123,9 @@ int gate_main(int argc, char **argv) {
             opt.out_dir = argv[++i];
         } else if (a == "--fuzz-games" && has_value && parse_int(argv[i + 1], &n) && n >= 0) {
             opt.fuzz_games = static_cast<int>(n);
+            ++i;
+        } else if (a == "--manual-mana-games" && has_value && parse_int(argv[i + 1], &n) && n >= 0) {
+            opt.manual_mana_games = static_cast<int>(n);
             ++i;
         } else if (a == "--smoke-games" && has_value && parse_int(argv[i + 1], &n) && n >= 0) {
             opt.smoke_games = static_cast<int>(n);

@@ -15,6 +15,8 @@
 //   concede    the CR 104.3a concession sentinels (-2 / -3) at bo1 / bo3 decisions over the RMSTATE
 //              stream (answered, and piped unread), results and --replay of the logged decisions
 //   scenarios  every rules-regression scenario (tests/scenarios/*.json)
+//   cli        the human CLI's golden transcripts: each scripted stdin session (tests/cli/<name>.json)
+//              against its <name>.out byte for byte (--record rewrites them)
 //   replay     the replay corpus: each decision log (tests/corpus/<name>.rmlog) replayed,
 //              its output against <name>.replay byte for byte (--record rewrites the baselines)
 //   state      the state format's self-checks over the replayed corpus, explore fuzz games and the

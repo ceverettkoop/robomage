@@ -813,9 +813,11 @@ Player A played Swamp
 | menu:
 |   0: Pass priority
 |   1: Cast Baleful Strix
-|   2: Cast Orcish Bowmasters
-|   3: Cast Sheoldred's Edict
-|   4: Cast Thoughtseize
+|   2: Cast Fatal Push
+|   3: Cast Fatal Push
+|   4: Cast Orcish Bowmasters
+|   5: Cast Sheoldred's Edict
+|   6: Cast Thoughtseize
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Baleful Strix)
 Player A activated Swamp for 1(B)

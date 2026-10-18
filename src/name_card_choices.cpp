@@ -59,7 +59,6 @@ std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entitie
         if (copies[a] != copies[b]) return copies[a] > copies[b];
         return names[a] < names[b];
     });
-    if (order.size() > static_cast<size_t>(MAX_ACTIONS)) order.resize(MAX_ACTIONS);
 
     std::vector<LegalAction> name_choices;
     out_names.clear();

@@ -25,7 +25,7 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 ### 1.2 Name-a-card offers a limited candidate set
 - **CR** 201.4
 - **Rules:** the player may name any card in the Oracle card reference.
-- **Engine:** with open decklists (the default), the candidates are the distinct vocab cards in the relevant deck(s), filtered by `ValidCards$`, capped at `MAX_ACTIONS`. `CHOOSER_ONLY` offers one player's whole deck (Cabal Therapy: the target player's deck; Disruptor Flute: the opponent's). `BOTH_PLAYERS` offers both decks for land naming (Petrified Hamlet). Under `--closed-decklist`, which hides the opponent's list, the candidates are every vocab card (by front face) passing `ValidCards$`, in name order and uncapped (`docs/state_format.md` register 11a). Their card data comes from the process-wide parse cache (`card_data_by_name`), so cards no deck holds create no entity and change no entity id or RNG draw. That menu is wider than `MAX_ACTIONS` (64); the RMSTATE menu has no width limit.
+- **Engine:** with open decklists (the default), the candidates are the distinct vocab cards in the relevant deck(s), filtered by `ValidCards$`, uncapped. `CHOOSER_ONLY` offers one player's whole deck (Cabal Therapy: the target player's deck; Disruptor Flute: the opponent's). `BOTH_PLAYERS` offers both decks for land naming (Petrified Hamlet). Under `--closed-decklist`, which hides the opponent's list, the candidates are every vocab card (by front face) passing `ValidCards$`, in name order and uncapped (`docs/state_format.md` register 11a). Their card data comes from the process-wide parse cache (`card_data_by_name`), so cards no deck holds create no entity and change no entity id or RNG draw. The RMSTATE menu has no width limit.
 - **Effect:** with open decklists a card that is in neither deck can't be named; under `--closed-decklist` a card outside the vocab can't be. Naming such a card has no effect except bluffing.
 - **Code:** `src/name_card_choices.cpp`: `build_name_card_choices`; `src/effects/effect_name_card.cpp`; `src/card_db.cpp`: `card_data_by_name`.
 
@@ -35,11 +35,11 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 - **Engine:** a draw (`GAME_RESULT: <n> draw`) counts for neither player, and the match continues until one player has won two games. The drawn game's starting player starts again, which matches 103.1 under the forced-play policy (see 2.1). A match that reaches `MAX_MATCH_GAMES` (10) games is a fatal error.
 - **Code:** `src/game_driver.cpp`: `play_bo3_match`; `MAX_MATCH_GAMES` in `src/game_driver.h`.
 
-### 1.4 Automatic mana payment in machine mode
+### 1.4 Automatic mana payment (auto-mana)
 - **CR** 601.2g–h, 605, 107.4e
 - **Rules:** the player chooses which mana abilities to activate, which pool mana to spend, and how each hybrid symbol is paid.
-- **Engine:** in machine mode, the part of a cost the pool doesn't cover is paid by a greedy payer. It prefers painless and single-colour sources, and falls back to the highest-yield ability of each source. Hybrid pips are resolved to the first payable assignment, with no decision. A player can still float mana first through mana-ability actions at priority. Generic pips are paid from the pool in enum order (W, U, B, R, G, then C), not colourless first.
-- **Effect:** there are no tapping decisions. With {W}{C} floating, paying {1} spends the {W}, which can strand a later {W} spell in the same step.
+- **Engine:** with auto-mana on (the default, for every consumer), the part of a cost the pool doesn't cover is paid by a greedy payer. It prefers painless and single-colour sources, and falls back to the highest-yield ability of each source. Hybrid pips are resolved to the first payable assignment, with no decision. Ordinary mana abilities are not offered at priority; instant-speed sources and sources targeted by removal on the stack are, so mana can still be floated. `--no-auto-mana` turns all of this off for the match: every mana ability is offered at priority, and costs and hybrid pips are paid by the player's choices. Generic pips are paid from the pool in enum order (W, U, B, R, G, then C), not colourless first.
+- **Effect:** with auto-mana on there are no tapping decisions. With {W}{C} floating, paying {1} spends the {W}, which can strand a later {W} spell in the same step.
 - **Code:** `src/mana_system.cpp`: `auto_pay_mana`, `auto_pay_mana_attempt`, `pay_from_pool`; `src/action_processor.cpp`: `run_cast_flow` (HYBRID step, `resolve_hybrid_cost`).
 
 ### 1.5 An illegal menace block is released, not rewound
@@ -48,10 +48,10 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 - **Engine:** when blockers are confirmed, a lone blocker on a menace attacker is removed from the block and the other blocks stand.
 - **Code:** `src/action_processor.cpp`: `release_illegal_menace_blockers`.
 
-### 1.6 Interchangeable choices are collapsed; two menus are capped at 64 actions
+### 1.6 Interchangeable choices are collapsed; the sideboard menu is capped at 64 actions
 - **CR** none (an action-encoding limit)
-- **Engine:** before a menu is emitted, entries that make the same choice on interchangeable objects are dropped (for example, two copies of a card in a graveyard). The RMSTATE menu has no width limit. `MAX_ACTIONS` (64) still bounds two menus: an open-decklist name-a-card menu is truncated to 64 candidates (1.2), and a sideboarding menu wider than 64 is a fatal error (the swap locks keep it far smaller). The largest menu seen in fuzzing is 41, so the truncation is theoretical; plan step 4a lifts it.
-- **Code:** `src/input_logger.cpp`: `interchangeable_choices`, `distinct_choice_indices`; `src/queries/zones.cpp`: `interchangeable_cards`; `src/name_card_choices.cpp`; `src/game_driver.cpp` (the sideboard menu); `src/classes/gamestate.h`.
+- **Engine:** before a menu is emitted, entries that make the same choice on interchangeable objects are dropped (for example, two copies of a card in a graveyard, or in a library when each seat sees both of them or neither in a live reveal window). The RMSTATE menu has no width limit. `SIDEBOARD_MENU_LIMIT` (64, `src/game_driver.cpp`) still bounds one menu: a sideboarding menu wider than 64 is a fatal error (the swap locks keep it far smaller).
+- **Code:** `src/input_logger.cpp`: `interchangeable_choices`, `distinct_choice_indices`; `src/queries/zones.cpp`: `interchangeable_cards`; `src/game_driver.cpp` (the sideboard menu).
 
 ### 1.7 Some prompts block and are never search roots
 - **CR** none (a search limitation; the rules outcome is correct)

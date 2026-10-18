@@ -1697,29 +1697,25 @@ Choose which card goes 5 from top:
 | decision 183: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Street Wraith
-|   1: Street Wraith
-|   2: Thassa's Oracle
-(REPLAY) [T8 | First Main | Player A] Input: 2
-| >> Player A: 2 (Thassa's Oracle)
+|   1: Thassa's Oracle
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thassa's Oracle)
 Choose which card goes 4 from top:
 | decision 184: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Street Wraith
-|   1: Street Wraith
 (REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Street Wraith)
 Choose which card goes 3 from top:
 | decision 185: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Street Wraith
-|   1: Street Wraith
 (REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Street Wraith)
 Choose which card goes 2 from top:
 | decision 186: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Street Wraith
-|   1: Street Wraith
 (REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Street Wraith)
 Resolving ability (category: LoseLife, amount: 9)

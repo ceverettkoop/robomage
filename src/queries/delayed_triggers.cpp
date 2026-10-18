@@ -6,8 +6,8 @@
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../machine_io.h"
 #include "../transform.h"
+#include "characteristics.h"
 #include "spells.h"
 
 static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt);
@@ -54,10 +54,9 @@ void register_delayed_trigger(DelayedTrigger dt, const ObjectRef &creator) {
     DelayedTriggerLink &link = dt.ability.delayed_link;
     link.seq = cur_game.next_delayed_seq++;
     link.creator = creator;
-    link.creator_vocab_idx = action_card_vocab_idx(creator.lki_entity());
+    link.creator_vocab_idx = source_vocab_idx(creator.lki_entity());
     if (link.subjects.empty()) link.subjects = derive_delayed_subjects(dt);
-    link.subject_vocab_idx =
-        link.subjects.empty() ? -1 : action_card_vocab_idx(link.subjects[0].lki_entity());
+    link.subject_vocab_idx = link.subjects.empty() ? -1 : source_vocab_idx(link.subjects[0].lki_entity());
     link.fire_kind = delayed_fire_kind(dt);
     cur_game.delayed_triggers.push_back(std::move(dt));
 }

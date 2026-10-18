@@ -29,10 +29,10 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "queries/characteristics.h"
 #include "queries/players.h"
 #include "queries/zones.h"
 #include "input_logger.h"
-#include "machine_io.h"
 #include "snapshot.h"
 #include "state_format/events.h"
 #include "state_format/stream.h"
@@ -51,6 +51,8 @@ static int sideboard_copy_ordinal(size_t copies);
 static constexpr int SIDEBOARD_ORDINAL_MAX = 63;
 // Completed swaps per sideboarding player in machine mode (run_sideboard_phase).
 static constexpr int SIDEBOARD_SWAP_CAP = 15;
+// The widest sideboarding menu run_sideboard_phase may emit (fatal past it).
+static constexpr size_t SIDEBOARD_MENU_LIMIT = 64;
 static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
                                std::vector<std::pair<size_t, std::string>> &to,
                                size_t from_idx);
@@ -73,6 +75,8 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 static std::vector<std::string> padded_library(
     const std::vector<std::string> &hand, const std::vector<std::string> &library);
 static std::string deck_line_name(const std::string &card);
+static std::string sideboard_card_label(const std::string &deck_name);
+[[noreturn]] static void end_run_without_result(const std::string &line);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -81,14 +85,13 @@ Deck DEFAULT_DECK_TWO;
 Game cur_game;
 bool has_human_player = false;
 bool human_player_is_a = false;
+bool human_seat[2] = {false, false};
 // Narrative spectator: pins game_log_private output to one player's view even
 // when both seats are driven over the machine protocol (the TUI play mode wants
 // one-sided narrative without routing input through the human-keyboard path).
 bool log_viewer_set = false;
 Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
 
-// The CLI board (print_game_state) of the current decision.
-static GameState gs;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
@@ -101,6 +104,12 @@ bool no_shuffle = false;
 // the proposal (CR 733.1). A testing aid for the rewind; off by default, so the machine action
 // space is unchanged.
 bool offer_cast_cancel = false;
+// auto-mana (on unless --no-auto-mana), match-wide for every consumer: ordinary mana abilities stay
+// off the priority menu, the greedy payer (auto_pay_mana) pays the part of a cost the pool doesn't
+// cover, and hybrid pips resolve to the first payable assignment. Off, every mana ability is
+// offered at priority and costs are paid through the interactive payment loop
+// (prompt_mana_payment). Recorded in the RMLOG header.
+bool auto_mana = true;
 bool narrative_mode = false;
 bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training
@@ -599,9 +608,6 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // actions, no SBE trigger scan, no new decisions (CR 104.1: the game
         // ends immediately) — so exit now.
         if (cur_game.ended) break;
-        Zone::Ownership viewer = (has_human_player)
-            ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
-            : Zone::UNKNOWN;
 
         if (!resolution_just_completed) {
             if ((!InputLogger::instance().is_machine_mode() || narrative_mode) &&
@@ -682,12 +688,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             continue;
         }
 
-        // The CLI board (machine mode prints none).
         g_priority_window_open = true;
-        if (!machine_mode) {
-            populate_gamestate(&gs, viewer);
-            print_game_state(&gs);
-        }
         // The priority decision is loop-safe: the whole state lives in cur_game +
         // ECS here, and re-entering the loop top on that data re-derives this
         // same decision (the snapshot round-trip CI test proves it byte-for-byte).
@@ -938,11 +939,21 @@ Deck load_launch_deck(Zone::Ownership seat) {
     return Deck::from_string(text);
 }
 
-[[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+// Ends the run before the decision at hand is decided, `line` its last line of output.
+[[noreturn]] static void end_run_without_result(const std::string &line) {
     std::fflush(stdout);
-    std::printf("MAX_DECISIONS: stopped after %zu decisions (--max-decisions; no result)\n", decisions);
+    std::printf("%s\n", line.c_str());
     std::fflush(stdout);
     std::exit(0);
+}
+
+[[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+    end_run_without_result(
+        "MAX_DECISIONS: stopped after " + std::to_string(decisions) + " decisions (--max-decisions; no result)");
+}
+
+[[noreturn]] void end_run_at_recorded_quit(size_t decision) {
+    end_run_without_result("QUIT: the recorded session quit at decision " + std::to_string(decision) + " (no result)");
 }
 
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
@@ -1182,6 +1193,14 @@ static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from
 // outstanding card and force_done) lives in `st`, and the menu is a pure function
 // of it plus `deck` — so a MATCH-scoped restore re-derives the identical menu,
 // which is what keeps a sideboard prompt a loop-safe search root.
+// The card a deck line names, by the card's name rather than the line's spelling ("Dead/Gone" is
+// Dead // Gone, "Mishras Bauble" Mishra's Bauble); the line's spelling for a card that does not load.
+static std::string sideboard_card_label(const std::string &deck_name) {
+    const Entity e = load_card(deck_name);
+    if (e == 0 || !global_coordinator.entity_has_component<CardData>(e)) return deck_name;
+    return whole_card_name(global_coordinator.GetComponent<CardData>(e));
+}
+
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     Zone::Ownership player = st.player;
     sideboard_phase = true;
@@ -1234,7 +1253,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         auto add_choice = [&](const char *verb, size_t deck_idx, size_t copies,
                               const std::string &name, bool is_in) {
             actions.emplace_back(ActionType::SPECIAL_ACTION,
-                                 std::string(verb) + std::to_string(copies) + "x " + name);
+                std::string(verb) + std::to_string(copies) + "x " + sideboard_card_label(name));
             actions.back().category = is_in ? ActionCategory::SIDEBOARD_IN
                                             : ActionCategory::SIDEBOARD_OUT;
             actions.back().option_ordinal = sideboard_copy_ordinal(copies);
@@ -1289,22 +1308,20 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
 
         // The one-shot locks bound the menu to Done + (distinct sideboard) while
         // balanced, and to (distinct maindeck) — or the lone forced cut — at +1,
-        // comfortably inside MAX_ACTIONS for any real deck; a wider menu means the
+        // comfortably inside SIDEBOARD_MENU_LIMIT for any real deck; a wider menu means the
         // locks failed, so it is fatal.
-        if (actions.size() > MAX_ACTIONS)
+        if (actions.size() > SIDEBOARD_MENU_LIMIT)
             fatal_error("sideboard menu has " + std::to_string(actions.size()) +
-                        " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
-                        " — choices beyond that would be unreachable");
+                        " entries, exceeds SIDEBOARD_MENU_LIMIT=" + std::to_string(SIDEBOARD_MENU_LIMIT) +
+                        " (the swap locks failed)");
 
-        // Cap completed swaps in machine mode so a runaway agent cannot spin here
-        // (schedule-affecting, so a replayed machine log must apply the same cap).
+        // Cap completed swaps, for every consumer, so a runaway agent cannot spin here.
         // Checked only while balanced: interrupting mid-move would strand the deck
         // off-size. It can also pre-empt the Done-only menu a forced cut sets up —
         // if the stranding swap was the SIDEBOARD_SWAP_CAP'th one this fires first.
         // The deck is balanced on either path, so the worst-case decision count is
         // unchanged (Done is simply replaced by the auto-finish).
-        if (balanced && InputLogger::instance().is_machine_schedule() &&
-            st.sb_swaps >= SIDEBOARD_SWAP_CAP) {
+        if (balanced && st.sb_swaps >= SIDEBOARD_SWAP_CAP) {
             game_log("%s hit sideboard swap limit (%d), auto-finishing.\n",
                      player_name, SIDEBOARD_SWAP_CAP);
             break;
@@ -1317,15 +1334,13 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             game_log_private(player, "\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
                              player_name, deck.sideboard.size(), st.sb_swaps);
         else
-            game_log_private(player, "\n%s must balance %s (%+d): choose a card to cut.\n",
-                             player_name, st.unpaired_name.c_str(), st.delta);
+            game_log_private(player, "\n%s must balance %s (%+d): choose a card to cut.\n", player_name,
+                sideboard_card_label(st.unpaired_name).c_str(), st.delta);
 
         // With a move outstanding, expose the unpaired card as the pending-decision
         // source so the observation shows WHICH card the balancing move is for.
         // Entity 0 is the "none" sentinel, so this is a no-op while balanced.
         PendingDecisionScope pending(balanced ? 0 : load_card(st.unpaired_name));
-        populate_gamestate(&gs, player);
-        if (balanced) print_game_state(&gs);
         // Loop-safe: the menu above is a pure function of (deck, the one-shot name
         // sets, delta, unpaired_name, force_done), all of which live in `st` and are
         // restored wholesale, so re-entry after a rollback re-derives this exact
@@ -1369,15 +1384,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             // the next decision offers only cuts.
             st.delta = 1;
             st.unpaired_name = moved;
-            game_log_private(player, "Bringing in %s.\n", moved.c_str());
+            game_log_private(player, "Bringing in %s.\n", sideboard_card_label(moved).c_str());
         } else {
             // Closing half: the pair is complete, so this counts as a swap. The
             // forced cut of a stranded +1 counts too, INCLUDING when it cuts the
             // very name just brought in — that leaves the deck exactly as it
             // started, which is a legal (if pointless) configuration, and the
             // phase force-ends on the next decision either way.
-            game_log_private(player, "Swapped %s for %s.\n", moved.c_str(),
-                             st.unpaired_name.c_str());
+            game_log_private(player, "Swapped %s for %s.\n", sideboard_card_label(moved).c_str(),
+                sideboard_card_label(st.unpaired_name).c_str());
             st.delta = 0;
             st.unpaired_name.clear();
             st.sb_swaps++;
@@ -1500,7 +1515,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                 ctx.a_goes_first = (winner != Zone::PLAYER_A);
 
             // sideboarding phase - ECS from the just-ended game is still valid
-            // (player entities exist for populate_gamestate, card_db works for load_card)
+            // (card_db works for load_card)
             ctx.sb = SideboardPhaseState();
             ctx.sb.player = Zone::PLAYER_A;
             ctx.stage = MatchContext::SIDEBOARD_A;

@@ -15,7 +15,6 @@
 
 #include "classes/deck.h"
 #include "classes/game.h"
-#include "classes/gamestate.h"
 #include "classes/match_context.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
@@ -33,6 +32,9 @@ extern Deck DEFAULT_DECK_TWO;
 extern Game cur_game;
 extern bool has_human_player;
 extern bool human_player_is_a;
+// The human seats (the C++ CLI, cli/human.h), [0] = Player A: set once the options are parsed
+// (cli_args.cpp).
+extern bool human_seat[2];
 extern bool log_viewer_set;
 extern Zone::Ownership log_viewer_owner;
 
@@ -45,6 +47,7 @@ extern bool seed_override;
 extern unsigned int seed_value;
 extern bool no_shuffle;
 extern bool offer_cast_cancel;
+extern bool auto_mana;
 extern bool narrative_mode;
 extern bool bo3_mode;
 extern bool log_decisions_flag;
@@ -193,6 +196,11 @@ Deck load_launch_deck(Zone::Ownership seat);
 // "MAX_DECISIONS: stopped after <n> decisions (--max-decisions; no result)" and exits with status
 // 0 (no GAME_RESULT for the unfinished game).
 [[noreturn]] void end_run_at_decision_cap(size_t decisions);
+
+// --replay of a decision log whose session quit (its QUIT_MARKER line, input_logger.h): ends the
+// run at that decision, `decision` (1-based), before it is decided: prints "QUIT: the recorded
+// session quit at decision <n> (no result)" and exits with status 0.
+[[noreturn]] void end_run_at_recorded_quit(size_t decision);
 
 // A best-of-three match that reaches this many games without a match winner is a fatal error
 // (only drawn games, which count for neither player, can lengthen a match past three).

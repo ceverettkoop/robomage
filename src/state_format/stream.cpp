@@ -37,11 +37,11 @@ static bool stream_match_frames_sent[3] = {false, false, false};
 static bool stream_on = false;
 
 // Whether machine seat `seat` (0 = A, 1 = B) decides over the stream: it has no in-process agent
-// or script (agents/driver.h) and is not the --player seat.
+// or script (agents/driver.h) and is not a human seat.
 static bool seat_reads_stdin(int seat) {
     if (play_script_given || actions_script_given) return false;
     if (!(seat == 0 ? agent_a_spec : agent_b_spec).empty()) return false;
-    return !(has_human_player && human_player_is_a == (seat == 0));
+    return !human_seat[seat];
 }
 
 void rmstate_outputs_init() {

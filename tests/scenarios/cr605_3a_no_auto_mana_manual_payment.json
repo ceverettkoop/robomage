@@ -1,0 +1,25 @@
+{
+  "name": "cr605_3a_no_auto_mana_manual_payment",
+  "why": "CR 605.3a / 601.2g-h: with --no-auto-mana a land's mana ability is offered at priority (mana:r floats {R} there, which pays the first Lightning Bolt) and a cost the pool doesn't cover goes through the payment loop (tap:Mountain pays the second, cast in response); both resolve and the game goes on (plan step 4a, auto-mana)",
+  "engine_flags": ["--no-auto-mana"],
+  "hand_a": ["Lightning Bolt", "Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:mana:r", "A:cast:Lightning Bolt", "A:target:Grizzly Bears@opp",
+           "A:cast:Lightning Bolt", "A:target:Player B", "A:tap:Mountain"],
+  "max_decisions": 14,
+  "expect_order": [
+    "Player A tapped Mountain for 1\\(R\\)",
+    "Player A casts Lightning Bolt targeting Grizzly Bears",
+    "Pay mana costs \\(\\(R\\) remaining\\)",
+    "Player A activated Mountain for 1\\(R\\)",
+    "Player A casts Lightning Bolt targeting Player B",
+    "Lightning Bolt deals 3 damage to Player B",
+    "Grizzly Bears is destroyed",
+    "TURN 2 \\(Player B\\)"
+  ],
+  "expect_menu": ["^Cancel casting$"]
+}

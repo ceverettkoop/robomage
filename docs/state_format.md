@@ -78,8 +78,8 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 **Reveal windows.**
 - A reveal shows a card to all players for as long as the revealing effect needs it (CR
   701.20a). A look is the same, shown only to the specified player (CR 701.20e).
-- The engine keeps one per-viewer **reveal-window** set. It generalises today's
-  `Game::revealed_in_library` to hands and looks. Implemented in `src/queries/visibility.{h,cpp}`
+- The engine keeps one per-viewer **reveal-window** set, over reveals and looks in libraries,
+  hands, the sideboard and face-down exile. Implemented in `src/queries/visibility.{h,cpp}`
   (`identity_visible`, `order_visible`, `reveal_windows_for`) over `Game::reveal_windows`;
   `--trace-visibility` narrates each window opening and closing.
 - A window ends when the effect finishes with the card, when the card changes zones, or when
@@ -120,7 +120,7 @@ child tables.
 | `lki` | departed objects still referenced | last-known characteristics for a stack or effect reference |
 | `reveal` | one per object in a current window for this viewer | handle, zone, position if in a library, card id, who it is revealed to |
 | `pending` | 0 or 1 | the paused flow (`PendingQuery::Tag`), deciding seat, source handle |
-| `pending_cost` | 0 or 1 during a cost-payment decision (manual mana payment under `--no-auto-mana`, pitch/alternative costs, unless-payments, X choices) | what is being paid for (spell/ability handle and which cost: mana, alternative, unless, additional), the **remaining cost** by pip type (W/U/B/R/G/C, generic, each hybrid and Phyrexian pip, snow, X), and the amount already paid. Child table `pending_cost_pip` for non-plain pips |
+| `pending_cost` | 0 or 1 during a cost-payment decision (manual mana payment under `--no-auto-mana`, pitch/alternative costs, unless-payments, X choices) | what is being paid for (spell/ability handle and which cost: mana, alternative, unless, additional), the **remaining cost** by pip type (W/U/B/R/G/C, generic, each hybrid and Phyrexian pip, snow, X), and the amount already paid. In the interactive mana payment loop, mana floating in the payer's pool counts as applied: the remaining cost is what the pool does not cover (the engine spends the pool once it covers the whole cost, CR 601.2g-h) and that mana counts as paid. Child table `pending_cost_pip` for non-plain pips |
 | `menu` | one per legal action | category, action type, source/target handles, ability reference, ordinal, cast-variant flags, card-is-public flag, description. No length cap; one integer answers the decision |
 | `match` | 1 | game number, wins, who played first this game, sideboard phase, own current deck/sideboard during sideboarding |
 | `events` | the drained event queue | section 5 |
@@ -378,11 +378,11 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   classified: the persistent knowledge bookkeeping that existed only for the observation
   (`Game::KnownLibraryTop`, `Zone::identity_known`, the match revealed bits, the `opp_known_hand`
   pass), with the search server and its determinizer.
-- **Menu collapse.** `interchangeable_cards` (`src/queries/zones.cpp`) refuses to merge two
-  identical library cards when one is at a position the other player knows; since 3b it reads
-  `Game::OppKnownLibraryTop` (one bool per top position, kept for this reader alone). That rule
-  must be redefined on currently explicit information (a card in a live reveal window is
-  distinguishable; memory is not). It changes the decision schedule, so it belongs with step 4a.
+- **Menu collapse** (step 4a, done). `interchangeable_cards` (`src/queries/zones.cpp`) merges two
+  identical cards in one library only when each seat sees both of them or neither right now
+  (`identity_visible`: a live reveal window); what a seat remembers of a closed window is not
+  read. `Game::OppKnownLibraryTop`, `Game::revealed_in_library` and `mark_card_revealed` are
+  gone.
 
 ## 9. Encoding and protocol
 
@@ -408,11 +408,12 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   is one line: an action index, `-1` (confirm), `-2` (concede game) or `-3` (concede match).
   Narrative goes to stderr or its own file descriptor, never interleaved with frames.
   `--machine` (also spelled `--machine-format rmstate`; `src/state_format/stream.h`) is this
-  protocol, for each seat with no in-process agent that is not the `--player` seat (under
-  `--replay` the log supplies every decision and no stream is written):
+  protocol, for each seat with no in-process agent that is not a human seat (a run with a human
+  seat, the C++ CLI, has no stream seat; under `--replay` the log supplies every decision and no
+  stream is written):
   - stdout carries only `RMSTATE` records. The engine moves stdout's descriptor aside for them
     at startup and points stdout at stderr, so everything else it prints (narrative under
-    `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, a `--player` seat's CLI prompt) goes to
+    `--narrative`, `GAME_RESULT` / `MATCH_RESULT`) goes to
     stderr. (`--broadcast-steps`' passive `BSTATE` frames and `--search-server` went with
     BQUERY; both flags are refused.)
   - The menu is unbounded: `--closed-decklist`'s name-a-card menus offer every vocab card
@@ -610,7 +611,7 @@ that also answers simulated ones (a search agent's).
 | 29 | `CARDS` always carries oracle text, for cards and tokens; text embeddings for learned models are built from it | decided |
 | 30 | Every schema column carries a semantic tag and, where defined, a value range (section 9) | decided |
 | 31 | Every row with an owner/controller/player column also carries it relative to the viewer (self/opponent) | decided |
-| 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off (per seat with `-a`/`-b` if needed); recorded in the RMLOG header. Lands with the other schedule changes in plan step 4a; until then the existing machine/interactive split stands | decided |
+| 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off for the match (match-wide; no per-seat variant); recorded in the RMLOG header. Done in plan step 4a | decided |
 | 33 | Every cost-payment decision's frame carries `pending_cost`: what is being paid for and the remaining cost by pip type (section 4) | decided |
 | 34 | Counter kinds travel as `text` (no engine enum; they are script strings) | decided |
 | 35 | Face-down exiled cards follow CR 406.3: a per-player look window, opened for whoever looked at the card before it was exiled face down or is allowed to look, lasting until the card leaves exile | decided |
@@ -916,7 +917,7 @@ computes neither outside its legal-action enumeration.
 | | `rem_w`, `rem_u`, `rem_b`, `rem_r`, `rem_g`, `rem_c`, `rem_generic`, `rem_x` | 8 × u8 | `count` | remaining plain pips; `rem_x` = {X} pips still to announce |
 | | `rem_life` | u16 | `count` | |
 | | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers) |
-| | `paid` | u8 | `count` | mana already paid (interactive payment) |
+| | `paid` | u8 | `count` | mana already paid (interactive payment; the pool's mana that applies to the cost counts as paid, and the `rem_*` columns leave it out) |
 | `pending_cost_pip` (45) | `cost` | u16 | `row:pending_cost` | remaining non-plain pips |
 | | `kind`, `colors`, `generic_alt` | u8 | `enum:pip_kind`, `mask:color`, `count` | as `card_pip` (plus snow) |
 | `menu` (46): row = action index of the menu as offered (after the interchangeable-choice collapse); only in the deciding seat's and the omniscient frame | `category` | u8 | `enum:action_category` | |
@@ -1062,5 +1063,5 @@ FIRE_LEAVES_BATTLEFIELD), `EffectKind` (`effect_kind`: None, then the categories
 `effect_kinds.def`, included as an X-macro). The type lists `all_types`, `all_subtypes`,
 `all_supertypes` (`src/constants.cpp`, sorted) give `card_type`, `subtype`, `supertype`; the
 parser's keyword table (`kKeywordTable`, `src/parse.cpp`, via `parser_keyword_names`) followed
-by the observation's evergreen keywords it lacks (`OBS_KEYWORDS`, `src/machine_io.h`) gives
+by the observation's evergreen keywords it lacks (`EVERGREEN_KEYWORDS`, `src/state_format/enum_names.cpp`) gives
 `keyword`. The SCHEMA frame lists the format's enums first, then these.

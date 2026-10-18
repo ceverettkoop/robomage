@@ -1,11 +1,16 @@
 #include "characteristics.h"
 
+#include "../card_vocab.h"
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/creature.h"
 #include "../components/token.h"
 #include "battlefield.h"
 #include "lki.h"
+
+static int token_vocab_idx(Entity e);
+static int last_known_vocab_idx(Entity e);
+static bool named_vocab_idx(Entity e, int *idx);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -106,6 +111,10 @@ std::set<Colors> effective_colors(Entity e) {
 // The single shared display-name resolver (contract documented at the declaration in
 // characteristics.h). Display-only: never consulted by rules logic, so the " token" tag and
 // the ability-entity description cannot affect behavior.
+std::string whole_card_name(const CardData &cd) {
+    return cd.is_split && cd.backside ? cd.name + " // " + cd.backside->name : cd.name;
+}
+
 std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
@@ -132,4 +141,56 @@ std::string entity_name(Entity e) {
     }
     std::string lk = last_known_name(e);
     return lk.empty() ? "<unknown>" : lk;
+}
+
+// Vocab index for a token entity: its registered token-band index (keyed by the
+// token SCRIPT stem — display names collide, stems don't), else TOKEN_SENTINEL.
+static int token_vocab_idx(Entity e) {
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        int idx = token_script_to_index(global_coordinator.GetComponent<Token>(e).script_name);
+        if (idx >= 0) return idx;
+    }
+    return TOKEN_SENTINEL;
+}
+
+// Vocab index of an object that left the battlefield and ceased to exist (a token, CR 111.7),
+// from its last-known information: a token's token-band index (else TOKEN_SENTINEL), a card's
+// name index. -1 when no last-known information was captured.
+static int last_known_vocab_idx(Entity e) {
+    const LastKnownInfo *lki = lki_for(e);
+    if (!lki || lki->name.empty()) return -1;
+    if (!lki->is_token) return card_name_to_index(lki->name);
+    int idx = token_script_to_index(lki->token_script);
+    return idx >= 0 ? idx : TOKEN_SENTINEL;
+}
+
+// Sets *idx to the vocab index of a permanent by its current name (a token by its token index) or
+// of a card by its CardData name; false when `e` has neither component.
+static bool named_vocab_idx(Entity e, int *idx) {
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        *idx = perm.is_token ? token_vocab_idx(e) : card_name_to_index(perm.name);
+        return true;
+    }
+    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
+    *idx = card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+    return true;
+}
+
+int source_vocab_idx(Entity e) {
+    if (e == 0) return -1;
+    int idx = -1;
+    if (named_vocab_idx(e, &idx)) return idx;
+    if (global_coordinator.entity_has_component<Ability>(e)) {
+        Entity src = global_coordinator.GetComponent<Ability>(e).source.lki_entity();
+        if (named_vocab_idx(src, &idx)) return idx;
+        // An ability whose token source has already left play keeps no Permanent/CardData;
+        // a lingering Token component still identifies it as a token.
+        if (global_coordinator.entity_has_component<Token>(src)) return token_vocab_idx(src);
+        // A source token that has ceased to exist entirely: its last-known identity.
+        return last_known_vocab_idx(src);
+    }
+    // An object with no live components left (a token that ceased to exist, CR 111.7) is
+    // identified by its last-known information.
+    return last_known_vocab_idx(e);
 }

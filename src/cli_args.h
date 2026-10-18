@@ -21,7 +21,7 @@ enum class CliParseResult {
 CliParseResult parse_command_line(int argc, char const *argv[]);
 
 // Appends the RMLOG v2 FLAGS tokens for every setup option in effect (plus the "machine"
-// decision-schedule marker) to `header`. Every setup option other than the decks and the seed,
+// protocol marker) to `header`. Every setup option other than the decks and the seed,
 // which have their own header fields, is written here.
 void record_header_flags(DecisionLogHeader &header);
 

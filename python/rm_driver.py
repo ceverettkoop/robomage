@@ -120,6 +120,8 @@ CLI_FLAGS = (
              "narrative)"},
     {"name": "--closed-decklist", "kind": "flag",
      "help": "Engine --closed-decklist: each seat's opponent list withheld"},
+    {"name": "--no-auto-mana", "kind": "flag",
+     "help": "Engine --no-auto-mana: every mana ability offered, costs paid source by source"},
     {"name": "--selfcheck-state", "kind": "flag",
      "help": "Engine --selfcheck-state: the state format's self-checks at every decision"},
     {"name": "--selfcheck-knowledge", "kind": "flag",
@@ -840,8 +842,8 @@ def run_games(agent_a="scripted", agent_b="scripted", *, label_a="A", label_b="B
 
 def _engine_flags(args) -> list:
     flags = []
-    for dest, flag in (("closed_decklist", "--closed-decklist"), ("selfcheck_state", "--selfcheck-state"),
-                       ("selfcheck_knowledge", "--selfcheck-knowledge")):
+    for dest, flag in (("closed_decklist", "--closed-decklist"), ("no_auto_mana", "--no-auto-mana"),
+                       ("selfcheck_state", "--selfcheck-state"), ("selfcheck_knowledge", "--selfcheck-knowledge")):
         if getattr(args, dest):
             flags.append(flag)
     for dest, flag in (("knowledge_a", "--knowledge-a"), ("knowledge_b", "--knowledge-b")):

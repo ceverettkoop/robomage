@@ -1,0 +1,232 @@
+robomage 0.2
+Decision log: auto_pass.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x5
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> Auto-pass starts at a priority decision with a Pass priority row.
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Mountain: created on the battlefield
+  T1: Player A's Grizzly Bears: created on the battlefield
+  T1: Player B's Forest: created on the battlefield (x2)
+  T1: Player B's Grizzly Bears: created on the battlefield
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #12
+  Forest x2           #10 #11
+Player A's battlefield:
+  Grizzly Bears  2/2  #9
+  Mountain            #8
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> Auto-passing until the next turn begins (it stops at any other decision, and when Player B puts something on the stack).
+Player A passes (auto): Game 1, turn 1, Draw: Player A's turn; Player A has priority
+Player A passes (auto): Game 1, turn 1, First main: Player A's turn; Player A has priority
+Player A passes (auto): Game 1, turn 1, Begin combat: Player A's turn; Player A has priority
+
+Auto-pass stopped: this decision is not a priority pass.
+Game 1, turn 1, Declare attackers: Player A's turn
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Grizzly Bears [2/2]
+  1: Confirm attackers   (or -1)
+Player A [0-1, help]> 
+Game 1, turn 1, Declare attackers: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> Auto-passing until the next turn begins (it stops at any other decision, and when Player B puts something on the stack).
+Player A passes (auto): Game 1, turn 1, End of combat: Player A's turn; Player A has priority
+Player A passes (auto): Game 1, turn 1, Second main: Player A's turn; Player A has priority
+Player A passes (auto): Game 1, turn 1, End step: Player A's turn; Player A has priority
+
+Auto-pass stopped: a new turn began.
+Game 1, turn 2, Upkeep: Player B's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> Auto-passing until your next turn begins (it stops at any other decision, and when Player B puts something on the stack).
+  T2: Player B draws a card
+Player A passes (auto): Game 1, turn 2, Draw: Player B's turn; Player A has priority
+
+Auto-pass stopped: Player B put something on the stack.
+Since your last decision:
+  T2: Player B casts Grizzly Bears from hand
+Game 1, turn 2, First main: Player B's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 7   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #12
+  Forest x2           #10 #11  tapped
+Player A's battlefield:
+  Grizzly Bears  2/2  #9
+  Mountain            #8
+Stack (top first):
+  1. Grizzly Bears #13 (Player B)
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> Auto-passing until your next turn begins (it stops at any other decision, and when Player B puts something on the stack).
+  T2: Player B's Grizzly Bears: stack -> battlefield
+  T2: Player B plays Forest
+Player A passes (auto): Game 1, turn 2, First main: Player B's turn; Player A has priority
+Player A passes (auto): Game 1, turn 2, Begin combat: Player B's turn; Player A has priority
+Player A passes (auto): Game 1, turn 2, Declare attackers: Player B's turn; Player A has priority
+
+Auto-pass stopped: this decision is not a priority pass.
+Game 1, turn 2, Declare blockers: Player B's turn
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 6   library 7   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #12      tapped, attacking
+  Grizzly Bears  2/2  #14      summoning sick
+  Forest x2           #10 #11  tapped
+  Forest              #15
+Player A's battlefield:
+  Grizzly Bears  2/2  #9
+  Mountain            #8
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: declare blockers (pick each blocker, then confirm)
+  0: Grizzly Bears [2/2]
+  1: Confirm blockers   (or -1)
+Player A [0-1, help]> 
+Game 1, turn 2, Declare blockers: Player B's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> Auto-passing until your next turn begins (it stops at any other decision, and when Player B puts something on the stack).
+  life: Player A 20 -> 18
+Player A passes (auto): Game 1, turn 2, Combat damage: Player B's turn; Player A has priority
+Player A passes (auto): Game 1, turn 2, End of combat: Player B's turn; Player A has priority
+Player A passes (auto): Game 1, turn 2, Second main: Player B's turn; Player A has priority
+Player A passes (auto): Game 1, turn 2, End step: Player B's turn; Player A has priority
+
+Auto-pass stopped: your turn began.
+Game 1, turn 3, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 18   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 6   library 7   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #12      tapped
+  Grizzly Bears  2/2  #14      summoning sick
+  Forest x2           #10 #11  tapped
+  Forest              #15
+Player A's battlefield:
+  Grizzly Bears  2/2  #9
+  Mountain            #8
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> 
+Since your last decision:
+  T3: Player A draws a card: Mountain
+Game 1, turn 3, Draw: Player A's turn; Player A has priority
+  Player A (you)  life 18   hand 8   library 7   graveyard 0   exile 0
+  Player B        life 20   hand 6   library 7   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #12      tapped
+  Grizzly Bears  2/2  #14      summoning sick
+  Forest x2           #10 #11  tapped
+  Forest              #15
+Player A's battlefield:
+  Grizzly Bears  2/2  #9
+  Mountain            #8
+Your hand (8):
+  Lightning Bolt  #1   {R}  Instant
+  Mountain        #2        Basic Land - Mountain
+  Mountain        #3        Basic Land - Mountain
+  Mountain        #4        Basic Land - Mountain
+  Mountain        #5        Basic Land - Mountain
+  Mountain        #6        Basic Land - Mountain
+  Mountain        #7        Basic Land - Mountain
+  Mountain        #16       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> 
+Input closed; quitting.

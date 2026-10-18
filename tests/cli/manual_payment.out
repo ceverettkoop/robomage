@@ -1,0 +1,231 @@
+robomage 0.2
+Decision log: manual_payment.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Skewer the Critics, Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Mountain
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Skewer the Critics  #1  {2}{R}  Sorcery
+  Lightning Bolt      #2  {R}     Instant
+  Mountain            #3          Basic Land - Mountain
+  Mountain            #4          Basic Land - Mountain
+  Mountain            #5          Basic Land - Mountain
+  Mountain            #6          Basic Land - Mountain
+  Mountain            #7          Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Mountain: created on the battlefield (x3)
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain x3  #8 #9 #10
+Your hand (7):
+  Skewer the Critics  #1  {2}{R}  Sorcery
+  Lightning Bolt      #2  {R}     Instant
+  Mountain            #3          Basic Land - Mountain
+  Mountain            #4          Basic Land - Mountain
+  Mountain            #5          Basic Land - Mountain
+  Mountain            #6          Basic Land - Mountain
+  Mountain            #7          Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+  2: Tap Mountain for (R)
+  3: Tap Mountain for (R)
+  4: Tap Mountain for (R)
+Player A [0-4, help]> 
+Game 1, turn 1, Draw: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+  2: Tap Mountain for (R)
+  3: Tap Mountain for (R)
+  4: Tap Mountain for (R)
+Player A [0-4, help]> 
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+Decision: act or pass priority
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Play Mountain
+   5: Play Mountain
+   6: Cast Skewer the Critics
+   7: Cast Lightning Bolt
+   8: Tap Mountain for (R)
+   9: Tap Mountain for (R)
+  10: Tap Mountain for (R)
+Player A [0-10, help]> 
+Since your last decision:
+  T1: Player A casts Skewer the Critics from hand
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain x3  #8 #9 #10
+Stack (top first):
+  1. Skewer the Critics #11 (Player A)
+Your hand (6):
+  Lightning Bolt  #2  {R}  Instant
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: casting Skewer the Critics: choose a target
+  0: Player B (20 life)
+  1: Player A (20 life)
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain x3  #8 #9 #10
+Stack (top first):
+  1. Skewer the Critics #11 (Player A)  -> Player B
+Your hand (6):
+  Lightning Bolt  #2  {R}  Instant
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: Skewer the Critics: pay the cost
+Cost: Skewer the Critics #11 (mana cost): {2}{R} left to pay
+  0: Tap Mountain for (R)
+  1: Tap Mountain for (R)
+  2: Tap Mountain for (R)
+  3: Cancel casting
+Player A [0-3, help]> Auto-pass starts at a priority decision with a Pass priority row.
+Player A [0-3, help]> 
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0   pool {R}
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain     #8      tapped
+  Mountain x2  #9 #10
+Stack (top first):
+  1. Skewer the Critics #11 (Player A)  -> Player B
+Your hand (6):
+  Lightning Bolt  #2  {R}  Instant
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: Skewer the Critics: pay the cost
+Cost: Skewer the Critics #11 (mana cost): {2} left to pay; 1 mana paid
+  0: Tap Mountain for (R)
+  1: Tap Mountain for (R)
+  2: Cancel casting
+Player A [0-2, help]> 
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0   pool {R}{R}
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain x2  #8 #9  tapped
+  Mountain     #10
+Stack (top first):
+  1. Skewer the Critics #11 (Player A)  -> Player B
+Your hand (6):
+  Lightning Bolt  #2  {R}  Instant
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: Skewer the Critics: pay the cost
+Cost: Skewer the Critics #11 (mana cost): {1} left to pay; 2 mana paid
+  0: Tap Mountain for (R)
+  1: Cancel casting
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Skewer the Critics: stack -> graveyard
+  life: Player B 20 -> 17
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 1   exile 0
+  Player B        life 17   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain x3  #8 #9 #10  tapped
+Your hand (6):
+  Lightning Bolt  #2  {R}  Instant
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: Skewer the Critics
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+Player A [0-5, help]> 
+Input closed; quitting.

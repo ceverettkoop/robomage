@@ -46,12 +46,16 @@ struct Decision {
 // What decide() returns when the agent cannot decide: the run ends with failure() as a fatal
 // error.
 constexpr int AGENT_FAILED = -1000;
+// What decide() returns to end the run at this decision with no result (a human seat's quit, or
+// the end of its input): the decision log records the stop, so the log replays up to it, and the
+// run exits with status 0.
+constexpr int AGENT_QUIT = -1001;
 
 class Agent {
     public:
         virtual ~Agent() = default;
-        // A menu row, -1 (the last row: confirm), a concession sentinel (-2 game, -3 match), or
-        // AGENT_FAILED.
+        // A menu row, -1 (the last row: confirm), a concession sentinel (-2 game, -3 match),
+        // AGENT_QUIT or AGENT_FAILED.
         virtual int decide(const Decision &d) = 0;
         // A short label for traces ("first", "explore", ...).
         virtual std::string label() const = 0;

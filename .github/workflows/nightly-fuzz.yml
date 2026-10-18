@@ -44,12 +44,12 @@ jobs:
             echo "Reproduce locally:"
             echo '```'
             echo "bin/debug/robomage_check --tier fuzz --matchups all \\"
-            echo "  --mode ${{ matrix.mode }} --fuzz-games $GAMES --seed $SEED"
+            echo "  --mode ${{ matrix.mode }} --fuzz-games $GAMES --manual-mana-games $GAMES --seed $SEED"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           bin/debug/robomage_check \
             --tier fuzz --matchups all --mode "${{ matrix.mode }}" \
-            --fuzz-games "$GAMES" --seed "$SEED" --out-dir ci_out
+            --fuzz-games "$GAMES" --manual-mana-games "$GAMES" --seed "$SEED" --out-dir ci_out
 
       - name: Upload transcripts
         if: always()

@@ -37,6 +37,9 @@ class Table {
         const std::string &text(size_t row, int col) const;
         // A `card` column's value as an id, -1 for none.
         int card(size_t row, int col) const;
+        // Whether the cell holds its column's none value (all ones of its width: a card, index,
+        // row: or nullable enum column); true for a column the schema lacks.
+        bool none(size_t row, int col) const;
 
     private:
         const rmstate::DecodedTable *table_ = nullptr;
@@ -70,9 +73,12 @@ class CardNames {
 };
 
 // One seat's frame stream: the schema and the once-per-match frames, which every STATE frame is
-// read with.
+// read with. Not copyable: the kept frames' tables point into its schema.
 class SeatStream {
     public:
+        SeatStream() = default;
+        SeatStream(const SeatStream &) = delete;
+        SeatStream &operator=(const SeatStream &) = delete;
         // Takes one of the seat's once-per-match frames (SCHEMA first). False (with `err`) on a frame
         // that does not decode.
         bool feed_match_frame(const std::string &payload, std::string *err);
@@ -81,6 +87,10 @@ class SeatStream {
         bool ready() const { return have_schema_; }
         const rmstate::Schema &schema() const { return schema_; }
         const CardNames &cards() const { return cards_; }
+        // The latest CARDS, DECKLISTS and METAGAME frames, decoded (no tables before the first).
+        const rmstate::DecodedFrame &cards_frame() const { return cards_frame_; }
+        const rmstate::DecodedFrame &decklists_frame() const { return decklists_frame_; }
+        const rmstate::DecodedFrame &metagame_frame() const { return metagame_frame_; }
         // The value of `name` in enum `enum_name`, or -1.
         int enum_value(const char *enum_name, const char *name) const;
         // The name of value `v` of enum `enum_name` ("?" when out of range).
@@ -92,6 +102,7 @@ class SeatStream {
         bool have_schema_ = false;
         rmstate::Schema schema_;
         CardNames cards_;
+        rmstate::DecodedFrame cards_frame_, decklists_frame_, metagame_frame_;
 };
 
 }  // namespace agents

@@ -1,0 +1,91 @@
+robomage 0.2
+Decision log: bo3_concede_match.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand)
+  T1: Player B draws 7 cards (opening hand): Skewer the Critics, Fireblast, Goblin Guide, Eidolon of the Great Revel, Price of Progress, Eidolon of the Great Revel, Mountain
+  T1: Player A's card: hand -> library (top) (x7)
+  T1: Player A's library is shuffled
+  T1: Player A draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player B (you)  life 20   hand 7   library 53  graveyard 0   exile 0
+  Player A        life 20   hand 7   library 53  graveyard 0   exile 0
+Player A's battlefield:
+  (no permanents)
+Player B's battlefield:
+  (no permanents)
+Your hand (7):
+  Skewer the Critics          #1  {2}{R}     Sorcery
+  Fireblast                   #2  {4}{R}{R}  Instant
+  Goblin Guide                #3  {R}        Creature - Goblin Scout
+  Eidolon of the Great Revel  #4  {R}{R}     Creature Enchantment - Spirit
+  Price of Progress           #5  {1}{R}     Instant
+  Eidolon of the Great Revel  #6  {R}{R}     Creature Enchantment - Spirit
+  Mountain                    #7             Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's archetype: slow_midrange
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player B [0-1, help]> 
+Player B concedes - Player A wins!
+GAME_RESULT: 1 Player A wins
+
+Since your last decision:
+  Game 1 ends: Player A wins
+Game 2, sideboarding (Player B plays first)
+  Player B (you)  wins 0
+  Player A        wins 1
+Your deck (60): 18 Mountain, 4 Lightning Bolt, 4 Price of Progress, 1 Fiery Islet, 4 Lava Spike,
+    4 Eidolon of the Great Revel, 2 Exquisite Firecraft, 4 Goblin Guide, 4 Chain Lightning,
+    3 Fireblast, 3 Skewer the Critics, 1 Light Up the Stage, 1 Roiling Vortex, 3 Rift Bolt,
+    4 Monastery Swiftspear
+Your sideboard (15): 4 Leyline of the Void, 4 Smash to Smithereens, 3 Searing Blood, 2 Dead // Gone,
+    2 Roiling Vortex
+Decision: sideboard: swap cards in and out, then done
+  0: Done sideboarding
+  1: Sideboard in: 2x Dead // Gone
+  2: Sideboard in: 4x Leyline of the Void
+  3: Sideboard in: 2x Roiling Vortex
+  4: Sideboard in: 3x Searing Blood
+  5: Sideboard in: 4x Smash to Smithereens
+Player B [0-5, help]> Player B's sideboard: 15 cards
+  Dead // Gone x2
+  Leyline of the Void x4
+  Roiling Vortex x2
+  Searing Blood x3
+  Smash to Smithereens x4
+Player B [0-5, help]> 
+Since your last decision:
+  Game 2 begins; Player B plays first
+  T1: Player A draws 7 cards (opening hand)
+  T1: Player B draws 7 cards (opening hand): Price of Progress, Mountain, Goblin Guide, Eidolon of the Great Revel, Chain Lightning, Mountain, Fireblast
+Game 2, opening hand (Player B plays first)
+  Player B (you)  life 20   hand 7   library 53  graveyard 0   exile 0   wins 0
+  Player A        life 20   hand 7   library 53  graveyard 0   exile 0   wins 1
+Player A's battlefield:
+  (no permanents)
+Player B's battlefield:
+  (no permanents)
+Your hand (7):
+  Price of Progress           #1  {1}{R}     Instant
+  Mountain                    #2             Basic Land - Mountain
+  Goblin Guide                #3  {R}        Creature - Goblin Scout
+  Eidolon of the Great Revel  #4  {R}{R}     Creature Enchantment - Spirit
+  Chain Lightning             #5  {R}        Sorcery
+  Mountain                    #6             Basic Land - Mountain
+  Fireblast                   #7  {4}{R}{R}  Instant
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's archetype: slow_midrange
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player B [0-1, help]> 
+Player B concedes - Player A wins!
+GAME_RESULT: 2 Player A wins
+MATCH_RESULT: Player A wins 2-0

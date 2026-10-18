@@ -52,15 +52,15 @@ no multiplayer-only machinery.
 Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
 
 Players and agents drive the engine through its in-process agents (`--agent-a/-b`, `--play`), its
-terminal prompt (the CLI; a human seat against an agent is plan step 4b's), or the machine
-protocol (`--machine`): **RMSTATE**, an exhaustive
+C++ CLI (human seats: `--player A --agent-b explore`, or hotseat by default; it renders only the
+seat's decoded frames, `src/cli/`), or the machine protocol (`--machine`): **RMSTATE**, an exhaustive
 binary game state per viewer with hidden information withheld (`docs/state_format.md`), each
 seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and sound deduction,
 `docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
 and its driver over that protocol, used for agent games and to record the replay corpus.
 
-The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–3
-done; 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer and in-process
+The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–4
+done — 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer and in-process
 actor). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
 TUI/GUI) is archived in place: branch `archive/rl-stack` (tag `rl-stack-final`, if created), whose
 tip `cf7f97f` is the last commit with both stacks.
@@ -125,10 +125,11 @@ background** and make the live output inspectable by the user:
   | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
+  | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
-  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient`); draws are findings |
+  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | decisions per second of a fixed explore workload (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` |
 
@@ -152,7 +153,8 @@ background** and make the live output inspectable by the user:
 
 The engine itself sculpts and scripts a game. Run it from `bin/` (`cd bin && ./debug/robomage
 …`) with `--narrative --trace-decisions` (the perfect-information game log, plus every decision's
-board, numbered menu and the choice made, as the deciding seat's frame shows them: `| ` lines),
+board, pending decision, numbered menu and the choice made, as the CLI renders the deciding seat's
+frame: `| ` lines),
 the test-setup presets and `--play`; `--help` lists every flag (zone presets
 `--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
 `--decision-log`, …).
@@ -430,10 +432,13 @@ functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtP
 
 ### Machine protocol, state format and knowledge sidecar
 
-`--machine` (also spelled `--machine-format rmstate`) selects the machine decision schedule (see
-plan step 4a for how it differs from the CLI's) and, for each seat with no in-process agent that
-is not the `--player` seat, the RMSTATE stream (`src/state_format/stream.h`,
-`docs/state_format.md` §9):
+`--machine` (also spelled `--machine-format rmstate`) selects, for each seat with no in-process
+agent that is not a human seat, the RMSTATE stream (`src/state_format/stream.h`,
+`docs/state_format.md` §9); it changes I/O only, never which decisions are asked or what a menu
+offers. Mana payment is the match-wide **auto-mana** option, on by default for every consumer
+(ordinary mana abilities hidden at priority, costs auto-paid, hybrid pips auto-resolved);
+`--no-auto-mana` (recorded in the RMLOG header) lists every mana ability and pays costs through the
+interactive payment loop (`prompt_mana_payment`):
 
 - stdout carries only `RMSTATE <nbytes>\n` + payload records; everything else (narrative under
   `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, diagnostics) goes to stderr.
@@ -447,8 +452,9 @@ is not the `--player` seat, the RMSTATE stream (`src/state_format/stream.h`,
   is written.
 
 Every menu goes through `InputLogger::get_input`, which leaves out a choice interchangeable with
-an earlier one (two identical cards in the same graveyard or library — `interchangeable_cards`,
-`src/queries/zones.cpp`); menu row *i* is reply *i*.
+an earlier one (two identical cards in the same graveyard, or in the same library when each seat
+sees both or neither right now — `interchangeable_cards`, `src/queries/zones.cpp`); menu row *i*
+is reply *i*.
 
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
 decision is read (machine, `--replay`, in-process agents, CLI); the pending-decision seat loses via
@@ -490,8 +496,8 @@ sections above are not repeated here.
   — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator;
   `src/mana_system.cpp` — mana pools, payment and auto-pay
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
-  accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
-  `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
+  accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`,
+  `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
   controller, `Defined$` player), `affected` (the objects / player an effect acts on:
   targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
@@ -502,8 +508,7 @@ sections above are not repeated here.
   decision, `CostPaymentScope`)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
-- `src/classes/reveals.{h,cpp}` — `mark_card_revealed`; `src/classes/match_context.h`,
-  `deck_state.h` — the bo3 state kept across the per-game ECS reset
+- `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
 - `src/stable_rng.h` — every gameplay random draw (platform-portable; never `std::shuffle` /
   `std::uniform_int_distribution` / `rand()` on the game RNG)
 - `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on
@@ -541,13 +546,18 @@ sections above are not repeated here.
   the engine state, and the knowledge state across the snapshot check's restore;
   `SELFCHECK-KNOWLEDGE:` summary
 - `src/snapshot.{h,cpp}` — in-process state snapshot/restore and the loop-safe decision marker
-- `src/machine_io.{h,cpp}` — the CLI board's source (`populate_gamestate` / `GameState`,
-  `src/classes/gamestate.h`, until plan step 4b) and `action_card_vocab_idx`;
-  `src/cli_output.cpp` — the CLI printer and `cli_print_help`
+- `src/cli_output.cpp` — `game_log` (the narrative) and `cli_print_help`
+- `src/cli/` — the C++ CLI: `board.h` renders one seat's decoded frames as text (board, pending
+  decision and cost, menu, knowledge panel, zones, card details, events; also `--trace-decisions`),
+  `human.h` the human seat (an in-process agent reading stdin: menu rows and the `board` / `zone` /
+  `card` / `know` / `log` / `z` (auto-pass) / `concede` / `help` commands); std + the agents' frame
+  reader only
 - `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, removed-flag
-  errors, replay-header flags); keep `cli_print_help` in `src/cli_output.cpp` in sync
-- `src/input_logger.cpp` — decision input (machine stream, `--replay`, CLI, the in-process provider
-  of the agents), the interchangeable-choice collapse, RMLOG, concede sentinels, `--max-decisions`
+  errors, replay-header flags, which seats are human); keep `cli_print_help` in
+  `src/cli_output.cpp` in sync
+- `src/input_logger.cpp` — decision input (machine stream, `--replay`, the in-process provider of
+  the agents and human seats), the interchangeable-choice collapse, RMLOG, concede sentinels,
+  `--max-decisions`
 - `src/card_vocab.h` — card name → vocab index (the implemented-card registry; the card id of the
   state format's `card` columns), `N_CARD_TYPES`, the token band
 - `src/name_card_choices.{h,cpp}` — the name-a-card candidate set
@@ -567,7 +577,7 @@ sections above are not repeated here.
   `random.Random` bit for bit; `game_seed.h`: the driver's engine seed of a game seed;
   `explore.h`: `python/explore_agent.py` ported, same games; `play_spec.h`: the `--play` resolver
   and its global script; `trace.h`: `--trace-decisions`). `driver.h` is the engine side:
-  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the provider, the trace
+  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace
 
 **libtorch plumbing (`src/actor/`, `make actor`)** — `az_evaluator.{h,cpp}` (TorchScript loading
 and evaluation, frozen as the base of the step-5 evaluator; its comments still name the archived
@@ -601,12 +611,15 @@ step 5 adds a main.
   (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the
   `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
-- `record_corpus.py` — re-records the replay corpus with the live scripted agent (`make regen`)
+- `record_corpus.py` — re-records the replay corpus with the live scripted agent, plus explore
+  `--no-auto-mana` games (`make regen`)
 - `pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
   self-lethal guard, the driver's seeds and imports), run by the `smoke` tier
 
 **Tests (`tests/`)**
 - `tests/scenarios/*.json` — the rules-regression and state-format / knowledge sharpness scenarios
+- `tests/cli/<name>.json` + `<name>.out` — the `cli` tier's sessions (engine flags and stdin lines)
+  and their golden stdout (`robomage_check --tier cli --record` rewrites them)
 - `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
   baseline; `docs/ci.md`)
 

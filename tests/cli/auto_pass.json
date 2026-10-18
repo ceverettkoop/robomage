@@ -1,0 +1,4 @@
+{"name": "auto_pass",
+ "why": "the z command against the explore agent: refused at the mulligan, z stops at the attack declaration and at the next turn, z mine stops when the opponent casts a spell and at the blocker declaration, then at the seat's own turn",
+ "args": ["--player", "A", "--agent-b", "explore", "--game-seed", "1", "--hand-a", "Lightning Bolt,Mountain", "--library-a", "Mountain", "--battlefield-a", "Mountain,Grizzly Bears", "--hand-b", "Grizzly Bears,Forest", "--library-b", "Forest", "--battlefield-b", "Forest,Forest,Grizzly Bears"],
+ "input": ["z", "0", "z", "-1", "z", "z mine", "z mine", "-1", "z mine", "0"]}

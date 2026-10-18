@@ -4,7 +4,9 @@
 Plays a fixed set of scripted deck-vs-deck games (the three fully-implemented curated decks —
 delver/doomsday/mav — in every seating, and every league pairing): the scripted agent (hard, both
 seats) on its RMSTATE frame view (``rm_agent.py``), driven by the RMSTATE driver
-(``rm_driver.py``) over ``--machine-format rmstate``. Each game writes its decision log
+(``rm_driver.py``) over ``--machine-format rmstate``. A few more games, ``manual_*``, are played by
+the explore agent (both seats) under ``--no-auto-mana``, so the corpus replays the interactive
+mana-payment loop too (the scripted agent pays with the first row offered, which is no player). Each game writes its decision log
 ``<name>.rmlog`` (the engine's ``--decision-log``: seed, setup flags, both decklists, every
 decision); then ``robomage_check --tier replay --record`` writes each log's replay baseline
 ``<name>.replay``, which the gate's ``replay`` tier checks byte for byte (no Python needed).
@@ -40,19 +42,20 @@ from rm_driver import DEFAULT_BINARY  # noqa: E402
 # cherry-picked. To re-roll, pick a new random value, update this, and re-record.
 SEED = 1641108517
 
-# (name, deck_a, deck_b) — deck names are relative to resources/decks/. Each
-# scenario is a natural deck-vs-deck scripted game: NO hand/battlefield sculpting,
+# (name, deck_a, deck_b, agent, engine flags) — deck names are relative to resources/decks/. Each
+# scenario is a natural deck-vs-deck game (the agent in both seats): NO hand/battlefield sculpting,
 # no forced outcomes. Pairings cover the three decks in both seatings.
+SCRIPTED = ("scripted", ())
 SCENARIOS = [
-    ("delver_mirror",      "delver",   "delver"),
-    ("doomsday_mirror",    "doomsday", "doomsday"),
-    ("mav_mirror",         "mav",      "mav"),
-    ("delver_vs_doomsday", "delver",   "doomsday"),
-    ("doomsday_vs_delver", "doomsday", "delver"),
-    ("delver_vs_mav",      "delver",   "mav"),
-    ("mav_vs_delver",      "mav",      "delver"),
-    ("doomsday_vs_mav",    "doomsday", "mav"),
-    ("mav_vs_doomsday",    "mav",      "doomsday"),
+    ("delver_mirror",      "delver",   "delver",   *SCRIPTED),
+    ("doomsday_mirror",    "doomsday", "doomsday", *SCRIPTED),
+    ("mav_mirror",         "mav",      "mav",      *SCRIPTED),
+    ("delver_vs_doomsday", "delver",   "doomsday", *SCRIPTED),
+    ("doomsday_vs_delver", "doomsday", "delver",   *SCRIPTED),
+    ("delver_vs_mav",      "delver",   "mav",      *SCRIPTED),
+    ("mav_vs_delver",      "mav",      "delver",   *SCRIPTED),
+    ("doomsday_vs_mav",    "doomsday", "mav",      *SCRIPTED),
+    ("mav_vs_doomsday",    "mav",      "doomsday", *SCRIPTED),
 ]
 
 # Full league-matchup coverage: every deck of the league roster against every
@@ -66,24 +69,34 @@ LEAGUE_DECKS = [
 ]
 for _i, _a in enumerate(LEAGUE_DECKS):
     for _b in LEAGUE_DECKS[_i:]:
-        SCENARIOS.append((f"lg_{_a}__{_b}", f"league/{_a}", f"league/{_b}"))
+        SCENARIOS.append((f"lg_{_a}__{_b}", f"league/{_a}", f"league/{_b}", *SCRIPTED))
+
+# Manual mana payment (--no-auto-mana: every mana ability offered at priority, each cost paid
+# source by source in the payment loop, its "Cancel casting" row included), explore vs explore:
+# Doomsday's rituals and Lotus Petal against Delver, and Maverick's mana creatures and Gaea's
+# Cradle in the mirror.
+MANUAL_MANA = ("explore", ("--no-auto-mana",))
+SCENARIOS += [
+    ("manual_doomsday_vs_delver", "doomsday", "delver", *MANUAL_MANA),
+    ("manual_mav_mirror",         "mav",      "mav",    *MANUAL_MANA),
+]
 
 
 def _record_scenario(task) -> str:
     """Plays one SCENARIOS entry with its decision log written into the corpus (a picklable
     process-pool task); returns its name."""
-    (name, deck_a, deck_b), binary = task
+    (name, deck_a, deck_b, agent, flags), binary = task
     import rm_driver  # noqa: E402
 
-    rm_driver.run_games("scripted", "scripted", label_a="A", label_b="B", binary=binary, deck_a=deck_a,
+    rm_driver.run_games(agent, agent, label_a="A", label_b="B", binary=binary, deck_a=deck_a,
                         deck_b=deck_b, n_games=1, seed=SEED, transcript="quiet",
-                        engine_flags=["--decision-log", str(_CORPUS / f"{name}.rmlog")])
+                        engine_flags=[*flags, "--decision-log", str(_CORPUS / f"{name}.rmlog")])
     return name
 
 
 def record(binary: str) -> int:
     _CORPUS.mkdir(parents=True, exist_ok=True)
-    names = {name for name, _a, _b in SCENARIOS}
+    names = {sc[0] for sc in SCENARIOS}
     for stale in list(_CORPUS.glob("*.rmlog")) + list(_CORPUS.glob("*.replay")):
         if stale.stem not in names:
             stale.unlink()

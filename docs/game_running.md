@@ -1,8 +1,8 @@
 # Running games: agents, drivers, scripts and logs
 
-How a RoboMage game is run: who decides each seat, the engine's in-process agents, the Python
-driver for the scripted agent, `--play` / `--actions` scripts, the machine protocol for an
-external agent, and decision logs. Every engine command runs from `bin/` (the engine finds
+How a RoboMage game is run: who decides each seat, the engine's in-process agents, playing as a
+human at the terminal, the Python driver for the scripted agent, `--play` / `--actions` scripts,
+the machine protocol for an external agent, and decision logs. Every engine command runs from `bin/` (the engine finds
 `resources/` relative to its working directory); `./debug/robomage --help` lists every flag.
 
 ## Who decides a seat
@@ -15,19 +15,71 @@ games). In order of precedence it goes to:
    runs out.
 3. **The seat's in-process agent** — `--agent-a <spec>` / `--agent-b <spec>`; when a script is
    given, a seat without one takes `first`.
-4. **The terminal** — the CLI prompt: without `--machine` every decision is prompted there
-   (`--player A|B` shows hidden information from that seat's view only); a `--player` seat under
-   `--machine` is prompted there too, but without its menu printed (a human seat against an agent
-   is plan step 4b's C++ CLI).
+4. **A human seat** — the C++ CLI at the terminal (below): the `--player A|B` seat, and without
+   `--machine` every seat that has no agent (so a plain run is hotseat). A human seat takes over a
+   script's seat once the script runs out.
 5. **The RMSTATE stream** — under `--machine`, every other seat: its frames on stdout, one integer
    reply per decision on stdin. This is how an external agent (such as the Python driver) plays.
 
-`--agent-a/-b`, `--play` and `--actions` imply `--machine` (the machine decision schedule) and
-cannot be combined with `--replay` or with an agent on the `--player` seat.
+`--agent-a/-b`, `--play` and `--actions` imply `--machine` and cannot be combined with `--replay`
+or with an agent on the `--player` seat. A human seat reads stdin, so with one no seat may be left
+to the stream (`--player A --machine` with no agent for B is refused). `--machine` changes only
+how decisions are read and written: the decisions themselves (which are asked, what each menu
+offers) are the same for every consumer — human seat, stream, in-process agent or replay.
+
+**Auto-mana** is on by default for all of them: ordinary mana abilities are not offered at
+priority (instant-speed sources and sources targeted by removal on the stack are, so mana can be
+floated), costs are paid by the greedy payer and hybrid pips resolve automatically.
+`--no-auto-mana` turns it off for the whole match: every mana ability is offered at priority and a
+cost the pool doesn't cover is paid by choosing sources one at a time, with a last row that
+cancels the payment and reverses the spell or ability. The flag is recorded in the decision log.
 
 Whatever decides, every game prints `GAME_RESULT: N Player A|B wins` (or `GAME_RESULT: N draw`,
 CR 104.4a) and a bo3 match ends with `MATCH_RESULT: Player A|B wins X-Y`. Under the stream those
 lines, like all other output, go to stderr.
+
+## Playing as a human: the C++ CLI
+
+```bash
+cd bin
+./debug/robomage --player A --agent-b explore --deck-a league/burn --deck-b league/bug   # vs an agent
+./debug/robomage --deck-a league/burn --deck-b league/bug --bo3                          # hotseat
+```
+
+A human seat (`src/cli/human.h`) is an in-process agent like the others: it is handed its seat's
+RMSTATE frames (knowledge tables included) and renders only those, decoded (`src/cli/board.h`),
+so it shows exactly what that seat may see. No perfect-information narrative is printed unless
+`--narrative` is given (with `--player`, its one-sided lines are limited to that seat's view); a
+human game always writes its decision log (`Decision log: <path>` is printed at the start; replay
+it with `--replay`). At each decision the seat sees what happened since its previous decision
+(its frames' events, life changes), the board when it changed (players, battlefields with P/T,
+statuses, counters, attachments and combat, the stack top first with targets, its hand,
+graveyards, exile, open reveals, effects, a "You know" knowledge summary), the pending decision
+(with what a cost still owes, by pip, during payment) and the numbered menu. Objects are labelled
+`#<handle>`, the handle of the seat's frame. Hotseat prints a `==== Player X to decide ====`
+banner before each decision. Commands at the prompt:
+
+| Command | |
+|---|---|
+| `<n>` | menu row *n*; `-1` is the last row (an attacker / blocker declaration's confirm, marked `(or -1)`) |
+| `concede` / `concede match` | concede the game (`-2`) / the match (`-3`) |
+| `board` | the board and menu again |
+| `zone <name> [opp]` | one zone, yours or the opponent's: `hand`, `library`, `graveyard`, `exile`, `battlefield`, `stack`, `sideboard`; a hidden zone shows its size, the cards the frame shows in it and what the knowledge tables say |
+| `card <#n\|name>` | a card's details from the `CARDS` frame (cost, type line, P/T, oracle text): an object of the board by handle, or a card of the match by name |
+| `know` | the knowledge panel in full: pools with each card's least and most copies, known library positions, copies seen, consistent reference lists, archetypes (and beliefs at `expert+belief`); off under `--knowledge-a/-b off` |
+| `log [n\|all]` | what this seat saw happen this match (its events), the last *n* lines (default 30) |
+| `z [mine]` (`pass turn [mine]`) | auto-pass: answer "Pass priority" at this seat's priority decisions until the next turn begins (`mine`: until this seat's own next turn begins), printing what happens and one line per pass |
+| `help`, `quit` | |
+
+Auto-pass reads only the seat's frames. It starts only at a plain priority decision (a pass row,
+no pending decision or cost) and stops, prompting as usual, at the first decision of the turn it
+waits for, at any other decision (a mandatory choice, attackers or blockers, a target, a payment, a
+mulligan, ...) and when the opponent puts a new object on the stack, so the seat can respond.
+
+Anything else re-prompts; end of input ends the run (exit status 0), as `quit` does. The decision
+log then ends with a `QUIT` line, so `--replay` of it stops at that decision with
+`QUIT: the recorded session quit at decision N (no result)` and exit status 0. `--trace-decisions` prints
+the same board, pending decision and menu for every decision as `| ` lines.
 
 ## The engine's in-process agents (`--agent-a/-b`)
 
@@ -61,8 +113,8 @@ cd bin
 
 `--narrative` prints the perfect-information game log (under `--machine` it is silent without
 it); `--log-viewer A|B` restricts the one-sided lines to one seat's view. `--trace-decisions`
-prints each decision's board and menu as the deciding seat's frame shows them, and the choice
-made, on lines starting `| `. `--max-decisions N` stops the run before decision N+1
+prints each decision's board, pending decision and menu as the CLI renders the deciding seat's
+frame (`src/cli/board.h`), and the choice made, on lines starting `| `. `--max-decisions N` stops the run before decision N+1
 (`MAX_DECISIONS:` line, exit status 0, no result for that game).
 
 ## Scripts: `--play` and `--actions`
@@ -206,10 +258,15 @@ Every decision is logged as an integer. `--decision-log FILE` writes the RMLOG v
 `FLAGS` — the setup flags that change the game — both decklists, then every decision, concession
 sentinels included); `--log-decisions` writes it to `resources/logs/game_<seed>.log` (interactive
 games always log there). `--replay FILE` replays it deterministically: the header alone fixes the
-setup (decks, seed, `--bo3`, `--no-shuffle`, the test-setup presets, `--max-decisions`), setup
-flags given alongside are ignored with a warning, and output flags (`--machine`, `--narrative`,
-`--trace-decisions`, `--rmstate-dump`, `--knowledge-a/-b`, the self-checks, …) still apply. A
-replay whose logged index is outside the live menu stops with `replay diverged at decision N`.
+setup (decks, seed, `--bo3`, `--no-shuffle`, `--no-auto-mana`, the test-setup presets,
+`--max-decisions`), setup flags given alongside are ignored with a warning, and output flags
+(`--machine`, `--narrative`, `--trace-decisions`, `--rmstate-dump`, `--knowledge-a/-b`, the
+self-checks, …) still apply. A plain `--replay` prints the narrative and each replayed input (no
+board); under `--machine` it prints only what the output flags ask for. `--player` / `--log-viewer`
+limit the narrative's one-sided lines to that seat's view (a replay has no human seat). A replay
+whose logged index is outside the live menu stops with `replay diverged at decision N`; a log that
+ends before the game does is fatal (`Replay file ended unexpectedly`) unless it ends with the
+`QUIT` line of a human seat's quit, where the replay stops cleanly (`QUIT: ...`, exit status 0).
 
 ```bash
 cd bin
@@ -218,8 +275,8 @@ cd bin
 ./debug/robomage --replay /tmp/g5.rmlog --machine --narrative --trace-decisions
 ```
 
-The replay corpus (`tests/corpus/`) is such logs from the scripted agent's games, with their
-replay output as byte-for-byte baselines (`docs/ci.md`).
+The replay corpus (`tests/corpus/`) is such logs from the scripted agent's games (and two explore
+games under `--no-auto-mana`), with their replay output as byte-for-byte baselines (`docs/ci.md`).
 
 ## State dumps
 

@@ -2192,13 +2192,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
         case Game::PendingCast::HYBRID: {
             // HYBRID mana (CR 107.4): resolve each {W/U} / {2/W} pip to one concrete payment
-            // before the colored/generic payment runs below. Machine/auto mode picks the first
-            // payable assignment (shared with the cast-legality gate via resolve_hybrid_cost);
-            // interactive mode prompts the player per pip, like the Phyrexian block below.
-            // (Machine mode auto-resolves with ZERO decisions; the interactive per-pip menu is
-            // a deliberate blocking non-conversion — snapshots can't be requested in CLI play.)
+            // before the colored/generic payment runs below. Auto-mana picks the first payable
+            // assignment (shared with the cast-legality gate via resolve_hybrid_cost); with
+            // auto-mana off the player is prompted per pip, like the Phyrexian block below.
+            // (Auto-mana resolves with ZERO decisions; the per-pip menu is a deliberate blocking
+            // non-conversion, not a loop-safe snapshot point.)
             if (!card_data.hybrid_mana.empty()) {
-                if (InputLogger::instance().is_machine_schedule()) {
+                if (auto_mana) {
                     ManaValue resolved;
                     if (resolve_hybrid_cost(caster, pc.cost_to_pay, card_data.hybrid_mana,
                                             spell_entity, orderer, card_data.has_delve,
@@ -3031,6 +3031,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 if (!prompt_mana_payment(owner, cost, card, orderer)) {
                     restore_mana_state(owner, mana_snap, orderer);
                     game_log("Payment cancelled.\n");
+                    cur_game.priority.payment_fail_counts[card]++;
                     break;
                 }
                 orderer->add_to_zone(false, card, Zone::EXILE);
@@ -3053,6 +3054,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 if (!prompt_mana_payment(owner, three, comp, orderer)) {
                     restore_mana_state(owner, mana_snap, orderer);
                     game_log("Payment cancelled.\n");
+                    cur_game.priority.payment_fail_counts[comp]++;
                     break;
                 }
                 std::string cname = global_coordinator.GetComponent<CardData>(comp).name;

@@ -1,0 +1,4 @@
+{"name": "bo3_concede_match",
+ "why": "a bo3 match, the human on seat B against the explore agent: concede the game, the sideboarding phase (its board, zone sideboard, done), then concede match",
+ "args": ["--bo3", "--player", "B", "--agent-a", "explore", "--deck-a", "league/bug", "--deck-b", "league/burn", "--game-seed", "2"],
+ "input": ["concede", "zone sideboard", "0", "concede match"]}

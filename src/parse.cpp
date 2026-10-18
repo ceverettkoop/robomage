@@ -1427,8 +1427,8 @@ static bool parse_token_file(const std::string &script_name, Token &tok) {
 
     tok.name = value_from_script(script_data, "Name");
     // Forge token scripts usually name the token "<Name> Token" ("Cat Warrior Token").
-    // Store the clean name once here — display code (entity_name's " token" tag,
-    // GameState::token_name) adds its own token marker, so keeping the suffix doubled
+    // Store the clean name once here — display code (entity_name's " token" tag)
+    // adds its own token marker, so keeping the suffix doubled
     // every log line ("Cat Warrior Token token"). Per CR 111.4 the token's real name is
     // the part without "Token" anyway.
     static const std::string kTokenSuffix = " Token";

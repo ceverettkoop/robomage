@@ -4,14 +4,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
-#include <random>  // pull in std::mt19937 (used by the engine's game.h) before torch's ATen headers define at::mt19937
 #include <sstream>
 
-// Engine headers BEFORE torch: gamestate.h -> game.h needs std::mt19937 resolved
-// in the ordinary std context; including torch first shadows it with at::mt19937.
-#include "az_layout.h"  // ACTOR_OBS_SIZE
-#include "classes/gamestate.h"  // MAX_ACTIONS
-#include "card_vocab.h"         // N_CARD_TYPES
+// Engine headers (std only) before torch.
+#include "az_layout.h"   // ACTOR_OBS_SIZE, ACTOR_MAX_ACTIONS
+#include "card_vocab.h"  // N_CARD_TYPES
 
 #include <ATen/Parallel.h>
 #include <torch/csrc/jit/passes/tensorexpr_fuser.h>
@@ -133,7 +130,7 @@ void AZEvaluator::load(const std::string& path, const std::string& device) {
         std::string text = ss.str();
         struct { const char* key; long expect; } checks[] = {
             {"OBS_SIZE", ACTOR_OBS_SIZE},
-            {"MAX_ACTIONS", MAX_ACTIONS},
+            {"MAX_ACTIONS", ACTOR_MAX_ACTIONS},
             {"N_CARD_TYPES", N_CARD_TYPES},
         };
         for (const auto& c : checks) {
@@ -194,7 +191,7 @@ void AZEvaluator::connect_server(const std::string& socket_path) {
     if (connect(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0)
         torch_fatal("eval-server: connect(" + socket_path + ") failed — is "
                     "train/az_eval_server.py running?");
-    int32_t hello[3] = {EVAL_SERVER_MAGIC, ACTOR_OBS_SIZE, MAX_ACTIONS};
+    int32_t hello[3] = {EVAL_SERVER_MAGIC, ACTOR_OBS_SIZE, ACTOR_MAX_ACTIONS};
     sock_send_frame(fd, hello, sizeof(hello), "hello");
     uint32_t rlen = 0;
     sock_read_all(fd, &rlen, sizeof(rlen), "hello reply");
@@ -221,7 +218,7 @@ AZEvalResult AZEvaluator::evaluate(const float* obs, int num_choices) {
         return r;
     }
     if (!impl_->loaded) torch_fatal("evaluate() before a successful load()");
-    if (num_choices < 1 || num_choices > MAX_ACTIONS)
+    if (num_choices < 1 || num_choices > ACTOR_MAX_ACTIONS)
         torch_fatal("evaluate(): num_choices out of range: " + std::to_string(num_choices));
 
     AZEvalResult result;
@@ -230,7 +227,7 @@ AZEvalResult AZEvaluator::evaluate(const float* obs, int num_choices) {
         // from_blob does not copy; the buffer outlives the forward call here.
         auto obs_t = torch::from_blob(const_cast<float*>(obs), {1, ACTOR_OBS_SIZE},
                                       torch::kFloat32);
-        auto mask_t = torch::zeros({1, MAX_ACTIONS}, torch::kBool);
+        auto mask_t = torch::zeros({1, ACTOR_MAX_ACTIONS}, torch::kBool);
         auto mask_a = mask_t.accessor<bool, 2>();
         for (int i = 0; i < num_choices; i++) mask_a[0][i] = true;
 
@@ -298,7 +295,7 @@ std::vector<AZEvalResultD> AZEvaluator::evaluate_double_batch(
         // (torch::softmax over the returned raw logits, single-threaded), so
         // AZEvalResultD numerics match a local forward of the same net.
         for (int nc : num_choices)
-            if (nc < 1 || nc > MAX_ACTIONS)
+            if (nc < 1 || nc > ACTOR_MAX_ACTIONS)
                 torch_fatal("evaluate_double_batch(): num_choices out of range");
         const uint32_t len = static_cast<uint32_t>(
             4 + static_cast<size_t>(k) * (4 * ACTOR_OBS_SIZE + 4));
@@ -314,11 +311,11 @@ std::vector<AZEvalResultD> AZEvaluator::evaluate_double_batch(
 
         uint32_t rlen = 0;
         sock_read_all(impl_->server_fd, &rlen, sizeof(rlen), "reply length");
-        const size_t expect = static_cast<size_t>(k) * (4 * MAX_ACTIONS + 4);
+        const size_t expect = static_cast<size_t>(k) * (4 * ACTOR_MAX_ACTIONS + 4);
         if (rlen != expect)
             torch_fatal("eval-server: bad reply length " + std::to_string(rlen) +
                         " (expected " + std::to_string(expect) + ")");
-        std::vector<float> logits(static_cast<size_t>(k) * MAX_ACTIONS);
+        std::vector<float> logits(static_cast<size_t>(k) * ACTOR_MAX_ACTIONS);
         std::vector<float> values(static_cast<size_t>(k));
         sock_read_all(impl_->server_fd, logits.data(), logits.size() * 4, "logits");
         sock_read_all(impl_->server_fd, values.data(), values.size() * 4, "values");
@@ -328,8 +325,8 @@ std::vector<AZEvalResultD> AZEvaluator::evaluate_double_batch(
             for (int b = 0; b < k; b++) {
                 int nc = num_choices[static_cast<size_t>(b)];
                 auto row = torch::from_blob(logits.data() +
-                                                static_cast<size_t>(b) * MAX_ACTIONS,
-                                            {MAX_ACTIONS}, torch::kFloat32);
+                                                static_cast<size_t>(b) * ACTOR_MAX_ACTIONS,
+                                            {ACTOR_MAX_ACTIONS}, torch::kFloat32);
                 auto probs = torch::softmax(
                     row.index({torch::indexing::Slice(0, nc)}), -1).contiguous();
                 auto pa = probs.accessor<float, 1>();
@@ -350,11 +347,11 @@ std::vector<AZEvalResultD> AZEvaluator::evaluate_double_batch(
         torch::NoGradGuard no_grad;
         auto obs_t = torch::from_blob(const_cast<float*>(obs), {k, ACTOR_OBS_SIZE},
                                       torch::kFloat32);
-        auto mask_t = torch::zeros({k, MAX_ACTIONS}, torch::kBool);
+        auto mask_t = torch::zeros({k, ACTOR_MAX_ACTIONS}, torch::kBool);
         auto mask_a = mask_t.accessor<bool, 2>();
         for (int b = 0; b < k; b++) {
             int nc = num_choices[static_cast<size_t>(b)];
-            if (nc < 1 || nc > MAX_ACTIONS)
+            if (nc < 1 || nc > ACTOR_MAX_ACTIONS)
                 torch_fatal("evaluate_double_batch(): num_choices out of range");
             for (int i = 0; i < nc; i++) mask_a[b][i] = true;
         }

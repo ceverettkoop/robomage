@@ -10,27 +10,14 @@
 struct Deck;
 struct Ability;
 
-// Who looked at a card an effect puts on top of a library (Orderer::add_to_zone): its OWNER
-// (Brainstorm / Ponder put-backs, surveil, the owner's own dig), the owner's OPPONENT (a
-// fateseal-class dig on that library, Jace's +2), or NOBODY (cards put there in a random order).
-// Under OWNER or OPPONENT a card whose identity was public as it left its zone (a public zone, or
-// revealed in the library) is known to both players.
-enum class LibraryTopView { OWNER, OPPONENT, NOBODY };
-
 class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 
 public:
     static void init();
-    // top_view (only meaningful for a non-bottom LIBRARY placement): who sees the identity of the
-    // card being placed on top (LibraryTopView). The opponent-knowledge record
-    // (Game::OppKnownLibraryTop) shifts down either way (positions stay honest); the new top is
-    // known to the opponent only if they saw it.
     // exile_face_down (CR 708): when true and destination is EXILE, the card is exiled FACE DOWN —
     // its Zone::is_face_down flag is set (its identity stays hidden from the opponent until an
     // effect turns it face up).
-    void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                     LibraryTopView top_view = LibraryTopView::OWNER,
-                     bool exile_face_down = false);
+    void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down = false);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and
@@ -79,14 +66,10 @@ public:
     // re-sorting inline at each call site.
     std::vector<Entity> get_library_top(Zone::Ownership owner, size_t n);
     std::vector<Entity> get_hand(Zone::Ownership owner);
-    // Records `card` (in a library) at its current depth as known to `knower`, without moving
-    // it: `knower` looked at it and it stays where it is (Delver's look, Mishra's Bauble). Only
-    // the owner's opponent's knowledge is recorded (Game::OppKnownLibraryTop).
-    void note_library_card_known(Entity card, Zone::Ownership knower);
     // Puts `card` on its owner's library `depth` cards from the top (0 = the top), under the
-    // cards already there: a top placement through add_to_zone (the same zone-change semantics,
-    // known-top push included) that then sinks below the `depth` cards above it, carrying its
-    // known-top entry down with it. A depth past the library's end leaves it on the bottom.
+    // cards already there: a top placement through add_to_zone (the same zone-change semantics)
+    // that then sinks below the `depth` cards above it. A depth past the library's end leaves it
+    // on the bottom.
     void put_in_library_at_depth(Entity card, size_t depth);
     void shuffle_library(Zone::Ownership owner);
     void generate_libraries(const Deck &deck_a, const Deck &deck_b);
@@ -144,10 +127,10 @@ private:
     };
     // The one zone move behind add_to_zone, put_in_library_at_depth and perform_draw (see
     // add_to_zone), reported as an observation event (state_format/events.h).
-    void move_object(bool on_bottom, Entity target, Zone::ZoneValue destination, LibraryTopView top_view,
-        bool exile_face_down, const MoveOptions &opts);
+    void move_object(
+        bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down, const MoveOptions &opts);
     // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
-    // leaves, shifting the objects beneath it up one, and drop it from the known-top library cache.
+    // leaves, shifting the objects beneath it up one.
     void close_zone_gap(Entity target);
     // Draw a single card for `player`, first offering any available dredge
     // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out

@@ -36,6 +36,7 @@
 #include "../queries/spells.h"
 #include "../queries/types.h"
 #include "../queries/zones.h"
+#include "../game_driver.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
@@ -54,8 +55,6 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
 static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty);
 static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window);
 static bool payment_blocked(Entity paid_for);
-static bool machine_masks_conditional_destroy(const CardData &face, Zone::Ownership caster,
-                                              const std::set<Entity> &entities);
 static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
@@ -89,53 +88,11 @@ static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool s
            rules_mod::cast_with_flash_active(caster, face);
 }
 
-// Machine mode: stop offering a spell or ability whose payment already failed twice (the payer
-// bumps priority.payment_fail_counts on each cancelled payment), so an agent can't loop on it.
+// Stop offering a spell or ability whose payment already failed twice (the payer bumps
+// priority.payment_fail_counts on each cancelled payment), so an agent can't loop on it.
 static bool payment_blocked(Entity paid_for) {
     const int *fails = cur_game.priority.payment_fail_counts.find(paid_for);
     return fails && *fails >= 2;
-}
-
-// Machine mode only: action-masking optimization — don't offer a conditional-destroy spell to
-// the RL agent when no target on the board would currently pass the condition (e.g. Fatal Push:
-// only show if a creature with mana value <= the current revolt-aware threshold exists). This is
-// a masking heuristic, NOT a rules gate — the spell can still legally target any creature in
-// CLI/interactive play.
-static bool machine_masks_conditional_destroy(const CardData &face, Zone::Ownership caster,
-                                              const std::set<Entity> &entities) {
-    if (!InputLogger::instance().is_machine_schedule()) return false;
-    for (const auto &ab : face.abilities) {
-        if (ab->ability_type != AbilityDef::SPELL) continue;
-        if (ab->condition_present.find("cmcLEX") == std::string::npos ||
-            ab->dynamic_amount_expr.empty())
-            return false;
-        // Evaluate Revolt threshold inline
-        int threshold = 2;
-        if (ab->dynamic_amount_expr.find("Count$Revolt.") != std::string::npos) {
-            size_t dot1 = ab->dynamic_amount_expr.find("Revolt.") + 7;
-            size_t dot2 = ab->dynamic_amount_expr.find('.', dot1);
-            int high_val = std::stoi(ab->dynamic_amount_expr.substr(dot1, dot2 - dot1));
-            int low_val = std::stoi(ab->dynamic_amount_expr.substr(dot2 + 1));
-            bool revolt = revolt_this_turn(caster);
-            threshold = revolt ? high_val : low_val;
-        }
-        for (auto ce : entities) {
-            if (!is_battlefield_permanent(ce)) continue;
-            if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
-            // A token creature carries no CardData; a non-copy token has no mana
-            // cost and therefore mana value 0 (CR 111.7), which is always <= the
-            // threshold, so it is a valid conditional-destroy target. Mirror
-            // effect_destroy.cpp, which likewise treats a CardData-less target as
-            // mana value 0 and destroys it — without this, boards whose only small
-            // creatures are tokens (e.g. Monk/Orc Army) hid the legal Fatal Push.
-            int cmc = global_coordinator.entity_has_component<CardData>(ce)
-                          ? card_mana_value(global_coordinator.GetComponent<CardData>(ce))
-                          : 0;
-            if (cmc <= threshold) return false;
-        }
-        return true;
-    }
-    return false;
 }
 
 // The cast-legality gates every cast-offering path shares (CR 601.2c, 601.3): the spell's timing
@@ -165,7 +122,6 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
     }
     // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
     if (!aura_enchant_target_available(face, caster, orderer)) return false;
-    if (machine_masks_conditional_destroy(face, caster, orderer->mEntities)) return false;
     if (rules_mod::cast_prohibited(caster, face, from_zone)) return false;
     return !payment_blocked(card_entity);
 }
@@ -772,7 +728,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             global_coordinator.GetComponent<Zone>(comp).location == Zone::SIDEBOARD &&
             global_coordinator.entity_has_component<CardData>(comp)) {
             ManaValue three = {GENERIC, GENERIC, GENERIC};
-            if (can_pay_mana(priority_player, three, comp, orderer)) {
+            if (can_pay_mana(priority_player, three, comp, orderer) && !payment_blocked(comp)) {
                 auto &cd = global_coordinator.GetComponent<CardData>(comp);
                 LegalAction la(SPECIAL_ACTION, comp,
                                "Companion: pay {3}, put " + cd.name + " into your hand");
@@ -856,7 +812,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // affordable. General over any Suspend card. Offered independently of the normal-cast block.
         if (card_data.has_suspend && timing_ok &&
             !rules_mod::cast_prohibited(priority_player, card_data) &&
-            can_pay_mana(priority_player, card_data.suspend_cost, card_entity, orderer)) {
+            can_pay_mana(priority_player, card_data.suspend_cost, card_entity, orderer) &&
+            !payment_blocked(card_entity)) {
             LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
             sus_la.category = ActionCategory::CAST_SPELL;  // cast-adjacent "play this card" action
             sus_la.suspend_action = true;
@@ -1080,18 +1037,17 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
     }
 
-    // CLI mode lists every collected mana ability so a human can float mana manually,
-    // whether or not it contributes to a castable spell.
-    bool machine = InputLogger::instance().is_machine_schedule();
+    // With auto-mana off every collected mana ability is listed, so mana can be floated
+    // manually whether or not it contributes to a castable spell.
     std::vector<Entity> removal_tgts;
-    if (machine && !legal_mana_abilities.empty()) removal_tgts = stack_removal_targets(orderer);
+    if (auto_mana && !legal_mana_abilities.empty()) removal_tgts = stack_removal_targets(orderer);
     for (auto &ma : legal_mana_abilities) {
-        // In machine mode, normal mana sources stay hidden and are auto-paid during cost
-        // payment, with two exceptions offered at priority so the agent can float mana:
+        // With auto-mana on, normal mana sources stay hidden and are auto-paid during cost
+        // payment, with two exceptions offered at priority so mana can still be floated:
         // instant-speed sources (e.g. LED, only activatable here), and any source that is
         // a chosen target of a Destroy/exile effect on the stack (float in response to
         // removal, e.g. Wasteland, before the source leaves the battlefield).
-        if (machine && !ma.ability.def->instant_speed &&
+        if (auto_mana && !ma.ability.def->instant_speed &&
             std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
                 removal_tgts.end())
             continue;

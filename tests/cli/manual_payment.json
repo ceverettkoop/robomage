@@ -1,0 +1,4 @@
+{"name": "manual_payment",
+ "why": "--no-auto-mana: a human (A) against the first agent pays Skewer the Critics source by source, the pending decision showing what the cost still owes by pip; z refused at a payment",
+ "args": ["--no-auto-mana", "--player", "A", "--agent-b", "first", "--game-seed", "1", "--hand-a", "Skewer the Critics,Lightning Bolt", "--library-a", "Mountain", "--battlefield-a", "Mountain,Mountain,Mountain", "--hand-b", "Forest", "--library-b", "Forest"],
+ "input": ["0", "0", "0", "6", "0", "z", "0", "0", "0"]}

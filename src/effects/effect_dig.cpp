@@ -8,7 +8,6 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/player.h"
@@ -95,8 +94,6 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // must NOT learn any card placed back on top, and private card-name logs are pinned to the
     // looker and redacted from the owner.
     Zone::Ownership looker = ab.controller;
-    LibraryTopView top_view = (dig_owner == looker) ? LibraryTopView::OWNER
-                                                    : LibraryTopView::OPPONENT;
     // Narrative actor: the ability's controller when the dug player is a chosen target (Jace
     // +2 looks at the target's library), else the dug player acting on their own library
     // (Goblin Guide: the defending player reveals and takes the card). Zones are the dig owner's
@@ -147,15 +144,14 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
 
         // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
-        // reveal publicly (visible to both seats, not redacted) and record it (mark_card_revealed),
-        // wherever each card subsequently goes (hand if it matches, else back on top).
+        // reveal publicly (visible to both seats, not redacted), wherever each card subsequently
+        // goes (hand if it matches, else back on top).
         if (ab.def->dig_reveal) {
             reveal_cards(rt.lib);
             for (auto e : rt.lib) {
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log("%s reveals %s from the top of %s library.\n", actor_name.c_str(), cd.name.c_str(),
                          owner_poss.c_str());
-                mark_card_revealed(e, dig_owner);
             }
         }
 
@@ -234,18 +230,15 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     const bool blind = dig_is_blind(ab);
     const bool chosen_revealed = dig_chosen_revealed(ab, chosen_dest);
     for (Entity chosen : rt.chosen) {
-        // A revealed card is recorded as revealed before it moves, so the move into a hand is a
-        // public one (CR 701.20a).
-        if (chosen_revealed) {
-            mark_card_revealed(chosen, dig_owner);
-            reveal_card(chosen);
-        }
+        // A revealed card is revealed before it moves, so the move into a hand is a public one
+        // (CR 701.20a).
+        if (chosen_revealed) reveal_card(chosen);
         if (chosen_dest == Zone::BATTLEFIELD) {
             // An Aura chooses what it enchants as it enters, or stays put without a legal object
             // (CR 303.4f/g) — the shared uncast battlefield entry.
             if (put_onto_battlefield(orderer, FrameCtx::blocking(), chosen) != Zone::BATTLEFIELD) continue;
         } else {
-            orderer->add_to_zone(on_bottom, chosen, chosen_dest, top_view, chosen_face_down);
+            orderer->add_to_zone(on_bottom, chosen, chosen_dest, chosen_face_down);
         }
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (blind) {
@@ -297,7 +290,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         Zone::ZoneValue rest_dest = dig_rest_destination(ab);
         const bool rest_face_down = dig_exiles_face_down(ab, rest_dest);
         for (auto e : remaining) {
-            orderer->add_to_zone(false, e, rest_dest, top_view, rest_face_down);
+            orderer->add_to_zone(false, e, rest_dest, rest_face_down);
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             if (rest_face_down) {
                 game_log_private(looker, "%s puts %s into exile face down.\n", actor_name.c_str(),
@@ -320,7 +313,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // Put back in an order only the looker sees (or, in a random order, nobody).
         ObsLibraryBatch batch(dig_owner, ab.def->rest_random_order ? Zone::UNKNOWN : looker);
         for (auto e : remaining) {
-            orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, top_view);
+            orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY);
         }
     }
     game_log("%s puts %zu card(s) on the %s of %s library.\n", actor_name.c_str(), remaining.size(),

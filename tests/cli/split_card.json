@@ -1,0 +1,4 @@
+{"name": "split_card",
+ "why": "a split card (Dead // Gone) named as the whole card in the hand, the graveyard, the events and the knowledge panel, and as the half cast on the stack and while it is being cast; card shows its second half",
+ "args": ["--player", "A", "--agent-b", "first", "--game-seed", "1", "--hand-a", "Dead/Gone,Dead/Gone,Mountain", "--library-a", "Mountain", "--battlefield-a", "Mountain,Mountain,Mountain", "--battlefield-b", "Grizzly Bears", "--hand-b", "Forest", "--library-b", "Forest"],
+ "input": ["0", "card gone", "3", "0", "0", "zone graveyard", "know", "quit"]}

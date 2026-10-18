@@ -5,7 +5,6 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../classes/gamestate.h"
 #include "../cli_output.h"
 #include "../components/permanent.h"
 #include "../components/player.h"

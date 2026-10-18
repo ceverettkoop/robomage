@@ -15,10 +15,11 @@
 //                      runs out each seat's --agent-* decides (first when none is given)
 //   --actions <ints>   one global list of replies for both seats, then the seats' agents
 //   --trace-decisions  the board and menu of every decision (agents/trace.h) on the game log
-// Any of the first three implies --machine (the machine decision schedule); a seat with no
-// agent and no script keeps its own input path (the RMSTATE stream on stdin/stdout, or the
-// terminal for a --player seat). They cannot be combined with --replay or an agent on a
-// --player seat.
+// Any of the first three implies --machine; a seat with no agent and no script keeps its own
+// input path: the RMSTATE stream on stdin/stdout, or, for a human seat (cli_args.cpp: the
+// --player seat, or every seat of a run without --machine), the CLI (cli/human.h), installed
+// here as that seat's agent (it takes over a --play / --actions script's seat once the script runs
+// out). They cannot be combined with --replay or an agent on a --player seat.
 //
 // At the end of the run (process exit, the --max-decisions stop included) a --play script prints
 // "resolved --actions: <i,i,...>" (every reply it gave) and, when some of its specs were never

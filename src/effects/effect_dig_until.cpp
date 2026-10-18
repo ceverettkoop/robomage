@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "../classes/game.h"
-#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -56,7 +55,6 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         game_log("%s reveals %s.\n", player_name(owner).c_str(), nm.c_str());
         // Every card this dig passes over is shown to all players (CR 701.20a), wherever it
         // goes next.
-        mark_card_revealed(card, owner);
         reveal_card(card);
         bool matches = ab.def->change_valid.empty() || card_matches_filter(card, ab.def->change_valid);
         if (matches) { found = card; break; }

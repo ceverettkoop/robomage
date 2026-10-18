@@ -1,0 +1,18 @@
+{
+  "name": "menu_collapse_remembered_library_copy",
+  "why": "menu collapse on currently explicit information (plan step 4a part 2): B's Mishra's Bauble looks at A's top card, a Forest (CR 701.20e), and that look window closes as the ability finishes resolving; when A's Once Upon a Time then looks at the top five, both Forests are in A's window and in none of B's, so the dig menu offers one Forest row and #2 is the Island (B's memory of the look is its knowledge sidecar's, no longer the engine's Game::OppKnownLibraryTop, which kept the two Forests apart)",
+  "hand_a": ["Once Upon a Time", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_a": ["Forest", "Forest", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "battlefield_b": ["Mishra's Bauble"],
+  "library_b": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "B:activate:Mishra's Bauble", "B:target:Player A", "A:pass",
+           "A:cast:Once Upon a Time", "A:#2"],
+  "max_decisions": 8,
+  "expect_order": [
+    "^Player B looks at top of Player A's library: Forest$",
+    "^Player A looks at the top 5 card\\(s\\) of their library\\.$",
+    "^Player A reveals Island and puts it into hand\\.$"
+  ],
+  "expect_not": ["^Player A reveals Forest and puts it into hand"]
+}

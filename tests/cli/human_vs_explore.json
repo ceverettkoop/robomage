@@ -1,0 +1,4 @@
+{"name": "human_vs_explore",
+ "why": "a human (A) against the explore agent: help, an unknown command, a menu row out of range, zone (own and the opponent's), card by name (ambiguous, exact) and by handle, an attack confirmed with -1, know, log; the quit command ends the run, and its decision log replays up to the quit",
+ "args": ["--player", "A", "--agent-b", "explore", "--deck-a", "league/burn", "--deck-b", "league/bug", "--game-seed", "3"],
+ "input": ["help", "frobnicate", "7", "0", "1", "zone hand opp", "zone library", "card bolt", "card lightning bolt", "card #2", "2", "0", "-1", "0", "0", "zone graveyard opp", "know", "log 6", "quit"]}

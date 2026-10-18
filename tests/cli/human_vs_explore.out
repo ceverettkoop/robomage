@@ -1,0 +1,251 @@
+robomage 0.2
+Decision log: human_vs_explore.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Chain Lightning, Monastery Swiftspear, Mountain, Fireblast, Skewer the Critics, Lightning Bolt, Goblin Guide
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 53  graveyard 0   exile 0
+  Player B        life 20   hand 7   library 53  graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Chain Lightning       #1  {R}        Sorcery
+  Monastery Swiftspear  #2  {R}        Creature - Human Monk
+  Mountain              #3             Basic Land - Mountain
+  Fireblast             #4  {4}{R}{R}  Instant
+  Skewer the Critics    #5  {2}{R}     Sorcery
+  Lightning Bolt        #6  {R}        Instant
+  Goblin Guide          #7  {R}        Creature - Goblin Scout
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's archetype: slow_midrange
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> Commands:
+  <n>                  choose menu row n (-1 = the last row: confirm attackers/blockers)
+  concede              concede this game;  concede match: the whole match
+  board                show the board and the menu again
+  zone <name> [opp]    one zone, yours or the opponent's: hand, library, graveyard,
+                       exile, battlefield, stack, sideboard
+  card <#n|name>       card details: an object of the board by its #handle, or a card
+                       of this match by name (e.g. card 12, card bolt)
+  know                 what you know and can deduce (the knowledge panel, in full)
+  log [n|all]          what you saw happen this match (the last n lines, default 30)
+  z [mine]             auto-pass: pass priority until the next turn begins (mine: until
+                       your next turn); it stops at any other decision and when the
+                       opponent puts something on the stack  (also: pass turn [mine])
+  help                 this list
+  quit                 end the game
+Player A [0-1, help]> Unknown command 'frobnicate' (type help).
+Player A [0-1, help]> No menu row 7: choose 0-1 (or help).
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A plays Mountain
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 53  graveyard 0   exile 0
+  Player B        life 20   hand 7   library 53  graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain  #23
+Your hand (6):
+  Chain Lightning       #1  {R}        Sorcery
+  Monastery Swiftspear  #2  {R}        Creature - Human Monk
+  Fireblast             #4  {4}{R}{R}  Instant
+  Skewer the Critics    #5  {2}{R}     Sorcery
+  Lightning Bolt        #6  {R}        Instant
+  Goblin Guide          #7  {R}        Creature - Goblin Scout
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's archetype: slow_midrange
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Chain Lightning
+  2: Cast Goblin Guide
+  3: Cast Lightning Bolt
+  4: Cast Monastery Swiftspear
+Player A [0-4, help]> Player B's hand: 7 cards, hidden
+  copies it can hold: Baleful Strix 0-2, Bayou 0-1, Brainstorm 0-4, Fatal Push 0-3, Flow State 0-3,
+      Force of Will 0-4, Forest 0-1, Island 0-1, Kaito, Bane of Nightmares 0-1,
+      Life from the Loam 0-1, Lórien Revealed 0-1, Misty Rainforest 0-4, Orcish Bowmasters 0-4,
+      Polluted Delta 0-3, Ponder 0-4, Sheoldred's Edict 0-2, Swamp 0-1,
+      Tamiyo, Inquisitive Student 0-3, Thoughtseize 0-2, Tropical Island 0-3, Undercity Sewers 0-1,
+      Underground Sea 0-2, Uro, Titan of Nature's Wrath 0-2, Verdant Catacombs 0-1, Wasteland 0-4,
+      Witherbloom Command 0-2
+Player A [0-4, help]> Player A's library: 53 cards, order hidden
+  contents, library (53 cards): Chain Lightning 3, Eidolon of the Great Revel 4,
+      Exquisite Firecraft 2, Fiery Islet 1, Fireblast 2, Goblin Guide 3, Lava Spike 4,
+      Light Up the Stage 1, Lightning Bolt 3, Monastery Swiftspear 3, Mountain 17,
+      Price of Progress 4, Rift Bolt 3, Roiling Vortex 1, Skewer the Critics 2
+Player A [0-4, help]> card: 'bolt' matches Lightning Bolt, Rift Bolt
+Player A [0-4, help]> Lightning Bolt  {R}
+  Instant
+  Lightning Bolt deals 3 damage to any target.
+Player A [0-4, help]> Monastery Swiftspear #2, Player A's hand
+Monastery Swiftspear  {R}
+  Creature - Human Monk  1/2
+  Haste
+  Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)
+Player A [0-4, help]> 
+Since your last decision:
+  T1: Player A casts Goblin Guide from hand
+  T1: Player A's Goblin Guide: stack -> battlefield
+Game 1, turn 1, Declare attackers: Player A's turn
+  Player A (you)  life 20   hand 5   library 53  graveyard 0   exile 0
+  Player B        life 20   hand 7   library 53  graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Goblin Guide  2/2  #25
+  Mountain           #23  tapped
+Your hand (5):
+  Chain Lightning       #1  {R}        Sorcery
+  Monastery Swiftspear  #2  {R}        Creature - Human Monk
+  Fireblast             #4  {4}{R}{R}  Instant
+  Skewer the Critics    #5  {2}{R}     Sorcery
+  Lightning Bolt        #6  {R}        Instant
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's archetype: slow_midrange
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Goblin Guide [2/2]
+  1: Confirm attackers   (or -1)
+Player A [0-1, help]> 
+Game 1, turn 1, Declare attackers: Player A's turn
+  Player A (you)  life 20   hand 5   library 53  graveyard 0   exile 0
+  Player B        life 20   hand 7   library 53  graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Goblin Guide  2/2  #25  attacking
+  Mountain           #23  tapped
+Your hand (5):
+  Chain Lightning       #1  {R}        Sorcery
+  Monastery Swiftspear  #2  {R}        Creature - Human Monk
+  Fireblast             #4  {4}{R}{R}  Instant
+  Skewer the Critics    #5  {2}{R}     Sorcery
+  Lightning Bolt        #6  {R}        Instant
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's archetype: slow_midrange
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Confirm attackers   (or -1)
+Player A [0-0, help]> 
+Since your last decision:
+  T1: Player A looks at 1 card of Player B's library (top): Tropical Island (by Goblin Guide)
+  T1: Revealed from Player B's library (top): Tropical Island (by Goblin Guide)
+  T1: Player B's Tropical Island: library (top) -> hand (by Goblin Guide)
+  T2: Player B draws a card
+  T2: Player B plays Tropical Island
+  T2: Player B's Flow State: hand -> graveyard
+  life: Player B 20 -> 18
+Game 1, turn 3, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 5   library 53  graveyard 0   exile 0
+  Player B        life 18   hand 7   library 51  graveyard 1   exile 0
+Player B's battlefield:
+  Tropical Island  #27
+Player A's battlefield:
+  Goblin Guide  2/2  #25
+  Mountain           #23
+Your hand (5):
+  Chain Lightning       #1  {R}        Sorcery
+  Monastery Swiftspear  #2  {R}        Creature - Human Monk
+  Fireblast             #4  {4}{R}{R}  Instant
+  Skewer the Critics    #5  {2}{R}     Sorcery
+  Lightning Bolt        #6  {R}        Instant
+Player A's graveyard: (empty)
+Player B's graveyard: Flow State
+You know:
+  Player B's archetype: slow_midrange
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> 
+Since your last decision:
+  T3: Player A draws a card: Mountain
+Game 1, turn 3, Draw: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 52  graveyard 0   exile 0
+  Player B        life 18   hand 7   library 51  graveyard 1   exile 0
+Player B's battlefield:
+  Tropical Island  #27
+Player A's battlefield:
+  Goblin Guide  2/2  #25
+  Mountain           #23
+Your hand (6):
+  Chain Lightning       #1   {R}        Sorcery
+  Monastery Swiftspear  #2   {R}        Creature - Human Monk
+  Fireblast             #4   {4}{R}{R}  Instant
+  Skewer the Critics    #5   {2}{R}     Sorcery
+  Lightning Bolt        #6   {R}        Instant
+  Mountain              #29             Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: Flow State
+You know:
+  Player B's archetype: slow_midrange
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> 
+Game 1, turn 3, First main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Cast Chain Lightning
+  3: Cast Lightning Bolt
+  4: Cast Monastery Swiftspear
+Player A [0-4, help]> Player B's graveyard: 1 card
+  Flow State #28
+Player A [0-4, help]> Knowledge (expert, exact):
+Player B:
+  known in hand: nothing
+  hand (7 cards): Baleful Strix 0-2, Bayou 0-1, Brainstorm 0-4, Fatal Push 0-3, Flow State 0-2,
+      Force of Will 0-4, Forest 0-1, Island 0-1, Kaito, Bane of Nightmares 0-1,
+      Life from the Loam 0-1, Lórien Revealed 0-1, Misty Rainforest 0-4, Orcish Bowmasters 0-4,
+      Polluted Delta 0-3, Ponder 0-4, Sheoldred's Edict 0-2, Swamp 0-1,
+      Tamiyo, Inquisitive Student 0-3, Thoughtseize 0-2, Tropical Island 0-2, Undercity Sewers 0-1,
+      Underground Sea 0-2, Uro, Titan of Nature's Wrath 0-2, Verdant Catacombs 0-1, Wasteland 0-4,
+      Witherbloom Command 0-2
+  library (51 cards): Baleful Strix 0-2, Bayou 0-1, Brainstorm 0-4, Fatal Push 0-3, Flow State 0-2,
+      Force of Will 0-4, Forest 0-1, Island 0-1, Kaito, Bane of Nightmares 0-1,
+      Life from the Loam 0-1, Lórien Revealed 0-1, Misty Rainforest 0-4, Orcish Bowmasters 0-4,
+      Polluted Delta 0-3, Ponder 0-4, Sheoldred's Edict 0-2, Swamp 0-1,
+      Tamiyo, Inquisitive Student 0-3, Thoughtseize 0-2, Tropical Island 0-2, Undercity Sewers 0-1,
+      Underground Sea 0-2, Uro, Titan of Nature's Wrath 0-2, Verdant Catacombs 0-1, Wasteland 0-4,
+      Witherbloom Command 0-2
+  sideboard (15 cards): Carpet of Flowers 2, Consign to Memory 2, Endurance 2, Force of Negation 1,
+      Force of Vigor 1, Hydroblast 1, Null Rod 1, Pernicious Deed 2, Surgical Extraction 1,
+      Toxic Deluge 1, Veil of Summer 1
+  copies seen this game (/match): Flow State 1, Tropical Island 1
+  consistent reference lists: league/bug (registered)
+  archetype: slow_midrange
+Player A (you):
+  library (52 cards): Chain Lightning 3, Eidolon of the Great Revel 4, Exquisite Firecraft 2,
+      Fiery Islet 1, Fireblast 2, Goblin Guide 3, Lava Spike 4, Light Up the Stage 1,
+      Lightning Bolt 3, Monastery Swiftspear 3, Mountain 16, Price of Progress 4, Rift Bolt 3,
+      Roiling Vortex 1, Skewer the Critics 2
+  copies seen this game (/match): Mountain 2, Lightning Bolt 1, Goblin Guide 1, Chain Lightning 1,
+      Fireblast 1, Skewer the Critics 1, Monastery Swiftspear 1
+  consistent reference lists: league/burn (registered)
+  archetype: burn
+Player A [0-4, help]> (8 earlier lines: log all)
+  T1: Player B's Tropical Island: library (top) -> hand (by Goblin Guide)
+  T2: Player B draws a card
+  T2: Player B plays Tropical Island
+  T2: Player B's Flow State: hand -> graveyard
+  life: Player B 20 -> 18
+  T3: Player A draws a card: Mountain
+Player A [0-4, help]> Quitting.

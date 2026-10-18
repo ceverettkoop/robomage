@@ -1,0 +1,252 @@
+robomage 0.2
+Decision log: hotseat_concede.rmlog
+
+======== Player A to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x5
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+======== Player B to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand)
+  T1: Player B draws 7 cards (opening hand): Forest, Grizzly Bears, Forest, Forest, Forest, Forest, Forest
+Game 1, opening hand (Player A plays first)
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  (no permanents)
+Player B's battlefield:
+  (no permanents)
+Your hand (7):
+  Forest         #1          Basic Land - Forest
+  Grizzly Bears  #2  {1}{G}  Creature - Bear
+  Forest         #3          Basic Land - Forest
+  Forest         #4          Basic Land - Forest
+  Forest         #5          Basic Land - Forest
+  Forest         #6          Basic Land - Forest
+  Forest         #7          Basic Land - Forest
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Mountain x6
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player B [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A's Mountain: created on the battlefield
+  T1: Player B's Grizzly Bears: created on the battlefield
+  T1: Player B's Forest: created on the battlefield
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #9
+  Forest              #10
+Player A's battlefield:
+  Mountain  #8
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A casts Lightning Bolt from hand
+Game 1, turn 1, Upkeep: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #9
+  Forest              #10
+Player A's battlefield:
+  Mountain  #8
+Stack (top first):
+  1. Lightning Bolt #11 (Player A)
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: casting Lightning Bolt: choose a target
+  0: Player B (20 life)
+  1: Player A (20 life)
+  2: Grizzly Bears
+Player A [0-2, help]> Game 1, turn 1, Upkeep: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #9
+  Forest              #10
+Player A's battlefield:
+  Mountain  #8
+Stack (top first):
+  1. Lightning Bolt #11 (Player A)
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: casting Lightning Bolt: choose a target
+  0: Player B (20 life)
+  1: Player A (20 life)
+  2: Grizzly Bears
+Player A [0-2, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A's Lightning Bolt: stack -> graveyard
+  T1: Player B's Grizzly Bears: battlefield -> graveyard
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 1   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 1   exile 0
+Player B's battlefield:
+  Forest  #10
+Player A's battlefield:
+  Mountain  #8  tapped
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: Lightning Bolt
+Player B's graveyard: Grizzly Bears
+You know:
+  Player B's hand holds Forest x6
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+  6: Play Mountain
+Player A [0-6, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T1: Player A's Mountain: created on the battlefield
+  T1: Player B's Grizzly Bears: created on the battlefield
+  T1: Player B's Forest: created on the battlefield
+  T1: Player A casts Lightning Bolt from hand
+  T1: Player A's Lightning Bolt: stack -> graveyard
+  T1: Player B's Grizzly Bears: battlefield -> graveyard
+  T1: Player A plays Mountain
+  T2: Player B draws a card: Forest
+Game 1, turn 2, First main: Player B's turn; Player B has priority
+  Player B (you)  life 20   hand 8   library 7   graveyard 1   exile 0
+  Player A        life 20   hand 5   library 8   graveyard 1   exile 0
+Player A's battlefield:
+  Mountain  #8   tapped
+  Mountain  #14
+Player B's battlefield:
+  Forest  #10
+Your hand (8):
+  Forest         #1           Basic Land - Forest
+  Grizzly Bears  #2   {1}{G}  Creature - Bear
+  Forest         #3           Basic Land - Forest
+  Forest         #4           Basic Land - Forest
+  Forest         #5           Basic Land - Forest
+  Forest         #6           Basic Land - Forest
+  Forest         #7           Basic Land - Forest
+  Forest         #15          Basic Land - Forest
+Player B's graveyard: Grizzly Bears
+Player A's graveyard: Lightning Bolt
+You know:
+  Player A's hand holds Mountain x5
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Forest
+  2: Play Forest
+  3: Play Forest
+  4: Play Forest
+  5: Play Forest
+  6: Play Forest
+  7: Play Forest
+Player B [0-7, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T2: Player B plays Forest
+Game 1, turn 2, First main: Player B's turn; Player B has priority
+  Player B (you)  life 20   hand 7   library 7   graveyard 1   exile 0
+  Player A        life 20   hand 5   library 8   graveyard 1   exile 0
+Player A's battlefield:
+  Mountain  #8   tapped
+  Mountain  #14
+Player B's battlefield:
+  Forest x2  #10 #16
+Your hand (7):
+  Grizzly Bears  #2   {1}{G}  Creature - Bear
+  Forest         #3           Basic Land - Forest
+  Forest         #4           Basic Land - Forest
+  Forest         #5           Basic Land - Forest
+  Forest         #6           Basic Land - Forest
+  Forest         #7           Basic Land - Forest
+  Forest         #15          Basic Land - Forest
+Player B's graveyard: Grizzly Bears
+Player A's graveyard: Lightning Bolt
+You know:
+  Player A's hand holds Mountain x5
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Grizzly Bears
+Player B [0-1, help]> 
+Player B concedes - Player A wins!
+GAME_RESULT: 1 Player A wins

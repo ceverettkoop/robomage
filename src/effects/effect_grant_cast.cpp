@@ -10,7 +10,6 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../machine_io.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/players.h"
@@ -44,7 +43,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         emblem.controller = ab.controller;
         emblem.statics = ab.def->effect_emblem_statics;
         emblem.source = ab.source.lki_entity();
-        emblem.source_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
+        emblem.source_vocab_idx = source_vocab_idx(ab.source.lki_entity());
         cur_game.resolved_effects.emblems.push_back(std::move(emblem));
         game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
@@ -71,7 +70,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             Ability ft(ft_def);
             ft.controller = ab.controller;
             ft.floating_creator = ab.source.lki_entity();
-            ft.floating_creator_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
+            ft.floating_creator_vocab_idx = source_vocab_idx(ab.source.lki_entity());
             cur_game.resolved_effects.floating_triggers.push_back(ft);
         }
         game_log("A floating triggered ability is created%s.\n",

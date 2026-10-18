@@ -100,9 +100,6 @@ static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_tri
 static void frame_finish() {
     ResolutionFrame &fr = cur_game.resolution;
     cur_game.priority.player_a_has_priority = fr.prev_priority;
-    // The revealing effect is over, so the cards it revealed in a library stop being revealed
-    // (CR 701.20a).
-    cur_game.revealed_in_library.clear();
     close_resolution_windows(fr.stack_entity);
     // What this resolution remembered and chose (ChooseCard's chosen cards: Ajani's kept
     // permanents, Dauthi Voidwalker's card) ends with it, so it can't leak into a later
