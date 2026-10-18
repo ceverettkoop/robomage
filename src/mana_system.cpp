@@ -54,6 +54,8 @@ static ManaValue *s_mana_spent_sink = nullptr;
 // report the colors it spent. Dry-run callers (can_afford_pool, activation-cost trials) pass
 // nullptr and are unaffected.
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue *spent = nullptr);
+// The part of `cost` that `pool` would leave unpaid, the pool left untouched.
+static ManaValue pool_shortfall(const ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true, bool has_improvise = false,
@@ -91,11 +93,15 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
                                             std::shared_ptr<Orderer> orderer);
 
 // Non-mutating affordability check: the read-only counterpart of pay_from_pool.
-// Dry-runs the payment on a throwaway copy (this function already copied the pool)
+// Dry-runs the payment on a throwaway copy (pool_shortfall copies the pool)
 // so the spend rule is never duplicated.
 bool can_afford_pool(const std::multiset<Colors> &pool, const std::multiset<Colors> &cost) {
-    auto copy = pool;
-    return pay_from_pool(copy, cost).empty();
+    return pool_shortfall(pool, cost).empty();
+}
+
+static ManaValue pool_shortfall(const ManaValue &pool, const ManaValue &cost) {
+    ManaValue copy = pool;
+    return pay_from_pool(copy, cost);
 }
 
 bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
@@ -1627,8 +1633,12 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         }
         game_log(" remaining):\n");
 
-        // The card being paid for is the pending-decision source.
-        payment_scope.set_remaining(remaining, static_cast<int>(cost.size()) - static_cast<int>(remaining.size()));
+        // The card being paid for is the pending-decision source. The mana floating in the pool
+        // is spent on the cost once it covers all of it (CR 601.2g-h: mana abilities first, then
+        // the payment); the frame reports it as applied already, so what is left to pay is what
+        // the pool does not cover.
+        const ManaValue owed = pool_shortfall(player.mana, remaining);
+        payment_scope.set_remaining(owed, static_cast<int>(cost.size()) - static_cast<int>(owed.size()));
         int choice;
         {
             PendingDecisionScope pending(paid_for);

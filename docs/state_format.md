@@ -120,7 +120,7 @@ child tables.
 | `lki` | departed objects still referenced | last-known characteristics for a stack or effect reference |
 | `reveal` | one per object in a current window for this viewer | handle, zone, position if in a library, card id, who it is revealed to |
 | `pending` | 0 or 1 | the paused flow (`PendingQuery::Tag`), deciding seat, source handle |
-| `pending_cost` | 0 or 1 during a cost-payment decision (manual mana payment under `--no-auto-mana`, pitch/alternative costs, unless-payments, X choices) | what is being paid for (spell/ability handle and which cost: mana, alternative, unless, additional), the **remaining cost** by pip type (W/U/B/R/G/C, generic, each hybrid and Phyrexian pip, snow, X), and the amount already paid. Child table `pending_cost_pip` for non-plain pips |
+| `pending_cost` | 0 or 1 during a cost-payment decision (manual mana payment under `--no-auto-mana`, pitch/alternative costs, unless-payments, X choices) | what is being paid for (spell/ability handle and which cost: mana, alternative, unless, additional), the **remaining cost** by pip type (W/U/B/R/G/C, generic, each hybrid and Phyrexian pip, snow, X), and the amount already paid. In the interactive mana payment loop, mana floating in the payer's pool counts as applied: the remaining cost is what the pool does not cover (the engine spends the pool once it covers the whole cost, CR 601.2g-h) and that mana counts as paid. Child table `pending_cost_pip` for non-plain pips |
 | `menu` | one per legal action | category, action type, source/target handles, ability reference, ordinal, cast-variant flags, card-is-public flag, description. No length cap; one integer answers the decision |
 | `match` | 1 | game number, wins, who played first this game, sideboard phase, own current deck/sideboard during sideboarding |
 | `events` | the drained event queue | section 5 |
@@ -917,7 +917,7 @@ computes neither outside its legal-action enumeration.
 | | `rem_w`, `rem_u`, `rem_b`, `rem_r`, `rem_g`, `rem_c`, `rem_generic`, `rem_x` | 8 × u8 | `count` | remaining plain pips; `rem_x` = {X} pips still to announce |
 | | `rem_life` | u16 | `count` | |
 | | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers) |
-| | `paid` | u8 | `count` | mana already paid (interactive payment) |
+| | `paid` | u8 | `count` | mana already paid (interactive payment; the pool's mana that applies to the cost counts as paid, and the `rem_*` columns leave it out) |
 | `pending_cost_pip` (45) | `cost` | u16 | `row:pending_cost` | remaining non-plain pips |
 | | `kind`, `colors`, `generic_alt` | u8 | `enum:pip_kind`, `mask:color`, `count` | as `card_pip` (plus snow) |
 | `menu` (46): row = action index of the menu as offered (after the interchangeable-choice collapse); only in the deciding seat's and the omniscient frame | `category` | u8 | `enum:action_category` | |

@@ -164,7 +164,7 @@ You know:
   Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
   Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
 Decision: Skewer the Critics: pay the cost
-Cost: Skewer the Critics #11 (mana cost): {2}{R} left to pay
+Cost: Skewer the Critics #11 (mana cost): {2} left to pay; 1 mana paid
   0: Tap Mountain for (R)
   1: Tap Mountain for (R)
   2: Cancel casting
@@ -193,7 +193,7 @@ You know:
   Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
   Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
 Decision: Skewer the Critics: pay the cost
-Cost: Skewer the Critics #11 (mana cost): {2}{R} left to pay
+Cost: Skewer the Critics #11 (mana cost): {1} left to pay; 2 mana paid
   0: Tap Mountain for (R)
   1: Cancel casting
 Player A [0-1, help]> 
