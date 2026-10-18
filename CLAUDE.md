@@ -89,21 +89,22 @@ has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one co
 `--binary <path>` overrides one invocation:
 
 - **Debug** (`bin/debug/robomage`; assertions, `-D_GLIBCXX_ASSERTIONS`, no `-O2`): the test
-  harness, `ci_check`/`make check`, `train.py observe`, and `train.py baseline`'s Python fallback.
+  harness, `make check` (`robomage_check`), `train.py observe`, and `train.py baseline`'s Python fallback.
 - **Release** (`bin/release/robomage`, `bin/release/az_actor`): `play.py` (every board),
   `analysis.py` (browse/report), every PPO/AZ training and `bench-*` subcommand, and `baseline`'s
   default C++-actor path.
 
-**Codegen is part of the build.** `make` first runs `pygen` (`train/gen_enums.py`,
+**Codegen is part of `make actor`** (no longer of `make`: only `src/actor/` and the Python RL stack
+read it; plan step 3b deletes it). `make pygen` / `make actor` run `pygen` (`train/gen_enums.py`,
 `gen_card_costs.py`, `gen_card_props.py`, `gen_archetypes.py`, `gen_sb_rules.py`; write-if-changed
 via `train/gen_util.py`, so unchanged outputs force no recompile).
-- **Committed** (derived from tracked sources; the `pygen` CI tier guards only these):
+- **Committed** (derived from tracked sources):
   `train/_enums.py` (C++ headers) and `src/gen/archetypes_gen.h` (`train/archetypes.py` +
   `bin/resources/decks/archetypes.json`, whose `_archetypes` key is the canonical label list).
-- **Untracked**, rebuilt locally every build: `train/card_costs.py`, `train/card_props.py`,
+- **Untracked**, rebuilt locally by every `pygen`: `train/card_costs.py`, `train/card_props.py`,
   `src/gen/card_costs_gen.h` (from gitignored, Forge-fetched card-script content) and
   `train/sb_rules.py` + `src/gen/sb_rules_gen.h` (from `train/sb_dead_rules.json`). A vocab
-  change + `make` keeps them in sync with nothing to commit.
+  change + `make pygen` keeps them in sync with nothing to commit.
 
 ## Long-running commands (Claude)
 
@@ -115,10 +116,11 @@ background** and make the live output inspectable by the user:
 
 ## Testing guidelines
 
-- **The standard gate is `make check`** (build + every default tier of `train/ci_check.py`:
-  codegen sync, vocab coverage, obs invariants, byte-identical replay corpus, deterministic league
-  smoke, short fuzz, …). It must pass before pushing, and CI runs exactly it. Tiers, reproducing a
-  CI failure, re-recording the corpus / regenerating codegen: [`docs/ci.md`](docs/ci.md).
+- **The standard gate is `make check`** (build + every tier of the C++ gate
+  `bin/debug/robomage_check`: vocab, concede, rules scenarios, byte-identical replay corpus
+  (`tests/corpus/`), state-format and knowledge self-checks, explore fuzz, bench, and the smoke
+  tier through the Python driver plus `train/pycheck.py`). It must pass before pushing, and CI
+  runs exactly it. Tiers, reproducing a CI failure, re-recording the corpus: [`docs/ci.md`](docs/ci.md).
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
 - Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
@@ -216,11 +218,12 @@ train/.venv/bin/python train/test_harness.py --format bo1 \
 ```
 
 **Rules-regression scenarios.** When you fix a rules bug, save the harness line that shows it as
-`train/regression/scenarios/<cr-rule>_<what>.json` (a `--scenario` file plus a `"why"` line citing
+`tests/scenarios/<cr-rule>_<what>.json` (a `--scenario` file plus a `"why"` line citing
 the CR rule and the commit, and assertions on the rules outcome: `expect` / `expect_not` /
 `expect_order` regexes over the narrative, `expect_menu` / `expect_menu_not` over offered actions,
-`expect_result`; keys in `train/test_scenarios.py`'s docstring). Keep `max_decisions` just past the
-asserted event, check it passes (`train/test_scenarios.py <name>`) and fails without the fix; the
+`expect_result`; keys in `tools/robomage_check/scenarios.h`). Keep `max_decisions` just past the
+asserted event, check it passes (`bin/debug/robomage_check --tier scenarios --scenario <name>`,
+`--show narrative` to see what the assertions match) and fails without the fix; the
 `scenarios` tier of `make check` runs them all.
 
 `train.py observe --player-a "play:<specs>"` drives one seat by specs against any agent (each list
@@ -384,9 +387,9 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 1. Append `{"Card Name", N}` (next free index) to `card_vocab_entries` in `src/card_vocab.h`;
    `N_CARD_TYPES` (`src/machine_io.h`) must exceed the highest index. Tokens are a separate band
    (`token_vocab_entries`, from index 900).
-2. Provision the script, then `make` (its `pygen` step regenerates the untracked
-   `train/card_costs.py`, `train/card_props.py`, `src/gen/card_costs_gen.h`; without a build run
-   `train/gen_card_costs.py` / `train/gen_card_props.py`). Nothing to commit; a new card only adds
+2. Provision the script, then `make` (and `make pygen` for the untracked
+   `train/card_costs.py`, `train/card_props.py`, `src/gen/card_costs_gen.h`, which only the actor
+   and the Python RL stack read). Nothing to commit; a new card only adds
    a property row, so the network shape and checkpoints are unaffected.
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
@@ -688,38 +691,15 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   Never hand-edit the outputs.
 - `missing_cards.py` — deck cards absent from `src/card_vocab.h`
 
-**Tests / CI (`train/`)**
-- `ci_check.py` — `make check` driver; default `ALL_TIERS` vs `OPT_IN_TIERS` (`actor`, `analysis`,
-  `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`;
-  tier `cppgate` runs `robomage_check`
-- `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check-cpp` runs it):
-  the C++ gate (plan step 3a), engine subprocesses only (links the std-only decoder and frame reader,
-  no engine TU); tiers `vocab`, `concede`, `scenarios`, `replay` (the corpus's `.rmlog` decision logs
-  against their `.replay` baselines; `--record` rewrites them), `state`, `knowledge`, `fuzz`, `bench`,
-  `smoke` (Python driver); `--tier`, `-j`, `--seed`, `--scenario GLOB --show output|narrative|dump`
-- `test_harness.py` — card-behavior harness (see Test harness)
-- `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
-- `compare_cpp_agents.py` — tier `cppagents`: the C++ `--play` resolver on every scenario against the
-  harness (same `resolved --actions`, assertions on both), C++ explore against `explore_agent.py`
-  (same games; `explore --games N` for a sweep)
-- `test_agent_parity.py` — tier `agentparity`: the scripted agent's vector view on RMSTATE plays the
-  games it plays on BQUERY (card knowledge, corpus and smoke games; the light corpus set's BQUERY
-  games frozen in `regression/agent_parity/bquery_corpus/`; listed divergences in
-  `regression/agent_parity_divergences.json`; `--lockstep GAME` attributes one)
-- `test_rm_agent.py` — tier `rmagent`: the agent's RMSTATE frame view (card names, `FrameCards`
-  against the generated tables, `--closed-decklist` games) and the RMSTATE driver (engine seeds,
-  card names, transcripts equal to `runner.run_games`', no RL-stack import, concessions)
-- `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
-  JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
-- `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
-  scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
-- `test_knowledge.py` — tier `knowledge`: the knowledge sidecar — `rmknow --selftest` / `--exactness`,
-  a fuzz under `--selfcheck-knowledge` (soundness vs the engine state), stream sessions (stream frames
-  equal the dump's, `k_*` included; `rmknow --isolation` per writer), `rmknow --truth` on the dumps,
-  archetype-inference sessions (METAGAME coverage, `k_template` / `k_archetype` vs the true lists and
-  the cards seen) (the corpus runs under `--selfcheck-knowledge` in tier `rmstate`)
-- `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
-- `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
-  (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),
-  `test_az_inspect.py` (opt-in `azinspect`)
+**Tests / CI**
+- `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
+  the gate (plan step 3a), engine subprocesses only (links the std-only decoder and frame reader,
+  no engine TU); tiers `vocab`, `concede`, `scenarios` (`tests/scenarios/*.json`), `replay` (the
+  corpus's `tests/corpus/*.rmlog` decision logs against their `.replay` baselines; `--record`
+  rewrites them), `state`, `knowledge`, `fuzz`, `bench`, `smoke` (Python driver and
+  `train/pycheck.py`); `--tier`, `-j`, `--seed`, `--scenario GLOB --show output|narrative|dump`
+- `train/record_corpus.py` — re-records the replay corpus with the live scripted agent (`make regen`)
+- `train/pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
+  driver's imports), run by the `smoke` tier
+- `train/test_harness.py` — card-behavior harness (see Test harness)
 - Fuzz campaigns are `train.py observe --player-a explore --player-b explore` (see Testing guidelines)

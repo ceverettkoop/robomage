@@ -364,7 +364,7 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   - a shadow comparison with the engine's current memory, in which every mismatch is
     classified as a bug or an old-vector leak (built into `--selfcheck-knowledge`,
     `src/state_format/shadow_knowledge.h`; signatures in
-    `train/regression/knowledge_divergences.json`; `knowledge_store.md` §9.7).
+    `tests/knowledge_divergences.json`; `knowledge_store.md` §9.7).
 
 ## 8. Engine changes this requires
 

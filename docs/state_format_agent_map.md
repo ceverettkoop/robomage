@@ -42,7 +42,7 @@ ways: raw `obs[...]` reads, `decode.decode_game_state` (`g`, built once per deci
    "revealed" bit (`_rev`, :2355). The agent therefore needs only those two outputs from the
    knowledge sidecar. The full shadow comparison with today's engine memory
    (`knowledge_store.md` §7, §9.7) is the broader event-completeness check; its classified
-   divergences (`train/regression/knowledge_divergences.json`) are the parity caveats of the
+   divergences (`tests/knowledge_divergences.json`) are the parity caveats of the
    port (`knowledge_store.md` §8).
 3. **Player identity is never needed beyond "self/opp".** The seat flag is read only to pick
    which deck *name* belongs to the agent (`_seat_deck` :2895).

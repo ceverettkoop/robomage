@@ -267,7 +267,7 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 - **Sharpness (the model):** hand-written regression scenarios with the deduction a strong
   player would make, asserted on the knowledge dump. Example: after a Brainstorm put-back
   from a hand known to hold {Force of Will, Daze, X}, and X then cast, the top two cards are
-  exactly {Force of Will, Daze}. Built as `train/regression/scenarios/knowledge_*.json` with the
+  exactly {Force of Will, Daze}. Built as `tests/scenarios/knowledge_*.json` with the
   `expect_dump*` keys of `train/test_scenarios.py` (section 9.7).
 - **Isolation:** `rmknow` on the recorded frame stream gives byte-identical knowledge tables
   to the in-process run, per writer (the dump's seat frames, a saved stream); and the stream's
@@ -284,7 +284,7 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   if that particular card stayed in hand, which tells the viewer which cards went back.
   `expert` reports "Force of Will: in hand or in the top two". Built as part of
   `--selfcheck-knowledge`, with every mismatch classified in
-  `train/regression/knowledge_divergences.json` (section 9.7): three leaks (this one, its copy
+  `tests/knowledge_divergences.json` (section 9.7): three leaks (this one, its copy
   variant and a library-position one), the rest quirks; no sidecar bug remained.
 - **Snapshot/restore:** the knowledge state is saved and restored with the engine snapshot,
   and frames after a restore match the originals.
@@ -303,7 +303,7 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
     library with `card` set (`at` from the top);
   - `opp_known_hand`: `k_known_hand` (per card, the copies definitely in the opponent's hand).
 - **Parity target:** byte-identical transcripts, except in games where a classified divergence
-  (`train/regression/knowledge_divergences.json`, section 9.7) changed what the agent saw. Those
+  (`tests/knowledge_divergences.json`, section 9.7) changed what the agent saw. Those
   games are re-recorded, each with its divergence as the reason. What the divergences imply:
   - `opp_known_hand` → `k_known_hand`: expert knows **less** after an opponent's hidden put-back
     (`put_back_leak`) and after a copy of a known card leaves the hand (`copy_leak`), and **more**
@@ -653,7 +653,7 @@ line naming its kind, direction (`old_more`, `new_more`, `conflict`), viewer, ow
 sides' values, whether the old side's claim holds in the true world, the game, turn and decision,
 and the frame's events with their source cards (the cause to classify by); a `SHADOW-KNOWLEDGE:`
 summary closes the match. The Python tiers classify every line against
-`train/regression/knowledge_divergences.json` (first matching signature: kind, direction, owner,
+`tests/knowledge_divergences.json` (first matching signature: kind, direction, owner,
 a regex over the line; `train/test_knowledge.py`): the `rmstate` tier's corpus part and the
 `knowledge` tier's fuzz and stream sessions, and the `knowledge` tier runs each signature's
 regression scenario to show it prints a line of that class. An unclassified line fails the tier.
@@ -689,7 +689,7 @@ are not 0..n-1"); and two library runs from one junction did not rejoin after co
 the history behind it into it (`PlayerModel::rejoin`; a run split around a searched card stayed
 split after the card left).
 
-**Sharpness scenarios** (`train/regression/scenarios/knowledge_*.json`). A scenario with an
+**Sharpness scenarios** (`tests/scenarios/knowledge_*.json`). A scenario with an
 `expect_dump`, `expect_dump_not`, `expect_dump_final` or `expect_dump_final_not` key runs with
 `--rmstate-dump FILE --state-dump json`, and `train/test_scenarios.py` renders every seat STATE
 frame's `k_*` tables as one text line per fact (`<seat> d=<decision> g<game> t<turn> pool opp

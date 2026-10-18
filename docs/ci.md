@@ -4,15 +4,22 @@ The standard for changes to this repo: **`make check` must pass.** CI runs exact
 locally before pushing.
 
 ```bash
-make check    # `make` (debug build + codegen), then train/ci_check.py (every default tier)
+make check    # `make` (debug build), then bin/debug/robomage_check (every tier; "The C++ gate" below)
 ```
 
 It needs the Forge card scripts provisioned first (the SessionStart hook does this in cloud sessions only;
-run it yourself on a fresh local clone):
+run it yourself on a fresh local clone; stdlib only):
 
 ```bash
-train/.venv/bin/python tools/forge_fetch/provision_decks.py
+python3 tools/forge_fetch/provision_decks.py
 ```
+
+> **Plan step 3b (in progress).** `make check` is the C++ gate `robomage_check` alone; the Python
+> gate `train/ci_check.py` and its engine-test scripts are deleted. The Python tier tables below
+> describe that retired gate and stay only until the documentation rewrite after step 3b; the
+> current gate is [The C++ gate](#the-c-gate-robomage_check). The rules scenarios, the replay
+> corpus and the knowledge-divergence signatures live in `tests/` (`tests/scenarios/`,
+> `tests/corpus/`, `tests/knowledge_divergences.json`).
 
 `provision_decks.py` fetches the script for **every card in `src/card_vocab.h`** plus every card
 named by the top-level, `meta/` and `league/` decks, and the tokens they create. Fetching the
@@ -200,7 +207,7 @@ train/.venv/bin/python train/test_rm_agent.py --part cards
 
 ### The C++ gate: `robomage_check`
 
-`tools/robomage_check/` builds `bin/<config>/robomage_check` (part of `make`; `make check-cpp` runs
+`tools/robomage_check/` builds `bin/<config>/robomage_check` (part of `make`; `make check` runs
 every tier). It runs the engine as subprocesses, in parallel (`-j N`, default the cores), and links
 no engine translation unit: only the std-only RMSTATE decoder (`src/state_format/decode.*`,
 `schema.*`) and the agents' frame reader and Python-compatible generator (`src/agents/seat_frames.*`,
@@ -208,7 +215,7 @@ no engine translation unit: only the std-only RMSTATE decoder (`src/state_format
 ends with each tier's PASS/FAIL, a wall-time table and a `Reproduce:` line, and exits 1 on any error
 (warnings alone pass; the same error / warning classification as above, the transcript scan ported
 in `scan.cpp`). Flags: `--tier a,b`, `-j N`, `--seed N` (fuzz and smoke), `--binary PATH` (default
-the engine beside it), `--out-dir DIR` (default `ci_out/cpp/`), `--fuzz-games N`, `--smoke-games N`,
+the engine beside it), `--out-dir DIR` (default `ci_out/`), `--fuzz-games N`, `--smoke-games N`,
 `--matchups PRESET`, `--mode explore|explore:patient`, `--scenario GLOB` (repeatable) with
 `--show output|narrative|dump`, `--record` (the replay baselines).
 
@@ -220,21 +227,20 @@ the engine beside it), `--out-dir DIR` (default `ci_out/cpp/`), `--fuzz-games N`
 | `replay` | each corpus decision log replayed: `robomage --replay <name>.rmlog --machine --narrative --trace-decisions`, its stdout (the log path in the replay banner as the file name, the trace's board lines left out) against `<name>.replay` byte for byte | `replay` (which plays the live agent) | ~20 s |
 | `state` | the corpus replayed under `--selfcheck-knowledge` (same output; clean summaries; shadow lines classified), the `rmstate` tier's 16 fuzz games with the C++ explore agents, every scenario at `--selfcheck-state-sample 1`, `--rmstate-read` on the dumps, the decoder's refusals, two RMSTATE sessions against their dumps (with and without one), the name-a-card menus, the include isolation | `rmstate` (its engine-side parts; the Python decoder's comparisons stay there) | ~2.5 min |
 | `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; the `knowledge` tier's 6 fuzz games under `--selfcheck-knowledge`; its 3 stream sessions and the 2 belief-structure sessions against their dumps; `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; the shadow lines classified and every signature's scenario; the 4 archetype-inference sessions against `archetypes.json`; the 13 belief calibration sessions and their report | `knowledge` (every part) | ~85 s |
-| `fuzz` | C++ explore vs explore (`--agent-a/-b`, the Python explore tier's games) over the league mirrors, `--fuzz-games` per matchup (matchup `k` game `i`: game seed `seed + 1000k + i`), and one bo3 `explore:patient` match per ring matchup; transcripts `ci_out/cpp/fuzz_<a>__<b>.txt`, draws saved beside them | `fuzz` | ~45 s |
+| `fuzz` | C++ explore vs explore (`--agent-a/-b`, the Python explore tier's games) over the league mirrors, `--fuzz-games` per matchup (matchup `k` game `i`: game seed `seed + 1000k + i`), and one bo3 `explore:patient` match per ring matchup; transcripts `ci_out/fuzz_<a>__<b>.txt`, draws saved beside them | `fuzz` | ~45 s |
 | `bench` | decisions/s of explore vs explore over three pairings × three games, one engine at a time (no threshold) | `train/bench_engine.py` | ~10 s |
-| `smoke` | scripted hard vs hard through `train/rm_driver.py` (one process per matchup, the `smoke` tier's games); skipped with a notice without a Python interpreter | `smoke` | ~15 s |
+| `smoke` | scripted hard vs hard through `train/rm_driver.py` (one process per matchup, the `smoke` tier's games), and beside them `train/pycheck.py`: `train/rmstate.py`'s decode of three dumps (an in-process bo1 game and bo3 match, a driver bo3 session under `--closed-decklist`) renders the engine's `--state-dump json` lines byte for byte, both decoders refuse (or skip) the same mutated frames, and a driven game imports nothing outside the stdlib-only kept Python (`smoke_pycheck.txt`); skipped with a notice without a Python interpreter (the venv's, else `python3` on `$PATH`) | `smoke`; the Python decoder's checks of `rmstate` and `rmagent`'s driver imports | ~35 s |
 
-**The replay corpus** (`train/regression/corpus/`): each game's decision log `<name>.rmlog`
-(RMLOG v2: seed, setup flags, both decklists, every decision) and its replay baseline
-`<name>.replay`, beside the Python tier's transcript `<name>.txt`. `replay_diff.py record` (`make
-regen`) plays the scripted agent with `--decision-log <name>.rmlog` (which changes no transcript
-line), then runs `robomage_check --tier replay --record` for the baselines. Checking needs no
-Python; re-recording needs the agent.
+**The replay corpus** (`tests/corpus/`): each game's decision log `<name>.rmlog` (RMLOG v2: seed,
+setup flags, both decklists, every decision) and its replay baseline `<name>.replay`.
+`train/record_corpus.py` (`make regen`; stdlib only) plays the scripted agent with
+`--decision-log <name>.rmlog`, then runs `robomage_check --tier replay --record` for the baselines.
+Checking needs no Python; re-recording needs the agent.
 
 ```bash
 bin/debug/robomage_check --tier scenarios --scenario 'ward*' --show narrative
 bin/debug/robomage_check --tier replay          # one tier; --record rewrites the baselines
-make check-cpp                                  # every tier
+make check                                      # build, then every tier
 ```
 
 ### Opt-in tiers (valid for `--tier`, not in the default run)
@@ -290,36 +296,31 @@ warning are the `ignored_keys` set in `src/parse.cpp`; their review is tracked i
 
 ## Workflows
 
-- **`.github/workflows/ci.yml`** — push / PR to `main`, and `workflow_dispatch`. Runs the default
-  `ci_check.py` with the fixed seed, so a red run is the diff's fault, not RNG. Transcripts are
-  uploaded as `ci-transcripts-<run_id>` even on success, so stall-draw logs are reviewable. The
-  image has only numpy + gymnasium: the `browser` tier, the `clispec` legs that need
-  torch/SB3/textual, and `xwsearch`'s torch legs print `[skip]` here.
+- **`.github/workflows/ci.yml`** — push / PR to `main`, and `workflow_dispatch`. Runs `make check`
+  (the C++ gate, every tier) with the fixed seed, so a red run is the diff's fault, not RNG.
+  Transcripts are uploaded as `ci-transcripts-<run_id>` even on success, so stall-draw logs are
+  reviewable.
 - **`.github/workflows/nightly-fuzz.yml`** — daily 08:00 UTC, plus manual (`games`, `seed`
-  inputs). Three jobs:
-  - `fuzz` — the `fuzz` tier over **all** league matchups, once with `explore` and once with
-    `explore:patient`, 40 games per matchup, with a **rotating** seed (run number × 100000
-    unless given), on RMSTATE through the driver as the tier is. The job summary prints the exact local reproduce command; artifact
-    `nightly-fuzz-explore[-patient]-<run>`.
-  - `actor-parity` — installs CPU torch (pinned `torch==2.10.*`, matching the dev venv; later
-    headers need C++20) and the SB3 stack, builds `make actor`, runs `--tier actor`.
-  - `full-check` — same torch pin plus SB3, matplotlib and `train/requirements-tui.txt`, then the
-    default `ci_check.py`, so every leg skipped per-push runs at least nightly.
+  inputs). One job, `fuzz`: the C++ gate's `fuzz` tier (in-process C++ explore) over **all**
+  league matchups, once with `explore` and once with `explore:patient`, 40 games per matchup, with
+  a **rotating** seed (run number × 100000 unless given). The job summary prints the exact local
+  reproduce command; artifact `nightly-fuzz-explore[-patient]-<run>`.
 
-All jobs share `.github/actions/setup-robomage` (Python 3.12 venv with numpy + gymnasium,
-card-script provisioning, ccache, debug build). The card-script cache is keyed on the
-`FORGE_PIN` hash (a pin bump restores nothing and re-fetches everything) and saved right after
-provisioning, so even a failing first run leaves a warm cache; the fetch tool is add-only, so a
-stale cache within a pin only re-fetches the delta.
+All jobs share `.github/actions/setup-robomage` (Python 3.12, stdlib only: card-script
+provisioning and the `smoke` tier; card-script provisioning, ccache, debug build). The card-script
+cache is keyed on the `FORGE_PIN` hash (a pin bump restores nothing and re-fetches everything) and
+saved right after provisioning, so even a failing first run leaves a warm cache; the fetch tool is
+add-only, so a stale cache within a pin only re-fetches the delta.
 
 ## Reproducing a CI failure locally
 
 1. **PR gate:** run `make check` (same command, same fixed seed). The failing tier names its
    transcript under `ci_out/`; the run's `ci-transcripts-*` artifact has CI's copies. Re-run one
-   tier with `--tier <name>` or its `test_*.py` script directly (e.g.
-   `train/.venv/bin/python train/test_obs_invariants.py`; fixed internal seeds).
-2. **Nightly fuzz:** run the `ci_check.py --tier fuzz --matchups all --mode … --fuzz-games …
-   --seed …` line from the job summary; the `nightly-fuzz-*` artifact has the transcripts.
+   tier with `bin/debug/robomage_check --tier <name>` (the run's last line is its `Reproduce:`
+   command).
+2. **Nightly fuzz:** run the `bin/debug/robomage_check --tier fuzz --matchups all --mode …
+   --fuzz-games … --seed …` line from the job summary; the `nightly-fuzz-*` artifact has the
+   transcripts.
 
 **Extra engine flags.** `ROBOMAGE_ENGINE_FLAGS` (whitespace-separated) is appended to the command
 line of every engine a Python `RoboMageEnv` starts (`train/env.py`: the harness, `observe`, the
@@ -348,13 +349,12 @@ seat's sidecar down to the `k_meta` row alone; play is the same.
 
 Some tiers pin current behavior, so an **intended** change updates them in the same commit (the
 diff is part of the review). The one-command path is **`make regen`**: provision the card set,
-`make` (which reruns every generator), then re-record the replay corpus. Review and commit the
+`make`, then re-record the replay corpus. Review and commit the
 changed files. What it covers:
 
 - **`replay` drift** from a deliberate engine / agent / card-data change: re-record and commit.
   ```bash
-  train/.venv/bin/python train/regression/replay_diff.py record   # transcripts, decision logs, replay baselines
-  train/.venv/bin/python train/test_agent_parity.py --record   # the agentparity tier's pinned games
+  python3 train/record_corpus.py   # decision logs, then their replay baselines
   ```
   The corpus is **platform-portable**: all gameplay randomness goes through `src/stable_rng.h`
   (hand-rolled Fisher–Yates + rejection sampling over the raw mt19937 stream), so Mac and Linux
@@ -363,13 +363,14 @@ changed files. What it covers:
   decision): their output is implementation-defined and differs between libstdc++ (CI) and
   libc++ (macOS), which would lock the corpus, RMLOG replays and bug-repro seeds to one platform.
 - **`pygen` staleness** after editing a C++/JSON codegen input: `make pygen` (every generator,
-  unconditionally, write-if-changed), then commit `train/_enums.py` and
-  `src/gen/archetypes_gen.h`. The other generated files are untracked; nothing to commit.
+  unconditionally, write-if-changed; no longer part of `make`, only of `make actor`, until plan
+  step 3b deletes the codegen), then commit `train/_enums.py` and `src/gen/archetypes_gen.h`.
+  The other generated files are untracked; nothing to commit.
 
 `make refetch` deletes the local card/token scripts, re-provisions them at the pinned Forge
 commit and runs `make check` **without** re-recording, to detect whether fresh scripts drift
 from the committed corpus; if the drift is intended, follow with `make regen`.
 
 `train.py observe --player-a explore --player-b explore --verbose --out FILE` is the manual,
-exploratory fuzz campaign (dumps a transcript for review; always exits 0). `ci_check.py` is the
-gating wrapper.
+exploratory fuzz campaign (dumps a transcript for review; always exits 0). The gating fuzz is
+`robomage_check --tier fuzz`.

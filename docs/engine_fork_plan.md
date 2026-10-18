@@ -367,6 +367,34 @@ The corpus must stay byte-identical across 3b.
 - Docs: rewrite CLAUDE.md, README, `docs/ci.md` and `docs/game_running.md`. Keep
   `docs/rules_deviations.md` and the CR files.
 
+**Status: part A done** (the gate switch). `make check` is the build plus every `robomage_check`
+tier (~5.5 min on 4 cores, debug, of which the gate ~5.2; was ~13.5); `make check-cpp` is gone, and
+`make` no longer runs `pygen` (only `make actor` does: `src/gen/` is read only by `src/actor/`, the
+other outputs only by the Python RL stack). `train/ci_check.py` is deleted with the engine-test
+scripts only it ran (`test_concede`, `test_scenarios`, `test_selfcheck_state`, `test_rmstate`,
+`test_knowledge`, `test_rm_agent`, `test_agent_parity` with its `regression/agent_parity*`,
+`compare_cpp_agents`); the other `test_*.py` (RL code) are unrun and go with `train/` in part C.
+The kept Python stays tested by `train/pycheck.py` (stdlib only), run by the `smoke` tier beside its
+games: `rmstate.py`'s decode of three dumps (an in-process bo1 game and bo3 match, a driver bo3
+session under `--closed-decklist`) equals the engine's `--state-dump json` and the live `.jsonl`,
+the two decoders' refusals of mutated frames agree, the driver's engine seeds are the pinned ones
+and a driven game imports nothing outside the kept Python (numpy included). The scenarios, the
+corpus and `knowledge_divergences.json` moved to `tests/` (`tests/scenarios/`, `tests/corpus/`,
+`tests/knowledge_divergences.json`); the corpus transcripts `<name>.txt` are deleted and
+`replay_diff.py` is `train/record_corpus.py` (`make regen`), which records only the decision logs
+and, through `robomage_check --tier replay --record`, their baselines (re-recording reproduces
+every byte). CI: `ci.yml` runs `make check`; the nightly fuzz runs `robomage_check --tier fuzz
+--matchups all` (40 games, explore and explore:patient); its actor-parity and full-check jobs went
+with their runner; `setup-robomage` installs no venv (python3, stdlib only: provisioning and
+`smoke`). **Decided: the kept Python lives in `python/`** after 3b (`rm_driver.py`,
+`scripted_core.py`, `rm_agent.py`, `explore_agent.py`, `rmstate.py`, `record_corpus.py`,
+`pycheck.py`; the move is part C's, with the smoke tier's paths, `find_python`'s venv path and
+`make regen`; `rmstate.py`'s CLI drops its `cli_spec` import). Part B note: the replay
+baselines hold no BQUERY bytes, but their command is `--replay LOG --machine --narrative
+--trace-decisions`, so `--machine`'s output and decision-schedule semantics in replay must survive
+the BQUERY deletion unchanged (or the corpus command change must be byte-neutral); the `concede`
+tier's two BQUERY legs are marked in `tier_concede.cpp`.
+
 ## Step 4 — One decision schedule, then the C++ CLI
 
 ### 4a. One rules-faithful decision schedule (intentional; re-record)
