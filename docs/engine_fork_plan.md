@@ -258,6 +258,21 @@ the fields of the event it consumes, which is the completeness check on the even
   - `--max-decisions`;
   - `--check-decks`, replacing the `vocab` tier and `missing_cards.py`;
   - `--trace-decisions`: board and menu at every decision.
+  **Status: part 1 done** (agents, resolver, flags; the gate driver is part 2). `src/agents/`
+  on the decision hook (now passed the deciding seat; it covers chosen seats, the rest keep their
+  input path), fed by an in-process frame writer (`state_format/agent_feed.h`: the stream's bytes
+  for the seat, `k_*` included); specs `first`, `random`, `actions:`, `play:`, `explore`,
+  `explore:patient`, plus global `--play` / `--actions` scripts. The agents draw from a port of
+  Python's `random.Random` (MT19937, `random()`, `randrange`, `choices`) seeded with the game seed
+  (`--game-seed N`: also the drivers' engine seed of N), so C++ explore plays exactly the Python
+  tier's games: 660 seeded bo1 games and bo3 matches (explore and explore:patient, 20 league
+  matchups) identical. The C++ resolver gives every one of the 98 scenarios the harness's
+  `resolved --actions` list, with their assertions passing on the engine's own output. New flags:
+  `--hand-a/-b`, `--library-a/-b`, `--game-seed`, `--max-decisions` (recorded in the log),
+  `--check-decks` (`--check-decks-dir`), `--trace-decisions`; the zone presets were already engine
+  flags. Gate tier `cppagents` (`train/compare_cpp_agents.py`). Release: C++ explore in-process
+  ~750 decisions/s (4.6 games/s; ~1,090 with `--knowledge-a/-b off`) vs Python explore over the
+  driver ~470 (2.9 games/s); the frame encoding and the knowledge sidecar are most of the cost.
 - **Gate driver `robomage_check`.** A separate C++ binary that links no engine TUs and so may
   enable exceptions (needs a CLAUDE.md exemption beside the actor's). It runs engine
   subprocesses in parallel. It reads the existing 70 scenario JSONs unchanged: their schema is

@@ -24,7 +24,8 @@ fails, so one invocation reports every finding):
           (train/test_cost_tables.py).
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
-          resolve through their script's front face, mirroring the engine.
+          resolve through their script's front face, mirroring the engine. The
+          engine's own check, `robomage --check-decks`, must pass as well.
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
@@ -96,6 +97,15 @@ fails, so one invocation reports every finding):
           line, an offered/withheld action, a game result). Run in parallel;
           a failure names the missing / forbidden line. Needs bin/robomage;
           ~2s.
+  cppagents The C++ in-process agents against their Python originals
+          (train/compare_cpp_agents.py): every rules scenario resolves to the
+          same `resolved --actions` list on the engine's own --play resolver
+          (src/agents/play_spec.*, run with the scenario's presets as engine
+          flags) as on test_harness.py, with its assertions passing on both
+          outputs; and the C++ explore tier (--agent-a/-b explore) plays the
+          same games as explore_agent.py over rm_driver.py (same replies, same
+          narrative) on a few seeded bo1 and bo3 games. Needs bin/robomage;
+          ~30s.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -294,7 +304,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
-             "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
+             "menus", "browser", "modelspec", "concede", "scenarios", "cppagents", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "smoke",
@@ -441,6 +451,27 @@ def tier_vocab(rep):
         if missing:
             rep.error("vocab", f"{label} decks reference {len(missing)} card(s) "
                                f"not in card_vocab.h: {', '.join(missing)}")
+    r = subprocess.run([runner.BINARY, "--check-decks"], cwd=os.path.join(_REPO_ROOT, "bin"),
+                       capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("vocab", f"robomage --check-decks failed (exit {r.returncode}):\n{r.stdout}{r.stderr}")
+
+
+def tier_cppagents(rep):
+    """The C++ in-process agents against their Python originals (train/compare_cpp_agents.py):
+    the --play resolver on every rules scenario, and the explore tier on seeded games."""
+    script = "train/compare_cpp_agents.py"
+    for what, argv in (("--play resolver", ["scenarios"]),
+                       ("explore bo1", ["explore", "--games", "2", "--seed", "1"]),
+                       ("explore bo3", ["explore", "--games", "1", "--seed", "1", "--format", "bo3",
+                                        "--spec", "explore:patient"])):
+        r = subprocess.run([sys.executable, script, "--binary", runner.BINARY] + argv, cwd=_REPO_ROOT,
+                           capture_output=True, text=True)
+        print(r.stdout, end="", flush=True)
+        if r.returncode != 0:
+            rep.error("cppagents", f"C++ {what} differs from the Python one ({script} exit "
+                                   f"{r.returncode}):\n{r.stdout}{r.stderr}")
 
 
 def tier_scenarios(rep):
@@ -1313,6 +1344,7 @@ _TIER_FNS = {
     "treerebuild": lambda rep, args, out_dir: tier_treerebuild(rep),
     "concede": lambda rep, args, out_dir: tier_concede(rep),
     "scenarios": lambda rep, args, out_dir: tier_scenarios(rep),
+    "cppagents": lambda rep, args, out_dir: tier_cppagents(rep),
     "obsinv": lambda rep, args, out_dir: tier_obsinv(rep),
     "actorobs": lambda rep, args, out_dir: tier_actorobs(rep),
     "snapshot": lambda rep, args, out_dir: tier_snapshot(rep),
@@ -1370,6 +1402,7 @@ def main(argv=None):
 
     # Game tiers need a built binary and provisioned card scripts.
     game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios",
+                  "cppagents", "vocab",
                   "obsinv",
                   "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
@@ -1377,7 +1410,8 @@ def main(argv=None):
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios", "obsinv",
+    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios", "cppagents",
+        "obsinv",
         "snapshot",
         "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):

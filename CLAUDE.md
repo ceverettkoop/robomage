@@ -569,6 +569,9 @@ sections above are not repeated here.
 - `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
   per frame writer (dump, stream, self-check) and seat, fed that writer's frames, appending `k_*` to
   each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks (`snapshot_set_sidecar_hooks`)
+- `src/state_format/agent_feed.{h,cpp}` — the in-process frame writer: for each seat an in-process
+  agent decides (or both under `--trace-decisions`) the bytes the RMSTATE stream would send it,
+  `k_*` included, handed over in memory
 - `src/state_format/selfcheck.{h,cpp}` — `--selfcheck-state`: per-decision roundtrip, scramble
   (frames and events rebuilt with hidden identities rotated), complete and, sampled, permutation
   (hidden zones physically permuted) and snapshot (save → K decisions → exact restore) checks;
@@ -582,9 +585,11 @@ sections above are not repeated here.
   `src/cli_output.cpp` writes the BQUERY frame
 - `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, replay-header
   flags); keep `cli_print_help` in `src/cli_output.cpp` in sync
-- `src/input_logger.cpp` — decision input (machine, `--replay`, CLI, actor provider), RMLOG, concede
-  sentinels
+- `src/input_logger.cpp` — decision input (machine, `--replay`, CLI, the in-process provider of the
+  agents and the actor), RMLOG, concede sentinels, `--max-decisions`
 - `src/card_vocab.h` — card name → vocab index (emitted as a normalized id float, not a one-hot)
+- `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
+  card loads and is in the vocab; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
   frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; archetype inference over the
   METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
@@ -598,6 +603,13 @@ sections above are not repeated here.
   engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
   `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
   `generative.h`, the belief model played out directly)
+- `src/agents/` — in-process agents on the decision hook, reading only the seat's decoded frames
+  (`agent.h`: the interface, specs `first`/`random`/`actions:`/`play:`/`explore`/`explore:patient`;
+  `seat_frames.h`, `decision_view.h`: the decoded stream and decision; `py_random.h`: Python's
+  `random.Random` bit for bit; `game_seed.h`: the drivers' engine seed of a game seed;
+  `explore.h`: `explore_agent.py` ported, same games; `play_spec.h`: the `--play` resolver and
+  `PlayController` ported; `trace.h`: `--trace-decisions`). `driver.h` is the engine side:
+  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the provider, the trace
 
 **AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
 Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):
@@ -681,6 +693,9 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
+- `compare_cpp_agents.py` — tier `cppagents`: the C++ `--play` resolver on every scenario against the
+  harness (same `resolved --actions`, assertions on both), C++ explore against `explore_agent.py`
+  (same games; `explore --games N` for a sweep)
 - `test_agent_parity.py` — tier `agentparity`: the scripted agent's vector view on RMSTATE plays the
   games it plays on BQUERY (card knowledge, corpus and smoke games; the light corpus set's BQUERY
   games frozen in `regression/agent_parity/bquery_corpus/`; listed divergences in
