@@ -1,0 +1,1282 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from manual_doomsday_vs_delver.rmlog
+REPLAY MODE: Using embedded decks 'doomsday' / 'delver' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Thoughtseize
+Player A draws Misty Rainforest
+Player A draws Island
+Player A draws Street Wraith
+Player A draws Underground Sea
+Player A draws Edge of Autumn
+Player A draws Ponder
+Player B draws Daze
+Player B draws Ponder
+Player B draws Scalding Tarn
+Player B draws Polluted Delta
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Brainstorm
+Player A hand:
+Thoughtseize
+Street Wraith
+Edge of Autumn
+Ponder
+Underground Sea
+Island
+Misty Rainforest
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Polluted Delta
+Player A draws Thoughtseize
+Player A draws Force of Will
+Player A draws Thoughtseize
+Player A draws Polluted Delta
+Player A draws Brainstorm
+Player A draws Dark Ritual
+Player B hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Brainstorm
+Daze
+Ponder
+Polluted Delta
+Scalding Tarn
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Dragon's Rage Channeler
+Player B draws Volcanic Island
+Player B draws Force of Will
+Player B draws Cori-Steel Cutter
+Player B draws Daze
+Player B draws Scalding Tarn
+Player B draws Unholy Heat
+Player A hand:
+Force of Will
+Thoughtseize
+Thoughtseize
+Dark Ritual
+Brainstorm
+Polluted Delta
+Polluted Delta
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Thoughtseize
+|   2: Thoughtseize
+|   3: Dark Ritual
+|   4: Brainstorm
+|   5: Polluted Delta
+|   6: Polluted Delta
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Force of Will)
+Player B hand:
+Dragon's Rage Channeler
+Cori-Steel Cutter
+Force of Will
+Daze
+Unholy Heat
+Volcanic Island
+Scalding Tarn
+| decision 5: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Force of Will
+Player B draws Ponder
+Player B draws Mountain
+Player B draws Cori-Steel Cutter
+Player B draws Wooded Foothills
+Player B draws Brainstorm
+Player B draws Delver of Secrets
+Player B hand:
+Delver of Secrets
+Cori-Steel Cutter
+Force of Will
+Brainstorm
+Ponder
+Mountain
+Wooded Foothills
+| decision 6: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Volcanic Island
+Player B draws Dragon's Rage Channeler
+Player B draws Ponder
+Player B draws Force of Will
+Player B draws Daze
+Player B draws Mishra's Bauble
+Player B draws Murktide Regent
+Player B hand:
+Murktide Regent
+Dragon's Rage Channeler
+Mishra's Bauble
+Force of Will
+Daze
+Ponder
+Volcanic Island
+| decision 7: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 4-card hand.
+Player B: Choose card to put on library bottom (3 remaining):
+| decision 8: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Murktide Regent
+|   1: Dragon's Rage Channeler
+|   2: Mishra's Bauble
+|   3: Force of Will
+|   4: Daze
+|   5: Ponder
+|   6: Volcanic Island
+(REPLAY) [T0 | Untap | Player B] Input: 2
+| >> Player B: 2 (Mishra's Bauble)
+Player B: Choose card to put on library bottom (2 remaining):
+| decision 9: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Murktide Regent
+|   1: Dragon's Rage Channeler
+|   2: Force of Will
+|   3: Daze
+|   4: Ponder
+|   5: Volcanic Island
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Murktide Regent)
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 10: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Force of Will
+|   2: Daze
+|   3: Ponder
+|   4: Volcanic Island
+(REPLAY) [T0 | Untap | Player B] Input: 4
+| >> Player B: 4 (Volcanic Island)
+
+-------- TURN 1 (Player A) --------
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Polluted Delta
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 13: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+|   4: Island
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Swamp)
+Player A shuffles their library
+Player A puts Swamp to the battlefield
+| decision 14: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Thoughtseize
+|   3: Cast Dark Ritual
+|   4: Tap Swamp for (B)
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 15: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Player A (19 life))
+Targeting choice 1
+Pay mana costs ((B) remaining):
+| decision 16: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Swamp for (B)
+|   1: Cancel casting
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 17: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Thoughtseize
+|   3: Cast Dark Ritual
+|   4: Tap Swamp for (B)
+(REPLAY) [T0 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Dark Ritual)
+Pay mana costs ((B) remaining):
+| decision 18: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Swamp for (B)
+|   1: Cancel casting
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 19: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Thoughtseize
+|   3: Cast Dark Ritual
+|   4: Tap Swamp for (B)
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 20: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Player A (19 life))
+Targeting choice 1
+Pay mana costs ((B) remaining):
+| decision 21: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Swamp for (B)
+|   1: Cancel casting
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 22: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Dark Ritual
+|   3: Tap Swamp for (B)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 23: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Player A (19 life))
+Targeting choice 1
+Pay mana costs ((B) remaining):
+| decision 24: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Swamp for (B)
+|   1: Cancel casting
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cancel casting)
+Payment cancelled.
+| decision 25: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Dark Ritual
+|   3: Tap Swamp for (B)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 26: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Player A (19 life))
+Targeting choice 1
+Pay mana costs ((B) remaining):
+| decision 27: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Swamp for (B)
+|   1: Cancel casting
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tap Swamp for (B))
+Player A activated Swamp for 1(B)
+Player A casts Thoughtseize targeting Player A
+| decision 28: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 29: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thoughtseize
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thoughtseize)
+Targeting choice 0
+| decision 30: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Daze
+|   1: Exile Ponder
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Daze)
+Player B pays 1 life
+Player B exiles Daze
+Player B casts Force of Will targeting Thoughtseize
+Resolving ability (category: Counter)
+Thoughtseize is countered
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Scalding Tarn
+| decision 31: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 32: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 33: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+|   4: Thundering Falls
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 34: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+|   3: Tap Volcanic Island for (U)
+|   4: Tap Volcanic Island for (R)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Pay mana costs ((R) remaining):
+| decision 35: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Cancel casting
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tap Volcanic Island for (R))
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 36: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Swamp for (B)
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Dark Ritual)
+Pay mana costs ((B) remaining):
+| decision 37: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Tap Swamp for (B)
+|   1: Cancel casting
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Swamp for (B))
+Player A activated Swamp for 1(B)
+Player A casts Dark Ritual
+Resolving ability (category: AddMana)
+Player A adds 3{B}
+Player A draws Street Wraith
+| decision 38: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Activate Street Wraith from hand (Draw))
+Player A pays 2 life
+Player A activates Street Wraith from hand
+Resolving ability (category: Draw, amount: 1)
+Player A draws Verdant Catacombs
+| decision 39: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Verdant Catacombs
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Verdant Catacombs)
+Player A played Verdant Catacombs
+| decision 40: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Verdant Catacombs (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Verdant Catacombs
+Player A's Verdant Catacombs ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 41: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 42: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Brainstorm
+|   3: Tap Underground Sea for (U)
+|   4: Tap Underground Sea for (B)
+(REPLAY) [T2 | First Main | Player A] Input: 4
+| >> Player A: 4 (Tap Underground Sea for (B))
+Player A tapped Underground Sea for 1(B)
+| decision 43: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 44: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (18 life)
+|   1: Player A (16 life)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Player A (16 life))
+Targeting choice 1
+Player A casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Brainstorm
+  Polluted Delta
+Player A chooses a card to discard:
+| decision 45: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Brainstorm
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Brainstorm)
+Player A discards Brainstorm
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 14)
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+| decision 46: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T3 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Tap Volcanic Island for (R))
+Player B tapped Volcanic Island for 1(R)
+Player B draws Mishra's Bauble
+| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mishra's Bauble
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Lightning Bolt
+| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lightning Bolt on top of library
+|   1: Put Lightning Bolt into graveyard
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Lightning Bolt into graveyard)
+Player B puts Lightning Bolt into their graveyard.
+Mishra's Bauble enters the battlefield
+| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 50: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T3 | Begin Combat | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 51: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Player A (14 life)
+|   1: Player B (18 life)
+(REPLAY) [T3 | Begin Combat | Player B] Input: 1
+| >> Player B: 1 (Player B (18 life))
+Targeting choice 1
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player B's library: Wasteland
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+
+--- Declare Attackers (Player B) ---
+| decision 52: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler [1/1]
+|   1: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler [1/1])
+Dragon's Rage Channeler attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+| decision 53: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 1 damage to Player A (now at 13 life)
+--- End Combat Damage ---
+
+
+-------- TURN 5 (Player A) --------
+Delayed trigger fires.
+| decision 54: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+|   2: Tap Underground Sea for (U)
+|   3: Tap Underground Sea for (B)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Swamp for (B))
+Player A tapped Swamp for 1(B)
+| decision 55: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Underground Sea for (U)
+|   2: Tap Underground Sea for (B)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Wasteland
+| decision 56: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Underground Sea for (U)
+|   2: Tap Underground Sea for (B)
+(REPLAY) [T4 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Underground Sea for (B))
+Player A tapped Underground Sea for 1(B)
+Player A draws Edge of Autumn
+| decision 57: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Draw | Player A] Input: 1
+| >> Player A: 1 (Activate Edge of Autumn from hand (Draw))
+| decision 58: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Sacrifice Swamp
+|   1: Sacrifice Underground Sea
+(REPLAY) [T4 | Draw | Player A] Input: 1
+| >> Player A: 1 (Sacrifice Underground Sea)
+Player A sacrifices Underground Sea
+Player A activates Edge of Autumn from hand
+Resolving ability (category: Draw, amount: 1)
+Player A draws Polluted Delta
+| decision 59: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Polluted Delta
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 60: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+|   3: Island
+(REPLAY) [T4 | First Main | Player A] Input: 3
+| >> Player A: 3 (Island)
+Player A shuffles their library
+Player A puts Island to the battlefield
+| decision 62: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Island for (U)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Island for (U))
+Player A tapped Island for 1(U)
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 63: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Volcanic Island for (U))
+Player B tapped Volcanic Island for 1(U)
+Player B draws Murktide Regent
+| decision 64: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 65: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Tap Wasteland for (C)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 66: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Volcanic Island
+|   1: Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Wasteland)
+Targeting choice 1
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Wasteland is on the stack
+Destroy fizzles
+
+--- Declare Attackers (Player B) ---
+| decision 67: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler [1/1]
+|   1: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler [1/1])
+Dragon's Rage Channeler attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+| decision 68: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 1 damage to Player A (now at 11 life)
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+| decision 69: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+|   2: Tap Island for (U)
+(REPLAY) [T6 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Island for (U))
+Player A tapped Island for 1(U)
+| decision 70: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Swamp for (B))
+Player A tapped Swamp for 1(B)
+Player A draws Personal Tutor
+| decision 71: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 72: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 73: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 74: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Personal Tutor
+|   2: Tap Underground Sea for (U)
+|   3: Tap Underground Sea for (B)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Personal Tutor)
+Pay mana costs ((U) remaining):
+| decision 75: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Underground Sea for (U)
+|   1: Tap Underground Sea for (B)
+|   2: Cancel casting
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Underground Sea for (B))
+Player A activated Underground Sea for 1(B)
+Payment cancelled.
+| decision 76: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Personal Tutor
+|   2: Tap Underground Sea for (U)
+|   3: Tap Underground Sea for (B)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Personal Tutor)
+Pay mana costs ((U) remaining):
+| decision 77: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Underground Sea for (U)
+|   1: Tap Underground Sea for (B)
+|   2: Cancel casting
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cancel casting)
+Payment cancelled.
+| decision 78: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Underground Sea for (U)
+|   2: Tap Underground Sea for (B)
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tap Underground Sea for (B))
+Player A tapped Underground Sea for 1(B)
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+| decision 79: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Dragon's Rage Channeler
+| decision 80: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 81: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+|   3: Tap Volcanic Island for (U)
+|   4: Tap Volcanic Island for (R)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Ponder)
+Pay mana costs ((U) remaining):
+| decision 82: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Cancel casting
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cancel casting)
+Payment cancelled.
+| decision 83: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+|   3: Tap Volcanic Island for (U)
+|   4: Tap Volcanic Island for (R)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Pay mana costs ((R) remaining):
+| decision 84: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Cancel casting
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cancel casting)
+Payment cancelled.
+| decision 85: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+|   3: Tap Volcanic Island for (U)
+|   4: Tap Volcanic Island for (R)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Pay mana costs ((R) remaining):
+| decision 86: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Cancel casting
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tap Volcanic Island for (U))
+Player B activated Volcanic Island for 1(U)
+Payment cancelled.
+| decision 87: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Tap Volcanic Island for (U)
+|   3: Tap Volcanic Island for (R)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Tap Volcanic Island for (U))
+Player B tapped Volcanic Island for 1(U)
+| decision 88: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B casts Ponder
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Volcanic Island
+| decision 89: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Volcanic Island on top of library
+|   1: Put Volcanic Island into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Volcanic Island on top of library)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 90: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Volcanic Island
+|   1: Flooded Strand
+|   2: Daze
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Volcanic Island)
+Choose which card goes 2 from top:
+| decision 91: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Daze
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Daze)
+| decision 92: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Shuffle)
+Player B shuffles their library.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Force of Will
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 93: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 7 life)
+--- End Combat Damage ---
+
+
+-------- TURN 9 (Player A) --------
+| decision 94: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+|   2: Tap Underground Sea for (U)
+|   3: Tap Underground Sea for (B)
+|   4: Tap Island for (U)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Polluted Delta
+| decision 95: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+|   2: Tap Underground Sea for (U)
+|   3: Tap Underground Sea for (B)
+|   4: Tap Island for (U)
+(REPLAY) [T8 | Draw | Player A] Input: 1
+| >> Player A: 1 (Tap Swamp for (B))
+Player A tapped Swamp for 1(B)
+| decision 96: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Underground Sea for (U)
+|   2: Tap Underground Sea for (B)
+|   3: Tap Island for (U)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 97: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Cast Personal Tutor
+|   3: Tap Underground Sea for (U)
+|   4: Tap Underground Sea for (B)
+|   5: Tap Island for (U)
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Personal Tutor)
+Pay mana costs ((U) remaining):
+| decision 98: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Underground Sea for (U)
+|   1: Tap Underground Sea for (B)
+|   2: Tap Island for (U)
+|   3: Cancel casting
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tap Island for (U))
+Player A activated Island for 1(U)
+Player A casts Personal Tutor
+| decision 99: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Underground Sea for (U)
+|   2: Tap Underground Sea for (B)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tap Underground Sea for (U))
+Player A tapped Underground Sea for 1(U)
+| decision 100: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T8 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 101: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Personal Tutor
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Personal Tutor)
+Targeting choice 0
+| decision 102: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Murktide Regent
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Murktide Regent)
+Player B pays 1 life
+Player B exiles Murktide Regent
+Player B casts Force of Will targeting Personal Tutor
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Unholy Heat
+| decision 103: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T8 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Unholy Heat into graveyard)
+Player B puts Unholy Heat into their graveyard.
+Resolving ability (category: Counter)
+Personal Tutor is countered
+| decision 104: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 105: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 106: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T8 | Begin Combat | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 107: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+(REPLAY) [T8 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A shuffles their library
+Player A fails to find
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 108: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Lightning Bolt
+| decision 109: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+|   2: Tap Volcanic Island for (U)
+|   3: Tap Volcanic Island for (R)
+(REPLAY) [T9 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 110: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Player A (6 life)
+|   1: Player B (17 life)
+|   2: Dragon's Rage Channeler
+(REPLAY) [T9 | Draw | Player B] Input: 1
+| >> Player B: 1 (Player B (17 life))
+Targeting choice 1
+Pay mana costs ((R) remaining):
+| decision 111: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Cancel casting
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Tap Volcanic Island for (U))
+Player B activated Volcanic Island for 1(U)
+Payment cancelled.
+| decision 112: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+|   2: Tap Volcanic Island for (U)
+|   3: Tap Volcanic Island for (R)
+(REPLAY) [T9 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 113: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Player A (6 life)
+|   1: Player B (17 life)
+|   2: Dragon's Rage Channeler
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Player A (6 life))
+Targeting choice 0
+Pay mana costs ((R) remaining):
+| decision 114: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Cancel casting
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Tap Volcanic Island for (U))
+Player B activated Volcanic Island for 1(U)
+Payment cancelled.
+| decision 115: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T9 | Draw | Player B] Input: 1
+| >> Player B: 1 (Tap Volcanic Island for (U))
+Player B tapped Volcanic Island for 1(U)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 116: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 3 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+| decision 117: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+|   2: Tap Underground Sea for (U)
+|   3: Tap Underground Sea for (B)
+|   4: Tap Island for (U)
+(REPLAY) [T10 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Tap Underground Sea for (U))
+Player A tapped Underground Sea for 1(U)
+| decision 118: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Swamp for (B)
+|   2: Tap Island for (U)
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Swamp for (B))
+Player A tapped Swamp for 1(B)
+| decision 119: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Island for (U)
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Tap Island for (U))
+Player A tapped Island for 1(U)
+Player A draws Ponder
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+| decision 120: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Volcanic Island for (U)
+|   2: Tap Volcanic Island for (R)
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Tap Volcanic Island for (U))
+Player B tapped Volcanic Island for 1(U)
+Player B draws Mishra's Bauble
+| decision 121: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mishra's Bauble
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Scalding Tarn
+| decision 122: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Scalding Tarn on top of library
+|   1: Put Scalding Tarn into graveyard
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Scalding Tarn on top of library)
+Mishra's Bauble enters the battlefield
+| decision 123: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 124: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (3 life)
+|   1: Player B (17 life)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (3 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Barrowgoyf
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 125: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 0 life)
+--- End Combat Damage ---
+
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

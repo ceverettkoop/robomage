@@ -604,7 +604,8 @@ step 5 adds a main.
   (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the
   `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
-- `record_corpus.py` — re-records the replay corpus with the live scripted agent (`make regen`)
+- `record_corpus.py` — re-records the replay corpus with the live scripted agent, plus explore
+  `--no-auto-mana` games (`make regen`)
 - `pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
   self-lethal guard, the driver's seeds and imports), run by the `smoke` tier
 

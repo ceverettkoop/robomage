@@ -63,7 +63,7 @@ Times are wall clock for the debug build on 4 cores (`make check` total about 5.
 | `vocab` | `robomage --check-decks` over the top-level and `league/` decks: every card loads and is in the vocab (13 decks, 215 cards) | <1 s |
 | `concede` | the CR 104.3a sentinels (140 checks) over RMSTATE sessions the gate answers itself: bo1 `-2`; bo3 `-2` into sideboarding and game 2; `-3`; the sentinels between games (`-2` ignored, `-3` ends the match); the same seed and replies give the same frames and the logged concession replays; and concessions at parked queries (Brainstorm's put-back mid-resolution, Cavern of Souls' ETB creature type), each also piped unread into a second `--machine` session, which must write the same frames. Results, narrative and `--replay` of every decision log | ~2 s |
 | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`, 98) on the engine alone: presets as engine flags, the `--play` resolver, `--narrative --trace-decisions`; every assertion key (`tools/robomage_check/scenarios.h`), the knowledge lines read from the binary dump | ~4 s |
-| `replay` | each corpus decision log replayed (`robomage --replay <name>.rmlog --machine --narrative --trace-decisions`), its stdout against `<name>.replay` byte for byte (64 games) | ~17 s |
+| `replay` | each corpus decision log replayed (`robomage --replay <name>.rmlog --machine --narrative --trace-decisions`), its stdout against `<name>.replay` byte for byte (66 games) | ~17 s |
 | `state` | the corpus replayed under `--selfcheck-knowledge` (same output, clean `SELFCHECK-STATE` / `SELFCHECK-KNOWLEDGE` summaries); 16 explore fuzz games with the self-checks and dumps; every scenario at `--selfcheck-state-sample 1`; `--rmstate-read` on the dumps; the decoder's refusals of mutated frames; two RMSTATE stream sessions against their dumps (with and without one written); the name-a-card menus with open and closed decklists; the include isolation of the std-only sources | ~2.2 min |
 | `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; six explore games under `--selfcheck-knowledge`; three stream sessions and two `expert+belief` sessions against their dumps (`k_*` / `b_*` included); `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; four archetype-inference sessions against `archetypes.json`; the belief calibration sessions and their report | ~75 s |
 | `fuzz` | C++ explore vs explore in-process (`--agent-a/-b <mode>`) over the matchups (default the ten league mirrors), `--fuzz-games` bo1 games each (matchup `k` game `i`: game seed `seed + 1000k + i`), then one bo3 `explore:patient` match per ring matchup (seed `seed + 500000 + k`); transcripts `ci_out/fuzz_<a>__<b>.txt` | ~40 s |
@@ -104,7 +104,10 @@ Each corpus game is two files:
   written by the engine's `--decision-log` while `python/record_corpus.py` plays the scripted
   agent (hard, both seats) through `python/rm_driver.py`: one bo1 game per scenario at a frozen
   seed — the curated `delver` / `doomsday` / `mav` decks in every seating (9 games) and every
-  league pairing plus each mirror (55 games, `lg_<a>__<b>`);
+  league pairing plus each mirror (55 games, `lg_<a>__<b>`) — plus two explore vs explore games
+  under `--no-auto-mana` (`manual_doomsday_vs_delver`, `manual_mav_mirror`: every mana ability
+  offered and each cost paid in the payment loop, its cancel row included; the `FLAGS` line
+  carries `no-auto-mana`), since the scripted agent pays with the first row offered;
 - `<name>.replay` — its baseline: the stdout of `robomage --replay <name>.rmlog --machine
   --narrative --trace-decisions`, with the replay banner's log path reduced to the file name and
   the trace's board lines (between `| decision` and `| menu:`) left out, so it holds the
@@ -175,7 +178,7 @@ same commit (the diff is part of the review):
 make regen    # provision the card set, `make`, then python3 python/record_corpus.py
 ```
 
-`record_corpus.py` replays the scripted games with the fresh debug binary, rewriting each
+`record_corpus.py` replays the corpus games with the fresh debug binary, rewriting each
 `<name>.rmlog`, then runs `robomage_check --tier replay --record` for the baselines; an unchanged
 engine + agent + card data reproduces every byte. Review and commit the changed files with the
 reason in the commit message. A scenario whose assertion an intended change breaks is edited by
