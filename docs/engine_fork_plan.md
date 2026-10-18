@@ -1,10 +1,17 @@
-# Engine-only fork: staged plan (steps 1–5)
+# Engine-only project: staged plan (steps 1–5)
 
-Goal: fork robomage into a project that is **only the C++ rules engine**. Players and agents
+Goal: turn robomage into a project that is **only the C++ rules engine**. Players and agents
 drive it through in-process agents, a C++ CLI, or a machine protocol that emits an **exhaustive
 binary game state** with hidden information withheld from each viewer. The RL stack is
 discarded: PPO/AZ training, the libtorch actor, the float state vector, embeddings, codegen and
-the Python front ends.
+the Python front ends. It is archived in place, not forked: branch `archive/rl-stack` (tag
+`rl-stack-final`, if created) ends at `cf7f97f`, the last commit with both stacks, and
+development continues on `main` in this repository.
+
+**Status: steps 1–3 are done** (each step's status paragraphs below are its history); steps 4
+and 5 are the plan forward. Paths under `train/` in those paragraphs name files deleted in step
+3b (they are on `archive/rl-stack`), except the seven kept Python files, which moved to `python/`
+and are written here with their current paths.
 
 **The Python scripted agent is kept.** It is the only realistic opponent and a deterministic
 consumer of the state. It is adapted to read the new format, and its games become the test that
@@ -23,9 +30,11 @@ new format; a learner (training loop) is not in scope.
 Scope: steps 1–5. The TUI and GUI (later steps) are deferred entirely; steps 1–5 only keep the
 state decoder, knowledge tables and featurizer reusable for them. The eventual machine agent
 is unspecified; the format just has to give it a complete, leak-free state and a structured
-menu. ## Starting point
+menu.
 
-What makes this feasible:
+## Starting point (before step 1)
+
+What made this feasible:
 
 - `bin/robomage` has no torch and needs no Python at run time. The engine core (ECS, rules,
   parser, effects, `src/queries/`, replacement/layer systems, bo3, RMLOG replay) is ~47k lines
@@ -41,7 +50,7 @@ What makes this feasible:
 - RMLOG v2 decision logs (`--log-decisions`) replay deterministically under `--replay`, with a
   divergence guard (`src/input_logger.cpp:380-388`).
 
-What makes it costly:
+What made it costly:
 
 - **The float state vector is the only interface between the engine and all Python.** The
   scripted agent, `explore` fuzzer, test harness, `--play` resolver, rules scenarios, TUI and
@@ -72,11 +81,12 @@ What the scripted agent depends on (`train/scripted_agent.py`, ~3.8k lines):
 1. **Change behaviour only on purpose.** Each step says whether it may change engine
    behaviour. Steps that must not end with the replay corpus byte-identical; an intentional
    change re-records the corpus in its own commit, saying why.
-2. **Build the new beside the old.** RMSTATE (with its knowledge tables) is emitted *alongside*
-   BQUERY until every consumer of the old vector is ported or deleted. The Python gate keeps
-   running until the C++ gate replaces its engine tiers.
-3. **Where the work happens.** Steps 1–2 only add code and run on robomage as it stands. Fork
-   (keeping git history) at the end of step 2; steps 3–4 happen in the fork.
+2. **Build the new beside the old.** RMSTATE (with its knowledge tables) was emitted *alongside*
+   BQUERY until every consumer of the old vector was ported or deleted, and the Python gate kept
+   running until the C++ gate replaced its engine tiers (both done in step 3).
+3. **Where the work happens.** Steps 1–2 only added code to robomage as it stood. At the end of
+   step 2 the RL stack was archived in place (branch `archive/rl-stack`, ending at `cf7f97f`)
+   instead of forking; steps 3–5 happen in this repository, on `main`, keeping its history.
 4. The existing conventions still apply: `-fno-exceptions` in engine TUs, shared queries in
    `src/queries/`, `ObjectRef` across zone changes, two-player only, CR as authority.
 
@@ -101,10 +111,10 @@ file layout, code locations, checks and exit criteria for a session executing st
 `rmstate` and `knowledge` tiers, `docs/ci.md`), with the replay corpus byte-identical and `obsinv`
 green. Deviations from the plan as written:
 
-- the shadow comparison is part of `--selfcheck-knowledge` (no flag of its own) and runs on the
-  same engines as the soundness check; its mismatches are printed as `SHADOW:` lines and classified
-  by the Python tiers against `train/regression/knowledge_divergences.json`
-  (`knowledge_store.md` §9.7). Three old-vector leaks were found (the known Brainstorm put-back
+- the shadow comparison was part of `--selfcheck-knowledge` (no flag of its own) and ran on the
+  same engines as the soundness check; its mismatches were printed as `SHADOW:` lines and
+  classified against `train/regression/knowledge_divergences.json` (`knowledge_store.md` §9.7;
+  deleted with the old vector's memory in 3b, part B item 6). Three old-vector leaks were found (the known Brainstorm put-back
   one, its per-copy variant, and library positions followed through ranges the viewer cannot tell
   apart); the other classes are quirks (§9.7);
 - it found and fixed, in the engine: a card put on the bottom of an empty library got position 1
@@ -112,8 +122,8 @@ green. Deviations from the plan as written:
   already chosen, so the other player could not tell a pick from them (`zone_search.cpp`); in the
   sidecar, two library runs from one junction did not rejoin once compaction had folded the
   history behind the junction into it (`PlayerModel::rejoin`);
-- the sharpness scenarios assert on the knowledge dump through `train/test_scenarios.py`'s
-  `expect_dump*` keys, which render each seat frame's `k_*` tables as text lines; scenarios may
+- the sharpness scenarios assert on the knowledge dump through the scenario runner's
+  `expect_dump*` keys (then `train/test_scenarios.py`, now `robomage_check`'s `scenarios` tier), which render each seat frame's `k_*` tables as text lines; scenarios may
   now also be bo3 (`format`).
 
 ### 1a. Design (docs)
@@ -222,7 +232,7 @@ the fields of the event it consumes, which is the completeness check on the even
   numpy if possible. The agent may now use the richer knowledge tables. Re-record the corpus
   with the live agent, saying why.
   **Status: done** (`state_format_agent_map.md` §8). The decisions are one numpy-free core over a
-  view (`train/scripted_core.py`): the decoded-frame view (`train/rm_agent.py`) is the default on
+  view (`python/scripted_core.py`): the decoded-frame view (`python/rm_agent.py`) is the default on
   RMSTATE, the vector view keeps the BQUERY consumers' games unchanged (checked in lockstep;
   `agentparity` pins them). The replay corpus holds the frame view's RMSTATE games (4 of 64 games
   changed: rules-correct sickness and mana values, the opponent's possible hand cards); head to
@@ -230,18 +240,21 @@ the fields of the event it consumes, which is the completeness check on the even
   fixed: a departed stack target's `lki` row (register 40).
 - **Explore.** The `explore` tiers in the same file move with the rest; step 3 decides whether
   they also get a C++ port.
-  **Status: done** (`state_format_agent_map.md` §9). The rule is `train/explore_agent.py` on the
+  **Status: done** (`state_format_agent_map.md` §9). The rule is `python/explore_agent.py` on the
   shared core's view, its rules listed for the C++ port; the `fuzz` tier (and the nightly fuzz)
   plays it on RMSTATE through the driver: the same games as on BQUERY.
 - **Driver.** A minimal driver (engine subprocess, frame read, reply write) replaces `env.py`
-  / `runner.py` / `opponents.py` for agent games. **Fork here.**
-  **Status: done** (`state_format_agent_map.md` §9). `train/rm_driver.py`, stdlib only: the
+  / `runner.py` / `opponents.py` for agent games. **Archive point** (originally "fork here": the
+  RL stack was archived in place instead, ground rule 3).
+  **Status: done** (`state_format_agent_map.md` §9). `python/rm_driver.py`, stdlib only: the
   scripted tiers, explore, `first`, `actions:`; corpus-format transcripts (the replay corpus is
   unchanged); the `replay`, `smoke` and `fuzz` tiers and the `rmagent` tier's games run on it.
   `play:` stays on `runner.py` until 3a. Release, scripted hard vs hard: ~530 decisions/s (BQUERY
   ~1,100).
 
 ## Step 3 — C++ gate, then strip the RL stack
+
+**Status: done** (3a parts 1–2, 3b parts A–C below).
 
 ### 3a. C++ agents, the `--play` resolver and the gate
 
@@ -374,14 +387,14 @@ other outputs only by the Python RL stack). `train/ci_check.py` is deleted with 
 scripts only it ran (`test_concede`, `test_scenarios`, `test_selfcheck_state`, `test_rmstate`,
 `test_knowledge`, `test_rm_agent`, `test_agent_parity` with its `regression/agent_parity*`,
 `compare_cpp_agents`); the other `test_*.py` (RL code) are unrun and go with `train/` in part C.
-The kept Python stays tested by `train/pycheck.py` (stdlib only), run by the `smoke` tier beside its
+The kept Python stays tested by `python/pycheck.py` (stdlib only), run by the `smoke` tier beside its
 games: `rmstate.py`'s decode of three dumps (an in-process bo1 game and bo3 match, a driver bo3
 session under `--closed-decklist`) equals the engine's `--state-dump json` and the live `.jsonl`,
 the two decoders' refusals of mutated frames agree, the driver's engine seeds are the pinned ones
 and a driven game imports nothing outside the kept Python (numpy included). The scenarios, the
 corpus and `knowledge_divergences.json` moved to `tests/` (`tests/scenarios/`, `tests/corpus/`,
-`tests/knowledge_divergences.json`); the corpus transcripts `<name>.txt` are deleted and
-`replay_diff.py` is `train/record_corpus.py` (`make regen`), which records only the decision logs
+`tests/knowledge_divergences.json`, deleted in part B); the corpus transcripts `<name>.txt` are deleted and
+`replay_diff.py` is `python/record_corpus.py` (`make regen`), which records only the decision logs
 and, through `robomage_check --tier replay --record`, their baselines (re-recording reproduces
 every byte). CI: `ci.yml` runs `make check`; the nightly fuzz runs `robomage_check --tier fuzz
 --matchups all` (40 games, explore and explore:patient); its actor-parity and full-check jobs went
@@ -442,8 +455,10 @@ any module from outside the standard library and `python/`). `robomage_check` ru
 regen` runs `python/record_corpus.py`, `PYTHON ?= python3`, and `make actor` finds libtorch through
 `$(PYTHON) -c 'import torch'`. The SessionStart hook only runs `python3
 tools/forge_fetch/provision_decks.py`; `.claude/settings.json` lost its two `train/` permissions;
-`.gitignore` its `train/` entries. CLAUDE.md got the minimal fixes (no deleted command left);
-README, `docs/ci.md`, `docs/game_running.md` and the rest of CLAUDE.md wait for the docs rewrite.
+`.gitignore` its `train/` entries. The docs rewrite followed: CLAUDE.md, README,
+`docs/ci.md` and `docs/game_running.md` describe the engine-only project, and the state-format,
+knowledge and history docs had their statements about BQUERY, the shadow comparison and `train/`
+paths corrected.
 
 ## Step 4 — One decision schedule, then the C++ CLI
 
@@ -452,11 +467,11 @@ README, `docs/ci.md`, `docs/game_running.md` and the rest of CLAUDE.md wait for 
 | Site | What it does | Fate |
 |---|---|---|
 | `state_manager_actions.cpp:104` `machine_masks_conditional_destroy` | hides Fatal Push-style casts with no currently passing target ("NOT a rules gate") | **delete** |
-| `state_manager_actions.cpp:1085`, `mana_system.cpp:1553` | hides ordinary mana abilities at priority; auto-pays costs | → explicit option `auto-mana`, **on by default for every consumer**; `--no-auto-mana` turns it off |
+| `state_manager_actions.cpp:1085`, `mana_system.cpp:1547` | hides ordinary mana abilities at priority; auto-pays costs | → explicit option `auto-mana`, **on by default for every consumer**; `--no-auto-mana` turns it off |
 | `action_processor.cpp:2201` | auto-resolves hybrid pips | part of `auto-mana` |
-| `game_driver.cpp:1212` | caps sideboard swaps per player | keep as an always-on safety limit |
-| `game_driver.cpp:538`, `cli_output.cpp` guards | output only | fold into the output mode |
-| `name_card_choices.cpp:54` | truncates name-a-card menus to `MAX_ACTIONS` | lift (menus are unbounded) |
+| `game_driver.cpp:1306` | caps sideboard swaps per player | keep as an always-on safety limit |
+| `game_driver.cpp:607`, `cli_output.cpp` guards (`print_query`) | output only | fold into the output mode |
+| `name_card_choices.cpp:62` | truncates open-decklist name-a-card menus to `MAX_ACTIONS` (64, `classes/gamestate.h`) | lift (menus are unbounded) |
 | `queries/zones.cpp` (`interchangeable_cards`) | keeps two identical library cards apart when one sits at a position the other player knows (engine memory: `Game::OppKnownLibraryTop`, kept by 3b for this reader alone) | redefine on currently explicit information: a card in a live reveal window is distinguishable, a remembered one is not; `OppKnownLibraryTop` then goes |
 
 - **`auto-mana` is on by default for everyone:** CLI, scripted agent and machine agents.
@@ -491,7 +506,9 @@ README, `docs/ci.md`, `docs/game_running.md` and the rest of CLAUDE.md wait for 
   `know`, `log` (viewer-redacted narrative), `help`.
 - **Seating:** human vs in-process agent, and hotseat. Human vs the Python scripted agent
   (external) needs a second channel (e.g. `--machine-fd`); decide here whether it is wanted
-  now.
+  now. Today a `--player` seat under `--machine` (which any `--agent-a/-b` implies) is prompted
+  without its menu (`print_query` returns early in machine mode), so human vs agent is not
+  playable until this step.
 - **Delete:** `GameState`, `populate_gamestate`, `print_game_state` and the remains of
   `src/machine_io.*`. `--trace-decisions` switches to the new renderer.
 - **Test (tier `cli`):** golden transcripts of scripted stdin sessions.
@@ -554,8 +571,11 @@ knowledge → featurizer → TorchScript policy → action, with no Python per s
 
 ### 5d. In-process actor (`src/actor/`, exceptions-enabled TUs)
 
-- **Evaluator:** loads a TorchScript policy (from the kept `az_evaluator.cpp` base) and checks
-  that its card-set hash matches the match's `CARDS`.
+- **Evaluator:** loads a TorchScript policy (from the kept `az_evaluator.{h,cpp}` base, whose
+  comments and frozen input width `az_layout.h` still describe the archived observation; both are
+  rewritten here) and checks that its card-set hash matches the match's `CARDS`. The binary links
+  the Makefile's kept plumbing: `$(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS)`, with the
+  exceptions-enabled `ACTOR_CXXFLAGS` for `src/actor/` only.
 - **Agent:** `nn:<model.pt>` on the step-3 Agent interface: featurize, evaluate, choose
   (argmax or sample) over menu rows.
 - **Batched-evaluation hook** for a later search agent.
@@ -583,20 +603,22 @@ weights, and actors still only look it up. This needs a learner, which is outsid
 
 ## Python inventory: what remains
 
-**Remains after step 4:**
+**Status: done** (3b part C). Everything kept is stdlib only and run with `python3` (no venv).
 
-| File (target location decided at the fork) | Role | Notes |
+| File (location since 3b) | Role | Notes |
 |---|---|---|
-| `tools/forge_fetch/fetch_script.py`, `fetch_deck_scripts.py`, `provision_decks.py` | pinned Forge script provisioning (CI, SessionStart hook) | stdlib only. Trim `provision_decks.py`'s references to `train/gen_card_costs.py` |
-| `tools/meta_scraper/scrape_meta.py` | MTGTop8 → `.dk` scraper | stdlib only; **keep or drop** (recommend keep) |
-| scripted agent (today `train/scripted_agent.py`) | the realistic opponent; `explore` tiers unless ported to C++ | on the Python RMSTATE decoder; knowledge comes from the C++ sidecar's tables; numpy dropped if possible |
-| agent driver (new, replaces `env.py` / `runner.py` / `opponents.py` for agent games) | engine subprocess, frame I/O, match loop | small |
-| RMSTATE decoder (new, replaces `decode.py` for the agent) | bytes → objects, knowledge tables included | no copied constants (schema frame) |
+| `tools/forge_fetch/fetch_script.py`, `fetch_deck_scripts.py`, `provision_decks.py` | pinned Forge script provisioning (CI, SessionStart hook) | stdlib only; no `train/` reference left |
+| `tools/meta_scraper/scrape_meta.py` | MTGTop8 → `.dk` scraper | stdlib only; kept (open decision 3) |
+| `python/scripted_core.py`, `python/rm_agent.py`, `python/explore_agent.py` (was `train/scripted_agent.py`) | the realistic opponent and the Python explore tier (also ported to C++, `src/agents/explore.*`) | on the Python RMSTATE decoder; knowledge comes from the C++ sidecar's tables; no numpy |
+| `python/rm_driver.py` (replaces `env.py` / `runner.py` / `opponents.py` for agent games) | engine subprocess, frame I/O, match loop, its own CLI | runs the `smoke` tier's games |
+| `python/rmstate.py` (replaces `decode.py` for the agent) | bytes → objects, knowledge tables included | no copied constants (schema frame) |
+| `python/record_corpus.py` (was `train/regression/replay_diff.py record`) | records the replay corpus with the live agent | `make regen` |
+| `python/pycheck.py` | the kept Python's own checks | run by the `smoke` tier |
 
 There is no Python knowledge tracker (memory and inference live in the C++ sidecar) and no
-Python in the embedding path (step 5 computes it in C++). The engine
-builds, runs and passes every gate tier except `smoke` (and Python `fuzz`, if explore stays
-Python) without Python. Recording the corpus needs the agent.
+Python in the embedding path (step 5 computes it in C++). The engine builds, runs and passes
+every gate tier except `smoke` without Python (explore is in C++). Recording the corpus needs the
+agent.
 
 **Ported to C++, then deleted:**
 
@@ -627,10 +649,11 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 
 1. ~~`auto-mana` defaults~~ **Decided:** on by default for everyone; `--no-auto-mana` turns
    it off.
-2. **`snapshot.cpp`**: proposed kept, tested by the `snapshot` self-check.
-3. **`tools/meta_scraper`**: keep or drop.
-4. **C++ `explore` port** (3a): makes `fuzz` Python-free and fast in-process; otherwise fuzz
-   runs through the Python driver.
+2. ~~**`snapshot.cpp`**~~ **Decided:** kept (3b), tested by the `--selfcheck-state` snapshot
+   check; the base for search agents.
+3. **`tools/meta_scraper`**: kept through 3b; keep or drop is still open.
+4. ~~**C++ `explore` port**~~ **Decided and done** (3a): `fuzz` is Python-free and in-process,
+   playing the Python tier's games for the same seeds.
 5. ~~**`robomage_check` with exceptions on**~~ **Decided:** built with `-fno-exceptions` (3a).
 6. **Human vs Python agent in the CLI** (4b): whether to add the second channel now.
 7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small

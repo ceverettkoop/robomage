@@ -8,12 +8,12 @@ windows (`src/queries/visibility.*`), handles (`src/state_format/handles.*`), th
 encoder for the snapshot and once-per-match frames (`src/state_format/schema.*`, `enum_names.*`,
 `encode.*`), the observation events (`src/state_format/events.*`), the C++ decoder and JSON
 rendering (`decode.*`, `json.*`), the dump and stream writers (`dump.*`, `stream.*`), the Python
-decoder (`train/rmstate.py`), the self-checks (`selfcheck.*`, `selfcheck_knowledge.*`,
-`shadow_knowledge.*`; section 10) and the knowledge sidecar (`src/knowledge/`, `knowledge_feed.*`).
-BQUERY is still the default protocol; RMSTATE runs beside it until later steps switch over.
+decoder (`python/rmstate.py`), the self-checks (`selfcheck.*`, `selfcheck_knowledge.*`; section
+10) and the knowledge sidecar (`src/knowledge/`, `knowledge_feed.*`). RMSTATE is the engine's only
+machine protocol (`--machine`): plan step 3b deleted the float state vector (BQUERY) it replaced.
 
-RMSTATE replaces the float state vector (BQUERY). The engine sends it to whoever makes a
-decision: an in-process agent, the C++ CLI, or an external machine agent over `--machine`.
+The engine sends it to whoever makes a decision: an in-process agent (`--agent-a/-b`, decoded in
+memory), the C++ CLI (plan step 4b), or an external machine agent over `--machine`.
 
 ## 1. Principle: the engine conveys explicit information; the actor remembers and infers
 
@@ -165,8 +165,8 @@ All of these are actor-side (section 7).
 - Every event carries `seq`: per viewer, 1 at match start, +1 per event, never reset within
   the match. A gap means a lost event; decoders refuse it.
 - Events are recorded only while someone consumes them (a frame writer such as `--rmstate-dump`,
-  or `--trace-events`); otherwise nothing is queued and play, the RNG and BQUERY are the same
-  either way.
+  or `--trace-events`); otherwise nothing is queued and play and the RNG are the same either
+  way.
 
 Each event carries **only what was explicit to that viewer at that instant**, projected through
 the same visibility rules as the snapshot.
@@ -265,9 +265,7 @@ built for the viewer drains its queue into `event` / `event_card` / `event_playe
 - **Turn.** The game's turn counter (`Game::turn_state.turn`): 0 during the pregame and the first
   turn.
 - `reorder` has no engine site (rearrangements are library → library `zone_move`s), and
-  `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses. The search server's
-  determinizer moves hidden cards without events; events are not meant to be consumed under
-  `--search-server`.
+  `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses.
 
 ## 6. Handles
 
@@ -347,7 +345,8 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   `expert`. The level changes only that seat's `k_*` and `b_*` tables, never play; it is an output
   option like the frame writers, so the RMLOG header does not record it and a `--replay` honours it.
 - **As built** (`src/state_format/knowledge_feed.h`, `knowledge_store.md` §9.6): every frame
-  writer (`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) has an instance of
+  writer (`--rmstate-dump`, the `--machine` stream, `--selfcheck-state`, the in-process agents'
+  feed) has an instance of
   its own per seat, fed exactly the frames that writer builds for the seat (its SCHEMA, CARDS,
   DECKLISTS, METAGAME, then each STATE frame as encoded), and appends the instance's `k_*` tables
   (ids 90-97) and, at `expert+belief`, `b_*` tables (98-99), the last blocks of the frame, to each
@@ -361,10 +360,9 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   - soundness against the omniscient truth;
   - exactness against brute-force enumeration;
   - isolation via the standalone `rmknow` tool;
-  - a shadow comparison with the engine's current memory, in which every mismatch is
-    classified as a bug or an old-vector leak (built into `--selfcheck-knowledge`,
-    `src/state_format/shadow_knowledge.h`; signatures in
-    `tests/knowledge_divergences.json`; `knowledge_store.md` §9.7).
+  - (until plan step 3b) a shadow comparison with the engine's old memory, every mismatch
+    classified as a bug or an old-vector leak; it was deleted with that memory, its findings are
+    `knowledge_store.md` §9.7.
 
 ## 8. Engine changes this requires
 
@@ -376,14 +374,14 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   viewer and the visibility rules' answer, never a raw entity.
 - **Reveal windows:** generalise `Game::revealed_in_library` into the per-viewer window set, and
   the snapshot's `reveal` table reads it.
-- **Delete in the plan's step 3b**, after the sidecar's shadow comparison is fully classified,
-  the persistent knowledge bookkeeping that existed only for the observation:
-  `Game::KnownLibraryTop`, `Zone::identity_known`, the match revealed bits, and the
-  `opp_known_hand` pass. The search server's determinizer also reads `identity_known`; it is
-  deleted in the same step.
-- **Menu collapse.** `interchangeable_cards` (`src/queries/zones.cpp:123-128`) refuses to merge
-  two identical library cards when one is at a position the other player knows. That rule must
-  be redefined on currently explicit information (a card in a live reveal window is
+- **Deleted in the plan's step 3b** (done), after the sidecar's shadow comparison was fully
+  classified: the persistent knowledge bookkeeping that existed only for the observation
+  (`Game::KnownLibraryTop`, `Zone::identity_known`, the match revealed bits, the `opp_known_hand`
+  pass), with the search server and its determinizer.
+- **Menu collapse.** `interchangeable_cards` (`src/queries/zones.cpp`) refuses to merge two
+  identical library cards when one is at a position the other player knows; since 3b it reads
+  `Game::OppKnownLibraryTop` (one bool per top position, kept for this reader alone). That rule
+  must be redefined on currently explicit information (a card in a live reveal window is
   distinguishable; memory is not). It changes the decision schedule, so it belongs with step 4a.
 
 ## 9. Encoding and protocol
@@ -394,7 +392,7 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   per-frame string pool. C++ reads rows directly; Python reads them with
   `struct.iter_unpack`; arrays can later be built from them directly. Layout and columns:
   Appendix A.
-- **Schema frame.** Sent once at startup, and available via `--print-schema`. It lists:
+- **Schema frame.** Sent to each viewer once per match, before its other frames. It lists:
   - tables;
   - columns: name, storage type, width, and a **semantic tag**: `enum:<table>`, `count`,
     `bool`, `signed`, `handle`, `card`, `player-rel`, `text`, `index`, `row:<table>`,
@@ -409,17 +407,16 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **Framing on `--machine`.** `RMSTATE <nbytes>\n` followed by the payload on stdout. The reply
   is one line: an action index, `-1` (confirm), `-2` (concede game) or `-3` (concede match).
   Narrative goes to stderr or its own file descriptor, never interleaved with frames.
-  `--machine-format rmstate` (implies `--machine`; `src/state_format/stream.h`) is this
-  protocol:
+  `--machine` (also spelled `--machine-format rmstate`; `src/state_format/stream.h`) is this
+  protocol, for each seat with no in-process agent that is not the `--player` seat (under
+  `--replay` the log supplies every decision and no stream is written):
   - stdout carries only `RMSTATE` records. The engine moves stdout's descriptor aside for them
     at startup and points stdout at stderr, so everything else it prints (narrative under
     `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, a `--player` seat's CLI prompt) goes to
-    stderr. Passive `BSTATE` frames are not written; `--search-server` is refused.
-  - The menu is unbounded. `--closed-decklist`'s name-a-card menus offer every vocab card
-    (register 11a), more than BQUERY's `MAX_ACTIONS`, so a machine run with `--closed-decklist`
-    is refused unless it uses this format (BQUERY's state vector shows the opponent's registered
-    list anyway). A `--player` seat's CLI prompt is capped the same way: a debug build stops on
-    such a menu there.
+    stderr. (`--broadcast-steps`' passive `BSTATE` frames and `--search-server` went with
+    BQUERY; both flags are refused.)
+  - The menu is unbounded: `--closed-decklist`'s name-a-card menus offer every vocab card
+    (register 11a).
   - At each decision the deciding seat (the sideboarding player between games, else the
     priority holder) gets, the first time it decides in the match, its `SCHEMA`, `CARDS`,
     `DECKLISTS` and `METAGAME` frames, then its `STATE` frame with the menu. Its events are those queued for it
@@ -427,10 +424,10 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
     next frame.
   - Everything the engine prints before a frame (the decision's narrative, a `GAME_RESULT` line)
     is flushed to stderr before the frame is written, so a reader of both pipes sees a decision's
-    narrative ahead of its frame (`train/rmstate_env.py`).
+    narrative ahead of its frame (as `python/rm_driver.py` does).
   - Menu row *i* is the action reply *i* selects: the menu as offered, after the
-    interchangeable-choice collapse (register 17), the same list BQUERY indexes. `-1` is the
-    last row. End of input or an unparseable line reads as `-1`, as for BQUERY.
+    interchangeable-choice collapse (register 17). `-1` is the last row. End of input or an
+    unparseable line reads as `-1`.
   - **Terminal frame.** Once the match is over (after its `match_end` event) each seat, A then B,
     gets one more `STATE` frame with `header.terminal = 1`, no menu and no reply: it carries the
     seat's last events (`game_end`, `match_end`). The engine then exits. `--rmstate-dump` ends
@@ -449,7 +446,7 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **Debug view.** `--state-dump json`, rendered from the decoded binary (not a second encoder):
   every record `--rmstate-dump FILE` writes is decoded and written as one JSON line into
   `FILE.jsonl`, and `--rmstate-read FILE --state-dump json` prints a stream's lines on stdout.
-  The renderer is `src/state_format/json.h` (rules there); `train/rmstate.py` renders the same
+  The renderer is `src/state_format/json.h` (rules there); `python/rmstate.py` renders the same
   bytes. One object per frame, no whitespace, keys in a fixed order:
   `{"frame":…,"viewer":…,"version":…,"schema_hash":"<16 hex>","tables":{"<table>":[{row},…],…}}`
   (plus `"skipped":[ids]` when a block's id is unknown). Tables in ascending id with the string
@@ -465,7 +462,7 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   with another row width or in a frame of another kind, and malformed framing; it skips unknown
   table ids. `--rmstate-read FILE` (`src/state_format/recode.h`) decodes, re-encodes and compares
   every record of a stream (`ERROR:` lines, exit status 1 on any difference).
-  `train/rmstate.py` is the Python decoder, built from the `SCHEMA` frame the same way (its
+  `python/rmstate.py` is the Python decoder, built from the `SCHEMA` frame the same way (its
   bootstrap is the frame and block headers and the layout of tables 1-4).
 
 ## 10. Verification
@@ -481,23 +478,21 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **complete:** every public object appears, counts match zone sizes, every handle reference
   resolves, every menu handle exists, and the knowledge sidecar's pool sizes match the snapshot.
 - **snapshot:** save → K actions → restore; both viewers' frames match the pre-save bytes.
-- **knowledge:** the sidecar's soundness, exactness, isolation and shadow checks
+- **knowledge:** the sidecar's soundness, exactness and isolation checks
   (`knowledge_store.md` §7). The self-check below covers the knowledge tables as frame bytes
   (roundtrip, references, snapshot restore) and reports the sidecar's per-frame consistency
   check; isolation is `rmknow --isolation`; soundness against the engine state, and the knowledge
   state across a snapshot restore, are `--selfcheck-knowledge` (`src/state_format/selfcheck_knowledge.h`,
-  `knowledge_store.md` §9.5), which implies `--selfcheck-state`; it also runs the shadow comparison
-  with the old BQUERY vector's memory (`src/state_format/shadow_knowledge.h`, `knowledge_store.md`
-  §9.7).
+  `knowledge_store.md` §9.5), which implies `--selfcheck-state`.
 
 **Implementation** (`--selfcheck-state`, `src/state_format/selfcheck.{h,cpp}`). At every decision
 the self-check builds every viewer's STATE frame (A, B, omniscient) from a queue copy of its own
 (`ObsConsumer::SELFCHECK`), so it runs with or without a frame writer; failures print `ERROR:`
 lines (`selfcheck-state <check>: viewer …, decision … (game, turn, step): <first differing table,
 row, card and column>`), and a `SELFCHECK-STATE: decisions=… frames=… events=… permutations=…
-snapshots=… errors=…` summary goes to stderr at match end. Play, the RNG, BQUERY and the
-`--rmstate-dump` bytes are the same with it on. It is off under `--search-server` and for the
-in-process actor.
+snapshots=… errors=…` summary goes to stderr at match end. Play, the RNG and the
+`--rmstate-dump` bytes are the same with it on. It skips the decisions of an in-process provider
+that also answers simulated ones (a search agent's).
 - **Knowledge tables.** The self-check has its own knowledge instance per seat
   (`ObsConsumer::SELFCHECK`, section 7), fed each seat's once-per-match frames and, exactly once,
   each real STATE frame the self-check builds (a decision's and the terminal one); its `k_*`
@@ -527,8 +522,8 @@ in-process actor.
   card made public by the choice itself (`card_is_public`) keeps its identity.
 - **permutation** (the snapshot-leak check, sampled every `--selfcheck-state-sample N`th decision,
   default 8): for each seat, the opponent's hidden hand, library and sideboard cards are dealt at
-  random among those cards' places (zone and library position: entity ids move, as in the search
-  server's determinizer), the seat's own hidden library cards among their positions, and then the
+  random among those cards' places (zone and library position: entity ids move, as a
+  determinizer's would), the seat's own hidden library cards among their positions, and then the
   identities of all cards hidden from the seat are shuffled per owner (a card in a window shown
   only to the other player keeps its place but not its identity; a face-down exiled card keeps
   its place, and the objects that refer to it, with another identity). Every card in a live
@@ -551,7 +546,7 @@ in-process actor.
   priority-window flag, and the events it drained) and fed to the restored knowledge instance,
   and compared, `k_*` tables included, with the saved decision's bytes, and the current state
   restored. Both restores are
-  exact (`snapshot_restore_exact`, registry put back from the copies): the search server's restore
+  exact (`snapshot_restore_exact`, registry put back from the copies): a plain `snapshot_restore`
   re-derives the continuous effects instead, which can change characteristics at a decision where
   the derived ones lag the state (`docs/rules_deviations.md` 2.3).
 - **names** (every frame of a seat): the text columns of a STATE frame (the menu's `description`
@@ -594,7 +589,7 @@ in-process actor.
 | 9 | Own library: count only; contents and order are actor-side | decided |
 | 10 | Opponent hand: count plus live reveal windows | decided |
 | 11 | Decklists are open by default: both registered lists (main + side) are explicit, sent in `DECKLISTS`. `--closed-decklist` turns this off: the viewer then gets only their own list, and the leak tests treat the opponent's list as hidden. The setting is recorded in the RMLOG header | decided |
-| 11a | Name-a-card candidate set follows decision 11. With open decklists (default) it stays as today: the distinct vocab cards of the relevant registered list, filtered by `ValidCards$`. The list is explicit information, so this no longer leaks, but it remains the documented CR 201.4 deviation. Under `--closed-decklist`: every vocab card passing `ValidCards$`, in name order, uncapped (`build_name_card_choices`); that menu is wider than BQUERY's `MAX_ACTIONS`, so a machine run with `--closed-decklist` needs `--machine-format rmstate` (refused otherwise) | decided |
+| 11a | Name-a-card candidate set follows decision 11. With open decklists (default) it stays as today: the distinct vocab cards of the relevant registered list, filtered by `ValidCards$`. The list is explicit information, so this no longer leaks, but it remains the documented CR 201.4 deviation. Under `--closed-decklist`: every vocab card passing `ValidCards$`, in name order, uncapped (`build_name_card_choices`); a machine run with it needed the RMSTATE stream while BQUERY existed (capped at `MAX_ACTIONS`) | decided |
 | 12 | Descriptions included and covered by the leak tests; the full-information narrative never goes to a seat | decided |
 | 13 | `CARDS` table once per match, replacing `card_props` / `card_costs` / script reading for the agent; card id stays the vocab index | decided |
 | 14 | Full keyword lists with parameters; counters as kind → count | decided |
@@ -622,7 +617,7 @@ in-process actor.
 | 36 | Events carry draw provenance: `turn` on every event, an opening-hand flag on `draw`, a hand subset (`drawn_this_turn`) on a `zone_move` out of a hand whose instruction is restricted to cards drawn this turn (Sylvan Library), and a draw link on a `reveal_start` that shows the card just drawn (Miracle). Both restrictions are explicit to both players, so the sidecar may use them | decided |
 | 37 | A reference metagame frame (`METAGAME`, once per match after `DECKLISTS`, the same for every viewer: archetype labels and reference lists from `bin/resources/decks/archetypes.json`) and the archetype tables `k_template` (per player and reference list: consistent, exact, registered) and `k_archetype` (per player and label: possible, exact) in `k_*`. Sound facts only (`knowledge_store.md` §10); a probabilistic layer is a later `b_*` level | decided |
 | 38 | A belief level `expert+belief` (per seat, `--knowledge-a/-b`; default stays `expert`) adds the `b_*` tables after `k_*`: `b_list` (per player and reference list: posterior probability in units of 10^-9, log-likelihood in milli-nats, exact) and `b_archetype` (per player and label: probability). A posterior under a uniform prior over the reference lists, with likelihood the weighted count of each list's hypothesis-network worlds (`knowledge_store.md` §10.6); probabilities, kept out of `k_*`, which stays sound facts. Zero exactly for the lists `k_template` excludes, at least one unit for the others, summing to 10^9 per player (or 0 when no list is consistent); a function of the seat's events like `k_*`. Absent below that level (fixed schema) | decided |
-| 39 | The raw card script travels in `CARDS` on request (`--rmstate-card-scripts`: the `script` column of a card's front row and of a token's row). The step-2 pass-1 parity adapter (`train/rmstate_adapter.py`) reads the scripted agent's card knowledge from it through the generators' own parsing, so it equals the generated tables (`card_props`, `card_costs`) card for card; pass 2 reads the structured columns instead | decided |
+| 39 | The raw card script travels in `CARDS` on request (`--rmstate-card-scripts`: the `script` column of a card's front row and of a token's row). The step-2 pass-1 parity adapter (`train/rmstate_adapter.py`, deleted in step 3b) read the scripted agent's card knowledge from it through the generators' own parsing, so it equals the generated tables (`card_props`, `card_costs`) card for card; pass 2 reads the structured columns instead | decided |
 | 40 | A stack object's target that has left the stack has an `lki` row too, not only a departed permanent: the target's card, token flag, controller, printed P/T, types and colours as it left the stack, as each viewer saw them (recorded at the zone-move choke point while another stack object is there to refer to it, dropped once the stack empties). Found by the step-2 port (`state_format_agent_map.md` §7); regression scenario `format_stack_target_lki` | decided |
 
 ## Appendix A: column definitions
@@ -665,7 +660,7 @@ No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `
 | Frame header (24 B) | `magic` u32 (`RMSF`), `version` u16, `kind` u8 (`enum:frame_kind`), `viewer` u8 (`enum:viewer`), `schema_hash` u64, `n_tables` u32, reserved u32 (0) |
 | Table block | header (16 B): `table_id` u16, reserved u16, `row_width` u32, `row_count` u32, reserved u32; then `row_count × row_width` bytes, zero-padded to a multiple of 8 |
 | Order | blocks in ascending table id (so `strings`, id 1, comes first); a table with no rows is omitted; `n_tables` counts the blocks present |
-| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
+| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine` writes the deciding seat's records on stdout (section 9) |
 | Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
 | Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
 | Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `METAGAME` (17–19), `STATE` (snapshot 20–48, events 80–82, knowledge 90–97, belief 98–99) |
@@ -808,7 +803,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `mana_value` | u8 | `count` | |
 | | `attached_to` | u32 | `handle` | |
 | | `timestamp` | u32 | `index` | entered-battlefield order; none off the battlefield |
-| | `entered_turn`, `cant_be_blocked`, `damage_shielded`, `delayed_subject` | u8 | `bool` | as BQUERY's per-turn statuses |
+| | `entered_turn`, `cant_be_blocked`, `damage_shielded`, `delayed_subject` | u8 | `bool` | per-turn statuses: entered this turn, can't be blocked this turn, damage shielded, the subject of a pending delayed trigger |
 | | `activations_turn`, `resolutions_turn` | u8 | `count` | |
 | | `chosen_name` | u16 | `card` | |
 | | `chosen_type` | u16 | `enum:subtype` | 0xFFFF none |
@@ -819,8 +814,7 @@ A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_valu
 `chosen_type`) and its `object_subtype`, `object_keyword`, `object_ability`, `object_provenance`
 and `object_link` rows are filled only when the viewer can see the object's identity; a
 face-down object shows its zone, seats, position, public status and counters. Phased-out
-permanents are included and flagged (the encoder, like the BQUERY serializer, reads
-`Permanent::is_phased_out` directly). No `can_attack` or `chosen_color` column: the engine
+permanents are included and flagged (the encoder reads `Permanent::is_phased_out` directly). No `can_attack` or `chosen_color` column: the engine
 computes neither outside its legal-action enumeration.
 | `object_subtype` (25) | `obj`, `subtype` | u32, u16 | `handle`, `enum:subtype` | post-layer |
 | `object_keyword` (26) | `obj` | u32 | `handle` | register 14; a battlefield permanent's `permanent_keywords`, else the active face's printed keywords |
@@ -883,7 +877,7 @@ computes neither outside its legal-action enumeration.
 | `emblem` (37) | `controller` | seat | | |
 | | `source_card` | u16 | `card` | |
 | `player_effect` (38) | `player` | seat | | |
-| | `kind` | u8 | `enum:player_effect_kind` | as BQUERY's player-effect block (`player_effects`) plus floating triggers |
+| | `kind` | u8 | `enum:player_effect_kind` | the player effects of `src/queries/player_effects.h` plus floating triggers |
 | | `colors` | u8 | `mask:color` | hexproof-from colours |
 | | `duration` | u8 | `enum:duration` | from the resolved effect behind it (end of turn, until your next turn); STATIC when a battlefield static gives it |
 | | `source_card` | u16 | `card` | a floating trigger's creator |

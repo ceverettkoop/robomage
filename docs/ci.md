@@ -4,373 +4,186 @@ The standard for changes to this repo: **`make check` must pass.** CI runs exact
 locally before pushing.
 
 ```bash
-make check    # `make` (debug build), then bin/debug/robomage_check (every tier; "The C++ gate" below)
+make check    # `make` (debug build), then bin/debug/robomage_check (every tier)
 ```
 
-It needs the Forge card scripts provisioned first (the SessionStart hook does this in cloud sessions only;
-run it yourself on a fresh local clone; stdlib only):
+It needs the Forge card scripts provisioned first (the SessionStart hook does this in cloud
+sessions only; run it yourself on a fresh local clone; stdlib only):
 
 ```bash
 python3 tools/forge_fetch/provision_decks.py
 ```
 
-> **Plan step 3b (in progress).** `make check` is the C++ gate `robomage_check` alone; the Python
-> gate `train/ci_check.py` and its engine-test scripts are deleted. The Python tier tables below
-> describe that retired gate and stay only until the documentation rewrite after step 3b; the
-> current gate is [The C++ gate](#the-c-gate-robomage_check). The rules scenarios, the replay
-> corpus and the knowledge-divergence signatures live in `tests/` (`tests/scenarios/`,
-> `tests/corpus/`, `tests/knowledge_divergences.json`).
-
 `provision_decks.py` fetches the script for **every card in `src/card_vocab.h`** plus every card
-named by the top-level, `meta/` and `league/` decks, and the tokens they create. Fetching the
-whole vocab keeps the script-derived codegen (`card_costs.py`, `card_props.py`,
-`src/gen/card_costs_gen.h`) complete and independent of which decks happen to be provisioned.
-`ci_check.py` exits 2 without running anything when a tier needs a missing engine binary or
-card scripts, or when `--tier` names an unknown tier.
+named by the top-level, `meta/` and `league/` decks, and the tokens they create, at the Forge
+commit pinned in `tools/forge_fetch/FORGE_PIN`. `robomage_check` exits 2 without running anything
+when the engine binary or the card scripts are missing, or when `--tier` names an unknown tier.
 
-## The tiers (`train/ci_check.py`)
+## The gate: `robomage_check`
 
-Tiers run in the order below. Every requested tier runs even if an earlier one fails, so one
-invocation reports every finding. Exit 1 on any **error**; warnings alone pass. Most tiers wrap
-one `train/test_*.py` script, which can be run standalone to reproduce.
+`tools/robomage_check/` builds `bin/<config>/robomage_check` (part of `make`). It runs the engine
+as subprocesses, in parallel (`-j N`, default the number of cores), with `bin/` as their working
+directory, and links no engine translation unit: only the std-only RMSTATE decoder
+(`src/state_format/decode.*`, `schema.*`) and the agents' frame reader and Python-compatible
+generator (`src/agents/seat_frames.*`, `py_random.*`). It is built like the engine
+(`-fno-exceptions`; a scenario regex is compiled in a forked child first, so a malformed one is
+reported, not an abort).
 
-| Tier | Checks (script) | Notes |
+Every requested tier runs even if an earlier one fails, so one invocation reports every finding.
+The run ends with each tier's PASS/FAIL, a wall-time table, every warning and error, and a
+`Reproduce:` line naming its tiers, seed, mode and matchups; it exits 1 on any **error**
+(warnings alone pass), 2 on bad usage or a missing binary.
+
+```
+robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR]
+               [--fuzz-games N] [--smoke-games N] [--matchups PRESET] [--mode MODE]
+               [--scenario GLOB ...] [--show output|narrative|dump] [--record]
+```
+
+| Flag | Meaning |
+|---|---|
+| `--tier a,b` | run these tiers, in the order listed (default: all, in the table's order) |
+| `-j N` / `--jobs N` | parallel engine processes (default: the cores) |
+| `--seed N` | base seed of the `fuzz` and `smoke` games (default 1) |
+| `--binary PATH` | the engine (default `robomage` beside the gate, so `bin/release/robomage_check` tests the release build); `rmknow` is taken from the same directory |
+| `--out-dir DIR` | transcripts, engine stderr and draw logs (default `ci_out/`) |
+| `--fuzz-games N` / `--smoke-games N` | games per matchup (default 8 / 2) |
+| `--matchups PRESET` | `mirrors`, `ring` (each league deck vs the next), `mirrors+ring`, `all` (every ordered pair), or `"a:b,c:d"` (deck specs relative to `decks/`); default `fuzz` `mirrors`, `smoke` `mirrors+ring` |
+| `--mode MODE` | the fuzz agent: `explore` (default) or `explore:patient` |
+| `--scenario GLOB` | `scenarios` tier: only the scenarios whose name matches (repeatable) |
+| `--show output\|narrative\|dump` | `scenarios` tier: print each run's engine output, the narrative lines the assertions see, or its knowledge lines |
+| `--record` | `replay` tier: rewrite the baselines instead of checking them |
+
+### The tiers
+
+Times are wall clock for the debug build on 4 cores (`make check` total about 5.3 minutes).
+
+| Tier | Checks | Time |
 |---|---|---|
-| `pygen` | Runs every generator; fails if the **tracked** outputs `train/_enums.py` / `src/gen/archetypes_gen.h` differ from the committed copies (restored afterward). The untracked script-derived outputs are crash-checked, and the C++ cost tables (`src/gen/card_costs_gen.h`) must equal `train/card_costs.py`'s matrices float32-exactly (`test_cost_tables.py`) | stale = a C++/JSON input changed without regenerating |
-| `vocab` | every top-level and `league/` deck card resolves to a `card_vocab.h` entry (DFCs via their script's front face); `robomage --check-decks` (the engine's own check, `src/deck_check.h`) passes too | |
-| `curriculum` | curriculum plan schema, each phase kind's composed `train.py` argv, resume forms, plan-hash prefix check (`test_curriculum.py`) | stdlib-only |
-| `clispec` | the shared CLI vocabulary (`test_cli_spec.py`): removed flags error with their hint and stay out of `--help`/TUI forms, `--format` defaults to bo3, GUI launcher fields mirror play.py/browser flags, search-knob fold, per-board option errors, `analysis.py browse --source` dispatch | legs whose script needs torch/SB3 (`train.py`, `bench_actor.py`) or textual (TUI stubs) print `[skip]` without them |
-| `gatesprt` | the AZ promotion gate's SPRT (`gate_sprt.py` via `test_gate_sprt.py`): symmetric hypotheses, draws half/half, Wald bounds, monotone/mirror-symmetric verdict, round-cap and floor-lock rules, simulated gates accept a stronger candidate, reject a weaker one, coin-flip an equal one | a silent change here changes which nets get promoted. Stdlib-only |
-| `shardrec` | play-session shard recorder (`test_shard_record.py`): trainer schema, mid-game flush validity (`z=0` rows), no duplicate rows on rewrite, per-mover z backfill, both readers round-trip, π from the search posterior only, shared search-vs-net divergence | torch-free, engine-free |
-| `treecache` | rebuilt-search-tree cache (`test_tree_cache.py`): per-world trees round-trip node-for-node through the npz layout; a bad format version is refused | torch-free, engine-free |
-| `menus` | the Python search's menu semantics on synthetic observations: duplicate-edge merging (`decode.menu_merge_reps`, the `mcts._Node` fold/select/walk; `test_menu_merge.py`) and the interchangeable-menu collapse behind the `SearchController` trivial fast path (`test_trivial_menu.py`) | torch-free, engine-free; the C++ merge twin is covered by `actor` |
-| `browser` | Textual analysis browser (`test_tui_browser.py`) driven headlessly: `.rmtrace` load/save round trip, a net probe, Tree tab rebuild/expand/walk, live-stream rows | needs the engine, textual and matplotlib; `[skip]` without the packages |
-| `modelspec` | model-spec resolver (`test_model_spec.py`): the spec-family table, knob stripping, and one spec → one checkpoint across every consumer | torch-free, engine-free |
-| `concede` | CR 104.3a concession sentinels (`test_concede.py`): bo1 / bo3-game / match concede outcomes, the sentinel replays via `--replay`, and a concession at a parked query (Brainstorm's put-back, Cavern of Souls' ETB type; BQUERY and `--machine-format rmstate`) ends the game with nothing parked | needs the engine |
-| `scenarios` | rules-regression scenarios (`test_scenarios.py`): every `train/regression/scenarios/*.json` sculpted harness game (bo1 unless its `format` says bo3, parallel) still shows its asserted rules outcome — narrative lines present / absent / in order, actions offered or withheld, the game result, and (`expect_dump*`, the `knowledge_*` sharpness scenarios) the deductions on the seats' knowledge tables, rendered as text lines from a `--rmstate-dump --state-dump json` run | needs the engine; ~2 s. A failure names the missing / forbidden line; `test_scenarios.py --narrative <name>` (`--dump <name>` for the knowledge lines) prints what the assertions match against |
-| `cppagents` | the C++ in-process agents (`src/agents/`, plan step 3a) against their Python originals (`compare_cpp_agents.py`): every rules scenario resolves to the same `resolved --actions` list on the engine's `--play` resolver (presets as engine flags: `--hand-*`, `--library-*`, `--game-seed`, `--max-decisions`, `--trace-decisions`) as on `test_harness.py`, its assertions passing on both outputs; the C++ explore tier plays the same games as `explore_agent.py` over `rm_driver.py` (same replies and narrative; bo1 explore, bo3 explore:patient) | needs the engine; ~40 s. `compare_cpp_agents.py explore --games N` widens the explore sweep |
-| `cppgate` | the C++ gate `bin/<config>/robomage_check` (below) on its Python-free tiers (`vocab`, `concede`, `scenarios`, `replay`, `state`, `knowledge`, `fuzz` at 2 games per mirror, `bench`), so CI runs both gates until plan step 3b makes it the gate | needs `make`'s `robomage_check`; ~4.5 min on 4 cores (`make check` ~13.5 min in all). Its output: `ci_out/cpp/robomage_check.txt`, transcripts and engine stderr under `ci_out/cpp/` |
-| `obsinv` | per-decision structural invariants on the raw observation over seeded scripted games (`test_obs_invariants.py`) — see its docstring for the list | prints the violated invariant (decision, seat, block, slot, value) |
-| `actorobs` | `make actor-syntax` (`-fsyntax-only` over the actor's libtorch-free TUs, firing the obs-layout `static_assert`s in `src/actor/obs_builder.{h,cpp}`), plus a generated TU asserting `machine_io.h`'s `OFFSET_CHAIN` equals `env.py`'s offsets block by block | compiler only |
-| `pergame` | bo3 per-game-index win-rate split: seat-flip consistency, tally merging, a live bo3 (`test_per_game_split.py`) | needs the engine |
-| `snapshot` | `--search-server` snapshot/restore/determinize protocol: round-trip identity, RNG isolation, terminal intercept (`test_snapshot.py`) | needs the engine |
-| `sbrules` | dead-sideboard-card rules table and `mcts.sb_dead_mask` (`test_sb_rules.py`) | engine- and torch-free; the C++ twin is covered by `actor` |
-| `sbselfplay` | AZ self-play writes bo3 sideboard samples priced by the next game's result (`test_sideboard_selfplay.py`) | needs the engine |
-| `plansearch` | sideboard plan search (`mcts.run_plan_search` + `IncrementalPlanSearch`): coverage, accounting, determinism, memo (`test_plan_search.py`) | needs the engine |
-| `mirror` | world-parallel mirror-pool search: bit-identical visits vs serial, bo3 lockstep, pool disable on drift (`test_mirror_search.py`) | needs the engine |
-| `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
-| `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed; the scripted agent (hard, both seats) on its RMSTATE frame view (`--machine-format rmstate`, `train/rm_agent.py`), played by the RMSTATE driver (`train/rm_driver.py`, its verbose transcript: no decoded board block) | any transcript drift; ~20 s on 4 cores |
-| `rmstate` | the RMSTATE state format (`test_selfcheck_state.py`, below): the engine's `--selfcheck-state` checks over the replay corpus, a short explore fuzz and every scenario, with each seat's knowledge sidecar (`k_*` tables) on at level expert; the Python-vs-C++ decode comparison, decoder refusals and `--machine-format rmstate` sessions (`test_rmstate.py`'s parts); name-a-card candidates with open and closed decklists; the knowledge-side include isolation | needs the engine; ~3 min on 4 cores (2.5 min before the knowledge sidecar). Engine stderr in `ci_out/rmstate/` |
-| `knowledge` | the knowledge sidecar (`test_knowledge.py`, below): `rmknow --selftest` / `--exactness`; an explore fuzz under `--selfcheck-knowledge` (soundness against the engine state, knowledge state across snapshot restores); `--machine-format rmstate` sessions each with a `--rmstate-dump`, stream frames equal to the dump's `k_*` tables included, `rmknow --isolation` on each writer's frames; `rmknow --truth` on every dump; archetype inference against the true lists and the cards seen; the belief layer's structure, calibration and exactness. The replay corpus runs under `--selfcheck-knowledge` in the `rmstate` tier | needs the engine and `rmknow`; ~100 s on 4 cores. Engine stderr in `ci_out/knowledge/` |
-| `agentparity` | the scripted agent's vector view on RMSTATE through the pass-1 parity adapter (`test_agent_parity.py`, below): its card knowledge from a `CARDS` frame equals the generated tables'; the light corpus set's BQUERY games equal their frozen transcripts and their RMSTATE games equal those; smoke games (two bo3) equal on both protocols; listed divergences against their re-recorded baselines | needs the engine; ~20 s on 4 cores (`--full`: every corpus and smoke-tier game and a bo3 match per mirror, ~75 s) |
-| `rmagent` | the scripted agent's RMSTATE frame view and the RMSTATE driver (`test_rm_agent.py`, below): every card the decision rules name is a `CARDS` card; the structured `CARDS` columns' card knowledge (`rm_agent.FrameCards`) answers as the generated tables do on every vocab card except the listed, rules-correct differences; scripted-hard bo3 matches under `--closed-decklist` finish; the driver's seeds, card names, transcripts, imports and concessions | needs the engine; ~15 s |
-| `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup), on its RMSTATE frame view | see classification below; ~13 s on 4 cores |
-| `fuzz` | the `explore` fuzzer (`--mode`, `train/explore_agent.py`) over the league mirrors (`--fuzz-games`, default 8 per matchup), on its RMSTATE frame view | see classification below; ~37 s on 4 cores (21 s on BQUERY: the debug engine's frames and knowledge sidecar) |
-
-`smoke`/`fuzz` play through the RMSTATE driver (`rm_driver.run_games`, `--machine-format
-rmstate`); game `i` of matchup `k` uses seed `--seed + 1000·k + i` (the same games
-`runner.run_games` plays for that seed: the driver derives the engine seed as the gymnasium env
-does). Every game is its own process-pool task (games are independent: own engine process, seed and
-fresh agents), and each matchup's games are reassembled in game order into
-`ci_out/<tier>_<a>__<b>.txt` (per game: a `--- Game i/N [mode] seed S ---` header, the driver's
-verbose transcript plus the engine's diagnostic lines it copied to stderr). A draw's saved log
-lands next to it as `<tier>_<a>__<b>_g<i>_draw_<stamp>.txt`.
-
-### The `rmstate` tier
-
-`train/test_selfcheck_state.py` (`run()` is the tier; `--part` runs one part) passes its engine
-flags through `ROBOMAGE_ENGINE_FLAGS` and keeps each engine's stderr in `ci_out/rmstate/` (the
-`--rmstate-dump` files it writes are deleted once checked). A self-check failure is an `ERROR:
-selfcheck-state <check>: viewer …, decision … (game, turn, step): <first differing cell>` line on
-an engine's stderr; each engine prints one `SELFCHECK-STATE: decisions=… errors=N` line when its
-match ends (`docs/state_format.md` §10). Every seat frame carries its writer's knowledge tables
-(`docs/knowledge_store.md` §9.6): the self-check's own instance's consistency errors are
-`selfcheck-state knowledge` failures, a dump's or stream's instance prints `ERROR: knowledge[…] …
-(dump frames)` / `(stream frames)`, and the roundtrip, references and snapshot checks cover the
-`k_*` tables.
-
-| Part | Runs | Fails on |
-|---|---|---|
-| `corpus` | `replay_diff.py check` with `--selfcheck-knowledge` (which implies `--selfcheck-state`; the `knowledge` tier shares these runs) | corpus drift, an `ERROR:` line, a missing summary (one `SELFCHECK-STATE`, one `SELFCHECK-KNOWLEDGE` and one `SHADOW-KNOWLEDGE` per corpus game), `errors≠0`, or a `SHADOW:` line no signature of `train/regression/knowledge_divergences.json` classifies (the `knowledge` tier's `shadow` part) |
-| `fuzz` | 16 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; reanimator for face-down exile, wrb_energy and bw_dnt for Cabal Therapy and Disruptor Flute; four with `--selfcheck-state-sample 1`); two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` summary (one stopped at the 2500-decision cap is scanned only) |
-| `scenarios` | `test_scenarios.py` with `--selfcheck-state --selfcheck-state-sample 1` | any failing scenario (the runner fails on an `ERROR:` line; a scenario stops at its decision cap, so it prints no summary) |
-| `decode` | `test_rmstate.check_dump` / `check_refusals` on the fuzz dumps, `stream_checks` on two `--machine-format rmstate` sessions with the self-checks on (one bo3 under `--closed-decklist`), `check_name_card_candidates` (a Disruptor Flute preset's opening menu: the opponent's registered cards with open decklists, every vocab card under `--closed-decklist`) | any check's failure; a session's `ERROR:` line or missing summary |
-| `isolation` | the includes of `src/state_format/decode.*`, `schema.*`, `json.*`, `recode.*` and `src/knowledge/*` | an include outside `STD_HEADERS`, `ALLOWED_PROJECT_HEADERS` (`decode.h`, `schema.h`, `json.h`), the file's own header and (for `src/knowledge/`) its own headers |
-
-Reproduce a failure:
+| `vocab` | `robomage --check-decks` over the top-level and `league/` decks: every card loads and is in the vocab (13 decks, 215 cards) | <1 s |
+| `concede` | the CR 104.3a sentinels (140 checks) over RMSTATE sessions the gate answers itself: bo1 `-2`; bo3 `-2` into sideboarding and game 2; `-3`; the sentinels between games (`-2` ignored, `-3` ends the match); the same seed and replies give the same frames and the logged concession replays; and concessions at parked queries (Brainstorm's put-back mid-resolution, Cavern of Souls' ETB creature type), each also piped unread into a second `--machine` session, which must write the same frames. Results, narrative and `--replay` of every decision log | ~2 s |
+| `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`, 98) on the engine alone: presets as engine flags, the `--play` resolver, `--narrative --trace-decisions`; every assertion key (`tools/robomage_check/scenarios.h`), the knowledge lines read from the binary dump | ~4 s |
+| `replay` | each corpus decision log replayed (`robomage --replay <name>.rmlog --machine --narrative --trace-decisions`), its stdout against `<name>.replay` byte for byte (64 games) | ~17 s |
+| `state` | the corpus replayed under `--selfcheck-knowledge` (same output, clean `SELFCHECK-STATE` / `SELFCHECK-KNOWLEDGE` summaries); 16 explore fuzz games with the self-checks and dumps; every scenario at `--selfcheck-state-sample 1`; `--rmstate-read` on the dumps; the decoder's refusals of mutated frames; two RMSTATE stream sessions against their dumps (with and without one written); the name-a-card menus with open and closed decklists; the include isolation of the std-only sources | ~2.2 min |
+| `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; six explore games under `--selfcheck-knowledge`; three stream sessions and two `expert+belief` sessions against their dumps (`k_*` / `b_*` included); `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; four archetype-inference sessions against `archetypes.json`; the belief calibration sessions and their report | ~75 s |
+| `fuzz` | C++ explore vs explore in-process (`--agent-a/-b <mode>`) over the matchups (default the ten league mirrors), `--fuzz-games` bo1 games each (matchup `k` game `i`: game seed `seed + 1000k + i`), then one bo3 `explore:patient` match per ring matchup (seed `seed + 500000 + k`); transcripts `ci_out/fuzz_<a>__<b>.txt` | ~40 s |
+| `bench` | decisions per second of explore vs explore, bo1, three league pairings × three games, one engine at a time (reported, no threshold) | ~8 s |
+| `smoke` | scripted hard vs hard through `python/rm_driver.py` (one process per matchup, default the mirrors and the ring, `--smoke-games` each; transcripts `ci_out/smoke_<a>__<b>.txt`), and beside them `python/pycheck.py`: `python/rmstate.py`'s decode of three dumps (an in-process bo1 game and bo3 match, a driver bo3 session under `--closed-decklist`) renders the engine's `--state-dump json` lines byte for byte, both decoders refuse (or skip) the same mutated frames, the scripted agent's self-lethal guard in sculpted positions, the driver's pinned engine seeds, and a driven game imports nothing outside the standard library and `python/`. Skipped with a notice when no `python3` is on `PATH` | ~35 s |
 
 ```bash
-train/.venv/bin/python train/test_selfcheck_state.py --part fuzz      # one part
-# one fuzz game (its seed is in the failure's label); its engine stderr is ci_out/rmstate/fuzz_<seed>.err
-train/.venv/bin/python train/test_selfcheck_state.py --part fuzz --fuzz-seed 102
-# one scenario with the checks on
-ROBOMAGE_ENGINE_FLAGS="--selfcheck-state --selfcheck-state-sample 1" \
-  train/.venv/bin/python train/test_scenarios.py --show <name>
+bin/debug/robomage_check --tier scenarios --scenario 'cr702_21a*' --show narrative
+bin/debug/robomage_check --tier replay                 # one tier
+bin/debug/robomage_check --tier fuzz --matchups all --mode explore:patient --fuzz-games 20 --seed 7
+bin/release/robomage_check --tier bench                # throughput of the release build
+make check                                             # build, then every tier
 ```
-
-### The `knowledge` tier
-
-`train/test_knowledge.py` (`run()` is the tier; `--part` runs one part) keeps each engine's stderr in
-`ci_out/knowledge/` and deletes its dumps and saved streams once checked. Every seat frame of every
-writer carries that writer's knowledge instance's `k_*` tables (`docs/knowledge_store.md` §9.6).
-`--selfcheck-knowledge` (implies `--selfcheck-state`; `src/state_format/selfcheck_knowledge.h`)
-checks, at every decision, every `k_*` fact of both seats against the true world built from the
-engine state, and every knowledge instance's state across the self-check's snapshot restores; a
-failure is an `ERROR: selfcheck-knowledge soundness|snapshot: viewer …, decision …: …` line and each
-engine prints one `SELFCHECK-KNOWLEDGE: decisions=… facts=… errors=N` line at match end. It also
-runs the shadow comparison (`src/state_format/shadow_knowledge.h`): wherever the `k_*` tables and the
-old BQUERY vector's memory (known library tops, known opponent hand cards, the decklist revealed
-bits) disagree, a `SHADOW: <kind> <direction> viewer=… owner=… card=… … events=…` line when the
-mismatch appears, and one `SHADOW-KNOWLEDGE: decisions=… compared=… mismatches=… shown=…` line at
-match end; a mismatch is no engine error, the tier classifies it. The replay corpus runs under it in
-the `rmstate` tier's corpus part (shared engine runs).
-
-| Part | Runs | Fails on |
-|---|---|---|
-| `selftest` | `rmknow --selftest`; `rmknow --exactness 40` (`EXACTNESS_N`) | a failed test or check |
-| `fuzz` | 6 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; ur_delver, bug and uw_control put-backs, wubg_doomsday and reanimator tutors, bug, wrb_energy and reanimator discard, mav's Sylvan Library, reanimator's face-down exile; one with `--selfcheck-state-sample 1`) under `--selfcheck-knowledge`; two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` `SELFCHECK-STATE` and `SELFCHECK-KNOWLEDGE` summaries |
-| `isolation` | three `--machine-format rmstate` sessions (`STREAM_GAMES`: ur_delver vs bug bo1, reanimator vs uw_control bo3, bug vs wubg_doomsday bo3 under `--closed-decklist`), each with a `--rmstate-dump` and `--selfcheck-knowledge`; `test_rmstate.check_stream` (every stream frame equals the dump's for that seat and decision, `k_*` tables included; decision numbers unique), then `rmknow --isolation` for both seats on every dump (the fuzz games' too) and each saved stream (`test_rmstate.check_knowledge_isolation`) | a frame or event difference, a duplicate decision number, a bo3 session without a sideboarding frame, an isolation difference, an `ERROR:` line or a missing summary |
-| `truth` | `rmknow --truth` for both seats on every dump (fuzz and stream sessions): the soundness check against the dump's omniscient frames | a violated fact, a model error, no frame checked |
-| `shadow` | the `SHADOW:` lines of the fuzz and stream sessions' engines, matched against the signatures of `train/regression/knowledge_divergences.json` (each a kind, a direction, a pattern over the line, a classification, a why and a regression scenario; the first that matches classifies it); then every signature's scenario run with `--selfcheck-knowledge` | an unclassified mismatch, a malformed signature file, a scenario that fails or prints no `SHADOW:` line its signature classifies |
-| `archetype` | archetype inference (`docs/knowledge_store.md` §10): four `--machine-format rmstate` sessions (`ARCHETYPE_GAMES`: three under `--closed-decklist`, one bo3, one against bw_dnt's companion; one with open decklists); the METAGAME frame against `archetypes.json`; per seat frame the `k_template` / `k_archetype` facts against the true lists and the cards seen | a tagged deck missing from the METAGAME frame, a label out of order, the true list reported inconsistent, a wrong exact archetype, an open list not classified as itself from the first frame, a consistent hidden list lacking a card seen, an archetype the cards seen pin down not reported exact (or never becoming exact), an `ERROR:` line |
-| `belief` | the belief layer (`docs/knowledge_store.md` §10.6) at `--knowledge-a/-b expert+belief`: two `--machine-format rmstate` sessions each with a dump (`BELIEF_STREAM_GAMES`: reanimator vs ur_delver under `--closed-decklist` and `--selfcheck-knowledge`, burn vs mav with open decklists): stream frames equal the dump's (`b_*` included), `rmknow --isolation --level expert+belief` on each writer's frames, `rmknow --truth` on the dump (probability zero exactly for the lists `k_template` excludes, positive for the true list, rows summing to the full scale); 13 calibration sessions under `--closed-decklist` (every reference list against the one five places on, `calibration_games`): log-loss, Brier, reliability bins and first-vs-last-frame figures printed; `rmknow --belief-exactness 10` (`BELIEF_EXACTNESS_N`) | a structural or isolation difference, a truth error, a mean list or archetype log-loss not below the uniform prior's, the true archetype's mean probability not higher at the games' last frames than at their first, an exactness failure, an `ERROR:` line |
-
-```bash
-train/.venv/bin/python train/test_knowledge.py --part fuzz --fuzz-seed 203   # one fuzz game
-train/.venv/bin/python train/test_knowledge.py --part isolation
-train/.venv/bin/python train/test_knowledge.py --part shadow
-train/.venv/bin/python train/test_knowledge.py --part belief
-# the calibration report over more sessions (every list against the lists 1..3 places on, bo1 and bo3)
-train/.venv/bin/python train/test_knowledge.py --calibration 3 --binary "$PWD/bin/release/robomage"
-# classify the SHADOW lines of any engine stderr (counts per signature; unclassified lines fail)
-train/.venv/bin/python train/test_knowledge.py --classify ci_out/rmstate/corpus.err
-# the soundness check on any game: one errors=0 SELFCHECK-KNOWLEDGE line per engine
-ROBOMAGE_ENGINE_FLAGS=--selfcheck-knowledge train/.venv/bin/python train/regression/replay_diff.py check
-```
-
-### The `agentparity` tier
-
-`train/test_agent_parity.py` (plan step 2, pass 1; `run()` is the tier, `--part` runs one part) plays
-the scripted agent (hard tier, both seats) on its vector view (`scripted_agent.VectorView`) over
-`--machine-format rmstate` (`scripted?view=vector`): `runner.run_games` runs
-`rmstate_env.RMStateNarrativeEnv`, which rebuilds the old observation from each seat's frames and
-`k_*` tables (`rmstate_adapter.SeatAdapter`), and the agent reads its card knowledge from `CARDS`
-(the engine adds the raw scripts under `--rmstate-card-scripts`) and its deck names and the
-opponent's list from `DECKLISTS`. The tier also pins the vector view's own games: the replay
-corpus is the agent's frame-view games (the `replay` tier), so the light corpus set's BQUERY
-transcripts are frozen in `train/regression/agent_parity/bquery_corpus/`, and each such game is played on
-BQUERY and must equal its frozen transcript byte for byte (the BQUERY consumers' agent, until plan
-step 3b deletes them). A game is compared through `project`: the RMSTATE transcript has no
-board block (the adapter rebuilds only what the agent reads), so the lines between `--- Decision N
----` and `Actions:` are left out of both, and the `PA:` / `PB:` hand lines are compared sorted;
-the narrative, every menu and every choice must be identical.
-
-| Part | Runs | Fails on |
-|---|---|---|
-| `cards` | a `--closed-decklist` CARDS frame (every vocab card): `FrameCardKnowledge` against `scripted_agent.VocabCardKnowledge` | any card whose cost row, land flag, property column, script lines or type line differs |
-| `corpus` | `CORPUS_GAMES` of the replay corpus (`--full`: all 64) on both protocols | a light-set BQUERY game that differs from its frozen transcript (`agent_parity/bquery_corpus/`), an RMSTATE projection that differs from the BQUERY game's |
-| `smoke` | `SMOKE_GAMES`: smoke-tier games, two bo3 matches and the listed divergence (`--full`: every smoke-tier game and a bo3 match per league mirror), on both protocols | projections that differ |
-
-A game whose old vector leaked or had a quirk that changed what the agent saw is listed in
-`train/regression/agent_parity_divergences.json` (the game, its first differing decision, the seat,
-the read that differed, a classification naming a signature of `knowledge_divergences.json`, why)
-and re-recorded: its RMSTATE projection is committed as `train/regression/agent_parity/<game>.txt`,
-which the check compares against, and the BQUERY game must still first differ at the listed
-decision. `--record` rewrites those baselines and the frozen BQUERY transcripts (`make regen` runs it). `--lockstep GAME` is the diagnostic that attributes a
-difference: the BQUERY game is played with `--rmstate-dump` and `--selfcheck-knowledge`; at every
-decision the adapter's observation is compared with the real vector block by block and a second agent
-decides on it; the first differing choice is printed with the differing blocks, the menu and the
-classified `SHADOW:` line of the deciding seat for each differing memory block.
-
-```bash
-train/.venv/bin/python train/test_agent_parity.py --full
-train/.venv/bin/python train/test_agent_parity.py --games smoke/burn__bw_dnt/11001
-train/.venv/bin/python train/test_agent_parity.py --lockstep match/bw_dnt__wrb_energy/298
-```
-
-### The `rmagent` tier
-
-`train/test_rm_agent.py` (plan step 2; `run()` is the tier, `--part` runs one part) checks the
-scripted agent's RMSTATE frame view (`train/rm_agent.py`) and the RMSTATE driver
-(`train/rm_driver.py`) where the replay corpus, which pins their games, cannot:
-
-| Part | Runs | Fails on |
-|---|---|---|
-| `names` | a `--closed-decklist` CARDS frame (every vocab card) against every card name constant of `train/scripted_core.py` | a name no `CARDS` row has (a misspelt or renamed card silently disables its rule) |
-| `cards` | `rm_agent.FrameCards` (the structured `CARDS` columns) against the generated tables read by name (`scripted_agent._NameCardKnowledge`) on every vocab card face: mana value, pip colours, land, printed power, Delve, Equipment, Miracle, legendary, basic land types, damage to a chosen target, non-mana activations (lands), artifact / enchantment | a difference not listed in `EXPECTED_CARD_DIFFERENCES` (each listed one with its reason: hybrid and Phyrexian pips, split halves, a two-digit generic cost, damage with no chosen target), or a listed one that no longer differs |
-| `closed` | `CLOSED_GAMES`: scripted-hard bo3 matches under `--closed-decklist` (the opponent's list withheld: the agent reads the lists it can be on from `k_template`), played by the driver | no winner, an `ERROR:` / `FATAL` line or a traceback |
-| `driver` | the RMSTATE driver (`train/rm_driver.py`): `engine_seed` against pinned values and numpy's draw (when installed); its hand-line names against the card vocabulary on every card of a `--closed-decklist` CARDS frame; `TRANSCRIPT_MATCHES` (bo3: scripted hard, explore, explore:patient) played by the driver and by `runner.run_games` on `--machine-format rmstate`; a game in a subprocess; concessions (`actions:` with `-2` / `-3`, bo1 and bo3) | a seed or name that differs, a transcript line that differs, a module of `DRIVER_FORBIDDEN` (numpy, gymnasium, `env`, `runner`, `opponents`, `decode`, `cli_spec`, …) imported by a game, a concession scored otherwise |
-
-```bash
-train/.venv/bin/python train/test_rm_agent.py --part cards
-```
-
-### The C++ gate: `robomage_check`
-
-`tools/robomage_check/` builds `bin/<config>/robomage_check` (part of `make`; `make check` runs
-every tier). It runs the engine as subprocesses, in parallel (`-j N`, default the cores), and links
-no engine translation unit: only the std-only RMSTATE decoder (`src/state_format/decode.*`,
-`schema.*`) and the agents' frame reader and Python-compatible generator (`src/agents/seat_frames.*`,
-`py_random.*`). It is built like the engine (`-fno-exceptions`). Every requested tier runs; the run
-ends with each tier's PASS/FAIL, a wall-time table and a `Reproduce:` line, and exits 1 on any error
-(warnings alone pass; the same error / warning classification as above, the transcript scan ported
-in `scan.cpp`). Flags: `--tier a,b`, `-j N`, `--seed N` (fuzz and smoke), `--binary PATH` (default
-the engine beside it), `--out-dir DIR` (default `ci_out/`), `--fuzz-games N`, `--smoke-games N`,
-`--matchups PRESET`, `--mode explore|explore:patient`, `--scenario GLOB` (repeatable) with
-`--show output|narrative|dump`, `--record` (the replay baselines).
-
-| Tier | Checks | Python counterpart | Time (debug, 4 cores) |
-|---|---|---|---|
-| `vocab` | `robomage --check-decks` over the top-level and `league/` decks | `vocab` | <1 s |
-| `concede` | the concession sentinels over `--machine-format rmstate` sessions it answers itself (bo1 `-2`, bo3 `-2` into sideboarding and game 2, `-3`, the sentinels between games, same seed same frames and `--replay` of the logged concession) and at parked queries (Brainstorm's put-back, Cavern of Souls' ETB type; `-2` bo1 / bo3 and `-3`), each also piped into BQUERY `--machine` with the same replies; results, narrative and `--replay` of each decision log | `concede` (its checks 1-4 and 7; 5 and 6 test the Python `GameDriver`) | ~3 s |
-| `scenarios` | every scenario on the engine alone (the `--play` resolver, presets as engine flags), every assertion key of `test_scenarios.py` with its failure messages; the knowledge lines read from the binary dump | `scenarios` | ~5 s |
-| `replay` | each corpus decision log replayed: `robomage --replay <name>.rmlog --machine --narrative --trace-decisions`, its stdout (the log path in the replay banner as the file name, the trace's board lines left out) against `<name>.replay` byte for byte | `replay` (which plays the live agent) | ~20 s |
-| `state` | the corpus replayed under `--selfcheck-knowledge` (same output; clean summaries; shadow lines classified), the `rmstate` tier's 16 fuzz games with the C++ explore agents, every scenario at `--selfcheck-state-sample 1`, `--rmstate-read` on the dumps, the decoder's refusals, two RMSTATE sessions against their dumps (with and without one), the name-a-card menus, the include isolation | `rmstate` (its engine-side parts; the Python decoder's comparisons stay there) | ~2.5 min |
-| `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; the `knowledge` tier's 6 fuzz games under `--selfcheck-knowledge`; its 3 stream sessions and the 2 belief-structure sessions against their dumps; `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; the shadow lines classified and every signature's scenario; the 4 archetype-inference sessions against `archetypes.json`; the 13 belief calibration sessions and their report | `knowledge` (every part) | ~85 s |
-| `fuzz` | C++ explore vs explore (`--agent-a/-b`, the Python explore tier's games) over the league mirrors, `--fuzz-games` per matchup (matchup `k` game `i`: game seed `seed + 1000k + i`), and one bo3 `explore:patient` match per ring matchup; transcripts `ci_out/fuzz_<a>__<b>.txt`, draws saved beside them | `fuzz` | ~45 s |
-| `bench` | decisions/s of explore vs explore over three pairings × three games, one engine at a time (no threshold) | `train/bench_engine.py` | ~10 s |
-| `smoke` | scripted hard vs hard through `train/rm_driver.py` (one process per matchup, the `smoke` tier's games), and beside them `train/pycheck.py`: `train/rmstate.py`'s decode of three dumps (an in-process bo1 game and bo3 match, a driver bo3 session under `--closed-decklist`) renders the engine's `--state-dump json` lines byte for byte, both decoders refuse (or skip) the same mutated frames, and a driven game imports nothing outside the stdlib-only kept Python (`smoke_pycheck.txt`); skipped with a notice without a Python interpreter (the venv's, else `python3` on `$PATH`) | `smoke`; the Python decoder's checks of `rmstate` and `rmagent`'s driver imports | ~35 s |
-
-**The replay corpus** (`tests/corpus/`): each game's decision log `<name>.rmlog` (RMLOG v2: seed,
-setup flags, both decklists, every decision) and its replay baseline `<name>.replay`.
-`train/record_corpus.py` (`make regen`; stdlib only) plays the scripted agent with
-`--decision-log <name>.rmlog`, then runs `robomage_check --tier replay --record` for the baselines.
-Checking needs no Python; re-recording needs the agent.
-
-```bash
-bin/debug/robomage_check --tier scenarios --scenario 'ward*' --show narrative
-bin/debug/robomage_check --tier replay          # one tier; --record rewrites the baselines
-make check                                      # build, then every tier
-```
-
-### Opt-in tiers (valid for `--tier`, not in the default run)
-
-| Tier | Checks | Needs |
-|---|---|---|
-| `actor` | `test_actor_parity.py` (obs bit-parity), `test_mcts_parity.py` (MCTS visit parity incl. two-model legs), `test_actor_shards.py` (shard schema/ingest), `test_actor_trains.py` (C++ vs Python shards train alike), `test_az_gate.py` (actor-backend gate driver) | `bin/<config>/az_actor` (`make actor`) + torch, else `[skip]`. Errors (instead of running) if any `src/` engine source (excluding `src/gen/`) is newer than the actor binary. The actor links the venv's libtorch but compiles against its headers, so after any change of the venv's torch rebuild both configs (`make actor` and `make actor BUILD=RELEASE`): stale actors abort with c10 errors (e.g. `set_stride`) or fail parity spuriously |
-| `analysis` | `test_analysis_session.py` (chunked `IncrementalSearch` bit-identical to `run_search`, detached-mirror lockstep, rewind, cancellation), `test_shard_replay.py` (`analysis.py browse --source DIR` reconstruction), `test_browse_session.py` (browser core), `test_gui_session_io.py` (`.rmplay`/`.rmtrace` save/load), `test_tree_follow.py` (SearchController tree-reuse gates, hidden-info fingerprint) | the engine; torch-free |
-| `treerebuild` | `test_tree_rebuild.py`: a recorded match's searches (fixed-sims and timed) re-run from their recorded world seeds + sim counts reproduce the recorded root visits exactly; cached tree reopens identical; followed rows resolve to their origin | the engine; torch-free |
-| `azinspect` | `test_az_inspect.py`: every `az_inspect` view against a fresh net + synthetic shards | torch (else `[skip]`); no engine |
-| `gui` | headless PySide6 legs (offscreen): play board, record-shards, analysis window, session save/reopen, `.rmtrace` open, shard browser, and a torch-free `mcts:uniform` search recording whose tree is rebuilt — each browsing only the scratch recordings the earlier legs wrote | PySide6 (else `[skip]`) |
-
-```bash
-train/.venv/bin/python train/ci_check.py --tier actor
-```
-
-Each `gui` leg is one process selected by `ROBOMAGE_SMOKE` (a comma list of `play[:N]`,
-`analysis`, `session`, `trace`, `browser[:DIR]`, `tree:DIR`; parsed by `cli_spec.smoke_legs`).
-Reproduce a leg by hand under a memory cap, against a small recording only (never a training
-pool):
-
-```bash
-QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=play:8 ROBOMAGE_RECORD_DIR=/tmp/rec \
-  train/.venv/bin/python train/play.py --no-analysis --deck-a league/ur_delver \
-  --deck-b league/gw_maverick --player-b scripted --format bo1 --record-shards
-QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=browser:/tmp/rec \
-  systemd-run --user --scope -q -p MemoryMax=8G -p MemorySwapMax=0 \
-  train/.venv/bin/python train/gui_main.py
-```
-
-Flags: `--tier a,b` (subset), `--smoke-games N`, `--fuzz-games N`, `--seed N` (default 1),
-`--mode explore|explore:patient` (fuzz agent), `--matchups mirrors|ring|mirrors+ring|all|"a:b,c:d"`
-(default: smoke `mirrors+ring`, fuzz `mirrors`), `--out-dir DIR` (default `ci_out/`). The run
-ends with a per-tier wall-time table and a `Reproduce:` line naming its tiers, seed, mode and
-matchups.
 
 ### Error and warning classification
 
-Draws are not acceptable, but the causes differ in severity:
+Draws are not acceptable, but the causes differ in severity (`tools/robomage_check/scan.h`):
 
 - **Error** (fails the gate): an engine crash (nonzero exit / EOF mid-game), fewer games
-  completed than requested, or any transcript line matching `^ERROR:` / `^FATAL:`, a Python
-  traceback, `Segmentation fault`, a failed assertion, `Aborted` or `core dumped` (a non-fatal
-  engine `ERROR:` is not acceptable per `CLAUDE.md`).
+  completed than requested, a failed check, or any output line starting `ERROR:` / `FATAL:` or
+  holding a Python traceback, `Segmentation fault`, a failed assertion, `Aborted` or
+  `core dumped` (a non-fatal engine `ERROR:` is not acceptable per `CLAUDE.md`), or a
+  `SELFCHECK-STATE:` / `SELFCHECK-KNOWLEDGE:` summary without `errors=0`.
 - **Warning** (flagged for review, passes): a game that ends with no winner — a drawn game (both
-  players lost at once, CR 104.4a) or a **stall** where the engine hit its step cap (either way
-  its log is moved into `--out-dir`) — or an engine `WARNING:` line.
+  players lost at once, CR 104.4a) or a **stall** — or an engine `WARNING:` line. A drawn game's
+  transcript is also saved as `ci_out/<tier>_<a>__<b>_g<i>_draw_<stamp>.txt`.
 
-`WARNING: Unrecognized ability param` lines stay in the transcript (greppable) but are not
+`WARNING: Unrecognized ability param` lines stay in the transcripts (greppable) but are not
 surfaced: they fire in bulk for cosmetic / AI-hint params. Params the parser drops without
 warning are the `ignored_keys` set in `src/parse.cpp`; their review is tracked in `todo.md`
 ("Audit: ability-param keys the parser silently ignores").
 
+## The replay corpus (`tests/corpus/`)
+
+Each corpus game is two files:
+
+- `<name>.rmlog` — its decision log (RMLOG v2: `SEED`, `FLAGS`, both decklists, every decision),
+  written by the engine's `--decision-log` while `python/record_corpus.py` plays the scripted
+  agent (hard, both seats) through `python/rm_driver.py`: one bo1 game per scenario at a frozen
+  seed — the curated `delver` / `doomsday` / `mav` decks in every seating (9 games) and every
+  league pairing plus each mirror (55 games, `lg_<a>__<b>`);
+- `<name>.replay` — its baseline: the stdout of `robomage --replay <name>.rmlog --machine
+  --narrative --trace-decisions`, with the replay banner's log path reduced to the file name and
+  the trace's board lines (between `| decision` and `| menu:`) left out, so it holds the
+  narrative and each decision's header, menu and choice (`tools/robomage_check/corpus.h`).
+
+Checking needs no Python; re-recording needs the agent. The corpus is identical from the debug
+and release builds and **platform-portable**: all gameplay randomness goes through
+`src/stable_rng.h` (hand-rolled Fisher–Yates + rejection sampling over the raw mt19937 stream), so
+Mac and Linux produce byte-identical transcripts from a seed. Never call `std::shuffle`,
+`std::uniform_int_distribution` or `rand()` with `cur_game.rng.engine` (or for any gameplay
+decision): their output is implementation-defined and differs between libstdc++ (CI) and libc++
+(macOS), which would lock the corpus, RMLOG replays and bug-repro seeds to one platform.
+
 ## Workflows
 
 - **`.github/workflows/ci.yml`** — push / PR to `main`, and `workflow_dispatch`. Runs `make check`
-  (the C++ gate, every tier) with the fixed seed, so a red run is the diff's fault, not RNG.
-  Transcripts are uploaded as `ci-transcripts-<run_id>` even on success, so stall-draw logs are
-  reviewable.
+  (every tier) with the fixed seed, so a red run is the diff's fault, not RNG. `ci_out/` is
+  uploaded as `ci-transcripts-<run_id>` even on success, so stall and draw logs are reviewable.
 - **`.github/workflows/nightly-fuzz.yml`** — daily 08:00 UTC, plus manual (`games`, `seed`
-  inputs). One job, `fuzz`: the C++ gate's `fuzz` tier (in-process C++ explore) over **all**
-  league matchups, once with `explore` and once with `explore:patient`, 40 games per matchup, with
-  a **rotating** seed (run number × 100000 unless given). The job summary prints the exact local
-  reproduce command; artifact `nightly-fuzz-explore[-patient]-<run>`.
+  inputs). Two matrix jobs run the gate's `fuzz` tier over **all** league matchups (100 ordered
+  pairs plus the bo3 ring matches), one with `explore` and one with `explore:patient`, 40 games per
+  matchup by default, with a **rotating** seed (run number × 100000 unless given). The job summary
+  prints the exact local reproduce command; artifact `nightly-fuzz-explore[-patient]-<run>`.
 
-All jobs share `.github/actions/setup-robomage` (Python 3.12, stdlib only: card-script
-provisioning and the `smoke` tier; card-script provisioning, ccache, debug build). The card-script
-cache is keyed on the `FORGE_PIN` hash (a pin bump restores nothing and re-fetches everything) and
-saved right after provisioning, so even a failing first run leaves a warm cache; the fetch tool is
+Both share `.github/actions/setup-robomage`: Python 3.12 (stdlib only: card-script provisioning
+and the `smoke` tier), card-script provisioning, ccache and the debug build. The card-script cache
+is keyed on the `FORGE_PIN` hash (a pin bump restores nothing and re-fetches everything) and saved
+right after provisioning, so even a failing first run leaves a warm cache; the fetch tool is
 add-only, so a stale cache within a pin only re-fetches the delta.
 
 ## Reproducing a CI failure locally
 
 1. **PR gate:** run `make check` (same command, same fixed seed). The failing tier names its
-   transcript under `ci_out/`; the run's `ci-transcripts-*` artifact has CI's copies. Re-run one
-   tier with `bin/debug/robomage_check --tier <name>` (the run's last line is its `Reproduce:`
-   command).
-2. **Nightly fuzz:** run the `bin/debug/robomage_check --tier fuzz --matchups all --mode …
+   transcript or engine stderr under `ci_out/` (a replay drift writes the actual output to
+   `ci_out/replay/<name>.replay` and names the first differing line); the run's
+   `ci-transcripts-*` artifact has CI's copies. Re-run one tier with
+   `bin/debug/robomage_check --tier <name>` (the run's last line is its `Reproduce:` command).
+2. **One scenario:** `bin/debug/robomage_check --tier scenarios --scenario <name> --show output`
+   prints the engine's whole output; the engine command it ran is the scenario's presets as flags
+   (see `scenarios.h`).
+3. **One fuzz or corpus game by hand:** a fuzz game is exactly `cd bin && ./debug/robomage
+   --agent-a explore --agent-b explore --game-seed <seed> --deck-a league/<a> --deck-b league/<b>
+   --narrative --trace-decisions` (the bo3 leg: `explore:patient` and `--bo3`; the seed is in the
+   tier's report line); a corpus game is `cd bin && ./debug/robomage --replay
+   ../tests/corpus/<name>.rmlog --machine --narrative --trace-decisions`.
+4. **Nightly fuzz:** run the `bin/debug/robomage_check --tier fuzz --matchups all --mode …
    --fuzz-games … --seed …` line from the job summary; the `nightly-fuzz-*` artifact has the
    transcripts.
 
-**Extra engine flags.** `ROBOMAGE_ENGINE_FLAGS` (whitespace-separated) is appended to the command
-line of every engine a Python `RoboMageEnv` starts (`train/env.py`: the harness, `observe`, the
-scenario runner), e.g. `ROBOMAGE_ENGINE_FLAGS=--trace-visibility` to narrate reveal windows
-(`VISIBILITY:` lines). A scenario passes its own through its `engine_flags` key
-(`test_scenarios.py`). Leave it unset for `make check`: a flag that changes output changes
-transcripts. `ROBOMAGE_ENGINE_FLAGS="--rmstate-dump /abs/dir/d_%p.rms --state-dump json"` writes
-every engine's RMSTATE frames (and their JSON lines) beside an unchanged run; check such dumps
-with `train/.venv/bin/python train/test_rmstate.py --dumps /abs/dir/d_*.rms` (engine re-encode byte
-identity, Python vs C++ JSON). `ROBOMAGE_ENGINE_FLAGS=--selfcheck-state` runs the state format's
-self-checks in every engine (`src/state_format/selfcheck.h`, `docs/state_format.md` §10): it
-changes no transcript (the replay corpus stays byte-identical under it), failures are `ERROR:`
-lines on the engine's stderr, and each engine prints a `SELFCHECK-STATE: … errors=N` summary
-line on stderr at match end; `--selfcheck-state-sample N` (default 8) sets how often the sampled
-permutation and snapshot checks run. `ROBOMAGE_ENGINE_FLAGS=--selfcheck-knowledge` adds the knowledge
-sidecar's soundness check (and implies `--selfcheck-state`): a `SELFCHECK-KNOWLEDGE: … errors=N`
-summary per engine. `train/test_rmstate.py` alone plays its own fuzz games and
-`--machine-format rmstate` sessions (`run()` is the entry point for a gate tier), and checks the
-knowledge isolation on them; `train/test_rmstate.py --isolation FILE… [--knowledge-a off]` runs
-just that on given dumps or saved streams: `bin/<config>/rmknow --isolation --viewer A|B --level
-off|expert --in FILE` recomputes every seat frame's `k_*` tables from the frames and compares them
-with the engine's byte for byte. `--knowledge-a off` / `--knowledge-b off` (engine flags) turn a
-seat's sidecar down to the `k_meta` row alone; play is the same.
+**Engine self-checks on any game.** `--selfcheck-state` runs the state format's self-checks
+(`src/state_format/selfcheck.h`, `docs/state_format.md` §10) and `--selfcheck-knowledge` adds the
+knowledge sidecar's soundness check (`docs/knowledge_store.md` §9.5); neither changes any other
+output (the replay corpus stays byte-identical under them), failures are `ERROR:` lines on the
+engine's stderr, and each engine prints a `SELFCHECK-STATE: … errors=N` /
+`SELFCHECK-KNOWLEDGE: … errors=N` summary at match end. `--selfcheck-state-sample N` (default 8)
+sets how often the sampled permutation and snapshot checks run. `--rmstate-dump FILE` (`%p` = the
+process id) writes every viewer's frames beside an unchanged run; `robomage --rmstate-read FILE`
+re-encodes them byte for byte, and `bin/debug/rmknow --isolation --viewer A|B --in FILE`
+recomputes every seat frame's `k_*` tables from the frames and compares them with the engine's.
+The driver passes any engine flag through `--engine-flags "…"` or `$ROBOMAGE_ENGINE_FLAGS`.
 
 ## Intentionally changing behavior
 
-Some tiers pin current behavior, so an **intended** change updates them in the same commit (the
-diff is part of the review). The one-command path is **`make regen`**: provision the card set,
-`make`, then re-record the replay corpus. Review and commit the
-changed files. What it covers:
+The `replay` tier pins current behavior, so an **intended** change re-records the corpus in the
+same commit (the diff is part of the review):
 
-- **`replay` drift** from a deliberate engine / agent / card-data change: re-record and commit.
-  ```bash
-  python3 train/record_corpus.py   # decision logs, then their replay baselines
-  ```
-  The corpus is **platform-portable**: all gameplay randomness goes through `src/stable_rng.h`
-  (hand-rolled Fisher–Yates + rejection sampling over the raw mt19937 stream), so Mac and Linux
-  produce byte-identical transcripts from a seed. Never call `std::shuffle`,
-  `std::uniform_int_distribution` or `rand()` with `cur_game.rng.engine` (or for any gameplay
-  decision): their output is implementation-defined and differs between libstdc++ (CI) and
-  libc++ (macOS), which would lock the corpus, RMLOG replays and bug-repro seeds to one platform.
-- **`pygen` staleness** after editing a C++/JSON codegen input: `make pygen` (every generator,
-  unconditionally, write-if-changed; no longer part of `make`, only of `make actor`, until plan
-  step 3b deletes the codegen), then commit `train/_enums.py` and `src/gen/archetypes_gen.h`.
-  The other generated files are untracked; nothing to commit.
+```bash
+make regen    # provision the card set, `make`, then python3 python/record_corpus.py
+```
+
+`record_corpus.py` replays the scripted games with the fresh debug binary, rewriting each
+`<name>.rmlog`, then runs `robomage_check --tier replay --record` for the baselines; an unchanged
+engine + agent + card data reproduces every byte. Review and commit the changed files with the
+reason in the commit message. A scenario whose assertion an intended change breaks is edited by
+hand.
 
 `make refetch` deletes the local card/token scripts, re-provisions them at the pinned Forge
-commit and runs `make check` **without** re-recording, to detect whether fresh scripts drift
-from the committed corpus; if the drift is intended, follow with `make regen`.
+commit and runs `make check` **without** re-recording, to detect whether fresh scripts drift from
+the committed corpus; if the drift is intended, follow with `make regen`.
 
-`train.py observe --player-a explore --player-b explore --verbose --out FILE` is the manual,
-exploratory fuzz campaign (dumps a transcript for review; always exits 0). The gating fuzz is
-`robomage_check --tier fuzz`.
+The gating fuzz is `robomage_check --tier fuzz`; a larger campaign is the same tier with
+`--matchups all --fuzz-games N` (and `--mode explore:patient`), its transcripts under `ci_out/`.
