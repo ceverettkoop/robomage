@@ -8,8 +8,8 @@ the Python front ends. It is archived in place, not forked: branch `archive/rl-s
 `rl-stack-final`, if created) ends at `cf7f97f`, the last commit with both stacks, and
 development continues on `main` in this repository.
 
-**Status: steps 1–3 and 4a are done** (each step's status paragraphs below are its history);
-4b and step 5 are the plan forward. Paths under `train/` in those paragraphs name files deleted in step
+**Status: steps 1–4 are done** (each step's status paragraphs below are its history); step 5
+is the plan forward. Paths under `train/` in those paragraphs name files deleted in step
 3b (they are on `archive/rl-stack`), except the seven kept Python files, which moved to `python/`
 and are written here with their current paths.
 
@@ -583,6 +583,20 @@ corpus baseline filter recognises a menu row exactly (`|   <i>: `), so the corpu
 byte-identical and the scenarios pass unchanged. Left for part 2: `GameState` /
 `populate_gamestate` / `print_game_state` now serve only the board a `--replay` without
 `--machine` prints; the `cli` tier.
+
+**Status: part 2 done; 4b and step 4 are done.** `GameState`, `populate_gamestate`,
+`print_game_state` and `src/machine_io.*` are deleted. A plain `--replay` prints the narrative and
+the replayed inputs, no board (its output is the output flags'); the corpus replays under
+`--machine`, so its baselines are unchanged. What they still provided moved to its users:
+`source_vocab_idx` (`queries/characteristics.h`), `SIDEBOARD_MENU_LIMIT` (`game_driver.cpp`) and
+`ACTOR_MAX_ACTIONS` (`actor/az_layout.h`). Auto-pass is back as a frame-only command: `z` (`pass
+turn`) answers the pass row until the next turn begins, `z mine` until the seat's own next turn;
+it starts only at a plain priority decision and stops at the first decision of that turn, at any
+other decision (mandatory choices, attackers, blockers, targets, payments, mulligans) and when the
+opponent puts a new object on the stack. The gate's `cli` tier (`tools/robomage_check/tier_cli.cpp`)
+plays the scripted stdin sessions of `tests/cli/<name>.json` and compares each stdout with
+`<name>.out` byte for byte (`--record` rewrites them): human vs explore, hotseat, manual payment,
+auto-pass and a bo3 match conceded.
 
 **Exit:** the C++ engine, RMSTATE with knowledge tables, the C++ CLI, the C++ gate, and the
 kept Python below.

@@ -68,7 +68,13 @@ banner before each decision. Commands at the prompt:
 | `card <#n\|name>` | a card's details from the `CARDS` frame (cost, type line, P/T, oracle text): an object of the board by handle, or a card of the match by name |
 | `know` | the knowledge panel in full: pools with each card's least and most copies, known library positions, copies seen, consistent reference lists, archetypes (and beliefs at `expert+belief`); off under `--knowledge-a/-b off` |
 | `log [n\|all]` | what this seat saw happen this match (its events), the last *n* lines (default 30) |
+| `z [mine]` (`pass turn [mine]`) | auto-pass: answer "Pass priority" at this seat's priority decisions until the next turn begins (`mine`: until this seat's own next turn begins), printing what happens and one line per pass |
 | `help`, `quit` | |
+
+Auto-pass reads only the seat's frames. It starts only at a plain priority decision (a pass row,
+no pending decision or cost) and stops, prompting as usual, at the first decision of the turn it
+waits for, at any other decision (a mandatory choice, attackers or blockers, a target, a payment, a
+mulligan, ...) and when the opponent puts a new object on the stack, so the seat can respond.
 
 Anything else re-prompts; end of input ends the run (exit status 0). `--trace-decisions` prints
 the same board, pending decision and menu for every decision as `| ` lines.
@@ -253,8 +259,10 @@ games always log there). `--replay FILE` replays it deterministically: the heade
 setup (decks, seed, `--bo3`, `--no-shuffle`, `--no-auto-mana`, the test-setup presets,
 `--max-decisions`), setup flags given alongside are ignored with a warning, and output flags
 (`--machine`, `--narrative`, `--trace-decisions`, `--rmstate-dump`, `--knowledge-a/-b`, the
-self-checks, …) still apply. A replay whose logged index is outside the live menu stops with
-`replay diverged at decision N`.
+self-checks, …) still apply. A plain `--replay` prints the narrative and each replayed input (no
+board); under `--machine` it prints only what the output flags ask for. `--player` / `--log-viewer`
+limit the narrative's one-sided lines to that seat's view (a replay has no human seat). A replay
+whose logged index is outside the live menu stops with `replay diverged at decision N`.
 
 ```bash
 cd bin

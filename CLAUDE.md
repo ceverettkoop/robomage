@@ -59,8 +59,8 @@ seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and so
 `docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
 and its driver over that protocol, used for agent games and to record the replay corpus.
 
-The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–3
-done; 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer and in-process
+The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–4
+done — 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer and in-process
 actor). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
 TUI/GUI) is archived in place: branch `archive/rl-stack` (tag `rl-stack-final`, if created), whose
 tip `cf7f97f` is the last commit with both stacks.
@@ -125,6 +125,7 @@ background** and make the live output inspectable by the user:
   | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
+  | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
@@ -549,7 +550,8 @@ sections above are not repeated here.
 - `src/cli/` — the C++ CLI: `board.h` renders one seat's decoded frames as text (board, pending
   decision and cost, menu, knowledge panel, zones, card details, events; also `--trace-decisions`),
   `human.h` the human seat (an in-process agent reading stdin: menu rows and the `board` / `zone` /
-  `card` / `know` / `log` / `concede` / `help` commands); std + the agents' frame reader only
+  `card` / `know` / `log` / `z` (auto-pass) / `concede` / `help` commands); std + the agents' frame
+  reader only
 - `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, removed-flag
   errors, replay-header flags, which seats are human); keep `cli_print_help` in
   `src/cli_output.cpp` in sync
@@ -616,6 +618,8 @@ step 5 adds a main.
 
 **Tests (`tests/`)**
 - `tests/scenarios/*.json` — the rules-regression and state-format / knowledge sharpness scenarios
+- `tests/cli/<name>.json` + `<name>.out` — the `cli` tier's sessions (engine flags and stdin lines)
+  and their golden stdout (`robomage_check --tier cli --record` rewrites them)
 - `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
   baseline; `docs/ci.md`)
 
