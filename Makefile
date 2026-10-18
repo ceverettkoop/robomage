@@ -98,7 +98,7 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 
 .DEFAULT_GOAL := all
 
-all: pygen program rmknow
+all: pygen program rmknow robomage_check
 
 # Regenerate ALL codegen on EVERY build. card_costs.py / card_props.py and the C++
 # mirror header src/gen/card_costs_gen.h derive from card-script CONTENT (ManaCost,
@@ -137,15 +137,16 @@ program:$(C_OBJ) $(CXX_OBJ)
 
 # Standardized engine test gate — the single command CI and developers run. Builds
 # first (via `all`), then runs every tier of train/ci_check.py (codegen-sync, vocab
-# coverage, byte-identical replay corpus, deterministic league smoke, short fuzz).
-# Exits nonzero on any finding. Requires the card scripts to be provisioned first
+# coverage, byte-identical replay corpus, deterministic league smoke, short fuzz; its
+# cppgate tier runs bin/<config>/robomage_check). Exits nonzero on any finding. Requires the card scripts to be provisioned first
 # (tools/forge_fetch/provision_decks.py; the SessionStart hook does this).
 check: all
 	$(PYTHON) train/ci_check.py
 
 # Regenerate every derived artifact after an intentional C++ change: provision
 # the card set (codegen reads card scripts), then re-record the replay corpus with
-# the fresh binary, and the scripted agent's BQUERY-pinned games and re-recorded
+# the fresh binary (the transcripts, each game's decision log and, through
+# robomage_check --tier replay --record, its replay baseline), and the scripted agent's BQUERY-pinned games and re-recorded
 # divergences (train/test_agent_parity.py --record). Run this when `make check`
 # reports corpus drift, then commit the results. `all` already regenerates all codegen unconditionally (the `pygen` target),
 # so provisioning first — which may fetch changed scripts — guarantees the codegen it
@@ -258,7 +259,24 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmknow $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-.PHONY: all pygen check regen refetch clean actor actor-syntax rmknow
+# ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
+# tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
+# the std-only RMSTATE decoder and schema and the agents' std-only frame reader and Python-compatible
+# generator. Built with the engine's flags (-fno-exceptions); `make check-cpp` runs every tier.
+RMCHECK_SRCS := $(wildcard tools/robomage_check/*.cpp)
+RMCHECK_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMCHECK_SRCS))
+RMCHECK_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o
+
+robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
+
+# Every robomage_check tier (the Python gate, `make check`, runs them too through its cppgate tier).
+check-cpp: all
+	$(BINDIR)/robomage_check
+
+.PHONY: all pygen check check-cpp regen refetch clean actor actor-syntax rmknow robomage_check
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -270,7 +288,7 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 # relink against libtorch and is gitignored separately).
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/robomage_check
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -279,3 +297,4 @@ clean:
 # objects behind and bin/az_actor links two different obs layouts together.
 -include $(ACTOR_OBJ:.o=.d)
 -include $(RMKNOW_OBJ:.o=.d)
+-include $(RMCHECK_OBJ:.o=.d)

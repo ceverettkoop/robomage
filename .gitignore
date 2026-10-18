@@ -2,6 +2,7 @@
 lib/libraylib.a
 bin/*/robomage
 bin/*/rmknow
+bin/*/robomage_check
 compile_commands.json
 obj/*.o
 obj/*/*.o
