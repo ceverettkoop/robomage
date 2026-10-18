@@ -2102,8 +2102,7 @@ Player B may put a Land card from among the revealed cards into their hand:
 | menu:
 |   0: Put Flooded Strand (Land) into hand
 |   1: Put Polluted Delta (Land) into hand
-|   2: Put Polluted Delta (Land) into hand
-|   3: Put no Land card into hand
+|   2: Put no Land card into hand
 (REPLAY) [T29 | First Main | Player B] Input: 0
 | >> Player B: 0 (Put Flooded Strand (Land) into hand)
 Player B chooses Flooded Strand

@@ -537,8 +537,7 @@ Player B may put a Artifact card from among the revealed cards into their hand:
 | decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Lotus Petal (Artifact) into hand
-|   1: Put Lotus Petal (Artifact) into hand
-|   2: Put no Artifact card into hand
+|   1: Put no Artifact card into hand
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Put Lotus Petal (Artifact) into hand)
 Player B chooses Lotus Petal
