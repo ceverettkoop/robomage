@@ -13,6 +13,7 @@
 #include "../game_driver.h"
 #include "../queries/players.h"
 #include "../search_server.h"
+#include "agent_feed.h"
 #include "dump.h"
 #include "encode.h"
 #include "events.h"
@@ -63,7 +64,8 @@ Zone::Ownership rmstate_deciding_seat() {
 }
 
 void rmstate_begin_decision() {
-    if (rmstate_dump_path.empty() && !machine_format_rmstate && !selfcheck_state_enabled()) return;
+    if (rmstate_dump_path.empty() && !machine_format_rmstate && !selfcheck_state_enabled() && !agent_feed_enabled())
+        return;
     ++(sideboard_phase ? cur_game.state_sideboard_decisions : cur_game.state_decisions);
     for (Zone::Ownership viewer : {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN}) issue_handles_canonical(viewer);
 }

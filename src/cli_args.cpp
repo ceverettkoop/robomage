@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "agents/game_seed.h"
 #include "cli_output.h"
 #include "components/zone.h"
 #include "error.h"
@@ -35,6 +36,7 @@ struct ParsedOption {
 static std::vector<std::string> split_card_list(const std::string &csv);
 static bool is_seat_a(const char *value);
 static int knowledge_level_value(const char *value);
+static long non_negative_value(const char *flag, const char *value);
 static const CliOption *find_option(const std::string &name);
 static const CliOption *find_header_option(const std::string &key);
 static std::string header_key(const CliOption &option);
@@ -91,6 +93,13 @@ static const CliOption OPTIONS[] = {
         [](DecisionLogHeader &h, const std::string &k) {
             if (closed_decklist) h.add_flag(k);
         }},
+    // Stop the run at the first decision past N (end_run_at_decision_cap), so a capped log replays
+    // to the same point.
+    {"--max-decisions", nullptr, true, true,
+        [](const char *v) { max_decisions = non_negative_value("--max-decisions", v); },
+        [](DecisionLogHeader &h, const std::string &k) {
+            if (max_decisions >= 0) h.add_flag(k, std::to_string(max_decisions));
+        }},
 
     // Setup options recorded in their own header fields (DECK_A / DECK_B / SEED)
     {"--deck", nullptr, true, true,
@@ -107,6 +116,32 @@ static const CliOption OPTIONS[] = {
             seed_value = static_cast<unsigned int>(std::stoul(v));
         },
         nullptr},
+    // The game the Python drivers call seed N: engine seed engine_seed_for_game(N), the agents'
+    // generator seeded with N (agents/game_seed.h).
+    {"--game-seed", nullptr, true, true,
+        [](const char *v) {
+            game_seed_given = true;
+            game_seed_value = static_cast<uint64_t>(non_negative_value("--game-seed", v));
+            seed_override = true;
+            seed_value = agents::engine_seed_for_game(game_seed_value);
+        },
+        nullptr},
+    // A seat's stacked deck: these cards first (the opening hand), then its --library-a/-b
+    // (load_launch_deck). Implies --no-shuffle for both seats.
+    {"--hand-a", nullptr, true, true,
+        [](const char *v) {
+            hand_a_cards = split_card_list(v);
+            no_shuffle = true;
+        },
+        nullptr},
+    {"--hand-b", nullptr, true, true,
+        [](const char *v) {
+            hand_b_cards = split_card_list(v);
+            no_shuffle = true;
+        },
+        nullptr},
+    {"--library-a", nullptr, true, true, [](const char *v) { library_a_cards = split_card_list(v); }, nullptr},
+    {"--library-b", nullptr, true, true, [](const char *v) { library_b_cards = split_card_list(v); }, nullptr},
 
     // Input / output options; honored in replay mode
     {"--replay", nullptr, true, false,
@@ -137,6 +172,39 @@ static const CliOption OPTIONS[] = {
             log_viewer_owner = is_seat_a(v) ? Zone::PLAYER_A : Zone::PLAYER_B;
         },
         nullptr},
+    // In-process agents (agents/driver.h); each implies --machine.
+    {"--agent-a", nullptr, true, false,
+        [](const char *v) {
+            agent_a_spec = v;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--agent-b", nullptr, true, false,
+        [](const char *v) {
+            agent_b_spec = v;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--play", nullptr, true, false,
+        [](const char *v) {
+            play_script_given = true;
+            play_script_specs = v;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--actions", nullptr, true, false,
+        [](const char *v) {
+            actions_script_given = true;
+            actions_script = v;
+            machine_mode = true;
+        },
+        nullptr},
+    // The board and menu of every decision on the game log (agents/trace.h).
+    {"--trace-decisions", nullptr, false, false, [](const char *) { trace_decisions = true; }, nullptr},
+    // Check the decks' cards against the card vocabulary and their scripts instead of playing
+    // (deck_check.h).
+    {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
+    {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
     {"--narrative", nullptr, false, false, [](const char *) { narrative_mode = true; }, nullptr},
     {"--log-decisions", nullptr, false, false, [](const char *) { log_decisions_flag = true; }, nullptr},
     // Passive BSTATE frames at forced auto-pass windows (machine mode observers only; no stdin
@@ -233,6 +301,15 @@ static int knowledge_level_value(const char *value) {
     if (std::strcmp(value, "expert+belief") == 0) return 2;
     fatal_error("--knowledge-a/--knowledge-b: expected off, expert or expert+belief, got '" + std::string(value) + "'");
     return 0;
+}
+
+// A non-negative integer option value; anything else is fatal.
+static long non_negative_value(const char *flag, const char *value) {
+    char *end = nullptr;
+    const long long n = std::strtoll(value, &end, 10);
+    if (end == value || *end != '\0' || n < 0)
+        fatal_error(std::string(flag) + ": expected a non-negative integer, got '" + value + "'");
+    return static_cast<long>(n);
 }
 
 static const CliOption *find_option(const std::string &name) {

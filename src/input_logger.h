@@ -72,18 +72,22 @@ class InputLogger {
     // concession / unwind sentinel).
     int get_input(const std::vector<LegalAction>& actions);
 
-    // In-process decision hook (Phase D in-process actor). When set, the machine-mode
-    // decision read (machine_mode && !human_has_priority) delegates the choice to this
-    // provider instead of populating a GameState/Query and blocking on stdin — no query
-    // is emitted and stdin/stdout are never touched. The provider receives the same
-    // `actions` vector and returns an action index (with the same -1 → last-slot confirm
-    // remap the stdio path uses); the choice still flows through commit_choice so the
-    // decision log stays complete. The provider is set by the future
-    // C++ actor binary (which links the engine objects minus main.o); nothing in
-    // bin/robomage ever sets it, so unset is the default and the stdio path is unchanged.
-    // The cooperative-unwind short-circuit (search_restore_pending) runs BEFORE this hook,
-    // so search RESTORE semantics are unaffected.
-    void set_input_provider(std::function<int(const std::vector<LegalAction>&)> provider);
+    // In-process decision hook. When set, the machine-mode decision read (machine_mode &&
+    // !human_has_priority) of a seat the provider covers delegates the choice to it instead of
+    // emitting a query and blocking on stdin: no query is emitted and stdin/stdout are not
+    // touched. The provider receives the deciding seat (the sideboarding player between games,
+    // else the priority holder: rmstate_deciding_seat) and the same `actions` vector, and returns
+    // an action index (with the same -1 → last-slot confirm remap and concession sentinels the
+    // stdio path accepts); the choice still flows through commit_choice so the decision log stays
+    // complete. A seat it does not cover keeps the stdio path. Set by the in-process agents
+    // (agents/driver.h) and the C++ actor binary; unset by default. `real_decisions` is false for a
+    // provider that also answers decisions no game makes (the actor's search simulations): the
+    // --selfcheck-state checks skip every decision such a provider covers. The
+    // cooperative-unwind short-circuit (search_restore_pending) runs BEFORE this hook, so search
+    // RESTORE semantics are unaffected.
+    using InputProvider = std::function<int(Zone::Ownership seat, const std::vector<LegalAction> &)>;
+    void set_input_provider(
+        InputProvider provider, bool covers_a = true, bool covers_b = true, bool real_decisions = false);
     void clear_input_provider();
 
    private:
@@ -114,8 +118,17 @@ class InputLogger {
     Deck replay_deck_b;
     std::vector<std::string> replay_flags;
     int auto_pass_until_turn = -1;
-    // Unset by default (see set_input_provider); only the Phase D in-process actor sets it.
-    std::function<int(const std::vector<LegalAction>&)> input_provider;
+    // Unset by default (see set_input_provider).
+    InputProvider input_provider;
+    bool provider_covers[2] = {false, false};  // seats A, B
+    bool provider_real_decisions = false;
+    // Whether the provider decides `seat`'s decisions.
+    bool provider_decides(Zone::Ownership seat) const;
+    // The input read for one decision once the frame writers have run (the replay, machine and
+    // CLI paths).
+    int read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat);
+    // Decisions read so far in the run (for --max-decisions and the decision trace).
+    size_t decisions_read = 0;
 };
 
 // Ask `chooser` an optional yes/no question with a single decline (index 0) and accept

@@ -601,7 +601,7 @@ int main(int argc, char const* argv[]) {
     // with it IDLE again (the committed pick); without it every call is real.
     long real_decisions = 0;
     InputLogger::instance().set_input_provider(
-        [&](const std::vector<LegalAction>& actions) -> int {
+        [&](Zone::Ownership, const std::vector<LegalAction>& actions) -> int {
             const bool real = !mcts || mcts->at_real_decision();
             if (real && cfg.max_decisions > 0 && real_decisions >= cfg.max_decisions) {
                 std::fprintf(stderr, "az_actor: --max-decisions %d reached; "

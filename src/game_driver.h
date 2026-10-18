@@ -75,6 +75,22 @@ extern std::vector<std::string> sideboard_a_cards;
 extern std::vector<std::string> sideboard_b_cards;
 extern int life_a_override;
 extern int life_b_override;
+extern std::vector<std::string> hand_a_cards;
+extern std::vector<std::string> hand_b_cards;
+extern std::vector<std::string> library_a_cards;
+extern std::vector<std::string> library_b_cards;
+extern long max_decisions;
+extern std::string agent_a_spec;
+extern std::string agent_b_spec;
+extern bool play_script_given;
+extern std::string play_script_specs;
+extern bool actions_script_given;
+extern std::string actions_script;
+extern bool trace_decisions;
+extern bool game_seed_given;
+extern uint64_t game_seed_value;
+extern bool check_decks_flag;
+extern std::vector<std::string> check_decks_dirs;
 
 extern int match_game_number;
 extern int match_wins_a;
@@ -170,6 +186,17 @@ EcsSystems init_ecs();
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed);
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st);
+
+// The deck `seat` starts the run with: its --hand-a/-b + --library-a/-b stack when a hand is given
+// (the hand's cards first, then the library padded to 15 cards with copies of its last card, else
+// of a basic land in the hand, else Mountains; no sideboard; the deck is named stacked_a /
+// stacked_b), else the .dk file --deck-a/-b names (resources/decks/<name>.dk).
+Deck load_launch_deck(Zone::Ownership seat);
+
+// --max-decisions: ends the run at the first decision past the cap, before it is decided: prints
+// "MAX_DECISIONS: stopped after <n> decisions (--max-decisions; no result)" and exits with status
+// 0 (no GAME_RESULT for the unfinished game).
+[[noreturn]] void end_run_at_decision_cap(size_t decisions);
 
 // A best-of-three match that reaches this many games without a match winner is a fatal error
 // (only drawn games, which count for neither player, can lengthen a match past three).

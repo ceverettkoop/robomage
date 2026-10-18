@@ -1,6 +1,7 @@
 #include "game_driver.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -70,6 +71,9 @@ static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
 static void discard_conceded_game_suspensions();
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
+static std::vector<std::string> padded_library(
+    const std::vector<std::string> &hand, const std::vector<std::string> &library);
+static std::string deck_line_name(const std::string &card);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -163,6 +167,30 @@ std::vector<std::string> sideboard_b_cards;
 // life-payment costs (fetch lands, Toxic Deluge, phyrexian mana) at a chosen life total.
 int life_a_override = -1;
 int life_b_override = -1;
+// --hand-a / --hand-b and --library-a / --library-b: a seat's stacked deck (load_launch_deck).
+std::vector<std::string> hand_a_cards;
+std::vector<std::string> hand_b_cards;
+std::vector<std::string> library_a_cards;
+std::vector<std::string> library_b_cards;
+// --max-decisions N: the run stops at decision N + 1 (end_run_at_decision_cap); -1 = no cap.
+long max_decisions = -1;
+// --agent-a / --agent-b: a seat's in-process agent spec (agents/agent.h); empty = none.
+std::string agent_a_spec;
+std::string agent_b_spec;
+// --play / --actions: one global script for both seats (agents/driver.h).
+bool play_script_given = false;
+std::string play_script_specs;
+bool actions_script_given = false;
+std::string actions_script;
+// --trace-decisions: the board and menu of every decision on the game log (agents/trace.h).
+bool trace_decisions = false;
+// --game-seed N: the engine seed is the drivers' engine seed of game seed N
+// (agents/game_seed.h), and the agents' shared generator is seeded with N.
+bool game_seed_given = false;
+uint64_t game_seed_value = 0;
+// --check-decks [--check-decks-dir DIR ...]: check the decks instead of playing (deck_check.h).
+bool check_decks_flag = false;
+std::vector<std::string> check_decks_dirs;
 
 // match state (accessible for state serialization)
 int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
@@ -924,6 +952,66 @@ static void pregame_mull_bottom(EcsSystems &sys) {
 // graveyard and exile presets to the main deck, sideboard presets to the sideboard), so the
 // registered decklist the opponent's observation reveals against includes every card that player
 // actually has in the game.
+// The library of a stacked deck padded to STACKED_DECK_MIN cards with the hand: copies of the
+// library's last card, else of a basic land in the hand, else Mountains.
+static std::vector<std::string> padded_library(
+    const std::vector<std::string> &hand, const std::vector<std::string> &library) {
+    constexpr size_t STACKED_DECK_MIN = 15;
+    static const char *basics[] = {"Mountain", "Forest", "Island", "Swamp", "Plains"};
+    std::vector<std::string> out = library;
+    if (hand.size() + out.size() >= STACKED_DECK_MIN) return out;
+    std::string filler;
+    if (!library.empty()) filler = library.back();
+    for (const std::string &card : hand) {
+        if (!filler.empty()) break;
+        for (const char *basic : basics)
+            if (card == basic) filler = card;
+    }
+    if (filler.empty()) filler = "Mountain";
+    while (hand.size() + out.size() < STACKED_DECK_MIN) out.push_back(filler);
+    return out;
+}
+
+// A card's name as a deck-file line writes it (apostrophes dropped).
+static std::string deck_line_name(const std::string &card) {
+    std::string out;
+    for (size_t i = 0; i < card.size(); ++i) {
+        if (card[i] == '\'') continue;
+        if (card.compare(i, 3, "\xE2\x80\x99") == 0) {
+            i += 2;
+            continue;
+        }
+        out.push_back(card[i]);
+    }
+    return out;
+}
+
+Deck load_launch_deck(Zone::Ownership seat) {
+    const bool a = seat == Zone::PLAYER_A;
+    const std::vector<std::string> &hand = a ? hand_a_cards : hand_b_cards;
+    const std::vector<std::string> &library = a ? library_a_cards : library_b_cards;
+    std::string &name = a ? deck_a_name : deck_b_name;
+    if (hand.empty()) {
+        if (!library.empty())
+            cli_warning(
+                std::string("--library-") + (a ? "a" : "b") + " has no effect without --hand-" + (a ? "a" : "b"));
+        return Deck(RESOURCE_DIR + "/decks/" + name + ".dk");
+    }
+    std::string text;
+    for (const std::string &card : hand) text += "1 " + deck_line_name(card) + "\n";
+    for (const std::string &card : padded_library(hand, library)) text += "1 " + deck_line_name(card) + "\n";
+    text += "\nSIDEBOARD:\n";
+    name = a ? "stacked_a" : "stacked_b";
+    return Deck::from_string(text);
+}
+
+[[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+    std::fflush(stdout);
+    std::printf("MAX_DECISIONS: stopped after %zu decisions (--max-decisions; no result)\n", decisions);
+    std::fflush(stdout);
+    std::exit(0);
+}
+
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
     bool a = owner == Zone::PLAYER_A;
     Deck out = deck;

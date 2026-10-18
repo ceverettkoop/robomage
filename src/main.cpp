@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "agents/driver.h"
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "classes/match_state.h"
@@ -11,6 +12,7 @@
 #include "cli_output.h"
 #include "error.h"
 #include "components/zone.h"
+#include "deck_check.h"
 #include "game_driver.h"
 #include "input_logger.h"
 #include "search_server.h"
@@ -41,8 +43,8 @@ static void game_loop() {
         deck_b_name = hdr.deck_b_name;
         apply_replay_header_flags(InputLogger::instance().get_replay_flags());
     } else {
-        DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/" + deck_a_name + ".dk");
-        DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/" + deck_b_name + ".dk");
+        DEFAULT_DECK_ONE = load_launch_deck(Zone::PLAYER_A);
+        DEFAULT_DECK_TWO = load_launch_deck(Zone::PLAYER_B);
         seed = seed_override ? seed_value : static_cast<unsigned int>(time(nullptr));
         // Machine mode only logs decisions when --log-decisions is given; only
         // create the logs directory when a log will actually be written.
@@ -67,6 +69,7 @@ static void game_loop() {
     }
     std::srand(seed);
     cli_print_seed(seed);
+    agents_install(seed);
 
     if (bo3_mode) {
         // The full bo3 match sequencing lives in game_driver's play_bo3_match so
@@ -96,6 +99,9 @@ int main(int argc, char const *argv[]) {
     if (search_server_mode && (replay_mode || log_decisions_flag || has_human_player)) {
         fatal_error("--search-server is incompatible with --replay, --log-decisions, and --player");
     }
+
+    // --check-decks: the decks' cards against the vocabulary; no game is played.
+    if (check_decks_flag) return check_decks(check_decks_dirs);
 
     // --rmstate-read: an offline stream check; no game is played.
     if (!rmstate_read_path.empty()) return rmstate_read_stream(rmstate_read_path, state_dump_json);

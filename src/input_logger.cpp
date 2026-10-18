@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "agents/driver.h"
 #include "card_vocab.h"
 #include "classes/game.h"
 #include "choice_labels.h"
@@ -160,11 +161,17 @@ InputLogger &InputLogger::instance() {
     return logger;
 }
 
-void InputLogger::set_input_provider(std::function<int(const std::vector<LegalAction> &)> provider) {
+void InputLogger::set_input_provider(InputProvider provider, bool covers_a, bool covers_b, bool real_decisions) {
     input_provider = std::move(provider);
+    provider_covers[0] = covers_a;
+    provider_covers[1] = covers_b;
+    provider_real_decisions = real_decisions;
 }
 
-void InputLogger::clear_input_provider() { input_provider = nullptr; }
+void InputLogger::clear_input_provider() {
+    input_provider = nullptr;
+    provider_covers[0] = provider_covers[1] = false;
+}
 
 void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &header) {
     log_file << "RMLOG v2\n";
@@ -365,10 +372,6 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
 }
 
 int InputLogger::choose(const std::vector<LegalAction> &actions) {
-    extern bool has_human_player;
-    extern bool human_player_is_a;
-    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.priority.player_a_has_priority);
-
     // Cooperative unwind after a concession (CR 104.3a): the game is already
     // decided, so hand back the first choice at every remaining decision --
     // emitting no query, consuming no stdin, committing nothing -- until control
@@ -381,16 +384,39 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // --trace-handles: every viewer's handle table as of this decision (state_format/handles.h).
     if (trace_handles) trace_handle_tables();
 
-    // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h),
-    // after the bookkeeping both RMSTATE writers share (state_format/stream.h), then the
-    // --selfcheck-state checks of this decision's frames (state_format/selfcheck.h; not for the
-    // in-process actor's decisions).
+    const Zone::Ownership seat = rmstate_deciding_seat();
     // Not while the search server unwinds to a restore: that decision is never made.
-    if (!search_restore_pending()) {
-        rmstate_begin_decision();
-        rmstate_dump_decision(actions);
-        if (!input_provider) selfcheck_state_decision(actions);
-    }
+    if (search_restore_pending()) return read_choice(actions, seat);
+
+    // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h),
+    // after the bookkeeping every RMSTATE writer shares (state_format/stream.h), then the
+    // --selfcheck-state checks of this decision's frames (state_format/selfcheck.h; not for the
+    // decisions of a provider that also answers simulated ones, the C++ actor's).
+    rmstate_begin_decision();
+    rmstate_dump_decision(actions);
+    if (!provider_decides(seat) || provider_real_decisions) selfcheck_state_decision(actions);
+
+    // --max-decisions: the run stops at the first decision past the cap, before anyone decides it.
+    if (max_decisions >= 0 && decisions_read >= static_cast<size_t>(max_decisions))
+        end_run_at_decision_cap(decisions_read);
+    ++decisions_read;
+
+    // The in-process agents' frames for this decision, and its --trace-decisions block.
+    const bool traced = agents_begin_decision(actions, decisions_read);
+    const int choice = read_choice(actions, seat);
+    if (traced) agents_trace_choice(choice);
+    return choice;
+}
+
+bool InputLogger::provider_decides(Zone::Ownership seat) const {
+    if (!input_provider) return false;
+    return (seat == Zone::PLAYER_A && provider_covers[0]) || (seat == Zone::PLAYER_B && provider_covers[1]);
+}
+
+int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat) {
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.priority.player_a_has_priority);
 
     if (replay_mode) {
         int choice;
@@ -431,16 +457,15 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
         if (search_restore_pending()) {
             return search_unwind_choice();
         }
-        // In-process actor hook (Phase D): when a provider is installed, take the
+        // In-process decision hook: when a provider covers the deciding seat, take the
         // choice directly from it — no query is emitted and stdin/stdout are not
         // touched. Runs AFTER the cooperative-unwind short-circuit above and BEFORE
         // the GameState/Query population + stdio loop. Falls through to the same
-        // commit_choice the stdio path uses so the decision log stays complete. Unset in
-        // bin/robomage, so this is a no-op there. The provider can consult
-        // search_loop_safe() for restore-safety without any extra plumbing.
-        // Same concession sentinels and -1 (confirm sentinel) → last-slot remap the stdio path
-        // applies.
-        if (input_provider) return accept_machine_choice(actions, input_provider(actions));
+        // commit_choice the stdio path uses so the decision log stays complete. The
+        // provider can consult search_loop_safe() for restore-safety without any extra
+        // plumbing. Same concession sentinels and -1 (confirm sentinel) → last-slot remap
+        // the stdio path applies.
+        if (provider_decides(seat)) return accept_machine_choice(actions, input_provider(seat, actions));
         // --machine-format rmstate: the deciding seat's RMSTATE frame takes the place of BQUERY,
         // answered by one integer line (state_format/stream.h).
         if (rmstate_stream_enabled()) return accept_machine_choice(actions, rmstate_stream_exchange(actions));
