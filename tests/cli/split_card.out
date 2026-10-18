@@ -1,0 +1,155 @@
+robomage 0.2
+Decision log: split_card.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Dead // Gone, Dead // Gone, Mountain, Mountain, Mountain, Mountain, Mountain
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Dead // Gone  #1  {R} // {2}{R}  Instant // Instant
+  Dead // Gone  #2  {R} // {2}{R}  Instant // Instant
+  Mountain      #3                 Basic Land - Mountain
+  Mountain      #4                 Basic Land - Mountain
+  Mountain      #5                 Basic Land - Mountain
+  Mountain      #6                 Basic Land - Mountain
+  Mountain      #7                 Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x6
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Mountain: created on the battlefield (x3)
+  T1: Player B's Grizzly Bears: created on the battlefield
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #11
+Player A's battlefield:
+  Mountain x3  #8 #9 #10
+Your hand (7):
+  Dead // Gone  #1  {R} // {2}{R}  Instant // Instant
+  Dead // Gone  #2  {R} // {2}{R}  Instant // Instant
+  Mountain      #3                 Basic Land - Mountain
+  Mountain      #4                 Basic Land - Mountain
+  Mountain      #5                 Basic Land - Mountain
+  Mountain      #6                 Basic Land - Mountain
+  Mountain      #7                 Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Dead
+  2: Cast Dead
+  3: Cast Gone
+  4: Cast Gone
+Player A [0-4, help]> Dead  {R}
+  Instant
+  Dead deals 2 damage to target creature.
+// second half:
+Gone  {2}{R}
+  Instant
+  Return target creature you don't control to its owner's hand.
+Player A [0-4, help]> 
+Since your last decision:
+  T1: Player A casts Gone from hand
+Game 1, turn 1, Upkeep: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #11
+Player A's battlefield:
+  Mountain x3  #8 #9 #10
+Stack (top first):
+  1. Gone #12 (Player A)
+Your hand (6):
+  Dead // Gone  #2  {R} // {2}{R}  Instant // Instant
+  Mountain      #3                 Basic Land - Mountain
+  Mountain      #4                 Basic Land - Mountain
+  Mountain      #5                 Basic Land - Mountain
+  Mountain      #6                 Basic Land - Mountain
+  Mountain      #7                 Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: casting Gone: choose a target
+  0: Grizzly Bears
+Player A [0-0, help]> 
+Since your last decision:
+  T1: Player B's Grizzly Bears: battlefield -> hand (by Dead // Gone)
+  T1: Player A's Dead // Gone: stack -> graveyard
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 1   exile 0
+  Player B        life 20   hand 8   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Mountain x3  #8 #9 #10  tapped
+Your hand (6):
+  Dead // Gone  #2  {R} // {2}{R}  Instant // Instant
+  Mountain      #3                 Basic Land - Mountain
+  Mountain      #4                 Basic Land - Mountain
+  Mountain      #5                 Basic Land - Mountain
+  Mountain      #6                 Basic Land - Mountain
+  Mountain      #7                 Basic Land - Mountain
+Player A's graveyard: Dead // Gone
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7, Grizzly Bears
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+Player A [0-5, help]> 
+Game 1, turn 1, Second main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+Player A [0-5, help]> Player A's graveyard: 1 card
+  Dead // Gone #13
+Player A [0-5, help]> Knowledge (expert, exact):
+Player B:
+  known in hand: Forest x7, Grizzly Bears
+  hand (8 cards): Forest 7, Grizzly Bears 1
+  known library positions: top: Forest, 2nd from the top: Forest, 3rd from the top: Forest,
+      4th from the top: Forest, 4th from the bottom: Forest, 3rd from the bottom: Forest,
+      2nd from the bottom: Forest, bottom: Forest
+  copies seen this game (/match): Grizzly Bears 1
+  consistent reference lists: none
+  archetype: matches no reference list
+Player A (you):
+  known library positions: top: Mountain, 2nd from the top: Mountain, 3rd from the top: Mountain,
+      4th from the top: Mountain, 4th from the bottom: Mountain, 3rd from the bottom: Mountain,
+      2nd from the bottom: Mountain, bottom: Mountain
+  copies seen this game (/match): Mountain 8, Dead // Gone 2
+  consistent reference lists: none
+  archetype: matches no reference list
+Player A [0-5, help]> Quitting.

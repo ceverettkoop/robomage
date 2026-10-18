@@ -35,6 +35,7 @@ struct Frame {
         std::map<int, size_t> front, back;     // card id -> its CARDS `card` row, per face
         uint64_t me = 0, opp = 0;              // the viewer's and the opponent's seat values
         int z_library, z_battlefield, z_hand, z_stack, z_graveyard, z_exile, z_sideboard;
+        int layout_split;  // the SPLIT value of the CARDS `layout` column
         uint64_t creature_bit = 0;
 };
 
@@ -94,6 +95,7 @@ Frame::Frame(const agents::DecisionView &view) : v(view), st(view.stream()) {
     z_graveyard = st.enum_value("zone", "GRAVEYARD");
     z_exile = st.enum_value("zone", "EXILE");
     z_sideboard = st.enum_value("zone", "SIDEBOARD");
+    layout_split = st.enum_value("layout", "SPLIT");
     const int creature = st.enum_value("card_type", "Creature");
     if (creature >= 0) creature_bit = 1ull << creature;
 }
@@ -118,6 +120,7 @@ static std::string name_key(const std::string &name);
 static std::string you(const Frame &f, uint64_t seat);
 static std::string possessive(const Frame &f, uint64_t seat);
 static std::string ref(uint64_t handle);
+static bool is_split_card(const Frame &f, int cid);
 static std::string card_name(const Frame &f, int cid);
 static std::string object_name(const Frame &f, size_t row);
 static std::string object_ref(const Frame &f, uint64_t handle);
@@ -245,15 +248,33 @@ static std::string ref(uint64_t handle) {
     return "#" + std::to_string(handle);
 }
 
-// A card id's front-face name; "" for none.
-static std::string card_name(const Frame &f, int cid) {
-    return cid < 0 ? std::string() : f.v.cards().name(cid);
+// Whether card id `cid` is a split card (CR 709): a CARDS front row of the SPLIT layout, with its
+// second half as the back row.
+static bool is_split_card(const Frame &f, int cid) {
+    auto it = f.front.find(cid);
+    return it != f.front.end() && f.layout_split >= 0 && f.back.count(cid) &&
+           static_cast<int>(f.card.u(it->second, f.card.col("layout"))) == f.layout_split;
 }
 
-// An object row's name as it is now; "face-down card" when the viewer cannot see its card.
+// A card id's name as a whole card: a split card's two names ("Dead // Gone"; CR 709.4: outside
+// the stack it has both halves' characteristics), any other card's front-face name (CR 712.8a);
+// "" for none.
+static std::string card_name(const Frame &f, int cid) {
+    if (cid < 0) return std::string();
+    if (is_split_card(f, cid)) return f.v.cards().name(cid) + " // " + f.v.cards().name(cid, true);
+    return f.v.cards().name(cid);
+}
+
+// An object row's name as it is now (a split card on the stack is the half cast, CR 709.3b, and
+// the whole card elsewhere); "face-down card" when the viewer cannot see its card.
 static std::string object_name(const Frame &f, size_t row) {
     const std::optional<std::string> name = f.v.object_name(row);
-    return name ? *name : "face-down card";
+    if (!name) return "face-down card";
+    const int cid = f.obj.card(row, f.obj.col("card"));
+    if (static_cast<int>(f.obj.u(row, f.obj.col("zone"))) != f.z_stack && !f.obj.u(row, f.obj.col("token")) &&
+        f.obj.card(row, f.obj.col("copy_of")) < 0 && is_split_card(f, cid))
+        return card_name(f, cid);
+    return *name;
 }
 
 // "Goblin Guide #30" for an object of the frame; "#30" for a handle it does not list.
@@ -478,7 +499,13 @@ static std::string stack_item(const Frame &f, size_t row) {
     if (!modes.empty()) extra.push_back("mode " + join(modes, ", "));
     if (const uint64_t k = s.u(row, s.col("kicked")))
         extra.push_back(k == 1 ? "kicked" : "kicked x" + std::to_string(k));
-    const std::string variant = mask_names(f, "cast_variant", s.u(row, s.col("variant")));
+    uint64_t variants = s.u(row, s.col("variant"));
+    // A split card's second half is named by its own name, not as a back face.
+    auto self = f.by_handle.find(h);
+    const int back = f.st.enum_value("cast_variant", "BACK_FACE");
+    if (back >= 0 && self != f.by_handle.end() && is_split_card(f, f.obj.card(self->second, f.obj.col("card"))))
+        variants &= ~(1ull << back);
+    const std::string variant = mask_names(f, "cast_variant", variants);
     if (!variant.empty()) extra.push_back(lower_words(variant));
     std::vector<std::string> targets;
     const agents::Table &t = f.starget;
@@ -520,10 +547,11 @@ static std::vector<std::string> hand_lines(const Frame &f) {
     for (size_t r : rows) {
         const int cid = f.obj.card(r, f.obj.col("card"));
         auto it = f.front.find(cid);
+        std::string types = it != f.front.end() ? type_line(f, it->second) : "";
+        if (is_split_card(f, cid)) types += " // " + type_line(f, f.back.at(cid));
         std::string line = "  " + pad(object_name(f, r), w_name) + "  " +
                            pad(ref(f.obj.u(r, f.obj.col("handle"))), w_handle) + "  " +
-                           (w_cost ? pad(card_cost(f, cid), w_cost) + "  " : "") +
-                           (it != f.front.end() ? type_line(f, it->second) : "");
+                           (w_cost ? pad(card_cost(f, cid), w_cost) + "  " : "") + types;
         while (!line.empty() && line.back() == ' ') line.pop_back();
         out.push_back(line);
     }
@@ -776,7 +804,12 @@ static std::string pending_context(const Frame &f) {
     if (f.pending.rows() == 0) return "";
     const agents::Table &p = f.pending;
     const std::string tag = f.st.enum_name("pending_tag", p.u(0, p.col("tag")));
-    const std::string src = card_name(f, p.card(0, p.col("source_card")));
+    // The source object as it is now (the half of a split card being cast) when the viewer sees its
+    // card, else the source's card.
+    auto obj = f.by_handle.find(p.u(0, p.col("source")));
+    const std::string src = obj != f.by_handle.end() && f.v.object_name(obj->second)
+                                ? object_name(f, obj->second)
+                                : card_name(f, p.card(0, p.col("source_card")));
     const std::string of = src.empty() ? "" : " " + src;
     if (tag == "CAST") return "casting" + of;
     if (tag == "ACTIVATION") return "activating" + of;
@@ -873,10 +906,14 @@ std::vector<std::string> menu_lines(const agents::DecisionView &v, bool annotate
 
 // ── cards ─────────────────────────────────────────────────────────────────────────────────────
 
-// A card's printed mana cost ("{1}{U}"); "" for a land, a card the frame does not list or none.
+// A card's printed mana cost ("{1}{U}"; a split card's halves' costs, "{R} // {2}{R}"); "" for a
+// land, a card the frame does not list or none.
 static std::string card_cost(const Frame &f, int cid) {
     auto it = f.front.find(cid);
-    return it == f.front.end() ? "" : f.card.text(it->second, f.card.col("mana_cost"));
+    if (it == f.front.end()) return "";
+    const std::string cost = f.card.text(it->second, f.card.col("mana_cost"));
+    if (!is_split_card(f, cid)) return cost;
+    return cost + " // " + f.card.text(f.back.at(cid), f.card.col("mana_cost"));
 }
 
 // "Legendary Creature - Human Wizard" for a CARDS `card` row.
@@ -990,7 +1027,7 @@ std::vector<std::string> card_lines(const agents::DecisionView &v, const std::st
     for (const std::string &l : card_face_lines(f, front->second)) out.push_back(l);
     auto back = f.back.find(cid);
     if (back != f.back.end()) {
-        out.push_back("// back face:");
+        out.push_back(is_split_card(f, cid) ? "// second half:" : "// back face:");
         for (const std::string &l : card_face_lines(f, back->second)) out.push_back(l);
     }
     return out;
@@ -1359,8 +1396,12 @@ static std::string event_cards(const Frame &f, const std::vector<size_t> &rows, 
             ++*hidden;
             continue;
         }
-        names.push_back(card_name(f, cid) + (c.u(r, c.col("token")) ? " token" : "") +
-                        (c.u(r, c.col("face_down")) ? " (face down)" : ""));
+        // A card the event put on the stack is named as the spell it is there (a split card's half).
+        auto after = f.by_handle.find(c.u(r, c.col("handle_after")));
+        const bool on_stack =
+            after != f.by_handle.end() && static_cast<int>(f.obj.u(after->second, f.obj.col("zone"))) == f.z_stack;
+        names.push_back((on_stack ? object_name(f, after->second) : card_name(f, cid)) +
+                        (c.u(r, c.col("token")) ? " token" : "") + (c.u(r, c.col("face_down")) ? " (face down)" : ""));
     }
     return join(names, ", ");
 }

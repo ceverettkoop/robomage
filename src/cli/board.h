@@ -18,7 +18,9 @@
 // Objects are labelled by their handle in the viewer's frame, `#<handle>`: it stays the same
 // while the object stays where it is (a zone change makes a new object with a new handle).
 // Players are named absolutely ("Player A"); the viewer's own seat is marked "(you)" where both
-// players are listed. Turns are shown from 1 (the frame's turn counter is 0-based).
+// players are listed. Turns are shown from 1 (the frame's turn counter is 0-based). A card is
+// named as a whole card (a split card by its two names, "Dead // Gone", CR 709.4), except a split
+// card on the stack, which is the half cast (CR 709.3b).
 
 namespace cli {
 

@@ -62,6 +62,11 @@ inline int card_mana_value(const CardData &cd) {
     return mv;
 }
 
+// The name of the card `cd` as a whole, as a decklist or a sideboard names it: a split card's two
+// names joined by " // " (CR 709.4: outside the stack it has both halves' characteristics), any
+// other card's name (a double-faced card's is its front face's, CR 712.8a).
+std::string whole_card_name(const CardData &cd);
+
 // Mana value of object `e` (printed characteristics `cd`). A spell on the stack has the face
 // that was cast (a split card's half or a modal back face, CR 709.3, 712.8f; active_face), and
 // each {X} in its mana cost counts as the value announced for X (CR 202.3e). In every other zone

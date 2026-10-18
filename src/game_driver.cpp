@@ -29,6 +29,7 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "queries/characteristics.h"
 #include "queries/players.h"
 #include "queries/zones.h"
 #include "input_logger.h"
@@ -74,6 +75,7 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 static std::vector<std::string> padded_library(
     const std::vector<std::string> &hand, const std::vector<std::string> &library);
 static std::string deck_line_name(const std::string &card);
+static std::string sideboard_card_label(const std::string &deck_name);
 [[noreturn]] static void end_run_without_result(const std::string &line);
 
 std::string RESOURCE_DIR;
@@ -1191,6 +1193,14 @@ static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from
 // outstanding card and force_done) lives in `st`, and the menu is a pure function
 // of it plus `deck` — so a MATCH-scoped restore re-derives the identical menu,
 // which is what keeps a sideboard prompt a loop-safe search root.
+// The card a deck line names, by the card's name rather than the line's spelling ("Dead/Gone" is
+// Dead // Gone, "Mishras Bauble" Mishra's Bauble); the line's spelling for a card that does not load.
+static std::string sideboard_card_label(const std::string &deck_name) {
+    const Entity e = load_card(deck_name);
+    if (e == 0 || !global_coordinator.entity_has_component<CardData>(e)) return deck_name;
+    return whole_card_name(global_coordinator.GetComponent<CardData>(e));
+}
+
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     Zone::Ownership player = st.player;
     sideboard_phase = true;
@@ -1243,7 +1253,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         auto add_choice = [&](const char *verb, size_t deck_idx, size_t copies,
                               const std::string &name, bool is_in) {
             actions.emplace_back(ActionType::SPECIAL_ACTION,
-                                 std::string(verb) + std::to_string(copies) + "x " + name);
+                std::string(verb) + std::to_string(copies) + "x " + sideboard_card_label(name));
             actions.back().category = is_in ? ActionCategory::SIDEBOARD_IN
                                             : ActionCategory::SIDEBOARD_OUT;
             actions.back().option_ordinal = sideboard_copy_ordinal(copies);
@@ -1324,8 +1334,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             game_log_private(player, "\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
                              player_name, deck.sideboard.size(), st.sb_swaps);
         else
-            game_log_private(player, "\n%s must balance %s (%+d): choose a card to cut.\n",
-                             player_name, st.unpaired_name.c_str(), st.delta);
+            game_log_private(player, "\n%s must balance %s (%+d): choose a card to cut.\n", player_name,
+                sideboard_card_label(st.unpaired_name).c_str(), st.delta);
 
         // With a move outstanding, expose the unpaired card as the pending-decision
         // source so the observation shows WHICH card the balancing move is for.
@@ -1374,15 +1384,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             // the next decision offers only cuts.
             st.delta = 1;
             st.unpaired_name = moved;
-            game_log_private(player, "Bringing in %s.\n", moved.c_str());
+            game_log_private(player, "Bringing in %s.\n", sideboard_card_label(moved).c_str());
         } else {
             // Closing half: the pair is complete, so this counts as a swap. The
             // forced cut of a stranded +1 counts too, INCLUDING when it cuts the
             // very name just brought in — that leaves the deck exactly as it
             // started, which is a legal (if pointless) configuration, and the
             // phase force-ends on the next decision either way.
-            game_log_private(player, "Swapped %s for %s.\n", moved.c_str(),
-                             st.unpaired_name.c_str());
+            game_log_private(player, "Swapped %s for %s.\n", sideboard_card_label(moved).c_str(),
+                sideboard_card_label(st.unpaired_name).c_str());
             st.delta = 0;
             st.unpaired_name.clear();
             st.sb_swaps++;

@@ -111,6 +111,10 @@ std::set<Colors> effective_colors(Entity e) {
 // The single shared display-name resolver (contract documented at the declaration in
 // characteristics.h). Display-only: never consulted by rules logic, so the " token" tag and
 // the ability-entity description cannot affect behavior.
+std::string whole_card_name(const CardData &cd) {
+    return cd.is_split && cd.backside ? cd.name + " // " + cd.backside->name : cd.name;
+}
+
 std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
