@@ -10,7 +10,6 @@
 #include "../error.h"
 #include "../parse.h"  // name_to_uid
 #include "deck.h"
-#include "gamestate.h"  // DECKLIST_MAIN_SLOTS / DECKLIST_SIDE_SLOTS
 
 // Registered (frozen, opponent-visible) and live (own-view) stores — see the
 // header for why the two are kept apart.
@@ -45,10 +44,9 @@ int deck_card_vocab(const std::string &name) {
 }
 
 // Build a sorted (vocab_idx, count) list from a deck section, merging by vocab id.
-// Fatal on an unregistered card name or on a distinct-name count exceeding max_slots.
+// Fatal on an unregistered card name.
 static std::vector<DecklistEntry> build_block(
-    const std::vector<std::pair<size_t, std::string>> &section, int max_slots,
-    const char *block_name) {
+    const std::vector<std::pair<size_t, std::string>> &section, const char *block_name) {
     std::map<int, int> by_id;  // ordered ascending by vocab id
     for (const auto &entry : section) {
         int idx = deck_name_to_vocab(entry.second);
@@ -58,10 +56,6 @@ static std::vector<DecklistEntry> build_block(
                         "cannot serialize the " + block_name + " deck-identity block");
         by_id[idx] += static_cast<int>(entry.first);
     }
-    if (static_cast<int>(by_id.size()) > max_slots)
-        fatal_error("deck_state: " + std::string(block_name) + " has " +
-                    std::to_string(by_id.size()) + " distinct card names, exceeds " +
-                    std::to_string(max_slots) + " serialized slots");
     std::vector<DecklistEntry> out;
     out.reserve(by_id.size());
     for (const auto &kv : by_id) out.push_back({kv.first, kv.second});
@@ -71,8 +65,8 @@ static std::vector<DecklistEntry> build_block(
 // Build both blocks of `deck` into the caller's destination vectors.
 static void set_blocks(const Deck &deck, std::vector<DecklistEntry> &main_out,
                        std::vector<DecklistEntry> &side_out) {
-    main_out = build_block(deck.main_deck, DECKLIST_MAIN_SLOTS, "maindeck");
-    side_out = build_block(deck.sideboard, DECKLIST_SIDE_SLOTS, "sideboard");
+    main_out = build_block(deck.main_deck, "maindeck");
+    side_out = build_block(deck.sideboard, "sideboard");
 }
 
 void deck_state_set_registered(Zone::Ownership owner, const Deck &deck) {

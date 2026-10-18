@@ -1272,7 +1272,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         Zone::Ownership owner = tp.queue.front().controller;
         // Placement-time decisions (the 603.3b ordering pick and 603.3d target selection)
         // belong to the TRIGGER'S controller, who need not be the player holding priority
-        // (e.g. the opponent's draw fired our Orcish Bowmasters). The input/BQUERY seat
+        // (e.g. the opponent's draw fired our Orcish Bowmasters). The deciding seat
         // follows cur_game.priority.player_a_has_priority, so seat the queries on the owner;
         // tp.saved_priority is restored when the whole placement completes.
         cur_game.priority.player_a_has_priority = (owner == Zone::PLAYER_A);

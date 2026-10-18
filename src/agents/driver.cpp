@@ -55,7 +55,7 @@ static std::unique_ptr<agents::Agent> agent_for(const std::string &spec, const c
     return agent;
 }
 
-// The game log channel: stdout (stderr's descriptor under --machine-format rmstate).
+// The game log channel: stdout (stderr's descriptor while the RMSTATE stream is on).
 static void print_line(const std::string &line) {
     std::printf("%s\n", line.c_str());
 }

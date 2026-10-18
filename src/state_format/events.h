@@ -96,7 +96,7 @@ struct ObsEvent {
 // decisions).
 enum class ObsConsumer : uint8_t {
     DUMP,    // --rmstate-dump (state_format/dump.h)
-    STREAM,     // --machine-format rmstate (state_format/stream.h)
+    STREAM,     // the RMSTATE stream (state_format/stream.h)
     SELFCHECK,  // --selfcheck-state (state_format/selfcheck.h)
     AGENT,      // the in-process agents and --trace-decisions (state_format/agent_feed.h)
 };
@@ -105,7 +105,7 @@ enum class ObsConsumer : uint8_t {
 struct ObsEventQueue {
         uint32_t next_seq = 1;
         std::vector<ObsEvent> events;         // not yet in a --rmstate-dump frame
-        std::vector<ObsEvent> stream_events;     // not yet in a --machine-format rmstate frame (seats only)
+        std::vector<ObsEvent> stream_events;     // not yet in an RMSTATE stream frame (seats only)
         std::vector<ObsEvent> selfcheck_events;  // not yet in a --selfcheck-state frame
         std::vector<ObsEvent> agent_events;      // not yet in an in-process feed frame (served seats only)
 };
@@ -161,7 +161,7 @@ struct ObsEventState {
 // its identity.
 const ObsStackDeparture *obs_stack_departure(const ObjectRef &ref, Zone::Ownership viewer, int &card);
 
-// Whether anyone consumes events (a frame writer: --rmstate-dump or --machine-format rmstate; the
+// Whether anyone consumes events (a frame writer: --rmstate-dump or the RMSTATE stream; the
 // --selfcheck-state frames; or --trace-events). Every obs_* hook is a no-op otherwise.
 //
 // Under --selfcheck-state each seat's event is built twice as it is constructed, the second time

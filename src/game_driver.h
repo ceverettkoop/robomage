@@ -36,8 +36,6 @@ extern bool human_player_is_a;
 extern bool log_viewer_set;
 extern Zone::Ownership log_viewer_owner;
 
-extern GameState gs;
-extern const GameState *gs_ptr;
 extern std::string replay_file_path;
 extern bool replay_mode;
 extern bool machine_mode;
@@ -51,13 +49,11 @@ extern bool narrative_mode;
 extern bool bo3_mode;
 extern bool log_decisions_flag;
 extern std::string decision_log_path;
-extern bool broadcast_steps_mode;
 extern bool trace_visibility;
 extern bool trace_handles;
 extern bool trace_events;
 extern bool closed_decklist;
 extern std::string rmstate_dump_path;
-extern bool machine_format_rmstate;
 extern bool rmstate_card_scripts;
 extern bool state_dump_json;
 extern std::string rmstate_read_path;
@@ -122,12 +118,11 @@ extern uint64_t g_card_db_generation;
 bool in_main_loop();
 
 // True only while play_single_game's decision loop is emitting an ordinary
-// priority decision — the determine_legal_actions menu, including a forced pass
-// broadcast as a BSTATE frame. False for every other decision kind: pregame
-// (keep/mulligan, bottoming, opening-hand actions), mandatory choices, parked
-// mid-flow queries, blocking mid-cast / mid-resolution prompts, and sideboarding.
-// The serializer gates the pass flags and is_priority_window on it, so the two
-// always agree.
+// priority decision — the determine_legal_actions menu. False for every other
+// decision kind: pregame (keep/mulligan, bottoming, opening-hand actions),
+// mandatory choices, parked mid-flow queries, blocking mid-cast / mid-resolution
+// prompts, and sideboarding. The state format's encoder gates the pass flags and
+// the priority-window flag on it, so the two always agree.
 bool priority_window_open();
 // Sets what priority_window_open answers. Only the state-format self-check uses it, to encode a
 // restored snapshot as of the decision it was saved at (state_format/selfcheck.h).

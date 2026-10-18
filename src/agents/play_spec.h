@@ -42,10 +42,9 @@
 // interchangeable: the first is taken. A leading seat key `A:` / `B:` pins a spec to a seat
 // (PlayScript); resolution itself ignores it.
 //
-// The menu as the resolver reads it (MenuAction) is the BQUERY menu's decoding
-// (train/decode.py's decode_actions): the card is the name of the action's card id as the BQUERY
-// `ids` array gave it (DecisionView::bquery_card_id; accents folded), the controller is the
-// BQUERY `ctrl` array's, the description the menu row's.
+// The menu as the resolver reads it (MenuAction): the card is the name of the action's card id
+// (DecisionView::menu_card_id; accents folded), the controller DecisionView::menu_controller's,
+// the description the menu row's.
 
 namespace agents {
 

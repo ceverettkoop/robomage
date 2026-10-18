@@ -786,7 +786,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // is the searched zone's owner — normally also the ability's controller, but a DefinedPlayer$
     // TargetedController search (White Orchid Phantom / Erode: the destroyed land's controller
     // may search THEIR library) belongs to that player, not the caster whose trigger is resolving
-    // (the resolve seat is the controller's, set in stack_manager). The input/BQUERY seat follows
+    // (the resolve seat is the controller's, set in stack_manager). The deciding seat follows
     // cur_game.priority.player_a_has_priority, so set it here and restore rt.prev_priority after the loop
     // (the set is idempotent on resume: a suspension persisted priority at this same seat).
     //

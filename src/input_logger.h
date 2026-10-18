@@ -60,8 +60,8 @@ class InputLogger {
     // some menu entries that the CLI path presents interactively, so a machine log
     // only replays faithfully when those same code paths are taken. Use this (not
     // is_machine_mode) in any conditional that changes WHICH decisions are queried
-    // or WHAT the menu contains; keep is_machine_mode for I/O concerns (BQUERY
-    // emission, output suppression, training-signal prints).
+    // or WHAT the menu contains; keep is_machine_mode for I/O concerns (output
+    // suppression).
     bool is_machine_schedule() const;
     unsigned int get_replay_seed() const;
     // Parsed from the RMLOG v2 header (valid after init_replay)

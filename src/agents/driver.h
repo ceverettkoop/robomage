@@ -16,8 +16,8 @@
 //   --actions <ints>   one global list of replies for both seats, then the seats' agents
 //   --trace-decisions  the board and menu of every decision (agents/trace.h) on the game log
 // Any of the first three implies --machine (the machine decision schedule); a seat with no
-// agent and no script keeps its own input path (BQUERY or the RMSTATE stream on stdin/stdout,
-// or the terminal for a --player seat). They cannot be combined with --replay or an agent on a
+// agent and no script keeps its own input path (the RMSTATE stream on stdin/stdout, or the
+// terminal for a --player seat). They cannot be combined with --replay or an agent on a
 // --player seat.
 //
 // At the end of the run (process exit, the --max-decisions stop included) a --play script prints

@@ -4,12 +4,15 @@
 #include <string>
 #include <unordered_map>
 
-#include "machine_io.h"  // N_CARD_TYPES (embedding vocab size)
-#include "str_util.h"    // ascii_fold_card_name
+#include "str_util.h"  // ascii_fold_card_name
+
+// The size of the vocab index space: card indices, then the token band (900-1022), then
+// TOKEN_SENTINEL.
+static constexpr int N_CARD_TYPES = 1024;
 
 // Single source of truth for card name <-> vocab index mapping.
 // To add a new card: append an entry to card_vocab_entries.
-// N_CARD_TYPES in machine_io.h must be >= (highest index + 1).
+// N_CARD_TYPES must be >= (highest index + 1).
 struct CardVocabEntry {
     const char *name;
     int index;
@@ -272,7 +275,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
 
-// Slot N_CARD_TYPES - 1 is reserved as sentinel for all tokens in the ML observation.
+// Index N_CARD_TYPES - 1 is the sentinel for a token whose script is not registered.
 static constexpr int TOKEN_SENTINEL = N_CARD_TYPES - 1;
 
 // ── Token identity band ───────────────────────────────────────────────────────
@@ -325,9 +328,8 @@ inline int token_script_to_index(const std::string &script_name) {
     return it != vocab.end() ? it->second : -1;
 }
 
-// Maps a card name to a 0-based vocabulary index used to encode card identity in
-// the machine-mode state vector.  Returns -1 for unregistered cards (encoded as
-// the empty/unknown sentinel id).  Matching is ASCII-folded (see above) so an
+// Maps a card name to the 0-based vocabulary index the engine identifies cards by.
+// Returns -1 for unregistered cards.  Matching is ASCII-folded (see above) so an
 // accented `CardData::name` resolves to its ASCII vocab entry.
 inline int card_name_to_index(const std::string &name) {
     static const std::unordered_map<std::string, int> vocab = [] {

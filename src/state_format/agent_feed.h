@@ -9,7 +9,7 @@
 
 // ── The in-process frame feed: RMSTATE frames for the agents in the engine process ───────────
 //
-// A frame writer (ObsConsumer::AGENT) beside --rmstate-dump and --machine-format rmstate. It serves
+// A frame writer (ObsConsumer::AGENT) beside --rmstate-dump and the RMSTATE stream. It serves
 // the seats an in-process agent decides (src/agents/, --agent-a / --agent-b, --play, --actions) and,
 // under --trace-decisions, both seats. At a decision of a served seat it builds exactly what the
 // stdout stream would send that seat (state_format/stream.h): the seat's SCHEMA, CARDS, DECKLISTS

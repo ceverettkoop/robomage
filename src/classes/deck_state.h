@@ -9,9 +9,9 @@
 struct Deck;
 
 // Persistent, match-scoped stores of each player's decklist (name -> count)
-// resolved to vocab indices. They live outside the per-game ECS (like
-// match_state) so the state serializer can read a decklist without threading the
-// Deck struct through the call chains.
+// resolved to vocab indices. They live outside the per-game ECS so the state
+// format can read a decklist without threading the Deck struct through the call
+// chains.
 //
 // There are TWO stores, and the distinction is a rules/information one:
 //
@@ -20,14 +20,11 @@ struct Deck;
 //     refresh it. This is the OPPONENT-VISIBLE list under this engine's
 //     open-decklist ruleset — you know your opponent's registered maindeck and
 //     sideboard, but NOT which 60 of the 75 they boarded into for game 2+.
-//     Serialized into the opp_deck_main / opp_deck_side observation blocks (see
-//     the machine_io.h tail).
 //
 //   LIVE — each player's CURRENT configuration: refreshed at every game start
 //     and again as each sideboard swap lands, so it tracks the mutating Deck
-//     struct. This is what a player legitimately knows about their OWN deck.
-//     Not serialized yet; it exists as the seam for a future self-decklist
-//     observation block, and is covered by the deck-state tests.
+//     struct. This is what a player legitimately knows about their OWN deck
+//     (the state format's encoder reads it).
 struct DecklistEntry {
     int vocab_idx;  // card vocab index (>= 0)
     int count;      // copies of that card in the block

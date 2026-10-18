@@ -9,16 +9,11 @@
 #include "card_vocab.h"
 #include "classes/colors.h"
 #include "input_logger.h"
-#include "machine_io.h"
 
 // Formats a player's non-mana resource counters (poison, energy) into `buf` as a
 // " poison N, energy N" suffix, listing only the counters that are nonzero. Writes
 // an empty string when the player has neither. Display only.
 static void format_player_resources(const PlayerState& ps, char* buf, size_t buf_len);
-
-// Shared body of cli_emit_machine_query / cli_emit_machine_bstate: prints the
-// `header` line ("BQUERY:" / "BSTATE:") then the fixed binary payload.
-static void emit_machine_frame(const char* header, const Query* q, const GameState* gs);
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 
@@ -111,112 +106,6 @@ void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
     va_end(ap);
 }
 
-// ── Machine query emitter ─────────────────────────────────────────────────────
-
-void cli_emit_machine_query(const Query* q, const GameState* gs) {
-    emit_machine_frame("BQUERY:", q, gs);
-}
-
-// Passive state broadcast (--broadcast-steps): the identical payload under a
-// "BSTATE:" header. The engine expects NO stdin response to this frame — it is
-// display-only, emitted at forced auto-pass windows so observers can watch the
-// game move through steps.
-void cli_emit_machine_bstate(const Query* q, const GameState* gs) {
-    emit_machine_frame("BSTATE:", q, gs);
-}
-
-static void emit_machine_frame(const char* header, const Query* q, const GameState* gs) {
-    const auto& state_vec = serialize_state(gs);
-
-    // Text header line: "BQUERY: N STATE_SIZE MAX_ACTIONS\n"
-    // The two trailing sizes are a runtime layout handshake: the Python driver
-    // asserts them against its own imported STATE_SIZE / MAX_ACTIONS so a C++
-    // layout change without regenerated Python constants fails loudly instead of
-    // silently misframing the binary payload.
-    // Followed immediately by binary payload (no text parsing needed on Python side).
-    printf("%s %d %d %d\n", header, q->num_choices, STATE_SIZE, MAX_ACTIONS);
-
-    // Binary state vector (STATE_SIZE float32s)
-    fwrite(state_vec.data(), sizeof(float), static_cast<size_t>(STATE_SIZE), stdout);
-
-    // Per-action metadata padded to MAX_ACTIONS for fixed-size reads.
-    const float id_null   = -1.0f / static_cast<float>(N_CARD_TYPES);
-    const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
-    int32_t cats[MAX_ACTIONS]  = {};
-    float   ids [MAX_ACTIONS];
-    float   ctrl[MAX_ACTIONS];
-    float   pub [MAX_ACTIONS]  = {};  // 1.0 = card identity publicly known (revealed), else 0.0
-    int32_t zone[MAX_ACTIONS]  = {};  // ActionRefZone of the choice's entity (REF_NONE = none)
-    int32_t refs[MAX_ACTIONS];        // entity-reference slot of the choice's source (-1 = none)
-    int32_t ords[MAX_ACTIONS];        // per-action ordinal/value scalar (-1 = not applicable)
-    std::fill(ids,  ids  + MAX_ACTIONS, id_null);
-    std::fill(ctrl, ctrl + MAX_ACTIONS, ctrl_null);
-    std::fill(refs, refs + MAX_ACTIONS, static_cast<int32_t>(-1));
-    std::fill(ords, ords + MAX_ACTIONS, static_cast<int32_t>(-1));
-
-    for (int i = 0; i < q->num_choices; i++) {
-        cats[i] = q->choices[i].category;
-        ids[i]  = q->choices[i].card_vocab_idx >= 0
-            ? static_cast<float>(q->choices[i].card_vocab_idx) / static_cast<float>(N_CARD_TYPES)
-            : id_null;
-        ctrl[i] = (q->choices[i].zone_ref != REF_NONE)
-            ? (q->choices[i].controller_is_self ? 1.0f : 0.0f)
-            : ctrl_null;
-        pub[i]  = q->choices[i].card_is_public ? 1.0f : 0.0f;
-        zone[i] = static_cast<int32_t>(q->choices[i].zone_ref);
-        refs[i] = static_cast<int32_t>(q->choices[i].slot_ref);
-        ords[i] = static_cast<int32_t>(q->choices[i].option_ordinal);
-    }
-
-    fwrite(cats, sizeof(int32_t), MAX_ACTIONS, stdout);
-    fwrite(ids,  sizeof(float),   MAX_ACTIONS, stdout);
-    fwrite(ctrl, sizeof(float),   MAX_ACTIONS, stdout);
-    fwrite(pub,  sizeof(float),   MAX_ACTIONS, stdout);
-    fwrite(zone, sizeof(int32_t), MAX_ACTIONS, stdout);
-    fwrite(refs, sizeof(int32_t), MAX_ACTIONS, stdout);
-    fwrite(ords, sizeof(int32_t), MAX_ACTIONS, stdout);
-
-    // Human-readable per-action descriptions (e.g. "Target Player B (20 life)",
-    // "Pay 4 life", "Put on top"), only under --narrative so the ML training path
-    // stays binary-only and OBS-unaffected. Observers/test harness read this
-    // block to label choices the (category, card_id, controller) metadata alone
-    // can't — player targets, Sylvan Library pay-vs-return, charm modes, etc.
-    // Fixed-size [MAX_ACTIONS][MAX_CHOICE_DESC] for simple framing; NUL-padded.
-    if (narrative_mode) {
-        char descs[MAX_ACTIONS][MAX_CHOICE_DESC] = {};
-        for (int i = 0; i < q->num_choices; i++)
-            snprintf(descs[i], MAX_CHOICE_DESC, "%s", q->choices[i].description);
-        fwrite(descs, MAX_CHOICE_DESC, MAX_ACTIONS, stdout);
-
-        // Per-permanent typed-counter summaries ("+1/+1:2, time:3, loyalty:4"),
-        // narrative-only like the descriptions above — display info for observers
-        // (TUI/harness board labels); the ML training path stays binary-only and
-        // OBS-unaffected. Slot order matches the state vector's permanent blocks
-        // (48 self slots, then 48 opp slots), so slot i's summary labels the
-        // permanent serialized in slot i. Fixed-size NUL-padded char block.
-        char ctrs[2 * MAX_BATTLEFIELD_SLOTS][PERM_COUNTERS_LEN] = {};
-        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-            snprintf(ctrs[i], PERM_COUNTERS_LEN, "%s", gs->self_permanents[i].counters);
-            snprintf(ctrs[MAX_BATTLEFIELD_SLOTS + i], PERM_COUNTERS_LEN, "%s",
-                     gs->opp_permanents[i].counters);
-        }
-        fwrite(ctrs, PERM_COUNTERS_LEN, 2 * MAX_BATTLEFIELD_SLOTS, stdout);
-
-        // Per-permanent token names — the state vector only carries the generic
-        // TOKEN_SENTINEL card id for every token, so observers can't tell a Clue
-        // from a Human Knight without this. Narrative-only side-channel, slot-aligned
-        // with the permanent blocks like the counters above; empty for non-tokens.
-        char toks[2 * MAX_BATTLEFIELD_SLOTS][PERM_TOKEN_NAME_LEN] = {};
-        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-            snprintf(toks[i], PERM_TOKEN_NAME_LEN, "%s", gs->self_permanents[i].token_name);
-            snprintf(toks[MAX_BATTLEFIELD_SLOTS + i], PERM_TOKEN_NAME_LEN, "%s",
-                     gs->opp_permanents[i].token_name);
-        }
-        fwrite(toks, PERM_TOKEN_NAME_LEN, 2 * MAX_BATTLEFIELD_SLOTS, stdout);
-    }
-    fflush(stdout);
-}
-
 // ── Startup / meta ────────────────────────────────────────────────────────────
 
 void cli_print_version(const char* version) {
@@ -245,22 +134,23 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      A testing aid (default: off)\n");
     printf("  --closed-decklist   Each seat's state-format frames carry only its own\n");
     printf("                      registered decklist (default: both lists are open);\n");
-    printf("                      name-a-card then offers every vocab card. A machine run\n");
-    printf("                      needs --machine-format rmstate\n");
+    printf("                      name-a-card then offers every vocab card\n");
     printf("\nInput and output:\n");
     printf("  --player <A|B>      Designate a human seat (any value other than A/a means\n");
     printf("                      B); hidden information is shown from that seat's view.\n");
     printf("                      With --machine only that seat is prompted at the\n");
     printf("                      terminal; without it every decision is prompted there\n");
-    printf("  --machine           Machine mode: emit BQUERY frames on stdout and read one\n");
-    printf("                      integer choice per decision from stdin; narrative is\n");
-    printf("                      silenced unless --narrative is given\n");
-    printf("  --narrative         In machine mode, also print the game narrative and\n");
-    printf("                      per-action descriptions (perfect information)\n");
+    printf("  --machine           Machine mode (the machine decision schedule). Outside\n");
+    printf("                      --replay, each seat that has no in-process agent and is\n");
+    printf("                      not the --player seat decides over the RMSTATE stream:\n");
+    printf("                      its frames (\"RMSTATE <nbytes>\" + payload) on stdout, one\n");
+    printf("                      integer reply per decision on stdin, a terminal frame per\n");
+    printf("                      seat at match end; all other output then goes to stderr.\n");
+    printf("                      Narrative is silenced unless --narrative is given\n");
+    printf("  --narrative         In machine mode, also print the game narrative (perfect\n");
+    printf("                      information)\n");
     printf("  --log-viewer <A|B>  Restrict one-sided narrative to that seat's view\n");
     printf("                      (any value other than A/a means B)\n");
-    printf("  --broadcast-steps   In machine mode, also emit passive BSTATE frames at\n");
-    printf("                      forced auto-pass windows (no response expected)\n");
     printf("  --trace-visibility  Narrate each reveal/look window as it opens and closes\n");
     printf("                      (VISIBILITY: lines in the game log; a debugging aid)\n");
     printf("  --trace-handles     Print each viewer's handle table at every decision and\n");
@@ -274,12 +164,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      protocol is unchanged\n");
     printf("  --state-dump json   Also render every --rmstate-dump frame, decoded, as one\n");
     printf("                      JSON line into <file>.jsonl (with --rmstate-read: to stdout)\n");
-    printf("  --machine-format <bquery|rmstate>\n");
-    printf("                      Machine protocol on stdout (implies --machine; default\n");
-    printf("                      bquery). rmstate: the deciding seat's RMSTATE frames\n");
-    printf("                      (\"RMSTATE <nbytes>\" + payload) replace BQUERY, a terminal\n");
-    printf("                      frame per seat at match end; all other output goes to\n");
-    printf("                      stderr\n");
+    printf("  --machine-format rmstate\n");
+    printf("                      The same as --machine (RMSTATE is the only machine\n");
+    printf("                      protocol)\n");
     printf("  --rmstate-card-scripts  Every CARDS frame carries each card's raw script text\n");
     printf("                      (its front-face row's script column; a token's in its row)\n");
     printf("  --rmstate-read <file>  Play no game: decode every record of an RMSTATE stream\n");
@@ -322,7 +209,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --no-shuffle, test setup); those flags given alongside\n");
     printf("                      --replay are ignored with a warning. Output flags\n");
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
-    printf("                      --broadcast-steps, --trace-visibility, --trace-handles,\n");
+    printf("                      --trace-visibility, --trace-handles,\n");
     printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
     printf("                      --knowledge-a/-b, --selfcheck-state, --selfcheck-knowledge)\n");
     printf("                      still apply; --log-decisions has no effect\n");
@@ -333,7 +220,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      seat's RMSTATE frames: first (row 0), random, explore,\n");
     printf("                      explore:patient, actions:<i,i,...> (then row 0) or\n");
     printf("                      play:<specs> (then row 0). A seat without one keeps its\n");
-    printf("                      input path (BQUERY / the RMSTATE stream, or --player)\n");
+    printf("                      input path (the RMSTATE stream, or --player)\n");
     printf("  --play <specs>      One --play script for both seats: comma-separated semantic\n");
     printf("                      specs (cast:<card>, target:<card>@opp, A:attack:<card>, ...),\n");
     printf("                      each resolved against its decision's menu; once it runs out\n");
@@ -505,12 +392,12 @@ void print_game_state(const GameState* gs) {
 
 // ── Choice display ────────────────────────────────────────────────────────────
 
-void print_query(const Query* q, bool player_a_has_priority) {
+void print_query(const std::vector<LegalAction>& actions, bool player_a_has_priority) {
     if (InputLogger::instance().is_machine_mode()) return;
     const char* pname = player_a_has_priority ? "Player A" : "Player B";
     game_log("\n%s has priority. Legal actions:\n", pname);
-    for (int i = 0; i < q->num_choices; i++) {
-        game_log("  %d: %s\n", i, q->choices[i].description);
+    for (size_t i = 0; i < actions.size(); i++) {
+        game_log("  %zu: %s\n", i, actions[i].description.c_str());
     }
 }
 

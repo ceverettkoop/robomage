@@ -211,9 +211,6 @@ static const CliOption OPTIONS[] = {
             log_decisions_flag = true;
         },
         nullptr},
-    // Passive BSTATE frames at forced auto-pass windows (machine mode observers only; no stdin
-    // response expected, nothing recorded).
-    {"--broadcast-steps", nullptr, false, false, [](const char *) { broadcast_steps_mode = true; }, nullptr},
     // Narrate reveal windows opening and closing (VISIBILITY: lines in the game log).
     {"--trace-visibility", nullptr, false, false, [](const char *) { trace_visibility = true; }, nullptr},
     // Print the per-viewer handle tables at each decision and narrate handle issue/link/retire
@@ -223,14 +220,14 @@ static const CliOption OPTIONS[] = {
     {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
     // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
     {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
-    // The machine protocol's stdout format: bquery (the default) or rmstate (the deciding seat's
-    // RMSTATE frame, state_format/stream.h); either implies --machine.
+    // The machine protocol's stdout format: rmstate, the only one (state_format/stream.h), so the
+    // same as --machine.
     {"--machine-format", nullptr, true, false,
         [](const char *v) {
-            if (std::strcmp(v, "rmstate") == 0)
-                machine_format_rmstate = true;
-            else if (std::strcmp(v, "bquery") != 0)
-                fatal_error("--machine-format: expected bquery or rmstate, got '" + std::string(v) + "'");
+            if (std::strcmp(v, "bquery") == 0)
+                fatal_error("--machine-format bquery was removed: the machine protocol is RMSTATE (--machine)");
+            if (std::strcmp(v, "rmstate") != 0)
+                fatal_error("--machine-format: expected rmstate, got '" + std::string(v) + "'");
             machine_mode = true;
         },
         nullptr},
@@ -318,6 +315,7 @@ static long non_negative_value(const char *flag, const char *value) {
 
 static const RemovedOption REMOVED_OPTIONS[] = {
     {"--search-server", "the MCTS search protocol is gone; snapshots stay in-process (snapshot.h)"},
+    {"--broadcast-steps", "BSTATE frames went with BQUERY; the RMSTATE frames are the machine protocol"},
 };
 
 static const RemovedOption *find_removed_option(const std::string &name) {

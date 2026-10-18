@@ -47,6 +47,10 @@ static unsigned int match_game_seed(const MatchContext &ctx);
 // wins, reported with the games actually played so the score still reads true.
 static void print_match_concede_result(const MatchContext &ctx);
 static int sideboard_copy_ordinal(size_t copies);
+// The largest sideboard option ordinal (sideboard_copy_ordinal).
+static constexpr int SIDEBOARD_ORDINAL_MAX = 63;
+// Completed swaps per sideboarding player in machine mode (run_sideboard_phase).
+static constexpr int SIDEBOARD_SWAP_CAP = 15;
 static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
                                std::vector<std::pair<size_t, std::string>> &to,
                                size_t from_idx);
@@ -83,8 +87,8 @@ bool human_player_is_a = false;
 bool log_viewer_set = false;
 Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
 
-GameState gs;
-const GameState *gs_ptr = &gs;
+// The CLI board (print_game_state) of the current decision.
+static GameState gs;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
@@ -105,12 +109,6 @@ bool log_decisions_flag = false;
 // --decision-log FILE: the decision log's path (implies --log-decisions); empty = the default,
 // resources/logs/game_<seed>.log.
 std::string decision_log_path;
-// --broadcast-steps: at every forced auto-pass (a priority window whose only
-// legal action is pass), emit a passive BSTATE frame — the BQUERY payload with
-// no stdin read — so an observing front end can render each step instead of
-// fast-forwarding to the next real decision. Consumes no input and records
-// nothing, so replays and search mirrors are unaffected.
-bool broadcast_steps_mode = false;
 // --trace-visibility: narrate every reveal window as it opens and closes (VISIBILITY: lines,
 // src/queries/visibility.cpp). A debugging aid; off by default, so no output changes.
 bool trace_visibility = false;
@@ -127,9 +125,6 @@ bool closed_decklist = false;
 // --rmstate-dump FILE: every viewer's state-format frames are written to FILE at each decision
 // (state_format/dump.h); empty = off.
 std::string rmstate_dump_path;
-// --machine-format rmstate: the deciding seat's RMSTATE frame replaces BQUERY on stdout, and
-// everything else the engine prints goes to stderr (state_format/stream.h).
-bool machine_format_rmstate = false;
 // --rmstate-card-scripts: every CARDS frame carries each card's raw script text in its front-face
 // row's `script` column, and each token's in its row (state_format/encode.cpp); off = empty.
 bool rmstate_card_scripts = false;
@@ -145,7 +140,7 @@ std::string rmstate_read_path;
 int knowledge_level_a = 1;
 int knowledge_level_b = 1;
 // --selfcheck-state: the state format's self-checks run at every decision (state_format/selfcheck.h);
-// failures print ERROR: lines. Play, the RNG and BQUERY are the same with or without it.
+// failures print ERROR: lines. Play, the RNG and the frames are the same with or without it.
 bool selfcheck_state = false;
 // --selfcheck-state-sample N: the sampled self-checks (permutation leak, snapshot) start at every
 // Nth decision.
@@ -205,7 +200,7 @@ const SideboardPhaseState *sideboard_phase_state = nullptr;
 
 // The whole bo3 match's between-game state in one snapshottable value struct.
 // play_bo3_match dispatches over its `stage`; the legacy globals above remain
-// authoritative-in-sync (machine_io/input_logger read them). Exposed (Stage 2)
+// authoritative-in-sync (the state format and input_logger read them). Exposed (Stage 2)
 // so the match-scoped game snapshot can capture/restore it across init_ecs().
 MatchContext g_match_ctx;
 
@@ -617,7 +612,6 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
 
             sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
             if (cur_game.is_mandatory_choice_pending()) {
-                populate_gamestate(&gs, viewer);
                 proc_mandatory_choice(cur_game, sys.orderer);
                 continue;
             }
@@ -647,7 +641,6 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // decision re-derived the miracle prompt instead of its own menu (the
         // az_mcts world-consistency violation).
         if (cur_game.is_mandatory_choice_pending()) {
-            populate_gamestate(&gs, viewer);
             proc_mandatory_choice(cur_game, sys.orderer);
             continue;
         }
@@ -685,25 +678,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         }
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {
-            // --broadcast-steps: surface this forced pass to the machine driver as
-            // a passive BSTATE frame (no stdin read, nothing recorded). Not under
-            // --machine-format rmstate, whose stdout carries RMSTATE records only.
-            if (machine_mode && broadcast_steps_mode && !machine_format_rmstate) {
-                Query q;
-                g_priority_window_open = true;
-                populate_gamestate(&gs, viewer);
-                g_priority_window_open = false;
-                populate_query(&q, legal_actions);
-                cli_emit_machine_bstate(&q, &gs);
-            }
             cur_game.pass_priority();
-            if (!machine_mode) populate_gamestate(&gs, viewer);
             continue;
         }
 
-        // In machine mode this populate is redundant: print_game_state early-returns,
-        // and InputLogger::get_input re-runs populate_gamestate into its own buffer.
-        // Skip the wasted full-entity scan + memset on every machine-mode decision.
+        // The CLI board (machine mode prints none).
         g_priority_window_open = true;
         if (!machine_mode) {
             populate_gamestate(&gs, viewer);
@@ -1144,14 +1123,11 @@ static void run_pregame_step(EcsSystems &sys, const Deck &deck_a, const Deck &de
 }
 
 // How many copies a sideboard IN/OUT choice moves between, as the per-action
-// option_ordinal. Without it "4x Lightning Bolt" and "1x Island" reach the policy
-// as the same action (category + card id only), so cutting one of four looks
-// identical to cutting a singleton. Clamped to OPTION_ORDINAL_MAX because the
-// ordinal is serialized as (ord + 1) / (OPTION_ORDINAL_MAX + 1) — a 60-basic deck
-// tallies to 60, inside the clamp, but a pathological entry must not wrap.
+// option_ordinal, so "4x Lightning Bolt" and "1x Island" are told apart by more than
+// their card. Clamped to SIDEBOARD_ORDINAL_MAX: a 60-basic deck tallies to 60, inside
+// the clamp.
 static int sideboard_copy_ordinal(size_t copies) {
-    if (copies > static_cast<size_t>(OPTION_ORDINAL_MAX))
-        return OPTION_ORDINAL_MAX;
+    if (copies > static_cast<size_t>(SIDEBOARD_ORDINAL_MAX)) return SIDEBOARD_ORDINAL_MAX;
     return static_cast<int>(copies);
 }
 
@@ -1213,9 +1189,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     sideboard_phase_state = &st;
     // Repoint priority to the sideboarding player (the established engine pattern:
     // every prompt is issued with priority.player_a_has_priority pointing at the chooser).
-    // populate_query's per-action controller_is_self flags read this flag, so
-    // without the repoint they would carry whatever the just-ended game left behind. cur_game is discarded
-    // (replaced by Game(seed)) when the next game starts, so nothing to restore.
+    // cur_game is discarded (replaced by Game(seed)) when the next game starts, so
+    // nothing to restore.
     cur_game.priority.player_a_has_priority = (player == Zone::PLAYER_A);
     // Reset the pending-decision baseline to 0 for this phase. The OUT menu wraps
     // its query in a PendingDecisionScope(in_card_eid) whose RAII prev-restore
@@ -1314,9 +1289,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
 
         // The one-shot locks bound the menu to Done + (distinct sideboard) while
         // balanced, and to (distinct maindeck) — or the lone forced cut — at +1,
-        // comfortably inside MAX_ACTIONS for any real deck. Fail loudly rather
-        // than relying on populate_query's silent truncation, which would make
-        // legal choices unreachable to the model.
+        // comfortably inside MAX_ACTIONS for any real deck; a wider menu means the
+        // locks failed, so it is fatal.
         if (actions.size() > MAX_ACTIONS)
             fatal_error("sideboard menu has " + std::to_string(actions.size()) +
                         " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
@@ -1433,7 +1407,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     // Initialize the match context from the params. All between-game state lives
     // here so the loop is a resumable dispatcher over ctx.stage. The legacy
     // globals (match_wins_a/b, match_game_number, sideboard_phase*) are kept in
-    // sync as we go — they remain the values machine_io/input_logger read.
+    // sync as we go — they remain the values the state format and input_logger read.
     MatchContext &ctx = g_match_ctx;
     ctx = MatchContext();
     ctx.active = true;

@@ -50,7 +50,7 @@ static void check_seat(Zone::Ownership viewer, const std::string &frame);
 static void report(const char *check, Zone::Ownership viewer, const std::string &detail) {
     ++stats.errors;
     if (stats.errors > MAX_ERROR_LINES) return;
-    // Under --machine-format rmstate stdout is stderr's descriptor with a buffer of its own.
+    // While the RMSTATE stream is on stdout is stderr's descriptor with a buffer of its own.
     std::fflush(stdout);
     const char *who = viewer == Zone::PLAYER_A ? "A" : viewer == Zone::PLAYER_B ? "B" : "all";
     non_fatal_error(std::string("selfcheck-knowledge ") + check + ": viewer " + who + ", " +

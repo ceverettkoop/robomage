@@ -84,7 +84,7 @@ static void pass_errors(ObsConsumer consumer, int seat, std::vector<std::string>
             continue;
         }
         if (ch.errors > MAX_ERROR_LINES) continue;
-        // Under --machine-format rmstate stdout is stderr's descriptor with a buffer of its own.
+        // While the RMSTATE stream is on stdout is stderr's descriptor with a buffer of its own.
         std::fflush(stdout);
         std::fprintf(stderr, "%s\n", line.c_str());
         if (ch.errors == MAX_ERROR_LINES)

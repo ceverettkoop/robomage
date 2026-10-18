@@ -272,8 +272,9 @@ static void check_parked_replay(const rmcheck::Options &opt, ConcedeChecks &c, c
 
 // test_concede.py's check 7: a concession at a parked query (Brainstorm's put-back, mid-resolution;
 // Cavern of Souls' ETB creature type, an SBE-pass prompt) ends the game at once, over the RMSTATE
-// stream driven by its frames and over a second session the same replies are piped into unread
-// (no --narrative), which writes the same frames; the logs replay to it.
+// stream driven by its frames (--machine-format rmstate) and over a second session the same
+// replies are piped into unread (--machine, no --narrative), which writes the same frames; the
+// logs replay to it.
 static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
     const std::string temp = opt.decks_dir() + "/temp";
     rmcheck::make_dirs(temp);
@@ -345,10 +346,10 @@ static void parked(const rmcheck::Options &opt, ConcedeChecks &c) {
                     tag + ": the match concession credited Player B");
             }
             check_parked_replay(opt, c, tag, log, results, pc.announce, sentinel);
-            // Piped: the same replies written up front, the frames not read.
+            // Piped: the same replies written up front into plain --machine, the frames not read.
             const std::string blog = rmcheck::path_join(dir, "piped_" + std::to_string(seed) + ".rmlog");
             rmcheck::ProcSpec spec;
-            spec.argv = {opt.binary, "--machine-format", "rmstate"};
+            spec.argv = {opt.binary, "--machine"};
             spec.argv.insert(spec.argv.end(), flags.begin(), flags.end());
             spec.argv.push_back("--decision-log");
             spec.argv.push_back(blog);

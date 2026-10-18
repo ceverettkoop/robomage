@@ -273,9 +273,9 @@ std::vector<MenuAction> resolver_menu(const DecisionView &v) {
         MenuAction &a = out[i];
         a.index = i;
         a.category = v.category(i);
-        const int cid = v.bquery_card_id(i);
+        const int cid = v.menu_card_id(i);
         if (cid >= 0) a.card = ascii_fold_card_name(v.cards().face_name(cid));
-        a.controller = v.bquery_controller(i);
+        a.controller = v.menu_controller(i);
         a.description = v.description(i);
     }
     return out;

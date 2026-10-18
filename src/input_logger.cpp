@@ -19,7 +19,6 @@
 #include "game_driver.h"
 #include "queries/players.h"
 #include "queries/zones.h"
-#include "machine_io.h"
 #include "state_format/dump.h"
 #include "state_format/selfcheck.h"
 #include "state_format/stream.h"
@@ -450,56 +449,16 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
 
     if (machine_mode && !human_has_priority) {
         // In-process decision hook: when a provider covers the deciding seat, take the
-        // choice directly from it — no query is emitted and stdin/stdout are not
-        // touched. Runs BEFORE the GameState/Query population + stdio loop. Falls through
-        // to the same commit_choice the stdio path uses so the decision log stays complete.
-        // The provider can consult snapshot_loop_safe() for restore-safety without any
-        // extra plumbing. Same concession sentinels and -1 (confirm sentinel) → last-slot
-        // remap the stdio path applies.
+        // choice directly from it — no frame is written and stdin/stdout are not
+        // touched. The choice goes through accept_machine_choice (concession sentinels,
+        // -1 → last-slot remap, commit_choice), as the stream's does, so the decision log
+        // stays complete. The provider can consult snapshot_loop_safe() for restore-safety
+        // without any extra plumbing.
         if (provider_decides(seat)) return accept_machine_choice(actions, input_provider(seat, actions));
-        // --machine-format rmstate: the deciding seat's RMSTATE frame takes the place of BQUERY,
-        // answered by one integer line (state_format/stream.h).
-        if (rmstate_stream_enabled()) return accept_machine_choice(actions, rmstate_stream_exchange(actions));
-        extern bool sideboard_phase;
-        extern Zone::Ownership sideboard_phase_player;
-        GameState gs;
-        Query q;
-        // During sideboarding, priority/active-player flags don't reflect who is
-        // sideboarding. Use the sideboard player as the viewer so state index
-        // [34] (self_is_player_a) correctly identifies the sideboarding side.
-        Zone::Ownership viewer = sideboard_phase ? sideboard_phase_player : Zone::UNKNOWN;
-
-        populate_gamestate(&gs, viewer);
-        populate_query(&q, actions);
-        cli_emit_machine_query(&q, &gs);
-
-        // End of input or an unparseable line: the legacy confirm fallback (choice stays -1).
-        int choice = -1;
-        char line[128];
-        if (fgets(line, sizeof(line), stdin)) {
-            if (!strchr(line, '\n')) {
-                int c;
-                while ((c = getchar()) != '\n' && c != EOF);
-            }
-            char *end = nullptr;
-            long parsed = strtol(line, &end, 10);
-            if (end != line) choice = static_cast<int>(parsed);
-        }
-
-        // Concession sentinels (CR 104.3a): logged verbatim so --replay
-        // reproduces the concession, then applied instead of being indexed into
-        // the menu. Handled before the -1 confirm remap and the range check.
-        if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
-            commit_choice(actions, choice);
-            return apply_concede_input(choice);
-        }
-        // Remap -1 (confirm sentinel from Python env) to last slot
-        if (choice == -1 && !actions.empty()) {
-            choice = static_cast<int>(actions.size()) - 1;
-        }
-        check_machine_choice(actions, choice);
-        commit_choice(actions, choice);
-        return choice;
+        // Every other machine seat decides over the RMSTATE stream: its frame, answered by
+        // one integer line (state_format/stream.h).
+        if (!rmstate_stream_enabled()) fatal_error("a machine decision with no input path (no agent, no stream)");
+        return accept_machine_choice(actions, rmstate_stream_exchange(actions));
     }
 
     // Auto-pass mode: return 0 until we reach the target turn
@@ -514,15 +473,8 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
     }
 
     // CLI input loop: print query, validate, log
-    Zone::Ownership viewer = (has_human_player)
-        ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
-        : Zone::UNKNOWN;
-    GameState gs;
-    Query q;
     while (true) {
-        populate_gamestate(&gs, viewer);
-        populate_query(&q, actions);
-        print_query(&q, cur_game.priority.player_a_has_priority);
+        print_query(actions, cur_game.priority.player_a_has_priority);
         int choice = get_int_input();
         // handling flagged choices
         switch (choice) {

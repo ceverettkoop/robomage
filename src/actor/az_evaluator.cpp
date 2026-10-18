@@ -11,7 +11,7 @@
 // in the ordinary std context; including torch first shadows it with at::mt19937.
 #include "az_layout.h"  // ACTOR_OBS_SIZE
 #include "classes/gamestate.h"  // MAX_ACTIONS
-#include "machine_io.h"         // N_CARD_TYPES
+#include "card_vocab.h"         // N_CARD_TYPES
 
 #include <ATen/Parallel.h>
 #include <torch/csrc/jit/passes/tensorexpr_fuser.h>

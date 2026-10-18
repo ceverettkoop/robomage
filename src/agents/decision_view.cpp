@@ -130,7 +130,7 @@ int DecisionView::stack_face_id(size_t row) const {
     return cid;
 }
 
-int DecisionView::bquery_card_id(size_t i) const {
+int DecisionView::menu_card_id(size_t i) const {
     const int o = object_row(menu_.u(i, m_source_));
     int cid = menu_.card(i, m_source_card_);
     int zone = -1;
@@ -150,7 +150,7 @@ int DecisionView::bquery_card_id(size_t i) const {
     return cid;
 }
 
-int DecisionView::bquery_controller(size_t i) const {
+int DecisionView::menu_controller(size_t i) const {
     const int o = object_row(menu_.u(i, m_source_));
     if (o >= 0) {
         const size_t row = static_cast<size_t>(o);

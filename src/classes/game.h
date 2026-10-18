@@ -160,9 +160,8 @@ enum MandatoryChoice {
     CHOOSE_ENTITY,  // Legend rule, replacement effect, choose card name, choose permanent
     ASSIGN_COMBAT_DAMAGE_CHOICE  // T3.10: attacker divides damage among 2+ blockers it can't all kill
 };
-// Width of the MandatoryChoice one-hot in the serialized state vector. Derived
-// from the enum's last value, so adding a choice kind widens the one-hot (and
-// shifts every later block via machine_io.h's offset chain) automatically.
+// The number of MandatoryChoice kinds (the state format's mandatory_choice table), derived from
+// the enum's last value.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 
 // An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
@@ -279,8 +278,7 @@ struct Game {
         // starting at 1 so 0 stays "not a delayed trigger").
         uint32_t next_delayed_seq = 1;
         // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
-        // the monarch). Serialized into the state vector's global-extras block (per-player
-        // is_monarch flags; see machine_io.h).
+        // the monarch).
         Entity monarch_entity = MAX_ENTITIES;
         std::vector<ObjectRef> delve_exiled;  // cards exiled during current delve cast; cleared after ETB
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
@@ -662,10 +660,9 @@ struct Game {
             MandatoryChoice choice = NONE;
             PendingQuery query;  // the decision parked for the main loop to emit
             // The source entity of the spell/ability currently making a mid-resolution choice
-            // (target select, dig/scry/surveil pick, search, discard, modal, ...). Serialized into
-            // the state vector's pending-decision context block so the ML observation shows WHAT is
-            // asking for the current choice (a mid-resolution choice's source need not be on the
-            // stack). Managed exclusively via PendingDecisionScope; 0 = no ability-driven choice
+            // (target select, dig/scry/surveil pick, search, discard, modal, ...), so an observer
+            // sees WHAT is asking for the current choice (a mid-resolution choice's source need not
+            // be on the stack). Managed exclusively via PendingDecisionScope; 0 = no ability-driven choice
             // pending.
             Entity decision_source = 0;
             // Combat sub-prompt suspension state (pending.query tags ATTACK_TARGET /

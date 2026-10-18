@@ -150,7 +150,7 @@ static std::string context() {
 static void report(const char *check, Zone::Ownership viewer, const std::string &detail) {
     ++stats.errors;
     if (stats.errors > MAX_ERROR_LINES) return;
-    // Under --machine-format rmstate stdout is stderr's descriptor with a buffer of its own: a
+    // While the RMSTATE stream is on stdout is stderr's descriptor with a buffer of its own: a
     // partly buffered narrative line would otherwise run into this one.
     std::fflush(stdout);
     non_fatal_error(

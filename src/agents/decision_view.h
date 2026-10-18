@@ -19,9 +19,8 @@
 //   category name, its card (card(i): the action's object's name as it is now, a stack object's
 //   card, a back face played or cast as it, a named card; none for a player or a card-less
 //   choice), the own hand's card names and the CARDS frame's mana values;
-// - the --play resolver (agents/play_spec.h) reads each row's card id and controller as the BQUERY
-//   menu gave them (bquery_card_id / bquery_controller: train/rmstate_adapter.py's emulation of
-//   machine_io.cpp's populate_query), and its description.
+// - the --play resolver (agents/play_spec.h) reads each row's card id and controller
+//   (menu_card_id / menu_controller) and its description.
 
 namespace agents {
 
@@ -41,12 +40,13 @@ class DecisionView {
         const std::string &description(size_t i) const;
         // The action's card name (explore's view; none for a player or a card-less choice).
         std::optional<std::string> card(size_t i) const;
-        // The action's card id as the BQUERY menu's `ids` array gave it (-1 none).
-        int bquery_card_id(size_t i) const;
-        // The action's controller as the BQUERY menu's `ctrl` array gave it: 1 the viewer, 0 the
-        // opponent, -1 none (no object or player source, or an object outside the battlefield,
-        // hand, stack, graveyard and exile).
-        int bquery_controller(size_t i) const;
+        // The action's card id (-1 none): its source object's face as it is now on the
+        // battlefield or the stack (object_face_id / stack_face_id), else the row's source card
+        // (its back face for a back-face play or cast); none for a player source.
+        int menu_card_id(size_t i) const;
+        // The action's controller: 1 the viewer, 0 the opponent, -1 none (no object or player
+        // source, or an object outside the battlefield, hand, stack, graveyard and exile).
+        int menu_controller(size_t i) const;
 
         // ── objects ──
         // The own hand's card names (face-down cards left out), in object-table order.
@@ -64,8 +64,8 @@ class DecisionView {
         std::optional<std::string> stack_card(size_t row) const;
 
     private:
-        // The BQUERY card id of an object (a token's id, a copy's copied card, a transformed card's
-        // back face) and of a stack row.
+        // The card id of an object as it is now (a token's id, a copy's copied card, a transformed
+        // card's back face) and of a stack row.
         int object_face_id(size_t row) const;
         int stack_face_id(size_t row) const;
         // The object row of handle `h` (-1 when the frame has none).

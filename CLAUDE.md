@@ -24,8 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   add your own `is_phased_out` check at the call site. The only code that reads
   `Permanent::is_phased_out` directly is the phasing subsystem itself (the untap-step
   phase-in/skip in `classes/game.cpp`), the phase-out setter in `effects/effect_phases.cpp`,
-  and the observation serializers — `machine_io.cpp` and the state-format encoder
-  `state_format/encode.cpp` — which deliberately include phased-out permanents, flagged.
+  and the observation serializer — the state-format encoder `state_format/encode.cpp` — which
+  deliberately includes phased-out permanents, flagged.
   Add similar shared accessors (in the `src/queries/` header for their concern) when a new
   entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
@@ -339,7 +339,7 @@ relevant deck(s), filtered by `ValidCards$`. `NameCardScope` selects the source:
 (one player's whole deck) or `BOTH_PLAYERS` (either player's cards, de-duped — used for
 land-naming), so a land-naming card can still name a land only in the opponent's deck.
 Under `--closed-decklist` (register 11a) the set is instead every vocab card passing `ValidCards$`
-(read from the parse cache, no entities), which needs `--machine-format rmstate` (uncapped menu).
+(read from the parse cache, no entities).
 
 ### Card scripts and parsing
 
@@ -378,7 +378,7 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 ### Adding a New Card
 
 1. Append `{"Card Name", N}` (next free index) to `card_vocab_entries` in `src/card_vocab.h`;
-   `N_CARD_TYPES` (`src/machine_io.h`) must exceed the highest index. Tokens are a separate band
+   `N_CARD_TYPES` (`src/card_vocab.h`) must exceed the highest index. Tokens are a separate band
    (`token_vocab_entries`, from index 900).
 2. Provision the script, then `make`.
 
@@ -416,48 +416,19 @@ buffers and updates are output-preserving, so checkpoints resume under either se
 
 ### Machine mode protocol
 
-`--machine`: at each decision the engine prints a `BQUERY` header + binary payload on stdout and
-reads one integer on stdin; other stdout lines are narrative. Emitter: `emit_machine_frame` in
-`src/cli_output.cpp` (layout comment at the top of `src/machine_io.h`).
-`--machine-format rmstate` instead writes the deciding seat's RMSTATE frames (`RMSTATE <nbytes>\n`
-+ payload, `docs/state_format.md` §9) as the only stdout output (everything else goes to stderr),
-answered by the same one integer, plus a terminal frame per seat at match end; the default is unchanged.
-Every seat's STATE frame (stream and `--rmstate-dump`) ends with that seat's knowledge-sidecar tables
-(`k_*`, `--knowledge-a/-b off|expert`, default expert; `docs/knowledge_store.md` §9.6).
-```
-BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
-float32[STATE_SIZE] state   (priority player's = "self" perspective)
-int32  [MAX_ACTIONS] cats   (ActionCategory)
-float32[MAX_ACTIONS] ids    (vocab_idx / N_CARD_TYPES; -1/N_CARD_TYPES = null)
-float32[MAX_ACTIONS] ctrl   (1 self / 0 opp / null for non-entity)
-float32[MAX_ACTIONS] pub    (card identity public; side-channel, NOT in the obs)
-int32  [MAX_ACTIONS] zone   (ActionRefZone)
-int32  [MAX_ACTIONS] refs   (entity-reference slot, -1 = none)
-int32  [MAX_ACTIONS] ords   (mode/X/color/ability index, -1 = n/a)
-```
-Arrays are padded to `MAX_ACTIONS`. Every menu goes through `InputLogger::get_input`, which leaves
-out a choice interchangeable with an earlier one (two identical cards in the same graveyard or
-library — `interchangeable_cards`), so a menu never needs more than `MAX_ACTIONS` slots; a debug
-build stops on a wider one (`populate_query`). The header's sizes are a layout handshake the
-Python driver asserts. Under `--narrative` the frame also carries per-action description strings and
-per-permanent counter / token-name strings (display only). `--broadcast-steps` emits the same
-payload as `BSTATE:` frames that take no reply.
+`--machine` (spelling also accepted: `--machine-format rmstate`): the machine decision schedule,
+and for each seat with no in-process agent that is not the `--player` seat, the RMSTATE stream —
+the deciding seat's frames (`RMSTATE <nbytes>\n` + payload, `docs/state_format.md` §9) as the
+only stdout output (everything else goes to stderr), answered by one integer on stdin, plus a
+terminal frame per seat at match end (`src/state_format/stream.h`). Under `--replay` the log
+supplies every decision and no stream is written. Every seat's STATE frame (stream and
+`--rmstate-dump`) ends with that seat's knowledge-sidecar tables (`k_*`, `--knowledge-a/-b
+off|expert`, default expert; `docs/knowledge_store.md` §9.6). Every menu goes through
+`InputLogger::get_input`, which leaves out a choice interchangeable with an earlier one (two
+identical cards in the same graveyard or library — `interchangeable_cards`).
 
-**Source of truth (never duplicate values here or re-spell them as literals):**
-- Layout, `STATE_SIZE`, `N_CARD_TYPES`, per-slot field order: `src/machine_io.h`. Card identity
-  is one normalized id float (`norm_card_id`), not a one-hot.
-- Block widths: `machine_io.h`'s "State-vector block widths", mirrored to `train/_enums.py` by
-  `gen_enums.py` — import them in `env.py`/`extractor.py`/`obs_builder.cpp`.
-- Block offsets: `machine_io.h`'s `OFFSET_CHAIN`; `env.py` derives the same chain, the `actorobs`
-  ci tier compares them block-by-block, and `extractor.py` asserts vs `env.py` at import.
-- Per-action obs positions: `env.py`'s `ACT_*_START` constants — never `STATE_SIZE + k*MAX_ACTIONS`.
-- `ActionCategory`: `src/classes/action.h` (mirrored to `_enums.py`, incl. `ACTION_CATEGORY_MAX`).
-- `OBS_SIZE` = `STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS` + matchup tail (`train/env.py`);
-  `N_ACTION_OBS_BLOCKS` (`machine_io.h`) alone says how many per-action arrays fold in (`pub` is not).
-  Per-card cost facts live in the network's frozen `card_props`, not the obs.
-
-**Confirm slot:** mandatory attacker/blocker menus end with a confirm action; the env remaps
-`num_choices - 1` to `-1` before sending.
+**Confirm slot:** mandatory attacker/blocker menus end with a confirm action; a reply of `-1`
+selects the last row.
 
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
 decision is read (machine, `--replay`, actor, CLI); the pending-decision seat loses via the
@@ -465,9 +436,6 @@ ordinary `Game::player_loses` path, and the sentinel is logged so it replays. `-
 match (even from the sideboard phase, where `-2` is a no-op). Python constants in `train/env.py`;
 `GameDriver.concede(match=…)`; regression tier `concede`.
 
-**Perspective flags:** the header has "priority player is active" (relative) and "self is Player A"
-(absolute); their XNOR is `active_is_a`. The seat flag is zeroed out of both network trunks
-(`extractor.network_global_ctx`) so the net cannot learn seat-specific play.
 
 **No action history in the obs** (it leaked hidden picks). What it carried is now explicit fields:
 pass flags / `is_priority_window` / mulligan state, per-turn counters, per-permanent turn statuses,
@@ -541,7 +509,7 @@ sections above are not repeated here.
 - `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
 - `src/state_format/dump.{h,cpp}` — `--rmstate-dump FILE`: every viewer's frames at each decision
   (and `--state-dump json`'s `FILE.jsonl`)
-- `src/state_format/stream.{h,cpp}` — `--machine-format rmstate` (the deciding seat's frames on
+- `src/state_format/stream.{h,cpp}` — the `--machine` RMSTATE stream (the deciding seat's frames on
   stdout) and the per-decision / match-end bookkeeping both frame writers share
 - `src/state_format/decode.{h,cpp}` — RMSTATE bytes → plain structs (std + `schema.h` only): schema
   from the SCHEMA frame, generic table decode, re-encode, stream record reader
@@ -566,8 +534,8 @@ sections above are not repeated here.
   the engine state, and the knowledge state across the snapshot check's restore;
   `SELFCHECK-KNOWLEDGE:` summary
 - `src/snapshot.cpp` — in-process state snapshot/restore and the loop-safe decision marker
-- `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;
-  `src/cli_output.cpp` writes the BQUERY frame
+- `src/machine_io.{h,cpp}` — the CLI board's source (`populate_gamestate` / `GameState`, until
+  step 4b) and `action_card_vocab_idx`
 - `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, replay-header
   flags); keep `cli_print_help` in `src/cli_output.cpp` in sync
 - `src/input_logger.cpp` — decision input (machine, `--replay`, CLI, the in-process provider of the

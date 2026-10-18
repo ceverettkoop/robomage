@@ -23,6 +23,7 @@
 #include "enum_names.h"
 #include "handles.h"
 #include "selfcheck.h"
+#include "stream.h"
 
 using rmstate::EventKind;
 using rmstate::LibAnchor;
@@ -73,7 +74,7 @@ static int slot(Zone::Ownership viewer) {
 // Whether a frame writer (or the self-check) drains the queues; under --trace-events alone events
 // are only narrated.
 static bool queues_enabled() {
-    return !rmstate_dump_path.empty() || machine_format_rmstate || selfcheck_state_enabled() || agent_feed_enabled();
+    return !rmstate_dump_path.empty() || rmstate_stream_enabled() || selfcheck_state_enabled() || agent_feed_enabled();
 }
 
 bool rmstate_events_enabled() {
@@ -163,7 +164,7 @@ static uint32_t push(Zone::Ownership viewer, ObsEvent ev) {
     if (trace_events) trace_event(viewer, ev);
     const uint32_t seq = ev.seq;
     // The stdout stream serves the seats only.
-    if (machine_format_rmstate && is_seat(viewer)) q.stream_events.push_back(ev);
+    if (rmstate_stream_enabled() && is_seat(viewer)) q.stream_events.push_back(ev);
     if (selfcheck_state_enabled()) q.selfcheck_events.push_back(ev);
     if (agent_feed_serves(viewer)) q.agent_events.push_back(ev);
     if (!rmstate_dump_path.empty()) q.events.push_back(std::move(ev));

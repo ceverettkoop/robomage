@@ -38,7 +38,6 @@
 #include "../ecs/events.h"
 #include "../input_logger.h"
 #include "replacement_effects.h"
-#include "../machine_io.h"
 #include "../saga.h"
 #include "../type_constants.h"
 #include "../components/types.h"
@@ -665,9 +664,8 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
 
     // Sideboard cards ("outside the game"): instantiate each deck's SIDEBOARD: section as
     // SIDEBOARD-zone entities so wish effects (Karn, the Great Creator -2, Origin$ Sideboard)
-    // can find them in every game, not just via test-harness --sideboard presets. SIDEBOARD is
-    // never serialized to the ML state (populate_gamestate ignores it), and this runs after the
-    // creature-subtype scan above so ChooseType menus are unchanged. setup_companions reuses an
+    // can find them in every game, not just via test-harness --sideboard presets. This runs after
+    // the creature-subtype scan above so ChooseType menus are unchanged. setup_companions reuses an
     // already-instantiated sideboard entity instead of creating its own, so no duplication.
     for (size_t i = 0; i < 2; i++) {
         Zone::Ownership sb_owner = (i == 0) ? Zone::PLAYER_A : Zone::PLAYER_B;

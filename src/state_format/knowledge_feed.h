@@ -14,7 +14,7 @@ class Knowledge;
 
 // ── The knowledge sidecar in the engine (docs/knowledge_store.md §2, §9.6) ────────────────────
 //
-// Every RMSTATE frame writer (ObsConsumer: --rmstate-dump, --machine-format rmstate,
+// Every RMSTATE frame writer (ObsConsumer: --rmstate-dump, the RMSTATE stream,
 // --selfcheck-state, the in-process feed) has a knowledge::Knowledge instance of its own per seat, fed with exactly the
 // frames that writer builds for that seat, in order: the seat's SCHEMA, CARDS, DECKLISTS and METAGAME
 // frames, then each of its STATE frames as encoded (its events drained into it), before the k_*
