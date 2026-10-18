@@ -866,10 +866,6 @@ static void pregame_mull_decide(EcsSystems &sys) {
             pg.bottom_remaining = mulligans;
             pg.stage = Game::PregameState::MULL_BOTTOM;
         } else {
-            if (mulligans >= 3 && InputLogger::instance().is_machine_mode()) {
-                printf("MULLIGAN_PENALTY: %s\n", seat == Zone::PLAYER_A ? "A" : "B");
-                fflush(stdout);
-            }
             auto hand = sys.orderer->get_hand(seat);
             for (auto card : hand) {
                 sys.orderer->add_to_zone(false, card, Zone::LIBRARY);

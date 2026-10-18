@@ -136,13 +136,6 @@ ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost) {
 void empty_mana_pool(Zone::Ownership player_owner) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
-    if (!player.mana.empty() && InputLogger::instance().is_machine_mode()) {
-        // Signal the Python env to apply a shaping penalty to the model if this
-        // player's side is the one being trained.
-        const char* side = (player_owner == Zone::PLAYER_A) ? "A" : "B";
-        printf("MANA_WASTED: %s\n", side);
-        fflush(stdout);
-    }
     player.mana.clear();
 }
 
