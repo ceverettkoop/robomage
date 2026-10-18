@@ -8,8 +8,8 @@ the Python front ends. It is archived in place, not forked: branch `archive/rl-s
 `rl-stack-final`, if created) ends at `cf7f97f`, the last commit with both stacks, and
 development continues on `main` in this repository.
 
-**Status: steps 1–3 are done** (each step's status paragraphs below are its history); steps 4
-and 5 are the plan forward. Paths under `train/` in those paragraphs name files deleted in step
+**Status: steps 1–3 and 4a are done** (each step's status paragraphs below are its history);
+4b and step 5 are the plan forward. Paths under `train/` in those paragraphs name files deleted in step
 3b (they are on `archive/rl-stack`), except the seven kept Python files, which moved to `python/`
 and are written here with their current paths.
 
@@ -495,8 +495,8 @@ paths corrected.
 - Re-record the corpus with the live agent, and add explore games with `--no-auto-mana` so
   manual mana payment is covered.
 
-**Status: parts 1 and 2 done** (the schedule; `interchangeable_cards`; the corpus re-record is
-still to do). `machine_masks_conditional_destroy` is deleted: a Fatal Push-style spell is
+**Status: done** (part 1 the schedule, part 2 `interchangeable_cards`, part 3 the corpus
+re-record and the manual-payment coverage). `machine_masks_conditional_destroy` is deleted: a Fatal Push-style spell is
 offered whenever it has a legal target (CR 601.2c) and its condition is checked on resolution.
 `auto-mana` is the match-wide launch option `auto_mana` (`game_driver.h`), on unless
 `--no-auto-mana` (a setup option in the `cli_args.cpp` table, so the RMLOG `FLAGS` line carries
@@ -529,7 +529,15 @@ two revealed copies merge). Evidence: 240 C++ explore games with `--selfcheck-kn
 of the Doomsday, reanimator, BUG, Lands, Delver, control and Maverick decks; 10 seeds each, bo1
 `explore`, bo3 `explore:patient` and bo1 `--no-auto-mana`; 95,604 decisions) end with no error and
 no draw; the 43 whose decision log differs from part 1's first diverge at a menu that lost a
-duplicate row.
+duplicate row. Part 3: the corpus re-recorded with the live agent (`make regen`) changes exactly
+the four drifting games, no result: the baselines of `lg_bug__reanimator` (the two Fatal Pushes in
+the menu), `lg_gw_maverick__reanimator` and `lg_reanimator__reanimator` (the merged reveal rows),
+and one logged decision of `doomsday_mirror` (Thassa's Oracle one row up). Manual payment is
+covered by two corpus games recorded explore vs explore with `--no-auto-mana`
+(`manual_doomsday_vs_delver`, `manual_mav_mirror`; the scripted agent pays with the payment loop's
+first row, often the wrong colour of a dual, so it records none) and by the `fuzz` tier's
+`--no-auto-mana` leg: `--manual-mana-games` (default 2) bo1 `--mode` games per ring matchup, 20
+games and about 13 s of the debug gate on 4 cores; the nightly sweep plays 40 per ring matchup.
 
 ### 4b. C++ CLI on the decoder
 

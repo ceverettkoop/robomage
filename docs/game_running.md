@@ -228,8 +228,8 @@ cd bin
 ./debug/robomage --replay /tmp/g5.rmlog --machine --narrative --trace-decisions
 ```
 
-The replay corpus (`tests/corpus/`) is such logs from the scripted agent's games, with their
-replay output as byte-for-byte baselines (`docs/ci.md`).
+The replay corpus (`tests/corpus/`) is such logs from the scripted agent's games (and two explore
+games under `--no-auto-mana`), with their replay output as byte-for-byte baselines (`docs/ci.md`).
 
 ## State dumps
 
