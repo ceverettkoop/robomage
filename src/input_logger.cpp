@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "agents/driver.h"
 #include "card_vocab.h"
 #include "classes/game.h"
 #include "choice_labels.h"
@@ -18,8 +19,6 @@
 #include "game_driver.h"
 #include "queries/players.h"
 #include "queries/zones.h"
-#include "machine_io.h"
-#include "search_server.h"
 #include "state_format/dump.h"
 #include "state_format/selfcheck.h"
 #include "state_format/stream.h"
@@ -42,7 +41,12 @@ static std::string read_embedded_deck(std::ifstream &file, const std::string &de
 static int get_int_input() {
     int c;
     while ((c = getchar()) == ' ' || c == '\t');
-    if (c == EOF || c == '\n') return -1;
+    // End of input can never answer the prompt, so it quits like 'q' instead of asking again forever.
+    if (c == EOF) {
+        game_log("Input closed; quitting.\n");
+        exit(0);
+    }
+    if (c == '\n') return -1;
     if (c == 'q' || c == 'Q') {
         game_log("Quitting.\n");
         exit(0);
@@ -55,6 +59,10 @@ static int get_int_input() {
     int choice = -1;
     if (scanf("%d", &choice) != 1) {
         while ((c = getchar()) != '\n' && c != EOF);
+        if (c == EOF) {
+            game_log("Input closed; quitting.\n");
+            exit(0);
+        }
         return -1;
     }
     while ((c = getchar()) != '\n' && c != EOF);
@@ -160,11 +168,17 @@ InputLogger &InputLogger::instance() {
     return logger;
 }
 
-void InputLogger::set_input_provider(std::function<int(const std::vector<LegalAction> &)> provider) {
+void InputLogger::set_input_provider(InputProvider provider, bool covers_a, bool covers_b, bool real_decisions) {
     input_provider = std::move(provider);
+    provider_covers[0] = covers_a;
+    provider_covers[1] = covers_b;
+    provider_real_decisions = real_decisions;
 }
 
-void InputLogger::clear_input_provider() { input_provider = nullptr; }
+void InputLogger::clear_input_provider() {
+    input_provider = nullptr;
+    provider_covers[0] = provider_covers[1] = false;
+}
 
 void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &header) {
     log_file << "RMLOG v2\n";
@@ -182,16 +196,25 @@ void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &heade
     log_file.flush();
 }
 
-void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
-    log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
+void InputLogger::set_log_path(const std::string &path) {
+    named_log_path = path;
+}
+
+bool InputLogger::open_log(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
+    log_path = named_log_path.empty() ? resource_dir + "/logs/game_" + std::to_string(seed) + ".log" : named_log_path;
     log_file.open(log_path);
     if (!log_file.is_open()) {
         non_fatal_error("Failed to open log file: " + log_path);
-        return;
+        return false;
     }
     write_header(seed, header);
+    return true;
+}
+
+void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
+    if (!open_log(seed, resource_dir, header)) return;
     replay_mode = false;
-    game_log("Logging inputs to: %s\n", log_path.c_str());
+    if (named_log_path.empty()) game_log("Logging inputs to: %s\n", log_path.c_str());
 }
 
 void InputLogger::init_replay(const std::string &replay_path) {
@@ -241,17 +264,11 @@ void InputLogger::init_machine(unsigned int seed, const std::string &resource_di
                                const DecisionLogHeader &header) {
     machine_mode = true;
     replay_mode = false;
-    // Machine mode (RL training / test harness) writes no decision log unless
-    // --log-decisions is given — training runs millions of episodes.
+    // Machine mode (agent games, the gate) writes no decision log unless
+    // --log-decisions (or --decision-log) is given — agent runs play many games.
     if (!enable_log) return;
-    log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
-    log_file.open(log_path);
-    if (!log_file.is_open()) {
-        non_fatal_error("Failed to open log file: " + log_path);
-        return;
-    }
-    write_header(seed, header);
-    game_log("Logging inputs to: %s\n", log_path.c_str());
+    if (!open_log(seed, resource_dir, header)) return;
+    if (named_log_path.empty()) game_log("Logging inputs to: %s\n", log_path.c_str());
 }
 
 bool InputLogger::is_replay_mode() const {
@@ -365,10 +382,6 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
 }
 
 int InputLogger::choose(const std::vector<LegalAction> &actions) {
-    extern bool has_human_player;
-    extern bool human_player_is_a;
-    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.priority.player_a_has_priority);
-
     // Cooperative unwind after a concession (CR 104.3a): the game is already
     // decided, so hand back the first choice at every remaining decision --
     // emitting no query, consuming no stdin, committing nothing -- until control
@@ -381,16 +394,37 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // --trace-handles: every viewer's handle table as of this decision (state_format/handles.h).
     if (trace_handles) trace_handle_tables();
 
+    const Zone::Ownership seat = rmstate_deciding_seat();
+
     // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h),
-    // after the bookkeeping both RMSTATE writers share (state_format/stream.h), then the
+    // after the bookkeeping every RMSTATE writer shares (state_format/stream.h), then the
     // --selfcheck-state checks of this decision's frames (state_format/selfcheck.h; not for the
-    // in-process actor's decisions).
-    // Not while the search server unwinds to a restore: that decision is never made.
-    if (!search_restore_pending()) {
-        rmstate_begin_decision();
-        rmstate_dump_decision(actions);
-        if (!input_provider) selfcheck_state_decision(actions);
-    }
+    // decisions of a provider that also answers simulated ones, a search agent's).
+    rmstate_begin_decision();
+    rmstate_dump_decision(actions);
+    if (!provider_decides(seat) || provider_real_decisions) selfcheck_state_decision(actions);
+
+    // --max-decisions: the run stops at the first decision past the cap, before anyone decides it.
+    if (max_decisions >= 0 && decisions_read >= static_cast<size_t>(max_decisions))
+        end_run_at_decision_cap(decisions_read);
+    ++decisions_read;
+
+    // The in-process agents' frames for this decision, and its --trace-decisions block.
+    const bool traced = agents_begin_decision(actions, decisions_read);
+    const int choice = read_choice(actions, seat);
+    if (traced) agents_trace_choice(choice);
+    return choice;
+}
+
+bool InputLogger::provider_decides(Zone::Ownership seat) const {
+    if (!input_provider) return false;
+    return (seat == Zone::PLAYER_A && provider_covers[0]) || (seat == Zone::PLAYER_B && provider_covers[1]);
+}
+
+int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat) {
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.priority.player_a_has_priority);
 
     if (replay_mode) {
         int choice;
@@ -423,115 +457,17 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     }
 
     if (machine_mode && !human_has_priority) {
-        // Cooperative unwind (search server): a RESTORE command arrived at an
-        // earlier decision. Hand back the first choice at every decision --
-        // emitting no query, consuming no stdin, committing nothing -- until
-        // control returns to the main loop, which applies the pending restore
-        // and overwrites everything these auto-choices mutate.
-        if (search_restore_pending()) {
-            return search_unwind_choice();
-        }
-        // In-process actor hook (Phase D): when a provider is installed, take the
-        // choice directly from it — no query is emitted and stdin/stdout are not
-        // touched. Runs AFTER the cooperative-unwind short-circuit above and BEFORE
-        // the GameState/Query population + stdio loop. Falls through to the same
-        // commit_choice the stdio path uses so the decision log stays complete. Unset in
-        // bin/robomage, so this is a no-op there. The provider can consult
-        // search_loop_safe() for restore-safety without any extra plumbing.
-        // Same concession sentinels and -1 (confirm sentinel) → last-slot remap the stdio path
-        // applies.
-        if (input_provider) return accept_machine_choice(actions, input_provider(actions));
-        // --machine-format rmstate: the deciding seat's RMSTATE frame takes the place of BQUERY,
-        // answered by one integer line (state_format/stream.h).
-        if (rmstate_stream_enabled()) return accept_machine_choice(actions, rmstate_stream_exchange(actions));
-        extern bool sideboard_phase;
-        extern Zone::Ownership sideboard_phase_player;
-        GameState gs;
-        Query q;
-        // During sideboarding, priority/active-player flags don't reflect who is
-        // sideboarding. Use the sideboard player as the viewer so state index
-        // [34] (self_is_player_a) correctly identifies the sideboarding side.
-        Zone::Ownership viewer = sideboard_phase ? sideboard_phase_player : Zone::UNKNOWN;
-
-        int choice = -1;
-        while (true) {
-            populate_gamestate(&gs, viewer);
-            populate_query(&q, actions);
-            // Loop-safety marker for the search driver: SNAPSHOT/DETERMINIZE are
-            // legal only at decisions the main loop can re-derive from restored
-            // data. Plain pre-BQUERY text line; stock drivers ignore it.
-            if (search_server_mode) {
-                printf("SEARCHINFO safe=%d\n", search_loop_safe() ? 1 : 0);
-            }
-#ifndef NDEBUG
-            // Emission-side counterpart of the [dec] commit trace: log the menu as
-            // queried while a search snapshot is live, so a root re-derived after a
-            // RESTORE (whose action is never committed when the driver detects a
-            // divergence) is still visible for diffing.
-            if (search_server_mode && search_any_snapshot_live()) {
-                std::string menu;
-                for (const auto &a : actions) {
-                    menu += a.description;
-                    menu += '|';
-                }
-                fprintf(stderr, "[emit] t=%zu s=%d n=%zu %s\n", cur_game.turn_state.turn,
-                        static_cast<int>(cur_game.turn_state.step), actions.size(),
-                        menu.c_str());
-            }
-#endif
-            cli_emit_machine_query(&q, &gs);
-
-            char line[128];
-            if (!fgets(line, sizeof(line), stdin)) break;  // EOF: legacy confirm fallback
-            if (!strchr(line, '\n')) {
-                int c;
-                while ((c = getchar()) != '\n' && c != EOF);
-            }
-            char *end = nullptr;
-            long parsed = strtol(line, &end, 10);
-            if (end != line) {
-                choice = static_cast<int>(parsed);
-                break;
-            }
-            if (search_server_mode && search_handle_command(line)) {
-                // RESTORE begins the cooperative unwind at this very decision:
-                // hand back the first choice uncommitted; the main loop applies
-                // the restore and re-emits the restored decision's query.
-                if (search_restore_pending()) return search_unwind_choice();
-                continue;  // SNAPSHOT/DETERMINIZE/RELEASE handled: re-emit the query
-            }
-            break;  // unparseable input: legacy confirm fallback (choice stays -1)
-        }
-
-        // Concession sentinels (CR 104.3a): logged verbatim so --replay
-        // reproduces the concession, then applied instead of being indexed into
-        // the menu. Handled before the -1 confirm remap and the range check.
-        if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
-            commit_choice(actions, choice);
-            return apply_concede_input(choice);
-        }
-        // Remap -1 (confirm sentinel from Python env) to last slot
-        if (choice == -1 && !actions.empty()) {
-            choice = static_cast<int>(actions.size()) - 1;
-        }
-        check_machine_choice(actions, choice);
-#ifndef NDEBUG
-        // Per-decision search trace (debug builds): one line per committed decision
-        // while a search sim is running, so two sims' transcripts can be diffed to
-        // find the first divergent menu after a world-consistency break.
-        if (search_server_mode && search_any_snapshot_live()) {
-            std::string menu;
-            for (const auto &a : actions) {
-                menu += a.description;
-                menu += '|';
-            }
-            fprintf(stderr, "[dec] t=%zu s=%d n=%zu c=%d %s\n", cur_game.turn_state.turn,
-                    static_cast<int>(cur_game.turn_state.step), actions.size(), choice,
-                    menu.c_str());
-        }
-#endif
-        commit_choice(actions, choice);
-        return choice;
+        // In-process decision hook: when a provider covers the deciding seat, take the
+        // choice directly from it — no frame is written and stdin/stdout are not
+        // touched. The choice goes through accept_machine_choice (concession sentinels,
+        // -1 → last-slot remap, commit_choice), as the stream's does, so the decision log
+        // stays complete. The provider can consult snapshot_loop_safe() for restore-safety
+        // without any extra plumbing.
+        if (provider_decides(seat)) return accept_machine_choice(actions, input_provider(seat, actions));
+        // Every other machine seat decides over the RMSTATE stream: its frame, answered by
+        // one integer line (state_format/stream.h).
+        if (!rmstate_stream_enabled()) fatal_error("a machine decision with no input path (no agent, no stream)");
+        return accept_machine_choice(actions, rmstate_stream_exchange(actions));
     }
 
     // Auto-pass mode: return 0 until we reach the target turn
@@ -546,15 +482,8 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     }
 
     // CLI input loop: print query, validate, log
-    Zone::Ownership viewer = (has_human_player)
-        ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
-        : Zone::UNKNOWN;
-    GameState gs;
-    Query q;
     while (true) {
-        populate_gamestate(&gs, viewer);
-        populate_query(&q, actions);
-        print_query(&q, cur_game.priority.player_a_has_priority);
+        print_query(actions, cur_game.priority.player_a_has_priority);
         int choice = get_int_input();
         // handling flagged choices
         switch (choice) {

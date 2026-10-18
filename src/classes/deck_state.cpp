@@ -10,7 +10,6 @@
 #include "../error.h"
 #include "../parse.h"  // name_to_uid
 #include "deck.h"
-#include "gamestate.h"  // DECKLIST_MAIN_SLOTS / DECKLIST_SIDE_SLOTS
 
 // Registered (frozen, opponent-visible) and live (own-view) stores — see the
 // header for why the two are kept apart.
@@ -45,10 +44,9 @@ int deck_card_vocab(const std::string &name) {
 }
 
 // Build a sorted (vocab_idx, count) list from a deck section, merging by vocab id.
-// Fatal on an unregistered card name or on a distinct-name count exceeding max_slots.
+// Fatal on an unregistered card name.
 static std::vector<DecklistEntry> build_block(
-    const std::vector<std::pair<size_t, std::string>> &section, int max_slots,
-    const char *block_name) {
+    const std::vector<std::pair<size_t, std::string>> &section, const char *block_name) {
     std::map<int, int> by_id;  // ordered ascending by vocab id
     for (const auto &entry : section) {
         int idx = deck_name_to_vocab(entry.second);
@@ -58,10 +56,6 @@ static std::vector<DecklistEntry> build_block(
                         "cannot serialize the " + block_name + " deck-identity block");
         by_id[idx] += static_cast<int>(entry.first);
     }
-    if (static_cast<int>(by_id.size()) > max_slots)
-        fatal_error("deck_state: " + std::string(block_name) + " has " +
-                    std::to_string(by_id.size()) + " distinct card names, exceeds " +
-                    std::to_string(max_slots) + " serialized slots");
     std::vector<DecklistEntry> out;
     out.reserve(by_id.size());
     for (const auto &kv : by_id) out.push_back({kv.first, kv.second});
@@ -71,8 +65,8 @@ static std::vector<DecklistEntry> build_block(
 // Build both blocks of `deck` into the caller's destination vectors.
 static void set_blocks(const Deck &deck, std::vector<DecklistEntry> &main_out,
                        std::vector<DecklistEntry> &side_out) {
-    main_out = build_block(deck.main_deck, DECKLIST_MAIN_SLOTS, "maindeck");
-    side_out = build_block(deck.sideboard, DECKLIST_SIDE_SLOTS, "sideboard");
+    main_out = build_block(deck.main_deck, "maindeck");
+    side_out = build_block(deck.sideboard, "sideboard");
 }
 
 void deck_state_set_registered(Zone::Ownership owner, const Deck &deck) {
@@ -87,33 +81,6 @@ void deck_state_set_live(Zone::Ownership owner, const Deck &deck) {
         set_blocks(deck, g_live_main_a, g_live_side_a);
     else if (owner == Zone::PLAYER_B)
         set_blocks(deck, g_live_main_b, g_live_side_b);
-}
-
-void deck_state_resplit_live(Zone::Ownership owner, const std::vector<int> &side_vocab) {
-    if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
-    std::vector<DecklistEntry> &main_out = (owner == Zone::PLAYER_A) ? g_live_main_a : g_live_main_b;
-    std::vector<DecklistEntry> &side_out = (owner == Zone::PLAYER_A) ? g_live_side_a : g_live_side_b;
-    std::map<int, int> total;  // ordered ascending by vocab id, like build_block
-    for (const auto &entry : main_out) total[entry.vocab_idx] += entry.count;
-    for (const auto &entry : side_out) total[entry.vocab_idx] += entry.count;
-    std::map<int, int> side;
-    for (int idx : side_vocab) side[idx]++;
-    main_out.clear();
-    side_out.clear();
-    for (const auto &kv : total) {
-        auto it = side.find(kv.first);
-        const int n_side = it != side.end() ? it->second : 0;
-        if (n_side > kv.second)
-            fatal_error("deck_state_resplit_live: sideboard holds " + std::to_string(n_side) +
-                        " copies of vocab id " + std::to_string(kv.first) + ", the live 75 only " +
-                        std::to_string(kv.second));
-        if (kv.second > n_side) main_out.push_back({kv.first, kv.second - n_side});
-        if (n_side > 0) side_out.push_back({kv.first, n_side});
-        if (it != side.end()) side.erase(it);
-    }
-    if (!side.empty())
-        fatal_error("deck_state_resplit_live: sideboard card vocab id " +
-                    std::to_string(side.begin()->first) + " is not in the live 75");
 }
 
 void deck_state_reset() {

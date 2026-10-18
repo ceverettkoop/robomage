@@ -8,31 +8,28 @@
 #include "classes/deck_state.h"
 #include "classes/game.h"
 #include "classes/match_context.h"
-#include "classes/match_state.h"
 #include "components/player.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "ecs/entity.h"
 #include "game_driver.h"
-#include "search_server.h"
 
 extern Game cur_game;
 extern Coordinator global_coordinator;
 // card_db is declared in card_db.h. The match globals (g_match_ctx,
 // g_card_db_generation, match_game_number/wins/sideboard_phase*) live in
-// game_driver.{h,cpp}; g_sim_seed_salt in search_server.{h,cpp}.
+// game_driver.{h,cpp}.
 
 namespace {
 
 enum class SnapScope { GAME, MATCH };
 
 // One saved game state. Holds a deep copy of every mutable per-game store: the
-// value-typed Game, the ECS (via EcsSnapshot), the card name->entity map, and the
-// match-scoped revealed arrays. card_db MUST be part of the snapshot: a card first
-// loaded during a simulated line adds a prototype entity to the ECS and a
-// name->entity mapping to card_db, so restoring the ECS without also restoring
-// card_db would leave that mapping pointing at an entity that no longer exists —
-// a later load_card/GetData would then abort.
+// value-typed Game, the ECS (via EcsSnapshot) and the card name->entity map. card_db
+// MUST be part of the snapshot: a card first loaded during a simulated line adds a
+// prototype entity to the ECS and a name->entity mapping to card_db, so restoring the
+// ECS without also restoring card_db would leave that mapping pointing at an entity
+// that no longer exists — a later load_card/GetData would then abort.
 struct GameSnapshot {
     bool live = false;
     SnapScope scope = SnapScope::GAME;
@@ -42,8 +39,6 @@ struct GameSnapshot {
     // Bumped every init_ecs(); a mismatch on restore forces the card_db copy even
     // when sizes coincidentally match (see snapshot_restore).
     uint64_t card_db_generation = 0;
-    unsigned char revealed_a[REVEALED_SIZE] = {};
-    unsigned char revealed_b[REVEALED_SIZE] = {};
 
     // ── Match section (captured whenever a match is active; restored wholesale).
     // These are the between-game stores that survive an init_ecs() teardown, so a
@@ -58,9 +53,6 @@ struct GameSnapshot {
     int match_wins_b = 0;
     bool sideboard_phase = false;
     Zone::Ownership sideboard_phase_player = Zone::UNKNOWN;
-    // Placeholder captured/restored now, consumed in Stage 3 (determinization
-    // seed salt); always 0 until then so the plumbing is complete and inert.
-    unsigned int sim_seed_salt = 0;
     // The sidecar hooks' state (snapshot_set_sidecar_hooks); empty when none were registered.
     std::string sidecar;
 };
@@ -77,6 +69,9 @@ void (*g_sidecar_restore)(const std::string &blob) = nullptr;
 
 // See snapshot_set_quiet (snapshot.h).
 bool g_quiet = false;
+
+// See snapshot_set_loop_safe (snapshot.h).
+bool g_loop_safe = false;
 
 static bool valid_slot(int slot);
 
@@ -100,10 +95,6 @@ bool snapshot_save(int slot) {
     if (s.card_db_generation != g_card_db_generation || s.card_db_copy.size() != card_db.size())
         s.card_db_copy = card_db;
     s.card_db_generation = g_card_db_generation;
-    for (int i = 0; i < REVEALED_SIZE; ++i) {
-        s.revealed_a[i] = g_revealed_by_a[i];
-        s.revealed_b[i] = g_revealed_by_b[i];
-    }
     // Match section — captured whenever a match is in progress (see struct note).
     s.match_captured = g_match_ctx.active;
     if (s.match_captured) s.match_ctx = g_match_ctx;
@@ -113,7 +104,6 @@ bool snapshot_save(int slot) {
     s.match_wins_b = match_wins_b;
     s.sideboard_phase = sideboard_phase;
     s.sideboard_phase_player = sideboard_phase_player;
-    s.sim_seed_salt = g_sim_seed_salt;
     if (g_sidecar_save)
         g_sidecar_save(s.sidecar);
     else
@@ -161,10 +151,6 @@ static bool restore_slot(int slot) {
         card_db = s.card_db_copy;
     }
     g_card_db_generation = s.card_db_generation;
-    for (int i = 0; i < REVEALED_SIZE; ++i) {
-        g_revealed_by_a[i] = s.revealed_a[i];
-        g_revealed_by_b[i] = s.revealed_b[i];
-    }
     // Match section — restored wholesale (the between-game stores that outlive the
     // ECS). For a GAME-scoped in-match snapshot these equal the live values.
     if (s.match_captured) g_match_ctx = s.match_ctx;
@@ -174,7 +160,6 @@ static bool restore_slot(int slot) {
     match_wins_b = s.match_wins_b;
     sideboard_phase = s.sideboard_phase;
     sideboard_phase_player = s.sideboard_phase_player;
-    g_sim_seed_salt = s.sim_seed_salt;
     if (g_sidecar_restore) g_sidecar_restore(s.sidecar);
 #ifndef NDEBUG
     // Debug trace for the az_mcts world-consistency hunt: what suspended-flow
@@ -210,6 +195,13 @@ void snapshot_set_sidecar_hooks(void (*save)(std::string &blob), void (*restore)
 }
 
 void snapshot_set_quiet(bool quiet) { g_quiet = quiet; }
+
+void snapshot_set_loop_safe(bool safe) {
+    g_loop_safe = safe;
+}
+bool snapshot_loop_safe() {
+    return g_loop_safe;
+}
 
 bool snapshot_slot_live(int slot) { return valid_slot(slot) && g_slots[slot].live; }
 

@@ -1,0 +1,1336 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/lands' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dark Depths
+Player A draws Wasteland
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Skateboard
+Player B draws Ocelot Pride
+Player B draws Scrubland
+Player B draws Voice of Victory
+Player B draws Swords to Plowshares
+Player B draws Cabal Therapy
+Player B draws Amped Raptor
+Player B draws Marsh Flats
+Player A hand:
+Dark Depths
+Mox Diamond
+Mox Diamond
+Skateboard
+Urza's Saga
+Urza's Saga
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Amped Raptor
+Cabal Therapy
+Marsh Flats
+Ocelot Pride
+Scrubland
+Swords to Plowshares
+Voice of Victory
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Urza's Saga
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+|   5: Cast Mox Diamond
+|   6: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Mox Diamond
+|   3: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+|   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   3: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+Player A discards Dark Depths.
+Mox Diamond enters the battlefield
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   2: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+Player A discards Urza's Saga.
+Mox Diamond enters the battlefield
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Skateboard)
+Player A activated Mox Diamond for 1(W)
+Player A casts Skateboard
+Skateboard enters the battlefield
+Choose target for Skateboard:
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+|   1: Mox Diamond
+|   2: Skateboard
+|   3: Urza's Saga
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+Targeting choice 1
+Skateboard triggered
+Resolving ability (category: Tap)
+Mox Diamond is tapped.
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Thoughtseize
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Scrubland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Elegant Parlor
+|   3: Plains
+|   4: Plateau
+|   5: Scrubland
+|   6: Shadowy Backstreet
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy
+|   2: Cast Thoughtseize
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Crop Rotation
+|   1: Name card: Exploration
+|   2: Name card: Life from the Loam
+|   3: Name card: Malevolent Rumble
+|   4: Name card: Mox Diamond
+|   5: Name card: Sphere of Resistance
+|   6: Name card: Swords to Plowshares
+|   7: Name card: Endurance
+|   8: Name card: Faerie Macabre
+|   9: Name card: Force of Vigor
+|   10: Name card: Pithing Needle
+|   11: Name card: Twinshot Sniper
+|   12: Name card: Damping Sphere
+|   13: Name card: Expedition Map
+|   14: Name card: Grafdigger's Cage
+|   15: Name card: Skateboard
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Name card: Life from the Loam)
+Player B names card: Life from the Loam
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Wasteland
+No matching cards to discard.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Boseiju, Who Endures
+| decision 16: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
+Choose target for this ability:
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badlands
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badlands)
+Targeting choice 0
+Player A activated Mox Diamond for 1(G)
+Player A activated Mox Diamond for 1(W)
+Player A discards Boseiju, Who Endures
+Player A activates Boseiju, Who Endures from hand targeting Badlands
+Resolving ability (category: Destroy)
+Badlands is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 19: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Elegant Parlor
+|   2: Plains
+|   3: Plateau
+|   4: Scrubland
+|   5: Shadowy Backstreet
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Elegant Parlor)
+Player B shuffles their library
+Player B puts Elegant Parlor to the battlefield
+Elegant Parlor enters tapped.
+Elegant Parlor triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Silent Clearing
+| decision 20: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Silent Clearing on top of library
+|   1: Put Silent Clearing into graveyard
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Silent Clearing on top of library)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Elegant Parlor
+|   1: Urza's Saga
+|   2: Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Elegant Parlor)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Elegant Parlor is on the stack
+Resolving ability (category: Destroy)
+Elegant Parlor is destroyed
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Silent Clearing
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Play Silent Clearing
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ocelot Pride
+|   2: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ocelot Pride)
+Player B activated Scrubland for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy (flashback)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+| decision 28: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Ocelot Pride)
+Player B sacrifices Ocelot Pride
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 29: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Crop Rotation
+|   1: Name card: Exploration
+|   2: Name card: Life from the Loam
+|   3: Name card: Malevolent Rumble
+|   4: Name card: Mox Diamond
+|   5: Name card: Sphere of Resistance
+|   6: Name card: Swords to Plowshares
+|   7: Name card: Endurance
+|   8: Name card: Faerie Macabre
+|   9: Name card: Force of Vigor
+|   10: Name card: Pithing Needle
+|   11: Name card: Twinshot Sniper
+|   12: Name card: Damping Sphere
+|   13: Name card: Expedition Map
+|   14: Name card: Grafdigger's Cage
+|   15: Name card: Skateboard
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Name card: Life from the Loam)
+Player B names card: Life from the Loam
+Resolving ability (category: Discard)
+Player A reveals their hand:
+No matching cards to discard.
+Cabal Therapy is exiled (flashback)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 30: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+Player A draws Dark Depths
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Pithing Needle
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Player A shuffles their library
+Player A puts Expedition Map to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 33: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 34: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Construct token
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Construct token)
+Targeting choice 0
+Player B activated Scrubland for 1(W)
+Player B casts Swords to Plowshares targeting Construct token
+Resolving ability (category: ChangeZone)
+Construct token is moved to exile
+Resolving ability (category: GainLife, amount: 5)
+Player A gains 5 life (now at 25)
+Construct (token) is put into exile and ceases to exist.
+Player B draws Marsh Flats
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Silent Clearing
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Plateau
+|   3: Scrubland
+|   4: Shadowy Backstreet
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Plateau)
+Player B shuffles their library
+Player B puts Plateau to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 38: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Exploration
+| decision 39: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Exploration
+|   2: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Exploration)
+Player A activated Mox Diamond for 1(G)
+Player A casts Exploration
+Exploration enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Voice of Victory
+| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Silent Clearing
+|   2: Cast Amped Raptor
+|   3: Cast Thoughtseize
+|   4: Cast Voice of Victory
+|   5: Cast Voice of Victory
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Amped Raptor)
+Player B activated Plateau for 1(R)
+Player B activated Scrubland for 1(W)
+Player B casts Amped Raptor
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+Resolving ability (category: DigUntil)
+Player B reveals Ajani, Nacatl Pariah.
+Player B exiles Ajani, Nacatl Pariah.
+Resolving ability (category: Play)
+Player B may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Ajani, Nacatl Pariah
+|   1: Cast Ajani, Nacatl Pariah
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ajani, Nacatl Pariah)
+Player B pays 2 energy
+Player B casts Ajani, Nacatl Pariah
+Resolving ability (category: Cleanup)
+Ajani, Nacatl Pariah enters the battlefield
+Ajani, Nacatl Pariah triggered
+Resolving ability (category: Token)
+Token created: 2/1 Cat Warrior
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Silent Clearing
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Silent Clearing)
+Player B played Silent Clearing
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (25 life)
+|   1: Player B (18 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (25 life))
+Targeting choice 0
+Player B pays 1 life
+Player B activated Silent Clearing for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 15)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+| decision 46: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Exploration
+| decision 47: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 48: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Exploration
+|   2: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Exploration)
+Player A activated Mox Diamond for 1(G)
+Player A casts Exploration
+Exploration enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 49: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Marsh Flats
+| decision 50: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 51: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Cast Voice of Victory
+|   3: Cast Voice of Victory
+|   4: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Voice of Victory)
+Player B activated Plateau for 1(W)
+Player B activated Scrubland for 1(W)
+Player B casts Voice of Victory
+Voice of Victory enters the battlefield
+| decision 52: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 53: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 54: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Plateau
+|   3: Scrubland
+|   4: Shadowy Backstreet
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Plateau)
+Player B shuffles their library
+Player B puts Plateau to the battlefield
+| decision 55: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Voice of Victory
+|   2: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Voice of Victory)
+Player B activated Plateau for 1(W)
+Player B pays 1 life
+Player B activated Silent Clearing for 1(W)
+Player B casts Voice of Victory
+Voice of Victory enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 56: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ajani, Nacatl Pariah [1/2]
+|   1: Amped Raptor [2/1]
+|   2: Cat Warrior token [2/1]
+|   3: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ajani, Nacatl Pariah [1/2])
+Ajani, Nacatl Pariah attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+| decision 57: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Cat Warrior token [2/1]
+|   2: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 58: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [2/1]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [2/1])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Cat Warrior token [2/1] -> Player A
+| decision 59: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ajani, Nacatl Pariah -> Player A
+  Amped Raptor -> Player A
+  Cat Warrior token -> Player A
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 23 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Ajani, Nacatl Pariah deals 1 damage to Player A (now at 22 life)
+  Cat Warrior token deals 2 damage to Player A (now at 20 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+| decision 60: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Sphere of Resistance
+| decision 61: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 62: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+|   2: Activate Expedition Map (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Sphere of Resistance)
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A casts Sphere of Resistance
+Sphere of Resistance enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+| decision 63: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Silent Clearing (Draw)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Amped Raptor
+| decision 64: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Silent Clearing (Draw)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 65: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Amped Raptor
+|   2: Activate Silent Clearing (Draw)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Amped Raptor)
+Player B activated Plateau for 1(R)
+Player B activated Plateau for 1(R)
+Player B activated Scrubland for 1(W)
+Player B casts Amped Raptor
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+Resolving ability (category: DigUntil)
+Player B reveals Arid Mesa.
+Player B reveals Karakas.
+Player B reveals Goblin Bombardment.
+Player B exiles Goblin Bombardment.
+Resolving ability (category: Play)
+Player B may cast Goblin Bombardment by paying 2 energy rather than its mana cost.
+| decision 66: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Goblin Bombardment
+|   1: Cast Goblin Bombardment
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Goblin Bombardment)
+Player B pays 1 life
+Player B activated Silent Clearing for 1(W)
+Player B pays 2 energy
+Player B casts Goblin Bombardment
+Resolving ability (category: Cleanup)
+Goblin Bombardment enters the battlefield
+| decision 67: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 68: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 69: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ajani, Nacatl Pariah [1/2]
+|   1: Amped Raptor [2/1]
+|   2: Voice of Victory [1/3]
+|   3: Voice of Victory [1/3]
+|   4: Cat Warrior token [2/1]
+|   5: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ajani, Nacatl Pariah [1/2])
+Ajani, Nacatl Pariah attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+| decision 70: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Voice of Victory [1/3]
+|   2: Voice of Victory [1/3]
+|   3: Cat Warrior token [2/1]
+|   4: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 71: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Voice of Victory [1/3]
+|   2: Cat Warrior token [2/1]
+|   3: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [1/3])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+| decision 72: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Cat Warrior token [2/1]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [1/3])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+| decision 73: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [2/1]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [2/1])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+  [attacking] Cat Warrior token [2/1] -> Player A
+| decision 74: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ajani, Nacatl Pariah -> Player A
+  Amped Raptor -> Player A
+  Voice of Victory -> Player A
+  Voice of Victory -> Player A
+  Cat Warrior token -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 75: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory (Mobilize)
+|   1: Voice of Victory (Mobilize)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory (Mobilize))
+Voice of Victory triggered
+Voice of Victory triggered
+| decision 76: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+| decision 77: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+| decision 78: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 79: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 18 life)
+--- End First Strike Combat Damage ---
+
+| decision 80: Player B (game 0, turn 11, FIRST_STRIKE_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | First Strike Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Ajani, Nacatl Pariah deals 1 damage to Player A (now at 17 life)
+  Voice of Victory deals 1 damage to Player A (now at 16 life)
+  Voice of Victory deals 1 damage to Player A (now at 15 life)
+  Cat Warrior token deals 2 damage to Player A (now at 13 life)
+  Warrior token deals 1 damage to Player A (now at 12 life)
+  Warrior token deals 1 damage to Player A (now at 11 life)
+  Warrior token deals 1 damage to Player A (now at 10 life)
+  Warrior token deals 1 damage to Player A (now at 9 life)
+--- End Combat Damage ---
+
+| decision 81: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 82: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 83: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 84: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (9 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Pariah
+|   3: Amped Raptor
+|   4: Amped Raptor
+|   5: Voice of Victory
+|   6: Voice of Victory
+|   7: Cat Warrior token
+|   8: Warrior token
+|   9: Warrior token
+|   10: Warrior token
+|   11: Warrior token
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (9 life))
+Targeting choice 0
+| decision 85: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ajani, Nacatl Pariah
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Amped Raptor
+|   3: Sacrifice Voice of Victory
+|   4: Sacrifice Voice of Victory
+|   5: Sacrifice Cat Warrior
+|   6: Sacrifice Warrior
+|   7: Sacrifice Warrior
+|   8: Sacrifice Warrior
+|   9: Sacrifice Warrior
+(REPLAY) [T11 | Second Main | Player B] Input: 6
+| >> Player B: 6 (Sacrifice Warrior)
+Player B sacrifices Warrior
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+Warrior (token) is put into the graveyard and ceases to exist.
+| decision 86: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 87: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (9 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Pariah
+|   3: Amped Raptor
+|   4: Amped Raptor
+|   5: Voice of Victory
+|   6: Voice of Victory
+|   7: Cat Warrior token
+|   8: Warrior token
+|   9: Warrior token
+|   10: Warrior token
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (9 life))
+Targeting choice 0
+| decision 88: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ajani, Nacatl Pariah
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Amped Raptor
+|   3: Sacrifice Voice of Victory
+|   4: Sacrifice Voice of Victory
+|   5: Sacrifice Cat Warrior
+|   6: Sacrifice Warrior
+|   7: Sacrifice Warrior
+|   8: Sacrifice Warrior
+(REPLAY) [T11 | Second Main | Player B] Input: 6
+| >> Player B: 6 (Sacrifice Warrior)
+Player B sacrifices Warrior
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+Warrior (token) is put into the graveyard and ceases to exist.
+| decision 89: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 8 life)
+| decision 90: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 91: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (8 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Pariah
+|   3: Amped Raptor
+|   4: Amped Raptor
+|   5: Voice of Victory
+|   6: Voice of Victory
+|   7: Cat Warrior token
+|   8: Warrior token
+|   9: Warrior token
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (8 life))
+Targeting choice 0
+| decision 92: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ajani, Nacatl Pariah
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Amped Raptor
+|   3: Sacrifice Voice of Victory
+|   4: Sacrifice Voice of Victory
+|   5: Sacrifice Cat Warrior
+|   6: Sacrifice Warrior
+|   7: Sacrifice Warrior
+(REPLAY) [T11 | Second Main | Player B] Input: 6
+| >> Player B: 6 (Sacrifice Warrior)
+Player B sacrifices Warrior
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+Warrior (token) is put into the graveyard and ceases to exist.
+| decision 93: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 7 life)
+| decision 94: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 95: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (7 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Pariah
+|   3: Amped Raptor
+|   4: Amped Raptor
+|   5: Voice of Victory
+|   6: Voice of Victory
+|   7: Cat Warrior token
+|   8: Warrior token
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (7 life))
+Targeting choice 0
+| decision 96: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ajani, Nacatl Pariah
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Amped Raptor
+|   3: Sacrifice Voice of Victory
+|   4: Sacrifice Voice of Victory
+|   5: Sacrifice Cat Warrior
+|   6: Sacrifice Warrior
+(REPLAY) [T11 | Second Main | Player B] Input: 6
+| >> Player B: 6 (Sacrifice Warrior)
+Player B sacrifices Warrior
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+Warrior (token) is put into the graveyard and ceases to exist.
+| decision 97: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 6 life)
+| decision 98: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 99: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (6 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Pariah
+|   3: Amped Raptor
+|   4: Amped Raptor
+|   5: Voice of Victory
+|   6: Voice of Victory
+|   7: Cat Warrior token
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (6 life))
+Targeting choice 0
+| decision 100: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ajani, Nacatl Pariah
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Amped Raptor
+|   3: Sacrifice Voice of Victory
+|   4: Sacrifice Voice of Victory
+|   5: Sacrifice Cat Warrior
+(REPLAY) [T11 | Second Main | Player B] Input: 5
+| >> Player B: 5 (Sacrifice Cat Warrior)
+Player B sacrifices Cat Warrior
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+Cat Warrior (token) is put into the graveyard and ceases to exist.
+Ajani, Nacatl Pariah triggered
+| decision 101: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Decline: use Ajani, Nacatl Pariah's triggered ability
+|   1: Accept: use Ajani, Nacatl Pariah's triggered ability
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Accept: use Ajani, Nacatl Pariah's triggered ability)
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to exile
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to the battlefield
+Resolving ability (category: Cleanup)
+Ajani, Nacatl Avenger enters transformed.
+| decision 103: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 5 life)
+| decision 104: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 4 life)
+| decision 105: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
+|   2: Activate Ajani, Nacatl Avenger [0] (Token)
+|   3: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 5)
+Player B's Ajani, Nacatl Avenger ability is on the stack
+| decision 106: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 107: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (4 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Avenger
+|   3: Amped Raptor
+|   4: Amped Raptor
+|   5: Voice of Victory
+|   6: Voice of Victory
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (4 life))
+Targeting choice 0
+| decision 108: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Amped Raptor
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Voice of Victory
+|   3: Sacrifice Voice of Victory
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Sacrifice Amped Raptor)
+Player B sacrifices Amped Raptor
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+| decision 109: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 3 life)
+| decision 110: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 111: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (3 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Avenger
+|   3: Amped Raptor
+|   4: Voice of Victory
+|   5: Voice of Victory
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (3 life))
+Targeting choice 0
+| decision 112: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Amped Raptor
+|   1: Sacrifice Voice of Victory
+|   2: Sacrifice Voice of Victory
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Sacrifice Voice of Victory)
+Player B sacrifices Voice of Victory
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+| decision 113: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 2 life)
+| decision 114: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 115: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (2 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Avenger
+|   3: Amped Raptor
+|   4: Voice of Victory
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (2 life))
+Targeting choice 0
+| decision 116: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Amped Raptor
+|   1: Sacrifice Voice of Victory
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Sacrifice Voice of Victory)
+Player B sacrifices Voice of Victory
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+| decision 117: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 1 life)
+| decision 118: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 1
+| >> Player B: 1 (Activate Goblin Bombardment (DealDamage))
+Choose target for Goblin Bombardment:
+| decision 119: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Player A (1 life)
+|   1: Player B (12 life)
+|   2: Ajani, Nacatl Avenger
+|   3: Amped Raptor
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Player A (1 life))
+Targeting choice 0
+| decision 120: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Amped Raptor
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Amped Raptor)
+Player B sacrifices Amped Raptor
+Player B's Goblin Bombardment ability targeting Player A is on the stack
+Resolving ability (category: DealDamage, amount: 1)
+Goblin Bombardment deals 1 damage to Player A (now at 0 life)
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

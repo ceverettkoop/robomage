@@ -9,9 +9,9 @@
 struct Deck;
 
 // Persistent, match-scoped stores of each player's decklist (name -> count)
-// resolved to vocab indices. They live outside the per-game ECS (like
-// match_state) so the state serializer can read a decklist without threading the
-// Deck struct through the call chains.
+// resolved to vocab indices. They live outside the per-game ECS so the state
+// format can read a decklist without threading the Deck struct through the call
+// chains.
 //
 // There are TWO stores, and the distinction is a rules/information one:
 //
@@ -20,17 +20,11 @@ struct Deck;
 //     refresh it. This is the OPPONENT-VISIBLE list under this engine's
 //     open-decklist ruleset — you know your opponent's registered maindeck and
 //     sideboard, but NOT which 60 of the 75 they boarded into for game 2+.
-//     Serialized into the opp_deck_main / opp_deck_side observation blocks (see
-//     the machine_io.h tail). This matches the MCTS determinizer, which already
-//     models the opponent's post-board split as hidden information by mixing
-//     their sideboard into the exchange pool for game 2+ (see
-//     `opp_sideboard_hidden` in search_server.cpp).
 //
 //   LIVE — each player's CURRENT configuration: refreshed at every game start
 //     and again as each sideboard swap lands, so it tracks the mutating Deck
-//     struct. This is what a player legitimately knows about their OWN deck.
-//     Not serialized yet; it exists as the seam for a future self-decklist
-//     observation block, and is covered by the deck-state tests.
+//     struct. This is what a player legitimately knows about their OWN deck
+//     (the state format's encoder reads it).
 struct DecklistEntry {
     int vocab_idx;  // card vocab index (>= 0)
     int count;      // copies of that card in the block
@@ -48,12 +42,6 @@ void deck_state_set_registered(Zone::Ownership owner, const Deck &deck);
 // Set the LIVE (own-view) list for `owner` from the current Deck struct. Called
 // at every game start and after every completed sideboard swap.
 void deck_state_set_live(Zone::Ownership owner, const Deck &deck);
-
-// Re-split `owner`'s LIVE 75 so the sideboard holds exactly `side_vocab` (one vocab
-// index per card) and the maindeck the rest. The search determinizer calls it when a
-// sampled world re-deals which of the opponent's cards sat out (see
-// determinize_hidden_state); fatal if `side_vocab` is not drawn from the live 75.
-void deck_state_resplit_live(Zone::Ownership owner, const std::vector<int> &side_vocab);
 
 // Zero both stores for both players. Call at match start (and before a single
 // game) so a previous match's lists can never bleed through.

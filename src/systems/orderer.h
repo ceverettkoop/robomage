@@ -22,12 +22,12 @@ class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 public:
     static void init();
     // top_view (only meaningful for a non-bottom LIBRARY placement): who sees the identity of the
-    // card being placed on top (LibraryTopView). The known-top record shifts down for both players
-    // either way (positions stay honest); a player who didn't see the card gets an UNKNOWN marker
-    // at slot 0 instead of its identity.
+    // card being placed on top (LibraryTopView). The opponent-knowledge record
+    // (Game::OppKnownLibraryTop) shifts down either way (positions stay honest); the new top is
+    // known to the opponent only if they saw it.
     // exile_face_down (CR 708): when true and destination is EXILE, the card is exiled FACE DOWN —
-    // its Zone::is_face_down flag is set and it is NOT accumulated into the owner's public revealed
-    // multi-hot (its identity stays hidden from the opponent until an effect turns it face up).
+    // its Zone::is_face_down flag is set (its identity stays hidden from the opponent until an
+    // effect turns it face up).
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
                      LibraryTopView top_view = LibraryTopView::OWNER,
                      bool exile_face_down = false);
@@ -80,7 +80,8 @@ public:
     std::vector<Entity> get_library_top(Zone::Ownership owner, size_t n);
     std::vector<Entity> get_hand(Zone::Ownership owner);
     // Records `card` (in a library) at its current depth as known to `knower`, without moving
-    // it: `knower` looked at it and it stays where it is (Delver's look, Mishra's Bauble).
+    // it: `knower` looked at it and it stays where it is (Delver's look, Mishra's Bauble). Only
+    // the owner's opponent's knowledge is recorded (Game::OppKnownLibraryTop).
     void note_library_card_known(Entity card, Zone::Ownership knower);
     // Puts `card` on its owner's library `depth` cards from the top (0 = the top), under the
     // cards already there: a top placement through add_to_zone (the same zone-change semantics,

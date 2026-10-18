@@ -1,8 +1,9 @@
 name: Set up robomage
 description: >
-  Provision the Python venv + Forge card scripts and build the headless engine,
-  with pip / card-script / ccache caching. Shared by the CI and nightly-fuzz
-  workflows so both use an identical environment.
+  Set up python3 (stdlib only: card-script provisioning and the gate's smoke
+  tier), provision the Forge card scripts and build the headless engine, with
+  card-script / ccache caching. Shared by the CI and nightly-fuzz workflows so
+  both use an identical environment.
 
 runs:
   using: composite
@@ -11,22 +12,6 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
-
-    - name: Cache pip
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: pip-${{ runner.os }}-numpy-gymnasium
-        restore-keys: pip-${{ runner.os }}-
-
-    - name: Create venv + install harness deps
-      shell: bash
-      run: |
-        python3 -m venv train/.venv
-        train/.venv/bin/python -m pip install --quiet --upgrade pip
-        # numpy + gymnasium are all the test harness / env import chain needs
-        # (no torch — that is only for PPO training). Mirrors the SessionStart hook.
-        train/.venv/bin/python -m pip install --quiet numpy gymnasium
 
     # Card + token scripts are .gitignored and fetched from Card-Forge/forge.
     # Restore-then-save (not the monolithic cache action) so the FIRST run still
@@ -39,7 +24,7 @@ runs:
     # the pin-scoped restore-keys prefix no longer matches any prior cache, so the
     # restore is empty and provisioning re-fetches the whole set at the NEW pin —
     # otherwise the broad fallback would restore old-pin scripts that add-only never
-    # overwrites, silently shipping stale card content into codegen and the engine.
+    # overwrites, silently shipping stale card content into the engine.
     - name: Restore card scripts cache
       id: cards-cache
       uses: actions/cache/restore@v4
@@ -56,7 +41,7 @@ runs:
         # Authenticates the contents-API calls fetch_script.py makes to resolve
         # DFC filenames (raises the 60 req/hr unauthenticated cap to 5000).
         GITHUB_TOKEN: ${{ github.token }}
-      run: train/.venv/bin/python tools/forge_fetch/provision_decks.py
+      run: python3 tools/forge_fetch/provision_decks.py
 
     - name: Save card scripts cache
       # Save right after provisioning (before the build can fail) so the first
@@ -73,7 +58,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/.ccache
-        key: ccache-${{ runner.os }}-${{ hashFiles('src/**', 'Makefile') }}
+        key: ccache-${{ runner.os }}-${{ hashFiles('src/**', 'tools/**', 'Makefile') }}
         restore-keys: ccache-${{ runner.os }}-
 
     - name: Install ccache

@@ -11,11 +11,8 @@ It collects the union of (a) every card registered in src/card_vocab.h — the
 engine's full implemented-card set — and (b) every card named by the
 curated/fully-implemented decks (top-level *.dk), the scraped metagame decks
 (meta/), and the PFSP league roster (league/), plus the basic lands the harness
-examples use. Fetching the whole vocab (not just deck cards) is what keeps the
-codegen deterministic: train/gen_card_costs.py reads each vocab card's ManaCost
-from its script, so a vocab card whose script is absent would regenerate to a
-zero cost — a spurious card_costs.py diff that varies by which decks were
-provisioned. Deck cards not yet in the vocab (unimplemented meta cards) are still
+examples use. Fetching the whole vocab (not just deck cards) gives every
+implemented card its script, whichever decks a run loads. Deck cards not yet in the vocab (unimplemented meta cards) are still
 fetched so those decks load for testing. It then scans the fetched card scripts
 for the token scripts those cards create and fetches those too. The underlying
 fetch tool (tools/forge_fetch/fetch_script.py) is add-only and DFC-aware: a card

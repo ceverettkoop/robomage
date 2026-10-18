@@ -1,238 +1,231 @@
-# Running games: modes, agents, I/O
+# Running games: agents, drivers, scripts and logs
 
-How a RoboMage game is run outside the torch training loop: what the engine provides, the agent
-spec grammar, and the one Python API to script games with.
+How a RoboMage game is run: who decides each seat, the engine's in-process agents, the Python
+driver for the scripted agent, `--play` / `--actions` scripts, the machine protocol for an
+external agent, and decision logs. Every engine command runs from `bin/` (the engine finds
+`resources/` relative to its working directory); `./debug/robomage --help` lists every flag.
 
-## The engine has no agents
+## Who decides a seat
 
-`bin/<config>/robomage` knows nothing about scripted tiers, models or humans. In `--machine` mode
-it emits a `BQUERY` frame on stdout at every decision, for **both** seats in priority order, and
-reads one integer back on stdin. Who picks that integer is the driver's concern. The only
-engine-side seat options are `--player A|B` (routes one seat to the engine's own interactive stdin
-prompt; no Python tool uses it) and `--log-viewer A|B` (redacts private narrative to one seat's
-view without rerouting input; set by the TUI/GUI play boards).
+Each decision belongs to one seat (the priority holder, or the sideboarding player between
+games). In order of precedence it goes to:
 
-Other engine flags (`src/main.cpp` argv loop): `--deck-a/-b` (or `--deck` for both), `--seed`,
-`--no-shuffle`, zone presets `--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`,
-`--narrative` (full game log + per-action description side-channels), `--bo3` (match loop:
-per-game seed = base + game, loser goes first, sideboarding, a drawn game counts for neither
-player, `MATCH_RESULT:` line; every game, bo1 too, prints `GAME_RESULT:`), `--replay <rmlog>`
-(deterministic replay), `--log-decisions` (write the replay log in machine mode), `--search-server` (snapshot/restore/determinize protocol for MCTS; implies
-`--machine`), `--broadcast-steps` (passive `BSTATE` frames at auto-passed steps, for the GUI's
-step pacing).
+1. **`--replay LOG`** — every decision comes from the log (below); nothing else is consulted.
+2. **A global script** — `--play <specs>` or `--actions <i,i,…>` decides for both seats until it
+   runs out.
+3. **The seat's in-process agent** — `--agent-a <spec>` / `--agent-b <spec>`; when a script is
+   given, a seat without one takes `first`.
+4. **The terminal** — the CLI prompt: without `--machine` every decision is prompted there
+   (`--player A|B` shows hidden information from that seat's view only); a `--player` seat under
+   `--machine` is prompted there too, but without its menu printed (a human seat against an agent
+   is plan step 4b's C++ CLI).
+5. **The RMSTATE stream** — under `--machine`, every other seat: its frames on stdout, one integer
+   reply per decision on stdin. This is how an external agent (such as the Python driver) plays.
 
-## The Python stack (`train/`)
+`--agent-a/-b`, `--play` and `--actions` imply `--machine` (the machine decision schedule) and
+cannot be combined with `--replay` or with an agent on the `--player` seat.
 
-| Layer | Module | Role |
-|---|---|---|
-| Engine wrapper | `env.py` (`RoboMageEnv`, `NarrativeEnv`); `search_env.py` (`SearchNarrativeEnv`) | subprocess launch, BQUERY parse, obs, result/reward, seeds; the search variant is swapped in when a controller sets `wants_search_env` |
-| Decoding | `decode.py` | state vector / action menu → readable structures and transcript blocks |
-| Agents | `opponents.py` (`Controller`, `make_controller`) | every agent kind below |
-| Loop | `runner.py` (`drive_game`) | THE decision loop: priority seat → controller, step, hooks |
-| Orchestration | `runner.py` (`run_games`, `run_match`) | env per game, transcripts, tallies, records |
-| RMSTATE driver | `rm_driver.py` (`run_games`, `play_game`) | stdlib-only agent games on `--machine-format rmstate` (scripted tiers, explore, `first`, `actions:`), [below](#the-rmstate-driver-rm_driverpy) |
+Whatever decides, every game prints `GAME_RESULT: N Player A|B wins` (or `GAME_RESULT: N draw`,
+CR 104.4a) and a bo3 match ends with `MATCH_RESULT: Player A|B wins X-Y`. Under the stream those
+lines, like all other output, go to stderr.
 
-## Agent specs (one grammar everywhere)
+## The engine's in-process agents (`--agent-a/-b`)
 
-`opponents.make_controller(spec)` backs every `--player-a/-b` flag (harness, observe, baseline,
-play.py, analysis, the TUI/GUI) and `run_match`. Specs are case-insensitive:
+The agents (`src/agents/`) run inside the engine on its decision hook and read only the deciding
+seat's decoded RMSTATE frames (the bytes the stream would send it, knowledge tables included,
+handed over in memory by `src/state_format/agent_feed.h`):
 
 | Spec | Agent |
 |---|---|
-| `scripted`, `hard`, `heuristic`, `scripted:hard` | scripted HARD tier (what a bare `scripted` means everywhere) |
-| `easy`, `greedy` (or `scripted:easy`…) | greedy tier |
-| `random` | uniform random |
-| `explore`, `fuzz` | coverage fuzzer (vary `--seed`) |
-| `explore:patient`, `patient` | fuzzer's big-mana profile |
-| any scripted spec `?view=vector` | on `machine_format="rmstate"`: the scripted agent reads the pass-1 parity adapter's rebuilt BQUERY vector (`scripted_agent.VectorView`) instead of the decoded frame (`rm_agent.FrameView`, the default there); on BQUERY the vector is the only view |
-| `auto`, `autopass` | always action 0 (pass / first choice) |
-| `human` | terminal seat: prints board + menu, takes an index or a semantic spec (`cast:bolt`, `target:bears@opp`, `pass`), `quit`/`q`/`exit` to leave |
-| `play:<spec,spec,…>` | semantic action script (the harness `--play` grammar, `action_spec.py`); once exhausted, action 0 |
-| `actions:<i,i,…>` | positional action indices |
-| `gen`, or a checkpoint path / name | PPO model (`ModelController`) via `opponents.resolve_checkpoint`: `gen` → `checkpoints/gen__final.zip`, else newest `gen__v*.zip`; a name is looked up in `checkpoints/` as-is, `.zip`, `_final.zip`. A bare deck name (`delver`) is rejected: the deck is always a separate parameter |
-| `mcts:<gen\|path\|uniform>[?knobs]` | PUCT search with a PPO net's policy/value (`uniform` = torch-free uniform evaluator, for plumbing tests) |
-| `az:<gen\|path>[?knobs]` | PUCT search with an AZNet: `az:gen` → `gen__azfinal.pt`, else newest `gen__azv*.pt`, else a warm start from the `gen` PPO net; a `.pt` path loads directly, a `.zip` warm-starts |
-| `azraw:<gen\|path>` | the AZNet's argmax policy, no search (knobs are not parsed) |
-| a `Controller` instance | passed through |
+| `first` (`auto`) | always row 0 (pass priority, the first choice) |
+| `random` | a uniform row |
+| `explore` | the coverage fuzzer: novelty-weighted choices (`python/explore_agent.py` ported, `src/agents/explore.h`) |
+| `explore:patient` | its big-mana profile (holds cheap activations, favours expensive casts) |
+| `actions:<i,i,…>` | this seat's replies in order (a `-2` / `-3` sentinel is sent as is), then row 0 |
+| `play:<specs>` | the `--play` resolver on this seat's decisions only, then row 0 |
 
-Which checkpoint a spec names for analysis purposes (V(s), probes, replay search) is resolved by
-`opponents.parse_model_spec` and its `load_spec_*` loaders; do not strip prefixes by hand.
-
-### Search knobs (`mcts:` / `az:`)
-
-Query string `?k=v&k=v` (later keys win); a malformed value fails naming the spec.
-
-| Knob | Default | Meaning |
-|---|---|---|
-| `sims` | 128 | in-game simulations per decision, split across worlds |
-| `worlds` | 4 | determinized worlds |
-| `c` | `DEFAULT_AZ_C_PUCT` (2.5) | PUCT constant |
-| `temp` | 0 | root temperature |
-| `seed` | 0 | search RNG seed |
-| `time` | — | wall-clock seconds per decision (see below) |
-| `procs` | 1 | engine processes for world-parallel search (see below) |
-| `clock`, `tmin`, `tmax`, `sb_tmax` | —, 0.5, 60, 15 | whole-match chess-clock bank in seconds; each decision draws a variable budget in [`tmin`, `tmax`] (sideboard roots capped at `sb_tmax`) |
-| `paced` | 0 | human-facing play: small jittered response floor plus occasional fake-think pauses, masking timing tells |
-| `xw` | 1 | cross-world batched leaf evaluation (identical visits, pure speed); `xw=0` disables |
-| `device` | `ROBOMAGE_EVAL_DEVICE`, else cpu | `az:` only: torch device for the net |
-| `vscale` | 1 | `mcts:` only: PPO value tanh scale |
-| `sb_branches`, `sb_worlds`, `sb_rollout_turns` | 8, 4, 6 (`cli_spec.DEFAULT_SB_*`) | bo3 sideboard plan-search budget |
-
-- **`time=<s>`** replaces `sims` as the terminator: worlds run round-robin until the deadline, with
-  a floor of one simulation per world; `sims`, if explicitly given, becomes a hard cap. Without
-  `time=` the fixed-sims path is byte-for-byte unchanged (the actor parity corpus depends on it).
-  `play.py --think-time` is the CLI front door. e.g. `az:gen?time=5&worlds=4`.
-- **`procs=<n>`** keeps `n-1` mirror engine processes in lockstep with the game and fans the
-  worlds across all `n` (about linear speedup for `procs ≤ worlds`); `procs=1` is identical to
-  the single-engine search, and self-play / parity never use the pool. The spec default stays 1
-  for reproducible gates and eval, but the interactive front doors (`play.py` and so the
-  `./tui.sh` play entry and GUI Play dialog, and the analysis browser) add
-  `procs=min(worlds, max(1, cpu_count // 2))` when neither the spec nor `--search-procs` sets it
-  (`cli_spec.search_knob_pairs` via `opponents.default_search_procs`).
-
-The human seat on a board is the exception to `runner`: the TUI and GUI play boards
-(`tui_game.py` / `gui_game.py`, via `play.py --board tui|gui`, `./tui.sh`, `./gui.sh`) run their
-own UI-coupled loop (`game_driver.GameDriver`) and queue human clicks; the opponent seat uses the
-spec grammar above.
-
-## Scripting games: `runner.run_match`
-
-```python
-import runner
-
-# bo3 match, scripted HARD mirror, deterministic, compact transcript
-r = runner.run_match("scripted", "scripted", deck_a="league/bug", deck_b="league/bug")
-
-# PPO generalist vs scripted, 10 bo1 games, no output
-r = runner.run_match("gen", "scripted", deck_a="league/bug", deck_b="league/bug",
-                     games=10, bo3=False, transcript="quiet")
-print(r.win_rate, r.records[0].engine_seed, r.records[0].actions)
-
-# one seat through a fixed line, sculpted state (harness-style kwargs)
-r = runner.run_match("play:keep,cast:Lightning Bolt,target:Grizzly Bears@opp", "auto",
-                     bo3=False, battlefield_a="Mountain", battlefield_b="Grizzly Bears",
-                     max_decisions=40)
-```
-
-```python
-run_match(agent_a="scripted", agent_b="scripted", *, deck_a=None, deck_b=None,
-          games=1, bo3=True, seed=1, transcript="compact", out=None,
-          binary_path=BINARY, deterministic_models=True, checkpoint_resolver=None,
-          max_decisions=None, **run_games_kwargs) -> MatchResult
-```
-
-- `seed`: game *i* uses `seed + i`; `seed=None` is random. Python's `random` is seeded the same,
-  so scripted tie-breaks replay too.
-- `transcript`: `"verbose"` (narrative + board + menu per decision), `"compact"` (narrative + one
-  line per decision), `"narrative"` (engine narrative and results only, for a `human` seat),
-  `"quiet"` (nothing). `out=` redirects to any stream.
-- Every draw (no winner: a drawn game — both players lost at once — or the engine's step cap),
-  including a drawn game inside a decided bo3 match, saves its full log to
-  `draw_<timestamp>.txt` in the cwd, even when quiet. A game stopped by `max_decisions` is
-  reported incomplete and not counted.
-- Extra kwargs pass to `run_games`: zone presets (`battlefield_a`, `graveyard_b`, `exile_a`,
-  `sideboard_b`, …), `no_shuffle`, `life_a/b`, `log_decisions`, `coverage` (a
-  `coverage_report.CoverageAccumulator`), hooks `on_query` / `on_action` / `on_game_end(record)`,
-  `narrative=False` (engine without its game log; the benchmark path, only sensible quiet), and
-  `machine_format="rmstate"`: the engine speaks RMSTATE (`--machine-format rmstate`); the scripted
-  tiers read the deciding seat's decoded frame (`rm_agent.py`; with `?view=vector` the old
-  observation the pass-1 parity adapter rebuilds from it, `rmstate_adapter.py`); only
-  `rmstate_capable` controllers may play (the scripted tiers, `auto`, `actions:`, `play:`), the menu
-  is unbounded (`--closed-decklist` name-a-card menus; the vector view refuses one wider than
-  `MAX_ACTIONS`), and the verbose transcript has no board block.
-- Returns `MatchResult`: `wins` / `losses` / `draws` from seat A, `games`, `win_rate`,
-  `label_a/b`, and `records` — one `GameRecord` per game (bo1) or match (bo3) with `reward`,
-  `decisions`, `capped`, `actions` (every index sent; with `engine_seed`, enough to replay),
-  `engine_seed`, `winner`, and under bo3 `game_results` (per-game `(winner, a_on_play)`).
-
-`run_games(controller_a, controller_b, *, …)` is the layer below: it takes `Controller` objects
-(pass one object twice for a single global decision-maker, as the harness does), `n_games`, and
-defaults to `bo3=False`, `seed=None`; it returns `(wins, losses, draws)`.
-
-For custom instrumentation drop to `runner.drive_game(env, obs, controller_a, controller_b, *,
-on_query=None, on_action=None, on_narrative=None, max_decisions=None, coverage=None)` on an env
-you have reset (and will close). `on_query(d)` / `on_action(d, action)` receive a `Decision`
-(`obs`, `num_choices`, `priority_is_a`, `controller`, `index`, lazily decoded `menu()`). It
-returns a `GameRecord`. There is no other decision loop outside the training wrappers and the
-play boards.
-
-## The RMSTATE driver: `rm_driver.py`
-
-`train/rm_driver.py` plays agent games on `--machine-format rmstate` with the standard library
-only: no numpy, gymnasium, `env.py`, `runner.py`, `opponents.py` or `decode.py` (plan step 2's
-"Driver"; it is the game runner that remains after the RL stack is stripped). It reads each seat's
-frames with `rmstate.py` into `rm_agent.SeatFrames` and answers the deciding seat's frame with one
-integer.
-
-| Spec | Agent |
-|---|---|
-| `scripted` (`hard`, `heuristic`), `scripted:easy` / `greedy`, `scripted:random` | `scripted_core.ScriptedCore` on the seat's decoded frame (`rm_agent.decide`) |
-| `explore` (`fuzz`), `explore:patient` (`patient`) | the coverage fuzzer (`explore_agent.py`; its rules in that docstring) the same way |
-| `first`, `auto` | action 0 |
-| `actions:<i,i,…>` | this seat's replies in order (`-2` / `-3` concede), then action 0 |
-
-`play:` scripts stay on `runner.run_games` (`machine_format="rmstate"` there) until the `--play`
-resolver moves to C++ (plan step 3a).
+Every agent of the process draws from one generator, a bit-exact port of Python's
+`random.Random` (`src/agents/py_random.h`), seeded once before the match with the game seed.
+`--game-seed N` is the game the Python driver and the scenario files call seed N: the engine seed
+derived from it (`src/agents/game_seed.h`, the same derivation as `rm_driver.engine_seed`) and the
+agents' generator seeded with N, so C++ explore plays exactly the games Python explore plays for
+the same seed. `--seed N` instead sets the raw engine seed (the agents' generator then gets N).
 
 ```bash
-train/.venv/bin/python train/rm_driver.py --player-a scripted --player-b explore \
-  --deck-a league/bug --deck-b league/burn --format bo1 --games 5 --verbose
+cd bin
+./debug/robomage --agent-a explore --agent-b explore --game-seed 5 \
+  --deck-a league/bug --deck-b league/burn                          # one game, results only
+./debug/robomage --agent-a explore:patient --agent-b explore:patient --game-seed 5 --bo3 \
+  --deck-a league/bug --deck-b league/burn --narrative --trace-decisions   # a bo3 match, every decision
 ```
 
-Flags (`rm_driver.CLI_FLAGS`, registered as `cli_spec.DRIVER_TOOL`): observe's `--player-a/-b`,
-`--deck-a/-b`, `--format`, `--games`, `--seed` (default 1), `--verbose` / `--quiet` / `--out FILE`,
-`--max-decisions`, `--timing`, plus `--on-the-play a|b|random` (side b swaps the two sides' agents
-and decks between the engine seats, since engine seat A starts game 1), the engine's
+`--narrative` prints the perfect-information game log (under `--machine` it is silent without
+it); `--log-viewer A|B` restricts the one-sided lines to one seat's view. `--trace-decisions`
+prints each decision's board and menu as the deciding seat's frame shows them, and the choice
+made, on lines starting `| `. `--max-decisions N` stops the run before decision N+1
+(`MAX_DECISIONS:` line, exit status 0, no result for that game).
+
+## Scripts: `--play` and `--actions`
+
+`--play` is a comma-separated list of semantic specs (`keep`, `cast:Lightning Bolt`,
+`target:Grizzly Bears@opp`, `A:attack:Delver`, `sb-out:Daze`, `concede`, …), each resolved
+against the live menu of the decision it is applied to; an unmatched or ambiguous spec stops the
+run with `FATAL: --play: …` and the legal menu. Seat keys `A:` / `B:` let each player's line be
+written without sequencing the other seat's passes. The grammar is in
+`src/agents/play_spec.h`, and `CLAUDE.md` ("Testing card behavior") tabulates it with the
+seat-key rules. `--actions` is the same as a list of raw menu indices (fragile: it breaks when a
+menu changes).
+
+At exit a `--play` run prints `resolved --actions: <i,i,…>` (every reply it gave, so the line can
+be replayed as `--actions` with the same seed) and, when some specs were never applied,
+`SCRIPT INCOMPLETE: …`.
+
+Scripts combine with the test-setup presets for sculpted positions: `--hand-a/-b` +
+`--library-a/-b` (a stacked deck, hand first; implies `--no-shuffle`), `--battlefield-a/-b`,
+`--graveyard-a/-b`, `--exile-a/-b`, `--sideboard-a/-b`, `--life-a/-b`; `--offer-cancel` adds a
+"Cancel" row to every cast and activation prompt (CR 733.1).
+
+```bash
+cd bin
+./debug/robomage --narrative --trace-decisions --game-seed 1 --max-decisions 10 \
+  --hand-a "Lightning Bolt" --battlefield-a "Mountain" --battlefield-b "Grizzly Bears" \
+  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
+```
+
+The rules-regression scenarios (`tests/scenarios/*.json`) are such runs with assertions; the gate
+plays them (`bin/debug/robomage_check --tier scenarios --scenario <glob>`, `docs/ci.md`).
+
+## The scripted agent: `python/rm_driver.py`
+
+The rule-based scripted agent is Python (`python/scripted_core.py`, read through one seat's
+decoded frames by `python/rm_agent.py`). `python/rm_driver.py` plays it, with the standard
+library only: it launches the engine with `--machine`, decodes each seat's frames with
+`python/rmstate.py`, asks the deciding seat's agent for one integer and writes it back.
+
+| Spec | Agent |
+|---|---|
+| `scripted` (`hard`, `heuristic`, `scripted:hard`) | the hard tier: smart mulligan, combat simulation, combo lines |
+| `scripted:easy` / `greedy` (`easy`) | the greedy tier |
+| `scripted:random` (`random`) | uniform random |
+| `explore` (`fuzz`), `explore:patient` (`patient`) | the coverage fuzzer (`python/explore_agent.py`; the same games as the engine's C++ port for the same seed) |
+| `first` (`auto`) | action 0 |
+| `actions:<i,i,…>` | this seat's replies in order (`-2` / `-3` concede), then action 0 |
+
+`play:` scripts are not driver agents: they run in the engine (`--play`, `--agent-a play:…`),
+which then decides those seats itself, so they cannot be combined with the driver's agents.
+
+```bash
+python3 python/rm_driver.py --player-a scripted --player-b explore \
+  --deck-a league/bug --deck-b league/burn --format bo1 --games 5 --verbose
+python3 python/rm_driver.py --deck-a league/ur_delver --deck-b league/gw_maverick \
+  --games 20 --quiet --timing                                        # 20 bo3 matches, summary only
+```
+
+Flags (`rm_driver.CLI_FLAGS`; `--help`): `--player-a/-b` (default `scripted`), `--deck-a`
+(default `delver`) / `--deck-b` (default: A's deck), `--format bo1|bo3` (default **bo3**),
+`--games N` (matches under bo3), `--seed N` (default 1; game *i* uses `--seed + i`),
+`--on-the-play a|b|random` (side b swaps the two sides' agents and decks between the engine seats,
+since engine seat A starts game 1), `--verbose` / `--quiet` / `--out FILE`, `--max-decisions N`,
+`--timing` (throughput; with `--quiet` the engine runs without narrative), the engine's
 `--closed-decklist`, `--selfcheck-state`, `--selfcheck-knowledge`, `--rmstate-dump FILE`
-(`FILE.<i>` per match when `--games > 1`), `--knowledge-a/-b`, and `--engine-flags "…"` for any
-other engine flag ($ROBOMAGE_ENGINE_FLAGS is added too). The default binary is
-`bin/$ROBOMAGE_BUILD/robomage`, debug when unset.
+(`FILE.<i>` per match when `--games > 1`), `--knowledge-a/-b`, `--engine-flags "…"` for any other
+engine flag (`$ROBOMAGE_ENGINE_FLAGS` is added too), and `--binary` (default
+`bin/$ROBOMAGE_BUILD/robomage`, debug when unset).
 
-From Python: `rm_driver.run_games(agent_a, agent_b, *, deck_a, deck_b, n_games=1, bo3=False,
+**Seeds.** Before game *i* the driver seeds Python's `random` with `seed + i` (the scripted agent
+breaks ties and the explore tier draws from it) and the engine gets `--seed engine_seed(seed +
+i)`, so a seed names the same game here as on the engine's `--game-seed`.
+
+**Transcripts.** `verbose` (the smoke tier's): each decision's engine narrative in a
+`--- Narrative ---` block, `--- Pregame ---` / `--- Turn N (Player X) ---` markers with `PA:` /
+`PB:` hand lines, `--- Decision N ---` with the menu as offered and `>> label/seat: i
+(description)`, then the result. The default (`compact`) writes the narrative and one line per
+decision; `--quiet` only a W/L/D summary line. Every draw (a drawn game, or a game with no result)
+is announced and its log saved to `draw_<stamp>.txt`, even when quiet; a run stopped by
+`--max-decisions` is reported incomplete and not counted. Engine diagnostic lines (`WARNING:`,
+`ERROR:`, `FATAL`, the self-check summaries) go to the driver's stderr; an engine that exits
+nonzero raises.
+
+**From Python:**
+
+```python
+import sys; sys.path.insert(0, "python")
+import rm_driver
+
+wins, losses, draws = rm_driver.run_games(
+    "scripted", "explore", deck_a="league/bug", deck_b="league/burn",
+    n_games=10, bo3=False, seed=1, transcript="quiet", on_game_end=print)
+```
+
+`run_games(agent_a, agent_b, *, label_a, label_b, binary, deck_a, deck_b, n_games=1, bo3=False,
 seed=None, transcript="compact|verbose|quiet", out=None, max_decisions=None, narrative=True,
-engine_flags=(), on_game_end=None, dump=None, binary=…, label_a=, label_b=)` returns
-`(wins, losses, draws)` and hands each `GameRecord` (`reward`, `decisions`, `capped`, `actions`,
-`engine_seed`, `game_results` as `(winner, a_on_play)`, `diagnostics`) to `on_game_end`;
-`rm_driver.play_game` is one game or match with `on_narrative` / `on_decision(d)` /
-`on_action(d, action)` hooks. Game *i* uses seed `seed + i`: Python's `random` is seeded with it and
-the engine gets `engine_seed(seed + i)`, the seed the gymnasium env draws for it, so a seed names
-the same game as on `runner.run_games`. The verbose transcript is `runner.run_games`' RMSTATE
-transcript byte for byte (the replay corpus format); draws are announced and logged to
-`draw_<stamp>.txt` as there. Engine diagnostic lines (`WARNING:`, `ERROR:`, `FATAL`, the self-check
-summaries, `SHADOW:` lines) go to the driver's stderr; an engine that exits nonzero raises.
+engine_flags=(), on_game_end=None, dump=None)` returns Player A's `(wins, losses, draws)` and hands
+each `GameRecord` (`reward`, `decisions`, `capped`, `actions` — every reply sent, enough with
+`engine_seed` to replay — `engine_seed`, `game_results` as `(winner, a_on_play)`, `diagnostics`,
+and the properties `winner` and `drawn_games`) to `on_game_end`. `play_game(agent_a, agent_b, *, binary, deck_a, deck_b, bo3, seed,
+max_decisions, narrative, engine_flags, on_narrative, on_decision, on_action)` is one game or match
+with hooks (`on_decision(d)` gets a `Decision`: the seat, its decoded frame, the menu and its
+categories). An agent is any object with `new_game()` and `decide(seat_frames, frame) -> int`
+(`make_agent` builds the spec'd ones).
 
-## The tools and where they sit
+## An external agent on the machine protocol
 
-Every tool that plays games takes `--format bo1|bo3` (default **bo3**). A count is always
-`--games` (whole matches under bo3), the PUCT constant is always `--c-puct`, and `--seed`
-defaults to **1** on test, eval and inspection tools (observe, baseline, az-eval, analysis, the
-harness, `bench-actor` / `bench-workers`, az_inspect) but to a **random, printed** seed on long
-training runs (az-selfplay, az-train, az, az-league); `play.py` is random unless given.
+`--machine` makes every seat without an in-process agent (and not the `--player` seat) decide
+over the RMSTATE stream (`docs/state_format.md` §9): stdout carries only `RMSTATE <nbytes>\n` +
+payload records; the deciding seat gets its `SCHEMA`, `CARDS`, `DECKLISTS` and `METAGAME` frames
+the first time it decides, then a `STATE` frame per decision, answered by one integer line (a menu
+row, `-1` = the last row, `-2` / `-3` = concede game / match); at match end each seat gets a
+terminal `STATE` frame (`header.terminal = 1`, no reply) and the engine exits. Everything else the
+engine prints goes to stderr. A minimal random agent with the stdlib decoder:
 
-- **`test_harness.py`** (`run_games`) — state sculpting (hands / zones / scenarios). One global
-  `--play`/`--actions` script drives both seats first (seat keys `A:`/`B:`), then each seat's
-  `--player-a/-b` agent (default `auto`). Use `--format bo1` for a single sculpted game.
-- **`train.py observe`** (`run_games`) — any matchup: `--player-a/-b` (default `scripted`),
-  `--deck-a` (default `delver`) / `--deck-b` (default: A's deck); game *i* uses `--seed + i`.
-  Transcript `--verbose` / compact / `--quiet` (one-line W/L/D only); `--out FILE` writes the
-  transcript to FILE with the summary on stdout; `--max-decisions N` caps each game; `--machine-format rmstate` plays over RMSTATE (as
-  `run_games(machine_format=…)`; the harness takes the flag too). Two forms:
-  - **fuzz campaign** — `--player-a explore --player-b explore` (or `explore:patient`)
-    `--verbose --out FILE`; any draw is a finding (also saved to `draw_<stamp>.txt`).
-  - **throughput benchmark** — `--timing` prints games, decisions, wall, games/s, decisions/s,
-    ms/decision (`matches=` under bo3); with `--quiet` the engine runs without narrative:
-    `--format bo1 --games 40 --max-decisions 4000 --quiet --timing`.
-- **`train.py az-eval`** — the promotion gate; its Python fallback plays through `run_match`.
-- **`play.py`** — one seat `human` (default: human on A vs `az:gen` on B), `--deck-a/-b`.
-  `--board text` = `run_games` with a human seat (index or semantic spec; `concede` /
-  `concede:match` resign); `--board tui|gui` (default gui) = the GameDriver boards.
-- **`ci_check.py`** — the `make check` gate; `smoke`/`fuzz` tiers and the `replay` corpus
-  (`regression/replay_diff.py`) run through the RMSTATE driver (`rm_driver.run_games`), the
-  `rmagent` tier's closed-decklist matches too. See [`ci.md`](ci.md).
-- **`analysis.py`** — trace collection and counterfactual rollouts on `drive_game` hooks, replayed
-  from a recorded engine seed + action log; `gui_session_io.py` replays saved sessions the same
-  way.
+```python
+import random, subprocess, sys
+sys.path.insert(0, "python")
+import rmstate
 
-The torch training loop (`train.py train/league/sweep`, the vectorized wrappers
-`ModelVsScriptedEnv`/`SelfPlayEnv`/`FixedModelEnv`) is a separate path by design and does not use
-the runner (only its periodic rollout transcripts do, via `run_games`).
+eng = subprocess.Popen(["./debug/robomage", "--machine", "--deck-a", "league/bug",
+                        "--deck-b", "league/burn", "--seed", "7"], cwd="bin",
+                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+dec = rmstate.StreamDecoder()
+for payload in rmstate.records(eng.stdout):
+    frame = dec.feed(payload)                       # tables: name -> list of row dicts
+    if frame.kind != "STATE" or frame.tables["header"][0]["terminal"]:
+        continue                                    # once-per-match frames, or the match is over
+    eng.stdin.write(b"%d\n" % random.randrange(len(frame.tables["menu"])))
+    eng.stdin.flush()
+eng.wait()
+```
+
+`frame.viewer` says which seat a frame is for; the seat's knowledge (what it remembers and can
+deduce) is in the frame's `k_*` tables (`docs/knowledge_store.md`). In C++ the same decoding is
+`src/state_format/decode.h` (std-only), as the in-process agents and the gate use it.
+
+## Decision logs and replay
+
+Every decision is logged as an integer. `--decision-log FILE` writes the RMLOG v2 log (`SEED`,
+`FLAGS` — the setup flags that change the game — both decklists, then every decision, concession
+sentinels included); `--log-decisions` writes it to `resources/logs/game_<seed>.log` (interactive
+games always log there). `--replay FILE` replays it deterministically: the header alone fixes the
+setup (decks, seed, `--bo3`, `--no-shuffle`, the test-setup presets, `--max-decisions`), setup
+flags given alongside are ignored with a warning, and output flags (`--machine`, `--narrative`,
+`--trace-decisions`, `--rmstate-dump`, `--knowledge-a/-b`, the self-checks, …) still apply. A
+replay whose logged index is outside the live menu stops with `replay diverged at decision N`.
+
+```bash
+cd bin
+./debug/robomage --agent-a explore --agent-b explore --game-seed 5 \
+  --deck-a league/bug --deck-b league/burn --decision-log /tmp/g5.rmlog
+./debug/robomage --replay /tmp/g5.rmlog --machine --narrative --trace-decisions
+```
+
+The replay corpus (`tests/corpus/`) is such logs from the scripted agent's games, with their
+replay output as byte-for-byte baselines (`docs/ci.md`).
+
+## State dumps
+
+`--rmstate-dump FILE` writes every viewer's frames (A, B and omniscient) at each decision beside
+any run (`%p` in FILE = the process id), and a terminal frame each at match end;
+`--state-dump json` adds `FILE.jsonl`, one JSON line per frame. `--rmstate-read FILE` decodes,
+re-encodes and compares a stream (`--state-dump json`: its JSON lines on stdout);
+`python3 python/rmstate.py dump FILE` prints the same JSON lines from Python;
+`bin/<config>/rmknow --viewer A --in FILE --text` runs the knowledge sidecar over a seat's frames.

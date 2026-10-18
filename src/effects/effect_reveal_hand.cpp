@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../classes/game.h"
-#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -22,10 +21,9 @@ namespace effects {
 
 // DB$ RevealHand (Thought-Knot Seer; general over Duress/Thoughtseize-style "target player reveals
 // their hand"): the targeted player reveals their entire hand to all players (CR 701.16). The
-// reveal is a public game action — every revealed card's identity is recorded into the match-scoped
-// belief state (mark_card_revealed) so the chooser of a chained selection (e.g. a Chooser$ You
-// ChangeZone) sees the actual cards. This effect moves nothing on its own; the subsequent
-// sub-ability acts on the now-public hand.
+// reveal is a public game action (reveal windows, queries/visibility.h), so the chooser of a chained
+// selection (e.g. a Chooser$ You ChangeZone) sees the actual cards. This effect moves nothing on its
+// own; the subsequent sub-ability acts on the now-public hand.
 HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Whose hand: the targeted Player entity (ValidTgts$ Opponent/Player). With no player target
     // the effect has nothing to reveal, so fall through (chaining subabilities) as a no-op.
@@ -50,8 +48,6 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     for (auto e : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         game_log("  %s\n", cd.name.c_str());
-        // The whole hand is now public — record each card's identity in the belief state.
-        mark_card_revealed(e, hand_owner);
         if (ab.def->remember_revealed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(e));
     }
     return HandlerResult::DONE_RUN_SUBS;

@@ -4,7 +4,6 @@
 #include <cstdio>
 
 #include "announce.h"
-#include "classes/match_state.h"
 #include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
@@ -38,7 +37,7 @@
 #include "input_logger.h"
 #include "mana_system.h"
 #include "parse.h"
-#include "search_server.h"
+#include "snapshot.h"
 #include "systems/orderer.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
@@ -611,9 +610,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         // sub-prompt below is loop-safe too: it is parked as a pending query
         // (the chosen attacker persisted in Game::pending.attacker) and emitted
         // at the main-loop top.
-        search_set_loop_safe(true);
+        snapshot_set_loop_safe(true);
         int creature_choice = InputLogger::instance().get_input(atk_actions);
-        search_set_loop_safe(false);
+        snapshot_set_loop_safe(false);
 
         if (creature_choice == static_cast<int>(atk_actions.size()) - 1) break;
 
@@ -869,9 +868,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         // Creature components; the block-target sub-prompt below is parked as a
         // loop-top pending query (chosen blocker in Game::pending.blocker), so
         // it is loop-safe too.
-        search_set_loop_safe(true);
+        snapshot_set_loop_safe(true);
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
-        search_set_loop_safe(false);
+        snapshot_set_loop_safe(false);
 
         if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) {
             // 509.1b / 702.111b: a creature with menace can't be blocked except by two or
@@ -3337,9 +3336,9 @@ void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
 static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card) {
     game.pending.decision_source = 0;
     PendingDecisionScope pending(card);
-    search_set_loop_safe(true);
+    snapshot_set_loop_safe(true);
     int choice = InputLogger::instance().get_input(menu);
-    search_set_loop_safe(false);
+    snapshot_set_loop_safe(false);
     return choice;
 }
 
@@ -3347,7 +3346,7 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // reveal it "as they draw it" — a PRIVATE special action taken off the stack (the opponent is not
 // told a miracle card was drawn unless it is revealed). This forced yes/no is presented to the
 // OWNER (who need not hold priority) before they proceed. On decline the card stays hidden in hand.
-// On accept the card becomes public (belief state + log) and the linked "when you reveal this card
+// On accept the card becomes public (a reveal, logged) and the linked "when you reveal this card
 // this way, you may cast it" triggered ability is synthesized onto the stack (opponent now sees the
 // revealed card and gets a response window); the owner decides whether to cast it as that trigger
 // resolves (effect_miracle.cpp).
@@ -3395,9 +3394,8 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
 
     if (choice != 1) return;  // declined — the card stays hidden in hand, no cast opportunity
 
-    // Revealed (CR 702.94a/702.94b): the card is now public. Record the reveal in the belief state
-    // and log it, then put the linked "you may cast it" triggered ability on the stack.
-    mark_card_revealed(card, owner);
+    // Revealed (CR 702.94a/702.94b): the card is now public. Log it, then put the linked "you may
+    // cast it" triggered ability on the stack.
     game_log("%s reveals %s for its miracle cost.\n", player_name(owner).c_str(), nm.c_str());
     Ability trig(triggered_effect_def("MiracleCast"));
     trig.source = ObjectRef::of(card);
@@ -3512,9 +3510,9 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             game.priority.player_a_has_priority = (active_player == Zone::PLAYER_A);
             // Loop-safe: one discard per proc_mandatory_choice call, menu derived
             // from the hand alone.
-            search_set_loop_safe(true);
+            snapshot_set_loop_safe(true);
             int choice = InputLogger::instance().get_input(discard_actions);
-            search_set_loop_safe(false);
+            snapshot_set_loop_safe(false);
             game.priority.player_a_has_priority = prev_priority;
             Entity card = discard_actions[static_cast<size_t>(choice)].source_entity;
             auto &cd = global_coordinator.GetComponent<CardData>(card);

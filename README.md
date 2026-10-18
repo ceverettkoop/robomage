@@ -1,169 +1,124 @@
 # robomage
 
-Magic the Gathering rules engine built for reinforcement learning. Games run are deterministic, based on random seed. Agent (human, scripted or ML model) is presented with finite options for every decision point.
+A Magic: The Gathering rules engine in C++17 (an Entity Component System over Forge card
+scripts), for two-player games. Games are deterministic given a seed, every decision is a choice
+from a finite menu and is logged as an integer, and a decision log replays the game exactly.
 
-Current agent training workflow is maskable PPO training with SB3 to train a base policy and then refines that model with MCTS training. The latest release will include a training model to play any
-of the decks in bin/resources/decks/league. It may be able to handle other decks with the same or similar cards but note that the engine will require rebuilding for any cards not currently listed in the card-vocab
-and rules engine fidelity is not guaranteed for cards outside of the vocab. todo.md includes open engine correctness items.
+Agents drive the engine three ways:
 
-Agent training workflow and rules engine are under active development so things may break frequently.
-Developer docs: `CLAUDE.md` (architecture, test harness, full build/tooling notes), `docs/ci.md`
-(the `make check` gate), `docs/game_running.md` (running games programmatically).
+- **in-process agents** (`--agent-a/-b`: `first`, `random`, `explore`, `explore:patient`,
+  `actions:…`, `play:…`) and the semantic `--play` script used for sculpted tests;
+- the **terminal prompt**: a human deciding at the terminal (`--player A|B` picks whose hidden
+  information is shown);
+- the **machine protocol** (`--machine`): **RMSTATE**, an exhaustive binary game state sent to the
+  deciding seat with everything hidden from it withheld, answered with one integer per decision.
+  Each seat's frames carry the **knowledge sidecar**'s tables: what that seat can remember and
+  soundly deduce from its own frames (perfect recall, exact inference).
+
+The rule-based **scripted agent** (Python, standard library only) plays over that protocol; it is
+the realistic opponent, and its games are the replay corpus the test gate checks byte for byte.
+
+The decks under `bin/resources/decks/` (top-level and `league/`) are fully implemented. Cards
+outside `src/card_vocab.h` are considered unimplemented; rules fidelity is not guaranteed for
+them. `todo.md` lists open engine correctness items, `docs/rules_deviations.md` the known
+deviations from the Comprehensive Rules.
+
+The reinforcement-learning stack this engine was first built for (PPO / AlphaZero training, the
+float observation vector, the libtorch self-play actor, the TUI and GUI) has been archived: it
+lives on branch `archive/rl-stack` (tag `rl-stack-final`, if created; commit `cf7f97f` is the last
+one with both stacks). `docs/engine_fork_plan.md` is the plan this repo follows from here (a single
+decision schedule and a C++ CLI on the state decoder, then a C++ featurizer and in-process actor
+for learned models).
 
 ## Prereqs
 
-**C++ toolchain** — to build the engine binary (`make`). Engine is C++17 + standard library. Tested on Mac and Linux
-would probably work on Windows with mingw but have not tested.
-
-**Python toolchain** — for the RL training stack, the TUI, and the test harness.
-Python 3.10+ (CI is tested on 3.12).
-```bash
-python3 -m venv train/.venv
-train/.venv/bin/pip install --upgrade pip
-train/.venv/bin/pip install numpy gymnasium                     # minimum: test harness / env only
-train/.venv/bin/pip install stable-baselines3 sb3-contrib shap  # full RL training + analysis (pulls in PyTorch)
-train/.venv/bin/pip install -r train/requirements-tui.txt       # textual, needed by ./tui.sh
-train/.venv/bin/pip install -r train/requirements-gui.txt       # PySide6, optional: desktop GUI board
-```
-PyTorch is not needed to play against or test with the scripted agents.
+- A C++17 compiler and GNU make (tested on Linux and macOS; the engine is C++17 + the standard
+  library).
+- `python3` (3.10+, standard library only; CI uses 3.12) for card-script provisioning, the agent
+  driver, the corpus recorder and the gate's `smoke` tier. No venv, no packages.
 
 ## Building
 
-Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts/` (Forge format,
-not tracked in git). Fetch them first — the build's codegen reads them:
+Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts/` (Forge
+format, not tracked in git, pinned to a Forge commit in `tools/forge_fetch/FORGE_PIN`). Fetch them
+first:
 
 ```bash
 python3 tools/forge_fetch/provision_decks.py   # every vocab card + the league/meta/top-level deck cards + their tokens
-make                  # debug build   -> bin/debug/robomage
-make BUILD=RELEASE    # optimized     -> bin/release/robomage
-make actor BUILD=RELEASE   # optional: C++ AlphaZero self-play actor -> bin/release/az_actor
+make                  # debug build   -> bin/debug/{robomage,rmknow,robomage_check}
+make BUILD=RELEASE    # optimized     -> bin/release/{robomage,rmknow,robomage_check}
+make check            # the test gate (below)
 ```
 
 Each configuration has its own `bin/<config>/` and `obj/<config>/` tree, so switching needs no
-`make clean`. `make actor` links the venv's PyTorch (pin `torch==2.10.*`; newer headers need
-C++20). Which binary the Python tools run is chosen per tool: test/CI tools (harness, `observe`,
-`make check`) default to the debug build, while the GUI, analysis browser, and training default to
-release. `ROBOMAGE_BUILD=debug|release` forces one, and every command takes `--binary PATH`.
+`make clean`. `bin/<config>/rmknow` runs the knowledge sidecar over a recorded RMSTATE stream.
+`make actor` compiles the libtorch TorchScript evaluator kept for the future in-process actor (no
+binary yet; needs a torch importable by `python3` or `LIBTORCH_DIR=…`).
 
-## Running
+## Running games
 
-**`./tui.sh`, run from the repo root, exposes all features.** It launches a Textual TUI
-(`train/tui.py`) that wraps deck management, training, league runs, observing games, analysis, and
-interactive play against a model; every form is built from the same flags as the CLIs below.
-
-The raw `robomage` binary underlies all of it and can also be driven directly. It must be run
-from the `bin` directory (it finds `resources/` relative to the working directory):
+The engine must be run from `bin/` (it finds `resources/` relative to the working directory).
+`./debug/robomage --help` lists every flag.
 
 ```bash
 cd bin
-./debug/robomage --deck-a delver --deck-b mav            # interactive (you play both sides)
-./debug/robomage --replay resources/logs/game_12345.log  # replay a saved game (logs are named by seed)
-./debug/robomage --machine                               # machine mode for RL training
+./debug/robomage --deck-a delver --deck-b mav                    # interactive: you decide for both seats
+./debug/robomage --deck-a league/bug --deck-b league/burn \
+  --agent-a explore --agent-b explore --game-seed 5 --decision-log /tmp/g5.rmlog    # an explore game, logged
+./debug/robomage --replay /tmp/g5.rmlog --machine --narrative     # replay it
 ```
 
-In interactive mode, numbers select a choice (every choice is logged), z passes priority, q quits.
-`--help` lists the other engine flags.
+At the terminal prompt a number selects a choice (every choice is logged); `--player A|B` shows
+hidden information from that seat's view only. Deck names are paths under
+`bin/resources/decks/` without `.dk` (`delver`, `league/ur_delver`). A human seat against an
+agent is plan step 4b's C++ CLI: today a `--player` seat under `--machine` (which any
+`--agent-a/-b` implies) is prompted without its menu being printed.
 
-## Cards
-
-The ML agent only understands cards listed in `src/card_vocab.h`. The decks in this repo's `bin/resources/decks` are fully implemented. Other cards may or may not work but will in any case require being added to the vocab.
-`train/missing_cards.py --decks-dir DIR` lists the cards a set of decks uses that are not in the vocab.
-
-## Training
-
-All commands run from the repo root with a venv that has the appropriate prereqs. `./tui.sh`
-wraps all of these; `train/train.py --help` lists every subcommand. Deck names are paths under
-`bin/resources/decks/` without `.dk` (`delver`, `league/ur_delver`).
-
-There is **one generalist model** that pilots any deck, saved as `train/checkpoints/gen__final.zip`
-(plus periodic `gen__v{steps}.zip` snapshots); the AZ net is `train/checkpoints/az/gen__azfinal.pt`.
-
-The standard end-to-end run (PPO league, then AZ self-play) is the tracked curriculum plan
-`train/checkpoints/curricula/default.plan.json`:
+**Agent games with the scripted agent** go through the stdlib-only driver, from the repo root:
 
 ```bash
-train/.venv/bin/python train/train.py curriculum --plan default --dry-run   # print each phase's command
-train/.venv/bin/python train/train.py curriculum --plan default             # run it (--resume / --status)
+python3 python/rm_driver.py --player-a scripted --player-b explore \
+  --deck-a league/bug --deck-b league/burn --format bo1 --games 10
+python3 python/rm_driver.py --player-a scripted --player-b scripted \
+  --deck-a league/ur_delver --deck-b league/gw_maverick --verbose --out match.txt   # a bo3 match, full transcript
 ```
 
-### League (PFSP) — train the PPO generalist
+Agents: `scripted` (hard), `scripted:easy` / `greedy`, `scripted:random`, `explore`,
+`explore:patient`, `first`, `actions:<i,i,…>`. `--help` lists the flags;
+[`docs/game_running.md`](docs/game_running.md) covers the driver, the in-process agents, `--play`
+scripts and decision logs.
 
-`league` is the primary way to train `gen__final.zip`: it rotates a single learner across a
-roster of decks, training each against a shared pool of frozen snapshots of past versions
-(prioritised fictitious self-play). The single-matchup `train`/`sweep` subcommands are for
-scripting one deck-vs-deck session, not the primary training loop.
+**Sculpted positions** (testing a card or a rule): the engine's test-setup presets and `--play`
+specs, e.g.
 
 ```bash
-train/.venv/bin/python train/train.py league                                          # all decks in decks/league/
-train/.venv/bin/python train/train.py league --decks delver,mav --total-timesteps 5000000
-train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted run
-train/.venv/bin/python train/train.py --deck-a delver --deck-b mav                    # one matchup (`train` is the default subcommand; --fresh restarts gen)
-train/.venv/bin/python train/train.py observe --deck-a delver --deck-b mav --games 10 # sanity-check a build (scripted vs scripted + summary)
-train/.venv/bin/python train/train.py baseline --player-a gen --deck-a delver         # gen's win rate vs the scripted agent
+cd bin
+./debug/robomage --narrative --trace-decisions --game-seed 1 --max-decisions 10 \
+  --hand-a "Lightning Bolt" --battlefield-a "Mountain" --battlefield-b "Grizzly Bears" \
+  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
-### AlphaZero (AZ) training — warm-started from PPO
+## The state format and the knowledge sidecar
 
-The AZ loop trains a policy/value net on MCTS output instead of PPO gradients: self-play games
-use determinized search over engine snapshots, each decision's visit counts become a policy
-target, and outcomes train the value head. Run `league` first: when no AZ checkpoint exists yet,
-the first `az`/`az-train` cycle warm-starts the AZ net from `gen__final.zip` (falling back to a
-random init only if there is no PPO checkpoint either).
+- [`docs/state_format.md`](docs/state_format.md) — RMSTATE: visibility, handles, the snapshot
+  tables, observation events, the encoding, the `--machine` protocol, the self-checks, and its
+  decision register. The format describes itself in a SCHEMA frame; the decoders (C++
+  `src/state_format/decode.h`, Python `python/rmstate.py`) are built from it.
+- [`docs/knowledge_store.md`](docs/knowledge_store.md) — the knowledge sidecar
+  (`src/knowledge/`): levels `off` / `expert` / `expert+belief`, the model, the update rules, the
+  `k_*` / `b_*` tables, the verification.
 
-```bash
-train/.venv/bin/python train/train.py az --decks delver               # one full cycle: self-play -> train -> gate
-train/.venv/bin/python train/train.py az-league                       # rotate AZ cycles across decks/league/
-```
+`--rmstate-dump FILE` writes every viewer's frames beside any game (`--state-dump json` adds a
+JSON line per frame); `python3 python/rmstate.py dump FILE` prints them.
 
-Self-play uses the C++ actor automatically when `bin/<config>/az_actor` is built (release by
-default, see Building), else a pure-Python backend — same shards either way. The AZ net plays
-anywhere a controller spec is accepted: `az:gen?sims=128&worlds=4` (with search) or `azraw:gen`
-(net only); `mcts:gen` runs search over the PPO checkpoint instead.
+## The test gate
 
-## Play against model
+`make check` builds and runs every tier of `bin/debug/robomage_check`: deck/vocab check,
+concessions, the rules-regression scenarios (`tests/scenarios/`), the byte-identical replay corpus
+(`tests/corpus/`), the state format's and the knowledge sidecar's self-checks, an explore fuzz, a
+throughput bench and scripted-agent smoke games (about 5 minutes on 4 cores). CI runs exactly
+it; a nightly workflow runs a deep fuzz over every league matchup. After an intentional behavior
+change, `make regen` re-records the corpus. Details: [`docs/ci.md`](docs/ci.md).
 
-```bash
-./gui.sh                                                                              # GUI app on its welcome pane — File ▸ New Session opens the play/analysis dialogs
-train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck)                  # straight into a game on the GUI board; you are player A vs az:gen on --deck-b
-train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck) --board tui      # Textual terminal board
-train/.venv/bin/python train/play.py --board text --player-b scripted                 # plain-text board (type an action number or 'cast:bolt')
-```
-
-`play.py --board gui|tui|text` picks the front end (default `gui`, which falls back to the TUI
-with a notice when PySide6 is missing). The GUI's File ▸ New Session ▸ Play… dialog is the
-`play.py` command line as a form — same fields, same defaults (`train/.venv/bin/python
-train/play.py --help` lists them), remembered in `~/.robomage/gui_launcher.json`. Defaults:
-you (`--player-a human`) on `league/bug`, on the play, vs `az:gen` on `league/ur_delver`, best of
-three; the search opponent uses 8 worlds on a 25-minute match clock (`--sims`, `--worlds`,
-`--think-time`, `--match-clock`, … tune it); `--on-the-play b|random` changes who starts.
-
-The GUI's **analysis window** (F9 toggles it in-game; `--no-analysis` to start without it) is
-live MCTS evaluation of your current decision on a separate, detached engine copy that never
-blocks the live game. It is GUI-only; `--board tui`/`text` reject the `--analysis*` flags.
-
-## Analyze games
-
-`analysis.py browse` is a full-screen browser: pick a game from the sidebar and page through its
-board states one decision at a time, with the model's policy at each step; seek by clicking the
-V(s) histogram; run any analysis view (summary, cardvalue, targeting, swings, regret, entropy,
-calibration, shap, …, the game transcript, and `chart …` views that save PNGs under
-`train/analysis_out/`); and branch a counterfactual `whatif` at the current step (`w` key).
-
-`--source` picks what it browses: `simulate` (the default — `--games` games of `--player-a` vs
-`--player-b` on `--deck-a`/`--deck-b`), a directory of recorded shards (AZ self-play such as
-`train/az_data/gen`, or a play recording under `train/az_data/recorded/`; `--games N` loads the
-first N matches, and `--games 0` is refused for a directory over 2 GiB), or a saved `.rmtrace`
-session. `--board tui` (the default) is the Textual browser; `--board gui` opens the PySide6 app.
-The TUI's **analysis → browse** form and the GUI's New Session ▸ Analysis… dialog carry the same
-flags.
-
-```bash
-train/.venv/bin/python train/analysis.py browse --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --games 20
-train/.venv/bin/python train/analysis.py browse --source train/az_data/gen --player-a gen                     # first 20 matches (--games)
-train/.venv/bin/python train/analysis.py browse --source session.rmtrace --board gui
-```
-
-`analysis.py report` runs the standard battery headless and writes one self-contained HTML
-report. With a search `--player-a` (`az:gen`, `mcts:gen`) it adds search-vs-net sections
-(KL(search‖net), top-1 agreement, net V vs the search root value); `--workers N` splits the games
-across processes.
+Developer notes (architecture, conventions, how to test card behavior, the key-file index):
+[`CLAUDE.md`](CLAUDE.md).

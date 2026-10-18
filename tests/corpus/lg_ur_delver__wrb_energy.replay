@@ -1,0 +1,1867 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_ur_delver__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/ur_delver' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Daze
+Player A draws Volcanic Island
+Player A draws Volcanic Island
+Player A draws Mishra's Bauble
+Player A draws Thundering Falls
+Player A draws Mishra's Bauble
+Player A draws Murktide Regent
+Player B draws Ocelot Pride
+Player B draws Scrubland
+Player B draws Voice of Victory
+Player B draws Swords to Plowshares
+Player B draws Cabal Therapy
+Player B draws Amped Raptor
+Player B draws Marsh Flats
+Player A hand:
+Daze
+Mishra's Bauble
+Mishra's Bauble
+Murktide Regent
+Thundering Falls
+Volcanic Island
+Volcanic Island
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Amped Raptor
+Cabal Therapy
+Marsh Flats
+Ocelot Pride
+Scrubland
+Swords to Plowshares
+Voice of Victory
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Cast Mishra's Bauble
+|   5: Cast Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Cast Mishra's Bauble
+|   5: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Thoughtseize
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Mishra's Bauble enters the battlefield
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thundering Falls)
+Player A played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Thoughtseize
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Brainstorm
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm into graveyard
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Brainstorm on top of library)
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 11: Player A (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Delayed trigger
+|   1: Delayed trigger
+(REPLAY) [T1 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Delayed trigger)
+Delayed trigger fires.
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+Resolving ability (category: Draw, amount: 1)
+Player A draws Daze
+Player B draws Thoughtseize
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Scrubland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Elegant Parlor
+|   3: Plains
+|   4: Plateau
+|   5: Scrubland
+|   6: Shadowy Backstreet
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy
+|   2: Cast Thoughtseize
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Cabal Therapy
+| decision 17: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 18: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cabal Therapy
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Cabal Therapy)
+Targeting choice 0
+| decision 19: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Thundering Falls
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Thundering Falls)
+Player A returns Thundering Falls to hand
+Player A casts Daze targeting Cabal Therapy
+Resolving ability (category: Counter)
+Cabal Therapy's controller may pay {1} to save it:
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Cabal Therapy is countered)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Cabal Therapy is countered))
+Cabal Therapy is countered
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Mishra's Bauble
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Cast Mishra's Bauble
+(REPLAY) [T2 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thundering Falls)
+Player A played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (19 life)
+|   1: Player A (20 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (19 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Thoughtseize
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Cori-Steel Cutter
+| decision 25: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Cori-Steel Cutter on top of library
+|   1: Put Cori-Steel Cutter into graveyard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Cori-Steel Cutter on top of library)
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
+Player B draws Thoughtseize
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Cast Thoughtseize
+|   3: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Thoughtseize targeting Player A
+| decision 28: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 29: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thoughtseize)
+Targeting choice 0
+| decision 30: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Thundering Falls
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Thundering Falls)
+Player A returns Thundering Falls to hand
+Player A casts Daze targeting Thoughtseize
+Resolving ability (category: Counter)
+Thoughtseize's controller may pay {1} to save it:
+| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Thoughtseize is countered)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Thoughtseize is countered))
+Thoughtseize is countered
+| decision 32: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ocelot Pride
+|   2: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ocelot Pride)
+Player B activated Scrubland for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+| decision 34: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy (flashback)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+| decision 36: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Ocelot Pride)
+Player B sacrifices Ocelot Pride
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 37: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Cori-Steel Cutter
+|   2: Name card: Daze
+|   3: Name card: Dragon's Rage Channeler
+|   4: Name card: Force of Will
+|   5: Name card: Lightning Bolt
+|   6: Name card: Mishra's Bauble
+|   7: Name card: Ponder
+|   8: Name card: Flow State
+|   9: Name card: Red Elemental Blast
+|   10: Name card: Blue Elemental Blast
+|   11: Name card: Consign to Memory
+|   12: Name card: Force of Negation
+|   13: Name card: Murktide Regent
+|   14: Name card: Price of Freedom
+|   15: Name card: Unholy Heat
+|   16: Name card: Grafdigger's Cage
+|   17: Name card: Into the Flood Maw
+|   18: Name card: Meltdown
+|   19: Name card: Preordain
+|   20: Name card: Surgical Extraction
+|   21: Name card: Tamiyo, Inquisitive Student
+(REPLAY) [T3 | First Main | Player B] Input: 4
+| >> Player B: 4 (Name card: Force of Will)
+Player B names card: Force of Will
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Brainstorm
+  Cori-Steel Cutter
+  Murktide Regent
+  Thundering Falls
+  Volcanic Island
+  Volcanic Island
+No matching cards to discard.
+Cabal Therapy is exiled (flashback)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Brainstorm
+| decision 38: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thundering Falls)
+Player A played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Ponder
+| decision 39: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Ponder on top of library)
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Marsh Flats
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Cast Amped Raptor
+|   3: Cast Thoughtseize
+|   4: Cast Voice of Victory
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Amped Raptor)
+Player B activated Badlands for 1(R)
+Player B activated Scrubland for 1(W)
+Player B casts Amped Raptor
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+Resolving ability (category: DigUntil)
+Player B reveals Arid Mesa.
+Player B reveals Swords to Plowshares.
+Player B exiles Swords to Plowshares.
+Resolving ability (category: Play)
+Player B may cast Swords to Plowshares by paying 1 energy rather than its mana cost.
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Swords to Plowshares
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Do not cast Swords to Plowshares)
+Resolving ability (category: Cleanup)
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Elegant Parlor
+|   2: Plains
+|   3: Plateau
+|   4: Scrubland
+|   5: Shadowy Backstreet
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Elegant Parlor)
+Player B shuffles their library
+Player B puts Elegant Parlor to the battlefield
+Elegant Parlor enters tapped.
+Elegant Parlor triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Thoughtseize
+| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Thoughtseize on top of library
+|   1: Put Thoughtseize into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Thoughtseize on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 46: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Brainstorm
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Thundering Falls for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Ponder
+Player A draws Scalding Tarn
+Player A draws Unholy Heat
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 47: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Cori-Steel Cutter
+|   2: Murktide Regent
+|   3: Ponder
+|   4: Scalding Tarn
+|   5: Unholy Heat
+|   6: Volcanic Island
+|   7: Volcanic Island
+(REPLAY) [T6 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Scalding Tarn)
+Player A puts Scalding Tarn to top of library
+Player A chooses a card from Player A hand:
+| decision 48: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Cori-Steel Cutter
+|   2: Murktide Regent
+|   3: Ponder
+|   4: Unholy Heat
+|   5: Volcanic Island
+|   6: Volcanic Island
+(REPLAY) [T6 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Volcanic Island)
+Player A puts Volcanic Island to top of library
+Player A draws Volcanic Island
+| decision 49: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Ponder
+|   3: Cast Unholy Heat
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Volcanic Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Scalding Tarn
+Player A draws Preordain
+Player A draws Scalding Tarn
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Cori-Steel Cutter
+|   1: Murktide Regent
+|   2: Ponder
+|   3: Preordain
+|   4: Scalding Tarn
+|   5: Scalding Tarn
+|   6: Unholy Heat
+|   7: Volcanic Island
+(REPLAY) [T6 | First Main | Player A] Input: 4
+| >> Player A: 4 (Scalding Tarn)
+Player A puts Scalding Tarn to top of library
+Player A chooses a card from Player A hand:
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Cori-Steel Cutter
+|   1: Murktide Regent
+|   2: Ponder
+|   3: Preordain
+|   4: Scalding Tarn
+|   5: Unholy Heat
+|   6: Volcanic Island
+(REPLAY) [T6 | First Main | Player A] Input: 4
+| >> Player A: 4 (Scalding Tarn)
+Player A puts Scalding Tarn to top of library
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+| decision 53: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Thoughtseize
+| decision 54: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Thoughtseize
+|   3: Cast Thoughtseize
+|   4: Cast Voice of Victory
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (18 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Thoughtseize targeting Player A
+| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Cori-Steel Cutter
+  Murktide Regent
+  Ponder
+  Preordain
+  Unholy Heat
+  Volcanic Island
+Player B chooses a card to discard:
+| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter
+|   1: Murktide Regent
+|   2: Ponder
+|   3: Preordain
+|   4: Unholy Heat
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Murktide Regent)
+Player A discards Murktide Regent
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 16)
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Thoughtseize
+|   3: Cast Voice of Victory
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (16 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Scrubland for 1(B)
+Player B casts Thoughtseize targeting Player A
+| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Cori-Steel Cutter
+  Ponder
+  Preordain
+  Unholy Heat
+  Volcanic Island
+Player B chooses a card to discard:
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter
+|   1: Ponder
+|   2: Preordain
+|   3: Unholy Heat
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Cori-Steel Cutter)
+Player A discards Cori-Steel Cutter
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 14)
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 64: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 65: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 66: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Amped Raptor -> Player A
+| decision 67: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 68: Player B (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 18 life)
+--- End First Strike Combat Damage ---
+
+| decision 69: Player B (game 0, turn 7, FIRST_STRIKE_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | First Strike Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+| decision 70: Player B (game 0, turn 7, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 71: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 72: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 73: Player B (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+| decision 74: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 75: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Amped Raptor
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Amped Raptor)
+Targeting choice 0
+Player A activated Thundering Falls for 1(R)
+Player A casts Unholy Heat targeting Amped Raptor
+| decision 76: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 2 damage to Amped Raptor
+Amped Raptor is destroyed (lethal damage)
+Player A draws Scalding Tarn
+| decision 77: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Volcanic Island
+|   3: Cast Ponder
+|   4: Cast Preordain
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 78: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Scalding Tarn
+|   1: Lightning Bolt
+|   2: Dragon's Rage Channeler
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Scalding Tarn)
+Choose which card goes 2 from top:
+| decision 79: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Lightning Bolt
+|   1: Dragon's Rage Channeler
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Lightning Bolt)
+| decision 80: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Dragon's Rage Channeler
+| decision 81: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Volcanic Island
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scalding Tarn)
+Player A played Scalding Tarn
+| decision 82: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 83: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Volcanic Island
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 84: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Preordain
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 85: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T8 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 86: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player B activated Elegant Parlor for 1(W)
+Player B casts Swords to Plowshares targeting Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Dragon's Rage Channeler is moved to exile
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 20)
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+Player B draws Arid Mesa
+| decision 87: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Arid Mesa
+|   2: Cast Voice of Victory
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Voice of Victory)
+Player B activated Elegant Parlor for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Voice of Victory
+Voice of Victory enters the battlefield
+| decision 88: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Arid Mesa
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Arid Mesa)
+Player B played Arid Mesa
+| decision 89: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Arid Mesa (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Arid Mesa (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Arid Mesa
+Player B's Arid Mesa ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 90: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Plateau
+|   3: Scrubland
+|   4: Shadowy Backstreet
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Plateau)
+Player B shuffles their library
+Player B puts Plateau to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Force of Will
+| decision 91: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Preordain
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Preordain)
+Player A activated Thundering Falls for 1(U)
+Player A casts Preordain
+Resolving ability (category: Scry, amount: 2)
+Player A scries 2.
+Scry: looking at Flow State
+Scry: looking at Tamiyo, Inquisitive Student
+| decision 92: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Flow State on top of library
+|   1: Put Tamiyo, Inquisitive Student on top of library
+|   2: Put Flow State on the bottom of library
+|   3: Put Tamiyo, Inquisitive Student on the bottom of library
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Flow State on top of library)
+| decision 93: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Tamiyo, Inquisitive Student on top of library
+|   1: Put Tamiyo, Inquisitive Student on the bottom of library
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Tamiyo, Inquisitive Student on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Flow State
+| decision 94: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Flow State
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Flow State)
+Player A activated Volcanic Island for 1(U)
+Player A activated Volcanic Island for 1(U)
+Player A casts Flow State
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 95: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student
+|   1: Cori-Steel Cutter
+|   2: Dragon's Rage Channeler
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cori-Steel Cutter)
+| decision 96: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student
+|   1: Dragon's Rage Channeler
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Dragon's Rage Channeler)
+Player A puts Cori-Steel Cutter into hand.
+Player A puts Dragon's Rage Channeler into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 97: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 98: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+Player B draws Guide of Souls
+| decision 99: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Guide of Souls
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Guide of Souls)
+Player B activated Elegant Parlor for 1(W)
+Player B casts Guide of Souls
+Guide of Souls enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 100: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 13 (Player A) --------
+Player A draws Into the Flood Maw
+| decision 101: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Into the Flood Maw
+(REPLAY) [T12 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Into the Flood Maw)
+| decision 102: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Decline: promise a tapped Fish to your opponent
+|   1: Accept: promise a tapped Fish to your opponent
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Decline: promise a tapped Fish to your opponent)
+Choose target for Into the Flood Maw:
+| decision 103: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Guide of Souls
+|   1: Voice of Victory
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Guide of Souls)
+Targeting choice 0
+Player A activated Thundering Falls for 1(U)
+Player A casts Into the Flood Maw targeting Guide of Souls
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Island
+| decision 104: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Put Island on top of library
+|   1: Put Island into graveyard
+(REPLAY) [T12 | Draw | Player A] Input: 1
+| >> Player A: 1 (Put Island into graveyard)
+Player A puts Island into their graveyard.
+Resolving ability (category: ChangeZone)
+Guide of Souls is moved to hand
+Resolving ability (category: ChangeZone)
+| decision 105: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Cori-Steel Cutter)
+Player A activated Volcanic Island for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A casts Cori-Steel Cutter
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Force of Will
+| decision 106: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Force of Will into graveyard
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Force of Will on top of library)
+Cori-Steel Cutter enters the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+| decision 107: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B (now at 10 life)
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+Player B draws Voice of Victory
+| decision 108: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Guide of Souls
+|   2: Cast Voice of Victory
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Guide of Souls)
+Player B activated Elegant Parlor for 1(W)
+Player B casts Guide of Souls
+Guide of Souls enters the battlefield
+| decision 109: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Voice of Victory
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Voice of Victory)
+Player B activated Plateau for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Voice of Victory
+Voice of Victory enters the battlefield
+Guide of Souls triggered
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 11)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 3).
+
+--- Declare Attackers (Player B) ---
+| decision 110: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [1/3])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Voice of Victory [1/3] -> Player A
+| decision 111: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Voice of Victory -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 112: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (ImmediateTrigger)
+|   1: Voice of Victory (Mobilize)
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (ImmediateTrigger))
+Guide of Souls triggered
+Voice of Victory triggered
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 113: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (GainLife)
+|   1: Guide of Souls (GainLife)
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (GainLife))
+Guide of Souls triggered
+Guide of Souls triggered
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 12)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 4).
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 13)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 5).
+Resolving ability (category: ImmediateTrigger)
+| decision 114: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Decline: Pay 3 energy
+|   1: Accept: Pay 3 energy
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Accept: Pay 3 energy)
+Player B pays 3 energy.
+Choose target for Guide of Souls:
+| decision 115: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory
+|   1: Warrior token
+|   2: Warrior token
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory)
+Targeting choice 0
+Guide of Souls reflexive trigger
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounterAll, amount: 2)
+Put 2 P1P1 counter(s) on Voice of Victory.
+Put 1 Flying counter(s) on Voice of Victory.
+Resolving ability (category: Animate)
+Voice of Victory becomes an Angel in addition to its other types.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Voice of Victory deals 3 damage to Player A (now at 17 life)
+  Warrior token deals 1 damage to Player A (now at 16 life)
+  Warrior token deals 1 damage to Player A (now at 15 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: SacrificeTokens)
+Mobilize: Warrior is sacrificed.
+Mobilize: Warrior is sacrificed.
+Warrior (token) is put into the graveyard and ceases to exist.
+Warrior (token) is put into the graveyard and ceases to exist.
+
+-------- TURN 15 (Player A) --------
+Player A draws Force of Will
+| decision 116: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Cori-Steel Cutter)
+Choose target for Cori-Steel Cutter:
+| decision 117: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Thundering Falls for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A's Cori-Steel Cutter ability targeting Dragon's Rage Channeler is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
+| decision 118: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [4/4] -> Player B
+| decision 119: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 4 damage to Player B (now at 9 life)
+--- End Combat Damage ---
+
+| decision 120: Player A (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T14 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 16 (Player B) --------
+Player B draws Wasteland
+| decision 121: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 122: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 123: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thundering Falls
+|   1: Volcanic Island
+|   2: Volcanic Island
+|   3: Volcanic Island
+|   4: Badlands
+|   5: Elegant Parlor
+|   6: Plateau
+|   7: Scrubland
+|   8: Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thundering Falls)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+
+--- Declare Attackers (Player B) ---
+| decision 124: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls [1/2]
+|   1: Voice of Victory [3/5]
+|   2: Voice of Victory [1/3]
+|   3: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls [1/2])
+Guide of Souls attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Guide of Souls [1/2] -> Player A
+| decision 125: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [3/5]
+|   1: Voice of Victory [1/3]
+|   2: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [3/5])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Guide of Souls [1/2] -> Player A
+  [attacking] Voice of Victory [3/5] -> Player A
+| decision 126: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [1/3])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Guide of Souls [1/2] -> Player A
+  [attacking] Voice of Victory [3/5] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+| decision 127: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Guide of Souls -> Player A
+  Voice of Victory -> Player A
+  Voice of Victory -> Player A
+Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 128: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (ImmediateTrigger)
+|   1: Voice of Victory (Mobilize)
+|   2: Voice of Victory (Mobilize)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (ImmediateTrigger))
+Guide of Souls triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 129: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory (Mobilize)
+|   1: Voice of Victory (Mobilize)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory (Mobilize))
+Voice of Victory triggered
+Voice of Victory triggered
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 130: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (GainLife)
+|   1: Guide of Souls (GainLife)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (GainLife))
+Guide of Souls triggered
+Guide of Souls triggered
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 10)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 3).
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 11)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 4).
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 131: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (GainLife)
+|   1: Guide of Souls (GainLife)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (GainLife))
+Guide of Souls triggered
+Guide of Souls triggered
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 12)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 5).
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 13)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 6).
+Resolving ability (category: ImmediateTrigger)
+| decision 132: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Decline: Pay 3 energy
+|   1: Accept: Pay 3 energy
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Accept: Pay 3 energy)
+Player B pays 3 energy.
+Choose target for Guide of Souls:
+| decision 133: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls
+|   1: Voice of Victory
+|   2: Voice of Victory
+|   3: Warrior token
+|   4: Warrior token
+|   5: Warrior token
+|   6: Warrior token
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls)
+Targeting choice 0
+Guide of Souls reflexive trigger
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounterAll, amount: 2)
+Put 2 P1P1 counter(s) on Guide of Souls.
+Put 1 Flying counter(s) on Guide of Souls.
+Resolving ability (category: Animate)
+Guide of Souls becomes an Angel in addition to its other types.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Guide of Souls deals 3 damage to Player A (now at 12 life)
+  Voice of Victory deals 3 damage to Player A (now at 9 life)
+  Voice of Victory deals 1 damage to Player A (now at 8 life)
+  Warrior token deals 1 damage to Player A (now at 7 life)
+  Warrior token deals 1 damage to Player A (now at 6 life)
+  Warrior token deals 1 damage to Player A (now at 5 life)
+  Warrior token deals 1 damage to Player A (now at 4 life)
+--- End Combat Damage ---
+
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 134: Player B (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Delayed trigger
+|   1: Delayed trigger
+(REPLAY) [T15 | End Step | Player B] Input: 0
+| >> Player B: 0 (Delayed trigger)
+Delayed trigger fires.
+Delayed trigger fires.
+Resolving ability (category: SacrificeTokens)
+Mobilize: Warrior is sacrificed.
+Mobilize: Warrior is sacrificed.
+Warrior (token) is put into the graveyard and ceases to exist.
+Warrior (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: SacrificeTokens)
+Mobilize: Warrior is sacrificed.
+Mobilize: Warrior is sacrificed.
+Warrior (token) is put into the graveyard and ceases to exist.
+Warrior (token) is put into the graveyard and ceases to exist.
+
+-------- TURN 17 (Player A) --------
+Player A draws Ponder
+| decision 135: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Equip Cori-Steel Cutter
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+Dragon's Rage Channeler triggered
+| decision 136: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Dragon's Rage Channeler
+| decision 137: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Dragon's Rage Channeler on top of library
+|   1: Put Dragon's Rage Channeler into graveyard
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Dragon's Rage Channeler on top of library)
+| decision 138: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 139: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Wasteland
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Wasteland)
+Choose which card goes 2 from top:
+| decision 140: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Wasteland
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Wasteland)
+| decision 141: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Dragon's Rage Channeler
+| decision 142: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Equip Cori-Steel Cutter
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+Cori-Steel Cutter triggered
+| decision 143: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 144: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+| decision 145: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+| decision 146: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+  [attacking] Monk token [2/2] -> Player B
+| decision 147: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+  Monk token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B (now at 10 life)
+  Monk token deals 2 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+
+-------- TURN 18 (Player B) --------
+Player B draws Marsh Flats
+| decision 148: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 149: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 150: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Plateau
+|   3: Scrubland
+|   4: Shadowy Backstreet
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Plateau)
+Player B shuffles their library
+Player B puts Plateau to the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 151: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls [3/4]
+|   1: Voice of Victory [3/5]
+|   2: Voice of Victory [1/3]
+|   3: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls [3/4])
+Guide of Souls attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Guide of Souls [3/4] -> Player A
+| decision 152: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [3/5]
+|   1: Voice of Victory [1/3]
+|   2: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [3/5])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Guide of Souls [3/4] -> Player A
+  [attacking] Voice of Victory [3/5] -> Player A
+| decision 153: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [1/3])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Guide of Souls [3/4] -> Player A
+  [attacking] Voice of Victory [3/5] -> Player A
+  [attacking] Voice of Victory [1/3] -> Player A
+| decision 154: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Guide of Souls -> Player A
+  Voice of Victory -> Player A
+  Voice of Victory -> Player A
+Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 155: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (ImmediateTrigger)
+|   1: Voice of Victory (Mobilize)
+|   2: Voice of Victory (Mobilize)
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (ImmediateTrigger))
+Guide of Souls triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 156: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory (Mobilize)
+|   1: Voice of Victory (Mobilize)
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory (Mobilize))
+Voice of Victory triggered
+Voice of Victory triggered
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 157: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (GainLife)
+|   1: Guide of Souls (GainLife)
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (GainLife))
+Guide of Souls triggered
+Guide of Souls triggered
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 8)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 4).
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 9)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 5).
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 158: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls (GainLife)
+|   1: Guide of Souls (GainLife)
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls (GainLife))
+Guide of Souls triggered
+Guide of Souls triggered
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 10)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 6).
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 11)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 7).
+Resolving ability (category: ImmediateTrigger)
+| decision 159: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Decline: Pay 3 energy
+|   1: Accept: Pay 3 energy
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Accept: Pay 3 energy)
+Player B pays 3 energy.
+Choose target for Guide of Souls:
+| decision 160: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Guide of Souls
+|   1: Voice of Victory
+|   2: Voice of Victory
+|   3: Warrior token
+|   4: Warrior token
+|   5: Warrior token
+|   6: Warrior token
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (Voice of Victory)
+Targeting choice 2
+Guide of Souls reflexive trigger
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounterAll, amount: 2)
+Put 2 P1P1 counter(s) on Voice of Victory.
+Put 1 Flying counter(s) on Voice of Victory.
+Resolving ability (category: Animate)
+Voice of Victory becomes an Angel in addition to its other types.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Guide of Souls [3/4]
+  1: Voice of Victory [3/5]
+  2: Voice of Victory [3/5]
+  3: Warrior token [1/1]
+  4: Warrior token [1/1]
+  5: Warrior token [1/1]
+  6: Warrior token [1/1]
+Your creatures:
+| decision 161: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler [3/3]
+|   1: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler [3/3])
+Select attacker for Dragon's Rage Channeler to block:
+| decision 162: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Guide of Souls [3/4]
+|   1: Voice of Victory [3/5]
+|   2: Voice of Victory [3/5]
+|   3: Warrior token [1/1]
+|   4: Warrior token [1/1]
+|   5: Warrior token [1/1]
+|   6: Warrior token [1/1]
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 3
+| >> Player A: 3 (Warrior token [1/1])
+Dragon's Rage Channeler blocking Warrior token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Guide of Souls [3/4]
+  1: Voice of Victory [3/5]
+  2: Voice of Victory [3/5]
+  3: Warrior token [1/1]
+  4: Warrior token [1/1]
+  5: Warrior token [1/1]
+  6: Warrior token [1/1]
+Your creatures:
+  (assigned) Dragon's Rage Channeler [3/3] blocking Warrior token
+| decision 163: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Confirm blockers)
+
+Blockers declared:
+  Dragon's Rage Channeler blocking Warrior token
+
+--- Combat Damage ---
+  Guide of Souls deals 3 damage to Player A (now at 1 life)
+  Voice of Victory deals 3 damage to Player A (now at -2 life)
+  Voice of Victory deals 3 damage to Player A (now at -5 life)
+  Dragon's Rage Channeler deals 3 damage to Warrior token
+  Warrior token deals 1 damage to Dragon's Rage Channeler
+  Warrior token deals 1 damage to Player A (now at -6 life)
+  Warrior token deals 1 damage to Player A (now at -7 life)
+  Warrior token deals 1 damage to Player A (now at -8 life)
+--- End Combat Damage ---
+
+
+Player A has -8 life - Player B wins!
+GAME_RESULT: 1 Player B wins

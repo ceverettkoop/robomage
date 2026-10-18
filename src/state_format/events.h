@@ -92,19 +92,22 @@ struct ObsEvent {
 };
 
 // The frame writers that drain the queues; each takes its own copy of every event, at its own
-// pace (the dump at every decision, the stdout stream at that viewer's decisions).
+// pace (the dump at every decision, the stdout stream and the in-process feed at that viewer's
+// decisions).
 enum class ObsConsumer : uint8_t {
     DUMP,    // --rmstate-dump (state_format/dump.h)
-    STREAM,     // --machine-format rmstate (state_format/stream.h)
+    STREAM,     // the RMSTATE stream (state_format/stream.h)
     SELFCHECK,  // --selfcheck-state (state_format/selfcheck.h)
+    AGENT,      // the in-process agents and --trace-decisions (state_format/agent_feed.h)
 };
 
 // One viewer's queue.
 struct ObsEventQueue {
         uint32_t next_seq = 1;
         std::vector<ObsEvent> events;         // not yet in a --rmstate-dump frame
-        std::vector<ObsEvent> stream_events;     // not yet in a --machine-format rmstate frame (seats only)
+        std::vector<ObsEvent> stream_events;     // not yet in an RMSTATE stream frame (seats only)
         std::vector<ObsEvent> selfcheck_events;  // not yet in a --selfcheck-state frame
+        std::vector<ObsEvent> agent_events;      // not yet in an in-process feed frame (served seats only)
 };
 
 // The order-hidden batch an instruction is putting cards into a library with (§5): its cards'
@@ -158,7 +161,7 @@ struct ObsEventState {
 // its identity.
 const ObsStackDeparture *obs_stack_departure(const ObjectRef &ref, Zone::Ownership viewer, int &card);
 
-// Whether anyone consumes events (a frame writer: --rmstate-dump or --machine-format rmstate; the
+// Whether anyone consumes events (a frame writer: --rmstate-dump or the RMSTATE stream; the
 // --selfcheck-state frames; or --trace-events). Every obs_* hook is a no-op otherwise.
 //
 // Under --selfcheck-state each seat's event is built twice as it is constructed, the second time

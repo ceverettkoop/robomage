@@ -1,0 +1,1982 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from doomsday_vs_delver.rmlog
+REPLAY MODE: Using embedded decks 'doomsday' / 'delver' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Thoughtseize
+Player A draws Misty Rainforest
+Player A draws Island
+Player A draws Street Wraith
+Player A draws Underground Sea
+Player A draws Edge of Autumn
+Player A draws Ponder
+Player B draws Daze
+Player B draws Ponder
+Player B draws Scalding Tarn
+Player B draws Polluted Delta
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Brainstorm
+Player A hand:
+Thoughtseize
+Street Wraith
+Edge of Autumn
+Ponder
+Underground Sea
+Island
+Misty Rainforest
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Brainstorm
+Daze
+Ponder
+Polluted Delta
+Scalding Tarn
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+(REPLAY) [T0 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 4: Player A (game 0, turn 0, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+(REPLAY) [T0 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Play Island
+|   3: Play Misty Rainforest
+|   4: Activate Street Wraith from hand (Draw)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Underground Sea)
+Player A played Underground Sea
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Ponder
+|   3: Activate Street Wraith from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A casts Thoughtseize targeting Player B
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Dragon's Rage Channeler
+  Mishra's Bauble
+  Brainstorm
+  Daze
+  Ponder
+  Polluted Delta
+  Scalding Tarn
+Player A chooses a card to discard:
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Mishra's Bauble
+|   2: Brainstorm
+|   3: Daze
+|   4: Ponder
+(REPLAY) [T0 | First Main | Player A] Input: 3
+| >> Player A: 3 (Daze)
+Player B discards Daze
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 18)
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 11: Player A (game 0, turn 0, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 12: Player A (game 0, turn 0, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 13: Player A (game 0, turn 0, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 14: Player A (game 0, turn 0, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 15: Player A (game 0, turn 0, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T0 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 2 (Player B) --------
+| decision 16: Player A (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Volcanic Island
+| decision 17: Player A (game 0, turn 1, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+| decision 19: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 21: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 22: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (18 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (18 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 23: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+| decision 24: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 25: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 26: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+| decision 27: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Scalding Tarn
+Player B draws Lightning Bolt
+Player B draws Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 28: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Dragon's Rage Channeler
+|   2: Lightning Bolt
+|   3: Ponder
+|   4: Volcanic Island
+|   5: Scalding Tarn
+|   6: Scalding Tarn
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 29: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Dragon's Rage Channeler
+|   2: Lightning Bolt
+|   3: Ponder
+|   4: Scalding Tarn
+|   5: Scalding Tarn
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Scalding Tarn)
+Player B puts Scalding Tarn to top of library
+| decision 30: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Doomsday
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 31: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 32: Player A (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 33: Player A (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 34: Player A (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 35: Player A (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 36: Player A (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+Delayed trigger fires.
+| decision 37: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Scalding Tarn
+| decision 38: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Doomsday
+| decision 39: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Misty Rainforest
+|   3: Cast Ponder
+|   4: Activate Street Wraith from hand (Draw)
+|   5: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Ponder)
+Player A activated Underground Sea for 1(U)
+Player A casts Ponder
+| decision 41: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 42: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thoughtseize
+|   1: Edge of Autumn
+|   2: Force of Will
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thoughtseize)
+Choose which card goes 2 from top:
+| decision 43: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Edge of Autumn
+|   1: Force of Will
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Force of Will)
+| decision 44: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Edge of Autumn
+| decision 45: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Misty Rainforest
+|   3: Activate Street Wraith from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+|   5: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Island)
+Player A played Island
+| decision 46: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 47: Player A (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 48: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 49: Player A (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 50: Player A (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 51: Player A (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 52: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 53: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Player A (18 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (18 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+| decision 54: Player A (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 15 life)
+| decision 55: Player A (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Volcanic Island
+| decision 56: Player A (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 57: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Scalding Tarn
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 58: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Ponder
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+| decision 59: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+| decision 60: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 61: Player A (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 62: Player A (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 63: Player A (game 0, turn 3, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 64: Player A (game 0, turn 3, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 65: Player A (game 0, turn 3, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 5 (Player A) --------
+| decision 66: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Force of Will
+| decision 67: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 68: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 69: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+| decision 70: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 71: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 72: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 73: Player A (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 74: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 75: Player A (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 76: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 77: Player A (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 78: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Volcanic Island
+| decision 79: Player A (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 80: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Scalding Tarn
+|   4: Cast Dragon's Rage Channeler
+|   5: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+| decision 81: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+| decision 82: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Scalding Tarn
+|   4: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 83: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 84: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ponder
+| decision 85: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 86: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ponder
+| decision 87: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 88: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 89: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ponder
+|   1: Mishra's Bauble
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Mishra's Bauble)
+Choose which card goes 2 from top:
+| decision 90: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Ponder)
+| decision 91: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 92: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Scalding Tarn
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 93: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 94: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 95: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ponder
+| decision 96: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 97: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ponder
+| decision 98: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 99: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 100: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ponder
+|   1: Mishra's Bauble
+|   2: Thundering Falls
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Thundering Falls)
+Choose which card goes 2 from top:
+| decision 101: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ponder
+|   1: Mishra's Bauble
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Mishra's Bauble)
+| decision 102: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+| decision 103: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 104: Player A (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 105: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+| decision 106: Player A (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 107: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 11 life)
+--- End Combat Damage ---
+
+| decision 108: Player A (game 0, turn 5, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 109: Player A (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 110: Player A (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 111: Player A (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 112: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Street Wraith
+| decision 113: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 114: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 115: Player A (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 116: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 117: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 118: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 119: Player A (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 120: Player A (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Mishra's Bauble
+| decision 121: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 122: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+|   3: Cast Mishra's Bauble
+|   4: Cast Ponder
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 123: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 124: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Thundering Falls
+| decision 125: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Thundering Falls on top of library
+|   1: Put Thundering Falls into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Thundering Falls into graveyard)
+Player B puts Thundering Falls into their graveyard.
+| decision 126: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Flooded Strand
+| decision 127: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Flooded Strand on top of library
+|   1: Put Flooded Strand into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Flooded Strand into graveyard)
+Player B puts Flooded Strand into their graveyard.
+| decision 128: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 129: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+|   3: Cast Ponder
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 130: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 131: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 132: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (11 life)
+|   1: Player B (19 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (11 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 133: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Dark Ritual
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 134: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 135: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 136: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 137: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 138: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 139: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Mishra's Bauble
+|   1: Brainstorm
+|   2: Force of Will
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Mishra's Bauble)
+Choose which card goes 2 from top:
+| decision 140: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Force of Will
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+| decision 141: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Force of Will
+| decision 142: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 143: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+| decision 144: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 145: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 146: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 147: Player A (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 148: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+| decision 149: Player A (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 150: Player A (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 8 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 5 life)
+--- End Combat Damage ---
+
+| decision 151: Player A (game 0, turn 7, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 152: Player A (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 153: Player A (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 154: Player A (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+Delayed trigger fires.
+| decision 155: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+| decision 156: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 157: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T8 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 158: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 159: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 160: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 161: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 162: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 163: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Mishra's Bauble
+Player B draws Delver of Secrets
+Player B draws Lightning Bolt
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 164: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Delver of Secrets
+|   1: Mishra's Bauble
+|   2: Force of Will
+|   3: Lightning Bolt
+|   4: Scalding Tarn
+(REPLAY) [T8 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Scalding Tarn)
+Player B puts Scalding Tarn to top of library
+Player B chooses a card from Player B hand:
+| decision 165: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Delver of Secrets
+|   1: Mishra's Bauble
+|   2: Force of Will
+|   3: Lightning Bolt
+(REPLAY) [T8 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Mishra's Bauble)
+Player B puts Mishra's Bauble to top of library
+| decision 166: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T8 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 167: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Player A (5 life)
+|   1: Player B (18 life)
+|   2: Dragon's Rage Channeler
+|   3: Dragon's Rage Channeler
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (5 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 168: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 169: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 170: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 171: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 172: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 173: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 174: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 175: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 176: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 2 life)
+| decision 177: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Dark Ritual
+| decision 178: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Street Wraith from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+|   5: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 179: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Street Wraith from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+|   5: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dark Ritual)
+Player A activated Underground Sea for 1(B)
+Player A casts Dark Ritual
+| decision 180: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 181: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T8 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 182: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dark Ritual
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dark Ritual)
+Targeting choice 0
+| decision 183: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Delver of Secrets
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Delver of Secrets)
+Player B pays 1 life
+Player B exiles Delver of Secrets
+Player B casts Force of Will targeting Dark Ritual
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 184: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 185: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 186: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 187: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 188: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| decision 189: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Counter)
+Dark Ritual is countered
+| decision 190: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 191: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 192: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 193: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 194: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 195: Player A (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+| decision 196: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Mishra's Bauble
+| decision 197: Player A (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 198: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mishra's Bauble
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 199: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 200: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Scalding Tarn
+| decision 201: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Scalding Tarn on top of library
+|   1: Put Scalding Tarn into graveyard
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Scalding Tarn into graveyard)
+Player B puts Scalding Tarn into their graveyard.
+| decision 202: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Delver of Secrets
+| decision 203: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Delver of Secrets on top of library
+|   1: Put Delver of Secrets into graveyard
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Delver of Secrets on top of library)
+| decision 204: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 205: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 206: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (2 life)
+|   1: Player B (17 life)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (2 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 207: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Street Wraith
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 208: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 209: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 210: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+| decision 211: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 212: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at -1 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at -4 life)
+--- End Combat Damage ---
+
+
+Player A has -4 life - Player B wins!
+GAME_RESULT: 1 Player B wins

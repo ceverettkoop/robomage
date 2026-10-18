@@ -30,8 +30,9 @@
 
 extern Coordinator global_coordinator;
 
-static void known_top_remove(int *arr, int pos);
-static void known_top_insert(int *arr, int pos, int card_vocab_idx);
+static Game::OppKnownLibraryTop &opp_known_top(Game &game, Zone::Ownership library_owner);
+static void known_top_remove(bool *arr, int pos);
+static void known_top_insert(bool *arr, int pos, bool known);
 
 bool Game::ready_to_resolve() {
     return priority.a_has_passed && priority.b_has_passed;
@@ -113,67 +114,54 @@ void Game::players_lose(bool a_loses, bool b_loses, const std::string &reason) {
         player_loses(Zone::PLAYER_B, reason);
 }
 
-Game::KnownLibraryTop &Game::known_top_library(Zone::Ownership library_owner) {
-    return library_owner == Zone::PLAYER_A ? known_top_library_a : known_top_library_b;
+// The opponent-knowledge record of `library_owner`'s library.
+static Game::OppKnownLibraryTop &opp_known_top(Game &game, Zone::Ownership library_owner) {
+    return library_owner == Zone::PLAYER_A ? game.opp_known_top_a : game.opp_known_top_b;
 }
 
-const Game::KnownLibraryTop &Game::known_top_library(Zone::Ownership library_owner) const {
-    return library_owner == Zone::PLAYER_A ? known_top_library_a : known_top_library_b;
+bool Game::opp_knows_library_pos(Zone::Ownership library_owner, size_t pos) const {
+    if (pos >= static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) return false;
+    return (library_owner == Zone::PLAYER_A ? opp_known_top_a : opp_known_top_b).known[pos];
 }
 
-const int *Game::known_top_library_seen_by(Zone::Ownership library_owner,
-                                           Zone::Ownership viewer) const {
-    const KnownLibraryTop &k = known_top_library(library_owner);
-    return viewer == library_owner ? k.by_owner : k.by_opponent;
+void Game::clear_opp_known_top(Zone::Ownership library_owner) {
+    opp_known_top(*this, library_owner) = OppKnownLibraryTop{};
 }
 
-void Game::clear_known_top_library(Zone::Ownership library_owner) {
-    known_top_library(library_owner) = KnownLibraryTop{};
+void Game::opp_known_top_push(Zone::Ownership library_owner, bool known) {
+    known_top_insert(opp_known_top(*this, library_owner).known, 0, known);
 }
 
-void Game::known_top_library_push(Zone::Ownership library_owner, int owner_idx, int opp_idx) {
-    KnownLibraryTop &k = known_top_library(library_owner);
-    known_top_insert(k.by_owner, 0, owner_idx);
-    known_top_insert(k.by_opponent, 0, opp_idx);
+void Game::opp_known_top_remove_pos(Zone::Ownership library_owner, int pos) {
+    known_top_remove(opp_known_top(*this, library_owner).known, pos);
 }
 
-void Game::known_top_library_remove_pos(Zone::Ownership library_owner, int pos) {
+void Game::opp_known_top_set(Zone::Ownership library_owner, int pos, bool known) {
     if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
-    KnownLibraryTop &k = known_top_library(library_owner);
-    known_top_remove(k.by_owner, pos);
-    known_top_remove(k.by_opponent, pos);
+    opp_known_top(*this, library_owner).known[pos] = known;
 }
 
-void Game::known_top_library_note(Zone::Ownership library_owner, int pos, int card_vocab_idx,
-                                  Zone::Ownership knower) {
-    if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
-    KnownLibraryTop &k = known_top_library(library_owner);
-    (knower == library_owner ? k.by_owner : k.by_opponent)[pos] = card_vocab_idx;
+void Game::opp_known_top_move(Zone::Ownership library_owner, int from, int to) {
+    bool *arr = opp_known_top(*this, library_owner).known;
+    const bool known = from >= 0 && from < KNOWN_TOP_LIBRARY_SIZE && arr[from];
+    known_top_remove(arr, from);
+    known_top_insert(arr, to, known);
 }
 
-void Game::known_top_library_move(Zone::Ownership library_owner, int from, int to) {
-    KnownLibraryTop &k = known_top_library(library_owner);
-    for (int *arr : {k.by_owner, k.by_opponent}) {
-        int idx = (from >= 0 && from < KNOWN_TOP_LIBRARY_SIZE) ? arr[from] : -1;
-        known_top_remove(arr, from);
-        known_top_insert(arr, to, idx);
-    }
-}
-
-// Removes the entry at `pos` of one known-top array, shifting the deeper ones up (the last
-// becomes unknown). No-op outside the window.
-static void known_top_remove(int *arr, int pos) {
+// Removes the entry at `pos` of a known-top array, shifting the deeper ones up (the last becomes
+// unknown). No-op outside the window.
+static void known_top_remove(bool *arr, int pos) {
     if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
     for (int i = pos; i < KNOWN_TOP_LIBRARY_SIZE - 1; i++) arr[i] = arr[i + 1];
-    arr[KNOWN_TOP_LIBRARY_SIZE - 1] = -1;
+    arr[KNOWN_TOP_LIBRARY_SIZE - 1] = false;
 }
 
-// Inserts `card_vocab_idx` at `pos` of one known-top array, shifting the entries at pos.. one
-// deeper (the deepest falls off the window). No-op outside the window.
-static void known_top_insert(int *arr, int pos, int card_vocab_idx) {
+// Inserts `known` at `pos` of a known-top array, shifting the entries at pos.. one deeper (the
+// deepest falls off the window). No-op outside the window.
+static void known_top_insert(bool *arr, int pos, bool known) {
     if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
     for (int i = KNOWN_TOP_LIBRARY_SIZE - 1; i > pos; i--) arr[i] = arr[i - 1];
-    arr[pos] = card_vocab_idx;
+    arr[pos] = known;
 }
 
 void Game::pass_priority() {

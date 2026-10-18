@@ -24,29 +24,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   add your own `is_phased_out` check at the call site. The only code that reads
   `Permanent::is_phased_out` directly is the phasing subsystem itself (the untap-step
   phase-in/skip in `classes/game.cpp`), the phase-out setter in `effects/effect_phases.cpp`,
-  and the observation serializers — `machine_io.cpp` and the state-format encoder
-  `state_format/encode.cpp` — which deliberately include phased-out permanents, flagged.
+  and the observation serializer — the state-format encoder `state_format/encode.cpp` — which
+  deliberately includes phased-out permanents, flagged.
   Add similar shared accessors (in the `src/queries/` header for their concern) when a new
   entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`; only the libtorch actor TUs in `src/actor/` enable them)
-- Two interactive front ends, both Python, both sitting on the shared driver in
-  `train/game_driver.py`: the Textual TUI (`train/tui_game.py`) and the PySide6 GUI
-  (`train/gui_main.py` app shell over the `train/gui_game.py` board, with its analysis window in
-  `train/gui_analysis.py`), plus a plain text board (`play.py --board text`). There is NO C++
-  front end (the old raylib GUI was removed); the engine is always a `--machine` subprocess.
+- The kept Python (`python/`: the RMSTATE agent driver, the scripted agent, the decoder, the corpus
+  recorder and their checks) is **stdlib only**; run it with `python3`, no venv. Flags use one
+  vocabulary: `--format bo1|bo3` (driver), a seat's deck `--deck-a` / `--deck-b`, a seat's agent
+  `--player-a` / `--player-b` (driver) or `--agent-a` / `--agent-b` (the engine's in-process
+  agents).
 - Uses clang-format configuration in `.clang-format`
-- Every Python CLI flag lives in `train/cli_spec.py` (the TUI/GUI forms are built from it). The
-  match format is one flag everywhere, `--format bo1|bo3` (default bo3, PPO training included).
-  Seats use one vocabulary everywhere: a single seat's deck is `--deck-a` / `--deck-b` (multi-deck
-  pools stay `--decks` / `--opponents`) and a seat's agent (an `opponents.make_controller` spec)
-  is `--player-a` / `--player-b` — the interactive human is just the spec `human`. Where one side
-  is "under test" (analysis, baseline, training) it is player A.
-  When a flag is renamed or removed, add the old spelling to
-  `cli_spec.REMOVED_FLAGS` (global or scoped to a tool / `tool/sub`) so it errors with
-  "`--old` was removed; use …" instead of vanishing — parsers built with `apply_to_parser` pick the
-  table up automatically, a standalone argparse calls `add_removed_flags(parser, scope)`. A removed
-  environment variable goes in `cli_spec.REMOVED_ENV_VARS` (enforced by `check_removed_env`).
 - DO NOT MODIFY CARD SCRIPTS
 - When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
   and use subagents for each one. Instruct the subagents to not spawn additional agents. 
@@ -62,7 +51,19 @@ no multiplayer-only machinery.
 
 Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
 
-The python side of the project enables machine learning of the game and analysis.
+Players and agents drive the engine through its in-process agents (`--agent-a/-b`, `--play`), its
+terminal prompt (the CLI; a human seat against an agent is plan step 4b's), or the machine
+protocol (`--machine`): **RMSTATE**, an exhaustive
+binary game state per viewer with hidden information withheld (`docs/state_format.md`), each
+seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and sound deduction,
+`docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
+and its driver over that protocol, used for agent games and to record the replay corpus.
+
+The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–3
+done; 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer and in-process
+actor). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
+TUI/GUI) is archived in place: branch `archive/rl-stack` (tag `rl-stack-final`, if created), whose
+tip `cf7f97f` is the last commit with both stacks.
 
 ## Rules Reference (authoritative)
 
@@ -77,37 +78,36 @@ update it when you knowingly deviate or leave a rules gap.
 
 ## Build Commands
 
-- `make && make actor` — debug build: `bin/debug/robomage` + `bin/debug/az_actor` (the libtorch
-  actor; `make actor` needs torch in `train/.venv` and is not part of plain `make`)
-- `make BUILD=RELEASE && make actor BUILD=RELEASE` — same into `bin/release/` (separate obj/bin
+Card scripts are not tracked; provision them first on a fresh clone (the SessionStart hook does
+it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
+
+- `make` — debug build (`-ggdb`, warnings, `-D_GLIBCXX_ASSERTIONS`, no `-O2`) of the three
+  binaries: `bin/debug/robomage` (the engine), `bin/debug/rmknow` (the knowledge sidecar over a
+  recorded stream) and `bin/debug/robomage_check` (the test gate)
+- `make BUILD=RELEASE` — the same into `bin/release/` (`-O2 -flto -march=native`; separate obj/bin
   trees per config, so switching `BUILD` never needs `make clean`)
-- `make clean` · `make check` (the test gate, below) · `make regen` (re-record the replay corpus
-  after an intentional behavior change; see `docs/ci.md`)
+- `make check` — build, then `bin/debug/robomage_check` (every tier; below and `docs/ci.md`)
+- `make regen` — provision, build, then `python3 python/record_corpus.py`: re-record the replay
+  corpus after an intentional behavior change
+- `make refetch` — delete the local card/token scripts, re-provision them at the pinned Forge
+  commit and run `make check` without re-recording (detects upstream script drift)
+- `make actor` — compiles the libtorch TUs of `src/actor/` (the TorchScript evaluator kept as the
+  base of plan step 5; no binary until step 5 adds a main). Needs a torch importable by `python3`,
+  or `LIBTORCH_DIR=…`; not part of plain `make`
+- `make clean`
 
-**Which binary the Python tooling runs is independent of which one you just built.** Each tool
-has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one config, and
-`--binary <path>` overrides one invocation:
+**Which binary the tooling runs is independent of which one you just built.** The gate
+(`robomage_check`) runs the engine beside it (`bin/<config>/robomage`), so `make check` tests the
+debug build and `bin/release/robomage_check` the release one; `python/rm_driver.py` and
+`python/record_corpus.py` default to `bin/debug/robomage`; `ROBOMAGE_BUILD=release` moves the
+driver onto `bin/release/robomage`, and `--binary <path>` overrides one invocation of any of them.
 
-- **Debug** (`bin/debug/robomage`; assertions, `-D_GLIBCXX_ASSERTIONS`, no `-O2`): the test
-  harness, `ci_check`/`make check`, `train.py observe`, and `train.py baseline`'s Python fallback.
-- **Release** (`bin/release/robomage`, `bin/release/az_actor`): `play.py` (every board),
-  `analysis.py` (browse/report), every PPO/AZ training and `bench-*` subcommand, and `baseline`'s
-  default C++-actor path.
-
-**Codegen is part of the build.** `make` first runs `pygen` (`train/gen_enums.py`,
-`gen_card_costs.py`, `gen_card_props.py`, `gen_archetypes.py`, `gen_sb_rules.py`; write-if-changed
-via `train/gen_util.py`, so unchanged outputs force no recompile).
-- **Committed** (derived from tracked sources; the `pygen` CI tier guards only these):
-  `train/_enums.py` (C++ headers) and `src/gen/archetypes_gen.h` (`train/archetypes.py` +
-  `bin/resources/decks/archetypes.json`, whose `_archetypes` key is the canonical label list).
-- **Untracked**, rebuilt locally every build: `train/card_costs.py`, `train/card_props.py`,
-  `src/gen/card_costs_gen.h` (from gitignored, Forge-fetched card-script content) and
-  `train/sb_rules.py` + `src/gen/sb_rules_gen.h` (from `train/sb_dead_rules.json`). A vocab
-  change + `make` keeps them in sync with nothing to commit.
+**There is no codegen.** `bin/resources/decks/archetypes.json` is read directly (its `_archetypes`
+key is the canonical label list; `src/state_format/metagame.cpp`, the `METAGAME` frame).
 
 ## Long-running commands (Claude)
 
-When Claude runs a long command (build, training, gate, fuzz, bench) it must run it **in the
+When Claude runs a long command (build, gate, fuzz, bench) it must run it **in the
 background** and make the live output inspectable by the user:
 
 - Always state the task's output-file path in chat when launching it, so the user can
@@ -115,47 +115,56 @@ background** and make the live output inspectable by the user:
 
 ## Testing guidelines
 
-- **The standard gate is `make check`** (build + every default tier of `train/ci_check.py`:
-  codegen sync, vocab coverage, obs invariants, byte-identical replay corpus, deterministic league
-  smoke, short fuzz, …). It must pass before pushing, and CI runs exactly it. Tiers, reproducing a
-  CI failure, re-recording the corpus / regenerating codegen: [`docs/ci.md`](docs/ci.md).
+- **The standard gate is `make check`**: the build, then every tier of the C++ gate
+  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). It
+  must pass before pushing, and CI runs exactly it. Tiers, in order (`--tier a,b` runs a subset;
+  details, runtimes and reproducing a CI failure in [`docs/ci.md`](docs/ci.md)):
+
+  | Tier | Checks |
+  |---|---|
+  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab |
+  | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
+  | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
+  | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
+  | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
+  | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
+  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient`); draws are findings |
+  | `bench` | decisions per second of a fixed explore workload (no threshold) |
+  | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` |
+
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
 - Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
-- **Every game-running tool sits on `runner.drive_game` — do not hand-roll decision loops.**
-  From Python use `runner.run_match(agent_a, agent_b, deck_a=…, deck_b=…, games=, bo3=True,
-  seed=1, transcript="compact|verbose|narrative|quiet", out=…)`. Agent specs
-  (`opponents.make_controller`, one grammar everywhere): `scripted` (= the **hard** tier: smart
-  mulligan, combat simulation, combo lines), `scripted:easy`/`greedy`, `scripted:random`,
-  `explore` / `explore:patient` (coverage fuzzer; big-mana mode), `auto`, `human`,
-  `play:<specs>`, `actions:<ints>`, `gen` / `az:gen` / `azraw:gen` / `mcts:gen`, or a checkpoint
-  path. Details: [`docs/game_running.md`](docs/game_running.md).
-- **`train.py observe`** runs N games of one matchup between any two agents — the quick check of a
-  new build. bo3 by default (`--format bo1` for single games); game i uses seed `--seed`+i.
-  `--games N` (per-game results + W/L/D), `--verbose` (per-decision board + menu + narrative),
-  `--out FILE` (transcript to FILE, one-line summary to stdout), `--quiet`, `--max-decisions N`.
-  Choose `--deck-a/-b` that exercise what you changed (decks relative to `bin/resources/decks/`).
-  - **Fuzz campaign** (any draw is a finding; also saved to `draw_<stamp>.txt`):
-    `observe --player-a explore --player-b explore --deck-a league/ur_delver --deck-b league/gw_maverick --games 100 --verbose --out out.txt`
-  - **Engine throughput:** `observe --format bo1 --games 40 --max-decisions 4000 --quiet --timing`
+- **Agent games** (the quick check of a new build): `python3 python/rm_driver.py --player-a
+  scripted --player-b explore --deck-a league/bug --deck-b league/burn --format bo1 --games N`
+  (bo3 by default; game i uses seed `--seed`+i; `--verbose` per-decision narrative + menu, `--out
+  FILE`, `--quiet`, `--max-decisions N`, `--timing`; `--help` lists all). Agents: `scripted` (= the
+  **hard** tier: smart mulligan, combat simulation, combo lines), `scripted:easy` / `greedy` /
+  `random`, `explore` / `explore:patient` (coverage fuzzer; big-mana mode), `first` (= `auto`),
+  `actions:<ints>`. Choose `--deck-a/-b` that exercise what you changed (decks relative to
+  `bin/resources/decks/`). Details: [`docs/game_running.md`](docs/game_running.md).
+  - **Fuzz campaign** (any draw is a finding): `bin/debug/robomage_check --tier fuzz --matchups
+    all --fuzz-games 100 [--mode explore:patient] [--seed N]` (the engine's C++ explore agents;
+    transcripts and draw logs under `ci_out/`)
+  - **Engine throughput:** `bin/release/robomage_check --tier bench`
 
-### Test harness for card behavior verification
+### Testing card behavior: the engine's own harness
 
-`train/test_harness.py` runs the engine with `--machine --narrative` (narrative = the
-perfect-information game log). At every decision it prints the narrative, the decoded board
-state, and the numbered **Available actions** menu. Flags live in `cli_spec.HARNESS_TOOL`;
-`--help` lists them all (zone presets `--battlefield/graveyard/exile/sideboard-a/-b`,
-`--life-a/-b`, `--scenario`, `--merge-sideboard`, `--coverage-json`, `--log-decisions`, …).
+The engine itself sculpts and scripts a game. Run it from `bin/` (`cd bin && ./debug/robomage
+…`) with `--narrative --trace-decisions` (the perfect-information game log, plus every decision's
+board, numbered menu and the choice made, as the deciding seat's frame shows them: `| ` lines),
+the test-setup presets and `--play`; `--help` lists every flag (zone presets
+`--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
+`--decision-log`, …).
 
-- **Format:** bo3 by default — once the script runs out play auto-continues through games 2–3
-  and sideboarding up to `--max-decisions` (default 1500). Sculpted scenarios usually want
-  `--format bo1` (cap 500; required by `--merge-sideboard`).
-- **Setting up cards:** `--hand-a/-b` + `--library-a/-b` build a stacked temp deck in
-  `bin/resources/decks/temp/` (hand first; padded to 15 cards with the last library card; deleted
-  at exit). `--battlefield-a/-b` permanents start in play without summoning sickness. Otherwise
-  `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`). For an exact small
-  library (e.g. Thassa's Oracle) write your own `1 CardName`-per-line `.dk` in `decks/temp/`
-  (hand cards first, plus `--no-shuffle`); hand-made files there are not auto-deleted.
+- **Format:** one game by default; `--bo3` plays a match with sideboarding. Cap the run with
+  `--max-decisions N` (it stops before decision N+1 with a `MAX_DECISIONS:` line, exit 0).
+- **Seed:** `--game-seed N` is the game the driver and the scenario files call seed N (the engine
+  seed derived from it, and the in-process agents' generator seeded with N); `--seed` sets the
+  raw engine seed instead.
+- **Setting up cards:** `--hand-a/-b` + `--library-a/-b` build a stacked deck (hand first; padded
+  to 15 cards with its last card). `--battlefield-a/-b` permanents start in play without summoning
+  sickness. Otherwise `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`).
 - **Shuffling:** libraries shuffle with the seeded RNG unless `--no-shuffle` (deck-file order =
   draw order; first 7 = opening hand). Any `--hand-a/-b` implies `--no-shuffle` for both seats.
 - **No commas in card names.** List flags (`--play`, `--hand-*`, `--library-*`, zone presets)
@@ -163,14 +172,17 @@ state, and the numbered **Available actions** menu. Flags live in `cli_spec.HARN
   `--play`, a unique comma-free substring such as `cast:thalia`). Apostrophes are optional.
 - **Who decides:** `--play` (semantic specs; preferred) or `--actions` (positional indices;
   fragile) is ONE global script for both seats. It makes every decision until it runs out; then
-  each seat's `--player-a/-b` agent decides (default `auto` = action 0, so the game
-  auto-advances; e.g. `scripted` to hand over to the hard tier). **Claude cannot use `human`**
-  (no TTY) — use `--play`. A `--play` run prints `resolved --actions: …` for exact replay; keep
-  `--seed` fixed (default 1) while extending a line.
+  each seat's `--agent-a/-b` agent decides (default `first` = action 0, so the game
+  auto-advances; e.g. `explore`). Agent specs: `first` (`auto`), `random`, `explore`,
+  `explore:patient`, `actions:<i,i,…>`, `play:<specs>` (`src/agents/agent.h`). **Claude cannot
+  play a seat interactively** (no TTY; a seat without `--play`, `--actions` or an agent reads the
+  RMSTATE stream on stdin) — use `--play`. A `--play` run prints `resolved --actions: …` for exact
+  replay (and `SCRIPT INCOMPLETE: …` when specs were left unapplied); keep `--game-seed` fixed while
+  extending a line.
 
-**`--play` grammar** (full list in the `train/action_spec.py` docstring). Each spec is resolved
-against *that* decision's live menu by intent, so it survives menu reordering; an unmatched or
-ambiguous spec **fails loudly with the legal menu**.
+**`--play` grammar** (the C++ resolver `src/agents/play_spec.{h,cpp}`; full list in its header).
+Each spec is resolved against *that* decision's live menu by intent, so it survives menu
+reordering; an unmatched or ambiguous spec **fails loudly with the legal menu** (`FATAL: --play: …`).
 
 | Spec | Meaning |
 |---|---|
@@ -184,6 +196,8 @@ ambiguous spec **fails loudly with the legal menu**.
 | `mana:<w/u/b/r/g/c>` / `tap:<land>` | tap for mana |
 | `search:<card>` / `search:fail` · `top:` · `bottom:` · `dig:<card>` | library search / top / bottom / dig pick |
 | `pay:<text>` · `choice:<text>` · `sb-in:` / `sb-out:<card>` / `sb-done` | optional cost · generic/modal choice · sideboarding |
+| `sacrifice:` `return:` `x:` `discard:` `mode:` `color:` `name:` `exile:` `shuffle:` `companion:` … | the matching choice category, by text / card |
+| `concede` / `concede:game` / `concede:match` | the `-2` / `-3` sentinels |
 | `desc:<text>` · `#<n>` or bare integer | any action by description substring · literal index |
 
 Card names match case- and apostrophe-insensitively; an exact name wins, else a unique substring
@@ -194,7 +208,7 @@ ambiguous — pin them with `@own`/`@opp`, `desc:`, or `#<n>`. Start a sculpted-
 **Seat keys** (`A:`/`B:`, case-insensitive; independent of `@own`/`@opp`) let you write each
 player's line without hand-sequencing priority passes. If the next spec is keyed to the seat
 lacking priority, the priority holder auto-passes (its mandatory choices, e.g. cleanup discard, go
-to its `--player-a/-b` agent) until the keyed seat is on the clock. A keyed spec also passes its
+to its `--agent-a/-b` agent) until the keyed seat is on the clock. A keyed spec also passes its
 own seat forward through priority windows until the action is legal (e.g. `A:attack:X` written in
 main phase waits for declare-attackers); a typo'd/ambiguous spec, or one that hits a mandatory
 choice it doesn't match, still fails loudly. Unkeyed specs apply to whoever has priority, with no
@@ -202,39 +216,50 @@ auto-advance. **The engine never asks a seat whose only legal action is a pass**
 only where that seat could do something else.
 
 ```bash
-# Sculpted hands, script the opening, then scripted agents play on
-train/.venv/bin/python train/test_harness.py --format bo1 \
+cd bin
+# Sculpted hands, script the opening, then the explore agents play on
+./debug/robomage --narrative --trace-decisions --game-seed 1 --max-decisions 30 \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --hand-b "Forest,Grizzly Bears" --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
-  --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 30
+  --play "keep,keep" --agent-a explore --agent-b explore
 
 # Bolt a bear already in play, seat-keyed (B has no response, so it gets no decision)
-train/.venv/bin/python train/test_harness.py --format bo1 \
+./debug/robomage --narrative --trace-decisions --game-seed 1 --max-decisions 10 \
   --hand-a "Lightning Bolt" --battlefield-a "Mountain" --battlefield-b "Grizzly Bears" \
   --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
-**Rules-regression scenarios.** When you fix a rules bug, save the harness line that shows it as
-`train/regression/scenarios/<cr-rule>_<what>.json` (a `--scenario` file plus a `"why"` line citing
-the CR rule and the commit, and assertions on the rules outcome: `expect` / `expect_not` /
-`expect_order` regexes over the narrative, `expect_menu` / `expect_menu_not` over offered actions,
-`expect_result`; keys in `train/test_scenarios.py`'s docstring). Keep `max_decisions` just past the
-asserted event, check it passes (`train/test_scenarios.py <name>`) and fails without the fix; the
-`scenarios` tier of `make check` runs them all.
-
-`train.py observe --player-a "play:<specs>"` drives one seat by specs against any agent (each list
+`--agent-a "play:<specs>"` drives one seat by specs against the other seat's agent (each list
 drives only its seat, so leave specs unkeyed there).
 
-**JSON scenarios** (`--scenario FILE`) capture a reproducible setup: keys `name`, `hand_a/b`,
-`library_a/b`, `battlefield_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`,
-`play` (spec list) or `actions`, `seed`, `max_decisions`. Command-line flags override scenario
-values; format and players come only from the command line.
+**Rules-regression scenarios.** When you fix a rules bug, save the harness line that shows it as
+`tests/scenarios/<cr-rule>_<what>.json` (a JSON scenario plus a `"why"` line citing
+the CR rule and the commit, and assertions on the rules outcome: `expect` / `expect_not` /
+`expect_order` regexes over the narrative, `expect_menu` / `expect_menu_not` over offered actions,
+`expect_result`; every key in `tools/robomage_check/scenarios.h`). Keep `max_decisions` just past the
+asserted event, check it passes (`bin/debug/robomage_check --tier scenarios --scenario <name>`,
+`--show narrative` to see what the assertions match) and fails without the fix; the
+`scenarios` tier of `make check` runs them all.
+
+**JSON scenarios** (`tests/scenarios/*.json`, run by `robomage_check --tier scenarios --scenario
+<glob>`) capture a reproducible setup: keys `name`, `hand_a/b`, `library_a/b`, `deck_a/b`,
+`battlefield_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`, `play` (spec list)
+or `actions`, `seed` (the `--game-seed`, default 1), `max_decisions` (default 60), `format`,
+`offer_cancel`, `engine_flags`, `variants`, plus the assertions (incl. `expect_count`,
+`expect_unique`, `expect_same` and the knowledge-dump keys `expect_dump*`). Each runs as one engine
+process with `--narrative --trace-decisions`; once its script runs out a seat takes action 0.
 ```json
-{"name": "bolt_kills_bear", "hand_a": ["Mountain", "Lightning Bolt"],
+{"name": "bolt_kills_bear", "why": "CR 120.6: …", "hand_a": ["Mountain", "Lightning Bolt"],
  "battlefield_b": ["Grizzly Bears"],
- "play": ["keep", "keep", "play:Mountain", "cast:Lightning Bolt", "target:Grizzly Bears@opp"], "seed": 1}
+ "play": ["keep", "keep", "play:Mountain", "cast:Lightning Bolt", "target:Grizzly Bears@opp"], "seed": 1,
+ "expect": ["Grizzly Bears is destroyed"]}
 ```
+
+**Decision logs and replay.** `--decision-log FILE` (or `--log-decisions`: `resources/logs/game_<seed>.log`)
+writes the RMLOG v2 log (seed, setup flags, both decklists, every decision); `--replay FILE`
+replays it deterministically (the header alone fixes the setup; output flags such as
+`--narrative`, `--trace-decisions`, `--rmstate-dump`, `--selfcheck-*` still apply).
 
 ## Architecture
 
@@ -247,7 +272,7 @@ reached through the `global_coordinator` singleton (`src/ecs/coordinator.h`). Th
 components and systems are listed in `init_ecs()` (`src/game_driver.cpp`).
 Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared in
 `src/game_driver.h`), `card_db` (uid → loaded card entity, `src/card_db.h`), and `RESOURCE_DIR`
-(`getcwd() + "/resources"`, so the engine runs with cwd `bin/`, as the Python drivers do).
+(`getcwd() + "/resources"`, so the engine runs with cwd `bin/`, as the driver and the gate do).
 **Per-object state lives on components; `Game` holds only game-scoped state and cross-object
 registries keyed by `ObjectRef`** (`ObjectSet` / `ObjectMap`, e.g. a permission granted to a card).
 
@@ -280,7 +305,7 @@ flags), `combat`, `pending` (every suspended-decision state), `resolved_effects`
 belong to no permanent, emblems), `rng`, `identity` (object stamps), plus the timestamp, delayed
 triggers and last-known information; `reset_turn_counters` is the one turn-end reset of "this
 turn" counts. `main.cpp` only parses flags; the loop is `play_single_game` in
-`src/game_driver.cpp` (shared with `az_actor`; bo3 sequencing is `play_bo3_match`). Each
+`src/game_driver.cpp` (bo3 sequencing is `play_bo3_match`). Each
 iteration: emit a parked `pending.query` → pregame stage
 → turn-based actions → mandatory choice (`proc_mandatory_choice`) → SBEs → `advance_step` (resolve
 top of stack / next step once both players pass) → SBEs → `determine_legal_actions` (a lone pass is
@@ -290,7 +315,13 @@ auto-taken) → `InputLogger::get_input` → `process_action`.
 effect handlers ask through `FrameCtx` (`src/resolution_frame.h`): the query parks as a
 `PendingQuery` (`src/pending_query.h`), `SUSPENDED` propagates to the loop, which re-emits it and
 re-enters with the answer. All state lives in `cur_game`/ECS, never in statics, so a snapshot
-(MCTS search, `src/snapshot.cpp`) covers it.
+(`src/snapshot.cpp`: the `--selfcheck-state` snapshot check, and search agents to come) covers it.
+
+**Engine result lines:** `GAME_RESULT: N Player A|B wins` — or `GAME_RESULT: N draw`
+when both players lose at once (CR 104.4a) — after every game, bo1 and bo3 (`print_game_result`);
+`MATCH_RESULT: Player A|B wins X-Y` ends a bo3 match. A drawn bo3 game counts for neither player:
+the match plays on until someone has won two games (fatal past `MAX_MATCH_GAMES`), and the player
+who went first in the drawn game goes first again. Every game end goes through `Game::end_game`.
 
 ### Ability resolution
 
@@ -343,7 +374,7 @@ relevant deck(s), filtered by `ValidCards$`. `NameCardScope` selects the source:
 (one player's whole deck) or `BOTH_PLAYERS` (either player's cards, de-duped — used for
 land-naming), so a land-naming card can still name a land only in the opponent's deck.
 Under `--closed-decklist` (register 11a) the set is instead every vocab card passing `ValidCards$`
-(read from the parse cache, no entities), which needs `--machine-format rmstate` (uncapped menu).
+(read from the parse cache, no entities), uncapped.
 
 ### Card scripts and parsing
 
@@ -382,12 +413,10 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 ### Adding a New Card
 
 1. Append `{"Card Name", N}` (next free index) to `card_vocab_entries` in `src/card_vocab.h`;
-   `N_CARD_TYPES` (`src/machine_io.h`) must exceed the highest index. Tokens are a separate band
+   `N_CARD_TYPES` (`src/card_vocab.h`) must exceed the highest index. Tokens are a separate band
    (`token_vocab_entries`, from index 900).
-2. Provision the script, then `make` (its `pygen` step regenerates the untracked
-   `train/card_costs.py`, `train/card_props.py`, `src/gen/card_costs_gen.h`; without a build run
-   `train/gen_card_costs.py` / `train/gen_card_props.py`). Nothing to commit; a new card only adds
-   a property row, so the network shape and checkpoints are unaffected.
+2. Provision the script, then `make`. `bin/debug/robomage_check --tier vocab` (the engine's
+   `--check-decks`) lists any deck card that does not load or is missing from the vocab.
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
@@ -399,122 +428,47 @@ meaning. In limited cases it is acceptable to *ignore* an irrelevant tag when th
 functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtPrompt$`, or a
 `ChangeNum$` count-SVar when the effect already moves all matching cards); repurposing a tag is not.
 
-## Reinforcement Learning
+### Machine protocol, state format and knowledge sidecar
 
-`train/` holds the Python side: gymnasium env, PPO (`MaskablePPO`, sb3-contrib) and AlphaZero
-training, analysis and front ends. Venv: `train/.venv/` (invoke `train/.venv/bin/python`).
+`--machine` (also spelled `--machine-format rmstate`) selects the machine decision schedule (see
+plan step 4a for how it differs from the CLI's) and, for each seat with no in-process agent that
+is not the `--player` seat, the RMSTATE stream (`src/state_format/stream.h`,
+`docs/state_format.md` §9):
 
-**Engine result lines (machine mode):** `GAME_RESULT: N Player A|B wins` — or `GAME_RESULT: N draw`
-when both players lose at once (CR 104.4a) — after every game, bo1 and bo3 (`print_game_result`);
-`MATCH_RESULT: Player A|B wins X-Y` ends a bo3 match. A drawn bo3 game counts for neither player:
-the match plays on until someone has won two games (fatal past `MAX_MATCH_GAMES`), and the player
-who went first in the drawn game goes first again. Every game end goes through `Game::end_game`.
+- stdout carries only `RMSTATE <nbytes>\n` + payload records; everything else (narrative under
+  `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, diagnostics) goes to stderr.
+- The deciding seat gets, the first time it decides in the match, its `SCHEMA`, `CARDS`,
+  `DECKLISTS` and `METAGAME` frames, then a `STATE` frame (snapshot tables, the events since its
+  last frame, the menu, its `k_*` knowledge tables) at each of its decisions.
+- The reply is one integer line: a menu row, `-1` (the last row: an attacker/blocker
+  declaration's confirm), `-2` / `-3` (concede). End of input or an unparseable line reads as `-1`.
+- At match end each seat, A then B, gets a terminal `STATE` frame (`header.terminal = 1`, no menu,
+  no reply); the engine then exits. Under `--replay` the log supplies every decision and no stream
+  is written.
 
-**Reward (Player A's perspective, per game):** ±1.0 per game (`GAME_WIN_REWARD`/`GAME_LOSS_REWARD`,
-`train/env.py`), 0.0 for a drawn game (`DRAW_REWARD`; AZ z = 0); it lands at every `GAME_RESULT`.
-The match reward (`MATCH_WIN_REWARD`/`MATCH_LOSS_REWARD`) is 0.0 — `MATCH_RESULT` only ends the
-episode. Per-game rewards match the
-AlphaZero outcome target, so a PPO checkpoint warm-starting an AZ net (`az_net.from_ppo`) hands
-over a calibrated critic; AZ trains value on `(1 - q_mix) * z + q_mix * td_q` (n-step TD target;
-`--td-n` / `--q-mix`, see `cli_spec.py`). Shaping is capped per game (`SHAPING_EPISODE_CAP`).
-PopArt (`train/popart.py`) normalizes each archetype bucket's value targets, on by default;
-`--no-popart` disables it and `--stock-head` implies `--no-popart`. Its stats live in policy
-buffers and updates are output-preserving, so checkpoints resume under either setting.
-
-**Bo3 state-vector fields** (indices in the `src/machine_io.h` layout block): match context
-(`game_number` / `MATCH_GAME_NORMALIZER`, match wins, `is_sideboard_phase`; all 0.0 in bo1),
-library counts, the known top-5 cards of each library as the viewer knows them (per-player
-knowledge in `Game::KnownLibraryTop`: own looks, the opponent's reveals, a fateseal), and a
-match-scoped `revealed` bit per opponent registered-decklist slot (the deterministic belief
-state, persisted across the per-game ECS reset; `src/classes/match_state.{h,cpp}`).
-
-### Machine mode protocol
-
-`--machine`: at each decision the engine prints a `BQUERY` header + binary payload on stdout and
-reads one integer on stdin; other stdout lines are narrative. Emitter: `emit_machine_frame` in
-`src/cli_output.cpp` (layout comment at the top of `src/machine_io.h`).
-`--machine-format rmstate` instead writes the deciding seat's RMSTATE frames (`RMSTATE <nbytes>\n`
-+ payload, `docs/state_format.md` §9) as the only stdout output (everything else goes to stderr),
-answered by the same one integer, plus a terminal frame per seat at match end; the default is unchanged.
-Every seat's STATE frame (stream and `--rmstate-dump`) ends with that seat's knowledge-sidecar tables
-(`k_*`, `--knowledge-a/-b off|expert`, default expert; `docs/knowledge_store.md` §9.6).
-```
-BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
-float32[STATE_SIZE] state   (priority player's = "self" perspective)
-int32  [MAX_ACTIONS] cats   (ActionCategory)
-float32[MAX_ACTIONS] ids    (vocab_idx / N_CARD_TYPES; -1/N_CARD_TYPES = null)
-float32[MAX_ACTIONS] ctrl   (1 self / 0 opp / null for non-entity)
-float32[MAX_ACTIONS] pub    (card identity public; side-channel, NOT in the obs)
-int32  [MAX_ACTIONS] zone   (ActionRefZone)
-int32  [MAX_ACTIONS] refs   (entity-reference slot, -1 = none)
-int32  [MAX_ACTIONS] ords   (mode/X/color/ability index, -1 = n/a)
-```
-Arrays are padded to `MAX_ACTIONS`. Every menu goes through `InputLogger::get_input`, which leaves
-out a choice interchangeable with an earlier one (two identical cards in the same graveyard or
-library — `interchangeable_cards`), so a menu never needs more than `MAX_ACTIONS` slots; a debug
-build stops on a wider one (`populate_query`). The header's sizes are a layout handshake the
-Python driver asserts. Under `--narrative` the frame also carries per-action description strings and
-per-permanent counter / token-name strings (display only). `--broadcast-steps` emits the same
-payload as `BSTATE:` frames that take no reply.
-
-**Source of truth (never duplicate values here or re-spell them as literals):**
-- Layout, `STATE_SIZE`, `N_CARD_TYPES`, per-slot field order: `src/machine_io.h`. Card identity
-  is one normalized id float (`norm_card_id`), not a one-hot.
-- Block widths: `machine_io.h`'s "State-vector block widths", mirrored to `train/_enums.py` by
-  `gen_enums.py` — import them in `env.py`/`extractor.py`/`obs_builder.cpp`.
-- Block offsets: `machine_io.h`'s `OFFSET_CHAIN`; `env.py` derives the same chain, the `actorobs`
-  ci tier compares them block-by-block, and `extractor.py` asserts vs `env.py` at import.
-- Per-action obs positions: `env.py`'s `ACT_*_START` constants — never `STATE_SIZE + k*MAX_ACTIONS`.
-- `ActionCategory`: `src/classes/action.h` (mirrored to `_enums.py`, incl. `ACTION_CATEGORY_MAX`).
-- `OBS_SIZE` = `STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS` + matchup tail (`train/env.py`);
-  `N_ACTION_OBS_BLOCKS` (`machine_io.h`) alone says how many per-action arrays fold in (`pub` is not).
-  Per-card cost facts live in the network's frozen `card_props`, not the obs.
-
-**Confirm slot:** mandatory attacker/blocker menus end with a confirm action; the env remaps
-`num_choices - 1` to `-1` before sending.
+Every menu goes through `InputLogger::get_input`, which leaves out a choice interchangeable with
+an earlier one (two identical cards in the same graveyard or library — `interchangeable_cards`,
+`src/queries/zones.cpp`); menu row *i* is reply *i*.
 
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
-decision is read (machine, `--replay`, actor, CLI); the pending-decision seat loses via the
-ordinary `Game::player_loses` path, and the sentinel is logged so it replays. `-3` also ends the
-match (even from the sideboard phase, where `-2` is a no-op). Python constants in `train/env.py`;
-`GameDriver.concede(match=…)`; regression tier `concede`.
+decision is read (machine, `--replay`, in-process agents, CLI); the pending-decision seat loses via
+the ordinary `Game::player_loses` path, and the sentinel is logged so it replays. `-3` also ends
+the match (even from the sideboard phase, where `-2` is a no-op). Python constants in
+`python/rm_driver.py` (`CONCEDE_GAME` / `CONCEDE_MATCH`); gate tier `concede`.
 
-**Perspective flags:** the header has "priority player is active" (relative) and "self is Player A"
-(absolute); their XNOR is `active_is_a`. The seat flag is zeroed out of both network trunks
-(`extractor.network_global_ctx`) so the net cannot learn seat-specific play.
+**Other frame writers:** `--rmstate-dump FILE` (every viewer's frames — A, B, omniscient — at each
+decision, beside any protocol; `--state-dump json` adds `FILE.jsonl`), `--rmstate-read FILE`
+(decode → re-encode byte check), the in-process agents' feed and `--trace-decisions`. The format
+is defined once in `src/state_format/schema.cpp`; decoders build themselves from the SCHEMA frame
+(C++ `src/state_format/decode.h`, Python `python/rmstate.py`), so no constant is copied.
 
-**No action history in the obs** (it leaked hidden picks). What it carried is now explicit fields:
-pass flags / `is_priority_window` / mulligan state, per-turn counters, per-permanent turn statuses,
-pending delayed triggers, player effects, zone play permissions, and the pending-decision source.
-
-### Interactive front ends: TUI, GUI, and the analysis window
-
-`./tui.sh` (`train/tui.py`) is the Textual control panel (decks, training, league, observe, play).
-`train/play.py` is the one play entry point (`--help` lists flags; defaults: `--board gui`
-(falls back to tui without PySide6), human on A vs `az:gen` on B, `league/bug` vs
-`league/ur_delver`, `--on-the-play a|b|random` via `cli_spec.resolve_on_the_play`/`seat_play_sides`).
-Exactly one seat is `human`. A flag a board cannot honour errors. The gui/tui boards share
-`train/game_driver.py` (`GameDriver`, `build_session`); `--board text` uses `runner.run_games` with
-a `HumanController`. `./gui.sh` opens the GUI app's welcome pane.
-
-- **The GUI mirrors the CLI.** Play/Analysis dialog fields are `play.py` / `analysis.py browse`
-  flags with the same dests and cli_spec defaults, tabled in `train/launcher_config.py`
-  (`test_cli_spec.py` asserts field ↔ flag parity); settings in `~/.robomage/gui_launcher.json`.
-  A new GUI knob gets a cli_spec flag first, then a field. The search-knob → `az:`/`mcts:` spec
-  fold is `cli_spec.search_knob_pairs` / `apply_search_knobs`, shared by every caller.
-- **Analysis browser** (`analysis.py browse`, `--board tui|gui`): `--source` (`cli_spec.browse_source_kind`)
-  is `simulate` (default), a `shard_*.npz` dir, or a `.rmtrace`; flags invalid for the kind error
-  (`cli_spec.BROWSE_SOURCE_DESTS`). `--games 0` on shards is refused past
-  `shard_replay.MAX_UNBOUNDED_SHARD_BYTES` — training pools like `az_data/gen` are ~100 GB.
-  Both boards (`tui_analysis.py`, `gui_browser.py`) sit on `train/browse_session.py`: **a new
-  browser feature goes there first**, boards add only rendering. Tier `browser`.
-- **Headless smokes:** `ROBOMAGE_SMOKE=<legs>` — see `docs/ci.md` (`gui` tier). Never point
-  `browser`/`tree` legs at a training pool.
-- **Analysis window** (GUI play board, live MCTS on a detached engine): `train/gui_analysis.py` over
-  the Qt-free `train/analysis_session.py`; opt-in tier `analysis`.
-- **Shard recording** (`play.py --record-shards`): `train/shard_record.py` (exactly replayable via
-  `.rmplay` sidecars); exact search-tree rebuild `tree_rebuild.py` / `tree_cache.py`; net probes
-  `shard_probes.py`. Search-vs-net KL / top-1 numbers all come from `decode.search_net_divergence`.
+**Knowledge sidecar** (`src/knowledge/`, `docs/knowledge_store.md`): one instance per frame writer
+and seat, fed only that seat's frames, appends the `k_*` tables (and at `expert+belief` the
+`b_*` belief tables) to each of the seat's STATE frames; `--knowledge-a/-b off|expert|expert+belief`
+(default `expert`) changes those tables only, never play. Self-checks: `--selfcheck-state` (the
+format: roundtrip, leak scramble, complete, permutation, snapshot) and `--selfcheck-knowledge`
+(every `k_*` fact against the true world); both print `ERROR:` lines and a summary on stderr and
+change no other output. `bin/<config>/rmknow` runs the sidecar over a recorded stream.
 
 ### Key files
 
@@ -522,8 +476,8 @@ A where-is-X index. Module docstrings / header comments hold the detail; files d
 sections above are not repeated here.
 
 **Engine (`src/`)**
-- `src/game_driver.cpp` — the per-game decision loop (`play_single_game`, `play_bo3_match`), ECS init,
-  concession; shared by `main.cpp` and `az_actor`
+- `src/main.cpp` — flag parsing only; `src/game_driver.cpp` — the per-game decision loop
+  (`play_single_game`, `play_bo3_match`), ECS init, test-setup presets, concession
 - `src/action_processor.cpp` — executes a chosen action (`process_action`), cast/activation/targeting
   flows, `proc_mandatory_choice`
 - `src/systems/state_manager*.cpp` — SBAs + `determine_legal_actions`, split by concern (`_actions`,
@@ -533,19 +487,25 @@ sections above are not repeated here.
 - `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
 - `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
   candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
-  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator
+  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator;
+  `src/mana_system.cpp` — mana pools, payment and auto-pay
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
   `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
   controller, `Defined$` player), `affected` (the objects / player an effect acts on:
   targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
-  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`,
-  `visibility` (what a viewer sees: `identity_visible`, reveal windows, `individually_identifiable`,
-  `canonical_object_order`, and `visible_card_id` / `card_identity`, the state format's one
-  identity read), `pending_cost` (the cost being paid at a decision, `CostPaymentScope`)
+  exile, `interchangeable_cards`), `lki` (object identity stamp, last-known info), `entry`
+  (`EntryInfo`), `delayed_triggers`, `visibility` (what a viewer sees: `identity_visible`, reveal
+  windows, `individually_identifiable`, `canonical_object_order`, and `visible_card_id` /
+  `card_identity`, the state format's one identity read), `pending_cost` (the cost being paid at a
+  decision, `CostPaymentScope`)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
-  decisions (makes every prompt a search root)
+  decisions (makes every prompt a loop-safe snapshot point)
+- `src/classes/reveals.{h,cpp}` — `mark_card_revealed`; `src/classes/match_context.h`,
+  `deck_state.h` — the bo3 state kept across the per-game ECS reset
+- `src/stable_rng.h` — every gameplay random draw (platform-portable; never `std::shuffle` /
+  `std::uniform_int_distribution` / `rand()` on the game RNG)
 - `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on
   `Game`: issue, old → new links at zone changes, retirement; `--trace-handles`
 - `src/state_format/schema.{h,cpp}` — the RMSTATE format's single definition (std-only): table/column
@@ -555,7 +515,7 @@ sections above are not repeated here.
 - `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
 - `src/state_format/dump.{h,cpp}` — `--rmstate-dump FILE`: every viewer's frames at each decision
   (and `--state-dump json`'s `FILE.jsonl`)
-- `src/state_format/stream.{h,cpp}` — `--machine-format rmstate` (the deciding seat's frames on
+- `src/state_format/stream.{h,cpp}` — the `--machine` RMSTATE stream (the deciding seat's frames on
   stdout) and the per-decision / match-end bookkeeping both frame writers share
 - `src/state_format/decode.{h,cpp}` — RMSTATE bytes → plain structs (std + `schema.h` only): schema
   from the SCHEMA frame, generic table decode, re-encode, stream record reader
@@ -567,8 +527,12 @@ sections above are not repeated here.
 - `src/state_format/metagame.{h,cpp}` — the reference metagame (`bin/resources/decks/archetypes.json`:
   labels and tagged reference lists) the `METAGAME` frame carries, read once per process
 - `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
-  per frame writer (dump, stream, self-check) and seat, fed that writer's frames, appending `k_*` to
-  each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks (`snapshot_set_sidecar_hooks`)
+  per frame writer (dump, stream, self-check, agent feed) and seat, fed that writer's frames,
+  appending `k_*` to each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks
+  (`snapshot_set_sidecar_hooks`)
+- `src/state_format/agent_feed.{h,cpp}` — the in-process frame writer: for each seat an in-process
+  agent decides (or both under `--trace-decisions`) the bytes the RMSTATE stream would send it,
+  `k_*` included, handed over in memory
 - `src/state_format/selfcheck.{h,cpp}` — `--selfcheck-state`: per-decision roundtrip, scramble
   (frames and events rebuilt with hidden identities rotated), complete and, sampled, permutation
   (hidden zones physically permuted) and snapshot (save → K decisions → exact restore) checks;
@@ -576,15 +540,19 @@ sections above are not repeated here.
   (implies `--selfcheck-state`): every `k_*` fact of both seats against the true world built from
   the engine state, and the knowledge state across the snapshot check's restore;
   `SELFCHECK-KNOWLEDGE:` summary
-- `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
-  protocol
-- `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;
-  `src/cli_output.cpp` writes the BQUERY frame
-- `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, replay-header
-  flags); keep `cli_print_help` in `src/cli_output.cpp` in sync
-- `src/input_logger.cpp` — decision input (machine, `--replay`, CLI, actor provider), RMLOG, concede
-  sentinels
-- `src/card_vocab.h` — card name → vocab index (emitted as a normalized id float, not a one-hot)
+- `src/snapshot.{h,cpp}` — in-process state snapshot/restore and the loop-safe decision marker
+- `src/machine_io.{h,cpp}` — the CLI board's source (`populate_gamestate` / `GameState`,
+  `src/classes/gamestate.h`, until plan step 4b) and `action_card_vocab_idx`;
+  `src/cli_output.cpp` — the CLI printer and `cli_print_help`
+- `src/cli_args.{h,cpp}` — the engine's flag table (parsing, bad-flag warnings, removed-flag
+  errors, replay-header flags); keep `cli_print_help` in `src/cli_output.cpp` in sync
+- `src/input_logger.cpp` — decision input (machine stream, `--replay`, CLI, the in-process provider
+  of the agents), the interchangeable-choice collapse, RMLOG, concede sentinels, `--max-decisions`
+- `src/card_vocab.h` — card name → vocab index (the implemented-card registry; the card id of the
+  state format's `card` columns), `N_CARD_TYPES`, the token band
+- `src/name_card_choices.{h,cpp}` — the name-a-card candidate set
+- `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
+  card loads and is in the vocab; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
   frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; archetype inference over the
   METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
@@ -593,112 +561,55 @@ sections above are not repeated here.
 - `src/knowledge/belief.{h,cpp}` — the belief layer (level `expert+belief`, `b_list` / `b_archetype`):
   each reference list's likelihood as the weighted world count of its hypothesis network, the
   posterior in fixed point (`docs/knowledge_store.md` §10.6)
+- `src/agents/` — in-process agents on the decision hook, reading only the seat's decoded frames
+  (`agent.h`: the interface, specs `first`/`random`/`actions:`/`play:`/`explore`/`explore:patient`;
+  `seat_frames.h`, `decision_view.h`: the decoded stream and decision; `py_random.h`: Python's
+  `random.Random` bit for bit; `game_seed.h`: the driver's engine seed of a game seed;
+  `explore.h`: `python/explore_agent.py` ported, same games; `play_spec.h`: the `--play` resolver
+  and its global script; `trace.h`: `--trace-decisions`). `driver.h` is the engine side:
+  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the provider, the trace
+
+**libtorch plumbing (`src/actor/`, `make actor`)** — `az_evaluator.{h,cpp}` (TorchScript loading
+and evaluation, frozen as the base of the step-5 evaluator; its comments still name the archived
+Python stack) and `az_layout.h` (the archived checkpoints' frozen input width). No binary until
+step 5 adds a main.
+
+**Tools (`tools/`)**
+- `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
+  the gate, engine subprocesses only (links the std-only decoder and frame reader, no engine TU);
+  one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
+  `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
+  `--out-dir` (default `ci_out/`), `--fuzz-games`, `--smoke-games`, `--matchups`, `--mode`,
+  `--scenario GLOB --show output|narrative|dump`, `--record`
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
   (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
   engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
   `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
   `generative.h`, the belief model played out directly)
+- `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
+  `.dk` scraper (stdlib only, its own README)
 
-**AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
-Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):
-- `obs_builder.cpp` ↔ `env.py` obs (+ `extractor.py`, `az_net.ScriptTrunk`); `az_mcts.cpp` ↔
-  `mcts.run_search`; `menu_merge.h` ↔ `decode.menu_merge_reps`; `sb_rules.h` ↔ `mcts.sb_dead_mask`;
-  `td_targets.cpp` ↔ `az_selfplay.compute_td_targets`; `root_diag.h` ↔ `shard_record` diag
-- `az_evaluator.cpp` (TorchScript AZNet), `oracle_client.cpp` (↔ `train/scripted_oracle.py`),
-  `npz_writer.cpp` (shards)
-
-**Python core (`train/`)**
-- `env.py` — `RoboMageEnv` / `ModelVsScriptedEnv` / `SelfPlayEnv`; obs offsets; re-exports
-  `scripted_action` (back-compat)
+**Python (`python/`, stdlib only)**
 - `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
-  tiers) over an abstract view of a decision (card names, engine enum names; no numpy)
-- `scripted_agent.py` — the agent on the BQUERY vector: `VectorView`, `ScriptedAgent.act(obs, n)`,
-  `make_agent`, `scripted_action`, the vocab card knowledge (`use_card_knowledge`)
-- `rm_agent.py` — the agent on RMSTATE (step-2 pass 2): one seat's decoded frames and `k_*` tables
-  as the core's view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns
-  (`FrameCards`); the default `scripted` view on `--machine-format rmstate`
+  tiers) over an abstract view of a decision (card names, engine enum names)
+- `rm_agent.py` — the agent on RMSTATE: one seat's decoded frames and `k_*` tables as the core's
+  view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns (`FrameCards`)
 - `explore_agent.py` — the `explore` / `explore:patient` coverage fuzzer's decision rule
-  (`explore_choice`, called by `ScriptedCore`; its rules listed in the docstring for a port)
-- `rm_driver.py` — the stdlib-only agent-game driver on `--machine-format rmstate` (step 2):
-  engine subprocess, frame read, reply write; scripted tiers, explore, `first`, `actions:`;
-  `run_games` / `play_game`, the corpus-format transcripts; its own CLI (`CLI_FLAGS`, registered
-  as `cli_spec.DRIVER_TOOL`); runs the `replay`, `smoke` and `fuzz` tiers (`docs/game_running.md`)
-- `runner.py` — `drive_game` / `run_games` / `run_match` (see `docs/game_running.md`)
-- `opponents.py` — `Controller`, `make_controller` spec grammar, training pools, and THE model-spec
-  resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator` / `load_spec_net` /
-  `load_spec_value_model`: bare / `mcts:` = the PPO checkpoint, `az:`/`azraw:`/`.pt` = the AZ
-  warm-start ladder); use it instead of stripping prefixes/knobs by hand
-- `decode.py` — obs/action decoders shared by every front end (torch-free)
-- `cli_spec.py` — every CLI flag and `Tool`/subcommand definition (stdlib-only)
-- `extractor.py` — `CardGameExtractor` policy trunk; `popart.py` — per-bucket value normalization
-- `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`,
-  also the engine's reference metagame source)
-- `action_spec.py` — `--play` semantic spec resolver (see Test harness)
-- `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts / numpy
-  arrays, the `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
-- `rmstate_adapter.py` — the step-2 pass-1 parity adapter: the old observation the scripted agent
-  reads, rebuilt from one seat's RMSTATE frames and `k_*` tables (`SeatAdapter`), and its card
-  knowledge from `CARDS` / `DECKLISTS` (`FrameCardKnowledge`; the agent reads cards through
-  `scripted_agent.use_card_knowledge`)
-- `rmstate_env.py` — `RMStateNarrativeEnv`: the engine on `--machine-format rmstate`, each seat's
-  frames into `rm_agent.SeatFrames` and the adapter (whole observation only for
-  `scripted?view=vector`); `runner.run_games(machine_format="rmstate")` / `--machine-format
-  rmstate` (observe, the harness) select it, for `rmstate_capable` controllers (scripted tiers,
-  auto, actions:, play:)
+  (`explore_choice`, called by `ScriptedCore`; ported to C++ as `src/agents/explore.h`)
+- `rm_driver.py` — the agent-game driver on `--machine`: engine subprocess, frame read, reply
+  write; scripted tiers, explore, `first`, `actions:`; `run_games` / `play_game`; its own CLI
+  (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
+- `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the
+  `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
+- `record_corpus.py` — re-records the replay corpus with the live scripted agent (`make regen`)
+- `pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
+  self-lethal guard, the driver's seeds and imports), run by the `smoke` tier
 
-**Training (`train/`)**
-- `train.py` — CLI for PPO (`train`, `league`, `exploiter`, …), `observe`, `baseline`, `curriculum`,
-  the `az-*` drivers and `bench-*`
-- `curriculum.py` — multi-phase plan schema + runner (stdlib-only); `progress_io.py` — atomic JSON
-  resume sidecars
-- `mcts.py` — determinized PUCT (`run_search`, `run_search_parallel`, `IncrementalSearch`);
-  duplicate-edge merge on by default (`merge_dupes`), dead-sideboard-IN pruning (`sb_dead_mask`)
-- `sb_dead_rules.json` — hand-edited dead-sideboard-card rules, compiled by `gen_sb_rules.py`;
-  self-play boards by net prior (`--sb-selfplay-mode prior`), gates/eval/play by plan search
-- `az_net.py` (AZNet, `from_ppo` warm start), `az_selfplay.py` (self-play shards), `az_train.py`
-  (`train_az`, `az_eval` gate, `az_league`), `gate_sprt.py` (gate SPRT)
-- `az_eval_server.py` — batched GPU inference server for the actor fleet; `scripted_oracle.py` —
-  scripted:hard over a socket for the actor
-- `az_baseline.py` — engine of `train.py baseline`
-- `search_env.py` — `SearchRoboMageEnv` (snapshot-protocol client, mirror pool)
+**Tests (`tests/`)**
+- `tests/scenarios/*.json` — the rules-regression and state-format / knowledge sharpness scenarios
+- `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
+  baseline; `docs/ci.md`)
 
-**Analysis / inspection (`train/`)**
-- `analysis.py` — `browse` (analysis browser) and `report` (HTML battery); `viz.py` — its chart helpers
-- `az_inspect.py` — static AZ-checkpoint views, a subcommand each (list in its docstring); `tui` →
-  `tui_az_inspect.py`
-- `shard_replay.py` — rebuilds browsable matches (and `.rmplay` replays) from shards
-
-**Codegen (`train/`, run by `make`)**
-- `gen_enums.py` → `_enums.py`; `gen_archetypes.py` → `src/gen/archetypes_gen.h`; `gen_sb_rules.py` →
-  `sb_rules.py` + `src/gen/sb_rules_gen.h`
-- `gen_card_costs.py` → `card_costs.py` + `src/gen/card_costs_gen.h`; `gen_card_props.py` →
-  `card_props.py` (103 frozen property columns, concatenated with the 32-dim learned embedding).
-  Never hand-edit the outputs.
-- `missing_cards.py` — deck cards absent from `src/card_vocab.h`
-
-**Tests / CI (`train/`)**
-- `ci_check.py` — `make check` driver; default `ALL_TIERS` vs `OPT_IN_TIERS` (`actor`, `analysis`,
-  `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
-- `test_harness.py` — card-behavior harness (see Test harness)
-- `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
-- `test_agent_parity.py` — tier `agentparity`: the scripted agent's vector view on RMSTATE plays the
-  games it plays on BQUERY (card knowledge, corpus and smoke games; the light corpus set's BQUERY
-  games frozen in `regression/agent_parity/bquery_corpus/`; listed divergences in
-  `regression/agent_parity_divergences.json`; `--lockstep GAME` attributes one)
-- `test_rm_agent.py` — tier `rmagent`: the agent's RMSTATE frame view (card names, `FrameCards`
-  against the generated tables, `--closed-decklist` games) and the RMSTATE driver (engine seeds,
-  card names, transcripts equal to `runner.run_games`', no RL-stack import, concessions)
-- `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
-  JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
-- `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
-  scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
-- `test_knowledge.py` — tier `knowledge`: the knowledge sidecar — `rmknow --selftest` / `--exactness`,
-  a fuzz under `--selfcheck-knowledge` (soundness vs the engine state), stream sessions (stream frames
-  equal the dump's, `k_*` included; `rmknow --isolation` per writer), `rmknow --truth` on the dumps,
-  archetype-inference sessions (METAGAME coverage, `k_template` / `k_archetype` vs the true lists and
-  the cards seen) (the corpus runs under `--selfcheck-knowledge` in tier `rmstate`)
-- `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
-- `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
-  (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),
-  `test_az_inspect.py` (opt-in `azinspect`)
-- Fuzz campaigns are `train.py observe --player-a explore --player-b explore` (see Testing guidelines)
+**Docs (`docs/`)** — `ci.md` (the gate), `game_running.md` (running games), `state_format.md`
+(RMSTATE), `knowledge_store.md` (the sidecar), `rules_deviations.md`, `engine_fork_plan.md` (the
+plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.

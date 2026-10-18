@@ -530,7 +530,7 @@ static void write_token_card(FrameWriter &w, int card_id, const Token &tok) {
 
 // ── Snapshot ──────────────────────────────────────────────────────────────────────────────────
 
-// The game the snapshot is about: between games, the upcoming one (as the BQUERY serializer).
+// The game the snapshot is about: between games, the upcoming one.
 static int match_game_index() {
     return sideboard_phase ? match_game_number + 1 : match_game_number;
 }

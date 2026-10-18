@@ -4,11 +4,15 @@
 #include <string>
 #include <unordered_map>
 
-#include "machine_io.h"  // N_CARD_TYPES (embedding vocab size)
+#include "str_util.h"  // ascii_fold_card_name
+
+// The size of the vocab index space: card indices, then the token band (900-1022), then
+// TOKEN_SENTINEL.
+static constexpr int N_CARD_TYPES = 1024;
 
 // Single source of truth for card name <-> vocab index mapping.
 // To add a new card: append an entry to card_vocab_entries.
-// N_CARD_TYPES in machine_io.h must be >= (highest index + 1).
+// N_CARD_TYPES must be >= (highest index + 1).
 struct CardVocabEntry {
     const char *name;
     int index;
@@ -239,9 +243,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     // "dead_gone" lets a "1 Dead/Gone" decklist serialize — and is also the uid the engine loads
     // the script under (cardsfolder/d/dead_gone.txt, Forge's underscore-joined split-card
     // filename). The in-game observation matches by ascii_fold (case/punctuation-preserving), so
-    // the loaded front name "Dead" and the back-face cast name "Gone" each resolve to 328. The
-    // cost / property codegen reads 328 as the whole card, both halves combined (CR 709.4;
-    // gen_util.card_row_lines), whichever of the three names it resolves.
+    // the loaded front name "Dead" and the back-face cast name "Gone" each resolve to 328.
     {"Dead", 328},
     {"Gone", 328},
     {"Dead/Gone", 328},
@@ -273,7 +275,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
 
-// Slot N_CARD_TYPES - 1 is reserved as sentinel for all tokens in the ML observation.
+// Index N_CARD_TYPES - 1 is the sentinel for a token whose script is not registered.
 static constexpr int TOKEN_SENTINEL = N_CARD_TYPES - 1;
 
 // ── Token identity band ───────────────────────────────────────────────────────
@@ -326,43 +328,8 @@ inline int token_script_to_index(const std::string &script_name) {
     return it != vocab.end() ? it->second : -1;
 }
 
-// Fold a UTF-8 card name to ASCII so an accented Forge `Name:` (the .txt is
-// gitignored and re-fetched accented, e.g. Lorien Revealed's script carries an
-// accented "o") still matches an ASCII vocab entry. Transliterates the Latin-1
-// Supplement accented letters (UTF-8 lead byte 0xC3) to their base ASCII letter,
-// passes ASCII through unchanged, and drops any other non-ASCII byte. This is the
-// ONE place name matching crosses the ASCII boundary; name_to_uid (filenames) and
-// deck files stay ASCII as before.
-inline std::string ascii_fold_card_name(const std::string &s) {
-    // index = second UTF-8 byte - 0x80, i.e. codepoint U+00C0..U+00FF; 0 = drop.
-    static const char latin1_base[64] = {
-        'A', 'A', 'A', 'A', 'A', 'A', 0,   'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I',  // C0..CF
-        'D', 'N', 'O', 'O', 'O', 'O', 'O', 0,   'O', 'U', 'U', 'U', 'U', 'Y', 0,   0,    // D0..DF
-        'a', 'a', 'a', 'a', 'a', 'a', 0,   'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i',  // E0..EF
-        'd', 'n', 'o', 'o', 'o', 'o', 'o', 0,   'o', 'u', 'u', 'u', 'u', 'y', 0,   'y',  // F0..FF
-    };
-    std::string out;
-    out.reserve(s.size());
-    for (size_t i = 0; i < s.size(); ++i) {
-        unsigned char c = static_cast<unsigned char>(s[i]);
-        if (c < 0x80) {
-            out.push_back(static_cast<char>(c));
-        } else if (c == 0xC3 && i + 1 < s.size()) {
-            unsigned char c2 = static_cast<unsigned char>(s[i + 1]);
-            if (c2 >= 0x80 && c2 <= 0xBF) {
-                char base = latin1_base[c2 - 0x80];
-                if (base) out.push_back(base);
-                ++i;  // consumed the continuation byte
-            }
-        }
-        // any other non-ASCII byte is dropped
-    }
-    return out;
-}
-
-// Maps a card name to a 0-based vocabulary index used to encode card identity in
-// the machine-mode state vector.  Returns -1 for unregistered cards (encoded as
-// the empty/unknown sentinel id).  Matching is ASCII-folded (see above) so an
+// Maps a card name to the 0-based vocabulary index the engine identifies cards by.
+// Returns -1 for unregistered cards.  Matching is ASCII-folded (see above) so an
 // accented `CardData::name` resolves to its ASCII vocab entry.
 inline int card_name_to_index(const std::string &name) {
     static const std::unordered_map<std::string, int> vocab = [] {

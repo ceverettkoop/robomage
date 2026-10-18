@@ -20,7 +20,6 @@
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
-#include "../search_server.h"
 #include "../snapshot.h"
 #include "../stable_rng.h"
 #include "../systems/state_manager.h"
@@ -71,7 +70,7 @@ struct Permutation {
 }  // namespace
 
 static const Zone::Ownership VIEWERS[] = {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN};
-// The snapshot slots the snapshot check uses (the search server, which uses them too, is off).
+// The snapshot slots the snapshot check uses.
 static const int SAVED_SLOT = 2;
 static const int RESUME_SLOT = 3;
 // Decisions that must pass between a snapshot check's save and its restore.
@@ -151,7 +150,7 @@ static std::string context() {
 static void report(const char *check, Zone::Ownership viewer, const std::string &detail) {
     ++stats.errors;
     if (stats.errors > MAX_ERROR_LINES) return;
-    // Under --machine-format rmstate stdout is stderr's descriptor with a buffer of its own: a
+    // While the RMSTATE stream is on stdout is stderr's descriptor with a buffer of its own: a
     // partly buffered narrative line would otherwise run into this one.
     std::fflush(stdout);
     non_fatal_error(
@@ -168,7 +167,7 @@ std::string selfcheck_decision_context() {
 }
 
 bool selfcheck_state_enabled() {
-    return selfcheck_state && !search_server_mode;
+    return selfcheck_state;
 }
 
 // ── Hidden identities (docs/state_format.md §3, decided here without queries/visibility.h) ────
@@ -758,12 +757,12 @@ static void start_snapshot_check(
 // At a loop-safe decision at least SNAPSHOT_K decisions after the save: saves the current state,
 // restores the saved decision, encodes every viewer's frame there (with that decision's menu,
 // decider and priority window, and the events its frames drained) and compares, then restores
-// the current state. The restore runs where the search server's protocol allows a snapshot (the
-// decision can be re-derived from the restored data), and the state put back is the one just
-// saved, so play goes on unchanged. Both restores are exact: the continuous-effects registry is
-// put back from copies instead of re-derived (snapshot_restore_exact), because at a decision in
-// the middle of a flow the characteristics the engine last derived can lag the state (they are
-// re-derived at each state-based pass) and a re-derivation would change them.
+// the current state. The restore runs at a loop-safe decision (one re-derived from the restored
+// data, snapshot.h), and the state put back is the one just saved, so play goes on unchanged.
+// Both restores are exact: the continuous-effects registry is put back from copies instead of
+// re-derived (snapshot_restore_exact), because at a decision in the middle of a flow the
+// characteristics the engine last derived can lag the state (they are re-derived at each
+// state-based pass) and a re-derivation would change them.
 static void finish_snapshot_check() {
     ++stats.snapshots;
     const bool window = priority_window_open();
@@ -792,9 +791,9 @@ void selfcheck_state_decision(const std::vector<LegalAction> &actions) {
     ++stats.decisions;
     snapshot_set_quiet(true);
     const bool sampled = stats.decisions % static_cast<size_t>(std::max(1, selfcheck_state_sample)) == 0;
-    // A snapshot is saved and restored only where the search server may take one (the state is
-    // all in cur_game and the ECS), never between games.
-    const bool restorable = search_loop_safe() && !sideboard_phase;
+    // A snapshot is saved and restored only at a loop-safe decision (the state is all in cur_game
+    // and the ECS, snapshot.h), never between games.
+    const bool restorable = snapshot_loop_safe() && !sideboard_phase;
     if (snap.active && (snap.game != match_game_number || !snapshot_slot_live(SAVED_SLOT))) snap = SnapshotCheck{};
     const bool start = sampled && restorable && !snap.active;
     // The match frames first, so that a snapshot saved at the first decision holds the knowledge

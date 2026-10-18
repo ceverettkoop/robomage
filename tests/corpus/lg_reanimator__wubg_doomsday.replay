@@ -1,0 +1,2156 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_reanimator__wubg_doomsday.rmlog
+REPLAY MODE: Using embedded decks 'league/reanimator' / 'league/wubg_doomsday' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Brainstorm
+Player A draws Undercity Sewers
+Player A draws Thoughtseize
+Player A draws Lotus Petal
+Player A draws Thoughtseize
+Player A draws Marsh Flats
+Player A draws Polluted Delta
+Player B draws Lotus Petal
+Player B draws Quantum Riddler
+Player B draws Tropical Island
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Doomsday
+Player B draws Dark Ritual
+Player B draws Force of Will
+Player A hand:
+Brainstorm
+Lotus Petal
+Marsh Flats
+Polluted Delta
+Thoughtseize
+Thoughtseize
+Undercity Sewers
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Dark Ritual
+Doomsday
+Force of Will
+Lotus Petal
+Quantum Riddler
+Tamiyo, Inquisitive Student
+Tropical Island
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Dark Ritual
+Player B draws Cavern of Souls
+Player B draws Dark Ritual
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Ponder
+Player B draws Doomsday
+Player B hand:
+Cavern of Souls
+Dark Ritual
+Dark Ritual
+Doomsday
+Ponder
+Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student
+| decision 3: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 4: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Cavern of Souls
+|   1: Dark Ritual
+|   2: Dark Ritual
+|   3: Doomsday
+|   4: Ponder
+|   5: Tamiyo, Inquisitive Student
+|   6: Tamiyo, Inquisitive Student
+(REPLAY) [T0 | Untap | Player B] Input: 4
+| >> Player B: 4 (Ponder)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Polluted Delta
+|   3: Play Undercity Sewers
+|   4: Cast Lotus Petal
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Lotus Petal)
+Player A casts Lotus Petal
+Lotus Petal enters the battlefield
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Polluted Delta
+|   3: Play Undercity Sewers
+|   4: Cast Brainstorm
+|   5: Cast Thoughtseize
+|   6: Cast Thoughtseize
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Brainstorm)
+Player A sacrifices Lotus Petal
+Player A activated Lotus Petal for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Archon of Cruelty
+Player A draws Bloodstained Mire
+Player A draws Otherworldly Gaze
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Bloodstained Mire
+|   2: Marsh Flats
+|   3: Otherworldly Gaze
+|   4: Polluted Delta
+|   5: Thoughtseize
+|   6: Thoughtseize
+|   7: Undercity Sewers
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Archon of Cruelty)
+Player A puts Archon of Cruelty to top of library
+Player A chooses a card from Player A hand:
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Bloodstained Mire
+|   1: Marsh Flats
+|   2: Otherworldly Gaze
+|   3: Polluted Delta
+|   4: Thoughtseize
+|   5: Thoughtseize
+|   6: Undercity Sewers
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Bloodstained Mire)
+Player A puts Bloodstained Mire to top of library
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Polluted Delta
+|   3: Play Undercity Sewers
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Marsh Flats)
+Player A played Marsh Flats
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Marsh Flats (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Marsh Flats
+Player A's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Undercity Sewers)
+Player A shuffles their library
+Player A puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Underground Sea
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Underground Sea on top of library
+|   1: Put Underground Sea into graveyard
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Underground Sea on top of library)
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Island
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Cavern of Souls
+|   2: Play Island
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Cavern of Souls)
+Player B played Cavern of Souls
+Choose a creature type for Cavern of Souls:
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Choose creature type: Wizard
+|   1: Choose creature type: Moonfolk
+|   2: Choose creature type: Merfolk
+|   3: Choose creature type: Sphinx
+|   4: Choose creature type: Wraith
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Choose creature type: Wizard)
+Player B chose creature type: Wizard
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Tamiyo, Inquisitive Student)
+Player B activated Cavern of Souls for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 16: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Otherworldly Gaze)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Otherworldly Gaze
+Resolving ability (category: Surveil, amount: 3)
+Player A surveils 3.
+Surveil: looking at Underground Sea
+Surveil: looking at Reanimate
+Surveil: looking at Brainstorm
+| decision 17: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Put Underground Sea on top of library
+|   1: Put Reanimate on top of library
+|   2: Put Brainstorm on top of library
+|   3: Put Underground Sea into graveyard
+|   4: Put Reanimate into graveyard
+|   5: Put Brainstorm into graveyard
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Put Reanimate on top of library)
+| decision 18: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Put Underground Sea on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Underground Sea into graveyard
+|   3: Put Brainstorm into graveyard
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Put Brainstorm on top of library)
+| decision 19: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Put Underground Sea on top of library
+|   1: Put Underground Sea into graveyard
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Put Underground Sea on top of library)
+Player A draws Reanimate
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Undercity Sewers
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Swamp
+|   3: Underground Sea
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Thoughtseize
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (18 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Dark Ritual
+  Dark Ritual
+  Doomsday
+  Island
+  Tamiyo, Inquisitive Student
+Player A chooses a card to discard:
+| decision 25: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dark Ritual
+|   1: Dark Ritual
+|   2: Doomsday
+|   3: Tamiyo, Inquisitive Student
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Doomsday)
+Player B discards Doomsday
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 16)
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Scrubland
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Scrubland
+|   3: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Tamiyo, Inquisitive Student)
+Player B activated Cavern of Souls for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Tamiyo, Inquisitive Student
+|   1: Keep Tamiyo, Inquisitive Student
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Tamiyo, Inquisitive Student)
+Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+| decision 28: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Scrubland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+
+--- Declare Attackers (Player B) ---
+| decision 29: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+| decision 30: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player A
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 5 (Player A) --------
+| decision 31: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze (flashback)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Otherworldly Gaze (flashback))
+Player A activated Undercity Sewers for 1(U)
+Player A activated Underground Sea for 1(U)
+Player A casts Otherworldly Gaze
+Resolving ability (category: Surveil, amount: 3)
+Player A surveils 3.
+Surveil: looking at Flooded Strand
+Surveil: looking at Underground Sea
+Surveil: looking at Force of Will
+| decision 32: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Put Flooded Strand on top of library
+|   1: Put Underground Sea on top of library
+|   2: Put Force of Will on top of library
+|   3: Put Flooded Strand into graveyard
+|   4: Put Underground Sea into graveyard
+|   5: Put Force of Will into graveyard
+(REPLAY) [T4 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Put Force of Will on top of library)
+| decision 33: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Put Flooded Strand on top of library
+|   1: Put Underground Sea on top of library
+|   2: Put Flooded Strand into graveyard
+|   3: Put Underground Sea into graveyard
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Put Flooded Strand on top of library)
+| decision 34: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Put Underground Sea on top of library
+|   1: Put Underground Sea into graveyard
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Put Underground Sea on top of library)
+Otherworldly Gaze is exiled (flashback)
+Player A draws Force of Will
+| decision 35: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Undercity Sewers
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Undercity Sewers)
+Player A played Undercity Sewers
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Flooded Strand
+| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Flooded Strand on top of library
+|   1: Put Flooded Strand into graveyard
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Flooded Strand on top of library)
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 37: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Tamiyo, Inquisitive Student
+| decision 38: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Cast Tamiyo, Inquisitive Student
+|   3: Activate Clue token (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Tamiyo, Inquisitive Student)
+Player B activated Cavern of Souls for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Tamiyo, Inquisitive Student
+|   1: Keep Tamiyo, Inquisitive Student
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Tamiyo, Inquisitive Student)
+Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+|   3: Activate Clue token (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Clue token (Draw))
+Player B activated Island for 1(U)
+Player B activated Scrubland for 1(W)
+Player B sacrifices Clue token
+Player B's Clue ability is on the stack
+Clue (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+
+--- Declare Attackers (Player B) ---
+| decision 43: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+| decision 44: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player A
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+Player A draws Flooded Strand
+| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Reanimate
+|   3: Cast Thoughtseize
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (16 life)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A activated Undercity Sewers for 1(B)
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Brainstorm
+  Dark Ritual
+  Dark Ritual
+Player A chooses a card to discard:
+| decision 47: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Dark Ritual
+|   2: Dark Ritual
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Dark Ritual)
+Player B discards Dark Ritual
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 14)
+| decision 48: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Reanimate
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Flooded Strand)
+Player A played Flooded Strand
+| decision 49: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Flooded Strand (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Flooded Strand
+Player A's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Underground Sea
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 52: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+(REPLAY) [T6 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 53: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Dark Ritual
+|   3: Activate Clue token (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+| decision 54: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Clue token (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Ponder
+Player B draws Flooded Strand
+Player B draws Flooded Strand
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 55: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Flooded Strand
+|   2: Flooded Strand
+|   3: Ponder
+(REPLAY) [T7 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Ponder)
+Player B puts Ponder to top of library
+Player B chooses a card from Player B hand:
+| decision 56: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Flooded Strand
+|   2: Flooded Strand
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dark Ritual)
+Player B puts Dark Ritual to top of library
+Tamiyo, Inquisitive Student triggered
+| decision 57: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to exile
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to the battlefield
+Resolving ability (category: Cleanup)
+Tamiyo, Seasoned Scholar enters transformed.
+| decision 58: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Dark Ritual
+| decision 59: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Clue token (Draw)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Flooded Strand
+|   3: Cast Dark Ritual
+|   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   5: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Flooded Strand (ChangeZone)
+|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   4: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Clue token (Draw))
+Player B activated Cavern of Souls for 1(C)
+Player B activated Scrubland for 1(W)
+Player B sacrifices Clue token
+Player B's Clue ability is on the stack
+Clue (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Tropical Island
+|   2: Tundra
+|   3: Undercity Sewers
+|   4: Underground Sea
+(REPLAY) [T7 | First Main | Player B] Input: 4
+| >> Player B: 4 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Ponder
+|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Ponder)
+Player B activated Underground Sea for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Polluted Delta
+|   2: Brainstorm
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Choose which card goes 2 from top:
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Polluted Delta
+|   1: Brainstorm
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Polluted Delta)
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Reanimate
+| decision 69: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Reanimate
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 70: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Reanimate
+(REPLAY) [T8 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+| decision 71: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Dark Ritual
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+| decision 72: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Polluted Delta
+Player B draws Flooded Strand
+Player B draws Street Wraith
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 73: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Flooded Strand
+|   2: Flooded Strand
+|   3: Polluted Delta
+|   4: Street Wraith
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Flooded Strand)
+Player B puts Flooded Strand to top of library
+Player B chooses a card from Player B hand:
+| decision 74: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Flooded Strand
+|   2: Polluted Delta
+|   3: Street Wraith
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dark Ritual)
+Player B puts Dark Ritual to top of library
+| decision 75: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Dark Ritual
+| decision 76: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 77: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Polluted Delta
+|   3: Cast Dark Ritual
+|   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   6: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 78: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Flooded Strand (ChangeZone)
+|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   5: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+| decision 79: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 80: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Tropical Island
+|   2: Tundra
+|   3: Undercity Sewers
+|   4: Underground Sea
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 81: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 84: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 85: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 86: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 87: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 88: Player B (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T9 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+| decision 89: Player B (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Ponder
+| decision 90: Player B (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 91: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Reanimate
+|   3: Cast Reanimate
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Ponder
+| decision 92: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 93: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Flow State
+|   2: Animate Dead
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Atraxa, Grand Unifier)
+Choose which card goes 2 from top:
+| decision 94: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Flow State
+|   1: Animate Dead
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Flow State)
+| decision 95: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Animate Dead
+| decision 96: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Reanimate
+|   3: Cast Reanimate
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 97: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 98: Player B (game 0, turn 10, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 99: Player B (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 100: Player B (game 0, turn 10, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 101: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Reanimate
+|   3: Cast Reanimate
+(REPLAY) [T10 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 10, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 103: Player B (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T10 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 12 (Player B) --------
+| decision 104: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Teferi, Time Raveler
+| decision 105: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 106: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Cast Dark Ritual
+|   3: Cast Street Wraith
+|   4: Cast Teferi, Time Raveler
+|   5: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   6: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   7: Activate Street Wraith from hand (Draw)
+(REPLAY) [T11 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Street Wraith)
+Player B activated Scrubland for 1(B)
+Player B activated Underground Sea for 1(B)
+Player B activated Cavern of Souls for 1(C)
+Player B activated Island for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B casts Street Wraith
+Street Wraith enters the battlefield
+| decision 107: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 108: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 109: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Tropical Island
+|   2: Tundra
+|   3: Undercity Sewers
+(REPLAY) [T11 | First Main | Player B] Input: 3
+| >> Player B: 3 (Undercity Sewers)
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Force of Will
+| decision 110: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Force of Will into graveyard
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Force of Will into graveyard)
+Player B puts Force of Will into their graveyard.
+| decision 111: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 8)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+Player A draws Flow State
+| decision 112: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Flow State
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Flow State)
+Player A activated Undercity Sewers for 1(U)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Flow State
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 113: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Flow State
+|   2: Bloodstained Mire
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Flow State)
+| decision 114: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Bloodstained Mire
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Bloodstained Mire)
+Player A puts Flow State into hand.
+Player A puts Bloodstained Mire into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 115: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Bloodstained Mire
+|   2: Cast Animate Dead
+|   3: Cast Flow State
+|   4: Cast Reanimate
+|   5: Cast Reanimate
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Flow State)
+Player A activated Underground Sea for 1(U)
+Player A activated Underground Sea for 1(U)
+Player A casts Flow State
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 116: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Dark Ritual
+|   2: Ponder
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Dark Ritual)
+| decision 117: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Ponder
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Ponder)
+Player A puts Dark Ritual into hand.
+Player A puts Ponder into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 118: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Bloodstained Mire
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Bloodstained Mire)
+Player A played Bloodstained Mire
+| decision 119: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Bloodstained Mire (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Bloodstained Mire (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Bloodstained Mire
+Player A's Bloodstained Mire ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 120: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Underground Sea
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 121: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Ponder
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Ponder)
+Player A activated Underground Sea for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 122: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Atraxa, Grand Unifier
+|   2: Archon of Cruelty
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Atraxa, Grand Unifier)
+Choose which card goes 2 from top:
+| decision 123: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Archon of Cruelty
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Archon of Cruelty)
+| decision 124: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Force of Will
+No creatures eligible to attack.
+
+-------- TURN 14 (Player B) --------
+| decision 125: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Lotus Petal
+| decision 126: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 127: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Lotus Petal
+|   3: Cast Teferi, Time Raveler
+|   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   6: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Lotus Petal)
+Player B casts Lotus Petal
+| decision 128: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 129: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T13 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 130: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Lotus Petal
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Lotus Petal)
+Targeting choice 0
+| decision 131: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Force of Will
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Force of Will)
+Player A pays 1 life
+Player A exiles Force of Will
+Player A casts Force of Will targeting Lotus Petal
+| decision 132: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Counter)
+Lotus Petal is countered
+| decision 133: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Teferi, Time Raveler
+|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Teferi, Time Raveler)
+Player B activated Scrubland for 1(W)
+Player B activated Island for 1(U)
+Player B activated Cavern of Souls for 1(C)
+Player B casts Teferi, Time Raveler
+| decision 134: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Teferi, Time Raveler enters the battlefield
+| decision 135: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+|   5: Activate Teferi, Time Raveler [+1] (Effect)
+|   6: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 10)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 136: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 137: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Teferi, Time Raveler [+1] (Effect)
+|   3: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Teferi, Time Raveler [+1] (Effect))
+Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 5)
+Player B's Teferi, Time Raveler ability is on the stack
+| decision 138: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+Player B may cast Sorcery spells as though they had flash until their next turn.
+| decision 139: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 140: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 141: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Street Wraith [3/4]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Street Wraith [3/4])
+Street Wraith attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Street Wraith [3/4] -> Player A
+| decision 142: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Street Wraith -> Player A
+| decision 143: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 144: Player B (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Street Wraith deals 3 damage to Player A (now at 8 life)
+--- End Combat Damage ---
+
+| decision 145: Player B (game 0, turn 13, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 146: Player B (game 0, turn 13, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 147: Player B (game 0, turn 13, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 148: Player B (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T13 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 15 (Player A) --------
+| decision 149: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Archon of Cruelty
+| decision 150: Player B (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 151: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 152: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 153: Player B (game 0, turn 14, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 154: Player B (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 155: Player B (game 0, turn 14, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 156: Player A (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T14 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 157: Player B (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 158: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 16 (Player B) --------
+| decision 159: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Teferi, Time Raveler
+| decision 160: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 161: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Teferi, Time Raveler
+|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+|   6: Activate Teferi, Time Raveler [+1] (Effect)
+|   7: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Teferi, Time Raveler)
+Player B activated Scrubland for 1(W)
+Player B activated Island for 1(U)
+Player B activated Cavern of Souls for 1(C)
+Player B casts Teferi, Time Raveler
+| decision 162: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Teferi, Time Raveler enters the battlefield
+Legend rule: Player B controls 2 copies of Teferi, Time Raveler; choose one to keep.
+| decision 163: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Teferi, Time Raveler
+|   1: Keep Teferi, Time Raveler
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Teferi, Time Raveler)
+Teferi, Time Raveler is put into the graveyard (legend rule)
+| decision 164: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+|   5: Activate Teferi, Time Raveler [+1] (Effect)
+|   6: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 12)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 165: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 166: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Teferi, Time Raveler [+1] (Effect)
+|   3: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Teferi, Time Raveler [+1] (Effect))
+Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 6)
+Player B's Teferi, Time Raveler ability is on the stack
+| decision 167: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+Player B may cast Sorcery spells as though they had flash until their next turn.
+| decision 168: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 169: Player B (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 170: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Street Wraith [3/4]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Street Wraith [3/4])
+Street Wraith attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Street Wraith [3/4] -> Player A
+| decision 171: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Street Wraith -> Player A
+| decision 172: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 173: Player B (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Street Wraith deals 3 damage to Player A (now at 5 life)
+--- End Combat Damage ---
+
+| decision 174: Player B (game 0, turn 15, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 175: Player B (game 0, turn 15, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 176: Player B (game 0, turn 15, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 177: Player B (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T15 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 17 (Player A) --------
+| decision 178: Player B (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Atraxa, Grand Unifier
+| decision 179: Player B (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 180: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 181: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 182: Player B (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 183: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 184: Player B (game 0, turn 16, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 185: Player A (game 0, turn 16, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T16 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 186: Player B (game 0, turn 16, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 187: Player B (game 0, turn 16, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 18 (Player B) --------
+| decision 188: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Daze
+| decision 189: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 190: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+|   5: Activate Teferi, Time Raveler [+1] (Effect)
+|   6: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 14)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 191: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 192: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Teferi, Time Raveler [+1] (Effect)
+|   3: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Teferi, Time Raveler [+1] (Effect))
+Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 7)
+Player B's Teferi, Time Raveler ability is on the stack
+| decision 193: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+Player B may cast Sorcery spells as though they had flash until their next turn.
+| decision 194: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 195: Player B (game 0, turn 17, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 196: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Street Wraith [3/4]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Street Wraith [3/4])
+Street Wraith attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Street Wraith [3/4] -> Player A
+| decision 197: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Street Wraith -> Player A
+| decision 198: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 199: Player B (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Street Wraith deals 3 damage to Player A (now at 2 life)
+--- End Combat Damage ---
+
+| decision 200: Player B (game 0, turn 17, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 201: Player B (game 0, turn 17, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 202: Player B (game 0, turn 17, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 203: Player B (game 0, turn 17, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T17 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 19 (Player A) --------
+| decision 204: Player B (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Atraxa, Grand Unifier
+| decision 205: Player B (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 206: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 207: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 208: Player B (game 0, turn 18, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 209: Player B (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 210: Player B (game 0, turn 18, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 211: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Animate Dead
+|   2: Cast Dark Ritual
+|   3: Cast Reanimate
+|   4: Cast Reanimate
+(REPLAY) [T18 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 212: Player B (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 213: Player B (game 0, turn 18, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T18 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 20 (Player B) --------
+| decision 214: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Lion's Eye Diamond
+| decision 215: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 216: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Lion's Eye Diamond
+|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+|   6: Activate Teferi, Time Raveler [+1] (Effect)
+|   7: Activate Teferi, Time Raveler [-3] (ChangeZone)
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Lion's Eye Diamond)
+Player B casts Lion's Eye Diamond
+| decision 217: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Daze
+|   3: Cast Daze (alternate cost)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Lion's Eye Diamond enters the battlefield
+| decision 218: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)
+|   5: Activate Teferi, Time Raveler [+1] (Effect)
+|   6: Activate Teferi, Time Raveler [-3] (ChangeZone)
+|   7: Tap Lion's Eye Diamond for (W)
+|   8: Tap Lion's Eye Diamond for (U)
+|   9: Tap Lion's Eye Diamond for (B)
+|   10: Tap Lion's Eye Diamond for (R)
+|   11: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 16)
+Player B's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 219: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 220: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Teferi, Time Raveler [+1] (Effect)
+|   3: Activate Teferi, Time Raveler [-3] (ChangeZone)
+|   4: Tap Lion's Eye Diamond for (W)
+|   5: Tap Lion's Eye Diamond for (U)
+|   6: Tap Lion's Eye Diamond for (B)
+|   7: Tap Lion's Eye Diamond for (R)
+|   8: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Teferi, Time Raveler [+1] (Effect))
+Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 8)
+Player B's Teferi, Time Raveler ability is on the stack
+| decision 221: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Effect)
+Player B may cast Sorcery spells as though they had flash until their next turn.
+| decision 222: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 223: Player B (game 0, turn 19, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 224: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Street Wraith [3/4]
+|   1: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Street Wraith [3/4])
+Street Wraith attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Street Wraith [3/4] -> Player A
+| decision 225: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Street Wraith -> Player A
+| decision 226: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 227: Player B (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T19 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Street Wraith deals 3 damage to Player A (now at -1 life)
+--- End Combat Damage ---
+
+
+Player A has -1 life - Player B wins!
+GAME_RESULT: 1 Player B wins

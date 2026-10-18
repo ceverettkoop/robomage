@@ -12,7 +12,6 @@
 #include "../classes/deck.h"
 #include "../classes/game.h"
 #include "../classes/action.h"
-#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -39,7 +38,6 @@
 #include "../ecs/events.h"
 #include "../input_logger.h"
 #include "replacement_effects.h"
-#include "../machine_io.h"
 #include "../saga.h"
 #include "../type_constants.h"
 #include "../components/types.h"
@@ -84,7 +82,6 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     // copy never made). Just register it as the new top and shift the existing stack down.
     Zone z(Zone::STACK, controller, controller);
     z.distance_from_top = 0;
-    z.identity_known = false;
     for (auto &&card : mEntities) {
         if (card == target) continue;
         auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
@@ -97,12 +94,6 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
         Ability &ab = global_coordinator.GetComponent<Ability>(target);
         if (ab.source.lki_entity() == target) ab.source = ObjectRef::of(target);
     }
-    // A stack object is public information (CR 400.2), but a copy of a spell is not a card
-    // (CR 707.10) and reveals nothing from its controller's deck, so only a created object that
-    // is a card is recorded in the owner's revealed set.
-    bool is_spell_copy = global_coordinator.entity_has_component<Spell>(target) &&
-                         global_coordinator.GetComponent<Spell>(target).is_copy;
-    if (!is_spell_copy) mark_card_revealed(target, controller);
     obs_object_created(target);
 }
 
@@ -282,18 +273,14 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
         target_zone.distance_from_top = 0;
     }
 
-    // If a card is being placed on top of a library, it becomes the new known top. The push is
-    // unconditional: both players' previously-known entries must shift one position deeper. A
-    // player who did not see the card (a fateseal's owner, the owner's opponent at a Brainstorm
-    // put-back, everyone for a random-order placement) records an UNKNOWN marker (-1) instead of
-    // its identity, so the positions stay honest without leaking a card they never saw.
+    // A card placed on top of a library becomes the new top of the opponent-knowledge record
+    // (Game::OppKnownLibraryTop). The push is unconditional: the entries below must shift one
+    // position deeper. The owner's opponent knows the new top only if they saw it (a public
+    // identity, their own fateseal), not at a Brainstorm put-back or a random-order placement.
     if (!on_bottom && destination == Zone::LIBRARY) {
-        const int vocab_idx = card_vocab_of(target);
         const bool seen = top_view != LibraryTopView::NOBODY;
-        const bool owner_knows = seen && (public_identity || top_view == LibraryTopView::OWNER);
         const bool opp_knows = seen && (public_identity || top_view == LibraryTopView::OPPONENT);
-        cur_game.known_top_library_push(target_zone.owner, owner_knows ? vocab_idx : -1,
-                                        opp_knows ? vocab_idx : -1);
+        cur_game.opp_known_top_push(target_zone.owner, opp_knows && card_vocab_of(target) != -1);
     }
 
     for (auto &&card : mEntities) {
@@ -346,41 +333,12 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
         strip_permanent_components(target, mEntities);
     }
 
-    // A zone change re-derives visibility from the new zone: any prior "identity
-    // known to the opponent while hidden in hand" belief no longer applies (the
-    // card is now either public, or a fresh hidden object). Reveal sites set this
-    // flag again if the destination is a revealed hidden zone.
-    target_zone.identity_known = false;
     cur_game.revealed_in_library.erase(target);
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
     if (target_zone.is_face_down) open_face_down_windows(target, saw_hidden);
 
-    // A card moving from a PUBLIC zone into hand is watched moving by both players,
-    // so its specific identity stays known to the opponent even though the hand is a
-    // hidden zone (e.g. Overlord of the Balemurk returning a creature card from the
-    // graveyard to hand, or bouncing a permanent to its owner's hand). Keep that
-    // belief so the observation carries the exact opponent-hand card. A draw
-    // (LIBRARY→HAND) is a hidden move and is intentionally excluded, as is a card leaving
-    // exile face down: its identity was hidden there too (CR 406.3).
-    // A card revealed in the library by the effect moving it (Atraxa, Goblin Guide) was seen by
-    // both players too (CR 701.20a).
-    if (destination == Zone::HAND && public_identity) target_zone.identity_known = true;
-
-    // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
-    // to both players, so accumulate it in the owner's revealed multi-hot. This
-    // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and
-    // deaths/discards (→GRAVEYARD/EXILE). Moves to HAND or within LIBRARY are
-    // hidden and intentionally skipped (tutor reveals are marked at their site).
-    // A card exiled FACE DOWN is the exception: entering exile does not make its identity public
-    // (CR 708.2), so it is NOT accumulated into the owner's revealed multi-hot until an effect
-    // turns it face up (the SetState$ TurnFaceUp site marks it revealed then).
-    if ((destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
-         destination == Zone::GRAVEYARD || destination == Zone::EXILE) &&
-        !target_zone.is_face_down) {
-        mark_card_revealed(target, target_zone.owner);
-    }
     // put_in_library_at_depth: the card put on top sinks below the `library_depth` cards above it,
     // carrying its known-top entry down with it. A replacement that redirected the move leaves
     // nothing to sink.
@@ -396,7 +354,7 @@ void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destina
             }
         }
         target_zone.distance_from_top = sunk_to;
-        cur_game.known_top_library_move(target_zone.owner, 0, static_cast<int>(sunk_to));
+        cur_game.opp_known_top_move(target_zone.owner, 0, static_cast<int>(sunk_to));
     }
     handles_end_move(handle_move, target);
     ObsMoveInfo obs_info;
@@ -430,9 +388,9 @@ void Orderer::close_zone_gap(Entity target) {
     }
 
     // If a card left the library within the tracked top window, drop it
-    // from the known-top cache and shift the rest up.
+    // from the opponent-knowledge record and shift the rest up.
     if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
-        cur_game.known_top_library_remove_pos(owner, static_cast<int>(departing_pos));
+        cur_game.opp_known_top_remove_pos(owner, static_cast<int>(departing_pos));
     }
 }
 
@@ -487,10 +445,7 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     z.obj_gen = cur_game.identity.next_obj_gen++;
     // CR 400.7g: a permission to cast the card applies to the object it becomes on the stack.
     cur_game.resolved_effects.impulse_cast_permission.follow(card, origin_gen);
-    z.identity_known = false;
     z.is_face_down = false;
-    // A spell on the stack is public (CR 400.2).
-    mark_card_revealed(card, z.owner);
     handles_end_move(handle_move, card);
     obs_end_move(obs_move, card, handle_move.after_handle, ObsMoveInfo{});
     return origin;
@@ -530,7 +485,6 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const uint64_t stack_gen = z.obj_gen;
     z = origin;
-    if (origin.location == Zone::HAND) z.identity_known = true;
     // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
     // permission that followed it onto the stack is back on it.
     cur_game.resolved_effects.impulse_cast_permission.follow(card, stack_gen);
@@ -575,9 +529,8 @@ std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
 
 void Orderer::note_library_card_known(Entity card, Zone::Ownership knower) {
     const auto &zone = global_coordinator.GetComponent<Zone>(card);
-    if (zone.location != Zone::LIBRARY) return;
-    cur_game.known_top_library_note(zone.owner, static_cast<int>(zone.distance_from_top),
-                                    card_vocab_of(card), knower);
+    if (zone.location != Zone::LIBRARY || knower == zone.owner) return;
+    cur_game.opp_known_top_set(zone.owner, static_cast<int>(zone.distance_from_top), card_vocab_of(card) != -1);
 }
 
 void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
@@ -605,7 +558,7 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 
     // Shuffling destroys any knowledge of which cards are on top of the library, and a revealed
     // card that is reordered stops being revealed (CR 701.20d).
-    cur_game.clear_known_top_library(owner);
+    cur_game.clear_opp_known_top(owner);
     for (auto &&card : contents) cur_game.revealed_in_library.erase(card);
     obs_shuffle(owner);
 }
@@ -711,9 +664,8 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
 
     // Sideboard cards ("outside the game"): instantiate each deck's SIDEBOARD: section as
     // SIDEBOARD-zone entities so wish effects (Karn, the Great Creator -2, Origin$ Sideboard)
-    // can find them in every game, not just via test-harness --sideboard presets. SIDEBOARD is
-    // never serialized to the ML state (populate_gamestate ignores it), and this runs after the
-    // creature-subtype scan above so ChooseType menus are unchanged. setup_companions reuses an
+    // can find them in every game, not just via test-harness --sideboard presets. This runs after
+    // the creature-subtype scan above so ChooseType menus are unchanged. setup_companions reuses an
     // already-instantiated sideboard entity instead of creating its own, so no duplication.
     for (size_t i = 0; i < 2; i++) {
         Zone::Ownership sb_owner = (i == 0) ? Zone::PLAYER_A : Zone::PLAYER_B;

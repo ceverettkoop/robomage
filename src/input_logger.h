@@ -48,6 +48,10 @@ class InputLogger {
     void init_replay(const std::string& log_path);
     void init_machine(unsigned int seed, const std::string& resource_dir, bool enable_log,
                       const DecisionLogHeader& header);
+    // --decision-log FILE: the decision log init_logging / init_machine open is FILE instead of
+    // resources/logs/game_<seed>.log, and no "Logging inputs to" line is printed (the caller
+    // named the file). Call before either init.
+    void set_log_path(const std::string& path);
     bool is_replay_mode() const;
     bool is_machine_mode() const;
     // True when the game must follow the machine-mode DECISION SCHEDULE: machine mode
@@ -56,8 +60,8 @@ class InputLogger {
     // some menu entries that the CLI path presents interactively, so a machine log
     // only replays faithfully when those same code paths are taken. Use this (not
     // is_machine_mode) in any conditional that changes WHICH decisions are queried
-    // or WHAT the menu contains; keep is_machine_mode for I/O concerns (BQUERY
-    // emission, output suppression, training-signal prints).
+    // or WHAT the menu contains; keep is_machine_mode for I/O concerns (output
+    // suppression).
     bool is_machine_schedule() const;
     unsigned int get_replay_seed() const;
     // Parsed from the RMLOG v2 header (valid after init_replay)
@@ -72,18 +76,20 @@ class InputLogger {
     // concession / unwind sentinel).
     int get_input(const std::vector<LegalAction>& actions);
 
-    // In-process decision hook (Phase D in-process actor). When set, the machine-mode
-    // decision read (machine_mode && !human_has_priority) delegates the choice to this
-    // provider instead of populating a GameState/Query and blocking on stdin — no query
-    // is emitted and stdin/stdout are never touched. The provider receives the same
-    // `actions` vector and returns an action index (with the same -1 → last-slot confirm
-    // remap the stdio path uses); the choice still flows through commit_choice so the
-    // decision log stays complete. The provider is set by the future
-    // C++ actor binary (which links the engine objects minus main.o); nothing in
-    // bin/robomage ever sets it, so unset is the default and the stdio path is unchanged.
-    // The cooperative-unwind short-circuit (search_restore_pending) runs BEFORE this hook,
-    // so search RESTORE semantics are unaffected.
-    void set_input_provider(std::function<int(const std::vector<LegalAction>&)> provider);
+    // In-process decision hook. When set, the machine-mode decision read (machine_mode &&
+    // !human_has_priority) of a seat the provider covers delegates the choice to it instead of
+    // emitting a query and blocking on stdin: no query is emitted and stdin/stdout are not
+    // touched. The provider receives the deciding seat (the sideboarding player between games,
+    // else the priority holder: rmstate_deciding_seat) and the same `actions` vector, and returns
+    // an action index (with the same -1 → last-slot confirm remap and concession sentinels the
+    // stdio path accepts); the choice still flows through commit_choice so the decision log stays
+    // complete. A seat it does not cover keeps the stdio path. Set by the in-process agents
+    // (agents/driver.h); unset by default. `real_decisions` is false for a provider that also
+    // answers decisions no game makes (a search agent's simulations): the --selfcheck-state checks
+    // skip every decision such a provider covers.
+    using InputProvider = std::function<int(Zone::Ownership seat, const std::vector<LegalAction> &)>;
+    void set_input_provider(
+        InputProvider provider, bool covers_a = true, bool covers_b = true, bool real_decisions = false);
     void clear_input_provider();
 
    private:
@@ -109,13 +115,27 @@ class InputLogger {
     std::ofstream log_file;
     std::ifstream replay_file;
     std::string log_path;
+    // Set by set_log_path; empty = the seed-named default.
+    std::string named_log_path;
+    // Opens the decision log (the named path, else the default under resource_dir) and writes its
+    // header; false when it cannot be opened.
+    bool open_log(unsigned int seed, const std::string& resource_dir, const DecisionLogHeader& header);
     DecisionLogHeader replay_header;
     Deck replay_deck_a;
     Deck replay_deck_b;
     std::vector<std::string> replay_flags;
     int auto_pass_until_turn = -1;
-    // Unset by default (see set_input_provider); only the Phase D in-process actor sets it.
-    std::function<int(const std::vector<LegalAction>&)> input_provider;
+    // Unset by default (see set_input_provider).
+    InputProvider input_provider;
+    bool provider_covers[2] = {false, false};  // seats A, B
+    bool provider_real_decisions = false;
+    // Whether the provider decides `seat`'s decisions.
+    bool provider_decides(Zone::Ownership seat) const;
+    // The input read for one decision once the frame writers have run (the replay, machine and
+    // CLI paths).
+    int read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat);
+    // Decisions read so far in the run (for --max-decisions and the decision trace).
+    size_t decisions_read = 0;
 };
 
 // Ask `chooser` an optional yes/no question with a single decline (index 0) and accept

@@ -93,8 +93,8 @@ static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaAc
 // restores: the post-restore hook recomputes it before any reader. It is deliberately
 // NOT part of the game snapshot. Across a bo3 game boundary the per-game init_ecs()
 // destroys the previous game's components and entity ids are reissued, and the
-// mulligan-decision observation reads it (via rules_mod::land_drops_remaining in
-// populate_gamestate) BEFORE the first SBE pass of the new game rebuilds it — so
+// mulligan decision's RMSTATE frame reads it (via rules_mod::land_drops_remaining in
+// encode_state_frame) BEFORE the first SBE pass of the new game rebuilds it — so
 // StateManager::init() must clear it.
 std::vector<ActiveStatic> g_active_statics;
 

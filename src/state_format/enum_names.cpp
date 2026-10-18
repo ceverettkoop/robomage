@@ -10,7 +10,6 @@
 #include "../components/ability.h"
 #include "../components/zone.h"
 #include "../effects/effect_kind.h"
-#include "../machine_io.h"
 #include "../parse.h"
 #include "../pending_query.h"
 #include "../type_constants.h"
@@ -291,13 +290,18 @@ static rmstate::EnumTable string_set_table(const char *name, const std::set<std:
     return t;
 }
 
-// The parser's keyword table (parse.cpp's kKeywordTable), then the evergreen keywords the
-// observation tracks (OBS_KEYWORDS) that the table has no entry for.
+// The evergreen keywords the keyword table always names, in this order after the parser's.
+static constexpr const char *EVERGREEN_KEYWORDS[] = {"Flying", "Reach", "First Strike", "Double Strike", "Deathtouch",
+    "Lifelink", "Trample", "Vigilance", "Menace", "Haste", "Defender", "Indestructible", "Hexproof", "Shroud", "Ward",
+    "Flash"};
+
+// The parser's keyword table (parse.cpp's kKeywordTable), then the evergreen keywords
+// (EVERGREEN_KEYWORDS) that the table has no entry for.
 static rmstate::EnumTable keyword_table() {
     rmstate::EnumTable t;
     t.name = "keyword";
     t.values = parser_keyword_names();
-    for (const char *kw : OBS_KEYWORDS) {
+    for (const char *kw : EVERGREEN_KEYWORDS) {
         bool present = false;
         for (const std::string &v : t.values) present = present || v == kw;
         if (!present) t.values.push_back(kw);

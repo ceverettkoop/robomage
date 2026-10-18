@@ -1,6 +1,7 @@
 #include "game_driver.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -13,7 +14,6 @@
 #include "classes/deck_state.h"
 #include "classes/game.h"
 #include "classes/match_context.h"
-#include "classes/match_state.h"
 #include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
@@ -33,7 +33,6 @@
 #include "queries/zones.h"
 #include "input_logger.h"
 #include "machine_io.h"
-#include "search_server.h"
 #include "snapshot.h"
 #include "state_format/events.h"
 #include "state_format/stream.h"
@@ -42,15 +41,16 @@
 #include "systems/state_manager.h"
 #include "resolution.h"
 
-// Per-game seed for a bo3 game. Salt 0 (the real line) reproduces today's exact
-// seed; a nonzero g_sim_seed_salt (set by a sideboard-root DETERMINIZE) folds in
-// to sample a distinct next-game deal per searched world. One engine-side
-// definition so the C++ actor and the Python stdio driver stay in parity.
+// Per-game seed for a bo3 game: the match seed plus the game's index.
 static unsigned int match_game_seed(const MatchContext &ctx);
 // MATCH_RESULT line for a conceded match (CR 104.3a): the conceder's opponent
 // wins, reported with the games actually played so the score still reads true.
 static void print_match_concede_result(const MatchContext &ctx);
 static int sideboard_copy_ordinal(size_t copies);
+// The largest sideboard option ordinal (sideboard_copy_ordinal).
+static constexpr int SIDEBOARD_ORDINAL_MAX = 63;
+// Completed swaps per sideboarding player in machine mode (run_sideboard_phase).
+static constexpr int SIDEBOARD_SWAP_CAP = 15;
 static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
                                std::vector<std::pair<size_t, std::string>> &to,
                                size_t from_idx);
@@ -70,6 +70,9 @@ static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
 static void discard_conceded_game_suspensions();
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
+static std::vector<std::string> padded_library(
+    const std::vector<std::string> &hand, const std::vector<std::string> &library);
+static std::string deck_line_name(const std::string &card);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -84,8 +87,8 @@ bool human_player_is_a = false;
 bool log_viewer_set = false;
 Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
 
-GameState gs;
-const GameState *gs_ptr = &gs;
+// The CLI board (print_game_state) of the current decision.
+static GameState gs;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
@@ -103,12 +106,9 @@ bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training
 // runs millions of episodes). CLI/interactive games always log — it's their save-game.
 bool log_decisions_flag = false;
-// --broadcast-steps: at every forced auto-pass (a priority window whose only
-// legal action is pass), emit a passive BSTATE frame — the BQUERY payload with
-// no stdin read — so an observing front end can render each step instead of
-// fast-forwarding to the next real decision. Consumes no input and records
-// nothing, so replays and search mirrors are unaffected.
-bool broadcast_steps_mode = false;
+// --decision-log FILE: the decision log's path (implies --log-decisions); empty = the default,
+// resources/logs/game_<seed>.log.
+std::string decision_log_path;
 // --trace-visibility: narrate every reveal window as it opens and closes (VISIBILITY: lines,
 // src/queries/visibility.cpp). A debugging aid; off by default, so no output changes.
 bool trace_visibility = false;
@@ -125,9 +125,6 @@ bool closed_decklist = false;
 // --rmstate-dump FILE: every viewer's state-format frames are written to FILE at each decision
 // (state_format/dump.h); empty = off.
 std::string rmstate_dump_path;
-// --machine-format rmstate: the deciding seat's RMSTATE frame replaces BQUERY on stdout, and
-// everything else the engine prints goes to stderr (state_format/stream.h).
-bool machine_format_rmstate = false;
 // --rmstate-card-scripts: every CARDS frame carries each card's raw script text in its front-face
 // row's `script` column, and each token's in its row (state_format/encode.cpp); off = empty.
 bool rmstate_card_scripts = false;
@@ -143,7 +140,7 @@ std::string rmstate_read_path;
 int knowledge_level_a = 1;
 int knowledge_level_b = 1;
 // --selfcheck-state: the state format's self-checks run at every decision (state_format/selfcheck.h);
-// failures print ERROR: lines. Play, the RNG and BQUERY are the same with or without it.
+// failures print ERROR: lines. Play, the RNG and the frames are the same with or without it.
 bool selfcheck_state = false;
 // --selfcheck-state-sample N: the sampled self-checks (permutation leak, snapshot) start at every
 // Nth decision.
@@ -163,6 +160,30 @@ std::vector<std::string> sideboard_b_cards;
 // life-payment costs (fetch lands, Toxic Deluge, phyrexian mana) at a chosen life total.
 int life_a_override = -1;
 int life_b_override = -1;
+// --hand-a / --hand-b and --library-a / --library-b: a seat's stacked deck (load_launch_deck).
+std::vector<std::string> hand_a_cards;
+std::vector<std::string> hand_b_cards;
+std::vector<std::string> library_a_cards;
+std::vector<std::string> library_b_cards;
+// --max-decisions N: the run stops at decision N + 1 (end_run_at_decision_cap); -1 = no cap.
+long max_decisions = -1;
+// --agent-a / --agent-b: a seat's in-process agent spec (agents/agent.h); empty = none.
+std::string agent_a_spec;
+std::string agent_b_spec;
+// --play / --actions: one global script for both seats (agents/driver.h).
+bool play_script_given = false;
+std::string play_script_specs;
+bool actions_script_given = false;
+std::string actions_script;
+// --trace-decisions: the board and menu of every decision on the game log (agents/trace.h).
+bool trace_decisions = false;
+// --game-seed N: the engine seed is the drivers' engine seed of game seed N
+// (agents/game_seed.h), and the agents' shared generator is seeded with N.
+bool game_seed_given = false;
+uint64_t game_seed_value = 0;
+// --check-decks [--check-decks-dir DIR ...]: check the decks instead of playing (deck_check.h).
+bool check_decks_flag = false;
+std::vector<std::string> check_decks_dirs;
 
 // match state (accessible for state serialization)
 int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
@@ -179,7 +200,7 @@ const SideboardPhaseState *sideboard_phase_state = nullptr;
 
 // The whole bo3 match's between-game state in one snapshottable value struct.
 // play_bo3_match dispatches over its `stage`; the legacy globals above remain
-// authoritative-in-sync (machine_io/input_logger read them). Exposed (Stage 2)
+// authoritative-in-sync (the state format and input_logger read them). Exposed (Stage 2)
 // so the match-scoped game snapshot can capture/restore it across init_ecs().
 MatchContext g_match_ctx;
 
@@ -194,8 +215,7 @@ uint64_t g_card_db_generation = 0;
 static bool g_concede_unwinding = false;
 static int g_concede_unwind_count = 0;
 // A runaway unwind (a menu family that never terminates under repeated
-// first-choice selection) would silently auto-play forever; cap it loudly, the
-// same way the search-server unwind does.
+// first-choice selection) would silently auto-play forever; cap it loudly.
 static const int CONCEDE_UNWIND_CAP = 10000;
 // Latched by CONCEDE_MATCH until the match ends (reset per match).
 static bool g_match_conceded = false;
@@ -287,8 +307,7 @@ static bool g_in_main_loop = false;
 bool in_main_loop() { return g_in_main_loop; }
 
 // Set around the main loop's priority-decision emission (see priority_window_open
-// in game_driver.h). A search RESTORE applies at the loop top, after the emitting
-// get_input has returned and cleared this, so a restored state never inherits it.
+// in game_driver.h).
 static bool g_priority_window_open = false;
 bool priority_window_open() { return g_priority_window_open; }
 void set_priority_window_open(bool open) { g_priority_window_open = open; }
@@ -339,7 +358,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed) {
     // A snapshot from a previous game of the match must never be restorable
     // into this game's fresh ECS — UNLESS a match-scoped snapshot is live: a
-    // sideboard-rooted MCTS sim rolls forward into THIS game precisely to search,
+    // sideboard-rooted search sim rolls forward into THIS game precisely to search,
     // and dropping its snapshot here would strand the rollback. The guard keeps
     // the original invariant for ordinary game starts (no match snapshot live).
     if (!snapshot_any_match_scope_live()) snapshot_release_all();
@@ -402,22 +421,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // synchronous pregame block always ran to completion regardless, so the
     // gate-driven one must too.
     while (!cur_game.ended || cur_game.pending.query.active || cur_game.resolution.active ||
-           cur_game.pregame.stage != Game::PregameState::DONE ||
-           search_intercept_game_end()) {
-        // A RESTORE that arrived mid-decision unwound to here; apply it before
-        // anything reads game state, so this iteration re-derives (and re-emits)
-        // the restored decision. (Applies GAME-scoped restores only.)
-        search_apply_pending_restore();
-        // A MATCH-scoped restore stays latched: it targets a sideboard root one
-        // level up, so bail out of this game's loop and let play_bo3_match's
-        // dispatcher apply it (its loop top) and re-enter the restored stage. The
-        // returned winner is ignored — the dispatcher checks the pending restore
-        // before reading it.
-        if (search_match_restore_pending()) {
-            g_in_main_loop = false;
-            concede_reset_unwind();
-            return cur_game.winner;
-        }
+           cur_game.pregame.stage != Game::PregameState::DONE) {
         // A concession ended the game: whatever decision it was read at (a
         // parked query, a pregame step, a priority window, a prompt below the
         // loop that the unwind carried back here), the game's suspended state is
@@ -425,8 +429,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // is answered or resumed.
         if (cur_game.ended && concede_unwind_pending()) {
             discard_conceded_game_suspensions();
-            if (!search_intercept_game_end()) break;
-            continue;
+            break;
         }
         // Set by the RESOLUTION dispatch below when a resumed resolution ran to
         // completion inside its direct advance_step call: skip straight to the
@@ -440,8 +443,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // thing each iteration, before the turn header and before turn-based
         // actions / mandatory choices / SBE run (a suspended trigger placement
         // or combat sub-prompt must not let combat damage run underneath it).
-        // The stored menu is re-emitted verbatim; loop-safe, so SNAPSHOT/
-        // DETERMINIZE are legal here.
+        // The stored menu is re-emitted verbatim; loop-safe (snapshot.h).
         if (cur_game.pending.query.active) {
             PendingQuery &pq = cur_game.pending.query;
             if (!pq.answered) {
@@ -459,12 +461,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 // natural line.
                 cur_game.pending.decision_source = 0;
                 PendingDecisionScope pending(pq.decision_source);
-                search_set_loop_safe(true);
+                snapshot_set_loop_safe(true);
                 int choice = InputLogger::instance().get_input(pq.menu);
-                search_set_loop_safe(false);
-                // A RESTORE latched during the query unwound it: loop back
-                // WITHOUT storing the answer so the restored state re-emits.
-                if (search_restore_pending() || search_match_restore_pending()) continue;
+                snapshot_set_loop_safe(false);
                 // A concession read here: the loop top discards the parked query.
                 if (concede_unwind_pending()) continue;
                 pq.answer = choice;
@@ -598,11 +597,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // resolution/advance that ended the game via a "wins the game"
         // effect. Nothing below may run on a finished game — no turn-based
         // actions, no SBE trigger scan, no new decisions (CR 104.1: the game
-        // ends immediately) — so exit (or hand the end to a live search) now.
-        if (cur_game.ended) {
-            if (!search_intercept_game_end()) break;
-            continue;
-        }
+        // ends immediately) — so exit now.
+        if (cur_game.ended) break;
         Zone::Ownership viewer = (has_human_player)
             ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
             : Zone::UNKNOWN;
@@ -616,7 +612,6 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
 
             sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
             if (cur_game.is_mandatory_choice_pending()) {
-                populate_gamestate(&gs, viewer);
                 proc_mandatory_choice(cur_game, sys.orderer);
                 continue;
             }
@@ -630,10 +625,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             // scan the way the life SBA's early return does), and breaking
             // with the query parked trips the loop-exit invariant fatal.
             if (decision_suspended()) continue;
-            if (cur_game.ended) {
-                if (!search_intercept_game_end()) break;
-                continue;
-            }
+            if (cur_game.ended) break;
             if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
                 continue;
             }
@@ -649,7 +641,6 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // decision re-derived the miracle prompt instead of its own menu (the
         // az_mcts world-consistency violation).
         if (cur_game.is_mandatory_choice_pending()) {
-            populate_gamestate(&gs, viewer);
             proc_mandatory_choice(cur_game, sys.orderer);
             continue;
         }
@@ -666,10 +657,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // question under an already-ended game, and the parked decision must
         // drain before the loop may exit.
         if (decision_suspended()) continue;
-        if (cur_game.ended) {
-            if (!search_intercept_game_end()) break;
-            continue;
-        }
+        if (cur_game.ended) break;
 
         // Diagnostic tripwire (stranded-flow hunt): this is a quiescent point —
         // no run_*_flow is on the C++ stack and no query is parked — so every
@@ -690,28 +678,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         }
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {
-            // --broadcast-steps: surface this forced pass to the machine driver as
-            // a passive BSTATE frame (no stdin read, nothing recorded). Suppressed
-            // while a search is simulating (snapshot live) or unwinding a restore —
-            // those lines are hypothetical and must not reach the observer. Not under
-            // --machine-format rmstate, whose stdout carries RMSTATE records only.
-            if (machine_mode && broadcast_steps_mode && !machine_format_rmstate && !search_restore_pending()
-                && !search_any_snapshot_live()) {
-                Query q;
-                g_priority_window_open = true;
-                populate_gamestate(&gs, viewer);
-                g_priority_window_open = false;
-                populate_query(&q, legal_actions);
-                cli_emit_machine_bstate(&q, &gs);
-            }
             cur_game.pass_priority();
-            if (!machine_mode) populate_gamestate(&gs, viewer);
             continue;
         }
 
-        // In machine mode this populate is redundant: print_game_state early-returns,
-        // and InputLogger::get_input re-runs populate_gamestate into its own buffer.
-        // Skip the wasted full-entity scan + memset on every machine-mode decision.
+        // The CLI board (machine mode prints none).
         g_priority_window_open = true;
         if (!machine_mode) {
             populate_gamestate(&gs, viewer);
@@ -720,10 +691,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // The priority decision is loop-safe: the whole state lives in cur_game +
         // ECS here, and re-entering the loop top on that data re-derives this
         // same decision (the snapshot round-trip CI test proves it byte-for-byte).
-        search_set_loop_safe(true);
+        snapshot_set_loop_safe(true);
         int choice = InputLogger::instance().get_input(legal_actions);
         g_priority_window_open = false;
-        search_set_loop_safe(false);
+        snapshot_set_loop_safe(false);
         // A concession read here takes no action; the loop top ends the game's loop.
         if (concede_unwind_pending()) continue;
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
@@ -786,17 +757,13 @@ static bool reenter_suspended_resolution(EcsSystems &sys) {
 
 // ── Pregame gate stages (Family F) ──────────────────────────────────────────
 
-// Emit one pregame decision from the loop gate. Loop-safe: the decision
-// re-derives from PregameState + the live hands on gate re-entry (the
-// sideboard-style re-derivation property), so SNAPSHOT/DETERMINIZE are legal
-// here. Returns -1 when a RESTORE latched during the query — the caller bails
-// without applying anything so the loop top applies the restore and the gate
-// re-derives (and re-emits) the restored decision.
+// Emit one pregame decision from the loop gate. Loop-safe (snapshot.h): the
+// decision re-derives from PregameState + the live hands on gate re-entry (the
+// sideboard-style re-derivation property).
 static int pregame_ask(std::vector<LegalAction> &actions) {
-    search_set_loop_safe(true);
+    snapshot_set_loop_safe(true);
     int choice = InputLogger::instance().get_input(actions);
-    search_set_loop_safe(false);
-    if (search_restore_pending() || search_match_restore_pending()) return -1;
+    snapshot_set_loop_safe(false);
     return choice;
 }
 
@@ -856,7 +823,6 @@ static void pregame_mull_decide(EcsSystems &sys) {
     mull_actions[0].category = ActionCategory::KEEP_HAND;
     mull_actions[1].category = ActionCategory::MULLIGAN;
     int choice = pregame_ask(mull_actions);
-    if (choice < 0) return;
     // Round bookkeeping: deciding as the round's first seat marks the round
     // half-done; deciding as the second seat completes (rolls) the round.
     pg.first_seat_decided_this_round = (seat == first);
@@ -878,10 +844,6 @@ static void pregame_mull_decide(EcsSystems &sys) {
             pg.bottom_remaining = mulligans;
             pg.stage = Game::PregameState::MULL_BOTTOM;
         } else {
-            if (mulligans >= 3 && InputLogger::instance().is_machine_mode()) {
-                printf("MULLIGAN_PENALTY: %s\n", seat == Zone::PLAYER_A ? "A" : "B");
-                fflush(stdout);
-            }
             auto hand = sys.orderer->get_hand(seat);
             for (auto card : hand) {
                 sys.orderer->add_to_zone(false, card, Zone::LIBRARY);
@@ -914,7 +876,6 @@ static void pregame_mull_bottom(EcsSystems &sys) {
         btm_actions.push_back(la);
     }
     int choice = pregame_ask(btm_actions);
-    if (choice < 0) return;
     sys.orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
     pg.bottom_remaining--;
     if (pg.bottom_remaining == 0) pg.stage = Game::PregameState::MULL_DECIDE;
@@ -924,6 +885,66 @@ static void pregame_mull_bottom(EcsSystems &sys) {
 // graveyard and exile presets to the main deck, sideboard presets to the sideboard), so the
 // registered decklist the opponent's observation reveals against includes every card that player
 // actually has in the game.
+// The library of a stacked deck padded to STACKED_DECK_MIN cards with the hand: copies of the
+// library's last card, else of a basic land in the hand, else Mountains.
+static std::vector<std::string> padded_library(
+    const std::vector<std::string> &hand, const std::vector<std::string> &library) {
+    constexpr size_t STACKED_DECK_MIN = 15;
+    static const char *basics[] = {"Mountain", "Forest", "Island", "Swamp", "Plains"};
+    std::vector<std::string> out = library;
+    if (hand.size() + out.size() >= STACKED_DECK_MIN) return out;
+    std::string filler;
+    if (!library.empty()) filler = library.back();
+    for (const std::string &card : hand) {
+        if (!filler.empty()) break;
+        for (const char *basic : basics)
+            if (card == basic) filler = card;
+    }
+    if (filler.empty()) filler = "Mountain";
+    while (hand.size() + out.size() < STACKED_DECK_MIN) out.push_back(filler);
+    return out;
+}
+
+// A card's name as a deck-file line writes it (apostrophes dropped).
+static std::string deck_line_name(const std::string &card) {
+    std::string out;
+    for (size_t i = 0; i < card.size(); ++i) {
+        if (card[i] == '\'') continue;
+        if (card.compare(i, 3, "\xE2\x80\x99") == 0) {
+            i += 2;
+            continue;
+        }
+        out.push_back(card[i]);
+    }
+    return out;
+}
+
+Deck load_launch_deck(Zone::Ownership seat) {
+    const bool a = seat == Zone::PLAYER_A;
+    const std::vector<std::string> &hand = a ? hand_a_cards : hand_b_cards;
+    const std::vector<std::string> &library = a ? library_a_cards : library_b_cards;
+    std::string &name = a ? deck_a_name : deck_b_name;
+    if (hand.empty()) {
+        if (!library.empty())
+            cli_warning(
+                std::string("--library-") + (a ? "a" : "b") + " has no effect without --hand-" + (a ? "a" : "b"));
+        return Deck(RESOURCE_DIR + "/decks/" + name + ".dk");
+    }
+    std::string text;
+    for (const std::string &card : hand) text += "1 " + deck_line_name(card) + "\n";
+    for (const std::string &card : padded_library(hand, library)) text += "1 " + deck_line_name(card) + "\n";
+    text += "\nSIDEBOARD:\n";
+    name = a ? "stacked_a" : "stacked_b";
+    return Deck::from_string(text);
+}
+
+[[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+    std::fflush(stdout);
+    std::printf("MAX_DECISIONS: stopped after %zu decisions (--max-decisions; no result)\n", decisions);
+    std::fflush(stdout);
+    std::exit(0);
+}
+
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
     bool a = owner == Zone::PLAYER_A;
     Deck out = deck;
@@ -1049,7 +1070,6 @@ static void pregame_opening_actions(EcsSystems &sys) {
                 PendingDecisionScope pending(card);
                 choice = pregame_ask(yn);
             }
-            if (choice < 0) return;  // restore latched; state is about to be overwritten
             cur_game.priority.player_a_has_priority = prev_priority;
             pg.oh_card_idx++;
             if (choice == 1) {
@@ -1103,14 +1123,11 @@ static void run_pregame_step(EcsSystems &sys, const Deck &deck_a, const Deck &de
 }
 
 // How many copies a sideboard IN/OUT choice moves between, as the per-action
-// option_ordinal. Without it "4x Lightning Bolt" and "1x Island" reach the policy
-// as the same action (category + card id only), so cutting one of four looks
-// identical to cutting a singleton. Clamped to OPTION_ORDINAL_MAX because the
-// ordinal is serialized as (ord + 1) / (OPTION_ORDINAL_MAX + 1) — a 60-basic deck
-// tallies to 60, inside the clamp, but a pathological entry must not wrap.
+// option_ordinal, so "4x Lightning Bolt" and "1x Island" are told apart by more than
+// their card. Clamped to SIDEBOARD_ORDINAL_MAX: a 60-basic deck tallies to 60, inside
+// the clamp.
 static int sideboard_copy_ordinal(size_t copies) {
-    if (copies > static_cast<size_t>(OPTION_ORDINAL_MAX))
-        return OPTION_ORDINAL_MAX;
+    if (copies > static_cast<size_t>(SIDEBOARD_ORDINAL_MAX)) return SIDEBOARD_ORDINAL_MAX;
     return static_cast<int>(copies);
 }
 
@@ -1164,7 +1181,7 @@ static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from
 // All persistent state (swap count, the one-shot direction locks, the drift, the
 // outstanding card and force_done) lives in `st`, and the menu is a pure function
 // of it plus `deck` — so a MATCH-scoped restore re-derives the identical menu,
-// which is what keeps a sideboard prompt a loop-safe MCTS search root.
+// which is what keeps a sideboard prompt a loop-safe search root.
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     Zone::Ownership player = st.player;
     sideboard_phase = true;
@@ -1172,9 +1189,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     sideboard_phase_state = &st;
     // Repoint priority to the sideboarding player (the established engine pattern:
     // every prompt is issued with priority.player_a_has_priority pointing at the chooser).
-    // populate_query's per-action controller_is_self flags read this flag, so
-    // without the repoint they would carry whatever the just-ended game left behind. cur_game is discarded
-    // (replaced by Game(seed)) when the next game starts, so nothing to restore.
+    // cur_game is discarded (replaced by Game(seed)) when the next game starts, so
+    // nothing to restore.
     cur_game.priority.player_a_has_priority = (player == Zone::PLAYER_A);
     // Reset the pending-decision baseline to 0 for this phase. The OUT menu wraps
     // its query in a PendingDecisionScope(in_card_eid) whose RAII prev-restore
@@ -1201,12 +1217,6 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     concede_clear_read_flag();
 
     while (true) {
-        // A MATCH-scoped restore latched during a simulation unwinds through here
-        // (its target is this very sideboard root, one dispatcher level up): bail
-        // without building the menu or mutating the deck; the dispatcher applies
-        // the restore and re-enters this phase from the restored state.
-        if (search_match_restore_pending()) return;
-
         // ── Build this decision's menu ───────────────────────────────────────
         // Balanced: Done plus every distinct sideboard card as a "+1". At +1: every
         // distinct maindeck card as the balancing "-1", or the lone forced cut when
@@ -1279,9 +1289,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
 
         // The one-shot locks bound the menu to Done + (distinct sideboard) while
         // balanced, and to (distinct maindeck) — or the lone forced cut — at +1,
-        // comfortably inside MAX_ACTIONS for any real deck. Fail loudly rather
-        // than relying on populate_query's silent truncation, which would make
-        // legal choices unreachable to the model.
+        // comfortably inside MAX_ACTIONS for any real deck; a wider menu means the
+        // locks failed, so it is fatal.
         if (actions.size() > MAX_ACTIONS)
             fatal_error("sideboard menu has " + std::to_string(actions.size()) +
                         " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
@@ -1317,19 +1326,13 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         PendingDecisionScope pending(balanced ? 0 : load_card(st.unpaired_name));
         populate_gamestate(&gs, player);
         if (balanced) print_game_state(&gs);
-        // A restore latched before we reach the query must bail here — every choice
-        // below mutates the deck, so unwinding through one would corrupt it.
-        if (search_match_restore_pending()) return;
         // Loop-safe: the menu above is a pure function of (deck, the one-shot name
         // sets, delta, unpaired_name, force_done), all of which live in `st` and are
         // restored wholesale, so re-entry after a rollback re-derives this exact
         // menu — the forced cut of a stranded +1 included.
-        search_set_loop_safe(true);
+        snapshot_set_loop_safe(true);
         int choice = InputLogger::instance().get_input(actions);
-        search_set_loop_safe(false);
-        // A RESTORE latched during the query unwinds via choice 0; bail before
-        // acting so no deck mutation happens on the rollback path.
-        if (search_match_restore_pending()) return;
+        snapshot_set_loop_safe(false);
 
         // A concession read during sideboarding is a safe no-op, never a menu
         // pick: apply_concede_input hands back choice 0, which is only "Done"
@@ -1404,7 +1407,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     // Initialize the match context from the params. All between-game state lives
     // here so the loop is a resumable dispatcher over ctx.stage. The legacy
     // globals (match_wins_a/b, match_game_number, sideboard_phase*) are kept in
-    // sync as we go — they remain the values machine_io/input_logger read.
+    // sync as we go — they remain the values the state format and input_logger read.
     MatchContext &ctx = g_match_ctx;
     ctx = MatchContext();
     ctx.active = true;
@@ -1421,20 +1424,12 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     match_wins_b = 0;
     g_match_conceded = false;  // concessions never carry across matches
     g_match_conceder = Zone::UNKNOWN;
-    match_reset_revealed();  // clear revealed-cards accumulator for the whole match
     // Drop the previous match's decklists so neither store can bleed across
     // matches; game 1's play_single_game repopulates both.
     deck_state_reset();
 
     bool match_done = false;
     while (!match_done) {
-        // A MATCH-scoped restore latched by a sideboard-rooted simulation (its
-        // unwind bailed out of the inner game/sideboard loop) is applied here,
-        // rolling the whole match — cur_game, ECS, ctx (stage/decks/sb), deck_state
-        // and the match globals — back to the sideboard root before the switch
-        // re-enters the restored stage.
-        if (search_match_restore_pending()) search_apply_pending_match_restore();
-
         // CR 104.3a: a conceded MATCH ends here whatever the game score is (the
         // sentinel may have arrived between games, during a sideboard phase).
         // The in-game case is caught right after that game's GAME_RESULT below.
@@ -1454,8 +1449,8 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                             " games without a match winner");
             match_game_number = ctx.game_num;
             // A sideboard-rooted sim rolls forward into this game only to search;
-            // its real-match side effects (the actor's begin_game/backfill hooks,
-            // the banner) must not fire. Suppress them while a match snapshot lives.
+            // its real-match side effects (the before_game hook, the banner) must
+            // not fire. Suppress them while a match snapshot lives.
             bool simulating = snapshot_any_match_scope_live();
             if (!simulating) {
                 game_log("\n----- MATCH GAME %d -----\n", ctx.game_num + 1);
@@ -1465,12 +1460,6 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
             EcsSystems sys = init_ecs();
             int winner = play_single_game(sys, ctx.deck_a, ctx.deck_b, ctx.a_goes_first,
                                           match_game_seed(ctx));
-
-            // A sim's unwind exited play_single_game with a MATCH restore still
-            // latched: take none of the real-game bookkeeping below (winner
-            // validation, tally, GAME_RESULT, after_game, stage advance) — loop
-            // back so the dispatcher top applies the restore.
-            if (search_match_restore_pending()) continue;
 
             // A game that ended with no winner is a draw (CR 104.4a): it counts for neither player.
             if (winner == Zone::PLAYER_A) {
@@ -1519,10 +1508,6 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         }
         case MatchContext::SIDEBOARD_A: {
             run_sideboard_phase(ctx.deck_a, ctx.sb);
-            // A sim's unwind (or a restore latched during this phase) exited
-            // run_sideboard_phase with a MATCH restore latched: don't advance the
-            // stage — loop back and apply the restore at the dispatcher top.
-            if (search_match_restore_pending()) continue;
             ctx.sb = SideboardPhaseState();
             ctx.sb.player = Zone::PLAYER_B;
             ctx.stage = MatchContext::SIDEBOARD_B;
@@ -1530,7 +1515,6 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         }
         case MatchContext::SIDEBOARD_B: {
             run_sideboard_phase(ctx.deck_b, ctx.sb);
-            if (search_match_restore_pending()) continue;
             ctx.game_num++;
             ctx.stage = MatchContext::PLAY_GAME;
             break;
@@ -1566,9 +1550,5 @@ static void print_match_concede_result(const MatchContext &ctx) {
 }
 
 static unsigned int match_game_seed(const MatchContext &ctx) {
-    // Real line (salt 0): exactly the historical seed, ctx.base_seed + game_num.
-    // A searched world (salt != 0, set by a sideboard-root DETERMINIZE) mixes the
-    // salt through a golden-ratio multiply so distinct salts give distinct deals.
-    return ctx.base_seed + static_cast<unsigned int>(ctx.game_num) +
-           (g_sim_seed_salt ? 0x9e3779b9u * g_sim_seed_salt : 0u);
+    return ctx.base_seed + static_cast<unsigned int>(ctx.game_num);
 }

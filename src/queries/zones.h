@@ -95,7 +95,7 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
 // Whether `a` and `b` are interchangeable cards to choose between: two copies of the same card in
 // the same player's graveyard, playable from there by the same players on the same terms
 // (card_play_permission), or in the same player's library (a search, a Doomsday pile), neither of
-// them revealed there or known to the opponent at its place (Game::KnownLibraryTop). Choosing one
+// them revealed there or known to the opponent at its place (Game::OppKnownLibraryTop). Choosing one
 // or the other makes no difference to the game, and the observation encodes the choices
 // identically, so a choice menu offers one of them. Defined in zones.cpp.
 bool interchangeable_cards(Entity a, Entity b);

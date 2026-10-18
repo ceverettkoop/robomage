@@ -30,9 +30,8 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
 
     // The draw-2 and the drawn-this-turn scan run once; the candidate set, the
-    // picks so far, and both loop indices persist in the frame rt (candidates +
-    // chosen cards pinned against determinize — the chosen ones may still be
-    // put back on top).
+    // picks so far, and both loop indices persist in the frame rt (the chosen
+    // cards may still be put back on top).
     SylvanRt local_rt;
     SylvanRt &rt = ctx.can_suspend() ? ctx.rt<SylvanRt>() : local_rt;
     if (!rt.init) {

@@ -2,12 +2,13 @@
 
 Status: step 1 of [`engine_fork_plan.md`](engine_fork_plan.md), **done**. T9-T12 are implemented
 (`src/knowledge/`, `tools/rmknow/`, `src/state_format/knowledge_feed.*`,
-`src/state_format/selfcheck_knowledge.*`, `src/state_format/shadow_knowledge.*`): the model, the
+`src/state_format/selfcheck_knowledge.*`; `src/state_format/shadow_knowledge.*` until plan step
+3b): the model, the
 update rules, bound propagation, the per-frame consistency check, the `k_*` rows and serialisation
 (T9), the exact solver, compaction and the enumerator tests (T10), the engine integration (T11),
 and the verification of T12: the cadence-independent model (section 9.6), `--selfcheck-knowledge`
-(soundness, the snapshot check and the shadow comparison with the old vector, sections 9.5 and
-9.7), the sharpness scenarios (section 9.7) and the `knowledge` gate tier (`docs/ci.md`); section 9
+(soundness and the snapshot check, section 9.5; the shadow comparison with the old vector,
+section 9.7, ran until plan step 3b deleted the old vector and its memory), the sharpness scenarios (section 9.7) and the `knowledge` gate tier (`docs/ci.md`); section 9
 says how. Archetype inference's sound layer (the reference metagame, `k_template`, `k_archetype`) is
 built on it, and the belief layer (a posterior over the reference lists, `b_*` tables at level
 `expert+belief`) on that: section 10.
@@ -56,7 +57,7 @@ consistent form for every kind of agent.
 | Piece | Location |
 |---|---|
 | core (model, update rules, solver) | `src/knowledge/` (C++17, `-fno-exceptions`), linked into `bin/robomage` and `rmknow` |
-| engine integration | `src/state_format/knowledge_feed.{h,cpp}` (engine side): one instance per RMSTATE frame writer (`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) and seat, fed with exactly the bytes that writer builds for that seat, decoded through `src/state_format/decode.*`; it appends the `k_*` tables to each of the seat's STATE frames before the writer emits it (section 9.6) |
+| engine integration | `src/state_format/knowledge_feed.{h,cpp}` (engine side): one instance per RMSTATE frame writer (`--rmstate-dump`, the `--machine` stream, `--selfcheck-state`, the in-process agents' feed) and seat, fed with exactly the bytes that writer builds for that seat, decoded through `src/state_format/decode.*`; it appends the `k_*` tables to each of the seat's STATE frames before the writer emits it (section 9.6) |
 | in-process agents and the CLI | read the decoded knowledge tables through the same decoder as everything else |
 | `rmknow` | `tools/rmknow/` → `bin/<config>/rmknow` (`make rmknow`, part of `make`): `rmknow [--viewer A\|B] [--level off\|expert] < frames.bin > knowledge.bin`; `--isolation` recomputes every frame's `k_*` from the frames and compares them with the engine's (the isolation test); offline analysis of recorded games (section 9) |
 
@@ -267,12 +268,13 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
 - **Sharpness (the model):** hand-written regression scenarios with the deduction a strong
   player would make, asserted on the knowledge dump. Example: after a Brainstorm put-back
   from a hand known to hold {Force of Will, Daze, X}, and X then cast, the top two cards are
-  exactly {Force of Will, Daze}. Built as `train/regression/scenarios/knowledge_*.json` with the
-  `expect_dump*` keys of `train/test_scenarios.py` (section 9.7).
+  exactly {Force of Will, Daze}. Built as `tests/scenarios/knowledge_*.json` with the
+  `expect_dump*` keys of the scenario runner (`tools/robomage_check/scenarios.h`, section 9.7).
 - **Isolation:** `rmknow` on the recorded frame stream gives byte-identical knowledge tables
   to the in-process run, per writer (the dump's seat frames, a saved stream); and the stream's
   `k_*` tables equal the dump's at every seat and decision (section 9.6).
-- **Shadow comparison with today's engine memory:** while the old vector is still emitted, at
+- **Shadow comparison with the engine's old memory** (step 1 to step 3b; deleted with that
+  memory, its findings kept in section 9.7): while the old vector was still emitted, at
   every decision compare `expert`'s implied view (own exact positions 0–4; definitely-in-hand
   opponent cards; cards seen this match) with the engine's `known_top_library_*`,
   `opp_known_hand` and revealed bits. Every mismatch is classified as either:
@@ -283,8 +285,8 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   opponent's Brainstorm put-back, the old vector still lists a known Force of Will in hand only
   if that particular card stayed in hand, which tells the viewer which cards went back.
   `expert` reports "Force of Will: in hand or in the top two". Built as part of
-  `--selfcheck-knowledge`, with every mismatch classified in
-  `train/regression/knowledge_divergences.json` (section 9.7): three leaks (this one, its copy
+  `--selfcheck-knowledge`, with every mismatch classified in a signature file
+  (`knowledge_divergences.json`, section 9.7): three leaks (this one, its copy
   variant and a library-position one), the rest quirks; no sidecar bug remained.
 - **Snapshot/restore:** the knowledge state is saved and restored with the engine snapshot,
   and frames after a restore match the originals.
@@ -303,7 +305,7 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
     library with `card` set (`at` from the top);
   - `opp_known_hand`: `k_known_hand` (per card, the copies definitely in the opponent's hand).
 - **Parity target:** byte-identical transcripts, except in games where a classified divergence
-  (`train/regression/knowledge_divergences.json`, section 9.7) changed what the agent saw. Those
+  (section 9.7) changed what the agent saw. Those
   games are re-recorded, each with its divergence as the reason. What the divergences imply:
   - `opp_known_hand` → `k_known_hand`: expert knows **less** after an opponent's hidden put-back
     (`put_back_leak`) and after a copy of a known card leaves the hand (`copy_leak`), and **more**
@@ -508,7 +510,7 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
     objects by the seat's handle, so face-down pools are checked too), and at the self-check's
     snapshot restore every instance's serialised state against the one saved. Failures are `ERROR:
     selfcheck-knowledge soundness|snapshot: …` lines; `SELFCHECK-KNOWLEDGE: decisions=… facts=…
-    errors=…` at match end. It also runs the shadow comparison (section 9.7). A reanimator vs uw_control bo3 fuzz match checks 179,079 facts over
+    errors=…` at match end. A reanimator vs uw_control bo3 fuzz match checks 179,079 facts over
     588 decisions. Proved with temporary bugs: a pool's max one too low (10,859 errors), a known
     position reported one place off (12) and a deserialise that dropped one player's copies seen
     (28 snapshot errors, besides the frame comparison's) were each caught. Over the replay corpus
@@ -555,7 +557,8 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
 
 **Placement and lifetime.** `src/state_format/knowledge_feed.{h,cpp}` (engine side; `src/knowledge/`
 still sees no engine header) keeps one `Knowledge` per RMSTATE frame writer (`ObsConsumer`:
-`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) and seat, at most six. An
+`--rmstate-dump`, the `--machine` stream, `--selfcheck-state`, the in-process agents' feed) and
+seat. An
 instance is made at its writer's first frame for that seat and lives outside `Game` for the whole
 match, so match memory crosses the per-game reset (the instance resets its networks itself at
 `game_start`). The writer feeds it the seat's SCHEMA, CARDS, DECKLISTS and METAGAME frames as it writes them,
@@ -569,7 +572,7 @@ omniscient frames carry no `k_*` tables. With no writer on, no instance exists a
 **Levels.** `--knowledge-a` / `--knowledge-b off|expert` (default expert) choose the level each
 seat's instances are made with. At level off `Knowledge::feed` decodes only the match frames and the
 STATE frames get the `k_meta` row alone (level off, exact 0, steps 0). The level changes only the
-`k_*` tables: play, the RNG, BQUERY and every other table are the same. It is an output option like
+`k_*` tables: play, the RNG and every other table are the same. It is an output option like
 the writers themselves: the RMLOG header does not record it and `--replay` honours it (a replay
 with the same level reproduces the frames).
 
@@ -600,8 +603,8 @@ into the live instance finds the same SCHEMA payload and does not decode it agai
 is not part of the state and outputs do not depend on it. Without a writer no hook is registered, so
 snapshots cost nothing more. With one, a snapshot carries about 45-65 KB per instance (two to six),
 mostly the SCHEMA payload, and serialising or restoring one instance takes about 20-35 us in a
-release build (150-300 us debug). The stream is refused under `--search-server` and the self-check
-is off there, so search pays this only with `--rmstate-dump` on.
+release build (150-300 us debug). (The search server, deleted in plan step 3b, refused the stream
+and ran without the self-check, so it paid this only with `--rmstate-dump` on.)
 
 **Self-checks.** The self-check's instance takes each real frame exactly once (a decision's, and the
 terminal one); the scrambled and permuted builds are compared with the frame as encoded, before its
@@ -614,12 +617,10 @@ and stream's instances print theirs as `ERROR: knowledge[…] … (dump frames)`
 **Isolation.** `rmknow --isolation [--viewer A|B] [--level off|expert]` splits each of the seat's
 STATE frames at table 90 (`rmstate::split_frame_blocks`), feeds the rest, computes
 `Knowledge::table_blocks` and compares them with the split-off tables byte for byte (an `ERROR:
-rmknow isolation` line names the first differing table and row). `train/test_rmstate.py --isolation
-FILE…` runs it for both seats (`check_knowledge_isolation`), and `test_rmstate.py` alone runs it on
-its fuzz dumps and its stream sessions' dumps and saved streams (`stream_<seed>.stream.rms`); the
-`knowledge` gate tier (`train/test_knowledge.py`, `docs/ci.md`) runs it on each writer's frames of
-its stream sessions (the dump's and the saved stream), after checking that every stream frame equals
-the dump's frame for that seat and decision, `k_*` included. At T11, on five stream sessions (bo1 and bo3, one under
+rmknow isolation` line names the first differing table and row). The `knowledge` gate tier
+(`docs/ci.md`) runs it, for both seats, on every dump and on each writer's frames of its stream
+sessions (the dump's and the saved stream), after checking that every stream frame equals the
+dump's frame for that seat and decision, `k_*` included. At T11, on five stream sessions (bo1 and bo3, one under
 `--closed-decklist`, one with seat A at level off), each with its dump, a dump with the self-check
 sampled at every decision, and the off variants: 0 differences over 14,514 seat frames.
 
@@ -629,13 +630,15 @@ expert, 1.7 s at off and 0.8 s with no dump, so about 1 ms per seat frame) and 1
 one (22.7 s, 8.5 s, 3.3 s). A dump pays it twice per decision, the stream once per decision of the
 seat, the self-check twice more. The `rmstate` gate tier (corpus under `--selfcheck-knowledge`,
 fuzz under the self-check, two fuzz dumps, two stream sessions) takes about 3 min 10 s on 4 cores
-(2 min 30 s without the sidecar), the `knowledge` tier about 90 s (its shadow part about 2 s: the
-divergence scenarios, the corpus and fuzz comparisons riding on engines that run anyway; its
-archetype part about 12 s, section 10.5), and the whole `make check` about 8 min.
+(2 min 30 s without the sidecar), the `knowledge` tier about 90 s (its archetype part about 12 s, section 10.5), and the whole
+`make check` about 8 min (figures of the Python gate at T11; the C++ gate's are in `docs/ci.md`).
 
 ### 9.7 Shadow comparison and sharpness (T12)
 
-**Shadow comparison** (`src/state_format/shadow_knowledge.{h,cpp}`, part of
+**Shadow comparison** (history: it ran from T12 until plan step 3b, part B item 6, deleted it with
+the old vector's memory, its signature file and the gate's classifier; the `knowledge_divergence_*`
+scenarios it produced stay, their assertions being `k_*` sharpness facts).
+(`src/state_format/shadow_knowledge.{h,cpp}`, part of
 `--selfcheck-knowledge`: it reads the same frames the soundness check reads). At every decision,
 for each seat, the seat's `k_*` rows are compared with the old BQUERY vector's memory for that
 seat, read through the serializer's own sources (`populate_gamestate`, and `opp_known_hand_cards`
@@ -653,7 +656,7 @@ line naming its kind, direction (`old_more`, `new_more`, `conflict`), viewer, ow
 sides' values, whether the old side's claim holds in the true world, the game, turn and decision,
 and the frame's events with their source cards (the cause to classify by); a `SHADOW-KNOWLEDGE:`
 summary closes the match. The Python tiers classify every line against
-`train/regression/knowledge_divergences.json` (first matching signature: kind, direction, owner,
+`tests/knowledge_divergences.json` (first matching signature: kind, direction, owner,
 a regex over the line; `train/test_knowledge.py`): the `rmstate` tier's corpus part and the
 `knowledge` tier's fuzz and stream sessions, and the `knowledge` tier runs each signature's
 regression scenario to show it prints a line of that class. An unclassified line fails the tier.
@@ -689,13 +692,14 @@ are not 0..n-1"); and two library runs from one junction did not rejoin after co
 the history behind it into it (`PlayerModel::rejoin`; a run split around a searched card stayed
 split after the card left).
 
-**Sharpness scenarios** (`train/regression/scenarios/knowledge_*.json`). A scenario with an
+**Sharpness scenarios** (`tests/scenarios/knowledge_*.json`). A scenario with an
 `expect_dump`, `expect_dump_not`, `expect_dump_final` or `expect_dump_final_not` key runs with
-`--rmstate-dump FILE --state-dump json`, and `train/test_scenarios.py` renders every seat STATE
+`--rmstate-dump FILE`, and the scenario runner (`tools/robomage_check/knowledge_lines.h`) renders every seat STATE
 frame's `k_*` tables as one text line per fact (`<seat> d=<decision> g<game> t<turn> pool opp
 library top0+2 size=2: Daze 1-1, Force of Will 1-1`, `position self top0 = Daze`, `known_hand
 Island x5`, …; `sb` for the turn between games; grammar in the module docstring), which the keys'
-regexes match (any frame, or each seat's last frame). `test_scenarios.py --dump NAME` prints them.
+regexes match (any frame, or each seat's last frame). `robomage_check --tier scenarios --scenario
+NAME --show dump` prints them.
 Scenarios may now be bo3 (`format`). The sharpness set:
 
 | Scenario | The deduction |
@@ -729,8 +733,8 @@ layer that weighs the consistent lists is kept apart, in `b_*` tables of a level
   the metagame reaches it only through this frame, so it stays a pure function of the viewer's
   stream.
 - **Source** (`src/state_format/metagame.{h,cpp}`, read once per process): `bin/resources/decks/archetypes.json`.
-  Its `_archetypes` key is the canonical label list, in index order (also what `train/archetypes.py`
-  reads as `ARCHETYPES`; append only), and `unknown` is appended last. Every tagged deck stem whose
+  Its `_archetypes` key is the canonical label list, in index order (append only), and `unknown`
+  is appended last. Every tagged deck stem whose
   `.dk` file exists, whose label is listed and whose every card has a vocab entry is a reference
   list, in ascending stem order. Today all 13 tagged decks are: the ten league decks plus `delver`,
   `doomsday` and `mav` (none is left out; the `knowledge` tier fails when a tagged deck is missing).
@@ -829,7 +833,7 @@ sessions. The CARDS frame's metagame cards cost the engine about 4 ms (debug bui
   `--exactness 400`: 25,104 (11,916 of them lists with no world) in 1.3 s (release).
   Deliberately broken, the sideboard root standing for the 75 (192 failures), the cards from zone
   none left free (3) and a feasibility search ignoring an infeasible component (132) are caught.
-- **Sharpness** (the `knowledge` tier's `archetype` part, `--machine-format rmstate` sessions; and
+- **Sharpness** (the `knowledge` tier's `archetype` part, RMSTATE stream sessions; and
   the scenario `knowledge_archetype_open_registered`): with open decklists every list a seat sees is
   exactly consistent and classified registered from the first frame; under `--closed-decklist`,
   before any of the opponent's cards is seen every label of a list that can hold the library and
@@ -917,7 +921,7 @@ seen they were taken at (the fallback's input) and the match memory, so a restor
 continues exactly.
 
 **Verification** (the `knowledge` tier's `belief` part, `docs/ci.md`):
-- *structure*: two `--machine-format rmstate` sessions at expert+belief, each with a dump (one
+- *structure*: two RMSTATE stream sessions at expert+belief, each with a dump (one
   under `--closed-decklist` and `--selfcheck-knowledge`): stream frames equal the dump's (`b_*`
   included), `rmknow --isolation` on each writer's frames, `rmknow --truth` (and the self-check's
   soundness pass, through `knowledge::check_truth`): per player a list has probability zero exactly
@@ -955,8 +959,8 @@ continues exactly.
   | scripted (hard) agents, bo1 (26) | 8,098 | 0.176 (2.565 / 0.168) | 1,121: 1.274 (1.213) | 0.078 (1.716) | 0.097 | 0.0030 | 0.282 → 1.000 |
   | scripted agents, bo3 (13 matches, 58 games) | 9,380 | 0.122 (2.565 / 0.094) | 918: 1.247 (0.963) | 0.029 (1.659) | 0.080 | 0.0050 | 0.678 → 1.000 |
 
-  The agents need BQUERY, which `--closed-decklist` refuses (its name-a-card menus are uncapped),
-  so their games are played with open decklists and replayed through `rmknow --belief
+  When this was measured the agents' games ran on BQUERY, which refused `--closed-decklist` (its
+  name-a-card menus are uncapped), so they were played with open decklists and replayed through `rmknow --belief
   --hide-lists`, which feeds the seat's DECKLISTS frame without the opponent's list (the events are
   the same either way). Under random and explore play the weighting beats the sound layer's
   uniform answer where it matters (1.601 against 1.638 and 1.479 against 1.545 nats) and the

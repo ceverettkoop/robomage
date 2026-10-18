@@ -12,7 +12,7 @@
 #include "../error.h"
 #include "../game_driver.h"
 #include "../queries/players.h"
-#include "../search_server.h"
+#include "agent_feed.h"
 #include "dump.h"
 #include "encode.h"
 #include "events.h"
@@ -26,35 +26,39 @@ static void stream_match_frames_once(Zone::Ownership seat);
 static void stream_state_frame(
     Zone::Ownership seat, const std::vector<LegalAction> &actions, Zone::Ownership decider, bool terminal);
 static int read_reply();
+static bool seat_reads_stdin(int seat);
 
 // The descriptor stdout had at startup, which carries the frames (stdout itself is pointed at
 // stderr by rmstate_outputs_init).
 static FILE *stream_out = nullptr;
 // Per seat (indexed by Zone::Ownership): its SCHEMA, CARDS, DECKLISTS and METAGAME frames were sent.
 static bool stream_match_frames_sent[3] = {false, false, false};
+// The stream is on (rmstate_outputs_init).
+static bool stream_on = false;
+
+// Whether machine seat `seat` (0 = A, 1 = B) decides over the stream: it has no in-process agent
+// or script (agents/driver.h) and is not the --player seat.
+static bool seat_reads_stdin(int seat) {
+    if (play_script_given || actions_script_given) return false;
+    if (!(seat == 0 ? agent_a_spec : agent_b_spec).empty()) return false;
+    return !(has_human_player && human_player_is_a == (seat == 0));
+}
 
 void rmstate_outputs_init() {
     if (state_dump_json && rmstate_dump_path.empty() && rmstate_read_path.empty())
         cli_warning("--state-dump json renders the --rmstate-dump or --rmstate-read stream; neither is given");
-    // A closed decklist's name-a-card menus offer the whole vocab, more than the MAX_ACTIONS a
-    // BQUERY (or search-server) query can carry; only the RMSTATE stream's menu is unbounded.
-    if (closed_decklist && machine_mode && !machine_format_rmstate)
-        fatal_error(
-            "--closed-decklist on a machine run needs --machine-format rmstate: its name-a-card menus "
-            "offer every vocab card, more than BQUERY's MAX_ACTIONS=" +
-            std::to_string(MAX_ACTIONS));
-    if (!machine_format_rmstate) return;
-    if (search_server_mode) fatal_error("--machine-format rmstate is incompatible with --search-server");
+    stream_on = machine_mode && !replay_mode && (seat_reads_stdin(0) || seat_reads_stdin(1));
+    if (!stream_on) return;
     std::fflush(stdout);
     const int frames_fd = dup(STDOUT_FILENO);
-    if (frames_fd < 0) fatal_error("--machine-format rmstate: cannot duplicate stdout");
+    if (frames_fd < 0) fatal_error("the RMSTATE stream: cannot duplicate stdout");
     stream_out = fdopen(frames_fd, "wb");
-    if (!stream_out) fatal_error("--machine-format rmstate: cannot open the frame stream");
-    if (dup2(STDERR_FILENO, STDOUT_FILENO) < 0) fatal_error("--machine-format rmstate: cannot redirect stdout");
+    if (!stream_out) fatal_error("the RMSTATE stream: cannot open the frame stream");
+    if (dup2(STDERR_FILENO, STDOUT_FILENO) < 0) fatal_error("the RMSTATE stream: cannot redirect stdout");
 }
 
 bool rmstate_stream_enabled() {
-    return machine_format_rmstate;
+    return stream_on;
 }
 
 Zone::Ownership rmstate_deciding_seat() {
@@ -63,7 +67,7 @@ Zone::Ownership rmstate_deciding_seat() {
 }
 
 void rmstate_begin_decision() {
-    if (rmstate_dump_path.empty() && !machine_format_rmstate && !selfcheck_state_enabled()) return;
+    if (rmstate_dump_path.empty() && !stream_on && !selfcheck_state_enabled() && !agent_feed_enabled()) return;
     ++(sideboard_phase ? cur_game.state_sideboard_decisions : cur_game.state_decisions);
     for (Zone::Ownership viewer : {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN}) issue_handles_canonical(viewer);
 }
@@ -95,7 +99,7 @@ static void stream_state_frame(
     stream_write(payload);
 }
 
-// One reply line from stdin, as the BQUERY path reads it: the integer it starts with, else -1
+// One reply line from stdin: the integer it starts with, else -1
 // (end of input or an unparseable line).
 static int read_reply() {
     char line[128];
@@ -122,10 +126,9 @@ int rmstate_stream_exchange(const std::vector<LegalAction> &actions) {
 }
 
 void rmstate_match_over() {
-    if (search_server_mode) return;
     rmstate_dump_match_over();
     selfcheck_state_match_over();
-    if (!machine_format_rmstate) return;
+    if (!stream_on) return;
     std::fflush(stdout);
     for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         stream_match_frames_once(seat);

@@ -100,9 +100,9 @@ enchanted PLAYER as the attach target and make the SBA treat a legally player-at
 attached. Until then, do NOT add an "Enchant player" Aura to the vocab.
 
 ### AZ search: residual `safe=0` prompt sites
-Every decision kind is a searchable root, except these residual blocking prompts (classified and
-CI-guarded by `train/test_snapshot.py`'s `PROMPT_SITE_WHITELIST`, which fails if a new blocking
-`get_input` appears): the 616.1 multi-replacement `choose_one` prompt (needs two replacement effects
+Every decision kind is a loop-safe snapshot point (a searchable root), except these residual
+blocking prompts (classified by the archived `train/test_snapshot.py`'s `PROMPT_SITE_WHITELIST`; no
+check now fails when a new blocking `get_input` appears, so a search agent should restore one): the 616.1 multi-replacement `choose_one` prompt (needs two replacement effects
 on one event, e.g. two Leylines of the Void; counted by `replacement::choose_one_prompt_count`), the
 Mox Diamond discard-a-land replacement prompt, `effect_choose_card`'s cast-from-exile mini-cast
 (Dauthi — see above), interactive-only prompts machine mode never reaches (mana payment, hybrid

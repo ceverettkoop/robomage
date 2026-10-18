@@ -6,7 +6,6 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/player.h"
@@ -71,8 +70,6 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             Entity chosen = hand[i];
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);
             game_log("%s discards %s at random\n", player_name(tgt_owner).c_str(), cd.name.c_str());
-            // The discarded card enters a public zone — record its identity in the belief state.
-            mark_card_revealed(chosen, tgt_owner);
             orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -85,17 +82,14 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     bool tgt_chooses = (mode == "TgtChoose");
     Zone::Ownership chooser = tgt_chooses ? tgt_owner : ab.controller;
 
-    // Arm-only reveal: the logs and the belief-state recording ran when the pick
-    // below was armed; a resume must not repeat them. TgtChoose does not reveal the hand.
+    // Arm-only reveal: the logs ran when the pick below was armed; a resume must not repeat
+    // them. TgtChoose does not reveal the hand.
     if (!ctx.resuming() && !tgt_chooses) {
         game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
         reveal_cards(hand);
         for (auto e : hand) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             game_log("  %s\n", cd.name.c_str());
-            // The whole hand is revealed to the caster: record each card's identity in
-            // the belief state (match-scoped multi-hot + per-card known-in-hand flag).
-            mark_card_revealed(e, tgt_owner);
         }
     }
 

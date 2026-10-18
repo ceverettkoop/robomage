@@ -1,5 +1,12 @@
 # Step 1 handoff: state format emitted + knowledge sidecar
 
+> **Historical record.** This brief describes the repository as it was at step 1, with the RL
+> stack, BQUERY and the Python gate (`train/ci_check.py`) still in place. Plan step 3b deleted
+> them: `train/` paths name files now on branch `archive/rl-stack` (the kept Python is in
+> `python/`, the scenarios and corpus in `tests/`), the gate is `robomage_check` (`docs/ci.md`),
+> `--machine` speaks RMSTATE, and the shadow comparison is gone (its findings:
+> `knowledge_store.md` §9.7). For the current project read `CLAUDE.md`.
+
 **Status: done.** Every task (T0–T12) is implemented and the exit criteria of section 6 hold:
 the `rmstate` and `knowledge` checks run in `make check`, the replay corpus is byte-identical,
 `obsinv` is green, and every shadow-comparison mismatch is classified in
@@ -79,7 +86,7 @@ This is a self-contained brief for a session picking up **step 1** of
 | `src/state_format/selfcheck.{h,cpp}` | `--selfcheck-state` / `--selfcheck-knowledge` | engine + decode + knowledge |
 | `src/knowledge/*.{h,cpp}` | model, update rules, solver, `k_*` output | `state_format/decode.h`, `schema.h`, std only |
 | `tools/rmknow/rmknow.cpp` | standalone frame-stream → knowledge tool | decode + knowledge only |
-| `train/rmstate.py` | Python decoder, built from the `SCHEMA` frame | stdlib (+ numpy optional) |
+| `python/rmstate.py` | Python decoder, built from the `SCHEMA` frame | stdlib (+ numpy optional) |
 
 **Build notes:**
 - The Makefile compiles `src/*.cpp` and `src/*/*.cpp` into `bin/<config>/robomage`, so
@@ -214,7 +221,7 @@ tell subagents not to spawn further agents.
 
 ### T6. Python decoder
 
-- `train/rmstate.py`, built from the `SCHEMA` frame. Decode with `struct.iter_unpack` /
+- `python/rmstate.py`, built from the `SCHEMA` frame. Decode with `struct.iter_unpack` /
   `numpy.frombuffer` structured dtypes; no copied constants.
 - **Done when:** for dumped frames, the Python decode equals the C++ `--state-dump json`.
 

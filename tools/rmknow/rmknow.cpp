@@ -9,7 +9,7 @@
 // --stats prints, after the summary, one RMKNOW_STATS line: frames, exact frames (k_meta.exact),
 // the most nodes and junctions either player's network held, the largest and mean serialised state
 // (Knowledge::serialize) and the percentiles and histogram of k_meta's solver steps.
-// Reads RMSTATE records (an --rmstate-dump file, or a --machine-format rmstate stream), keeps the
+// Reads RMSTATE records (an --rmstate-dump file, or a saved --machine stream), keeps the
 // chosen seat's frames (SCHEMA, CARDS, DECKLISTS, METAGAME, STATE) and runs the knowledge sidecar on them at
 // --level (default expert). With several viewers in the stream --viewer picks one (default: the
 // stream's first frame's seat). A STATE frame's own k_* tables (the engine's, tables 90 and up)
@@ -41,8 +41,8 @@
 //   RMKNOW_BELIEF: game=<g> decision=<d> true=<list ids equal to the opponent's registered list, from
 //   the omniscient DECKLISTS frame, comma-separated, or -> exact=<0|1> prob=<b_list prob per list>
 // --hide-lists feeds the seat's DECKLISTS frame without the opponent's list, as --closed-decklist
-// would have sent it: the belief layer's calibration over games played with open decklists (the
-// agents that need BQUERY cannot play under --closed-decklist); the events are the same either way.
+// would have sent it: the belief layer's calibration over games played with open decklists; the
+// events are the same either way.
 // It does not combine with --isolation (the frames' own tables were built with the list).
 // --belief-exactness N checks the belief layer against the weighted enumeration of the hypothesis
 // networks and the model played out directly on N simulated games (exactness.cpp); the last line is

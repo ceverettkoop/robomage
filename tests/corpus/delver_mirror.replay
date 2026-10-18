@@ -1,0 +1,1134 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from delver_mirror.rmlog
+REPLAY MODE: Using embedded decks 'delver' / 'delver' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dragon's Rage Channeler
+Player A draws Wasteland
+Player A draws Scalding Tarn
+Player A draws Daze
+Player A draws Misty Rainforest
+Player A draws Daze
+Player A draws Ponder
+Player B draws Daze
+Player B draws Ponder
+Player B draws Scalding Tarn
+Player B draws Polluted Delta
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Brainstorm
+Player A hand:
+Dragon's Rage Channeler
+Daze
+Daze
+Ponder
+Misty Rainforest
+Scalding Tarn
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Brainstorm
+Daze
+Ponder
+Polluted Delta
+Scalding Tarn
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Volcanic Island
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+| decision 9: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 17: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Dragon's Rage Channeler
+Player B draws Delver of Secrets
+Player B draws Flooded Strand
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+|   1: Dragon's Rage Channeler
+|   2: Dragon's Rage Channeler
+|   3: Daze
+|   4: Ponder
+|   5: Flooded Strand
+|   6: Volcanic Island
+|   7: Scalding Tarn
+(REPLAY) [T1 | First Main | Player B] Input: 5
+| >> Player B: 5 (Flooded Strand)
+Player B puts Flooded Strand to top of library
+Player B chooses a card from Player B hand:
+| decision 19: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+|   1: Dragon's Rage Channeler
+|   2: Dragon's Rage Channeler
+|   3: Daze
+|   4: Ponder
+|   5: Volcanic Island
+|   6: Scalding Tarn
+(REPLAY) [T1 | First Main | Player B] Input: 5
+| >> Player B: 5 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Unholy Heat
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Volcanic Island
+Player A draws Unholy Heat
+| decision 20: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 21: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Volcanic Island for 1(R)
+Player A casts Unholy Heat targeting Dragon's Rage Channeler
+Dragon's Rage Channeler triggered
+| decision 22: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 23: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 24: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Unholy Heat
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Unholy Heat)
+Targeting choice 0
+| decision 25: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Return Volcanic Island)
+Player B returns Volcanic Island to hand
+Player B casts Daze targeting Unholy Heat
+| decision 26: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 27: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Daze
+|   1: Unholy Heat
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Daze)
+Targeting choice 0
+| decision 28: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Return Volcanic Island)
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Daze
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Dragon's Rage Channeler
+| decision 29: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Put Dragon's Rage Channeler on top of library
+|   1: Put Dragon's Rage Channeler into graveyard
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Dragon's Rage Channeler on top of library)
+Resolving ability (category: Counter)
+Daze's controller may pay {1} to save it:
+| decision 30: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Don't pay (Daze is countered)
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Daze is countered))
+Daze is countered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Dragon's Rage Channeler
+| decision 31: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Put Dragon's Rage Channeler on top of library
+|   1: Put Dragon's Rage Channeler into graveyard
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Put Dragon's Rage Channeler on top of library)
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 2 damage to Dragon's Rage Channeler
+Dragon's Rage Channeler is destroyed (lethal damage)
+| decision 32: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 35: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Cori-Steel Cutter
+|   2: Delver of Secrets
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Choose which card goes 2 from top:
+| decision 36: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Cori-Steel Cutter
+|   1: Delver of Secrets
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Delver of Secrets)
+| decision 37: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Flooded Strand
+| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Play Scalding Tarn
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 40: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 41: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Delver of Secrets
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Dragon's Rage Channeler
+|   4: Cast Ponder
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Delver of Secrets)
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+| decision 42: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 43: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Delver of Secrets)
+Targeting choice 0
+| decision 44: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Volcanic Island)
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Delver of Secrets
+Resolving ability (category: Counter)
+Delver of Secrets's controller may pay {1} to save it:
+| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Delver of Secrets is countered)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Delver of Secrets is countered))
+Delver of Secrets is countered
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Delver of Secrets
+| decision 46: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Delver of Secrets
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Delver of Secrets)
+Player A activated Volcanic Island for 1(U)
+Player A casts Delver of Secrets
+Delver of Secrets enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Mishra's Bauble
+| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Cast Dragon's Rage Channeler
+|   5: Cast Dragon's Rage Channeler
+|   6: Cast Mishra's Bauble
+|   7: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Cast Mishra's Bauble
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Force of Will
+| decision 50: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Force of Will into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Force of Will on top of library)
+Mishra's Bauble enters the battlefield
+| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (18 life)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Dragon's Rage Channeler
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Delver of Secrets triggered
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Force of Will
+Resolving ability (category: PeekAndReveal)
+Top card of library: Dragon's Rage Channeler
+| decision 55: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Don't reveal)
+Player A draws Dragon's Rage Channeler
+| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Wasteland
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+| decision 57: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 58: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+| decision 59: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Ponder
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Ponder)
+Player B pays 1 life
+Player B exiles Ponder
+Player B casts Force of Will targeting Dragon's Rage Channeler
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 60: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Delver of Secrets
+| decision 61: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Delver of Secrets on top of library
+|   1: Put Delver of Secrets into graveyard
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Delver of Secrets on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Delver of Secrets
+| decision 62: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Delver of Secrets on top of library
+|   1: Put Delver of Secrets into graveyard
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Delver of Secrets on top of library)
+Resolving ability (category: Counter)
+Dragon's Rage Channeler is countered
+| decision 63: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scalding Tarn)
+Player A played Scalding Tarn
+| decision 64: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 65: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+|   4: Thundering Falls
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 66: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 8 (Player B) --------
+Player B draws Delver of Secrets
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Cast Delver of Secrets
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Delver of Secrets)
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 69: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 15 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 9 (Player A) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Mishra's Bauble
+| decision 70: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Don't reveal)
+Player A draws Mishra's Bauble
+| decision 71: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Mishra's Bauble
+|   3: Cast Cori-Steel Cutter
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 72: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Cori-Steel Cutter
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Cori-Steel Cutter)
+Player A activated Volcanic Island for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A casts Cori-Steel Cutter
+| decision 73: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 74: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (17 life)
+|   1: Player A (12 life)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (17 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Delver of Secrets
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Cori-Steel Cutter enters the battlefield
+| decision 75: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 76: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 77: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Volcanic Island
+|   1: Volcanic Island
+|   2: Volcanic Island
+|   3: Volcanic Island
+|   4: Volcanic Island
+|   5: Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Volcanic Island)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy)
+Volcanic Island is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 78: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Delver of Secrets [1/1] -> Player B
+| decision 79: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Delver of Secrets [1/1]
+Your creatures:
+| decision 80: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T8 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player B (now at 16 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Delver of Secrets triggered
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
+Resolving ability (category: PeekAndReveal)
+Top card of library: Delver of Secrets
+| decision 81: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Reveal)
+Revealed: Delver of Secrets
+Player B draws Delver of Secrets
+| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Cast Delver of Secrets
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Delver of Secrets)
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 84: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 85: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+|   4: Thundering Falls
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 86: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 87: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player A
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player A (now at 11 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 8 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 5 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Mountain
+| decision 88: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Don't reveal)
+Player A draws Mountain
+| decision 89: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Cast Cori-Steel Cutter
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Cori-Steel Cutter)
+Player A activated Volcanic Island for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A casts Cori-Steel Cutter
+Cori-Steel Cutter enters the battlefield
+| decision 90: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+
+--- Declare Attackers (Player A) ---
+| decision 91: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Delver of Secrets [1/1] -> Player B
+| decision 92: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Delver of Secrets [1/1]
+Your creatures:
+| decision 93: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T10 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player B (now at 14 life)
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 94: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Delver of Secrets (PeekAndReveal)
+|   1: Delver of Secrets (PeekAndReveal)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets (PeekAndReveal))
+Delver of Secrets triggered
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Lightning Bolt
+| decision 95: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Reveal)
+Revealed: Lightning Bolt
+Delver of Secrets transforms into Insectile Aberration!
+Resolving ability (category: PeekAndReveal)
+Top card of library: Lightning Bolt
+| decision 96: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Don't reveal)
+Player B draws Lightning Bolt
+| decision 97: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T11 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 98: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Player A (5 life)
+|   1: Player B (14 life)
+|   2: Delver of Secrets
+|   3: Delver of Secrets
+|   4: Insectile Aberration
+|   5: Dragon's Rage Channeler
+|   6: Dragon's Rage Channeler
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Player A (5 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 99: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Cori-Steel Cutter
+| decision 100: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Put Cori-Steel Cutter on top of library
+|   1: Put Cori-Steel Cutter into graveyard
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Cori-Steel Cutter on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Cori-Steel Cutter
+| decision 101: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Put Cori-Steel Cutter on top of library
+|   1: Put Cori-Steel Cutter into graveyard
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Cori-Steel Cutter on top of library)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 2 life)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 102: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Insectile Aberration [3/2]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 103: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Insectile Aberration [3/2]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Insectile Aberration [3/2])
+Insectile Aberration attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+  [attacking] Insectile Aberration [3/2] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 104: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player A
+  Insectile Aberration -> Player A
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player A (now at 1 life)
+  Insectile Aberration deals 3 damage to Player A (now at -2 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at -5 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at -8 life)
+--- End Combat Damage ---
+
+
+Player A has -8 life - Player B wins!
+GAME_RESULT: 1 Player B wins

@@ -1,0 +1,1153 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_gw_maverick__lands.rmlog
+REPLAY MODE: Using embedded decks 'league/gw_maverick' / 'league/lands' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Forest
+Player A draws Wasteland
+Player A draws Wasteland
+Player A draws Once Upon a Time
+Player A draws Thalia, Guardian of Thraben
+Player A draws Once Upon a Time
+Player A draws Savannah
+Player B draws Mox Diamond
+Player B draws Sphere of Resistance
+Player B draws Urza's Saga
+Player B draws Swords to Plowshares
+Player B draws Exploration
+Player B draws Crop Rotation
+Player B draws Malevolent Rumble
+Player A hand:
+Forest
+Once Upon a Time
+Once Upon a Time
+Savannah
+Thalia, Guardian of Thraben
+Wasteland
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Crop Rotation
+Exploration
+Malevolent Rumble
+Mox Diamond
+Sphere of Resistance
+Swords to Plowshares
+Urza's Saga
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Swords to Plowshares
+Player B draws Dark Depths
+Player B draws Boseiju, Who Endures
+Player B draws Crop Rotation
+Player B draws Thespian's Stage
+Player B draws Savannah
+Player B draws Exploration
+Player B hand:
+Boseiju, Who Endures
+Crop Rotation
+Dark Depths
+Exploration
+Savannah
+Swords to Plowshares
+Thespian's Stage
+| decision 3: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 4: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Boseiju, Who Endures
+|   1: Crop Rotation
+|   2: Dark Depths
+|   3: Exploration
+|   4: Savannah
+|   5: Swords to Plowshares
+|   6: Thespian's Stage
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Boseiju, Who Endures)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+|   2: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time (alternate cost))
+Player A casts for free (alternate cost)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 6: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Badgermole Cub
+|   2: Endurance
+|   3: Collector Ouphe
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Badgermole Cub)
+Player A reveals Badgermole Cub and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Savannah
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Malevolent Rumble
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Savannah
+|   3: Play Thespian's Stage
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dark Depths)
+Player B played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Swords to Plowshares
+| decision 9: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Savannah)
+Player A played Savannah
+| decision 10: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Badgermole Cub
+|   2: Cast Once Upon a Time
+|   3: Cast Thalia, Guardian of Thraben
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Badgermole Cub)
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Badgermole Cub
+Badgermole Cub enters the battlefield
+Choose target for Badgermole Cub:
+| decision 11: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Forest
+|   1: Savannah
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Forest)
+Targeting choice 0
+Badgermole Cub triggered
+Resolving ability (category: Earthbend)
+Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Sphere of Resistance
+| decision 12: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Thespian's Stage
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Play Thespian's Stage)
+Player B played Thespian's Stage
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 13: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time)
+Badgermole Cub adds an additional 1(G).
+Player A activated Forest for 1(G)
+Player A casts Once Upon a Time
+| decision 14: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 15: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Verdant Catacombs
+|   3: Talon Gates of Madara
+|   4: Noble Hierarch
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Thalia, Guardian of Thraben)
+Player A reveals Thalia, Guardian of Thraben and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 16: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Green Sun's Zenith
+| decision 17: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 18: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Cast Green Sun's Zenith
+|   4: Cast Swords to Plowshares
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 19: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 20: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (X = 1)
+Player A chooses X = 1
+Player A activated Savannah for 1(G)
+Player A activated Wasteland for 1(C)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 21: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Birds of Paradise
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Birds of Paradise)
+Player A shuffles their library
+Player A puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+
+--- Declare Attackers (Player A) ---
+| decision 22: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [2/2])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+| decision 23: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Player B (now at 18 life)
+--- End Combat Damage ---
+
+
+-------- TURN 6 (Player B) --------
+Player B draws The Tabernacle at Pendrell Vale
+| decision 24: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play The Tabernacle at Pendrell Vale
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 25: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+|   2: Cast Exploration
+|   3: Cast Malevolent Rumble
+|   4: Cast Sphere of Resistance
+|   5: Cast Swords to Plowshares
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Exploration)
+Player B activated Savannah for 1(G)
+Player B casts Exploration
+Exploration enters the battlefield
+| decision 26: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play The Tabernacle at Pendrell Vale
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play The Tabernacle at Pendrell Vale)
+Player B played The Tabernacle at Pendrell Vale
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 27: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Badgermole Cub (Destroy)
+|   1: Birds of Paradise (Destroy)
+|   2: Forest (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub (Destroy))
+Badgermole Cub triggered
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 28: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Birds of Paradise (Destroy)
+|   1: Forest (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Birds of Paradise (Destroy))
+Birds of Paradise triggered
+Forest triggered
+| decision 29: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Forest from being destroyed:
+| decision 30: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Tap Birds of Paradise for (W)
+|   1: Tap Birds of Paradise for (U)
+|   2: Tap Birds of Paradise for (B)
+|   3: Tap Birds of Paradise for (R)
+|   4: Tap Birds of Paradise for (G)
+|   5: Tap Forest for (G)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Wasteland for (C)
+|   9: Don't pay (Forest is destroyed)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Birds of Paradise for (W))
+Badgermole Cub adds an additional 1(G).
+Player A tapped Birds of Paradise for {W}
+| decision 31: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Pay {1} (Forest is not destroyed)
+|   5: Don't pay (Forest is destroyed)
+(REPLAY) [T6 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Pay {1} (Forest is not destroyed))
+Player A pays {1} — Forest is not destroyed
+| decision 32: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Birds of Paradise from being destroyed:
+| decision 33: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Pay {1} (Birds of Paradise is not destroyed)
+|   5: Don't pay (Birds of Paradise is destroyed)
+(REPLAY) [T6 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Pay {1} (Birds of Paradise is not destroyed))
+Player A pays {1} — Birds of Paradise is not destroyed
+| decision 34: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Badgermole Cub from being destroyed:
+| decision 35: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Don't pay (Badgermole Cub is destroyed)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Forest for (G))
+Badgermole Cub adds an additional 1(G).
+Player A tapped Forest for {G}
+| decision 36: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Tap Wasteland for (C)
+|   3: Pay {1} (Badgermole Cub is not destroyed)
+|   4: Don't pay (Badgermole Cub is destroyed)
+(REPLAY) [T6 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Pay {1} (Badgermole Cub is not destroyed))
+Player A pays {1} — Badgermole Cub is not destroyed
+| decision 37: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Scythecat Cub
+| decision 38: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Scythecat Cub
+|   3: Cast Swords to Plowshares
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Cast Thalia, Guardian of Thraben
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Scythecat Cub)
+Player A activated Savannah for 1(G)
+Player A activated Wasteland for 1(C)
+Player A casts Scythecat Cub
+Scythecat Cub enters the battlefield
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+Choose target for Scythecat Cub:
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badgermole Cub
+|   1: Birds of Paradise
+|   2: Forest
+|   3: Scythecat Cub
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub)
+Targeting choice 0
+Scythecat Cub triggered
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dark Depths
+|   1: Savannah
+|   2: The Tabernacle at Pendrell Vale
+|   3: Thespian's Stage
+|   4: Savannah
+|   5: Wasteland
+|   6: Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dark Depths)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Dark Depths is on the stack
+Resolving ability (category: Destroy)
+Dark Depths is destroyed
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 3/3).
+Resolving ability (category: MultiplyCounter)
+
+--- Declare Attackers (Player A) ---
+| decision 44: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [3/3]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [3/3])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [3/3] -> Player B
+| decision 45: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Badgermole Cub deals 3 damage to Player B (now at 15 life)
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+| decision 46: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Crop Rotation)
+| decision 47: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+|   1: Sacrifice The Tabernacle at Pendrell Vale
+|   2: Sacrifice Thespian's Stage
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Savannah)
+Player B activated Savannah for 1(G)
+Player B sacrifices Savannah
+Player B casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 48: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Forest
+|   7: Ghost Quarter
+|   8: Karakas
+|   9: Maze of Ith
+|   10: Rishadan Port
+|   11: Savannah
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T7 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Dark Depths)
+Player B shuffles their library
+Player B puts Dark Depths to the battlefield
+Dark Depths enters with 10 ICE counter(s).
+Player B draws Life from the Loam
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A orders 4 simultaneous triggers (pick which goes on the stack next).
+| decision 49: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Badgermole Cub (Destroy)
+|   1: Birds of Paradise (Destroy)
+|   2: Forest (Destroy)
+|   3: Scythecat Cub (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub (Destroy))
+Badgermole Cub triggered
+Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 50: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Birds of Paradise (Destroy)
+|   1: Forest (Destroy)
+|   2: Scythecat Cub (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Birds of Paradise (Destroy))
+Birds of Paradise triggered
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 51: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Forest (Destroy)
+|   1: Scythecat Cub (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Forest (Destroy))
+Forest triggered
+Scythecat Cub triggered
+| decision 52: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Scythecat Cub from being destroyed:
+| decision 53: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Birds of Paradise for (W)
+|   1: Tap Birds of Paradise for (U)
+|   2: Tap Birds of Paradise for (B)
+|   3: Tap Birds of Paradise for (R)
+|   4: Tap Birds of Paradise for (G)
+|   5: Tap Forest for (G)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Wasteland for (C)
+|   9: Don't pay (Scythecat Cub is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Birds of Paradise for (W))
+Badgermole Cub adds an additional 1(G).
+Player A tapped Birds of Paradise for {W}
+| decision 54: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Pay {1} (Scythecat Cub is not destroyed)
+|   5: Don't pay (Scythecat Cub is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Pay {1} (Scythecat Cub is not destroyed))
+Player A pays {1} — Scythecat Cub is not destroyed
+| decision 55: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Forest from being destroyed:
+| decision 56: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Pay {1} (Forest is not destroyed)
+|   5: Don't pay (Forest is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Pay {1} (Forest is not destroyed))
+Player A pays {1} — Forest is not destroyed
+| decision 57: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Birds of Paradise from being destroyed:
+| decision 58: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Don't pay (Birds of Paradise is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Forest for (G))
+Badgermole Cub adds an additional 1(G).
+Player A tapped Forest for {G}
+| decision 59: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Tap Wasteland for (C)
+|   3: Pay {1} (Birds of Paradise is not destroyed)
+|   4: Don't pay (Birds of Paradise is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Pay {1} (Birds of Paradise is not destroyed))
+Player A pays {1} — Birds of Paradise is not destroyed
+| decision 60: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Badgermole Cub from being destroyed:
+| decision 61: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Tap Wasteland for (C)
+|   3: Pay {1} (Badgermole Cub is not destroyed)
+|   4: Don't pay (Badgermole Cub is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Pay {1} (Badgermole Cub is not destroyed))
+Player A pays {1} — Badgermole Cub is not destroyed
+| decision 62: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Windswept Heath
+| decision 63: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Cast Swords to Plowshares
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Thalia, Guardian of Thraben)
+Player A activated Savannah for 1(W)
+Player A activated Wasteland for 1(C)
+Player A casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+| decision 65: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Windswept Heath)
+Player A played Windswept Heath
+Choose target for Scythecat Cub:
+| decision 66: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badgermole Cub
+|   1: Birds of Paradise
+|   2: Forest
+|   3: Scythecat Cub
+|   4: Thalia, Guardian of Thraben
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub)
+Targeting choice 0
+Scythecat Cub triggered
+| decision 67: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Windswept Heath (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 68: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Plains
+|   3: Savannah
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+Choose target for Scythecat Cub:
+| decision 69: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badgermole Cub
+|   1: Birds of Paradise
+|   2: Forest
+|   3: Scythecat Cub
+|   4: Thalia, Guardian of Thraben
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub)
+Targeting choice 0
+Scythecat Cub triggered
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: MultiplyCounter)
+MultiplyCounter: doubled +1/+1 counters on creature (now 4/4).
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 5/5).
+Resolving ability (category: MultiplyCounter)
+
+--- Declare Attackers (Player A) ---
+| decision 70: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [5/5]
+|   1: Scythecat Cub [2/2]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [5/5])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [5/5] -> Player B
+| decision 71: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [5/5] -> Player B
+  [attacking] Scythecat Cub [2/2] -> Player B
+| decision 72: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+  Scythecat Cub -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Badgermole Cub deals 5 damage to Player B (now at 10 life)
+  Scythecat Cub deals 2 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Wasteland
+| decision 73: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 74: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 75: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Savannah
+|   1: Savannah
+|   2: Wasteland
+|   3: Dark Depths
+|   4: The Tabernacle at Pendrell Vale
+|   5: Thespian's Stage
+|   6: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Savannah)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Savannah is on the stack
+| decision 76: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Savannah is destroyed
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A orders 5 simultaneous triggers (pick which goes on the stack next).
+| decision 77: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Badgermole Cub (Destroy)
+|   1: Birds of Paradise (Destroy)
+|   2: Forest (Destroy)
+|   3: Scythecat Cub (Destroy)
+|   4: Thalia, Guardian of Thraben (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub (Destroy))
+Badgermole Cub triggered
+Player A orders 4 simultaneous triggers (pick which goes on the stack next).
+| decision 78: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Birds of Paradise (Destroy)
+|   1: Forest (Destroy)
+|   2: Scythecat Cub (Destroy)
+|   3: Thalia, Guardian of Thraben (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Birds of Paradise (Destroy))
+Birds of Paradise triggered
+Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 79: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Forest (Destroy)
+|   1: Scythecat Cub (Destroy)
+|   2: Thalia, Guardian of Thraben (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Forest (Destroy))
+Forest triggered
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 80: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Scythecat Cub (Destroy)
+|   1: Thalia, Guardian of Thraben (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Scythecat Cub (Destroy))
+Scythecat Cub triggered
+Thalia, Guardian of Thraben triggered
+| decision 81: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Thalia, Guardian of Thraben from being destroyed:
+| decision 82: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Birds of Paradise for (W)
+|   1: Tap Birds of Paradise for (U)
+|   2: Tap Birds of Paradise for (B)
+|   3: Tap Birds of Paradise for (R)
+|   4: Tap Birds of Paradise for (G)
+|   5: Tap Forest for (G)
+|   6: Tap Savannah for (G)
+|   7: Tap Savannah for (W)
+|   8: Tap Wasteland for (C)
+|   9: Don't pay (Thalia, Guardian of Thraben is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Birds of Paradise for (W))
+Badgermole Cub adds an additional 1(G).
+Player A tapped Birds of Paradise for {W}
+| decision 83: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Pay {1} (Thalia, Guardian of Thraben is not destroyed)
+|   5: Don't pay (Thalia, Guardian of Thraben is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Pay {1} (Thalia, Guardian of Thraben is not destroyed))
+Player A pays {1} — Thalia, Guardian of Thraben is not destroyed
+| decision 84: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Scythecat Cub from being destroyed:
+| decision 85: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Pay {1} (Scythecat Cub is not destroyed)
+|   5: Don't pay (Scythecat Cub is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 4
+| >> Player A: 4 (Pay {1} (Scythecat Cub is not destroyed))
+Player A pays {1} — Scythecat Cub is not destroyed
+| decision 86: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Forest from being destroyed:
+| decision 87: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Forest for (G)
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+|   3: Tap Wasteland for (C)
+|   4: Don't pay (Forest is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Forest for (G))
+Badgermole Cub adds an additional 1(G).
+Player A tapped Forest for {G}
+| decision 88: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Tap Wasteland for (C)
+|   3: Pay {1} (Forest is not destroyed)
+|   4: Don't pay (Forest is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Pay {1} (Forest is not destroyed))
+Player A pays {1} — Forest is not destroyed
+| decision 89: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Birds of Paradise from being destroyed:
+| decision 90: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Tap Wasteland for (C)
+|   3: Pay {1} (Birds of Paradise is not destroyed)
+|   4: Don't pay (Birds of Paradise is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Pay {1} (Birds of Paradise is not destroyed))
+Player A pays {1} — Birds of Paradise is not destroyed
+| decision 91: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Badgermole Cub from being destroyed:
+| decision 92: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Savannah for (G)
+|   1: Tap Savannah for (W)
+|   2: Tap Wasteland for (C)
+|   3: Don't pay (Badgermole Cub is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Savannah for (G))
+Player A tapped Savannah for {G}
+| decision 93: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Tap Wasteland for (C)
+|   1: Pay {1} (Badgermole Cub is not destroyed)
+|   2: Don't pay (Badgermole Cub is destroyed)
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Pay {1} (Badgermole Cub is not destroyed))
+Player A pays {1} — Badgermole Cub is not destroyed
+| decision 94: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Keen-Eyed Curator
+| decision 95: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 96: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 97: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dark Depths
+|   1: The Tabernacle at Pendrell Vale
+|   2: Thespian's Stage
+|   3: Savannah
+|   4: Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dark Depths)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Dark Depths is on the stack
+Resolving ability (category: Destroy)
+Dark Depths is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 98: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [5/5]
+|   1: Scythecat Cub [2/2]
+|   2: Thalia, Guardian of Thraben [2/1]
+|   3: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [5/5])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [5/5] -> Player B
+| decision 99: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [5/5] -> Player B
+  [attacking] Scythecat Cub [2/2] -> Player B
+| decision 100: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [5/5] -> Player B
+  [attacking] Scythecat Cub [2/2] -> Player B
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| decision 101: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+  Scythecat Cub -> Player B
+  Thalia, Guardian of Thraben -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 6 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Badgermole Cub deals 5 damage to Player B (now at 1 life)
+  Scythecat Cub deals 2 damage to Player B (now at -1 life)
+--- End Combat Damage ---
+
+
+Player B has -1 life - Player A wins!
+GAME_RESULT: 1 Player A wins

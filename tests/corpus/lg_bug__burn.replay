@@ -1,0 +1,542 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bug__burn.rmlog
+REPLAY MODE: Using embedded decks 'league/bug' / 'league/burn' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Verdant Catacombs
+Player A draws Polluted Delta
+Player A draws Underground Sea
+Player A draws Polluted Delta
+Player A draws Sheoldred's Edict
+Player B draws Mountain
+Player B draws Mountain
+Player B draws Price of Progress
+Player B draws Mountain
+Player B draws Goblin Guide
+Player B draws Eidolon of the Great Revel
+Player B draws Lightning Bolt
+Player A hand:
+Flow State
+Polluted Delta
+Polluted Delta
+Sheoldred's Edict
+Underground Sea
+Verdant Catacombs
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Thoughtseize
+Player A draws Fatal Push
+Player A draws Brainstorm
+Player A draws Fatal Push
+Player A draws Tropical Island
+Player A draws Sheoldred's Edict
+Player A draws Force of Will
+Player B hand:
+Eidolon of the Great Revel
+Goblin Guide
+Lightning Bolt
+Mountain
+Mountain
+Mountain
+Price of Progress
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Brainstorm
+Fatal Push
+Fatal Push
+Force of Will
+Sheoldred's Edict
+Thoughtseize
+Tropical Island
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Fatal Push
+|   2: Fatal Push
+|   3: Force of Will
+|   4: Sheoldred's Edict
+|   5: Thoughtseize
+|   6: Tropical Island
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Brainstorm)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Mountain
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+|   4: Play Mountain
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Mountain)
+Player B played Mountain
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Goblin Guide
+|   2: Cast Lightning Bolt
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Goblin Guide)
+Player B activated Mountain for 1(R)
+Player B casts Goblin Guide
+Goblin Guide enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 8: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Goblin Guide [2/2]
+|   1: Confirm attackers
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Goblin Guide [2/2])
+Goblin Guide attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Goblin Guide [2/2] -> Player A
+| decision 9: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Goblin Guide -> Player A
+Goblin Guide triggered
+Resolving ability (category: Dig)
+Player A looks at the top 1 card(s) of their library.
+Player A reveals Orcish Bowmasters from the top of their library.
+Player A puts 1 card(s) on the top of their library.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Goblin Guide deals 2 damage to Player A (now at 18 life)
+--- End Combat Damage ---
+
+
+-------- TURN 3 (Player A) --------
+Player A draws Orcish Bowmasters
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+| decision 10: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 11: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Player A (18 life)
+|   1: Player B (20 life)
+|   2: Goblin Guide
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (18 life))
+Targeting choice 0
+Player B activated Mountain for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 15 life)
+Player B draws Lava Spike
+| decision 12: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Mountain)
+Player B played Mountain
+| decision 13: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lava Spike
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Lava Spike)
+Choose target for Lava Spike:
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (15 life)
+|   1: Player B (20 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (15 life))
+Targeting choice 0
+Player B activated Mountain for 1(R)
+Player B casts Lava Spike targeting Player A
+Resolving ability (category: DealDamage, amount: 3)
+Lava Spike deals 3 damage to Player A (now at 12 life)
+
+--- Declare Attackers (Player B) ---
+| decision 15: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Goblin Guide [2/2]
+|   1: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Goblin Guide [2/2])
+Goblin Guide attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Goblin Guide [2/2] -> Player A
+| decision 16: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Goblin Guide -> Player A
+Goblin Guide triggered
+Resolving ability (category: Dig)
+Player A looks at the top 1 card(s) of their library.
+Player A reveals Tamiyo, Inquisitive Student from the top of their library.
+Player A puts 1 card(s) on the top of their library.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Goblin Guide deals 2 damage to Player A (now at 10 life)
+--- End Combat Damage ---
+
+
+-------- TURN 5 (Player A) --------
+Player A draws Tamiyo, Inquisitive Student
+| decision 17: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Tamiyo, Inquisitive Student)
+Player A activated Tropical Island for 1(U)
+Player A casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 18: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Price of Progress
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Price of Progress)
+Player B activated Mountain for 1(R)
+Player B activated Mountain for 1(R)
+Player B casts Price of Progress
+Resolving ability (category: RepeatEach)
+Resolving ability (category: DealDamage, amount: 0)
+Resolving ability (category: DealDamage, amount: 2)
+Price of Progress deals 2 damage to Player A (now at 8 life)
+Player B draws Chain Lightning
+| decision 19: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Mountain)
+Player B played Mountain
+| decision 20: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Chain Lightning
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 21: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (8 life)
+|   1: Player B (20 life)
+|   2: Tamiyo, Inquisitive Student
+|   3: Goblin Guide
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (8 life))
+Targeting choice 0
+Player B activated Mountain for 1(R)
+Player B casts Chain Lightning targeting Player A
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player A (now at 5 life)
+Resolving ability (category: CopySpellAbility)
+Player A may pay to copy Chain Lightning:
+| decision 22: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't pay (Chain Lightning is not copied))
+
+--- Declare Attackers (Player B) ---
+| decision 23: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Goblin Guide [2/2]
+|   1: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Goblin Guide [2/2])
+Goblin Guide attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Goblin Guide [2/2] -> Player A
+| decision 24: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Goblin Guide -> Player A
+Goblin Guide triggered
+Resolving ability (category: Dig)
+Player A looks at the top 1 card(s) of their library.
+Player A reveals Tropical Island from the top of their library.
+Player A reveals Tropical Island and puts it into hand.
+Player A puts 0 card(s) on the top of their library.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Goblin Guide [2/2]
+Your creatures:
+| decision 25: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm blockers
+(REPLAY) [T5 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Goblin Guide deals 2 damage to Player A (now at 3 life)
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+Player A draws Baleful Strix
+| decision 26: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+
+--- Declare Attackers (Player A) ---
+| decision 27: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 28: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+| decision 29: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 30: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T6 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+| decision 31: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T6 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 32: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T6 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 33: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T6 | Second Main | Player A] Input: 1
+| >> Player A: 1 (Activate Clue token (Draw))
+Player A activated Tropical Island for 1(G)
+Player A activated Tropical Island for 1(G)
+Player A sacrifices Clue token
+Player A's Clue ability is on the stack
+Clue (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Swamp
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 34: Player A (game 0, turn 6, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Fatal Push
+|   2: Fatal Push
+|   3: Force of Will
+|   4: Orcish Bowmasters
+|   5: Sheoldred's Edict
+|   6: Swamp
+|   7: Thoughtseize
+(REPLAY) [T6 | Cleanup | Player A] Input: 5
+| >> Player A: 5 (Sheoldred's Edict)
+Player A discards Sheoldred's Edict.
+
+-------- TURN 8 (Player B) --------
+Player B draws Fireblast
+| decision 35: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fireblast (alternate cost)
+(REPLAY) [T7 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Fireblast (alternate cost))
+Choose target for Fireblast:
+| decision 36: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Player A (3 life)
+|   1: Player B (20 life)
+|   2: Tamiyo, Inquisitive Student
+|   3: Goblin Guide
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Player A (3 life))
+Targeting choice 0
+| decision 37: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Sacrifice Mountain
+|   1: Sacrifice Mountain
+|   2: Sacrifice Mountain
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Mountain)
+| decision 38: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Sacrifice Mountain
+|   1: Sacrifice Mountain
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Mountain)
+Player B sacrifices Mountain
+Player B sacrifices Mountain
+Player B casts Fireblast targeting Player A
+| decision 39: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T7 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 40: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Fireblast
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Fireblast)
+Targeting choice 0
+| decision 41: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Exile Baleful Strix
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Exile Baleful Strix)
+Player A pays 1 life
+Player A exiles Baleful Strix
+Player A casts Force of Will targeting Fireblast
+Resolving ability (category: Counter)
+Fireblast is countered
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Mountain)
+Player B played Mountain
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Eidolon of the Great Revel
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Eidolon of the Great Revel)
+Player B activated Mountain for 1(R)
+Player B activated Mountain for 1(R)
+Player B casts Eidolon of the Great Revel
+Eidolon of the Great Revel enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 44: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Goblin Guide [2/2]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Goblin Guide [2/2])
+Goblin Guide attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Goblin Guide [2/2] -> Player A
+| decision 45: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Goblin Guide -> Player A
+Goblin Guide triggered
+Resolving ability (category: Dig)
+Player A looks at the top 1 card(s) of their library.
+Player A reveals Misty Rainforest from the top of their library.
+Player A reveals Misty Rainforest and puts it into hand.
+Player A puts 0 card(s) on the top of their library.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Goblin Guide deals 2 damage to Player A (now at 0 life)
+--- End Combat Damage ---
+
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

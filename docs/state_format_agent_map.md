@@ -1,5 +1,11 @@
 # Agent read map: scripted agent → RMSTATE
 
+> **Historical record** of plan step 2 (the scripted agent's port from the BQUERY vector to
+> RMSTATE). Step 3b deleted BQUERY, the vector view, the parity adapter and the `agentparity` /
+> `rmagent` tiers; `train/` paths other than the agent, driver and decoder (now `python/`) name
+> files on branch `archive/rl-stack`. The agent today is `python/scripted_core.py` read through
+> `python/rm_agent.py`'s frame view (section 8), driven by `python/rm_driver.py` (section 9).
+
 Step-1 companion to [`state_format.md`](state_format.md). It maps every value the scripted agent
 (`train/scripted_agent.py`) reads today onto what will serve it in RMSTATE. It is the
 completeness checklist for the step-2 port and the specification of the pass-1 parity adapter.
@@ -9,9 +15,9 @@ completeness checklist for the step-2 port and the specification of the pass-1 p
 (`train/test_agent_parity.py`, `docs/ci.md`) holds the agent's RMSTATE games byte-identical with its
 BQUERY games, except listed and classified old-vector leaks and quirks. Pass 2 is built (section 8):
 the agent's decisions are one view-independent core read through a decoded-frame view
-(`train/rm_agent.py`) on RMSTATE and through the vector view on BQUERY; the replay corpus holds its
+(`python/rm_agent.py`) on RMSTATE and through the vector view on BQUERY; the replay corpus holds its
 RMSTATE games. Step 2 is complete (section 9): the stdlib-only RMSTATE driver
-(`train/rm_driver.py`) plays the scripted tiers and the explore fuzzer, and the `replay`, `smoke`
+(`python/rm_driver.py`) plays the scripted tiers and the explore fuzzer, and the `replay`, `smoke`
 and `fuzz` gate tiers run on it.
 
 **Legend for "served by":**
@@ -42,7 +48,7 @@ ways: raw `obs[...]` reads, `decode.decode_game_state` (`g`, built once per deci
    "revealed" bit (`_rev`, :2355). The agent therefore needs only those two outputs from the
    knowledge sidecar. The full shadow comparison with today's engine memory
    (`knowledge_store.md` §7, §9.7) is the broader event-completeness check; its classified
-   divergences (`train/regression/knowledge_divergences.json`) are the parity caveats of the
+   divergences (`tests/knowledge_divergences.json`) are the parity caveats of the
    port (`knowledge_store.md` §8).
 3. **Player identity is never needed beyond "self/opp".** The seat flag is read only to pick
    which deck *name* belongs to the agent (`_seat_deck` :2895).
@@ -301,7 +307,7 @@ the Ponder / Brainstorm / Doomsday decisions directly.
 
 ## 8. Pass 2 as built (plan step 2)
 
-**Structure.** The decisions are written once, in `train/scripted_core.py` (`ScriptedCore`: the
+**Structure.** The decisions are written once, in `python/scripted_core.py` (`ScriptedCore`: the
 tiers, presets and every rule), over an abstract view of one decision (its module docstring lists
 the view's reads): cards are names (the constants of the rules are card names, checked against a
 closed-decklist `CARDS` frame by the `rmagent` tier), categories, steps and zone references are the
@@ -376,7 +382,7 @@ knowledge sidecar are about 45% of the time, the Python decode about 25%, the ag
 
 ## 9. The driver and the explore tier (plan step 2, end)
 
-**Driver.** `train/rm_driver.py` replaces `env.py` / `runner.py` / `opponents.py` for agent games
+**Driver.** `python/rm_driver.py` replaces `env.py` / `runner.py` / `opponents.py` for agent games
 on RMSTATE. It imports the standard library, `rmstate.py`, `rm_agent.py` and the agent modules
 only (the `rmagent` tier's `driver` part runs a game in a subprocess and fails on any module of the
 RL stack in `sys.modules`). Its parts:
@@ -411,7 +417,7 @@ transcripts; three of those stay in the `rmagent` tier. The compact transcript n
 and steps by the schema's enum names (not pinned by any tier).
 
 **Explore.** The tier already decided on the shared core's view (pass 2); its rule now lives in
-`train/explore_agent.py` (`explore_choice`, called by `ScriptedCore`), with the rules listed in its
+`python/explore_agent.py` (`explore_choice`, called by `ScriptedCore`), with the rules listed in its
 docstring for the step-3a C++ port (weights by category, the fail-to-find de-weight, the novelty
 and patient factors, the draw by Python's `random.choices`). It reads `n`, `cats`, `card(i)`,
 `hand` and `cards.mana_value` only, so its games are the same on both protocols: the `fuzz` tier,

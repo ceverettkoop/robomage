@@ -1,0 +1,916 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands__ur_delver.rmlog
+REPLAY MODE: Using embedded decks 'league/lands' / 'league/ur_delver' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dark Depths
+Player A draws Wasteland
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Skateboard
+Player B draws Mishra's Bauble
+Player B draws Polluted Delta
+Player B draws Volcanic Island
+Player B draws Ponder
+Player B draws Dragon's Rage Channeler
+Player B draws Cori-Steel Cutter
+Player B draws Into the Flood Maw
+Player A hand:
+Dark Depths
+Mox Diamond
+Mox Diamond
+Skateboard
+Urza's Saga
+Urza's Saga
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Cori-Steel Cutter
+Dragon's Rage Channeler
+Into the Flood Maw
+Mishra's Bauble
+Polluted Delta
+Ponder
+Volcanic Island
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Urza's Saga
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+|   5: Cast Mox Diamond
+|   6: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Mox Diamond
+|   3: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+|   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   3: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+Player A discards Dark Depths.
+Mox Diamond enters the battlefield
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   2: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+Player A discards Urza's Saga.
+Mox Diamond enters the battlefield
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Skateboard)
+Player A activated Mox Diamond for 1(W)
+Player A casts Skateboard
+Skateboard enters the battlefield
+Choose target for Skateboard:
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+|   1: Mox Diamond
+|   2: Skateboard
+|   3: Urza's Saga
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+Targeting choice 1
+Skateboard triggered
+Resolving ability (category: Tap)
+Mox Diamond is tapped.
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Scalding Tarn
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+|   3: Play Volcanic Island
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+|   3: Play Volcanic Island
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Thundering Falls
+|   4: Volcanic Island
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Thundering Falls)
+Player B shuffles their library
+Player B puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Unholy Heat
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Unholy Heat on top of library)
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Boseiju, Who Endures
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Unholy Heat
+Player A draws Boseiju, Who Endures
+| decision 17: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
+Choose target for this ability:
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thundering Falls
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thundering Falls)
+Targeting choice 0
+Player A activated Mox Diamond for 1(G)
+Player A activated Mox Diamond for 1(W)
+Player A discards Boseiju, Who Endures
+Player A activates Boseiju, Who Endures from hand targeting Thundering Falls
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 20: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Volcanic Island
+(REPLAY) [T2 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 21: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Into the Flood Maw
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Into the Flood Maw)
+Player B promises the gift to Player A
+Choose target for Into the Flood Maw:
+| decision 22: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+|   1: Mox Diamond
+|   2: Skateboard
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Mox Diamond)
+Targeting choice 0
+Player B activated Volcanic Island for 1(U)
+Player B casts Into the Flood Maw
+Resolving ability (category: ChangeZone)
+Resolving ability (category: Token)
+Token created: 1/1 Fish
+Resolving ability (category: ChangeZone)
+Mox Diamond is moved to hand
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Mox Diamond
+|   3: Equip Skateboard
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   1: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Wasteland (put Mox Diamond onto the battlefield))
+Player A discards Wasteland.
+Mox Diamond enters the battlefield
+| decision 25: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Skateboard)
+Choose target for Skateboard:
+| decision 26: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fish token
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fish token)
+Targeting choice 0
+Player A activated Mox Diamond for 1(W)
+Player A's Skateboard ability targeting Fish token is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Fish token gains 1/0 Haste (always)
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 28: Player A (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T2 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 29: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 30: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Fish token
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Fish token)
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Unholy Heat targeting Fish token
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 2 damage to Fish token
+Fish token is destroyed (lethal damage)
+Skateboard becomes unattached
+Fish (token) is put into the graveyard and ceases to exist.
+Player B draws Lightning Bolt
+| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Volcanic Island
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 32: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Volcanic Island
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 34: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Lightning Bolt
+|   3: Cast Ponder
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 35: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+Player A draws Dark Depths
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Pithing Needle
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Player A shuffles their library
+Player A puts Expedition Map to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+| decision 37: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 38: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 39: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (18 life)
+|   2: Construct token
+|   3: Dragon's Rage Channeler
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Dragon's Rage Channeler
+| decision 40: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Put Dragon's Rage Channeler on top of library
+|   1: Put Dragon's Rage Channeler into graveyard
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Dragon's Rage Channeler on top of library)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 17 life)
+Player B draws Dragon's Rage Channeler
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Wasteland
+| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Wasteland on top of library
+|   1: Put Wasteland into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Wasteland on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Wasteland
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Wasteland on top of library
+|   1: Put Wasteland into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Wasteland on top of library)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Wasteland
+|   1: Flooded Strand
+|   2: Lightning Bolt
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Wasteland)
+Choose which card goes 2 from top:
+| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Lightning Bolt
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Lightning Bolt
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 50: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 14 life)
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+| decision 51: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Yavimaya, Cradle of Growth
+| decision 52: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Activate Expedition Map (ChangeZone)
+|   3: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Yavimaya, Cradle of Growth)
+Player A played Yavimaya, Cradle of Growth
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Expedition Map (ChangeZone)
+|   3: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Dark Depths (RemoveCounter))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A's Dark Depths ability is on the stack
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Skateboard)
+Choose target for Skateboard:
+| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Construct token
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Construct token)
+Targeting choice 0
+Player A activated Dark Depths for 1(G)
+Player A's Skateboard ability targeting Construct token is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Construct token gains 1/0 Haste (always)
+
+--- Declare Attackers (Player A) ---
+| decision 57: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [6/5]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [6/5])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/5] -> Player B
+| decision 58: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Construct token [6/5]
+Your creatures:
+| decision 59: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler [3/3]
+|   1: Confirm blockers
+(REPLAY) [T6 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player B (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+| decision 60: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 61: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Player A (14 life)
+|   1: Player B (12 life)
+|   2: Construct token
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (14 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 62: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Flooded Strand
+| decision 63: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Put Flooded Strand on top of library
+|   1: Put Flooded Strand into graveyard
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Flooded Strand on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Flooded Strand
+| decision 64: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Put Flooded Strand on top of library
+|   1: Put Flooded Strand into graveyard
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Flooded Strand on top of library)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 11 life)
+Player B draws Flooded Strand
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Cast Cori-Steel Cutter
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Cori-Steel Cutter)
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B casts Cori-Steel Cutter
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Wasteland
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Wasteland on top of library
+|   1: Put Wasteland into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Wasteland into graveyard)
+Player B puts Wasteland into their graveyard.
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Brainstorm
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+Cori-Steel Cutter enters the battlefield
+| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 71: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Volcanic Island
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 72: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 8 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 5 life)
+--- End Combat Damage ---
+
+
+-------- TURN 9 (Player A) --------
+| decision 73: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Exploration
+| decision 74: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 75: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Exploration
+|   2: Activate Dark Depths (RemoveCounter)
+|   3: Activate Expedition Map (ChangeZone)
+|   4: Equip Skateboard
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Exploration)
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A casts Exploration
+| decision 76: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Dark Depths (RemoveCounter))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A activated Dark Depths for 1(G)
+Player A's Dark Depths ability is on the stack
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+Exploration enters the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 77: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [6/5]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [6/5])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/5] -> Player B
+| decision 78: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player B (now at 5 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Force of Will
+| decision 79: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Equip Cori-Steel Cutter)
+Choose target for Cori-Steel Cutter:
+| decision 80: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Dragon's Rage Channeler
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B's Cori-Steel Cutter ability targeting Dragon's Rage Channeler is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
+| decision 81: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [4/4] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 82: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 4 damage to Player A (now at 1 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at -2 life)
+--- End Combat Damage ---
+
+
+Player A has -2 life - Player B wins!
+GAME_RESULT: 1 Player B wins

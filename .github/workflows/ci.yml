@@ -21,13 +21,13 @@ jobs:
       - name: Set up robomage
         uses: ./.github/actions/setup-robomage
 
-      # Fixed default seed => a red PR is the diff's fault, not RNG. Runs every
-      # tier: codegen-sync, vocab coverage, byte-identical replay corpus,
-      # deterministic league smoke, short fuzz. This image has no torch/SB3/
-      # textual/matplotlib, so the browser tier and the clispec legs that need them skip;
-      # nightly-fuzz.yml's full-check job runs them.
+      # Fixed default seed => a red PR is the diff's fault, not RNG. `make check`
+      # runs every tier of the C++ gate bin/debug/robomage_check (vocab, concede,
+      # scenarios, byte-identical replay corpus, state and knowledge self-checks,
+      # explore fuzz, bench, and the smoke tier through the stdlib-only Python
+      # driver); transcripts land in ci_out/.
       - name: Run engine test gate
-        run: train/.venv/bin/python train/ci_check.py --out-dir ci_out
+        run: make check -j"$(nproc)" CXX="ccache g++" CC="ccache gcc"
 
       - name: Upload transcripts
         if: always()

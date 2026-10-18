@@ -11,7 +11,7 @@
 
 namespace {
 
-// The fallback label of an untagged deck (train/archetypes.py UNKNOWN_NAME), last in the list.
+// The fallback label of an untagged deck, last in the list.
 const char *const UNKNOWN_LABEL = "unknown";
 
 // A JSON value of the subset archetypes.json uses: a string, a list of values, an object (its

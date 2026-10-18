@@ -3,11 +3,11 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "agents/game_seed.h"
 #include "cli_output.h"
 #include "components/zone.h"
 #include "error.h"
 #include "game_driver.h"
-#include "search_server.h"
 
 // One command-line option. The option table below is the single definition of which flags
 // exist, which take a value, which shape the game's setup, and which the log header records.
@@ -32,9 +32,17 @@ struct ParsedOption {
     const char *value;
 };
 
+// A removed option: giving it is fatal, with a hint at what replaces it.
+struct RemovedOption {
+        const char *name;
+        const char *hint;
+};
+
 static std::vector<std::string> split_card_list(const std::string &csv);
+static const RemovedOption *find_removed_option(const std::string &name);
 static bool is_seat_a(const char *value);
 static int knowledge_level_value(const char *value);
+static long non_negative_value(const char *flag, const char *value);
 static const CliOption *find_option(const std::string &name);
 static const CliOption *find_header_option(const std::string &key);
 static std::string header_key(const CliOption &option);
@@ -91,6 +99,13 @@ static const CliOption OPTIONS[] = {
         [](DecisionLogHeader &h, const std::string &k) {
             if (closed_decklist) h.add_flag(k);
         }},
+    // Stop the run at the first decision past N (end_run_at_decision_cap), so a capped log replays
+    // to the same point.
+    {"--max-decisions", nullptr, true, true,
+        [](const char *v) { max_decisions = non_negative_value("--max-decisions", v); },
+        [](DecisionLogHeader &h, const std::string &k) {
+            if (max_decisions >= 0) h.add_flag(k, std::to_string(max_decisions));
+        }},
 
     // Setup options recorded in their own header fields (DECK_A / DECK_B / SEED)
     {"--deck", nullptr, true, true,
@@ -107,20 +122,38 @@ static const CliOption OPTIONS[] = {
             seed_value = static_cast<unsigned int>(std::stoul(v));
         },
         nullptr},
+    // The game the Python drivers call seed N: engine seed engine_seed_for_game(N), the agents'
+    // generator seeded with N (agents/game_seed.h).
+    {"--game-seed", nullptr, true, true,
+        [](const char *v) {
+            game_seed_given = true;
+            game_seed_value = static_cast<uint64_t>(non_negative_value("--game-seed", v));
+            seed_override = true;
+            seed_value = agents::engine_seed_for_game(game_seed_value);
+        },
+        nullptr},
+    // A seat's stacked deck: these cards first (the opening hand), then its --library-a/-b
+    // (load_launch_deck). Implies --no-shuffle for both seats.
+    {"--hand-a", nullptr, true, true,
+        [](const char *v) {
+            hand_a_cards = split_card_list(v);
+            no_shuffle = true;
+        },
+        nullptr},
+    {"--hand-b", nullptr, true, true,
+        [](const char *v) {
+            hand_b_cards = split_card_list(v);
+            no_shuffle = true;
+        },
+        nullptr},
+    {"--library-a", nullptr, true, true, [](const char *v) { library_a_cards = split_card_list(v); }, nullptr},
+    {"--library-b", nullptr, true, true, [](const char *v) { library_b_cards = split_card_list(v); }, nullptr},
 
     // Input / output options; honored in replay mode
     {"--replay", nullptr, true, false,
         [](const char *v) {
             replay_mode = true;
             replay_file_path = v;
-        },
-        nullptr},
-    // MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/RELEASE); a machine-mode extension, so it
-    // implies --machine.
-    {"--search-server", nullptr, false, false,
-        [](const char *) {
-            search_server_mode = true;
-            machine_mode = true;
         },
         nullptr},
     {"--player", nullptr, true, false,
@@ -137,11 +170,47 @@ static const CliOption OPTIONS[] = {
             log_viewer_owner = is_seat_a(v) ? Zone::PLAYER_A : Zone::PLAYER_B;
         },
         nullptr},
+    // In-process agents (agents/driver.h); each implies --machine.
+    {"--agent-a", nullptr, true, false,
+        [](const char *v) {
+            agent_a_spec = v;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--agent-b", nullptr, true, false,
+        [](const char *v) {
+            agent_b_spec = v;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--play", nullptr, true, false,
+        [](const char *v) {
+            play_script_given = true;
+            play_script_specs = v;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--actions", nullptr, true, false,
+        [](const char *v) {
+            actions_script_given = true;
+            actions_script = v;
+            machine_mode = true;
+        },
+        nullptr},
+    // The board and menu of every decision on the game log (agents/trace.h).
+    {"--trace-decisions", nullptr, false, false, [](const char *) { trace_decisions = true; }, nullptr},
+    // Check the decks' cards against the card vocabulary and their scripts instead of playing
+    // (deck_check.h).
+    {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
+    {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
     {"--narrative", nullptr, false, false, [](const char *) { narrative_mode = true; }, nullptr},
     {"--log-decisions", nullptr, false, false, [](const char *) { log_decisions_flag = true; }, nullptr},
-    // Passive BSTATE frames at forced auto-pass windows (machine mode observers only; no stdin
-    // response expected, nothing recorded).
-    {"--broadcast-steps", nullptr, false, false, [](const char *) { broadcast_steps_mode = true; }, nullptr},
+    {"--decision-log", nullptr, true, false,
+        [](const char *v) {
+            decision_log_path = v;
+            log_decisions_flag = true;
+        },
+        nullptr},
     // Narrate reveal windows opening and closing (VISIBILITY: lines in the game log).
     {"--trace-visibility", nullptr, false, false, [](const char *) { trace_visibility = true; }, nullptr},
     // Print the per-viewer handle tables at each decision and narrate handle issue/link/retire
@@ -151,14 +220,14 @@ static const CliOption OPTIONS[] = {
     {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
     // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
     {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
-    // The machine protocol's stdout format: bquery (the default) or rmstate (the deciding seat's
-    // RMSTATE frame, state_format/stream.h); either implies --machine.
+    // The machine protocol's stdout format: rmstate, the only one (state_format/stream.h), so the
+    // same as --machine.
     {"--machine-format", nullptr, true, false,
         [](const char *v) {
-            if (std::strcmp(v, "rmstate") == 0)
-                machine_format_rmstate = true;
-            else if (std::strcmp(v, "bquery") != 0)
-                fatal_error("--machine-format: expected bquery or rmstate, got '" + std::string(v) + "'");
+            if (std::strcmp(v, "bquery") == 0)
+                fatal_error("--machine-format bquery was removed: the machine protocol is RMSTATE (--machine)");
+            if (std::strcmp(v, "rmstate") != 0)
+                fatal_error("--machine-format: expected rmstate, got '" + std::string(v) + "'");
             machine_mode = true;
         },
         nullptr},
@@ -235,6 +304,27 @@ static int knowledge_level_value(const char *value) {
     return 0;
 }
 
+// A non-negative integer option value; anything else is fatal.
+static long non_negative_value(const char *flag, const char *value) {
+    char *end = nullptr;
+    const long long n = std::strtoll(value, &end, 10);
+    if (end == value || *end != '\0' || n < 0)
+        fatal_error(std::string(flag) + ": expected a non-negative integer, got '" + value + "'");
+    return static_cast<long>(n);
+}
+
+static const RemovedOption REMOVED_OPTIONS[] = {
+    {"--search-server", "the MCTS search protocol is gone; snapshots stay in-process (snapshot.h)"},
+    {"--broadcast-steps", "BSTATE frames went with BQUERY; the RMSTATE frames are the machine protocol"},
+};
+
+static const RemovedOption *find_removed_option(const std::string &name) {
+    for (const RemovedOption &option : REMOVED_OPTIONS) {
+        if (name == option.name) return &option;
+    }
+    return nullptr;
+}
+
 static const CliOption *find_option(const std::string &name) {
     for (const CliOption &option : OPTIONS) {
         if (name == option.name || (option.alias && name == option.alias)) return &option;
@@ -277,6 +367,8 @@ CliParseResult parse_command_line(int argc, char const *argv[]) {
     std::vector<ParsedOption> parsed;
     bool show_help = false;
     for (int i = 1; i < argc; i++) {
+        if (const RemovedOption *removed = find_removed_option(argv[i]))
+            fatal_error(std::string(removed->name) + " was removed: " + removed->hint);
         const CliOption *option = find_option(argv[i]);
         if (!option) {
             cli_warning("unrecognized option '" + std::string(argv[i]) + "' (ignored); see --help");

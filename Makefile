@@ -32,14 +32,8 @@ DEPFLAGS = -MMD -MP
 BINDIR=bin/$(CONFIG)
 BINNAME=robomage
 
-# Python used to regenerate the train/ codegen files. Prefer the project venv;
-# fall back to python3 (both generators use only the stdlib).
-PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
-# Auto-generated codegen, regenerated on every build by the `pygen` target below.
-# Tracked (derive only from tracked C++/JSON sources): train/_enums.py,
-# src/gen/archetypes_gen.h. Untracked (derive from gitignored/fetched card-script
-# content, so regenerated locally): train/card_costs.py, train/card_props.py,
-# src/gen/card_costs_gen.h.
+# Python for card-script provisioning and the corpus recorder (stdlib only).
+PYTHON ?= python3
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -66,8 +60,8 @@ C_SRCS := $(wildcard $(SRCDIR)/*.c)
 C_SRCS += $(wildcard $(SRCDIR)/*/*.c)
 CXX_SRCS := $(wildcard $(SRCDIR)/*.cpp)
 CXX_SRCS += $(wildcard $(SRCDIR)/*/*.cpp)
-# The actor (bin/az_actor) is a SEPARATE binary that links libtorch and needs
-# exceptions on. Keep its TUs out of the engine build entirely so plain `make`,
+# The actor TUs (src/actor/, `make actor`) link libtorch and need exceptions on.
+# Keep them out of the engine build entirely so plain `make`,
 # `make check`, and bin/robomage never see torch or an exceptions-enabled TU.
 CXX_SRCS := $(filter-out $(SRCDIR)/actor/%,$(CXX_SRCS))
 _C_OBJ := $(patsubst $(SRCDIR)/%.c,%.o,$(C_SRCS))
@@ -98,74 +92,39 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 
 .DEFAULT_GOAL := all
 
-all: pygen program rmknow
-
-# Regenerate ALL codegen on EVERY build. card_costs.py / card_props.py and the C++
-# mirror header src/gen/card_costs_gen.h derive from card-script CONTENT (ManaCost,
-# keywords, types), and card scripts are gitignored/fetched — so their content is NOT
-# expressible as a Make prerequisite. The old mtime-based file targets went stale
-# whenever a script changed without a header/vocab change (e.g. a FORGE_PIN bump adding
-# a keyword), which is exactly how a stale card_props.py got committed. Running the
-# generators unconditionally here closes that hole; they write-if-changed
-# (train/gen_util.py), so an unchanged output keeps its mtime and forces no recompile.
-# Each generator announces itself and reports OK/FAILED; WARNING lines (e.g. a missing
-# card script zeroing a cost row) are surfaced instead of muted, the rest of the
-# verbose output is kept quiet, and a failure dumps the generator's full log.
-pygen:
-	@echo "[pygen] regenerating codegen (enums, card costs, card props, archetypes, sb rules)"
-	@for g in gen_enums gen_card_costs gen_card_props gen_archetypes gen_sb_rules; do \
-	  log=$$(mktemp); \
-	  if $(PYTHON) train/$$g.py >$$log 2>&1; then \
-	    grep -i "warning" $$log | sed "s/^[[:space:]]*/[pygen] $$g: /"; \
-	    echo "[pygen] $$g OK"; \
-	  else \
-	    cat $$log; echo "[pygen] $$g FAILED"; rm -f $$log; exit 1; \
-	  fi; \
-	  rm -f $$log; \
-	done
-
-# The generated C++ mirror headers (src/gen/*.h) are #included by the engine, and
-# src/gen/card_costs_gen.h is UNTRACKED — so guarantee pygen has produced them before any
-# TU compiles (a fresh clone has no header and no dep files yet). Order-only (|): a mere
-# regeneration never forces a rebuild; a real header content change still rebuilds its
-# dependent objects through the -MMD/-include dep files.
-$(C_OBJ) $(CXX_OBJ): | pygen
+all: program rmknow robomage_check
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/$(BINNAME) $(C_OBJ) $(CXX_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-# Standardized engine test gate — the single command CI and developers run. Builds
-# first (via `all`), then runs every tier of train/ci_check.py (codegen-sync, vocab
-# coverage, byte-identical replay corpus, deterministic league smoke, short fuzz).
-# Exits nonzero on any finding. Requires the card scripts to be provisioned first
-# (tools/forge_fetch/provision_decks.py; the SessionStart hook does this).
+# Standardized engine test gate — the single command CI and developers run. Builds first (via
+# `all`), then runs every tier of the C++ gate bin/<config>/robomage_check (docs/ci.md: vocab,
+# concede, rules scenarios, byte-identical replay corpus, state-format and knowledge self-checks,
+# explore fuzz, bench, and the smoke tier through the Python driver). Exits nonzero on any finding.
+# Requires the card scripts to be provisioned first (tools/forge_fetch/provision_decks.py; the
+# SessionStart hook does this).
 check: all
-	$(PYTHON) train/ci_check.py
+	$(BINDIR)/robomage_check
 
-# Regenerate every derived artifact after an intentional C++ change: provision
-# the card set (codegen reads card scripts), then re-record the replay corpus with
-# the fresh binary, and the scripted agent's BQUERY-pinned games and re-recorded
-# divergences (train/test_agent_parity.py --record). Run this when `make check`
-# reports corpus drift, then commit the results. `all` already regenerates all codegen unconditionally (the `pygen` target),
-# so provisioning first — which may fetch changed scripts — guarantees the codegen it
-# produces reflects the current card set before the corpus is recorded against it.
+# Re-record the replay corpus after an intentional behavior change: provision the card set, build,
+# then play the scripted agent's corpus games with the fresh binary (each game's decision log and,
+# through robomage_check --tier replay --record, its replay baseline; python/record_corpus.py). Run
+# this when `make check` reports corpus drift, then commit the results.
 regen:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) all
-	$(PYTHON) train/regression/replay_diff.py record
-	$(PYTHON) train/test_agent_parity.py --record
+	$(PYTHON) python/record_corpus.py
 
 # Force a clean re-fetch of every Forge card/token script, then VALIDATE the fresh
 # scripts against the COMMITTED replay corpus. Deletes the gitignored local scripts
 # (bin/resources/cardsfolder + tokenscripts) so provision_decks.py re-fetches them
 # all at the pinned Forge commit (tools/forge_fetch/FORGE_PIN) instead of skipping
-# already-present files, then runs the standard `make check` gate — which
-# regenerates all codegen (card_costs.py / card_props.py / src/gen/card_costs_gen.h)
-# from the fresh scripts, builds, and diffs the result against the committed corpus.
+# already-present files, then runs the standard `make check` gate — which builds and
+# diffs the result against the committed corpus.
 # Unlike `regen`, it deliberately does NOT re-record the corpus: the point is to
 # DETECT whether the refetched scripts drift from the committed baseline. A corpus
-# (or codegen-sync) failure here means an upstream script change moved engine
+# failure here means an upstream script change moved engine
 # behavior — investigate it; if the change is intentional, run `make regen` to
 # re-record and commit the new corpus.
 refetch:
@@ -173,17 +132,18 @@ refetch:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) check
 
-# ── bin/az_actor — in-process AlphaZero actor (Phase D), NOT in the default build ──
-# Links all engine objects EXCEPT obj/main.o (the actor provides its own main),
-# plus the src/actor/* TUs (compiled with exceptions ON) and libtorch. Auto-detect
-# libtorch from the project venv; override with `make actor LIBTORCH_DIR=/path`.
-LIBTORCH_DIR ?= $(shell ls -d train/.venv/lib/python3*/site-packages/torch 2>/dev/null | head -1)
-
-# Fail early (with a clear message) only when actually asked to build the actor.
+# ── make actor — the libtorch TUs of src/actor/, NOT in the default build ──
+# src/actor/ holds the TorchScript evaluator (az_evaluator.cpp), compiled with exceptions ON
+# against libtorch. There is no actor binary until plan step 5 adds a main: `make actor` compiles
+# the actor objects, and that binary will link $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS).
+# Auto-detect libtorch from the torch package $(PYTHON) imports (an active venv's included), only
+# when asked to build the actor; override with `make actor LIBTORCH_DIR=/path`. Fail early (with a
+# clear message) when there is none.
 ifneq (,$(filter actor,$(MAKECMDGOALS)))
+LIBTORCH_DIR ?= $(shell $(PYTHON) -c 'import os, torch; print(os.path.dirname(torch.__file__))' 2>/dev/null)
 ifeq ($(strip $(LIBTORCH_DIR)),)
-$(error LIBTORCH_DIR is empty: could not find train/.venv/.../site-packages/torch. \
-Install torch into the venv, or pass LIBTORCH_DIR=/path/to/torch)
+$(error LIBTORCH_DIR is empty: $(PYTHON) cannot import torch. \
+Install torch for it, or pass LIBTORCH_DIR=/path/to/torch)
 endif
 endif
 
@@ -191,55 +151,28 @@ ACTOR_SRCS := $(wildcard $(SRCDIR)/actor/*.cpp)
 ACTOR_OBJ := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(ACTOR_SRCS))
 ENGINE_OBJ_NO_MAIN := $(filter-out $(ODIR)/main.o,$(C_OBJ) $(CXX_OBJ))
 
-# Same order-only pygen guard as the engine objects: the actor TUs include the
-# untracked generated headers too, so pygen must produce them before they compile.
-$(ACTOR_OBJ): | pygen
-
 # torch headers are noisy under -Wconversion etc.; -isystem silences them. ABI is
-# 1 in this venv (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
+# 1 in the pip torch builds (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
 TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/include/torch/csrc/api/include
 # Same base flags as the engine MINUS -fno-exceptions (torch throws), PLUS torch
 # includes and -I$(SRCDIR) (actor TUs use non-relative engine includes).
 ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
-# When the venv torch is a ROCm build (libtorch_hip.so present), link the HIP
-# backend too so `az_actor --device cuda` can reach the Radeon. The libs must be
+# When the torch is a ROCm build (libtorch_hip.so present), link the HIP
+# backend too so a `--device cuda` evaluator can reach the Radeon. The libs must be
 # wrapped in --no-as-needed: nothing references their symbols directly (the
 # backend registers itself via static initializers), so without it the linker
 # drops them and the device silently never exists — the same gotcha as CUDA's
-# torch_cuda. CPU-only venvs build exactly as before.
+# torch_cuda. CPU-only torch builds link without them.
 ACTOR_TORCH_LIBS := -ltorch -ltorch_cpu -lc10
 ifneq (,$(wildcard $(LIBTORCH_DIR)/lib/libtorch_hip.so))
 ACTOR_TORCH_LIBS += -Wl,--no-as-needed -ltorch_hip -lc10_hip -Wl,--as-needed
 endif
+ACTOR_LDFLAGS := $(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
+                 -L$(LIBTORCH_DIR)/lib $(ACTOR_TORCH_LIBS) -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
-actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
-	@mkdir -p $(BINDIR)
-	$(CXX) -o $(BINDIR)/az_actor $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) \
-		$(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
-		-L$(LIBTORCH_DIR)/lib $(ACTOR_TORCH_LIBS) -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
-
-# ── actor-syntax — libtorch-free compile check of the actor's obs layout mirror ──
-# obs_builder.{h,cpp} carries the actor's copy of the observation layout, pinned by
-# a wall of static_asserts against the engine's constants. Those asserts are the
-# only thing that catches the C++ actor drifting from src/machine_io.h — but they
-# only fire under `make actor`, which needs libtorch and is not in the default
-# build, so a layout change can (and did) land with the actor left uncompilable.
-# These TUs are the actor's only torch-free ones, so -fsyntax-only fires every
-# layout assert with nothing but a compiler. Wired into ci_check.py's `actorobs`
-# tier, which IS part of `make check`. td_targets.cpp joins them for the same
-# reason: it is the C++ twin of az_selfplay.py's n-step TD rule and must stay
-# compilable wherever libtorch is not installed.
-ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp \
-                     $(SRCDIR)/actor/td_targets.cpp $(SRCDIR)/actor/oracle_client.cpp
-
-actor-syntax: pygen
-	@for f in $(ACTOR_SYNTAX_SRCS); do \
-		echo "  syntax-only: $$f"; \
-		$(CXX) -fsyntax-only $$f $(ACTOR_IFLAGS) \
-			$(filter-out -fno-exceptions,$(CXXFLAGS)) $(PLATFLAGS) || exit 1; \
-	done
+actor: $(ACTOR_OBJ)
 
 # ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
 # tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only
@@ -258,7 +191,20 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmknow $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-.PHONY: all pygen check regen refetch clean actor actor-syntax rmknow
+# ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
+# tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
+# the std-only RMSTATE decoder and schema and the agents' std-only frame reader and Python-compatible
+# generator. Built with the engine's flags (-fno-exceptions); `make check` runs every tier.
+RMCHECK_SRCS := $(wildcard tools/robomage_check/*.cpp)
+RMCHECK_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMCHECK_SRCS))
+RMCHECK_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o
+
+robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
+
+.PHONY: all check regen refetch clean actor rmknow robomage_check
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -266,16 +212,15 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 # keeps the git-tracked obj/.gitphony placeholder while removing obj/debug and
 # obj/release; `bin/*/robomage` removes both configs' linked binaries so a failed
 # build can't leave a stale one for the harness/CI. bin/ itself is kept — it holds
-# resources/ and decks — and bin/*/az_actor is left in place (it is expensive to
-# relink against libtorch and is gitignored separately).
+# resources/ and decks.
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/robomage_check
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
 # so their generated dep files must be included separately — otherwise editing a
-# header they share with the engine (e.g. obs_builder.h) leaves stale actor
-# objects behind and bin/az_actor links two different obs layouts together.
+# header they share with the engine leaves stale actor objects behind.
 -include $(ACTOR_OBJ:.o=.d)
 -include $(RMKNOW_OBJ:.o=.d)
+-include $(RMCHECK_OBJ:.o=.d)

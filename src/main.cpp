@@ -4,16 +4,16 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "agents/driver.h"
 #include "classes/deck.h"
 #include "classes/game.h"
-#include "classes/match_state.h"
 #include "cli_args.h"
 #include "cli_output.h"
 #include "error.h"
 #include "components/zone.h"
+#include "deck_check.h"
 #include "game_driver.h"
 #include "input_logger.h"
-#include "search_server.h"
 #include "state_format/recode.h"
 #include "state_format/stream.h"
 
@@ -41,8 +41,8 @@ static void game_loop() {
         deck_b_name = hdr.deck_b_name;
         apply_replay_header_flags(InputLogger::instance().get_replay_flags());
     } else {
-        DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/" + deck_a_name + ".dk");
-        DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/" + deck_b_name + ".dk");
+        DEFAULT_DECK_ONE = load_launch_deck(Zone::PLAYER_A);
+        DEFAULT_DECK_TWO = load_launch_deck(Zone::PLAYER_B);
         seed = seed_override ? seed_value : static_cast<unsigned int>(time(nullptr));
         // Machine mode only logs decisions when --log-decisions is given; only
         // create the logs directory when a log will actually be written.
@@ -55,6 +55,7 @@ static void game_loop() {
         // the log replays without re-supplying decks or flags.
         DecisionLogHeader hdr;
         record_header_flags(hdr);
+        if (!decision_log_path.empty()) InputLogger::instance().set_log_path(decision_log_path);
         hdr.deck_a_name = deck_a_name;
         hdr.deck_a_text = DEFAULT_DECK_ONE.raw_text;
         hdr.deck_b_name = deck_b_name;
@@ -67,14 +68,14 @@ static void game_loop() {
     }
     std::srand(seed);
     cli_print_seed(seed);
+    agents_install(seed);
 
     if (bo3_mode) {
         // The full bo3 match sequencing lives in game_driver's play_bo3_match so
-        // main.cpp and bin/az_actor share ONE implementation (game boundaries,
-        // loser-on-the-play, revealed accumulator, sideboarding between games).
+        // every in-process driver shares ONE implementation (game boundaries,
+        // loser-on-the-play, sideboarding between games).
         play_bo3_match(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, seed);
     } else {
-        match_reset_revealed();  // accumulator works in single-game mode too
         auto sys = init_ecs();
         print_game_result(1, play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed));
     }
@@ -90,12 +91,8 @@ int main(int argc, char const *argv[]) {
         return 0;
     }
 
-    // Search commands would interleave into (or replay out of sync with) the
-    // deterministic decision record, and the cooperative unwind cannot route
-    // through a human prompt.
-    if (search_server_mode && (replay_mode || log_decisions_flag || has_human_player)) {
-        fatal_error("--search-server is incompatible with --replay, --log-decisions, and --player");
-    }
+    // --check-decks: the decks' cards against the vocabulary; no game is played.
+    if (check_decks_flag) return check_decks(check_decks_dirs);
 
     // --rmstate-read: an offline stream check; no game is played.
     if (!rmstate_read_path.empty()) return rmstate_read_stream(rmstate_read_path, state_dump_json);

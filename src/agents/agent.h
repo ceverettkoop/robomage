@@ -1,0 +1,87 @@
+#ifndef AGENTS_AGENT_H
+#define AGENTS_AGENT_H
+
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "decision_view.h"
+#include "py_random.h"
+
+// ── In-process agents (plan step 3a) ──────────────────────────────────────────────────────────
+//
+// An agent decides one seat's decisions inside the engine process, through InputLogger's
+// in-process decision hook (agents/driver.h installs it). At each decision it receives the
+// deciding seat's frames, decoded: exactly the RMSTATE frames the seat would receive on the
+// stream (docs/state_format.md §9), knowledge tables included (the in-process feed,
+// state_format/agent_feed.h). An agent reads nothing else of the engine: this header and every
+// agent's own files include only the standard library, the state format's decoder and each
+// other.
+//
+// Specs (--agent-a / --agent-b; make_agent):
+//
+//   first (auto)        always row 0 (pass priority, the first choice)
+//   random              a uniform row: random.randrange(n) on the shared generator
+//   actions:<i,i,...>   the listed replies for this seat's decisions in order (a concession
+//                       sentinel -2 / -3 is sent as is), then row 0
+//   play:<specs>        the --play resolver (agents/play_spec.h) on this seat's decisions only,
+//                       then row 0
+//   explore             the coverage fuzzer, python/explore_agent.py ported (agents/explore.h)
+//   explore:patient     its big-mana profile
+//
+// The shared generator: every agent of the process draws from one PyRandom, seeded once before
+// the match with the game seed (--game-seed), else the engine seed (--seed), as the Python
+// drivers seed their global `random` before each match. A seat's agent and the other seat's draw
+// from the same stream in decision order, as the Python explore tiers of both seats do.
+
+namespace agents {
+
+// One decision of the seat an agent decides.
+struct Decision {
+        const DecisionView &view;  // the seat's decoded STATE frame (menu row i = reply i)
+        size_t number;             // decisions read before this one in the run
+};
+
+// What decide() returns when the agent cannot decide: the run ends with failure() as a fatal
+// error.
+constexpr int AGENT_FAILED = -1000;
+
+class Agent {
+    public:
+        virtual ~Agent() = default;
+        // A menu row, -1 (the last row: confirm), a concession sentinel (-2 game, -3 match), or
+        // AGENT_FAILED.
+        virtual int decide(const Decision &d) = 0;
+        // A short label for traces ("first", "explore", ...).
+        virtual std::string label() const = 0;
+        // Why decide() returned AGENT_FAILED.
+        const std::string &failure() const { return failure_; }
+
+    protected:
+        std::string failure_;
+};
+
+// The agent `spec` names, drawing from `rng`; nullptr (with `err`) for an unknown spec.
+std::unique_ptr<Agent> make_agent(const std::string &spec, PyRandom *rng, std::string *err);
+
+// Plays fixed replies in order, then row 0 (the actions: spec, and the global --actions script
+// when given players: the seats' agents decide once the replies run out).
+class ActionsAgent : public Agent {
+    public:
+        explicit ActionsAgent(std::vector<int> actions, Agent *player_a = nullptr, Agent *player_b = nullptr);
+        int decide(const Decision &d) override;
+        std::string label() const override { return "actions"; }
+
+    private:
+        std::vector<int> actions_;
+        size_t next_ = 0;
+        Agent *players_[2];
+};
+
+// Parses a comma-separated integer list ("0,1,-2"); false on a bad entry.
+bool parse_int_list(const std::string &csv, std::vector<int> *out);
+
+}  // namespace agents
+
+#endif /* AGENTS_AGENT_H */

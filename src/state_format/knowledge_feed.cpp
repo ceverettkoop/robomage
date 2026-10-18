@@ -14,7 +14,7 @@
 
 namespace {
 
-constexpr int N_CONSUMERS = 3;  // ObsConsumer's values
+constexpr int N_CONSUMERS = 4;  // ObsConsumer's values
 // Error lines printed per instance before the rest are only counted.
 constexpr size_t MAX_ERROR_LINES = 40;
 
@@ -50,6 +50,8 @@ static const char *consumer_word(ObsConsumer consumer) {
             return "stream";
         case ObsConsumer::SELFCHECK:
             return "selfcheck";
+        case ObsConsumer::AGENT:
+            return "agent";
     }
     return "?";
 }
@@ -82,7 +84,7 @@ static void pass_errors(ObsConsumer consumer, int seat, std::vector<std::string>
             continue;
         }
         if (ch.errors > MAX_ERROR_LINES) continue;
-        // Under --machine-format rmstate stdout is stderr's descriptor with a buffer of its own.
+        // While the RMSTATE stream is on stdout is stderr's descriptor with a buffer of its own.
         std::fflush(stdout);
         std::fprintf(stderr, "%s\n", line.c_str());
         if (ch.errors == MAX_ERROR_LINES)

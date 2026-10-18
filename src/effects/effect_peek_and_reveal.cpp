@@ -6,7 +6,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../classes/match_state.h"
+#include "../classes/reveals.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -103,8 +103,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         return HandlerResult::DONE_NO_SUBS;
     }
     auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-    // Arm-only peek line: the resume rebuilds the same menu (the top card is
-    // pinned against determinize by collect_pending_pins) without re-logging.
+    // Arm-only peek line: the resume rebuilds the same menu without re-logging.
     if (!ctx.resuming()) {
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
         orderer->note_library_card_known(top_card, ab.controller);
@@ -125,7 +124,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     if (reveal_choice == 1) {
         game_log("Revealed: %s\n", top_cd.name.c_str());
-        // Shown to all players (CR 701.20a): the opponent's belief state records it.
+        // Shown to all players (CR 701.20a).
         mark_card_revealed(top_card, ab.controller);
         reveal_card(top_card);
         bool is_instant_or_sorcery = false;

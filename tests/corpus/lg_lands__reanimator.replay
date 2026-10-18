@@ -1,0 +1,869 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands__reanimator.rmlog
+REPLAY MODE: Using embedded decks 'league/lands' / 'league/reanimator' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dark Depths
+Player A draws Wasteland
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Skateboard
+Player B draws Marsh Flats
+Player B draws Ponder
+Player B draws Thoughtseize
+Player B draws Reanimate
+Player B draws Careful Study
+Player B draws Atraxa, Grand Unifier
+Player B draws Force of Will
+Player A hand:
+Dark Depths
+Mox Diamond
+Mox Diamond
+Skateboard
+Urza's Saga
+Urza's Saga
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Atraxa, Grand Unifier
+Careful Study
+Force of Will
+Marsh Flats
+Ponder
+Reanimate
+Thoughtseize
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Urza's Saga
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+|   5: Cast Mox Diamond
+|   6: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Mox Diamond
+|   3: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 5: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 6: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Mox Diamond)
+Targeting choice 0
+| decision 7: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Atraxa, Grand Unifier
+|   1: Exile Careful Study
+|   2: Exile Ponder
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Atraxa, Grand Unifier)
+Player B pays 1 life
+Player B exiles Atraxa, Grand Unifier
+Player B casts Force of Will targeting Mox Diamond
+Resolving ability (category: Counter)
+Mox Diamond is countered
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+|   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   3: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+Player A discards Dark Depths.
+Mox Diamond enters the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Skateboard)
+Player A activated Mox Diamond for 1(W)
+Player A casts Skateboard
+Skateboard enters the battlefield
+Choose target for Skateboard:
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+|   1: Skateboard
+|   2: Urza's Saga
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Skateboard)
+Targeting choice 1
+Skateboard triggered
+Resolving ability (category: Tap)
+Skateboard is tapped.
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Scalding Tarn
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Scalding Tarn
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Undercity Sewers)
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Thoughtseize
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Thoughtseize on top of library
+|   1: Put Thoughtseize into graveyard
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Thoughtseize on top of library)
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Boseiju, Who Endures
+| decision 16: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
+Choose target for this ability:
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Undercity Sewers
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Undercity Sewers)
+Targeting choice 0
+Player A activated Mox Diamond for 1(G)
+Player A activated Urza's Saga for 1(C)
+Player A discards Boseiju, Who Endures
+Player A activates Boseiju, Who Endures from hand targeting Undercity Sewers
+Resolving ability (category: Destroy)
+Undercity Sewers is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 19: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Swamp
+|   3: Undercity Sewers
+|   4: Underground Sea
+(REPLAY) [T2 | First Main | Player B] Input: 3
+| >> Player B: 3 (Undercity Sewers)
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ponder
+| decision 20: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Ponder
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Cast Careful Study
+|   3: Cast Ponder
+|   4: Cast Ponder
+|   5: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Careful Study)
+Player B activated Undercity Sewers for 1(U)
+Player B casts Careful Study
+Resolving ability (category: Draw, amount: 2)
+Player B draws Island
+Player B draws Bloodstained Mire
+Resolving ability (category: Discard)
+Player B chooses a card to discard:
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bloodstained Mire
+|   1: Island
+|   2: Ponder
+|   3: Ponder
+|   4: Reanimate
+|   5: Scalding Tarn
+|   6: Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Bloodstained Mire)
+Player B discards Bloodstained Mire
+Player B chooses a card to discard:
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Island
+|   1: Ponder
+|   2: Ponder
+|   3: Reanimate
+|   4: Scalding Tarn
+|   5: Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 5
+| >> Player B: 5 (Thoughtseize)
+Player B discards Thoughtseize
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Scalding Tarn
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Ponder
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Island for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Polluted Delta
+|   1: Reanimate
+|   2: Careful Study
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Polluted Delta)
+Choose which card goes 2 from top:
+| decision 28: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Reanimate
+|   1: Careful Study
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Reanimate)
+| decision 29: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Careful Study
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 30: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Urza's Saga for 1(C)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+Player A draws Dark Depths
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga gets 1 lore counter (now 2).
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Urza's Saga (chapter 3)
+|   1: Urza's Saga (chapter 2)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Urza's Saga (chapter 3))
+Urza's Saga chapter 3 triggers.
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Pithing Needle
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Player A shuffles their library
+Player A puts Expedition Map to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Reanimate
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Cast Careful Study
+|   3: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Careful Study)
+Player B activated Island for 1(U)
+Player B casts Careful Study
+Resolving ability (category: Draw, amount: 2)
+Player B draws Polluted Delta
+Player B draws Atraxa, Grand Unifier
+Resolving ability (category: Discard)
+Player B chooses a card to discard:
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier
+|   1: Polluted Delta
+|   2: Ponder
+|   3: Reanimate
+|   4: Reanimate
+|   5: Scalding Tarn
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Atraxa, Grand Unifier)
+Player B discards Atraxa, Grand Unifier
+Player B chooses a card to discard:
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Polluted Delta
+|   1: Ponder
+|   2: Reanimate
+|   3: Reanimate
+|   4: Scalding Tarn
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Reanimate)
+Player B discards Reanimate
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+|   3: Cast Ponder
+|   4: Cast Reanimate
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Ponder)
+Player B activated Undercity Sewers for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Archon of Cruelty
+|   1: Brainstorm
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Archon of Cruelty)
+Choose which card goes 2 from top:
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Underground Sea
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Reanimate
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Underground Sea for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Otherworldly Gaze
+Player B draws Flow State
+Player B draws Thoughtseize
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flow State
+|   1: Otherworldly Gaze
+|   2: Reanimate
+|   3: Scalding Tarn
+|   4: Thoughtseize
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Scalding Tarn)
+Player B puts Scalding Tarn to top of library
+Player B chooses a card from Player B hand:
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flow State
+|   1: Otherworldly Gaze
+|   2: Reanimate
+|   3: Thoughtseize
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Otherworldly Gaze)
+Player B puts Otherworldly Gaze to top of library
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 47: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Exploration
+| decision 48: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+| decision 49: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Expedition Map (ChangeZone))
+Player A activated Urza's Saga for 1(C)
+Player A activated Mox Diamond for 1(W)
+Player A sacrifices Expedition Map
+Player A's Expedition Map ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Forest
+|   6: Ghost Quarter
+|   7: Karakas
+|   8: Maze of Ith
+|   9: Rishadan Port
+|   10: Savannah
+|   11: The Tabernacle at Pendrell Vale
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T6 | First Main | Player A] Input: 12
+| >> Player A: 12 (Thespian's Stage)
+Player A shuffles their library
+Player A reveals Thespian's Stage and puts it to hand
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Grafdigger's Cage
+|   2: Mox Diamond
+|   3: Pithing Needle
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Grafdigger's Cage)
+Player A shuffles their library
+Player A puts Grafdigger's Cage to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+|   2: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thespian's Stage)
+Player A played Thespian's Stage
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Skateboard)
+Choose target for Skateboard:
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Construct token
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Construct token)
+Targeting choice 0
+Player A activated Thespian's Stage for 1(C)
+Player A's Skateboard ability targeting Construct token is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Construct token gains 1/0 Haste (always)
+
+--- Declare Attackers (Player A) ---
+| decision 55: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [5/4]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [5/4])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [5/4] -> Player B
+| decision 56: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 5 damage to Player B (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+Player B draws Otherworldly Gaze
+| decision 57: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Otherworldly Gaze
+(REPLAY) [T7 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Otherworldly Gaze)
+Player B activated Island for 1(U)
+Player B casts Otherworldly Gaze
+Resolving ability (category: Surveil, amount: 3)
+Player B surveils 3.
+Surveil: looking at Scalding Tarn
+Surveil: looking at Polluted Delta
+Surveil: looking at Flow State
+| decision 58: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Put Scalding Tarn on top of library
+|   1: Put Polluted Delta on top of library
+|   2: Put Flow State on top of library
+|   3: Put Scalding Tarn into graveyard
+|   4: Put Polluted Delta into graveyard
+|   5: Put Flow State into graveyard
+(REPLAY) [T7 | Draw | Player B] Input: 2
+| >> Player B: 2 (Put Flow State on top of library)
+| decision 59: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Put Scalding Tarn on top of library
+|   1: Put Polluted Delta on top of library
+|   2: Put Scalding Tarn into graveyard
+|   3: Put Polluted Delta into graveyard
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Scalding Tarn on top of library)
+| decision 60: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Put Polluted Delta on top of library
+|   1: Put Polluted Delta into graveyard
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Polluted Delta on top of library)
+| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Flow State
+|   2: Cast Reanimate
+|   3: Cast Thoughtseize
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Flow State)
+Player B activated Undercity Sewers for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B casts Flow State
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flow State
+|   1: Scalding Tarn
+|   2: Polluted Delta
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Scalding Tarn)
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flow State
+|   1: Polluted Delta
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Polluted Delta)
+Player B puts Scalding Tarn into hand.
+Player B puts Polluted Delta into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Underground Sea
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Reanimate
+|   2: Cast Thoughtseize
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Reanimate)
+Choose target for Reanimate:
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Atraxa, Grand Unifier
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Atraxa, Grand Unifier)
+Targeting choice 0
+Player B activated Underground Sea for 1(B)
+Player B casts Reanimate targeting Atraxa, Grand Unifier
+Resolving ability (category: ChangeZone)
+Atraxa, Grand Unifier can't enter the battlefield from that zone.
+Resolving ability (category: LoseLife, amount: 7)
+Player B loses 7 life (now at 4)
+Resolving ability (category: Cleanup)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Crop Rotation
+| decision 69: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T8 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| decision 70: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Sacrifice Dark Depths
+|   1: Sacrifice Thespian's Stage
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Dark Depths)
+Player A activated Mox Diamond for 1(G)
+Player A sacrifices Dark Depths
+Player A casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 71: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Forest
+|   6: Ghost Quarter
+|   7: Karakas
+|   8: Maze of Ith
+|   9: Rishadan Port
+|   10: Savannah
+|   11: The Tabernacle at Pendrell Vale
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T8 | Draw | Player A] Input: 13
+| >> Player A: 13 (Urza's Saga)
+Player A shuffles their library
+Player A puts Urza's Saga to the battlefield
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 72: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Equip Skateboard
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 73: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+|   2: Activate Thespian's Stage (Clone)
+|   3: Activate Urza's Saga (Token)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Activate Urza's Saga (Token))
+Player A activated Thespian's Stage for 1(C)
+Player A activated Wasteland for 1(C)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+
+--- Declare Attackers (Player A) ---
+| decision 74: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [6/5]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [6/5])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/5] -> Player B
+| decision 75: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player B (now at -2 life)
+--- End Combat Damage ---
+
+
+Player B has -2 life - Player A wins!
+GAME_RESULT: 1 Player A wins

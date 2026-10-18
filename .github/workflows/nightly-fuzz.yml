@@ -43,11 +43,11 @@ jobs:
             echo "### Nightly fuzz — mode \`${{ matrix.mode }}\`"
             echo "Reproduce locally:"
             echo '```'
-            echo "train/.venv/bin/python train/ci_check.py --tier fuzz --matchups all \\"
+            echo "bin/debug/robomage_check --tier fuzz --matchups all \\"
             echo "  --mode ${{ matrix.mode }} --fuzz-games $GAMES --seed $SEED"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          train/.venv/bin/python train/ci_check.py \
+          bin/debug/robomage_check \
             --tier fuzz --matchups all --mode "${{ matrix.mode }}" \
             --fuzz-games "$GAMES" --seed "$SEED" --out-dir ci_out
 
@@ -57,92 +57,5 @@ jobs:
         with:
           # Seed is recoverable from the run number (see the step summary).
           name: nightly-fuzz-${{ matrix.label }}-${{ github.run_number }}
-          path: ci_out/
-          retention-days: 14
-
-  # AlphaZero actor parity gate (ci_check --tier actor): obs bit-parity, MCTS
-  # visit-count parity, and shard schema for bin/az_actor, in BOTH bo1 and bo3.
-  # Kept OUT of the per-push ci.yml because it needs the ~GB libtorch runtime
-  # (torch) that the default CI image deliberately omits; runs nightly instead.
-  actor-parity:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up robomage
-        uses: ./.github/actions/setup-robomage
-
-      # torch supplies both the Python AZ stack (run_search / AZNet, needed by the
-      # parity references) and the libtorch the actor links. CPU-only wheel keeps
-      # the download small; cached across nights. stable_baselines3/sb3-contrib
-      # are also required here: extractor.py (imported by az_net.py, which the
-      # actor-parity tests import) unconditionally imports
-      # stable_baselines3.common.torch_layers and
-      # sb3_contrib.common.maskable.policies at module load. The default CI
-      # image (setup-robomage) deliberately omits both, since ordinary CI never
-      # touches the AZ actor stack — installed here only, not there.
-      # torch is pinned to the dev venv's version (2.10): later releases' headers
-      # require C++20 and the actor compiles as C++17 with the engine.
-      - name: Cache torch wheel
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: pip-torch-cpu-2.10-${{ runner.os }}
-
-      - name: Install torch (CPU) + stable-baselines3 + build the actor
-        run: |
-          train/.venv/bin/python -m pip install --quiet "torch==2.10.*" \
-            --index-url https://download.pytorch.org/whl/cpu
-          train/.venv/bin/python -m pip install --quiet stable-baselines3 sb3-contrib
-          make actor -j"$(nproc)"
-
-      - name: AZ actor parity (bo1 + bo3)
-        run: train/.venv/bin/python train/ci_check.py --tier actor --out-dir ci_out
-
-      - name: Upload actor-parity output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nightly-actor-parity-${{ github.run_number }}
-          path: ci_out/
-          retention-days: 14
-
-  # The full `make check` default run in a dev-equivalent venv. The per-push
-  # ci.yml image omits torch, the SB3 stack, textual and matplotlib, so the checks that
-  # import them (the browser tier; train.py, bench_actor.py and the TUI stubs in
-  # the clispec tier; xwsearch's torch legs) self-skip there; this job installs
-  # them so every leg runs at least nightly.
-  # Same torch pin and CPU wheel as actor-parity below.
-  full-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up robomage
-        uses: ./.github/actions/setup-robomage
-
-      - name: Cache torch wheel
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: pip-torch-cpu-2.10-${{ runner.os }}
-
-      - name: Install torch (CPU) + stable-baselines3 + TUI/chart deps
-        run: |
-          train/.venv/bin/python -m pip install --quiet "torch==2.10.*" \
-            --index-url https://download.pytorch.org/whl/cpu
-          train/.venv/bin/python -m pip install --quiet stable-baselines3 sb3-contrib \
-            matplotlib -r train/requirements-tui.txt
-
-      - name: Engine test gate (make check, full deps)
-        run: train/.venv/bin/python train/ci_check.py --out-dir ci_out
-
-      - name: Upload full-check output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nightly-full-check-${{ github.run_number }}
           path: ci_out/
           retention-days: 14

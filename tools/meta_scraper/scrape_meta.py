@@ -2,7 +2,7 @@
 """Scrape the top Legacy metagame decks from MTGTop8 into robomage .dk files.
 
 Standalone tool — depends only on the Python standard library and does NOT import
-anything from the robomage engine or train/. Run it from anywhere:
+anything from the robomage engine or python/. Run it from anywhere:
 
     python tools/meta_scraper/scrape_meta.py --top 10
     python tools/meta_scraper/scrape_meta.py --top 10 --dry-run
@@ -69,7 +69,7 @@ def expand_dfc_name(name, cards_dir):
     MTGTop8 lists only the front face, so when there is no exact single-face
     script but a `<uid>_*.txt` combined script exists whose front Name matches,
     return "Front Back". Otherwise return the name unchanged (single-faced, or
-    no local script — left for implementation; see `train/missing_cards.py`).
+    no local script — left for implementation; see the engine's `--check-decks`).
     """
     uid = name_to_uid(name)
     if not uid or not cards_dir:

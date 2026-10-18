@@ -21,8 +21,7 @@ static void place_rearranged_card(RearrangeRt &rt, size_t remaining_idx, std::sh
 
 // Slots rt.remaining[remaining_idx]: appends it to rt.chosen_order (deepest
 // first, so chosen_order[0] ends up deepest and the last entry on top), removes
-// it from the candidates, and puts it on top of its owner's library, which also
-// pushes it onto the known-top cache.
+// it from the candidates, and puts it on top of its owner's library.
 static void place_rearranged_card(RearrangeRt &rt, size_t remaining_idx, std::shared_ptr<Orderer> orderer) {
     Entity card = rt.remaining[remaining_idx];
     rt.chosen_order.push_back(card);
@@ -36,15 +35,12 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     PendingDecisionScope pending_scope(ab.source.lki_entity());
     Zone::Ownership owner = ab.controller;  // "your library" = the ability's controller's (CR 109.5)
 
-    // The looked-at slice is frozen once into the frame rt (pinned against
-    // determinize). Slots are filled deepest first and each chosen card is put
-    // on top of the library the moment it is chosen, so every later placement
-    // lands above it and the final order is the slot order; the chosen card is
-    // on the known-top cache (and so in the observation) for the remaining
-    // picks. The unchosen cards stay in the library below the placed ones and
-    // are addressed by entity through rt.remaining, never by position. The
-    // slot-pick loop index, the forced-last placement, and the shuffle-y/n
-    // stage persist so a resume re-enters the suspended decision.
+    // The looked-at slice is frozen once into the frame rt. Slots are filled deepest first and
+    // each chosen card is put on top of the library the moment it is chosen, so every later
+    // placement lands above it and the final order is the slot order. The unchosen cards stay in
+    // the library below the placed ones and are addressed by entity through rt.remaining, never by
+    // position. The slot-pick loop index, the forced-last placement, and the shuffle-y/n stage
+    // persist so a resume re-enters the suspended decision.
     RearrangeRt local_rt;
     RearrangeRt &rt = ctx.can_suspend() ? ctx.rt<RearrangeRt>() : local_rt;
     if (!rt.init) {

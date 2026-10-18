@@ -1,0 +1,1169 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from mav_vs_delver.rmlog
+REPLAY MODE: Using embedded decks 'mav' / 'delver' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Horizon Canopy
+Player A draws Windswept Heath
+Player A draws Windswept Heath
+Player A draws Savannah
+Player A draws Wasteland
+Player A draws Savannah
+Player A draws Swords to Plowshares
+Player B draws Daze
+Player B draws Ponder
+Player B draws Scalding Tarn
+Player B draws Polluted Delta
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Brainstorm
+Player A hand:
+Horizon Canopy
+Savannah
+Savannah
+Swords to Plowshares
+Wasteland
+Windswept Heath
+Windswept Heath
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Talon Gates of Madara
+Player A draws Green Sun's Zenith
+Player A draws Forest
+Player A draws Green Sun's Zenith
+Player A draws Thalia, Guardian of Thraben
+Player A draws Scythecat Cub
+Player A draws Keen-Eyed Curator
+Player B hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Brainstorm
+Daze
+Ponder
+Polluted Delta
+Scalding Tarn
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Forest
+Green Sun's Zenith
+Green Sun's Zenith
+Keen-Eyed Curator
+Scythecat Cub
+Talon Gates of Madara
+Thalia, Guardian of Thraben
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Forest
+|   1: Green Sun's Zenith
+|   2: Green Sun's Zenith
+|   3: Keen-Eyed Curator
+|   4: Scythecat Cub
+|   5: Talon Gates of Madara
+|   6: Thalia, Guardian of Thraben
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Green Sun's Zenith)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Talon Gates of Madara
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 7: Player A (game 0, turn 0, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+(REPLAY) [T0 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 2 (Player B) --------
+Player B draws Volcanic Island
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Thundering Falls
+Player B draws Volcanic Island
+Player B draws Mishra's Bauble
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Mishra's Bauble
+|   2: Daze
+|   3: Ponder
+|   4: Volcanic Island
+|   5: Volcanic Island
+|   6: Scalding Tarn
+|   7: Thundering Falls
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Mishra's Bauble
+|   2: Daze
+|   3: Ponder
+|   4: Volcanic Island
+|   5: Scalding Tarn
+|   6: Thundering Falls
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Once Upon a Time
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+| decision 19: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 21: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Once Upon a Time
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 22: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Delayed trigger
+|   1: Delayed trigger
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Delayed trigger)
+Delayed trigger fires.
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Volcanic Island
+Resolving ability (category: Draw, amount: 1)
+Player B draws Volcanic Island
+Player A draws Once Upon a Time
+| decision 23: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time (alternate cost))
+Player A casts for free (alternate cost)
+Player A casts Once Upon a Time
+| decision 24: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 25: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Collector Ouphe
+|   3: Noble Hierarch
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Thalia, Guardian of Thraben)
+Player A reveals Thalia, Guardian of Thraben and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 26: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Talon Gates of Madara
+|   2: Cast Green Sun's Zenith
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Talon Gates of Madara)
+Player A played Talon Gates of Madara
+Choose target for Talon Gates of Madara:
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (No target)
+Targeting choice 0
+Talon Gates of Madara triggered
+Resolving ability (category: Phases)
+| decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Scythecat Cub
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 29: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (X = 1)
+Player A chooses X = 1
+Player A activated Forest for 1(G)
+Player A activated Talon Gates of Madara for 1(C)
+Player A casts Green Sun's Zenith
+| decision 30: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 31: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Green Sun's Zenith
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Green Sun's Zenith)
+Targeting choice 0
+| decision 32: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Volcanic Island)
+Player B returns Volcanic Island to hand
+Player B casts Daze targeting Green Sun's Zenith
+Resolving ability (category: Counter)
+Green Sun's Zenith's controller may pay {1} to save it:
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't pay (Green Sun's Zenith is countered)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't pay (Green Sun's Zenith is countered))
+Green Sun's Zenith is countered
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Lightning Bolt
+| decision 34: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+|   4: Play Scalding Tarn
+|   5: Play Thundering Falls
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Lightning Bolt
+|   3: Cast Ponder
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Noble Hierarch
+| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Cast Scythecat Cub
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Noble Hierarch)
+Player A activated Forest for 1(G)
+Player A casts Noble Hierarch
+Noble Hierarch enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 37: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 38: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+|   2: Noble Hierarch
+|   3: Dragon's Rage Channeler
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Dragon's Rage Channeler
+| decision 39: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Put Dragon's Rage Channeler on top of library
+|   1: Put Dragon's Rage Channeler into graveyard
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Dragon's Rage Channeler on top of library)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 17 life)
+Player B draws Dragon's Rage Channeler
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+|   3: Play Scalding Tarn
+|   4: Play Thundering Falls
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 42: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler [1/1]
+|   1: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler [1/1])
+Dragon's Rage Channeler attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+| decision 43: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Dragon's Rage Channeler [1/1]
+Your creatures:
+| decision 44: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Noble Hierarch [0/1]
+|   1: Confirm blockers
+(REPLAY) [T5 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 1 damage to Player A (now at 16 life)
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+Player A draws Karakas
+| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Cast Keen-Eyed Curator
+|   3: Cast Scythecat Cub
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Cast Thalia, Guardian of Thraben
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Keen-Eyed Curator)
+Player A activated Forest for 1(G)
+Player A activated Noble Hierarch for 1(G)
+Player A casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Karakas)
+Player A played Karakas
+| decision 47: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thalia, Guardian of Thraben
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thalia, Guardian of Thraben)
+Player A activated Karakas for 1(W)
+Player A activated Talon Gates of Madara for 1(C)
+Player A casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Cori-Steel Cutter
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Thundering Falls
+|   4: Cast Ponder
+(REPLAY) [T7 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Unholy Heat
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Unholy Heat on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Unholy Heat
+| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Unholy Heat on top of library)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Unholy Heat
+|   1: Cori-Steel Cutter
+|   2: Delver of Secrets
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Unholy Heat)
+Choose which card goes 2 from top:
+| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter
+|   1: Delver of Secrets
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Delver of Secrets)
+| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Cori-Steel Cutter
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Thundering Falls
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 56: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 13 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 10 life)
+--- End Combat Damage ---
+
+
+-------- TURN 9 (Player A) --------
+| decision 57: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Life from the Loam
+| decision 58: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Scythecat Cub
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Karakas (ChangeZone)
+|   5: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Player A activated Forest for 1(G)
+Player A activated Noble Hierarch for 1(W)
+Player A activated Karakas for 1(W)
+Player A casts Life from the Loam
+| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mishra's Bauble
+|   1: Brainstorm
+|   2: Lightning Bolt
+|   3: Daze
+|   4: Ponder
+|   5: Polluted Delta
+|   6: Green Sun's Zenith
+|   7: Life from the Loam
+|   8: Once Upon a Time
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Mishra's Bauble)
+Targeting choice 0
+Player A activated Talon Gates of Madara for 1(C)
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+Resolving ability (category: ChangeZone)
+Mishra's Bauble is moved to exile
+
+--- Declare Attackers (Player A) ---
+| decision 63: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Keen-Eyed Curator [3/3]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Keen-Eyed Curator [3/3])
+Keen-Eyed Curator attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+| decision 64: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| decision 65: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+  Thalia, Guardian of Thraben -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 17 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 3 damage to Player B (now at 14 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Delver of Secrets
+| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Thundering Falls
+|   3: Cast Delver of Secrets
+|   4: Cast Cori-Steel Cutter
+|   5: Cast Cori-Steel Cutter
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Delver of Secrets)
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Thundering Falls
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 68: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 70: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+|   2: Cast Cori-Steel Cutter
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cori-Steel Cutter)
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Cori-Steel Cutter
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 71: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mountain
+| decision 72: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Mountain on top of library
+|   1: Put Mountain into graveyard
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Mountain into graveyard)
+Player B puts Mountain into their graveyard.
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Delver of Secrets
+| decision 73: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Delver of Secrets on top of library
+|   1: Put Delver of Secrets into graveyard
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Delver of Secrets on top of library)
+Cori-Steel Cutter enters the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 74: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 7 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 4 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+| decision 75: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 76: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T10 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Wooded Foothills.
+Player A mills Sylvan Library.
+Player A mills Knight of the Reliquary.
+Player A dredges Life from the Loam (milled 3)
+| decision 77: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 78: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Scythecat Cub
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Karakas (ChangeZone)
+|   5: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 79: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Wooded Foothills
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Forest for 1(G)
+Player A activated Noble Hierarch for 1(W)
+Player A activated Karakas for 1(W)
+Player A casts Life from the Loam
+| decision 80: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+| decision 81: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 82: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mishra's Bauble
+|   1: Brainstorm
+|   2: Lightning Bolt
+|   3: Daze
+|   4: Ponder
+|   5: Mountain
+|   6: Polluted Delta
+|   7: Scalding Tarn
+|   8: Green Sun's Zenith
+|   9: Life from the Loam
+|   10: Knight of the Reliquary
+|   11: Once Upon a Time
+|   12: Sylvan Library
+|   13: Wooded Foothills
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Mishra's Bauble)
+Targeting choice 0
+Player A activated Talon Gates of Madara for 1(C)
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+Resolving ability (category: ChangeZone)
+Mishra's Bauble is moved to exile
+Dragon's Rage Channeler loses Delirium bonus
+Dragon's Rage Channeler loses Delirium bonus
+
+--- Declare Attackers (Player A) ---
+| decision 83: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Keen-Eyed Curator [3/3]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Keen-Eyed Curator [3/3])
+Keen-Eyed Curator attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+| decision 84: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| decision 85: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+  Thalia, Guardian of Thraben -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Keen-Eyed Curator [3/3]
+  1: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+| decision 86: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T10 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 11 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 3 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Delver of Secrets
+| decision 87: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Don't reveal)
+Player B draws Delver of Secrets
+| decision 88: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Cast Delver of Secrets
+|   3: Cast Cori-Steel Cutter
+|   4: Equip Cori-Steel Cutter
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Delver of Secrets)
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+| decision 89: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Cast Cori-Steel Cutter
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Cori-Steel Cutter)
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Cori-Steel Cutter
+Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 90: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+|   2: Cori-Steel Cutter (Token)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 91: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Cori-Steel Cutter (Token)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Cori-Steel Cutter triggered
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 92: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Lightning Bolt
+| decision 93: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lightning Bolt on top of library
+|   1: Put Lightning Bolt into graveyard
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Lightning Bolt on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Lightning Bolt
+| decision 94: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lightning Bolt on top of library
+|   1: Put Lightning Bolt into graveyard
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Lightning Bolt on top of library)
+Cori-Steel Cutter enters the battlefield
+| decision 95: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thundering Falls)
+Player B played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Lightning Bolt
+| decision 96: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lightning Bolt on top of library
+|   1: Put Lightning Bolt into graveyard
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Lightning Bolt on top of library)
+
+--- Declare Attackers (Player B) ---
+| decision 97: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Dragon's Rage Channeler [1/1]
+|   2: Dragon's Rage Channeler [1/1]
+|   3: Monk token [2/2]
+|   4: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+| decision 98: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler [1/1]
+|   1: Dragon's Rage Channeler [1/1]
+|   2: Monk token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler [1/1])
+Dragon's Rage Channeler attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+| decision 99: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler [1/1]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler [1/1])
+Dragon's Rage Channeler attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+| decision 100: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [2/2])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+  [attacking] Dragon's Rage Channeler [1/1] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+| decision 101: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player A
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+  Monk token -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player A (now at 3 life)
+  Dragon's Rage Channeler deals 1 damage to Player A (now at 2 life)
+  Dragon's Rage Channeler deals 1 damage to Player A (now at 1 life)
+  Monk token deals 2 damage to Player A (now at -1 life)
+--- End Combat Damage ---
+
+
+Player A has -1 life - Player B wins!
+GAME_RESULT: 1 Player B wins
