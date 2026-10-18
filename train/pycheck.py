@@ -15,7 +15,8 @@ playing does not:
             decoders; an unknown table block is skipped by both, with the same JSON (listed under
             ``"skipped"``).
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
-            plays (scripted against explore) imports nothing of ``DRIVER_FORBIDDEN``: the kept
+            plays (scripted against explore) on an interpreter without site-packages (``-S``)
+            imports no module from outside the standard library and this directory: the kept
             Python is stdlib only.
 
 Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: …`` line per finding;
@@ -47,14 +48,19 @@ ENGINE_DUMPS = (("league/ur_delver", "league/gw_maverick", False, 41),
                 ("league/reanimator", "league/uw_control", True, 42))
 # The driver's closed-decklist session: (deck_a, deck_b, bo3, seed).
 STREAM_DUMP = ("league/wrb_energy", "league/bw_dnt", True, 43)
-# rm_driver.engine_seed's values (the gymnasium env's derivation, numpy's SeedSequence → PCG64).
+# rm_driver.engine_seed's values (numpy's SeedSequence → PCG64 derivation, computed without numpy).
 PINNED_ENGINE_SEEDS = ((0, 1826701614), (1, 1016164991), (2, 1798679647), (7, 2029167940),
                        (1001, 1940026651), (2147483647, 1751933748), (4294967295, 409763535),
                        (4294967296, 1121323793), (1099511627781, 30406389), (13532794167, 596834746),
                        (1641108517, 1187322509))
-# Modules a driven game must not import: numpy (the kept Python is stdlib only) and the RL stack.
-DRIVER_FORBIDDEN = ("numpy", "gymnasium", "torch", "env", "runner", "opponents", "decode", "cli_spec",
-                    "_enums", "card_costs", "card_props", "scripted_agent", "rmstate_env", "rmstate_adapter")
+# Run in the probe after a driven game: every imported module with a file outside the standard
+# library and the kept Python's directory (argv[2]).
+_FOREIGN_MODULES = ("import os, sysconfig; "
+                    "roots = {os.path.realpath(sysconfig.get_paths()[k]) for k in ('stdlib', 'platstdlib')}; "
+                    "roots.add(os.path.realpath(sys.argv[2])); "
+                    "files = {n: getattr(m, '__file__', None) for n, m in list(sys.modules.items())}; "
+                    "print(' '.join(sorted(n for n, f in files.items() if f and not any("
+                    "os.path.realpath(f).startswith(r + os.sep) for r in roots))))")
 
 
 def _engine_json(binary, path):
@@ -233,15 +239,14 @@ def check_driver(binary, work):
         if rm_driver.engine_seed(seed) != want:
             fails.append(f"driver: engine_seed({seed}) = {rm_driver.engine_seed(seed)}, pinned {want}")
     probe = ("import sys; import rm_driver; rm_driver.run_games('scripted', 'explore', binary=sys.argv[1], "
-             "deck_a='league/burn', seed=3, transcript='quiet'); "
-             f"print(' '.join(m for m in {DRIVER_FORBIDDEN!r} if m in sys.modules))")
-    r = subprocess.run([sys.executable, "-c", probe, binary], capture_output=True, text=True, cwd=work,
-                       env=dict(os.environ, PYTHONPATH=_HERE), timeout=_TIMEOUT_S)
+             "deck_a='league/burn', seed=3, transcript='quiet'); " + _FOREIGN_MODULES)
+    r = subprocess.run([sys.executable, "-S", "-c", probe, binary, _HERE], capture_output=True, text=True,
+                       cwd=work, env=dict(os.environ, PYTHONPATH=_HERE), timeout=_TIMEOUT_S)
     if r.returncode != 0 or r.stdout.strip():
         fails.append(f"driver: a game imported {r.stdout.strip() or '?'} (exit {r.returncode}): {r.stderr[-300:]}")
     if not fails:
-        print(f"  OK   driver: {len(PINNED_ENGINE_SEEDS)} engine seeds pinned, a game imports nothing of "
-              f"{len(DRIVER_FORBIDDEN)} forbidden modules", flush=True)
+        print(f"  OK   driver: {len(PINNED_ENGINE_SEEDS)} engine seeds pinned, a game imports only the "
+              "standard library and the kept Python", flush=True)
     return fails
 
 

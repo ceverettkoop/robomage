@@ -2,18 +2,14 @@
 
 This module is the rule-based "scripted" agent itself: its skill tiers, presets and every
 decision rule. It reads the game only through a **view** of the decision it is asked to make
-and knows nothing about how the view was obtained, so one implementation serves both protocols:
-
-- ``scripted_agent.VectorView`` reads the engine's BQUERY float vector (the RL stack's
-  observation: ``scripted_agent.ScriptedAgent.act(obs, num_choices)``);
-- ``rm_agent.FrameView`` reads one seat's decoded RMSTATE frame and the knowledge sidecar's
-  ``k_*`` tables (``rm_agent.decide``).
+and knows nothing about how the view was obtained: ``rm_agent.FrameView`` reads one seat's decoded
+RMSTATE frame and the knowledge sidecar's ``k_*`` tables (``rm_agent.decide``).
 
 Cards are named, never numbered: every card the rules key on is a name constant below, and every
 view answers with card names (None where the view shows no card). Categories, steps and zone
 references are the engine's enum names (the RMSTATE schema's ``action_category`` / ``step``
-string tables; the vector view maps the BQUERY ints onto them). Card characteristics come from
-the view's card knowledge (``view.cards``). Nothing here imports numpy or the BQUERY layout.
+string tables). Card characteristics come from the view's card knowledge (``view.cards``).
+Stdlib only.
 
 IMPORTANT — no multi-ply lookahead: Python cannot fork/snapshot/restore the C++
 game state, so the agent reasons strictly single-ply.  Combat decisions are the
@@ -22,13 +18,12 @@ that is the only "simulation" performed.  Do not add rollout/minimax search that
 assumes hypothetical engine queries — the engine does not expose them.
 
 The decision functions are STATELESS pure functions of the (perspective-relative)
-view, because they run inside parallel vec-env subprocesses and
-diag/watch determinism depends on it. The only exceptions are small per-game,
+view, because same-seed replays depend on it. The only exceptions are small per-game,
 per-agent sets that are themselves deterministic functions of the trajectory
 (EXPLORE's novelty set and the GREEDY/HEURISTIC fruitless-activation stall
 guard — see ``ScriptedCore``).
 
-**The view** (both implementations; ``view.exact_refs`` says which joins it can make):
+**The view** (``view.exact_refs`` says which joins it can make):
 
 - menu: ``n``; ``cats`` (category names, ``n`` long); ``card(i)`` (the action's card name or
   None); ``nonnull_card(i)`` (the null-card test of the menu-shape rules); ``ctrl(i)`` (1 self,
@@ -62,8 +57,8 @@ guard — see ``ScriptedCore``).
   ``is_delve``, ``is_equipment``, ``has_miracle``, ``is_legendary``, ``land_colors``,
   ``deals_damage``, ``has_nonmana_activation``, ``is_artifact_or_enchantment``).
 
-``exact_refs`` is true when the view joins an action to its own object (RMSTATE handles); the
-vector view joins by card id where the rules always did (the first permanent with that card).
+``exact_refs`` is true when the view joins an action to its own object (RMSTATE handles); a view
+without it joins by card name (the first permanent with that card).
 """
 
 import random
@@ -166,9 +161,8 @@ class AgentConfig:
 
 # The "hard" configuration: heuristic play with combat simulation, evaluation-based
 # targeting, and smart mulligans. This is ALSO the default a bare "scripted" resolves
-# to — every default scripted opponent (the league/self-play scripted anchor, the
-# mixed opponent pools, observe/baseline/analysis, the test harness) plays at this
-# tier unless an explicit weaker suffix ("scripted:easy"/"greedy"/"random") is given.
+# to — every default scripted opponent (the driver's default, the smoke tier, the
+# corpus recorder) plays at this tier unless an explicit weaker suffix ("scripted:easy"/"greedy"/"random") is given.
 _HARD_CONFIG = AgentConfig(skill=Skill.HEURISTIC, use_combat_sim=True,
                            use_eval_targeting=True, use_smart_mulligan=True,
                            use_tron_synergy=True)
@@ -2574,8 +2568,8 @@ class ScriptedCore:
     """A stateless rule-based agent parameterised by an AgentConfig.
 
     ``decide(view)`` is a pure function of the (perspective-relative) view, except
-    for the RANDOM tier which draws from a per-agent seeded generator so parallel
-    vec-env subprocesses stay reproducible and independent of the global RNG, the
+    for the RANDOM tier which draws from a per-agent seeded generator so it stays
+    reproducible and independent of the global RNG, the
     EXPLORE tier which carries a per-game set of already-chosen cards for
     its novelty bias, and the GREEDY/HEURISTIC path which carries a per-game set
     of "fruitless" activation cards (the stall guard, see ``_hard_act``).
@@ -2610,11 +2604,11 @@ class ScriptedCore:
     def new_game(self) -> None:
         """Reset per-game state at the start of a game.
 
-        Called by ``runner.run_games`` (via ``ScriptedController.new_game``) before
+        Called by ``rm_driver.play_game`` (via the agent's ``new_game``) before
         each game so a reused agent instance can't leak state across games. The
         per-game state is the EXPLORE novelty-bias set and the GREEDY/HEURISTIC
         fruitless-activation set; as a belt-and-braces for reuse paths that never
-        call this (e.g. a scripted opponent living across vec-env episodes), both
+        call this, both
         ``_explore_action`` and ``_hard_act`` also clear their own set whenever
         they see a pregame mulligan decision.
         """
@@ -2625,8 +2619,7 @@ class ScriptedCore:
     def set_deck_names(self, deck_a: str | None, deck_b: str | None) -> None:
         """Tell the agent which deck each seat pilots.
 
-        Callers that know the decks (runner.run_games, ModelVsScriptedEnv, the
-        self-play scripted fallback, the RMSTATE controller from the DECKLISTS
+        Callers that know the decks (the RMSTATE view, from the DECKLISTS
         frame) push the names here so deck identification uses one name rule
         (_deck_named: 'doomsday'/'tron' anywhere in the name — league/car_doomsday
         and league/tron count). A matching name is authoritative; a missing or

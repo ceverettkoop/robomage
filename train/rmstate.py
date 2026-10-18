@@ -13,19 +13,17 @@ names and column names/storages in ``_BOOT_TABLES``). Once read, the frame must 
 tables exactly that way, and its hash must match its table blocks; the storage names it lists map to
 ``struct`` codes by name (``_STORAGE_CODES``).
 
-API (stdlib; numpy only for ``Schema.arrays``):
+API (stdlib only):
 
 - ``records(fp)``: the payloads of a binary file object (a file or a pipe);
 - ``Schema.from_frame(payload)``: the schema a SCHEMA frame describes; ``schema.decode(payload)``
   → ``Frame`` (``frame.tables``: table name → list of row dicts, text resolved to ``str``; ``only=``
   limits the rows decoded to some tables);
-  ``schema.arrays(payload)`` → table name → numpy structured array (text as pool offsets);
 - ``StreamDecoder``: follows a stream's SCHEMA frames, ``feed(payload)`` → ``Frame``;
 - ``frame_json(frame, schema)``: the same JSON line the engine's ``--state-dump json`` writes
   (``src/state_format/json.h``), byte for byte once encoded as UTF-8 with ``surrogateescape``.
 
-CLI (flags: ``cli_spec.RMSTATE_TOOL``): ``python train/rmstate.py dump FILE`` prints FILE's frames
-as JSON lines (``-`` = stdin).
+CLI: ``python3 train/rmstate.py dump FILE`` prints FILE's frames as JSON lines (``-`` = stdin).
 """
 from __future__ import annotations
 
@@ -336,20 +334,6 @@ class Schema:
         kinds = self.enums.get("frame_kind", [])
         return kinds[kind] if kind < len(kinds) else str(kind)
 
-    def arrays(self, payload: bytes) -> dict:
-        """Table name → numpy structured array over the frame's rows (text columns hold their
-        pool offsets; the pool is under the key ``"strings"`` as bytes)."""
-        import numpy as np
-        _, pool, known, _ = self._checked_blocks(payload)
-        out = {"strings": pool.pool}
-        for t, rows, body in known:
-            dtype = np.dtype({"names": [c.name for c in t.columns],
-                              "formats": ["<" + _STORAGE_CODES[c.storage] for c in t.columns],
-                              "offsets": [c.offset for c in t.columns],
-                              "itemsize": t.row_width})
-            out[t.name] = np.frombuffer(body, dtype=dtype, count=rows)
-        return out
-
 
 class StreamDecoder:
     """Decodes a stream's frames in order, building the schema from its SCHEMA frames (the first
@@ -471,14 +455,15 @@ def json_lines(fp):
 # ── CLI ───────────────────────────────────────────────────────────────────────────────────────
 
 def build_parser():
-    """The rmstate.py parser, built from cli_spec.RMSTATE_TOOL."""
+    """The rmstate.py parser."""
     import argparse
-    from cli_spec import RMSTATE_TOOL, apply_to_parser
     ap = argparse.ArgumentParser(prog="rmstate", description="Decode RMSTATE streams (the engine's "
                                  "--rmstate-dump files or --machine-format rmstate output).")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for s in RMSTATE_TOOL.subs:
-        apply_to_parser(sub.add_parser(s.name, help=s.help), s)
+    dump = sub.add_parser("dump", help="Print an RMSTATE stream (an engine --rmstate-dump file, or a "
+                          "--machine-format rmstate capture) as JSON lines, as the engine's "
+                          "--state-dump json renders them")
+    dump.add_argument("file", metavar="FILE", help="RMSTATE stream to decode (- = stdin)")
     return ap
 
 

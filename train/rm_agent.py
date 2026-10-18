@@ -17,14 +17,13 @@ enum names come from the stream's SCHEMA frame, cards from its CARDS frame. No n
 What the view reads (``docs/state_format.md`` Appendix A): ``header``, ``turn``, ``player``,
 ``object`` with ``object_keyword`` / ``object_counter``, ``stack``, ``pending``, ``menu``,
 ``k_position`` / ``k_pool`` / ``k_pool_card`` / ``k_known_hand`` (memory), ``k_template`` (the
-opponent's possible lists under ``--closed-decklist``). Against the BQUERY vector
-(``scripted_agent.VectorView``) it has no caps (every permanent, hand card, graveyard and exile
-card and stack object is there), reads summoning sickness as the rule (``object.sick``: a
-creature, haste considered), all keywords, a token's real characteristics, each permanent's own
-mana value and types, joins an action to its own object by handle (``exact_refs``), recognises a
-keyword-built ability by the menu's ability key, and knows what the knowledge sidecar knows
-(candidate sets of library positions, the cards that can be in the opponent's hand, the own
-library's contents, the lists the opponent can be on).
+opponent's possible lists under ``--closed-decklist``). It has no caps (every permanent, hand
+card, graveyard and exile card and stack object is there), reads summoning sickness as the rule
+(``object.sick``: a creature, haste considered), all keywords, a token's real characteristics,
+each permanent's own mana value and types, joins an action to its own object by handle
+(``exact_refs``), recognises a keyword-built ability by the menu's ability key, and knows what the
+knowledge sidecar knows (candidate sets of library positions, the cards that can be in the
+opponent's hand, the own library's contents, the lists the opponent can be on).
 """
 from __future__ import annotations
 

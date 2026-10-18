@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """The agent-game driver on the RMSTATE protocol: engine subprocess, frame read, reply write.
 
-Plan step 2, "Driver" (``docs/engine_fork_plan.md``): the minimal driver that plays agent games
-without the RL stack (no numpy, no gymnasium, no ``env.py`` / ``runner.py`` / ``opponents.py`` /
-``decode.py``). It launches the engine with ``--machine-format rmstate`` (``docs/state_format.md``
-§9: stdout carries only ``RMSTATE`` records; narrative, ``GAME_RESULT`` and ``MATCH_RESULT`` go to
-stderr), decodes each seat's frames with ``rmstate.py``, follows them in that seat's
-``rm_agent.SeatFrames``, asks the deciding seat's agent for one integer and writes it back. It needs
-only ``rmstate.py``, ``rm_agent.py`` and the agent modules (``scripted_core.py``,
-``explore_agent.py``).
+Plan step 2, "Driver" (``docs/engine_fork_plan.md``): the minimal, stdlib-only driver that plays
+agent games. It launches the engine with ``--machine`` (``docs/state_format.md`` §9: stdout carries
+only ``RMSTATE`` records; narrative, ``GAME_RESULT`` and ``MATCH_RESULT`` go to stderr), decodes
+each seat's frames with ``rmstate.py``, follows them in that seat's ``rm_agent.SeatFrames``, asks
+the deciding seat's agent for one integer and writes it back. It needs only ``rmstate.py``,
+``rm_agent.py`` and the agent modules (``scripted_core.py``, ``explore_agent.py``).
 
 **Agents** (``make_agent``; one spec per seat):
 
@@ -19,32 +17,29 @@ only ``rmstate.py``, ``rm_agent.py`` and the agent modules (``scripted_core.py``
 - ``actions:<i,i,...>``: the listed replies for this seat's decisions in order (a concession
   sentinel ``-2`` / ``-3`` is sent as is), then action 0.
 
-The ``play:`` scripts (``action_spec.py``) stay on ``runner.py`` until plan step 3a ports the
-resolver to C++.
+The ``play:`` scripts run in the engine (``--play``, ``src/agents/play_spec.h``).
 
 **A game** (``play_game``): before it, ``random.seed(seed)`` (the scripted agent breaks ties and the
 explore tier draws from Python's global ``random``) and each agent's ``new_game()``; the engine gets
-``--seed engine_seed(seed)``, the seed the gymnasium env (``env.py``) drew for game seed ``seed``,
-so a seed names the same game here as on ``runner.run_games``. At each decision frame (the deciding
-seat's non-terminal ``STATE`` frame, its menu unbounded) the reply is the agent's index, ``-1`` when
-it picked the last row of an attacker/blocker declaration (the confirm row, as the BQUERY env
-remaps it), or a concession sentinel. Terminal frames are fed to the seats and end the stream. A
+``--seed engine_seed(seed)`` (``src/agents/game_seed.h`` derives the same seed), so a seed names
+the same game here as on the engine's in-process agents (``--game-seed``). At each decision frame
+(the deciding seat's non-terminal ``STATE`` frame, its menu unbounded) the reply is the agent's
+index, ``-1`` when it picked the last row of an attacker/blocker declaration (the confirm row), or
+a concession sentinel. Terminal frames are fed to the seats and end the stream. A
 ``GAME_RESULT`` line scores the game (+1 Player A, -1 Player B, 0 a draw); the match is won by the
-sign of the sum. Engine diagnostics (``WARNING:``, ``ERROR:``, ``FATAL``, the self-check and shadow
+sign of the sum. Engine diagnostics (``WARNING:``, ``ERROR:``, ``FATAL``, the self-check
 lines, …) go to this process's stderr, not the narrative; an engine that exits nonzero raises.
 
-**Transcripts** (``run_games``): ``verbose`` (the smoke tier's transcripts): each decision's engine narrative in a ``--- Narrative ---`` block, ``--- Pregame
----`` / ``--- Turn N (Player X) ---`` markers with the ``PA:`` / ``PB:`` hand lines (each seat's
-hand as of its last decision, at most 10 cards, in (token, name, handle) order, empty while
-sideboarding), ``--- Decision N ---`` with the menu as offered and ``>> label/seat: i (description)``,
-then the result. It is the format ``runner.run_games`` writes on ``--machine-format rmstate`` (no
-board block), byte for byte. ``compact`` writes the narrative and one line per decision (the
-engine's category and step names); ``quiet`` nothing (a draw is still announced and its log saved
-to ``draw_<stamp>.txt``).
+**Transcripts** (``run_games``): ``verbose`` (the smoke tier's transcripts): each decision's
+engine narrative in a ``--- Narrative ---`` block, ``--- Pregame ---`` / ``--- Turn N (Player X)
+---`` markers with the ``PA:`` / ``PB:`` hand lines (each seat's hand as of its last decision, at
+most 10 cards, in (token, name, handle) order, empty while sideboarding), ``--- Decision N ---``
+with the menu as offered and ``>> label/seat: i (description)``, then the result. ``compact``
+writes the narrative and one line per decision (the engine's category and step names); ``quiet``
+nothing (a draw is still announced and its log saved to ``draw_<stamp>.txt``).
 
-CLI: ``python train/rm_driver.py --player-a scripted --player-b explore --deck-a league/bug ...``
-(``--help``). Its flags are ``CLI_FLAGS`` below, which ``cli_spec.DRIVER_TOOL`` registers; the
-parser is built from them with ``argparse`` alone.
+CLI: ``python3 train/rm_driver.py --player-a scripted --player-b explore --deck-a league/bug ...``
+(``--help``). Its flags are ``CLI_FLAGS`` below; the parser is built from them with ``argparse``.
 """
 from __future__ import annotations
 
@@ -78,10 +73,7 @@ HAND_LINE_CAP = 10                                # cards on a PA: / PB: line
 
 # Engine stderr lines that are diagnostics, not narrative.
 _DIAGNOSTIC_PREFIXES = (b"WARNING:", b"ERROR:", b"FATAL", b"error:", b"CRASH:", b"Backtrace:",
-                        b"SELFCHECK-STATE:", b"SELFCHECK-KNOWLEDGE:", b"SHADOW:", b"SHADOW-KNOWLEDGE:",
-                        b"parse_card_script:")
-# Engine stderr lines that are neither (training signals of the BQUERY protocol).
-_SIGNAL_PREFIXES = (b"MANA_WASTED: ", b"MULLIGAN_PENALTY: ")
+                        b"SELFCHECK-STATE:", b"SELFCHECK-KNOWLEDGE:", b"parse_card_script:")
 # Menu categories of an attacker/blocker declaration, whose last row is the confirm row.
 _DECLARATION_CATS = frozenset({"SELECT_ATTACKER", "CONFIRM_ATTACKERS", "SELECT_BLOCKER",
                                "CONFIRM_BLOCKERS"})
@@ -92,7 +84,7 @@ _SEAT_A = 1                                       # enum:seat value of Player A
 _SELF_REL = 1                                     # player-rel value of the viewer
 
 
-# ── CLI flags (registered in cli_spec.DRIVER_TOOL; kinds as cli_spec.Arg's) ───────────────────
+# ── CLI flags ───────────────────────────────────────────────────────────────────────────────
 
 CLI_FLAGS = (
     {"name": "--player-a", "default": "scripted", "suggest": "agent",
@@ -209,7 +201,7 @@ def _seed_sequence_words(seed: int) -> list:
 
 
 def engine_seed(seed: int) -> int:
-    """The engine ``--seed`` of game seed ``seed``: what the gymnasium env (``env.py``) draws,
+    """The engine ``--seed`` of game seed ``seed``:
     ``np.random.Generator(PCG64(SeedSequence(seed))).integers(0, 2**31 - 1)``, computed without
     numpy (PCG64 XSL-RR, numpy's buffered 32-bit Lemire bounded draw)."""
     s = _seed_sequence_words(seed)
@@ -240,7 +232,7 @@ def engine_seed(seed: int) -> int:
 
 def resolve_on_the_play(choice, seed=None) -> str:
     """The side ("A" / "B") ``--on-the-play`` ``choice`` puts on the play ("random": a coin flip
-    seeded from ``seed``, as ``cli_spec.resolve_on_the_play``)."""
+    seeded from ``seed``)."""
     key = str(choice or "a").lower()
     if key not in ON_THE_PLAY:
         raise ValueError(f"--on-the-play must be one of {'/'.join(ON_THE_PLAY)} (got {choice!r})")
@@ -321,8 +313,8 @@ def make_agent(spec):
     if is_scripted_spec(s):
         return ScriptedAgent(s)
     raise ValueError(f"unknown agent spec {spec!r} for the RMSTATE driver: scripted tiers, explore, "
-                     "explore:patient, first / auto or actions:<i,...> (play: specs run on "
-                     "runner.py)")
+                     "explore:patient, first / auto or actions:<i,...> (play: specs run in the "
+                     "engine: --play)")
 
 
 # ── The engine ──────────────────────────────────────────────────────────────────────────────
@@ -331,7 +323,7 @@ def engine_command(binary, *, seed, deck_a=None, deck_b=None, bo3=False, narrati
                    engine_flags=()) -> list:
     """The engine command line of one game (or bo3 match) with engine seed ``seed``, plus
     ``engine_flags`` and $ROBOMAGE_ENGINE_FLAGS."""
-    cmd = [os.path.realpath(binary), "--machine-format", "rmstate", "--seed", str(seed)]
+    cmd = [os.path.realpath(binary), "--machine", "--seed", str(seed)]
     if narrative:
         cmd.append("--narrative")
     if bo3:
@@ -462,8 +454,6 @@ class Engine:
                 return
             line = bytes(self._err[:nl])
             del self._err[:nl + 1]
-            if line.startswith(_SIGNAL_PREFIXES):
-                continue
             if line.startswith(_DIAGNOSTIC_PREFIXES):
                 self.diagnostics.append(line.decode("utf-8", errors="replace"))
                 _write_diagnostic(line)
@@ -534,8 +524,7 @@ class Decision:
         return bool(cats) and any(cats <= c for c in _PREGAME_CATS)
 
     def active_is_a(self) -> bool:
-        """The active seat; while sideboarding, the other seat (the BQUERY observation masks the
-        flag to "not active" then, and the transcript keeps its reading)."""
+        """The active seat; while sideboarding, the other seat (the transcript's reading)."""
         if self.turn is None or self.sideboarding:
             return self.seat != "A"
         return self.turn["active"] == _SEAT_A
@@ -674,14 +663,14 @@ def play_game(agent_a, agent_b, *, binary=DEFAULT_BINARY, deck_a=None, deck_b=No
     return rec
 
 
-# ── Transcripts and results (runner.run_games' formats) ─────────────────────────────────────
+# ── Transcripts and results ─────────────────────────────────────────────────────────────────
 
 def _pct(w, n):
     return f"{w}/{n} ({100 * w / n:.1f}%)" if n else f"{w}/{n} (n/a)"
 
 
 def per_game_split_lines(records, subject="Player A"):
-    """The bo3 per-game-index and post-board play/draw lines (``runner.format_per_game_split``)."""
+    """The bo3 per-game-index and post-board play/draw lines."""
     per_game = {}
     for rec in records:
         for gi, (winner, a_on_play) in enumerate(rec.game_results):
@@ -705,7 +694,7 @@ def per_game_split_lines(records, subject="Player A"):
 
 
 def format_timing(records, wall, bo3=False) -> str:
-    """One-line throughput summary of a run (``runner.format_timing``)."""
+    """One-line throughput summary of a run."""
     decisions = sum(r.decisions for r in records)
     completed = sum(1 for r in records if not r.capped)
     if bo3:
@@ -865,12 +854,6 @@ def _engine_flags(args) -> list:
 
 def main(argv=None) -> int:
     parser = build_parser()
-    try:
-        import cli_spec
-    except ImportError:
-        cli_spec = None
-    if cli_spec is not None:
-        cli_spec.add_removed_flags(parser, "driver", "driver/driver")
     args = parser.parse_args(argv)
     bo3 = args.format == "bo3"
     deck_a, deck_b = args.deck_a, args.deck_b or args.deck_a

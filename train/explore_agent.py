@@ -159,8 +159,7 @@ def explore_choice(v, seen: set, patient: bool = False) -> int:
         return 0
     cats = v.cats
     # A game always opens with a mulligan query, so seeing one means a new game
-    # started: clear the novelty set even when nobody called new_game() (e.g. a
-    # scripted opponent reused across vec-env episodes). Repeated clears during
+    # started: clear the novelty set even when nobody called new_game(). Repeated clears during
     # London mulligans are harmless — nothing is cast pregame.
     if any(c == _CAT_MULLIGAN for c in cats):
         seen.clear()
