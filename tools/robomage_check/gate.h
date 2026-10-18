@@ -20,6 +20,7 @@ struct Options {
         int jobs = 4;
         long seed = 1;
         int fuzz_games = 8;
+        int manual_mana_games = 2;  // fuzz: --no-auto-mana games per ring matchup
         int smoke_games = 2;
         std::string matchups;  // fuzz / smoke matchup preset ("" = the tier's default)
         std::string mode = "explore";

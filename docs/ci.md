@@ -36,8 +36,8 @@ The run ends with each tier's PASS/FAIL, a wall-time table, every warning and er
 
 ```
 robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR]
-               [--fuzz-games N] [--smoke-games N] [--matchups PRESET] [--mode MODE]
-               [--scenario GLOB ...] [--show output|narrative|dump] [--record]
+               [--fuzz-games N] [--manual-mana-games N] [--smoke-games N] [--matchups PRESET]
+               [--mode MODE] [--scenario GLOB ...] [--show output|narrative|dump] [--record]
 ```
 
 | Flag | Meaning |
@@ -48,8 +48,9 @@ robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR
 | `--binary PATH` | the engine (default `robomage` beside the gate, so `bin/release/robomage_check` tests the release build); `rmknow` is taken from the same directory |
 | `--out-dir DIR` | transcripts, engine stderr and draw logs (default `ci_out/`) |
 | `--fuzz-games N` / `--smoke-games N` | games per matchup (default 8 / 2) |
+| `--manual-mana-games N` | `fuzz` tier: `--no-auto-mana` games per ring matchup (default 2; 0 skips them) |
 | `--matchups PRESET` | `mirrors`, `ring` (each league deck vs the next), `mirrors+ring`, `all` (every ordered pair), or `"a:b,c:d"` (deck specs relative to `decks/`); default `fuzz` `mirrors`, `smoke` `mirrors+ring` |
-| `--mode MODE` | the fuzz agent: `explore` (default) or `explore:patient` |
+| `--mode MODE` | the fuzz agent (bo1 and `--no-auto-mana` games): `explore` (default) or `explore:patient` |
 | `--scenario GLOB` | `scenarios` tier: only the scenarios whose name matches (repeatable) |
 | `--show output\|narrative\|dump` | `scenarios` tier: print each run's engine output, the narrative lines the assertions see, or its knowledge lines |
 | `--record` | `replay` tier: rewrite the baselines instead of checking them |
@@ -66,7 +67,7 @@ Times are wall clock for the debug build on 4 cores (`make check` total about 5.
 | `replay` | each corpus decision log replayed (`robomage --replay <name>.rmlog --machine --narrative --trace-decisions`), its stdout against `<name>.replay` byte for byte (66 games) | ~17 s |
 | `state` | the corpus replayed under `--selfcheck-knowledge` (same output, clean `SELFCHECK-STATE` / `SELFCHECK-KNOWLEDGE` summaries); 16 explore fuzz games with the self-checks and dumps; every scenario at `--selfcheck-state-sample 1`; `--rmstate-read` on the dumps; the decoder's refusals of mutated frames; two RMSTATE stream sessions against their dumps (with and without one written); the name-a-card menus with open and closed decklists; the include isolation of the std-only sources | ~2.2 min |
 | `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; six explore games under `--selfcheck-knowledge`; three stream sessions and two `expert+belief` sessions against their dumps (`k_*` / `b_*` included); `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; four archetype-inference sessions against `archetypes.json`; the belief calibration sessions and their report | ~75 s |
-| `fuzz` | C++ explore vs explore in-process (`--agent-a/-b <mode>`) over the matchups (default the ten league mirrors), `--fuzz-games` bo1 games each (matchup `k` game `i`: game seed `seed + 1000k + i`), then one bo3 `explore:patient` match per ring matchup (seed `seed + 500000 + k`); transcripts `ci_out/fuzz_<a>__<b>.txt` | ~40 s |
+| `fuzz` | C++ explore vs explore in-process (`--agent-a/-b <mode>`) over the matchups (default the ten league mirrors), `--fuzz-games` bo1 games each (matchup `k` game `i`: game seed `seed + 1000k + i`), then one bo3 `explore:patient` match per ring matchup (seed `seed + 500000 + k`), then `--manual-mana-games` bo1 games per ring matchup under `--no-auto-mana`, so manual mana payment is covered (every mana ability offered at priority, each cost paid in the payment loop; ring matchup `k` game `i`: seed `seed + 700000 + 1000k + i`); transcripts `ci_out/fuzz_<a>__<b>.txt`, `fuzz_bo3_<a>__<b>.txt`, `fuzz_manual_<a>__<b>.txt` | ~50 s |
 | `bench` | decisions per second of explore vs explore, bo1, three league pairings × three games, one engine at a time (reported, no threshold) | ~8 s |
 | `smoke` | scripted hard vs hard through `python/rm_driver.py` (one process per matchup, default the mirrors and the ring, `--smoke-games` each; transcripts `ci_out/smoke_<a>__<b>.txt`), and beside them `python/pycheck.py`: `python/rmstate.py`'s decode of three dumps (an in-process bo1 game and bo3 match, a driver bo3 session under `--closed-decklist`) renders the engine's `--state-dump json` lines byte for byte, both decoders refuse (or skip) the same mutated frames, the scripted agent's self-lethal guard in sculpted positions, the driver's pinned engine seeds, and a driven game imports nothing outside the standard library and `python/`. Skipped with a notice when no `python3` is on `PATH` | ~35 s |
 
@@ -128,8 +129,8 @@ decision): their output is implementation-defined and differs between libstdc++ 
   uploaded as `ci-transcripts-<run_id>` even on success, so stall and draw logs are reviewable.
 - **`.github/workflows/nightly-fuzz.yml`** — daily 08:00 UTC, plus manual (`games`, `seed`
   inputs). Two matrix jobs run the gate's `fuzz` tier over **all** league matchups (100 ordered
-  pairs plus the bo3 ring matches), one with `explore` and one with `explore:patient`, 40 games per
-  matchup by default, with a **rotating** seed (run number × 100000 unless given). The job summary
+  pairs plus the bo3 ring matches and the `--no-auto-mana` ring games), one with `explore` and one
+  with `explore:patient`, 40 games per matchup (and per ring matchup without auto-mana) by default, with a **rotating** seed (run number × 100000 unless given). The job summary
   prints the exact local reproduce command; artifact `nightly-fuzz-explore[-patient]-<run>`.
 
 Both share `.github/actions/setup-robomage`: Python 3.12 (stdlib only: card-script provisioning
@@ -150,8 +151,8 @@ add-only, so a stale cache within a pin only re-fetches the delta.
    (see `scenarios.h`).
 3. **One fuzz or corpus game by hand:** a fuzz game is exactly `cd bin && ./debug/robomage
    --agent-a explore --agent-b explore --game-seed <seed> --deck-a league/<a> --deck-b league/<b>
-   --narrative --trace-decisions` (the bo3 leg: `explore:patient` and `--bo3`; the seed is in the
-   tier's report line); a corpus game is `cd bin && ./debug/robomage --replay
+   --narrative --trace-decisions` (the bo3 leg: `explore:patient` and `--bo3`; the manual-mana leg:
+   `--no-auto-mana`; the seed is in the tier's report line); a corpus game is `cd bin && ./debug/robomage --replay
    ../tests/corpus/<name>.rmlog --machine --narrative --trace-decisions`.
 4. **Nightly fuzz:** run the `bin/debug/robomage_check --tier fuzz --matchups all --mode …
    --fuzz-games … --seed …` line from the job summary; the `nightly-fuzz-*` artifact has the

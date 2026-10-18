@@ -128,7 +128,7 @@ background** and make the live output inspectable by the user:
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
-  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient`); draws are findings |
+  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | decisions per second of a fixed explore workload (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` |
 
