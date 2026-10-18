@@ -255,8 +255,8 @@ void InputLogger::init_machine(unsigned int seed, const std::string &resource_di
                                const DecisionLogHeader &header) {
     machine_mode = true;
     replay_mode = false;
-    // Machine mode (RL training / test harness) writes no decision log unless
-    // --log-decisions is given — training runs millions of episodes.
+    // Machine mode (agent games, the gate) writes no decision log unless
+    // --log-decisions (or --decision-log) is given — agent runs play many games.
     if (!enable_log) return;
     if (!open_log(seed, resource_dir, header)) return;
     if (named_log_path.empty()) game_log("Logging inputs to: %s\n", log_path.c_str());

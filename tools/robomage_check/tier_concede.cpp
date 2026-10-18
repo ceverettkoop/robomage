@@ -20,12 +20,12 @@ struct ConcedeChecks {
         }
 };
 
-// One parked-query line (test_concede.py's _PARKED_CASES).
+// One parked-query line.
 struct ParkedCase {
         const char *name, *deck_a, *pick, *prompt, *announce, *continued;
 };
 
-// The replies of a parked-concession line (test_concede.py's _ParkedScript): row 0 until A's pick is
+// The replies of a parked-concession line: row 0 until A's pick is
 // on the menu, the pick, row 0 until the parked prompt, then the sentinel; in a bo3 after a game
 // concession, row 0 through sideboarding and a second game concession at game 2's first decision.
 struct ParkedScript {
@@ -95,7 +95,7 @@ static std::string seat_of(int viewer) {
     return viewer == rmcheck::VIEWER_A ? "Player A" : "Player B";
 }
 
-// test_concede.py's checks 1-3b: delver vs mav, row 0 for twelve decisions, then a concession.
+// Checks 1-3b: delver vs mav, row 0 for twelve decisions, then a concession.
 static void natural_lines(const rmcheck::Options &opt, ConcedeChecks &c) {
     const std::vector<std::string> decks = {"--deck-a", "delver", "--deck-b", "mav"};
     // [1] bo1: the conceding seat loses.
@@ -203,7 +203,7 @@ static void natural_lines(const rmcheck::Options &opt, ConcedeChecks &c) {
     }
 }
 
-// test_concede.py's check 4: the same seed and replies give the same game, the sentinel is logged
+// Check 4: the same seed and replies give the same game, the sentinel is logged
 // and --replay reproduces the concession.
 static void determinism(const rmcheck::Options &opt, ConcedeChecks &c) {
     const std::string dir = rmcheck::make_temp_dir(opt.out("concede"), "determinism_");
@@ -270,7 +270,7 @@ static void check_parked_replay(const rmcheck::Options &opt, ConcedeChecks &c, c
         label + ": --replay conceded at the parked prompt");
 }
 
-// test_concede.py's check 7: a concession at a parked query (Brainstorm's put-back, mid-resolution;
+// Check 7: a concession at a parked query (Brainstorm's put-back, mid-resolution;
 // Cavern of Souls' ETB creature type, an SBE-pass prompt) ends the game at once, over the RMSTATE
 // stream driven by its frames (--machine-format rmstate) and over a second session the same
 // replies are piped into unread (--machine, no --narrative), which writes the same frames; the

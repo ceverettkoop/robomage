@@ -193,7 +193,8 @@ static std::vector<std::string> engine_args(
     return a;
 }
 
-// test_scenarios.py's _ERROR_RE.
+// Whether a line of a scenario run fails it: ERROR: / FATAL:, a crash (scan.h), a --play
+// resolution error or SCRIPT INCOMPLETE.
 static bool is_scenario_error_line(const std::string &line) {
     const std::string t = rmcheck::trim(line);
     if (rmcheck::starts_with(t, "ERROR:") || rmcheck::starts_with(t, "FATAL:")) return true;
@@ -237,7 +238,8 @@ static bool game_result(const std::string &text, std::string *got) {
     return false;
 }
 
-// test_scenarios.py's check_output on an engine run.
+// The failures of one engine run's output against the scenario's assertions: an error line, then
+// the narrative, menu and result keys.
 static std::vector<std::string> check_output(const Json &scn, const std::string &text) {
     std::vector<std::string> fails;
     for (const std::string &line : rmcheck::split_lines(text))
@@ -328,7 +330,7 @@ static std::vector<std::string> check_output(const Json &scn, const std::string 
     return fails;
 }
 
-// test_scenarios.py's check_dump.
+// The failures of the seat frames' knowledge lines against the scenario's expect_dump* keys.
 static std::vector<std::string> check_dump(
     const Json &scn, const std::vector<std::pair<char, std::vector<std::string>>> &frames) {
     if (frames.empty()) return {"no seat STATE frame in the --state-dump json output"};
@@ -408,7 +410,8 @@ static Json without(const Json &scn, const std::vector<std::string> &keys) {
     return out;
 }
 
-// test_scenarios.py's check_variants.
+// The failures of the scenario's variants: each variant run against the scenario's checks and
+// its expect_same lines against the scenario's own run.
 static std::vector<std::string> check_variants(const rmcheck::Options &opt, const Json &scn, const std::string &text) {
     std::vector<std::string> fails;
     const Json *variants = scn.get("variants");

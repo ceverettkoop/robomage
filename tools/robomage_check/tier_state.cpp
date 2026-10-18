@@ -217,7 +217,7 @@ static bool split_blocks(const std::string &payload, std::string *header, std::v
     return true;
 }
 
-// A frame payload from a 24-byte header (its table count replaced) and blocks (test_rmstate.py's _rebuild).
+// A frame payload from a 24-byte header (its table count replaced) and blocks.
 static std::string rebuild(const std::string &header, const std::vector<Block> &blocks) {
     std::string out = header;
     put_le(&out, 16, blocks.size(), 4);
@@ -233,8 +233,8 @@ static std::string rebuild(const std::string &header, const std::vector<Block> &
 }
 
 // Each mutation of a dump's first STATE frame is refused by the engine's decoder (--rmstate-read
-// exit 1 naming it), an unknown table skipped and listed (test_rmstate.py's check_refusals, the
-// engine's half).
+// exit 1 naming it), an unknown table skipped and listed (the engine's half; python/pycheck.py
+// checks the Python decoder's).
 static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, const std::string &dump) {
     std::vector<std::string> payloads, head;
     std::string err, state;
@@ -307,8 +307,7 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
     if (all_ok) rep.info("OK   refusals (" + std::to_string(mutants.size()) + " mutations)");
 }
 
-// Disruptor Flute's name-a-card menu with open and closed decklists (test_rmstate.py's
-// check_name_card_candidates).
+// Disruptor Flute's name-a-card menu with open and closed decklists.
 static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep) {
     for (bool closed : {false, true}) {
         const std::string label = std::string("name-a-card ") + (closed ? "closed" : "open") + " decklist";
@@ -467,8 +466,7 @@ static std::string normpath(const std::string &path) {
     return rmcheck::join(parts, "/");
 }
 
-// The knowledge-side sources include only the standard library and the std-only headers
-// (test_selfcheck_state.py's check_isolation).
+// The knowledge-side sources include only the standard library and the std-only headers.
 static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     static const std::set<std::string> std_headers = {"algorithm", "any", "array", "atomic", "bitset", "cassert",
         "cctype", "cerrno", "cfloat", "charconv", "chrono", "cinttypes", "climits", "cmath", "complex", "cstdarg",

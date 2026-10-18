@@ -72,7 +72,7 @@ std::vector<std::string> scenario_paths(const Options &opt);
 // so that load_scenario reports a malformed one instead of the process aborting on it. Call it
 // before running those scenarios, while no other thread runs.
 void prevalidate_scenarios(const std::vector<std::string> &paths);
-// Reads and validates one scenario file (test_scenarios.py's load_scenario); false with `err`.
+// Reads and validates one scenario file; false with `err`.
 bool load_scenario(const std::string &path, Scenario *out, std::string *err);
 // Whether the scenario has an expect_dump* key.
 bool wants_dump(const Json &scn);

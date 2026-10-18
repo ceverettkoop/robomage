@@ -128,7 +128,7 @@ static Metagame metagame_of(const std::vector<std::string> &payloads) {
     return m;
 }
 
-// test_knowledge.py's check_metagame.
+// The METAGAME frame against archetypes.json: its labels (plus unknown) and its reference lists.
 static std::vector<std::string> check_metagame(const Metagame &m, const Tags &tags, const std::string &label) {
     if (!m.found) return {label + ": no METAGAME frame"};
     std::vector<std::string> fails;
@@ -158,7 +158,7 @@ static std::string list_text(const std::vector<size_t> &v) {
     return "[" + rmcheck::join(parts, ", ") + "]";
 }
 
-// test_knowledge.py's _archetype_session.
+// One archetype session (knowledge_meta.h's archetype_part).
 static std::vector<std::string> archetype_session(
     const rmcheck::Options &opt, const StreamGame &g, const Tags &tags, const std::string &dir, std::string *summary) {
     bool closed = false;
@@ -300,7 +300,7 @@ static std::vector<std::string> archetype_session(
     return fails;
 }
 
-// test_knowledge.py's _calibration_session.
+// One calibration session (knowledge_meta.h's calibration_part): its records.
 static std::vector<std::string> calibration_session(
     const rmcheck::Options &opt, const StreamGame &g, const std::string &dir, std::vector<CalibrationRecord> *records) {
     const std::string label = "calibration " + g.deck_a + " vs " + g.deck_b + " seed " + std::to_string(g.seed);
@@ -352,7 +352,7 @@ static std::vector<std::string> calibration_session(
     return fails;
 }
 
-// test_knowledge.py's calibration_report, format_calibration and calibration_failures.
+// The calibration report over every session's records, and its failures (knowledge_meta.h).
 static void calibration_report(rmcheck::Report &rep, const std::vector<CalibrationRecord> &records) {
     const double eps = 1e-9;
     const size_t n = records.size();

@@ -8,7 +8,7 @@
 // ── robomage_check: the knowledge tier's reference-metagame parts ─────────────────────────────
 //
 // Archetype inference (docs/knowledge_store.md §10) and the belief calibration report (§10.6), on
-// --machine-format rmstate sessions answered with random replies (frames.h). The reference lists'
+// RMSTATE stream sessions answered with random replies (frames.h). The reference lists'
 // tags come from bin/resources/decks/archetypes.json (its `_archetypes` labels and deck keys).
 
 namespace rmcheck {

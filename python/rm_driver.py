@@ -61,7 +61,7 @@ from rm_agent import FRAME_TABLES, SeatFrames, decide, fold_name  # noqa: E402
 
 REPO_ROOT = os.path.dirname(_HERE)
 BIN_DIR = os.path.join(REPO_ROOT, "bin")          # the engine's working directory (resources/)
-# The build the driver runs by default: $ROBOMAGE_BUILD, else debug (like observe and the gate).
+# The build the driver runs by default: $ROBOMAGE_BUILD, else debug (the gate's default too).
 DEFAULT_BINARY = os.path.join(BIN_DIR, os.environ.get("ROBOMAGE_BUILD", "debug"), "robomage")
 # Extra engine flags every driven engine gets (the gate's tiers set it).
 ENGINE_FLAGS_ENV = "ROBOMAGE_ENGINE_FLAGS"
