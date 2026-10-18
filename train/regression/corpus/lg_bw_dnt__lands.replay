@@ -1,0 +1,3438 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bw_dnt__lands.rmlog
+REPLAY MODE: Using embedded decks 'league/bw_dnt' / 'league/lands' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Phelia, Exuberant Shepherd
+Player A draws Pre-War Formalwear
+Player A draws Wasteland
+Player A draws Aether Vial
+Player A draws Aether Vial
+Player A draws Orcish Bowmasters
+Player A draws Scrubland
+Player B draws Crop Rotation
+Player B draws Sphere of Resistance
+Player B draws Life from the Loam
+Player B draws Grafdigger's Cage
+Player B draws Mox Diamond
+Player B draws Boseiju, Who Endures
+Player B draws Thespian's Stage
+Player A hand:
+Aether Vial
+Aether Vial
+Orcish Bowmasters
+Phelia, Exuberant Shepherd
+Pre-War Formalwear
+Scrubland
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Boseiju, Who Endures
+Crop Rotation
+Grafdigger's Cage
+Life from the Loam
+Mox Diamond
+Sphere of Resistance
+Thespian's Stage
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scrubland)
+Player A played Scrubland
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Aether Vial
+|   2: Cast Aether Vial
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Aether Vial)
+Player A activated Scrubland for 1(W)
+Player A casts Aether Vial
+Aether Vial enters the battlefield
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A fails to find
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Crop Rotation
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Thespian's Stage
+|   3: Cast Mox Diamond
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Mox Diamond)
+Player B casts Mox Diamond
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Discard Boseiju, Who Endures (put Mox Diamond onto the battlefield)
+|   1: Discard Thespian's Stage (put Mox Diamond onto the battlefield)
+|   2: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Discard Boseiju, Who Endures (put Mox Diamond onto the battlefield))
+Player B discards Boseiju, Who Endures.
+Mox Diamond enters the battlefield
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+|   2: Cast Grafdigger's Cage
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Grafdigger's Cage)
+Player B activated Mox Diamond for 1(W)
+Player B casts Grafdigger's Cage
+Grafdigger's Cage enters the battlefield
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thespian's Stage)
+Player B played Thespian's Stage
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Aether Vial triggered
+| decision 11: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Wasteland
+| decision 14: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Cast Aether Vial
+|   4: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Aether Vial)
+Player A activated Scrubland for 1(W)
+Player A casts Aether Vial
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A fails to find
+Aether Vial enters the battlefield
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thespian's Stage
+|   1: Scrubland
+|   2: Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thespian's Stage)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Thespian's Stage is on the stack
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 22: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Thespian's Stage for (C)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Thespian's Stage is destroyed
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 24: Player A (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 25: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 26: Player A (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 27: Player A (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 28: Player A (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 29: Player A (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Sphere of Resistance
+| decision 30: Player A (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 31: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 32: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Fail to find)
+Player A fails to find
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 33: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 34: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 35: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 36: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 37: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 38: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Witch Enchanter
+| decision 39: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Witch-Blessed Meadow
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 41: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+|   2: Cast Phelia, Exuberant Shepherd
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Aether Vial (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Orcish Bowmasters)
+Player A activated Scrubland for 1(B)
+Player A activated Wasteland for 1(C)
+Player A casts Orcish Bowmasters
+| decision 42: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 43: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+|   2: Orcish Bowmasters
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+| decision 44: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 19 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 1/1.
+| decision 45: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 46: Player A (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 47: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 48: Player A (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 49: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 50: Player A (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 51: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Expedition Map
+| decision 52: Player A (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Expedition Map
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Expedition Map)
+Player B activated Mox Diamond for 1(W)
+Player B casts Expedition Map
+| decision 54: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Expedition Map enters the battlefield
+| decision 55: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 56: Player A (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 57: Player A (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 58: Player A (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 59: Player A (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 60: Player A (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 61: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 62: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Phelia, Exuberant Shepherd)
+Player A activated Scrubland for 1(W)
+Player A activated Wasteland for 1(C)
+Player A casts Phelia, Exuberant Shepherd
+| decision 63: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+| decision 64: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 65: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 66: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 67: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 68: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws White Orchid Phantom
+| decision 69: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 70: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Witch-Blessed Meadow)
+Player A played Witch-Blessed Meadow
+| decision 71: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: pay 3 life so it enters untapped)
+Player A pays 3 life.
+| decision 72: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 73: Player A (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 74: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 75: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| decision 76: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Orc Army token -> Player B
+| decision 77: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 78: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 18 life)
+  Orc Army token deals 1 damage to Player B (now at 17 life)
+--- End Combat Damage ---
+
+| decision 79: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 80: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 81: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 82: Player A (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 83: Player A (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Dark Depths
+| decision 84: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 85: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dark Depths)
+Player B played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+| decision 86: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+|   2: Cast Crop Rotation
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Crop Rotation)
+| decision 87: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Dark Depths
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Dark Depths)
+Player B activated Mox Diamond for 1(G)
+Player B sacrifices Dark Depths
+Player B casts Crop Rotation
+| decision 88: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 89: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Forest
+|   7: Ghost Quarter
+|   8: Karakas
+|   9: Maze of Ith
+|   10: Rishadan Port
+|   11: Savannah
+|   12: The Tabernacle at Pendrell Vale
+|   13: Thespian's Stage
+|   14: Urza's Saga
+|   15: Wasteland
+|   16: Yavimaya, Cradle of Growth
+(REPLAY) [T7 | First Main | Player B] Input: 12
+| >> Player B: 12 (The Tabernacle at Pendrell Vale)
+Player B shuffles their library
+Player B puts The Tabernacle at Pendrell Vale to the battlefield
+| decision 90: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 91: Player A (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 92: Player A (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 93: Player A (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 94: Player A (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 95: Player A (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+Player A orders 5 simultaneous triggers (pick which goes on the stack next).
+| decision 96: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+|   2: Orcish Bowmasters (Destroy)
+|   3: Phelia, Exuberant Shepherd (Destroy)
+|   4: Orc Army token (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Player A orders 4 simultaneous triggers (pick which goes on the stack next).
+| decision 97: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Orcish Bowmasters (Destroy)
+|   2: Phelia, Exuberant Shepherd (Destroy)
+|   3: Orc Army token (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 98: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Orcish Bowmasters (Destroy)
+|   1: Phelia, Exuberant Shepherd (Destroy)
+|   2: Orc Army token (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters (Destroy))
+Orcish Bowmasters triggered
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 99: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd (Destroy)
+|   1: Orc Army token (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd (Destroy))
+Phelia, Exuberant Shepherd triggered
+Orc Army token triggered
+| decision 100: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Orc Army token from being destroyed:
+| decision 101: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Scrubland for (W)
+|   1: Tap Scrubland for (B)
+|   2: Tap Wasteland for (C)
+|   3: Tap Witch-Blessed Meadow for (W)
+|   4: Don't pay (Orc Army token is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Scrubland for (W))
+Player A tapped Scrubland for {W}
+| decision 102: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Wasteland for (C)
+|   1: Tap Witch-Blessed Meadow for (W)
+|   2: Pay {1} (Orc Army token is not destroyed)
+|   3: Don't pay (Orc Army token is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Pay {1} (Orc Army token is not destroyed))
+Player A pays {1} — Orc Army token is not destroyed
+| decision 103: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Phelia, Exuberant Shepherd from being destroyed:
+| decision 104: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Wasteland for (C)
+|   1: Tap Witch-Blessed Meadow for (W)
+|   2: Don't pay (Phelia, Exuberant Shepherd is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Wasteland for (C))
+Player A tapped Wasteland for {C}
+| decision 105: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Witch-Blessed Meadow for (W)
+|   1: Pay {1} (Phelia, Exuberant Shepherd is not destroyed)
+|   2: Don't pay (Phelia, Exuberant Shepherd is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Pay {1} (Phelia, Exuberant Shepherd is not destroyed))
+Player A pays {1} — Phelia, Exuberant Shepherd is not destroyed
+| decision 106: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Player A may pay to prevent Orcish Bowmasters from being destroyed:
+| decision 107: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Tap Witch-Blessed Meadow for (W)
+|   1: Don't pay (Orcish Bowmasters is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Tap Witch-Blessed Meadow for (W))
+Player A tapped Witch-Blessed Meadow for {W}
+| decision 108: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pay {1} (Orcish Bowmasters is not destroyed)
+|   1: Don't pay (Orcish Bowmasters is destroyed)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pay {1} (Orcish Bowmasters is not destroyed))
+Player A pays {1} — Orcish Bowmasters is not destroyed
+| decision 109: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 110: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 111: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 112: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 113: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws White Orchid Phantom
+| decision 114: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 115: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 116: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 117: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 118: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+| decision 119: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| decision 120: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+  Orc Army token -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 121: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Aether Vial
+|   5: Aether Vial
+|   6: Orcish Bowmasters
+|   7: Orc Army token
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Targeting choice 1
+Phelia, Exuberant Shepherd triggered
+| decision 122: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Expedition Map is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+| decision 123: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 124: Player A (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 14 life)
+  Orc Army token deals 1 damage to Player B (now at 13 life)
+--- End Combat Damage ---
+
+| decision 125: Player A (game 0, turn 8, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 126: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 127: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Delayed trigger fires.
+| decision 128: Player A (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Expedition Map is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+| decision 129: Player A (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+| decision 130: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Crop Rotation)
+| decision 131: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice The Tabernacle at Pendrell Vale
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Sacrifice The Tabernacle at Pendrell Vale)
+Player B activated Mox Diamond for 1(G)
+Player B sacrifices The Tabernacle at Pendrell Vale
+Player B casts Crop Rotation
+| decision 132: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 133: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Forest
+|   7: Ghost Quarter
+|   8: Karakas
+|   9: Maze of Ith
+|   10: Rishadan Port
+|   11: Savannah
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T9 | Upkeep | Player B] Input: 13
+| >> Player B: 13 (Urza's Saga)
+Player B shuffles their library
+Player B puts Urza's Saga to the battlefield
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+| decision 134: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 135: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Ghost Quarter
+| decision 136: Player A (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 137: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 138: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Ghost Quarter)
+Player B played Ghost Quarter
+| decision 139: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+|   2: Cast Sphere of Resistance
+|   3: Activate Expedition Map (ChangeZone)
+|   4: Activate Ghost Quarter (Destroy)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Sphere of Resistance)
+Player B activated Ghost Quarter for 1(C)
+Player B activated Urza's Saga for 1(C)
+Player B casts Sphere of Resistance
+| decision 140: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Sphere of Resistance enters the battlefield
+| decision 141: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 142: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 143: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 144: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 145: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 146: Player A (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 147: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 148: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 149: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 150: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 151: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 5).
+| decision 152: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Prismatic Vista
+| decision 153: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 154: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Prismatic Vista
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   3: Cast White Orchid Phantom
+|   4: Cast White Orchid Phantom
+|   5: Activate Aether Vial (ChangeZone)
+|   6: Activate Aether Vial (ChangeZone)
+|   7: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast White Orchid Phantom)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Scrubland for 1(W)
+Player A activated Wasteland for 1(C)
+Player A casts White Orchid Phantom
+| decision 155: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+White Orchid Phantom enters the battlefield
+Choose target for White Orchid Phantom:
+| decision 156: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Ghost Quarter
+|   2: Urza's Saga
+|   3: Scrubland
+|   4: Wasteland
+|   5: Witch-Blessed Meadow
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Ghost Quarter)
+Targeting choice 1
+White Orchid Phantom triggered
+| decision 157: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Ghost Quarter is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 158: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+(REPLAY) [T10 | First Main | Player B] Input: 1
+| >> Player B: 1 (Forest)
+Player B shuffles their library
+Player B puts Forest to the battlefield
+Forest enters tapped.
+| decision 159: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Prismatic Vista
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Prismatic Vista)
+Player A played Prismatic Vista
+| decision 160: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Prismatic Vista (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 3
+| >> Player A: 3 (Activate Prismatic Vista (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Prismatic Vista
+Player A's Prismatic Vista ability is on the stack
+| decision 161: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 162: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Swamp
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Plains)
+Player A shuffles their library
+Player A puts Plains to the battlefield
+| decision 163: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 164: Player A (game 0, turn 10, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 165: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 166: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+| decision 167: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| decision 168: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+  Orc Army token -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 169: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Sphere of Resistance
+|   5: Aether Vial
+|   6: Aether Vial
+|   7: Orcish Bowmasters
+|   8: White Orchid Phantom
+|   9: Orc Army token
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Targeting choice 1
+Phelia, Exuberant Shepherd triggered
+| decision 170: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Expedition Map is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+| decision 171: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 172: Player A (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 12 life)
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 10 life)
+  Orc Army token deals 1 damage to Player B (now at 9 life)
+--- End Combat Damage ---
+
+| decision 173: Player A (game 0, turn 10, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 174: Player A (game 0, turn 10, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 175: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Delayed trigger fires.
+| decision 176: Player A (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Expedition Map is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+| decision 177: Player A (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T10 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 12 (Player B) --------
+| decision 178: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+|   2: Activate Urza's Saga (Token)
+(REPLAY) [T11 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate Urza's Saga (Token))
+Player B activated Forest for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B's Urza's Saga ability is on the stack
+| decision 179: Player A (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 180: Player A (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Malevolent Rumble
+| decision 181: Player A (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+| decision 182: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 183: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Pithing Needle
+|   3: Skateboard
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Pithing Needle)
+Player B shuffles their library
+Player B puts Pithing Needle to the battlefield
+Choose a card name for Pithing Needle:
+| decision 184: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Plains
+|   1: Name card: Aether Vial
+|   2: Name card: Karakas
+|   3: Name card: Marsh Flats
+|   4: Name card: Overlord of the Balemurk
+|   5: Name card: Phelia, Exuberant Shepherd
+|   6: Name card: Prismatic Vista
+|   7: Name card: Recruiter of the Guard
+|   8: Name card: Solitude
+|   9: Name card: Stoneforge Mystic
+|   10: Name card: Swords to Plowshares
+|   11: Name card: Thoughtseize
+|   12: Name card: Wasteland
+|   13: Name card: White Orchid Phantom
+|   14: Name card: Deafening Silence
+|   15: Name card: Orcish Bowmasters
+|   16: Name card: Scrubland
+|   17: Name card: Wrath of the Skies
+|   18: Name card: Disruptor Flute
+|   19: Name card: Erode
+|   20: Name card: Flooded Strand
+|   21: Name card: Pre-War Formalwear
+|   22: Name card: Shadowy Backstreet
+|   23: Name card: Skyclave Apparition
+|   24: Name card: Witch Enchanter
+|   25: Name card: Arid Mesa
+|   26: Name card: Cloak and Dagger, Entwined
+|   27: Name card: Containment Priest
+|   28: Name card: Faerie Macabre
+|   29: Name card: Flickerwisp
+|   30: Name card: Grafdigger's Cage
+|   31: Name card: Lion Sash
+|   32: Name card: Meteor Sword
+|   33: Name card: Surgical Extraction
+|   34: Name card: Swamp
+|   35: Name card: Windswept Heath
+|   36: Name card: Yorion, Sky Nomad
+(REPLAY) [T11 | First Main | Player B] Input: 5
+| >> Player B: 5 (Name card: Phelia, Exuberant Shepherd)
+Player B names card: Phelia, Exuberant Shepherd
+Urza's Saga is sacrificed (final chapter completed).
+| decision 185: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 186: Player A (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 187: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 188: Player A (game 0, turn 11, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 189: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 190: Player A (game 0, turn 11, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 13 (Player A) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 191: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 192: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 193: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T12 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 5).
+| decision 194: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 195: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T12 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 6).
+| decision 196: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Recruiter of the Guard
+| decision 197: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 198: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Pre-War Formalwear
+|   3: Cast Recruiter of the Guard
+|   4: Cast White Orchid Phantom
+|   5: Activate Aether Vial (ChangeZone)
+|   6: Activate Aether Vial (ChangeZone)
+|   7: Activate Wasteland (Destroy)
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Pre-War Formalwear)
+Player A activated Plains for 1(W)
+Player A activated Wasteland for 1(C)
+Player A activated Scrubland for 1(W)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A casts Pre-War Formalwear
+| decision 199: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Pre-War Formalwear enters the battlefield
+Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
+| decision 200: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 201: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 202: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: White Orchid Phantom [2/2]
+|   3: Orc Army token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 4
+| >> Player A: 4 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 203: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 204: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 205: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 206: Player A (game 0, turn 12, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 14 (Player B) --------
+| decision 207: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 208: Player A (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Sphere of Resistance
+| decision 209: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 210: Player A (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 211: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Expedition Map (ChangeZone))
+Player B activated Forest for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B sacrifices Expedition Map
+Player B's Expedition Map ability is on the stack
+| decision 212: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 213: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Karakas
+|   7: Maze of Ith
+|   8: Rishadan Port
+|   9: Savannah
+|   10: Thespian's Stage
+|   11: Urza's Saga
+|   12: Wasteland
+|   13: Yavimaya, Cradle of Growth
+(REPLAY) [T13 | First Main | Player B] Input: 11
+| >> Player B: 11 (Urza's Saga)
+Player B shuffles their library
+Player B reveals Urza's Saga and puts it to hand
+| decision 214: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+| decision 215: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 216: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 217: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 218: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [5/5]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [5/5])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [5/5] -> Player A
+| decision 219: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player A
+| decision 220: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [5/5]
+Your creatures:
+| decision 221: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: White Orchid Phantom [2/2]
+|   3: Orc Army token [1/1]
+|   4: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 4
+| >> Player A: 4 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 222: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 5 damage to Player A (now at 11 life)
+--- End Combat Damage ---
+
+| decision 223: Player A (game 0, turn 13, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 224: Player A (game 0, turn 13, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 225: Player A (game 0, turn 13, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 226: Player A (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 15 (Player A) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 227: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 228: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 229: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 6).
+| decision 230: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 231: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 7).
+| decision 232: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Scrubland
+| decision 233: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 234: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   3: Cast Recruiter of the Guard
+|   4: Cast White Orchid Phantom
+|   5: Activate Aether Vial (ChangeZone)
+|   6: Activate Aether Vial (ChangeZone)
+|   7: Equip Pre-War Formalwear
+|   8: Activate Wasteland (Destroy)
+(REPLAY) [T14 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Recruiter of the Guard)
+Player A activated Plains for 1(W)
+Player A activated Wasteland for 1(C)
+Player A activated Scrubland for 1(W)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A casts Recruiter of the Guard
+| decision 235: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Recruiter of the Guard enters the battlefield
+Recruiter of the Guard triggered
+| decision 236: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 237: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: use Recruiter of the Guard's triggered ability
+|   1: Accept: use Recruiter of the Guard's triggered ability
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Recruiter of the Guard's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 238: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Cloak and Dagger, Entwined
+|   2: Flickerwisp
+|   3: Lion Sash
+|   4: Orcish Bowmasters
+|   5: Phelia, Exuberant Shepherd
+|   6: Recruiter of the Guard
+|   7: Skyclave Apparition
+|   8: Solitude
+|   9: Stoneforge Mystic
+|   10: White Orchid Phantom
+|   11: Witch Enchanter
+(REPLAY) [T14 | First Main | Player A] Input: 8
+| >> Player A: 8 (Solitude)
+Player A shuffles their library
+Player A reveals Solitude and puts it to hand
+| decision 239: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scrubland)
+Player A played Scrubland
+| decision 240: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Solitude (alternate cost))
+| decision 241: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile White Orchid Phantom
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile White Orchid Phantom)
+Player A activated Scrubland for 1(W)
+Player A exiles White Orchid Phantom
+Player A casts Solitude
+| decision 242: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Solitude enters the battlefield
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 243: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Solitude (ChangeZone, targeted)
+|   1: Solitude (evoke: sacrifice)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Solitude (ChangeZone, targeted))
+Choose target for Solitude:
+| decision 244: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Construct token
+|   2: Orcish Bowmasters
+|   3: Phelia, Exuberant Shepherd
+|   4: Recruiter of the Guard
+|   5: White Orchid Phantom
+|   6: Orc Army token
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Construct token)
+Targeting choice 1
+Solitude triggered
+Solitude triggered
+| decision 245: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Solitude is moved to graveyard
+| decision 246: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Construct token is moved to exile
+Resolving ability (category: GainLife, amount: 5)
+Player B gains 5 life (now at 14)
+Construct (token) is put into exile and ceases to exist.
+| decision 247: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 248: Player A (game 0, turn 14, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 249: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: White Orchid Phantom [2/2]
+|   3: Orc Army token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 250: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: White Orchid Phantom [2/2]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+| decision 251: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: White Orchid Phantom [2/2]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom [2/2])
+White Orchid Phantom attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] White Orchid Phantom [2/2] -> Player B
+| decision 252: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] White Orchid Phantom [2/2] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| decision 253: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+  White Orchid Phantom -> Player B
+  Orc Army token -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 254: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Grafdigger's Cage
+|   2: Mox Diamond
+|   3: Pithing Needle
+|   4: Sphere of Resistance
+|   5: Aether Vial
+|   6: Aether Vial
+|   7: Orcish Bowmasters
+|   8: Pre-War Formalwear
+|   9: Recruiter of the Guard
+|   10: White Orchid Phantom
+|   11: Orc Army token
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Grafdigger's Cage)
+Targeting choice 1
+Phelia, Exuberant Shepherd triggered
+| decision 255: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Grafdigger's Cage is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+| decision 256: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 257: Player A (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Player B (now at 12 life)
+--- End First Strike Combat Damage ---
+
+| decision 258: Player A (game 0, turn 14, FIRST_STRIKE_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Strike Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 11 life)
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 9 life)
+  Orc Army token deals 1 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+| decision 259: Player A (game 0, turn 14, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 260: Player A (game 0, turn 14, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 261: Player A (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Delayed trigger fires.
+| decision 262: Player A (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Grafdigger's Cage is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+| decision 263: Player A (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 16 (Player B) --------
+| decision 264: Player A (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Maze of Ith
+| decision 265: Player A (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 266: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 267: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Maze of Ith
+|   2: Cast Life from the Loam
+|   3: Cast Malevolent Rumble
+|   4: Cast Sphere of Resistance
+|   5: Cast Sphere of Resistance
+|   6: Activate Urza's Saga (Token)
+(REPLAY) [T15 | First Main | Player B] Input: 6
+| >> Player B: 6 (Activate Urza's Saga (Token))
+Player B activated Forest for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B's Urza's Saga ability is on the stack
+| decision 268: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 269: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Maze of Ith
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Maze of Ith)
+Player B played Maze of Ith
+| decision 270: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 271: Player A (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 272: Player A (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 273: Player A (game 0, turn 15, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 274: Player A (game 0, turn 15, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 275: Player A (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 17 (Player A) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 276: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 277: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 278: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 7).
+| decision 279: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 280: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 8).
+| decision 281: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Aether Vial
+| decision 282: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 283: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Aether Vial
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Aether Vial (ChangeZone)
+|   5: Equip Pre-War Formalwear
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T16 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Aether Vial)
+Player A activated Plains for 1(W)
+Player A activated Scrubland for 1(W)
+Player A casts Aether Vial
+| decision 284: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T16 | First Main | Player A] Input: 3
+| >> Player A: 3 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 285: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Maze of Ith
+|   1: Urza's Saga
+|   2: Scrubland
+|   3: Scrubland
+|   4: Wasteland
+|   5: Witch-Blessed Meadow
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Maze of Ith)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Maze of Ith is on the stack
+| decision 286: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Maze of Ith is destroyed
+| decision 287: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Aether Vial enters the battlefield
+| decision 288: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 289: Player A (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 290: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Recruiter of the Guard [1/1]
+|   3: White Orchid Phantom [2/2]
+|   4: Orc Army token [1/1]
+|   5: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 5
+| >> Player A: 5 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 291: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 292: Player A (game 0, turn 16, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 293: Player A (game 0, turn 16, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 294: Player A (game 0, turn 16, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 18 (Player B) --------
+| decision 295: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate Urza's Saga (Token))
+Player B activated Forest for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B's Urza's Saga ability is on the stack
+| decision 296: Player A (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 297: Player A (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Boseiju, Who Endures
+| decision 298: Player A (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+| decision 299: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 300: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Skateboard
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Skateboard)
+Player B shuffles their library
+Player B puts Skateboard to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+Choose target for Skateboard:
+| decision 301: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Aether Vial
+|   1: Aether Vial
+|   2: Aether Vial
+|   3: Orcish Bowmasters
+|   4: Phelia, Exuberant Shepherd
+|   5: Plains
+|   6: Pre-War Formalwear
+|   7: Recruiter of the Guard
+|   8: Scrubland
+|   9: Scrubland
+|   10: White Orchid Phantom
+|   11: Witch-Blessed Meadow
+|   12: Orc Army token
+|   13: Forest
+|   14: Grafdigger's Cage
+|   15: Mox Diamond
+|   16: Pithing Needle
+|   17: Skateboard
+|   18: Sphere of Resistance
+|   19: Construct token
+|   20: Construct token
+(REPLAY) [T17 | First Main | Player B] Input: 4
+| >> Player B: 4 (Phelia, Exuberant Shepherd)
+Targeting choice 4
+Skateboard triggered
+| decision 302: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Tap)
+Phelia, Exuberant Shepherd is tapped.
+| decision 303: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Boseiju, Who Endures)
+Player B played Boseiju, Who Endures
+| decision 304: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Equip Skateboard)
+Choose target for Skateboard:
+| decision 305: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Construct token
+|   1: Construct token
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Construct token)
+Targeting choice 0
+Player B activated Boseiju, Who Endures for 1(G)
+Player B's Skateboard ability targeting Construct token is on the stack
+| decision 306: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Attach)
+Equipment attached.
+Construct token gains 1/0 Haste (always)
+| decision 307: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 308: Player A (game 0, turn 17, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 309: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [8/7]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [8/7])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [8/7] -> Player A
+| decision 310: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player A
+| decision 311: Player A (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [8/7]
+Your creatures:
+| decision 312: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Recruiter of the Guard [1/1]
+|   2: White Orchid Phantom [2/2]
+|   3: Orc Army token [1/1]
+|   4: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 4
+| >> Player A: 4 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 313: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 8 damage to Player A (now at 3 life)
+--- End Combat Damage ---
+
+| decision 314: Player A (game 0, turn 17, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 315: Player A (game 0, turn 17, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 316: Player A (game 0, turn 17, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 317: Player A (game 0, turn 17, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 19 (Player A) --------
+Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 318: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+|   2: Aether Vial (PutCounter)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 319: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Aether Vial (PutCounter)
+|   1: Aether Vial (PutCounter)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Aether Vial (PutCounter))
+Aether Vial triggered
+Aether Vial triggered
+| decision 320: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 321: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T18 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 8).
+| decision 322: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 323: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T18 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 9).
+| decision 324: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 325: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T18 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 326: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Stoneforge Mystic
+| decision 327: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 328: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Stoneforge Mystic
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Aether Vial (ChangeZone)
+|   5: Activate Aether Vial (ChangeZone)
+|   6: Equip Pre-War Formalwear
+(REPLAY) [T18 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Stoneforge Mystic)
+Player A activated Plains for 1(W)
+Player A activated Scrubland for 1(W)
+Player A activated Scrubland for 1(W)
+Player A casts Stoneforge Mystic
+| decision 329: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Stoneforge Mystic enters the battlefield
+Stoneforge Mystic triggered
+| decision 330: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 331: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: use Stoneforge Mystic's triggered ability
+|   1: Accept: use Stoneforge Mystic's triggered ability
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Stoneforge Mystic's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 332: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Lion Sash
+|   2: Meteor Sword
+|   3: Pre-War Formalwear
+(REPLAY) [T18 | First Main | Player A] Input: 2
+| >> Player A: 2 (Meteor Sword)
+Player A shuffles their library
+Player A reveals Meteor Sword and puts it to hand
+| decision 333: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 334: Player A (game 0, turn 18, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 335: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Recruiter of the Guard [1/1]
+|   3: White Orchid Phantom [2/2]
+|   4: Orc Army token [1/1]
+|   5: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 5
+| >> Player A: 5 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 336: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 337: Player A (game 0, turn 18, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 338: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 339: Player A (game 0, turn 18, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 20 (Player B) --------
+| decision 340: Player A (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Thespian's Stage
+| decision 341: Player A (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 342: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+|   2: Cast Life from the Loam
+|   3: Cast Malevolent Rumble
+|   4: Cast Sphere of Resistance
+|   5: Cast Sphere of Resistance
+|   6: Equip Skateboard
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 343: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Dark Depths
+|   3: Ghost Quarter
+|   4: Maze of Ith
+|   5: The Tabernacle at Pendrell Vale
+|   6: Thespian's Stage
+|   7: Urza's Saga
+(REPLAY) [T19 | First Main | Player B] Input: 7
+| >> Player B: 7 (Urza's Saga)
+Targeting choice 7
+Choose target for Life from the Loam:
+| decision 344: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Dark Depths
+|   3: Ghost Quarter
+|   4: Maze of Ith
+|   5: The Tabernacle at Pendrell Vale
+|   6: Thespian's Stage
+|   7: Urza's Saga
+(REPLAY) [T19 | First Main | Player B] Input: 7
+| >> Player B: 7 (Urza's Saga)
+Targeting choice 7
+Choose target for Life from the Loam:
+| decision 345: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Dark Depths
+|   3: Ghost Quarter
+|   4: Maze of Ith
+|   5: The Tabernacle at Pendrell Vale
+|   6: Thespian's Stage
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Forest for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B casts Life from the Loam targeting Urza's Saga
+| decision 346: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Urza's Saga is moved to hand
+Urza's Saga is moved to hand
+| decision 347: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+|   2: Play Urza's Saga
+|   3: Play Urza's Saga
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+| decision 348: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 349: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 350: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 351: Player A (game 0, turn 19, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 352: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [8/7]
+|   1: Construct token [7/7]
+|   2: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [8/7])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [8/7] -> Player A
+| decision 353: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [7/7]
+|   1: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [7/7])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [8/7] -> Player A
+  [attacking] Construct token [7/7] -> Player A
+| decision 354: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player A
+  Construct token -> Player A
+| decision 355: Player A (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [8/7]
+  1: Construct token [7/7]
+Your creatures:
+| decision 356: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Recruiter of the Guard [1/1]
+|   3: Stoneforge Mystic [1/2]
+|   4: White Orchid Phantom [2/2]
+|   5: Orc Army token [1/1]
+|   6: Confirm blockers
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Phelia, Exuberant Shepherd [2/2])
+Select attacker for Phelia, Exuberant Shepherd to block:
+| decision 357: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Construct token [8/7]
+|   1: Construct token [7/7]
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Construct token [8/7])
+Phelia, Exuberant Shepherd blocking Construct token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [8/7]
+  1: Construct token [7/7]
+Your creatures:
+  (assigned) Phelia, Exuberant Shepherd [2/2] blocking Construct token
+| decision 358: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Recruiter of the Guard [1/1]
+|   2: Stoneforge Mystic [1/2]
+|   3: White Orchid Phantom [2/2]
+|   4: Orc Army token [1/1]
+|   5: Confirm blockers
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 3
+| >> Player A: 3 (White Orchid Phantom [2/2])
+Select attacker for White Orchid Phantom to block:
+| decision 359: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Construct token [8/7]
+|   1: Construct token [7/7]
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Construct token [8/7])
+White Orchid Phantom blocking Construct token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [8/7]
+  1: Construct token [7/7]
+Your creatures:
+  (assigned) Phelia, Exuberant Shepherd [2/2] blocking Construct token
+  (assigned) White Orchid Phantom [2/2] blocking Construct token
+| decision 360: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Recruiter of the Guard [1/1]
+|   2: Stoneforge Mystic [1/2]
+|   3: Orc Army token [1/1]
+|   4: Confirm blockers
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 4
+| >> Player A: 4 (Confirm blockers)
+
+Blockers declared:
+  Phelia, Exuberant Shepherd blocking Construct token
+  White Orchid Phantom blocking Construct token
+| decision 361: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Construct token
+--- End First Strike Combat Damage ---
+
+| decision 362: Player A (game 0, turn 19, FIRST_STRIKE_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Strike Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Construct token
+  Construct token deals 2 damage to Phelia, Exuberant Shepherd
+  Construct token deals 6 damage to White Orchid Phantom
+  Construct token deals 7 damage to Player A (now at -4 life)
+--- End Combat Damage ---
+
+
+Player A has -4 life - Player B wins!
+GAME_RESULT: 1 Player B wins

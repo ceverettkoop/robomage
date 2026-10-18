@@ -1,0 +1,950 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_uw_control__wubg_doomsday.rmlog
+REPLAY MODE: Using embedded decks 'league/uw_control' / 'league/wubg_doomsday' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Tune the Narrative
+Player A draws Polluted Delta
+Player A draws Tundra
+Player A draws Ponder
+Player A draws Swords to Plowshares
+Player B draws Lotus Petal
+Player B draws Quantum Riddler
+Player B draws Tropical Island
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Doomsday
+Player B draws Dark Ritual
+Player B draws Force of Will
+Player A hand:
+Flow State
+Polluted Delta
+Ponder
+Swords to Plowshares
+Tundra
+Tune the Narrative
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Dark Ritual
+Doomsday
+Force of Will
+Lotus Petal
+Quantum Riddler
+Tamiyo, Inquisitive Student
+Tropical Island
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Dark Ritual
+Player B draws Cavern of Souls
+Player B draws Dark Ritual
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Ponder
+Player B draws Doomsday
+Player B hand:
+Cavern of Souls
+Dark Ritual
+Dark Ritual
+Doomsday
+Ponder
+Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student
+| decision 3: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 4: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Cavern of Souls
+|   1: Dark Ritual
+|   2: Dark Ritual
+|   3: Doomsday
+|   4: Ponder
+|   5: Tamiyo, Inquisitive Student
+|   6: Tamiyo, Inquisitive Student
+(REPLAY) [T0 | Untap | Player B] Input: 4
+| >> Player B: 4 (Ponder)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Tundra
+|   3: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Meticulous Archive
+|   3: Mystic Sanctuary
+|   4: Tundra
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Meticulous Archive)
+Player A shuffles their library
+Player A puts Meticulous Archive to the battlefield
+Meticulous Archive enters tapped.
+Meticulous Archive triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Mystic Sanctuary
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Mystic Sanctuary on top of library
+|   1: Put Mystic Sanctuary into graveyard
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Mystic Sanctuary on top of library)
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Island
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Cavern of Souls
+|   2: Play Island
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Cavern of Souls)
+Player B played Cavern of Souls
+Choose a creature type for Cavern of Souls:
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Choose creature type: Wizard
+|   1: Choose creature type: Moonfolk
+|   2: Choose creature type: Merfolk
+|   3: Choose creature type: Sphinx
+|   4: Choose creature type: Wraith
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Choose creature type: Wizard)
+Player B chose creature type: Wizard
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Tamiyo, Inquisitive Student)
+Player B activated Cavern of Souls for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Tune the Narrative
+(REPLAY) [T2 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Cast Tune the Narrative)
+Player A activated Meticulous Archive for 1(U)
+Player A casts Tune the Narrative
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mystic Sanctuary
+Resolving ability (category: PutCounter, amount: 2)
+Player A gets 2 ENERGY counter(s) (now 2).
+Player A draws Brainstorm
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mystic Sanctuary
+|   2: Play Tundra
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mystic Sanctuary)
+Player A played Mystic Sanctuary
+Mystic Sanctuary enters tapped.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Scrubland
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Scrubland
+|   3: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Tamiyo, Inquisitive Student)
+Player B activated Cavern of Souls for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Tamiyo, Inquisitive Student
+|   1: Keep Tamiyo, Inquisitive Student
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Tamiyo, Inquisitive Student)
+Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Scrubland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+
+--- Declare Attackers (Player B) ---
+| decision 17: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+| decision 18: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player A
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 5 (Player A) --------
+| decision 19: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Mystic Sanctuary for 1(U)
+Player A casts Brainstorm
+| decision 20: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player A draws Lórien Revealed
+Player A draws Geist of Saint Traft
+Player A draws Tundra
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 21: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Flow State
+|   1: Geist of Saint Traft
+|   2: Lórien Revealed
+|   3: Ponder
+|   4: Swords to Plowshares
+|   5: Tundra
+|   6: Tundra
+|   7: Wasteland
+(REPLAY) [T4 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Tundra)
+Player A puts Tundra to top of library
+Player A chooses a card from Player A hand:
+| decision 22: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Flow State
+|   1: Geist of Saint Traft
+|   2: Lórien Revealed
+|   3: Ponder
+|   4: Swords to Plowshares
+|   5: Tundra
+|   6: Wasteland
+(REPLAY) [T4 | Upkeep | Player A] Input: 5
+| >> Player A: 5 (Tundra)
+Player A puts Tundra to top of library
+| decision 23: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Tundra
+| decision 24: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 25: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tundra
+|   2: Play Wasteland
+|   3: Cast Ponder
+|   4: Cast Swords to Plowshares
+|   5: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Ponder)
+Player A activated Meticulous Archive for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 26: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tundra
+|   1: Lórien Revealed
+|   2: Force of Negation
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tundra)
+Choose which card goes 2 from top:
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Lórien Revealed
+|   1: Force of Negation
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Force of Negation)
+| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Lórien Revealed
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tundra
+|   2: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tundra)
+Player A played Tundra
+| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Lórien Revealed from hand (ChangeZone))
+Player A activated Tundra for 1(U)
+Player A activates Lórien Revealed from hand
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Tundra
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tundra)
+Player A shuffles their library
+Player A reveals Tundra and puts it to hand
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 32: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Tamiyo, Inquisitive Student
+| decision 33: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Cast Tamiyo, Inquisitive Student
+|   3: Activate Clue token (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Tamiyo, Inquisitive Student)
+Player B activated Cavern of Souls for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Tamiyo, Inquisitive Student
+|   1: Keep Tamiyo, Inquisitive Student
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Tamiyo, Inquisitive Student)
+Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+|   3: Activate Clue token (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dark Ritual)
+Player B activated Scrubland for 1(B)
+Player B casts Dark Ritual
+Resolving ability (category: AddMana)
+Player B adds 3{B}
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Doomsday
+|   3: Activate Clue token (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Doomsday)
+Player B casts Doomsday
+Resolving ability (category: ChangeZone)
+Searching Player B's graveyard and library:
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Tamiyo, Inquisitive Student (graveyard)
+|   2: Brainstorm (library)
+|   3: Consider (library)
+|   4: Dark Ritual (library)
+|   5: Daze (library)
+|   6: Doomsday (library)
+|   7: Edge of Autumn (library)
+|   8: Flooded Strand (library)
+|   9: Force of Will (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Lotus Petal (library)
+|   12: Polluted Delta (library)
+|   13: Ponder (library)
+|   14: Quantum Riddler (library)
+|   15: Street Wraith (library)
+|   16: Tamiyo, Inquisitive Student (library)
+|   17: Teferi, Time Raveler (library)
+|   18: Thassa's Oracle (library)
+|   19: Tropical Island (library)
+|   20: Tundra (library)
+|   21: Undercity Sewers (library)
+|   22: Underground Sea (library)
+|   23: Veil of Summer (library)
+(REPLAY) [T5 | First Main | Player B] Input: 18
+| >> Player B: 18 (Thassa's Oracle (library))
+Player B puts Thassa's Oracle to top of library
+Searching Player B's graveyard and library:
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Tamiyo, Inquisitive Student (graveyard)
+|   2: Brainstorm (library)
+|   3: Consider (library)
+|   4: Dark Ritual (library)
+|   5: Daze (library)
+|   6: Doomsday (library)
+|   7: Edge of Autumn (library)
+|   8: Flooded Strand (library)
+|   9: Force of Will (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Lotus Petal (library)
+|   12: Polluted Delta (library)
+|   13: Ponder (library)
+|   14: Quantum Riddler (library)
+|   15: Street Wraith (library)
+|   16: Tamiyo, Inquisitive Student (library)
+|   17: Teferi, Time Raveler (library)
+|   18: Tropical Island (library)
+|   19: Tundra (library)
+|   20: Undercity Sewers (library)
+|   21: Underground Sea (library)
+|   22: Veil of Summer (library)
+(REPLAY) [T5 | First Main | Player B] Input: 7
+| >> Player B: 7 (Edge of Autumn (library))
+Player B puts Edge of Autumn to top of library
+Searching Player B's graveyard and library:
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Tamiyo, Inquisitive Student (graveyard)
+|   2: Brainstorm (library)
+|   3: Consider (library)
+|   4: Dark Ritual (library)
+|   5: Daze (library)
+|   6: Doomsday (library)
+|   7: Flooded Strand (library)
+|   8: Force of Will (library)
+|   9: Lion's Eye Diamond (library)
+|   10: Lotus Petal (library)
+|   11: Polluted Delta (library)
+|   12: Ponder (library)
+|   13: Quantum Riddler (library)
+|   14: Street Wraith (library)
+|   15: Tamiyo, Inquisitive Student (library)
+|   16: Teferi, Time Raveler (library)
+|   17: Tropical Island (library)
+|   18: Tundra (library)
+|   19: Undercity Sewers (library)
+|   20: Underground Sea (library)
+|   21: Veil of Summer (library)
+(REPLAY) [T5 | First Main | Player B] Input: 14
+| >> Player B: 14 (Street Wraith (library))
+Player B puts Street Wraith to top of library
+Searching Player B's graveyard and library:
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Tamiyo, Inquisitive Student (graveyard)
+|   2: Brainstorm (library)
+|   3: Consider (library)
+|   4: Dark Ritual (library)
+|   5: Daze (library)
+|   6: Doomsday (library)
+|   7: Flooded Strand (library)
+|   8: Force of Will (library)
+|   9: Lion's Eye Diamond (library)
+|   10: Lotus Petal (library)
+|   11: Polluted Delta (library)
+|   12: Ponder (library)
+|   13: Quantum Riddler (library)
+|   14: Tamiyo, Inquisitive Student (library)
+|   15: Teferi, Time Raveler (library)
+|   16: Tropical Island (library)
+|   17: Tundra (library)
+|   18: Undercity Sewers (library)
+|   19: Underground Sea (library)
+|   20: Veil of Summer (library)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Brainstorm (library))
+Player B puts Brainstorm to top of library
+Searching Player B's graveyard and library:
+| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Tamiyo, Inquisitive Student (graveyard)
+|   2: Brainstorm (library)
+|   3: Consider (library)
+|   4: Dark Ritual (library)
+|   5: Daze (library)
+|   6: Doomsday (library)
+|   7: Flooded Strand (library)
+|   8: Force of Will (library)
+|   9: Lion's Eye Diamond (library)
+|   10: Lotus Petal (library)
+|   11: Polluted Delta (library)
+|   12: Ponder (library)
+|   13: Quantum Riddler (library)
+|   14: Tamiyo, Inquisitive Student (library)
+|   15: Teferi, Time Raveler (library)
+|   16: Tropical Island (library)
+|   17: Tundra (library)
+|   18: Undercity Sewers (library)
+|   19: Underground Sea (library)
+|   20: Veil of Summer (library)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Brainstorm (library))
+Player B puts Brainstorm to top of library
+Resolving ability (category: ChangeZoneAll)
+Player B moves Dark Ritual to exile
+Player B moves Tamiyo, Inquisitive Student to exile
+Player B moves Tamiyo, Inquisitive Student to exile
+Player B moves Brainstorm to exile
+Player B moves Brainstorm to exile
+Player B moves Consider to exile
+Player B moves Dark Ritual to exile
+Player B moves Dark Ritual to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Doomsday to exile
+Player B moves Doomsday to exile
+Player B moves Doomsday to exile
+Player B moves Flooded Strand to exile
+Player B moves Flooded Strand to exile
+Player B moves Flooded Strand to exile
+Player B moves Flooded Strand to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Lion's Eye Diamond to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Polluted Delta to exile
+Player B moves Polluted Delta to exile
+Player B moves Polluted Delta to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Quantum Riddler to exile
+Player B moves Tamiyo, Inquisitive Student to exile
+Player B moves Teferi, Time Raveler to exile
+Player B moves Teferi, Time Raveler to exile
+Player B moves Teferi, Time Raveler to exile
+Player B moves Tropical Island to exile
+Player B moves Tropical Island to exile
+Player B moves Tundra to exile
+Player B moves Undercity Sewers to exile
+Player B moves Underground Sea to exile
+Player B moves Underground Sea to exile
+Player B moves Veil of Summer to exile
+Player B moves Veil of Summer to exile
+Player B moves Veil of Summer to exile
+Player B moves 49 card(s) to exile
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 5 card(s) of their library.
+Choose which card goes 5 from top:
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Street Wraith
+|   2: Edge of Autumn
+|   3: Thassa's Oracle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+Choose which card goes 4 from top:
+| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Street Wraith
+|   2: Edge of Autumn
+|   3: Thassa's Oracle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+Choose which card goes 3 from top:
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+|   1: Edge of Autumn
+|   2: Thassa's Oracle
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Thassa's Oracle)
+Choose which card goes 2 from top:
+| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+|   1: Edge of Autumn
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Street Wraith)
+Resolving ability (category: LoseLife, amount: 10)
+Player B loses 10 life (now at 10)
+Resolving ability (category: Cleanup)
+
+--- Declare Attackers (Player B) ---
+| decision 48: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+| decision 49: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player A
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+| decision 50: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Wasteland
+| decision 51: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tundra
+|   2: Play Wasteland
+|   3: Play Wasteland
+|   4: Cast Flow State
+|   5: Cast Geist of Saint Traft
+|   6: Cast Swords to Plowshares
+|   7: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Flow State)
+Player A activated Mystic Sanctuary for 1(U)
+Player A activated Meticulous Archive for 1(U)
+Player A casts Flow State
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Lórien Revealed from hand (ChangeZone))
+Player A activated Tundra for 1(U)
+Player A activates Lórien Revealed from hand
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Tundra
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tundra)
+Player A shuffles their library
+Player A reveals Tundra and puts it to hand
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Polluted Delta
+|   2: Brainstorm
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Polluted Delta)
+| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Brainstorm
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Brainstorm)
+Player A puts Polluted Delta into hand.
+Player A puts Brainstorm into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Tundra
+|   3: Play Tundra
+|   4: Play Wasteland
+|   5: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 58: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Island)
+Player A shuffles their library
+Player A puts Island to the battlefield
+| decision 60: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Ponder
+Player A draws Tamiyo, Inquisitive Student
+Player A draws Brainstorm
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Geist of Saint Traft
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Tamiyo, Inquisitive Student
+|   5: Tundra
+|   6: Tundra
+|   7: Wasteland
+|   8: Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 5
+| >> Player A: 5 (Tundra)
+Player A puts Tundra to top of library
+Player A chooses a card from Player A hand:
+| decision 62: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Geist of Saint Traft
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Tamiyo, Inquisitive Student
+|   5: Tundra
+|   6: Wasteland
+|   7: Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 5
+| >> Player A: 5 (Tundra)
+Player A puts Tundra to top of library
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+| decision 63: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Edge of Autumn
+| decision 64: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Edge of Autumn from hand (Draw))
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Cavern of Souls
+|   1: Sacrifice Island
+|   2: Sacrifice Scrubland
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Sacrifice Scrubland)
+Player B sacrifices Scrubland
+Player B activates Edge of Autumn from hand
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Street Wraith
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+|   3: Activate Street Wraith from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Street Wraith from hand (Draw))
+Player B pays 2 life
+Player B activates Street Wraith from hand
+| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Thassa's Oracle
+Tamiyo, Inquisitive Student triggered
+| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to exile
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to the battlefield
+Resolving ability (category: Cleanup)
+Tamiyo, Seasoned Scholar enters transformed.
+| decision 71: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thassa's Oracle
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Clue token (Draw)
+|   4: Activate Clue token (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thassa's Oracle)
+Player B activated Cavern of Souls for 1(U)
+Player B activated Island for 1(U)
+Player B casts Thassa's Oracle
+Thassa's Oracle enters the battlefield
+Thassa's Oracle triggered
+Resolving ability (category: Dig)
+Player B looks at the top 2 card(s) of their library.
+| decision 72: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put nothing on top of library (rest go to the bottom of library)
+|   1: Brainstorm
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Brainstorm)
+Player B puts Brainstorm on the top of their library.
+Player B puts 1 card(s) on the bottom of their library.
+Resolving ability (category: WinsGame)
+
+Thassa's Oracle - Player B wins!
+GAME_RESULT: 1 Player B wins

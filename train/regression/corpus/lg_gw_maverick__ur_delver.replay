@@ -1,0 +1,1399 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_gw_maverick__ur_delver.rmlog
+REPLAY MODE: Using embedded decks 'league/gw_maverick' / 'league/ur_delver' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Forest
+Player A draws Wasteland
+Player A draws Wasteland
+Player A draws Once Upon a Time
+Player A draws Thalia, Guardian of Thraben
+Player A draws Once Upon a Time
+Player A draws Savannah
+Player B draws Mishra's Bauble
+Player B draws Polluted Delta
+Player B draws Volcanic Island
+Player B draws Ponder
+Player B draws Dragon's Rage Channeler
+Player B draws Cori-Steel Cutter
+Player B draws Into the Flood Maw
+Player A hand:
+Forest
+Once Upon a Time
+Once Upon a Time
+Savannah
+Thalia, Guardian of Thraben
+Wasteland
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Cori-Steel Cutter
+Dragon's Rage Channeler
+Into the Flood Maw
+Mishra's Bauble
+Polluted Delta
+Ponder
+Volcanic Island
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+|   2: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time (alternate cost))
+Player A casts for free (alternate cost)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 4: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Badgermole Cub
+|   2: Endurance
+|   3: Collector Ouphe
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Badgermole Cub)
+Player A reveals Badgermole Cub and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Savannah
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Scalding Tarn
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+|   3: Play Volcanic Island
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+|   3: Play Volcanic Island
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Thundering Falls
+|   4: Volcanic Island
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Thundering Falls)
+Player B shuffles their library
+Player B puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Lightning Bolt
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Lightning Bolt on top of library
+|   1: Put Lightning Bolt into graveyard
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Lightning Bolt on top of library)
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Swords to Plowshares
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Lightning Bolt
+Player A draws Swords to Plowshares
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Savannah)
+Player A played Savannah
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Badgermole Cub
+|   2: Cast Once Upon a Time
+|   3: Cast Thalia, Guardian of Thraben
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Badgermole Cub)
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Badgermole Cub
+Badgermole Cub enters the battlefield
+Choose target for Badgermole Cub:
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Forest
+|   1: Savannah
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Forest)
+Targeting choice 0
+Badgermole Cub triggered
+Resolving ability (category: Earthbend)
+Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+| decision 16: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Into the Flood Maw
+|   2: Cast Lightning Bolt
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Into the Flood Maw)
+| decision 17: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Decline: promise a tapped Fish to your opponent
+|   1: Accept: promise a tapped Fish to your opponent
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Decline: promise a tapped Fish to your opponent)
+Choose target for Into the Flood Maw:
+| decision 18: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Badgermole Cub
+|   1: Forest
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Badgermole Cub)
+Targeting choice 0
+Player B activated Thundering Falls for 1(U)
+Player B casts Into the Flood Maw targeting Badgermole Cub
+Resolving ability (category: ChangeZone)
+Badgermole Cub is moved to hand
+Resolving ability (category: ChangeZone)
+Player B draws Cori-Steel Cutter
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Volcanic Island
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Volcanic Island
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Lightning Bolt
+|   3: Cast Ponder
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 23: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time)
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Verdant Catacombs
+|   3: Talon Gates of Madara
+|   4: Noble Hierarch
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Thalia, Guardian of Thraben)
+Player A reveals Thalia, Guardian of Thraben and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+Player A draws Green Sun's Zenith
+| decision 25: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 26: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thundering Falls
+|   1: Volcanic Island
+|   2: Savannah
+|   3: Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thundering Falls)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (18 life)
+|   2: Forest
+|   3: Dragon's Rage Channeler
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Volcanic Island
+| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Put Volcanic Island on top of library
+|   1: Put Volcanic Island into graveyard
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Put Volcanic Island on top of library)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at 17 life)
+Player B draws Volcanic Island
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Murktide Regent
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Murktide Regent on top of library
+|   1: Put Murktide Regent into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Murktide Regent on top of library)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Murktide Regent
+|   1: Mishra's Bauble
+|   2: Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Mishra's Bauble)
+Choose which card goes 2 from top:
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Murktide Regent
+|   1: Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Volcanic Island)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Murktide Regent
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 37: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 14 life)
+--- End Combat Damage ---
+
+
+-------- TURN 7 (Player A) --------
+| decision 38: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 39: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Forest
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Savannah for 1(W)
+Player A casts Swords to Plowshares targeting Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Dragon's Rage Channeler is moved to exile
+Resolving ability (category: GainLife, amount: 3)
+Player B gains 3 life (now at 21)
+Player A draws Gaea's Cradle
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Gaea's Cradle
+|   2: Play Wasteland
+|   3: Cast Green Sun's Zenith
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Gaea's Cradle)
+Player A played Gaea's Cradle
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Badgermole Cub
+|   2: Cast Green Sun's Zenith
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Badgermole Cub)
+Player A activated Forest for 1(G)
+Player A activated Gaea's Cradle for 1(G)
+Player A casts Badgermole Cub
+Badgermole Cub enters the battlefield
+Choose target for Badgermole Cub:
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Forest
+|   1: Gaea's Cradle
+|   2: Savannah
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Forest)
+Targeting choice 0
+Badgermole Cub triggered
+Resolving ability (category: Earthbend)
+Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Volcanic Island
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+|   3: Cast Cori-Steel Cutter
+|   4: Cast Cori-Steel Cutter
+|   5: Cast Murktide Regent
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Cori-Steel Cutter)
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B casts Cori-Steel Cutter
+Cori-Steel Cutter enters the battlefield
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Volcanic Island
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Knight of the Reliquary
+| decision 45: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Green Sun's Zenith
+|   3: Cast Knight of the Reliquary
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Cast Thalia, Guardian of Thraben
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Green Sun's Zenith)
+Choose X value (0-3):
+| decision 46: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+|   2: X = 2
+|   3: X = 3
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (X = 3)
+Player A chooses X = 3
+Badgermole Cub adds an additional 1(G).
+Player A activated Forest for 1(G)
+Player A activated Gaea's Cradle for 2(G)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 47: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Badgermole Cub
+|   2: Birds of Paradise
+|   3: Collector Ouphe
+|   4: Dryad Arbor
+|   5: Endurance
+|   6: Gaddock Teeg
+|   7: Keen-Eyed Curator
+|   8: Knight of the Reliquary
+|   9: Noble Hierarch
+|   10: Outland Liberator
+|   11: Scryb Ranger
+|   12: Scythecat Cub
+(REPLAY) [T8 | First Main | Player A] Input: 5
+| >> Player A: 5 (Endurance)
+Player A shuffles their library
+Player A puts Endurance to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+Choose target for Endurance:
+| decision 48: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Player B (21 life)
+|   2: Player A (14 life)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Player B (21 life))
+Targeting choice 1
+Endurance triggered
+Resolving ability (category: ChangeZoneAll)
+Player B moves Polluted Delta to the bottom of their library
+Player B moves Thundering Falls to the bottom of their library
+Player B moves Mishra's Bauble to the bottom of their library
+Player B moves Ponder to the bottom of their library
+Player B moves Lightning Bolt to the bottom of their library
+Player B moves Into the Flood Maw to the bottom of their library
+Player B moves Scalding Tarn to the bottom of their library
+Player B moves 7 card(s) to the bottom of their library
+| decision 49: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thalia, Guardian of Thraben
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thalia, Guardian of Thraben)
+Player A activated Savannah for 1(W)
+Player A activated Wasteland for 1(C)
+Player A casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 51: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [2/2])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+| decision 52: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Player B (now at 19 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Mishra's Bauble
+| decision 53: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Cori-Steel Cutter
+|   3: Cast Mishra's Bauble
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Cori-Steel Cutter)
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Cori-Steel Cutter
+Cori-Steel Cutter enters the battlefield
+| decision 54: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 55: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mishra's Bauble
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Mishra's Bauble)
+Player B activated Volcanic Island for 1(U)
+Player B casts Mishra's Bauble
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 56: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter (Token)
+|   1: Cori-Steel Cutter (Token)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Cori-Steel Cutter (Token))
+Cori-Steel Cutter triggered
+Cori-Steel Cutter triggered
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 57: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 58: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Mishra's Bauble enters the battlefield
+| decision 59: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 60: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (14 life)
+|   1: Player B (19 life)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (14 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Gaddock Teeg
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+
+--- Declare Attackers (Player B) ---
+| decision 61: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 11 (Player A) --------
+Delayed trigger fires.
+| decision 62: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+| decision 63: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Gaddock Teeg
+| decision 64: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 65: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Gaddock Teeg
+|   2: Cast Knight of the Reliquary
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Gaddock Teeg)
+Player A activated Savannah for 1(W)
+Badgermole Cub adds an additional 1(G).
+Player A activated Forest for 1(G)
+Player A casts Gaddock Teeg
+| decision 66: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 67: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Volcanic Island
+|   1: Volcanic Island
+|   2: Volcanic Island
+|   3: Volcanic Island
+|   4: Gaea's Cradle
+|   5: Savannah
+|   6: Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Volcanic Island)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy)
+Volcanic Island is destroyed
+Gaddock Teeg enters the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 68: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Endurance [3/4]
+|   2: Thalia, Guardian of Thraben [2/1]
+|   3: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [2/2])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+| decision 69: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Endurance [3/4]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Endurance [3/4])
+Endurance attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+  [attacking] Endurance [3/4] -> Player B
+| decision 70: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+  [attacking] Endurance [3/4] -> Player B
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| decision 71: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+  Endurance -> Player B
+  Thalia, Guardian of Thraben -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Badgermole Cub [2/2]
+  1: Endurance [3/4]
+  2: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+| decision 72: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm blockers
+(REPLAY) [T10 | Declare Blockers | Player B] Input: 2
+| >> Player B: 2 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 17 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Player B (now at 15 life)
+  Endurance deals 3 damage to Player B (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+| decision 73: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 74: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: Draw, amount: 3)
+Player B draws Wasteland
+Player B draws Wasteland
+Player B draws Unholy Heat
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 75: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Murktide Regent
+|   1: Unholy Heat
+|   2: Wasteland
+|   3: Wasteland
+(REPLAY) [T11 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Wasteland)
+Player B puts Wasteland to top of library
+Player B chooses a card from Player B hand:
+| decision 76: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Murktide Regent
+|   1: Unholy Heat
+|   2: Wasteland
+(REPLAY) [T11 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Wasteland)
+Player B puts Wasteland to top of library
+Player B draws Wasteland
+| decision 77: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 78: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+|   2: Equip Cori-Steel Cutter
+|   3: Equip Cori-Steel Cutter
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 79: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Badgermole Cub
+|   1: Endurance
+|   2: Forest
+|   3: Gaddock Teeg
+|   4: Thalia, Guardian of Thraben
+|   5: Monk token
+|   6: Monk token
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Endurance)
+Targeting choice 1
+Player B activated Volcanic Island for 1(R)
+Player B activated Wasteland for 1(C)
+Player B casts Unholy Heat targeting Endurance
+Player B orders 4 simultaneous triggers (pick which goes on the stack next).
+| decision 80: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter (Token)
+|   1: Cori-Steel Cutter (Token)
+|   2: Monk token (ProwessBonus)
+|   3: Monk token (ProwessBonus)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Cori-Steel Cutter (Token))
+Cori-Steel Cutter triggered
+Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 81: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter (Token)
+|   1: Monk token (ProwessBonus)
+|   2: Monk token (ProwessBonus)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Cori-Steel Cutter (Token))
+Cori-Steel Cutter triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 82: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 83: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 84: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 2 damage to Endurance
+
+--- Declare Attackers (Player B) ---
+| decision 85: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [3/3]
+|   1: Monk token [3/3]
+|   2: Monk token [2/2]
+|   3: Monk token [2/2]
+|   4: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [3/3])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [3/3] -> Player A
+| decision 86: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [3/3]
+|   1: Monk token [2/2]
+|   2: Monk token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [3/3])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [3/3] -> Player A
+  [attacking] Monk token [3/3] -> Player A
+| decision 87: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [2/2])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [3/3] -> Player A
+  [attacking] Monk token [3/3] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+| decision 88: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [2/2])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [3/3] -> Player A
+  [attacking] Monk token [3/3] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+| decision 89: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Monk token -> Player A
+  Monk token -> Player A
+  Monk token -> Player A
+  Monk token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Monk token [3/3]
+  1: Monk token [3/3]
+  2: Monk token [2/2]
+  3: Monk token [2/2]
+Your creatures:
+| decision 90: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Gaddock Teeg [2/2]
+|   1: Confirm blockers
+(REPLAY) [T11 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Monk token deals 3 damage to Player A (now at 11 life)
+  Monk token deals 3 damage to Player A (now at 8 life)
+  Monk token deals 2 damage to Player A (now at 6 life)
+  Monk token deals 2 damage to Player A (now at 4 life)
+--- End Combat Damage ---
+
+
+-------- TURN 13 (Player A) --------
+Player A draws Thalia, Guardian of Thraben
+| decision 91: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Knight of the Reliquary
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Cast Thalia, Guardian of Thraben
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Knight of the Reliquary)
+Player A activated Savannah for 1(W)
+Badgermole Cub adds an additional 1(G).
+Player A activated Forest for 1(G)
+Player A casts Knight of the Reliquary
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+
+--- Declare Attackers (Player A) ---
+| decision 92: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Endurance [3/4]
+|   2: Gaddock Teeg [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+|   4: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [2/2])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+| decision 93: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Endurance [3/4]
+|   1: Gaddock Teeg [2/2]
+|   2: Thalia, Guardian of Thraben [2/1]
+|   3: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Endurance [3/4])
+Endurance attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+  [attacking] Endurance [3/4] -> Player B
+| decision 94: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Gaddock Teeg [2/2]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Gaddock Teeg [2/2])
+Gaddock Teeg attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+  [attacking] Endurance [3/4] -> Player B
+  [attacking] Gaddock Teeg [2/2] -> Player B
+| decision 95: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+  [attacking] Endurance [3/4] -> Player B
+  [attacking] Gaddock Teeg [2/2] -> Player B
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| decision 96: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+  Endurance -> Player B
+  Gaddock Teeg -> Player B
+  Thalia, Guardian of Thraben -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 10 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Player B (now at 8 life)
+  Endurance deals 3 damage to Player B (now at 5 life)
+  Gaddock Teeg deals 2 damage to Player B (now at 3 life)
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+| decision 97: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wasteland
+| decision 98: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 99: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Murktide Regent
+|   3: Equip Cori-Steel Cutter
+|   4: Equip Cori-Steel Cutter
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Murktide Regent)
+Choose how many cards to exile via Delve (3-4):
+| decision 100: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile 3 cards from graveyard (Delve)
+|   1: Exile 4 cards from graveyard (Delve)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Exile 4 cards from graveyard (Delve))
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B exiles Brainstorm via Delve.
+Player B exiles Mishra's Bauble via Delve.
+Player B exiles Unholy Heat via Delve.
+Player B exiles Volcanic Island via Delve.
+Player B casts Murktide Regent
+| decision 101: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 102: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Savannah
+|   2: Volcanic Island
+|   3: Volcanic Island
+|   4: Volcanic Island
+|   5: Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Gaea's Cradle)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Gaea's Cradle is on the stack
+| decision 103: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Gaea's Cradle for (G)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Gaea's Cradle is destroyed
+Murktide Regent enters the battlefield
+Murktide Regent enters with 2 +1/+1 counter(s) (5/5).
+| decision 104: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 105: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 106: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Savannah
+|   1: Volcanic Island
+|   2: Volcanic Island
+|   3: Volcanic Island
+|   4: Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Savannah)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Savannah is on the stack
+Resolving ability (category: Destroy)
+Savannah is destroyed
+
+--- Declare Attackers (Player B) ---
+| decision 107: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [1/1]
+|   1: Monk token [1/1]
+|   2: Monk token [2/2]
+|   3: Monk token [2/2]
+|   4: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [1/1])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [1/1] -> Player A
+| decision 108: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [1/1]
+|   1: Monk token [2/2]
+|   2: Monk token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [1/1])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [1/1] -> Player A
+  [attacking] Monk token [1/1] -> Player A
+| decision 109: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [2/2])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [1/1] -> Player A
+  [attacking] Monk token [1/1] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+| decision 110: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [2/2])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Monk token [1/1] -> Player A
+  [attacking] Monk token [1/1] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+| decision 111: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Monk token -> Player A
+  Monk token -> Player A
+  Monk token -> Player A
+  Monk token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Monk token [1/1]
+  1: Monk token [1/1]
+  2: Monk token [2/2]
+  3: Monk token [2/2]
+Your creatures:
+| decision 112: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Knight of the Reliquary [6/6]
+|   1: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Knight of the Reliquary [6/6])
+Select attacker for Knight of the Reliquary to block:
+| decision 113: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Monk token [1/1]
+|   1: Monk token [1/1]
+|   2: Monk token [2/2]
+|   3: Monk token [2/2]
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 2
+| >> Player A: 2 (Monk token [2/2])
+Knight of the Reliquary blocking Monk token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Monk token [1/1]
+  1: Monk token [1/1]
+  2: Monk token [2/2]
+  3: Monk token [2/2]
+Your creatures:
+  (assigned) Knight of the Reliquary [6/6] blocking Monk token
+| decision 114: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Confirm blockers)
+
+Blockers declared:
+  Knight of the Reliquary blocking Monk token
+
+--- Combat Damage ---
+  Monk token deals 1 damage to Player A (now at 3 life)
+  Monk token deals 1 damage to Player A (now at 2 life)
+  Knight of the Reliquary deals 6 damage to Monk token
+  Monk token deals 2 damage to Knight of the Reliquary
+  Monk token deals 2 damage to Player A (now at 0 life)
+--- End Combat Damage ---
+
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

@@ -1,0 +1,1701 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from delver_vs_doomsday.rmlog
+REPLAY MODE: Using embedded decks 'delver' / 'doomsday' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dragon's Rage Channeler
+Player A draws Wasteland
+Player A draws Scalding Tarn
+Player A draws Daze
+Player A draws Misty Rainforest
+Player A draws Daze
+Player A draws Ponder
+Player B draws Edge of Autumn
+Player B draws Ponder
+Player B draws Verdant Catacombs
+Player B draws Polluted Delta
+Player B draws Dark Ritual
+Player B draws Force of Will
+Player B draws Personal Tutor
+Player A hand:
+Dragon's Rage Channeler
+Daze
+Daze
+Ponder
+Misty Rainforest
+Scalding Tarn
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Force of Will
+Dark Ritual
+Personal Tutor
+Edge of Autumn
+Ponder
+Polluted Delta
+Verdant Catacombs
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 8: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Underground Sea
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Underground Sea
+|   3: Play Verdant Catacombs
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+|   4: Island
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Personal Tutor
+|   3: Cast Ponder
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Personal Tutor)
+Player B activated Underground Sea for 1(U)
+Player B casts Personal Tutor
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 14: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 15: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Personal Tutor
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Personal Tutor)
+Targeting choice 0
+| decision 16: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Volcanic Island)
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Personal Tutor
+Dragon's Rage Channeler triggered
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Unholy Heat
+| decision 18: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Unholy Heat on top of library)
+| decision 19: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Counter)
+Personal Tutor's controller may pay {1} to save it:
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Personal Tutor is countered)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Personal Tutor is countered))
+Personal Tutor is countered
+| decision 21: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 22: Player B (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 23: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 24: Player B (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 25: Player B (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 26: Player B (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T1 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+| decision 27: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Unholy Heat
+| decision 28: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 29: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 30: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+|   2: Cast Ponder
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Volcanic Island for 1(R)
+Player A casts Unholy Heat targeting Dragon's Rage Channeler
+Dragon's Rage Channeler triggered
+| decision 32: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 33: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Dragon's Rage Channeler
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Dragon's Rage Channeler on top of library
+|   1: Put Dragon's Rage Channeler into graveyard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Dragon's Rage Channeler on top of library)
+| decision 35: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 36: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 2 damage to Dragon's Rage Channeler
+Dragon's Rage Channeler is destroyed (lethal damage)
+| decision 37: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 38: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 39: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 40: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 41: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 42: Player B (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T2 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 43: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Thoughtseize
+| decision 44: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Play Verdant Catacombs
+|   3: Cast Thoughtseize
+|   4: Cast Dark Ritual
+|   5: Cast Ponder
+|   6: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B activated Underground Sea for 1(B)
+Player B casts Thoughtseize targeting Player A
+| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 48: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 49: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thoughtseize)
+Targeting choice 0
+| decision 50: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Volcanic Island)
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Thoughtseize
+| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Counter)
+Thoughtseize's controller may pay {1} to save it:
+| decision 52: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Thoughtseize is countered)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Thoughtseize is countered))
+Thoughtseize is countered
+| decision 53: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Play Verdant Catacombs
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Underground Sea)
+Player B played Underground Sea
+| decision 54: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Ponder
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Ponder)
+Player B activated Underground Sea for 1(U)
+Player B casts Ponder
+| decision 55: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 56: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Doomsday
+|   1: Undercity Sewers
+|   2: Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Doomsday)
+Choose which card goes 2 from top:
+| decision 57: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Undercity Sewers
+|   1: Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Undercity Sewers)
+| decision 58: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Thoughtseize
+| decision 59: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 60: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 61: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 62: Player B (game 0, turn 3, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 63: Player B (game 0, turn 3, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 64: Player B (game 0, turn 3, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T3 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 5 (Player A) --------
+| decision 65: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Dragon's Rage Channeler
+| decision 66: Player B (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 67: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 68: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+| decision 69: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+| decision 70: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 71: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 72: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 73: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 74: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 75: Player B (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T4 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 76: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Undercity Sewers
+| decision 77: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 78: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Undercity Sewers
+|   2: Play Verdant Catacombs
+|   3: Cast Thoughtseize
+|   4: Cast Dark Ritual
+|   5: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 79: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (19 life)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B activated Underground Sea for 1(B)
+Player B casts Thoughtseize targeting Player A
+| decision 80: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Ponder
+  Scalding Tarn
+  Wasteland
+Player B chooses a card to discard:
+| decision 81: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ponder
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Ponder)
+Player A discards Ponder
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 17)
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 82: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Undercity Sewers
+|   2: Play Verdant Catacombs
+|   3: Cast Dark Ritual
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Undercity Sewers)
+Player B played Undercity Sewers
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+| decision 83: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Doomsday
+| decision 84: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Doomsday on top of library
+|   1: Put Doomsday into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Doomsday on top of library)
+| decision 85: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 86: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 87: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 88: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 89: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 90: Player B (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 91: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Cori-Steel Cutter
+| decision 92: Player B (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 93: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scalding Tarn)
+Player A played Scalding Tarn
+| decision 94: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+| decision 95: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 96: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+|   4: Thundering Falls
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 97: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Cori-Steel Cutter)
+Player A activated Volcanic Island for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A casts Cori-Steel Cutter
+Dragon's Rage Channeler triggered
+| decision 98: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 99: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Mishra's Bauble on top of library)
+| decision 100: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Cori-Steel Cutter enters the battlefield
+| decision 101: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+| decision 103: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+| decision 104: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 105: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B (now at 14 life)
+--- End Combat Damage ---
+
+| decision 106: Player B (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 107: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 108: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 109: Player B (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 110: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Doomsday
+| decision 111: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 112: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Verdant Catacombs
+|   2: Cast Doomsday
+|   3: Cast Dark Ritual
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Doomsday)
+Player B activated Undercity Sewers for 1(B)
+Player B activated Underground Sea for 1(B)
+Player B activated Underground Sea for 1(B)
+Player B casts Doomsday
+| decision 113: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's graveyard and library:
+| decision 114: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize (graveyard)
+|   1: Personal Tutor (graveyard)
+|   2: Ponder (graveyard)
+|   3: Polluted Delta (graveyard)
+|   4: Doomsday (library)
+|   5: Force of Will (library)
+|   6: Thoughtseize (library)
+|   7: Daze (library)
+|   8: Dark Ritual (library)
+|   9: Lotus Petal (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Thassa's Oracle (library)
+|   12: Personal Tutor (library)
+|   13: Street Wraith (library)
+|   14: Edge of Autumn (library)
+|   15: Brainstorm (library)
+|   16: Ponder (library)
+|   17: Swamp (library)
+|   18: Polluted Delta (library)
+|   19: Underground Sea (library)
+|   20: Bloodstained Mire (library)
+|   21: Island (library)
+|   22: Flooded Strand (library)
+|   23: Misty Rainforest (library)
+|   24: Cavern of Souls (library)
+|   25: Barrowgoyf (library)
+|   26: Dauthi Voidwalker (library)
+|   27: Deep Analysis (library)
+(REPLAY) [T7 | First Main | Player B] Input: 11
+| >> Player B: 11 (Thassa's Oracle (library))
+Player B puts Thassa's Oracle to top of library
+Searching Player B's graveyard and library:
+| decision 115: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize (graveyard)
+|   1: Personal Tutor (graveyard)
+|   2: Ponder (graveyard)
+|   3: Polluted Delta (graveyard)
+|   4: Doomsday (library)
+|   5: Force of Will (library)
+|   6: Thoughtseize (library)
+|   7: Daze (library)
+|   8: Dark Ritual (library)
+|   9: Lotus Petal (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Personal Tutor (library)
+|   12: Street Wraith (library)
+|   13: Edge of Autumn (library)
+|   14: Brainstorm (library)
+|   15: Ponder (library)
+|   16: Swamp (library)
+|   17: Polluted Delta (library)
+|   18: Underground Sea (library)
+|   19: Bloodstained Mire (library)
+|   20: Island (library)
+|   21: Flooded Strand (library)
+|   22: Misty Rainforest (library)
+|   23: Cavern of Souls (library)
+|   24: Barrowgoyf (library)
+|   25: Dauthi Voidwalker (library)
+|   26: Deep Analysis (library)
+(REPLAY) [T7 | First Main | Player B] Input: 12
+| >> Player B: 12 (Street Wraith (library))
+Player B puts Street Wraith to top of library
+Searching Player B's graveyard and library:
+| decision 116: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize (graveyard)
+|   1: Personal Tutor (graveyard)
+|   2: Ponder (graveyard)
+|   3: Polluted Delta (graveyard)
+|   4: Doomsday (library)
+|   5: Force of Will (library)
+|   6: Thoughtseize (library)
+|   7: Daze (library)
+|   8: Dark Ritual (library)
+|   9: Lotus Petal (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Personal Tutor (library)
+|   12: Street Wraith (library)
+|   13: Edge of Autumn (library)
+|   14: Brainstorm (library)
+|   15: Ponder (library)
+|   16: Swamp (library)
+|   17: Polluted Delta (library)
+|   18: Underground Sea (library)
+|   19: Bloodstained Mire (library)
+|   20: Island (library)
+|   21: Flooded Strand (library)
+|   22: Misty Rainforest (library)
+|   23: Cavern of Souls (library)
+|   24: Barrowgoyf (library)
+|   25: Dauthi Voidwalker (library)
+|   26: Deep Analysis (library)
+(REPLAY) [T7 | First Main | Player B] Input: 12
+| >> Player B: 12 (Street Wraith (library))
+Player B puts Street Wraith to top of library
+Searching Player B's graveyard and library:
+| decision 117: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize (graveyard)
+|   1: Personal Tutor (graveyard)
+|   2: Ponder (graveyard)
+|   3: Polluted Delta (graveyard)
+|   4: Doomsday (library)
+|   5: Force of Will (library)
+|   6: Thoughtseize (library)
+|   7: Daze (library)
+|   8: Dark Ritual (library)
+|   9: Lotus Petal (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Personal Tutor (library)
+|   12: Street Wraith (library)
+|   13: Edge of Autumn (library)
+|   14: Brainstorm (library)
+|   15: Ponder (library)
+|   16: Swamp (library)
+|   17: Polluted Delta (library)
+|   18: Underground Sea (library)
+|   19: Bloodstained Mire (library)
+|   20: Island (library)
+|   21: Flooded Strand (library)
+|   22: Misty Rainforest (library)
+|   23: Cavern of Souls (library)
+|   24: Barrowgoyf (library)
+|   25: Dauthi Voidwalker (library)
+|   26: Deep Analysis (library)
+(REPLAY) [T7 | First Main | Player B] Input: 12
+| >> Player B: 12 (Street Wraith (library))
+Player B puts Street Wraith to top of library
+Searching Player B's graveyard and library:
+| decision 118: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize (graveyard)
+|   1: Personal Tutor (graveyard)
+|   2: Ponder (graveyard)
+|   3: Polluted Delta (graveyard)
+|   4: Doomsday (library)
+|   5: Force of Will (library)
+|   6: Thoughtseize (library)
+|   7: Daze (library)
+|   8: Dark Ritual (library)
+|   9: Lotus Petal (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Personal Tutor (library)
+|   12: Street Wraith (library)
+|   13: Edge of Autumn (library)
+|   14: Brainstorm (library)
+|   15: Ponder (library)
+|   16: Swamp (library)
+|   17: Polluted Delta (library)
+|   18: Underground Sea (library)
+|   19: Bloodstained Mire (library)
+|   20: Island (library)
+|   21: Flooded Strand (library)
+|   22: Misty Rainforest (library)
+|   23: Cavern of Souls (library)
+|   24: Barrowgoyf (library)
+|   25: Dauthi Voidwalker (library)
+|   26: Deep Analysis (library)
+(REPLAY) [T7 | First Main | Player B] Input: 12
+| >> Player B: 12 (Street Wraith (library))
+Player B puts Street Wraith to top of library
+Resolving ability (category: ChangeZoneAll)
+Player B moves Thoughtseize to exile
+Player B moves Thoughtseize to exile
+Player B moves Personal Tutor to exile
+Player B moves Ponder to exile
+Player B moves Polluted Delta to exile
+Player B moves Doomsday to exile
+Player B moves Doomsday to exile
+Player B moves Doomsday to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Thoughtseize to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Dark Ritual to exile
+Player B moves Dark Ritual to exile
+Player B moves Dark Ritual to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Lion's Eye Diamond to exile
+Player B moves Personal Tutor to exile
+Player B moves Personal Tutor to exile
+Player B moves Personal Tutor to exile
+Player B moves Edge of Autumn to exile
+Player B moves Brainstorm to exile
+Player B moves Brainstorm to exile
+Player B moves Brainstorm to exile
+Player B moves Brainstorm to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Swamp to exile
+Player B moves Polluted Delta to exile
+Player B moves Polluted Delta to exile
+Player B moves Polluted Delta to exile
+Player B moves Underground Sea to exile
+Player B moves Bloodstained Mire to exile
+Player B moves Island to exile
+Player B moves Flooded Strand to exile
+Player B moves Misty Rainforest to exile
+Player B moves Cavern of Souls to exile
+Player B moves Barrowgoyf to exile
+Player B moves Dauthi Voidwalker to exile
+Player B moves Deep Analysis to exile
+Player B moves 47 card(s) to exile
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 5 card(s) of their library.
+Choose which card goes 5 from top:
+| decision 119: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+|   1: Thassa's Oracle
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Thassa's Oracle)
+Choose which card goes 4 from top:
+| decision 120: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Street Wraith)
+Choose which card goes 3 from top:
+| decision 121: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Street Wraith)
+Choose which card goes 2 from top:
+| decision 122: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Street Wraith)
+Resolving ability (category: LoseLife, amount: 7)
+Player B loses 7 life (now at 7)
+Resolving ability (category: Cleanup)
+| decision 123: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Verdant Catacombs
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Verdant Catacombs)
+Player B played Verdant Catacombs
+| decision 124: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 125: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 126: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 127: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 128: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 129: Player B (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+| decision 130: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Mishra's Bauble
+| decision 131: Player B (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 132: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Mishra's Bauble
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+| decision 133: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 134: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Mishra's Bauble on top of library)
+| decision 135: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 136: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Activate Mishra's Bauble (PeekAndReveal)
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 137: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Equip Cori-Steel Cutter
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 138: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (7 life)
+|   1: Player A (18 life)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (7 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 139: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 140: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Undercity Sewers
+|   1: Underground Sea
+|   2: Underground Sea
+|   3: Verdant Catacombs
+|   4: Volcanic Island
+|   5: Volcanic Island
+|   6: Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Undercity Sewers)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Undercity Sewers is on the stack
+| decision 141: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Undercity Sewers is destroyed
+| decision 142: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Street Wraith
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 143: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Cori-Steel Cutter)
+Choose target for Cori-Steel Cutter:
+| decision 144: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Volcanic Island for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A's Cori-Steel Cutter ability targeting Dragon's Rage Channeler is on the stack
+| decision 145: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Attach)
+Equipment attached.
+Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
+| decision 146: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 147: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [4/4] -> Player B
+| decision 148: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+| decision 149: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 150: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 4 damage to Player B (now at 3 life)
+--- End Combat Damage ---
+
+| decision 151: Player B (game 0, turn 8, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 152: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 153: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 154: Player B (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+Delayed trigger fires.
+| decision 155: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Verdant Catacombs (ChangeZone)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mishra's Bauble
+| decision 156: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Verdant Catacombs (ChangeZone)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Street Wraith
+| decision 157: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Verdant Catacombs (ChangeZone)
+|   3: Activate Street Wraith from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 158: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Verdant Catacombs (ChangeZone)
+|   3: Activate Street Wraith from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Street Wraith from hand (Draw))
+Player B pays 2 life
+Player B activates Street Wraith from hand
+| decision 159: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Verdant Catacombs (ChangeZone)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Street Wraith
+| decision 160: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Verdant Catacombs (ChangeZone)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Edge of Autumn from hand (Draw))
+| decision 161: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Underground Sea
+|   1: Sacrifice Underground Sea
+|   2: Sacrifice Verdant Catacombs
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Sacrifice Verdant Catacombs)
+Player B sacrifices Verdant Catacombs
+Player B activates Edge of Autumn from hand
+| decision 162: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Street Wraith
+| decision 163: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 164: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 165: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 166: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 167: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 168: Player B (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+| decision 169: Player B (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Mountain
+| decision 170: Player B (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 171: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Cast Mishra's Bauble
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+| decision 172: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Scalding Tarn
+| decision 173: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Scalding Tarn on top of library
+|   1: Put Scalding Tarn into graveyard
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Scalding Tarn on top of library)
+| decision 174: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 175: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Activate Mishra's Bauble (PeekAndReveal)
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 176: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Equip Cori-Steel Cutter
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 177: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (1 life)
+|   1: Player A (18 life)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (1 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 178: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Street Wraith
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 179: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 180: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 181: Player B (game 0, turn 10, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [4/4] -> Player B
+| decision 182: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+| decision 183: Player B (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 184: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 4 damage to Player B (now at -3 life)
+--- End Combat Damage ---
+
+
+Player B has -3 life - Player A wins!
+GAME_RESULT: 1 Player A wins

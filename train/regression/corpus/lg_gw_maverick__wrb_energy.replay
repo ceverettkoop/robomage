@@ -1,0 +1,1594 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_gw_maverick__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/gw_maverick' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Forest
+Player A draws Wasteland
+Player A draws Wasteland
+Player A draws Once Upon a Time
+Player A draws Thalia, Guardian of Thraben
+Player A draws Once Upon a Time
+Player A draws Savannah
+Player B draws Ocelot Pride
+Player B draws Scrubland
+Player B draws Voice of Victory
+Player B draws Swords to Plowshares
+Player B draws Cabal Therapy
+Player B draws Amped Raptor
+Player B draws Marsh Flats
+Player A hand:
+Forest
+Once Upon a Time
+Once Upon a Time
+Savannah
+Thalia, Guardian of Thraben
+Wasteland
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Amped Raptor
+Cabal Therapy
+Marsh Flats
+Ocelot Pride
+Scrubland
+Swords to Plowshares
+Voice of Victory
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+|   2: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time (alternate cost))
+Player A casts for free (alternate cost)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 4: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Badgermole Cub
+|   2: Endurance
+|   3: Collector Ouphe
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Badgermole Cub)
+Player A reveals Badgermole Cub and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Savannah
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Thoughtseize
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Scrubland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Elegant Parlor
+|   3: Plains
+|   4: Plateau
+|   5: Scrubland
+|   6: Shadowy Backstreet
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy
+|   2: Cast Thoughtseize
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Badgermole Cub
+|   1: Name card: Endurance
+|   2: Name card: Green Sun's Zenith
+|   3: Name card: Knight of the Reliquary
+|   4: Name card: Noble Hierarch
+|   5: Name card: Swords to Plowshares
+|   6: Name card: Thalia, Guardian of Thraben
+|   7: Name card: Deafening Silence
+|   8: Name card: Force of Vigor
+|   9: Name card: Once Upon a Time
+|   10: Name card: Choke
+|   11: Name card: Erode
+|   12: Name card: Gaddock Teeg
+|   13: Name card: Scythecat Cub
+|   14: Name card: Birds of Paradise
+|   15: Name card: Collector Ouphe
+|   16: Name card: Icetill Explorer
+|   17: Name card: Keen-Eyed Curator
+|   18: Name card: Mole Man, Moloid Master
+|   19: Name card: Outland Liberator
+|   20: Name card: Scryb Ranger
+|   21: Name card: Sheltered by Ghosts
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Name card: Badgermole Cub)
+Player B names card: Badgermole Cub
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Badgermole Cub
+  Once Upon a Time
+  Savannah
+  Thalia, Guardian of Thraben
+  Wasteland
+  Wasteland
+Player A discards Badgermole Cub
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Swords to Plowshares
+| decision 12: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Savannah)
+Player A played Savannah
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Cast Thalia, Guardian of Thraben
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time)
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Verdant Catacombs
+|   3: Talon Gates of Madara
+|   4: Noble Hierarch
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thalia, Guardian of Thraben)
+Player A reveals Thalia, Guardian of Thraben and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Ocelot Pride
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Swords to Plowshares
+  Thalia, Guardian of Thraben
+  Thalia, Guardian of Thraben
+  Wasteland
+  Wasteland
+Player B chooses a card to discard:
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Thalia, Guardian of Thraben
+|   2: Thalia, Guardian of Thraben
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Thalia, Guardian of Thraben)
+Player A discards Thalia, Guardian of Thraben
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 17)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ocelot Pride
+|   2: Cast Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ocelot Pride)
+Player B activated Scrubland for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy (flashback)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (17 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Ocelot Pride)
+Player B sacrifices Ocelot Pride
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Badgermole Cub
+|   1: Name card: Endurance
+|   2: Name card: Green Sun's Zenith
+|   3: Name card: Knight of the Reliquary
+|   4: Name card: Noble Hierarch
+|   5: Name card: Swords to Plowshares
+|   6: Name card: Thalia, Guardian of Thraben
+|   7: Name card: Deafening Silence
+|   8: Name card: Force of Vigor
+|   9: Name card: Once Upon a Time
+|   10: Name card: Choke
+|   11: Name card: Erode
+|   12: Name card: Gaddock Teeg
+|   13: Name card: Scythecat Cub
+|   14: Name card: Birds of Paradise
+|   15: Name card: Collector Ouphe
+|   16: Name card: Icetill Explorer
+|   17: Name card: Keen-Eyed Curator
+|   18: Name card: Mole Man, Moloid Master
+|   19: Name card: Outland Liberator
+|   20: Name card: Scryb Ranger
+|   21: Name card: Sheltered by Ghosts
+(REPLAY) [T3 | First Main | Player B] Input: 5
+| >> Player B: 5 (Name card: Swords to Plowshares)
+Player B names card: Swords to Plowshares
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Swords to Plowshares
+  Thalia, Guardian of Thraben
+  Wasteland
+  Wasteland
+Player A discards Swords to Plowshares
+Cabal Therapy is exiled (flashback)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Green Sun's Zenith
+| decision 24: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Cast Green Sun's Zenith
+|   4: Cast Thalia, Guardian of Thraben
+(REPLAY) [T4 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 25: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (X = 1)
+Player A chooses X = 1
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 26: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Birds of Paradise
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Birds of Paradise)
+Player A shuffles their library
+Player A puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badlands
+|   1: Scrubland
+|   2: Savannah
+|   3: Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badlands)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Badlands is on the stack
+Resolving ability (category: Destroy)
+Badlands is destroyed
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Amped Raptor
+| decision 31: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ocelot Pride
+|   2: Cast Swords to Plowshares
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ocelot Pride)
+Player B activated Scrubland for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Karakas
+| decision 33: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Play Wasteland
+|   3: Cast Thalia, Guardian of Thraben
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Thalia, Guardian of Thraben)
+Player A activated Birds of Paradise for 1(W)
+Player A activated Forest for 1(G)
+Player A casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+| decision 34: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Karakas)
+Player A played Karakas
+| decision 35: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 36: Player A (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T6 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 37: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 38: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T6 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 39: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T6 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T6 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 41: Player A (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T7 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Silent Clearing
+| decision 42: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Silent Clearing
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Silent Clearing)
+Player B played Silent Clearing
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Voice of Victory
+|   3: Activate Silent Clearing (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Thalia, Guardian of Thraben
+|   2: Ocelot Pride
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Thalia, Guardian of Thraben)
+Targeting choice 1
+Player B activated Scrubland for 1(W)
+Player B pays 1 life
+Player B activated Silent Clearing for 1(W)
+Player B casts Swords to Plowshares targeting Thalia, Guardian of Thraben
+| decision 46: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player A gains 2 life (now at 22)
+
+--- Declare Attackers (Player B) ---
+| decision 47: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ocelot Pride [1/1])
+Ocelot Pride attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+| decision 48: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ocelot Pride -> Player A
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Ocelot Pride deals 1 damage to Player A (now at 21 life)
+  Player B gains 1 life (lifelink)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+Ocelot Pride triggered
+Resolving ability (category: Token)
+Token created: 1/1 Cat
+Resolving ability (category: CopyPermanent)
+
+-------- TURN 9 (Player A) --------
+Player A draws Misty Rainforest
+| decision 49: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 51: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Savannah
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 52: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Birds of Paradise [0/1]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 10 (Player B) --------
+| decision 53: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Thoughtseize
+| decision 54: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 55: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Voice of Victory
+|   3: Activate Silent Clearing (Draw)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 56: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (17 life)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Scrubland for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Wasteland
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 15)
+
+--- Declare Attackers (Player B) ---
+| decision 57: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Cat token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ocelot Pride [1/1])
+Ocelot Pride attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+| decision 58: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat token [1/1])
+Cat token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+| decision 59: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ocelot Pride -> Player A
+  Cat token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Ocelot Pride [1/1]
+  1: Cat token [1/1]
+Your creatures:
+| decision 60: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Birds of Paradise [0/1]
+|   1: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Ocelot Pride deals 1 damage to Player A (now at 19 life)
+  Player B gains 1 life (lifelink)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Cat token deals 1 damage to Player A (now at 18 life)
+--- End Combat Damage ---
+
+Ocelot Pride triggered
+Resolving ability (category: Token)
+Token created: 1/1 Cat
+Resolving ability (category: CopyPermanent)
+
+-------- TURN 11 (Player A) --------
+Player A draws Windswept Heath
+| decision 61: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Windswept Heath
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 62: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 63: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Scrubland
+|   1: Silent Clearing
+|   2: Karakas
+|   3: Savannah
+|   4: Savannah
+|   5: Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Scrubland)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Scrubland is on the stack
+Resolving ability (category: Destroy)
+Scrubland is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 64: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Birds of Paradise [0/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 12 (Player B) --------
+Player B draws Ajani, Nacatl Pariah
+
+--- Declare Attackers (Player B) ---
+| decision 65: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Cat token [1/1]
+|   2: Cat token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ocelot Pride [1/1])
+Ocelot Pride attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+| decision 66: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat token [1/1]
+|   1: Cat token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat token [1/1])
+Cat token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+| decision 67: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat token [1/1])
+Cat token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+| decision 68: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ocelot Pride -> Player A
+  Cat token -> Player A
+  Cat token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Ocelot Pride [1/1]
+  1: Cat token [1/1]
+  2: Cat token [1/1]
+Your creatures:
+| decision 69: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Birds of Paradise [0/1]
+|   1: Confirm blockers
+(REPLAY) [T11 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Ocelot Pride deals 1 damage to Player A (now at 17 life)
+  Player B gains 1 life (lifelink)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Cat token deals 1 damage to Player A (now at 16 life)
+  Cat token deals 1 damage to Player A (now at 15 life)
+--- End Combat Damage ---
+
+Ocelot Pride triggered
+Resolving ability (category: Token)
+Token created: 1/1 Cat
+Resolving ability (category: CopyPermanent)
+
+-------- TURN 13 (Player A) --------
+Player A draws Keen-Eyed Curator
+| decision 70: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Cast Keen-Eyed Curator
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Keen-Eyed Curator)
+Player A activated Forest for 1(G)
+Player A activated Birds of Paradise for 1(G)
+Player A casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+| decision 71: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Windswept Heath)
+Player A played Windswept Heath
+| decision 72: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 73: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badlands
+|   1: Marsh Flats
+|   2: Ocelot Pride
+|   3: Scrubland
+|   4: Swords to Plowshares
+|   5: Thoughtseize
+|   6: Badgermole Cub
+|   7: Misty Rainforest
+|   8: Once Upon a Time
+|   9: Swords to Plowshares
+|   10: Thalia, Guardian of Thraben
+|   11: Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badlands)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Badlands is on the stack
+| decision 74: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Windswept Heath (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+| decision 75: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 76: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Plains
+|   3: Savannah
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+| decision 77: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Badlands is moved to exile
+| decision 78: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 79: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Marsh Flats
+|   1: Ocelot Pride
+|   2: Scrubland
+|   3: Swords to Plowshares
+|   4: Thoughtseize
+|   5: Badgermole Cub
+|   6: Misty Rainforest
+|   7: Once Upon a Time
+|   8: Swords to Plowshares
+|   9: Thalia, Guardian of Thraben
+|   10: Wasteland
+|   11: Windswept Heath
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Marsh Flats)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Marsh Flats is on the stack
+| decision 80: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Marsh Flats is moved to exile
+| decision 81: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 82: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Ocelot Pride
+|   1: Scrubland
+|   2: Swords to Plowshares
+|   3: Thoughtseize
+|   4: Badgermole Cub
+|   5: Misty Rainforest
+|   6: Once Upon a Time
+|   7: Swords to Plowshares
+|   8: Thalia, Guardian of Thraben
+|   9: Wasteland
+|   10: Windswept Heath
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Ocelot Pride)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Ocelot Pride is on the stack
+| decision 83: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Ocelot Pride is moved to exile
+| decision 84: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 85: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Scrubland
+|   1: Swords to Plowshares
+|   2: Thoughtseize
+|   3: Badgermole Cub
+|   4: Misty Rainforest
+|   5: Once Upon a Time
+|   6: Swords to Plowshares
+|   7: Thalia, Guardian of Thraben
+|   8: Wasteland
+|   9: Windswept Heath
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Scrubland)
+Targeting choice 0
+Player A activated Karakas for 1(W)
+Player A's Keen-Eyed Curator ability targeting Scrubland is on the stack
+Resolving ability (category: ChangeZone)
+Scrubland is moved to exile
+No creatures eligible to attack.
+
+-------- TURN 14 (Player B) --------
+Player B draws Orcish Bowmasters
+
+--- Declare Attackers (Player B) ---
+| decision 86: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Cat token [1/1]
+|   2: Cat token [1/1]
+|   3: Cat token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 4
+| >> Player B: 4 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 15 (Player A) --------
+| decision 87: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Noble Hierarch
+| decision 88: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 89: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Noble Hierarch)
+Player A activated Forest for 1(G)
+Player A casts Noble Hierarch
+| decision 90: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Noble Hierarch enters the battlefield
+| decision 91: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 92: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Thoughtseize
+|   2: Badgermole Cub
+|   3: Misty Rainforest
+|   4: Once Upon a Time
+|   5: Swords to Plowshares
+|   6: Thalia, Guardian of Thraben
+|   7: Wasteland
+|   8: Windswept Heath
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Swords to Plowshares)
+Targeting choice 0
+Player A activated Birds of Paradise for 1(W)
+Player A's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
+| decision 93: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Swords to Plowshares is moved to exile
+| decision 94: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 95: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thoughtseize
+|   1: Badgermole Cub
+|   2: Misty Rainforest
+|   3: Once Upon a Time
+|   4: Swords to Plowshares
+|   5: Thalia, Guardian of Thraben
+|   6: Wasteland
+|   7: Windswept Heath
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thoughtseize)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
+| decision 96: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thoughtseize is moved to exile
+Keen-Eyed Curator gains 4/4 Trample (always)
+| decision 97: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 98: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thoughtseize
+|   1: Badgermole Cub
+|   2: Misty Rainforest
+|   3: Once Upon a Time
+|   4: Swords to Plowshares
+|   5: Thalia, Guardian of Thraben
+|   6: Wasteland
+|   7: Windswept Heath
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thoughtseize)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
+| decision 99: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thoughtseize is moved to exile
+| decision 100: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 101: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Badgermole Cub
+|   1: Misty Rainforest
+|   2: Once Upon a Time
+|   3: Swords to Plowshares
+|   4: Thalia, Guardian of Thraben
+|   5: Wasteland
+|   6: Windswept Heath
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Badgermole Cub is on the stack
+| decision 102: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Badgermole Cub is moved to exile
+| decision 103: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 104: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Misty Rainforest
+|   1: Once Upon a Time
+|   2: Swords to Plowshares
+|   3: Thalia, Guardian of Thraben
+|   4: Wasteland
+|   5: Windswept Heath
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Misty Rainforest)
+Targeting choice 0
+Player A activated Karakas for 1(W)
+Player A's Keen-Eyed Curator ability targeting Misty Rainforest is on the stack
+Resolving ability (category: ChangeZone)
+Misty Rainforest is moved to exile
+
+--- Declare Attackers (Player A) ---
+| decision 105: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Keen-Eyed Curator [7/7]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Keen-Eyed Curator [7/7])
+Keen-Eyed Curator attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [7/7] -> Player B
+| decision 106: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Keen-Eyed Curator [8/8]
+Your creatures:
+| decision 107: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Cat token [1/1]
+|   2: Cat token [1/1]
+|   3: Cat token [1/1]
+|   4: Confirm blockers
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 4
+| >> Player B: 4 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 8 damage to Player B (now at 9 life)
+--- End Combat Damage ---
+
+
+-------- TURN 16 (Player B) --------
+Player B draws Wasteland
+| decision 108: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 109: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ajani, Nacatl Pariah
+|   2: Cast Orcish Bowmasters
+|   3: Cast Voice of Victory
+|   4: Activate Silent Clearing (Draw)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ajani, Nacatl Pariah)
+Player B pays 1 life
+Player B activated Silent Clearing for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Ajani, Nacatl Pariah
+Ajani, Nacatl Pariah enters the battlefield
+Ajani, Nacatl Pariah triggered
+Resolving ability (category: Token)
+Token created: 2/1 Cat Warrior
+
+--- Declare Attackers (Player B) ---
+| decision 110: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Cat token [1/1]
+|   2: Cat token [1/1]
+|   3: Cat token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ocelot Pride [1/1])
+Ocelot Pride attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+| decision 111: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat token [1/1]
+|   1: Cat token [1/1]
+|   2: Cat token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat token [1/1])
+Cat token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+| decision 112: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat token [1/1]
+|   1: Cat token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat token [1/1])
+Cat token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+| decision 113: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat token [1/1])
+Cat token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ocelot Pride [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+  [attacking] Cat token [1/1] -> Player A
+| decision 114: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ocelot Pride -> Player A
+  Cat token -> Player A
+  Cat token -> Player A
+  Cat token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Ocelot Pride [1/1]
+  1: Cat token [1/1]
+  2: Cat token [1/1]
+  3: Cat token [1/1]
+Your creatures:
+| decision 115: Player A (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Noble Hierarch [0/1]
+|   1: Confirm blockers
+(REPLAY) [T15 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Ocelot Pride deals 1 damage to Player A (now at 13 life)
+  Player B gains 1 life (lifelink)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Cat token deals 1 damage to Player A (now at 12 life)
+  Cat token deals 1 damage to Player A (now at 11 life)
+  Cat token deals 1 damage to Player A (now at 10 life)
+--- End Combat Damage ---
+
+Ocelot Pride triggered
+Resolving ability (category: Token)
+Token created: 1/1 Cat
+Resolving ability (category: CopyPermanent)
+
+-------- TURN 17 (Player A) --------
+| decision 116: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Scythecat Cub
+| decision 117: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 118: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scythecat Cub
+|   2: Activate Karakas (ChangeZone)
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Scythecat Cub)
+Player A activated Forest for 1(G)
+Player A activated Birds of Paradise for 1(W)
+Player A casts Scythecat Cub
+| decision 119: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Karakas (ChangeZone))
+Choose target for Karakas:
+| decision 120: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Ajani, Nacatl Pariah
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Ajani, Nacatl Pariah)
+Targeting choice 0
+Player A's Karakas ability targeting Ajani, Nacatl Pariah is on the stack
+| decision 121: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to hand
+| decision 122: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Scythecat Cub enters the battlefield
+| decision 123: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 124: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Once Upon a Time
+|   1: Swords to Plowshares
+|   2: Thalia, Guardian of Thraben
+|   3: Wasteland
+|   4: Windswept Heath
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Once Upon a Time)
+Targeting choice 0
+Player A activated Noble Hierarch for 1(W)
+Player A's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+| decision 125: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Once Upon a Time is moved to exile
+| decision 126: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 127: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Once Upon a Time
+|   1: Swords to Plowshares
+|   2: Thalia, Guardian of Thraben
+|   3: Wasteland
+|   4: Windswept Heath
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Once Upon a Time)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+| decision 128: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Once Upon a Time is moved to exile
+| decision 129: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 130: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Thalia, Guardian of Thraben
+|   2: Wasteland
+|   3: Windswept Heath
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Swords to Plowshares)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
+| decision 131: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Swords to Plowshares is moved to exile
+| decision 132: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 133: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben
+|   1: Wasteland
+|   2: Windswept Heath
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben)
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Thalia, Guardian of Thraben is on the stack
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+
+--- Declare Attackers (Player A) ---
+| decision 134: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Keen-Eyed Curator [7/7]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Keen-Eyed Curator [7/7])
+Keen-Eyed Curator attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [7/7] -> Player B
+| decision 135: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Keen-Eyed Curator [8/8]
+Your creatures:
+| decision 136: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Cat Warrior token [2/1]
+|   1: Cat token [1/1]
+|   2: Confirm blockers
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 2
+| >> Player B: 2 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 8 damage to Player B (now at 1 life)
+--- End Combat Damage ---
+
+
+-------- TURN 18 (Player B) --------
+| decision 137: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+|   2: Activate Silent Clearing (Draw)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Orcish Bowmasters)
+Player B pays 1 life
+Player B activated Silent Clearing for 1(B)
+Player B activated Wasteland for 1(C)
+Player B casts Orcish Bowmasters
+
+Player B has 0 life - Player A wins!
+GAME_RESULT: 1 Player A wins

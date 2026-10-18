@@ -1,0 +1,1230 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands__wubg_doomsday.rmlog
+REPLAY MODE: Using embedded decks 'league/lands' / 'league/wubg_doomsday' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dark Depths
+Player A draws Wasteland
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Skateboard
+Player B draws Lotus Petal
+Player B draws Quantum Riddler
+Player B draws Tropical Island
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Doomsday
+Player B draws Dark Ritual
+Player B draws Force of Will
+Player A hand:
+Dark Depths
+Mox Diamond
+Mox Diamond
+Skateboard
+Urza's Saga
+Urza's Saga
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Dark Ritual
+Doomsday
+Force of Will
+Lotus Petal
+Quantum Riddler
+Tamiyo, Inquisitive Student
+Tropical Island
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Urza's Saga
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+|   5: Cast Mox Diamond
+|   6: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Mox Diamond
+|   3: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 5: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+|   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   3: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+Player A discards Dark Depths.
+Mox Diamond enters the battlefield
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 8: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   2: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+Player A discards Urza's Saga.
+Mox Diamond enters the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Skateboard)
+Player A activated Mox Diamond for 1(W)
+Player A casts Skateboard
+| decision 11: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Skateboard enters the battlefield
+Choose target for Skateboard:
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+|   1: Mox Diamond
+|   2: Skateboard
+|   3: Urza's Saga
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+Targeting choice 1
+Skateboard triggered
+Resolving ability (category: Tap)
+Mox Diamond is tapped.
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Teferi, Time Raveler
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Cast Lotus Petal
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Lotus Petal)
+Player B casts Lotus Petal
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Lotus Petal enters the battlefield
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Cast Dark Ritual
+|   3: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Tropical Island)
+Player B played Tropical Island
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Quantum Riddler (warp)
+|   3: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Tamiyo, Inquisitive Student)
+Player B activated Tropical Island for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Tamiyo, Inquisitive Student enters the battlefield
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 19: Player B (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T1 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 20: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 21: Player B (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T1 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 22: Player B (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T1 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 23: Player B (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T1 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+| decision 24: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Boseiju, Who Endures
+| decision 25: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 26: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
+Choose target for this ability:
+| decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Lotus Petal
+|   1: Tropical Island
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Lotus Petal)
+Targeting choice 0
+Player A activated Mox Diamond for 1(G)
+Player A activated Mox Diamond for 1(W)
+Player A discards Boseiju, Who Endures
+Player A activates Boseiju, Who Endures from hand targeting Lotus Petal
+| decision 29: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Tap Lotus Petal for (W)
+|   3: Tap Lotus Petal for (U)
+|   4: Tap Lotus Petal for (B)
+|   5: Tap Lotus Petal for (R)
+|   6: Tap Lotus Petal for (G)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Lotus Petal is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 30: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Scrubland
+|   3: Tropical Island
+|   4: Tundra
+|   5: Undercity Sewers
+|   6: Underground Sea
+(REPLAY) [T2 | First Main | Player B] Input: 6
+| >> Player B: 6 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 31: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 32: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tropical Island
+|   1: Underground Sea
+|   2: Urza's Saga
+|   3: Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Tropical Island)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Tropical Island is on the stack
+| decision 35: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Tropical Island is destroyed
+| decision 36: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 37: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 38: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 39: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 40: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 41: Player B (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 42: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Tropical Island
+| decision 43: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Cast Dark Ritual
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Dark Ritual)
+Player B activated Underground Sea for 1(B)
+Player B casts Dark Ritual
+| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: AddMana)
+Player B adds 3{B}
+| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Cast Doomsday
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Doomsday)
+Player B casts Doomsday
+| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's graveyard and library:
+| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Lotus Petal (graveyard)
+|   2: Tropical Island (graveyard)
+|   3: Brainstorm (library)
+|   4: Cavern of Souls (library)
+|   5: Consider (library)
+|   6: Dark Ritual (library)
+|   7: Daze (library)
+|   8: Doomsday (library)
+|   9: Edge of Autumn (library)
+|   10: Flooded Strand (library)
+|   11: Force of Will (library)
+|   12: Island (library)
+|   13: Lion's Eye Diamond (library)
+|   14: Lotus Petal (library)
+|   15: Polluted Delta (library)
+|   16: Ponder (library)
+|   17: Scrubland (library)
+|   18: Street Wraith (library)
+|   19: Tamiyo, Inquisitive Student (library)
+|   20: Teferi, Time Raveler (library)
+|   21: Thassa's Oracle (library)
+|   22: Tundra (library)
+|   23: Undercity Sewers (library)
+|   24: Underground Sea (library)
+|   25: Veil of Summer (library)
+(REPLAY) [T3 | First Main | Player B] Input: 21
+| >> Player B: 21 (Thassa's Oracle (library))
+Player B puts Thassa's Oracle to top of library
+Searching Player B's graveyard and library:
+| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Lotus Petal (graveyard)
+|   2: Tropical Island (graveyard)
+|   3: Brainstorm (library)
+|   4: Cavern of Souls (library)
+|   5: Consider (library)
+|   6: Dark Ritual (library)
+|   7: Daze (library)
+|   8: Doomsday (library)
+|   9: Edge of Autumn (library)
+|   10: Flooded Strand (library)
+|   11: Force of Will (library)
+|   12: Island (library)
+|   13: Lion's Eye Diamond (library)
+|   14: Lotus Petal (library)
+|   15: Polluted Delta (library)
+|   16: Ponder (library)
+|   17: Scrubland (library)
+|   18: Street Wraith (library)
+|   19: Tamiyo, Inquisitive Student (library)
+|   20: Teferi, Time Raveler (library)
+|   21: Tundra (library)
+|   22: Undercity Sewers (library)
+|   23: Underground Sea (library)
+|   24: Veil of Summer (library)
+(REPLAY) [T3 | First Main | Player B] Input: 9
+| >> Player B: 9 (Edge of Autumn (library))
+Player B puts Edge of Autumn to top of library
+Searching Player B's graveyard and library:
+| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Lotus Petal (graveyard)
+|   2: Tropical Island (graveyard)
+|   3: Brainstorm (library)
+|   4: Cavern of Souls (library)
+|   5: Consider (library)
+|   6: Dark Ritual (library)
+|   7: Daze (library)
+|   8: Doomsday (library)
+|   9: Flooded Strand (library)
+|   10: Force of Will (library)
+|   11: Island (library)
+|   12: Lion's Eye Diamond (library)
+|   13: Lotus Petal (library)
+|   14: Polluted Delta (library)
+|   15: Ponder (library)
+|   16: Scrubland (library)
+|   17: Street Wraith (library)
+|   18: Tamiyo, Inquisitive Student (library)
+|   19: Teferi, Time Raveler (library)
+|   20: Tundra (library)
+|   21: Undercity Sewers (library)
+|   22: Underground Sea (library)
+|   23: Veil of Summer (library)
+(REPLAY) [T3 | First Main | Player B] Input: 17
+| >> Player B: 17 (Street Wraith (library))
+Player B puts Street Wraith to top of library
+Searching Player B's graveyard and library:
+| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Lotus Petal (graveyard)
+|   2: Tropical Island (graveyard)
+|   3: Brainstorm (library)
+|   4: Cavern of Souls (library)
+|   5: Consider (library)
+|   6: Dark Ritual (library)
+|   7: Daze (library)
+|   8: Doomsday (library)
+|   9: Flooded Strand (library)
+|   10: Force of Will (library)
+|   11: Island (library)
+|   12: Lion's Eye Diamond (library)
+|   13: Lotus Petal (library)
+|   14: Polluted Delta (library)
+|   15: Ponder (library)
+|   16: Scrubland (library)
+|   17: Tamiyo, Inquisitive Student (library)
+|   18: Teferi, Time Raveler (library)
+|   19: Tundra (library)
+|   20: Undercity Sewers (library)
+|   21: Underground Sea (library)
+|   22: Veil of Summer (library)
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Brainstorm (library))
+Player B puts Brainstorm to top of library
+Searching Player B's graveyard and library:
+| decision 52: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Lotus Petal (graveyard)
+|   2: Tropical Island (graveyard)
+|   3: Brainstorm (library)
+|   4: Cavern of Souls (library)
+|   5: Consider (library)
+|   6: Dark Ritual (library)
+|   7: Daze (library)
+|   8: Doomsday (library)
+|   9: Flooded Strand (library)
+|   10: Force of Will (library)
+|   11: Island (library)
+|   12: Lion's Eye Diamond (library)
+|   13: Lotus Petal (library)
+|   14: Polluted Delta (library)
+|   15: Ponder (library)
+|   16: Scrubland (library)
+|   17: Tamiyo, Inquisitive Student (library)
+|   18: Teferi, Time Raveler (library)
+|   19: Tundra (library)
+|   20: Undercity Sewers (library)
+|   21: Underground Sea (library)
+|   22: Veil of Summer (library)
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Brainstorm (library))
+Player B puts Brainstorm to top of library
+Resolving ability (category: ChangeZoneAll)
+Player B moves Dark Ritual to exile
+Player B moves Lotus Petal to exile
+Player B moves Tropical Island to exile
+Player B moves Brainstorm to exile
+Player B moves Brainstorm to exile
+Player B moves Cavern of Souls to exile
+Player B moves Consider to exile
+Player B moves Dark Ritual to exile
+Player B moves Dark Ritual to exile
+Player B moves Dark Ritual to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Daze to exile
+Player B moves Doomsday to exile
+Player B moves Doomsday to exile
+Player B moves Doomsday to exile
+Player B moves Flooded Strand to exile
+Player B moves Flooded Strand to exile
+Player B moves Flooded Strand to exile
+Player B moves Flooded Strand to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Force of Will to exile
+Player B moves Island to exile
+Player B moves Lion's Eye Diamond to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Lotus Petal to exile
+Player B moves Polluted Delta to exile
+Player B moves Polluted Delta to exile
+Player B moves Polluted Delta to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Ponder to exile
+Player B moves Scrubland to exile
+Player B moves Tamiyo, Inquisitive Student to exile
+Player B moves Tamiyo, Inquisitive Student to exile
+Player B moves Tamiyo, Inquisitive Student to exile
+Player B moves Teferi, Time Raveler to exile
+Player B moves Teferi, Time Raveler to exile
+Player B moves Tundra to exile
+Player B moves Undercity Sewers to exile
+Player B moves Underground Sea to exile
+Player B moves Veil of Summer to exile
+Player B moves Veil of Summer to exile
+Player B moves Veil of Summer to exile
+Player B moves 48 card(s) to exile
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 5 card(s) of their library.
+Choose which card goes 5 from top:
+| decision 53: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Street Wraith
+|   2: Edge of Autumn
+|   3: Thassa's Oracle
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+Choose which card goes 4 from top:
+| decision 54: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Street Wraith
+|   2: Edge of Autumn
+|   3: Thassa's Oracle
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+Choose which card goes 3 from top:
+| decision 55: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+|   1: Edge of Autumn
+|   2: Thassa's Oracle
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Thassa's Oracle)
+Choose which card goes 2 from top:
+| decision 56: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Street Wraith
+|   1: Edge of Autumn
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Street Wraith)
+Resolving ability (category: LoseLife, amount: 10)
+Player B loses 10 life (now at 10)
+Resolving ability (category: Cleanup)
+| decision 57: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Tropical Island)
+Player B played Tropical Island
+
+--- Declare Attackers (Player B) ---
+| decision 58: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+| decision 59: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player A
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 5 (Player A) --------
+| decision 60: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+Player A draws Dark Depths
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Pithing Needle
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Player A shuffles their library
+Player A puts Expedition Map to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+| decision 62: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 63: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Edge of Autumn
+| decision 64: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 65: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Edge of Autumn
+|   2: Cast Quantum Riddler (warp)
+|   3: Activate Clue token (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Quantum Riddler (warp))
+Player B activated Tropical Island for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B casts Quantum Riddler
+| decision 66: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Quantum Riddler enters the battlefield
+Quantum Riddler was cast with warp (exiled at the next end step; castable from exile later).
+Quantum Riddler triggered
+| decision 67: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Street Wraith
+| decision 68: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+|   2: Activate Street Wraith from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Street Wraith from hand (Draw))
+Player B pays 2 life
+Player B activates Street Wraith from hand
+| decision 69: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Thassa's Oracle
+Tamiyo, Inquisitive Student triggered
+| decision 70: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to exile
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to the battlefield
+Resolving ability (category: Cleanup)
+Tamiyo, Seasoned Scholar enters transformed.
+| decision 71: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 72: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 73: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 74: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 75: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Delayed trigger fires.
+| decision 76: Player B (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: WarpExile)
+Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
+| decision 77: Player B (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 78: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 79: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Sphere of Resistance
+| decision 80: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 81: Player B (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 82: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+|   2: Activate Expedition Map (ChangeZone)
+|   3: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Sphere of Resistance)
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A casts Sphere of Resistance
+| decision 83: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Sphere of Resistance enters the battlefield
+| decision 84: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 85: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 86: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [6/6]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [6/6])
+Select target for Construct token:
+| decision 87: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (8 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 2)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/6] -> Player B
+| decision 88: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+| decision 89: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 90: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player B (now at 2 life)
+--- End Combat Damage ---
+
+| decision 91: Player B (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 92: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 93: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 94: Player B (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T6 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 95: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Brainstorm
+| decision 96: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 97: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Clue token (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 98: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 99: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 100: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 101: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Clue token (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T7 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+| decision 103: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 104: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Malevolent Rumble
+| decision 105: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 106: Player B (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 107: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+|   2: Equip Skateboard
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Expedition Map (ChangeZone))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A sacrifices Expedition Map
+Player A's Expedition Map ability is on the stack
+| decision 108: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 109: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Forest
+|   6: Ghost Quarter
+|   7: Karakas
+|   8: Maze of Ith
+|   9: Rishadan Port
+|   10: Savannah
+|   11: The Tabernacle at Pendrell Vale
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T8 | First Main | Player A] Input: 12
+| >> Player A: 12 (Thespian's Stage)
+Player A shuffles their library
+Player A reveals Thespian's Stage and puts it to hand
+| decision 110: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thespian's Stage)
+Player A played Thespian's Stage
+| decision 111: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Skateboard)
+Choose target for Skateboard:
+| decision 112: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Construct token
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Construct token)
+Targeting choice 0
+Player A activated Thespian's Stage for 1(C)
+Player A's Skateboard ability targeting Construct token is on the stack
+| decision 113: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Attach)
+Equipment attached.
+Construct token gains 1/0 Haste (always)
+| decision 114: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 115: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 116: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [6/5]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [6/5])
+Select target for Construct token:
+| decision 117: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (2 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 2)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (2 life))
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/5] -> Player B
+| decision 118: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+| decision 119: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 120: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Clue token (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player B (now at -4 life)
+--- End Combat Damage ---
+
+
+Player B has -4 life - Player A wins!
+GAME_RESULT: 1 Player A wins

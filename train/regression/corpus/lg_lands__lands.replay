@@ -1,0 +1,919 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands__lands.rmlog
+REPLAY MODE: Using embedded decks 'league/lands' / 'league/lands' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dark Depths
+Player A draws Wasteland
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Urza's Saga
+Player A draws Mox Diamond
+Player A draws Skateboard
+Player B draws Mox Diamond
+Player B draws Sphere of Resistance
+Player B draws Urza's Saga
+Player B draws Swords to Plowshares
+Player B draws Exploration
+Player B draws Crop Rotation
+Player B draws Malevolent Rumble
+Player A hand:
+Dark Depths
+Mox Diamond
+Mox Diamond
+Skateboard
+Urza's Saga
+Urza's Saga
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Crop Rotation
+Exploration
+Malevolent Rumble
+Mox Diamond
+Sphere of Resistance
+Swords to Plowshares
+Urza's Saga
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Swords to Plowshares
+Player B draws Dark Depths
+Player B draws Boseiju, Who Endures
+Player B draws Crop Rotation
+Player B draws Thespian's Stage
+Player B draws Savannah
+Player B draws Exploration
+Player B hand:
+Boseiju, Who Endures
+Crop Rotation
+Dark Depths
+Exploration
+Savannah
+Swords to Plowshares
+Thespian's Stage
+| decision 3: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 4: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Boseiju, Who Endures
+|   1: Crop Rotation
+|   2: Dark Depths
+|   3: Exploration
+|   4: Savannah
+|   5: Swords to Plowshares
+|   6: Thespian's Stage
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Boseiju, Who Endures)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Urza's Saga
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+|   5: Cast Mox Diamond
+|   6: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Mox Diamond
+|   3: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+|   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   3: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+Player A discards Dark Depths.
+Mox Diamond enters the battlefield
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+|   2: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+|   2: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+Player A discards Urza's Saga.
+Mox Diamond enters the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Skateboard
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Skateboard)
+Player A activated Mox Diamond for 1(W)
+Player A casts Skateboard
+Skateboard enters the battlefield
+Choose target for Skateboard:
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mox Diamond
+|   1: Mox Diamond
+|   2: Skateboard
+|   3: Urza's Saga
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+Targeting choice 1
+Skateboard triggered
+Resolving ability (category: Tap)
+Mox Diamond is tapped.
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Malevolent Rumble
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Savannah
+|   3: Play Thespian's Stage
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dark Depths)
+Player B played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Boseiju, Who Endures
+| decision 13: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
+Choose target for this ability:
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dark Depths
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dark Depths)
+Targeting choice 0
+Player A activated Mox Diamond for 1(G)
+Player A activated Mox Diamond for 1(W)
+Player A discards Boseiju, Who Endures
+Player A activates Boseiju, Who Endures from hand targeting Dark Depths
+Resolving ability (category: Destroy)
+Dark Depths is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 16: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+|   2: Savannah
+(REPLAY) [T2 | First Main | Player B] Input: 2
+| >> Player B: 2 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 17: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Crop Rotation)
+| decision 18: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sacrifice Savannah
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Savannah)
+Player B activated Savannah for 1(G)
+Player B sacrifices Savannah
+Player B casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 19: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Forest
+|   7: Ghost Quarter
+|   8: Karakas
+|   9: Maze of Ith
+|   10: Rishadan Port
+|   11: The Tabernacle at Pendrell Vale
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T2 | First Main | Player B] Input: 13
+| >> Player B: 13 (Urza's Saga)
+Player B shuffles their library
+Player B puts Urza's Saga to the battlefield
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Urza's Saga
+|   1: Urza's Saga
+|   2: Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Urza's Saga)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Urza's Saga is on the stack
+| decision 23: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Urza's Saga for (C)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Urza's Saga is destroyed
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Crop Rotation
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Thespian's Stage
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+|   2: Cast Exploration
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Exploration)
+Player B activated Savannah for 1(G)
+Player B casts Exploration
+Exploration enters the battlefield
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thespian's Stage)
+Player B played Thespian's Stage
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+Player A draws Dark Depths
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Expedition Map
+|   2: Grafdigger's Cage
+|   3: Mox Diamond
+|   4: Pithing Needle
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Expedition Map)
+Player A shuffles their library
+Player A puts Expedition Map to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+|   2: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Crop Rotation)
+| decision 31: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+|   1: Sacrifice Thespian's Stage
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Savannah)
+Player B activated Savannah for 1(G)
+Player B sacrifices Savannah
+Player B casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 32: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Ancient Tomb
+|   2: Blast Zone
+|   3: Bojuka Bog
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Forest
+|   7: Ghost Quarter
+|   8: Karakas
+|   9: Maze of Ith
+|   10: Rishadan Port
+|   11: The Tabernacle at Pendrell Vale
+|   12: Thespian's Stage
+|   13: Urza's Saga
+|   14: Wasteland
+|   15: Yavimaya, Cradle of Growth
+(REPLAY) [T5 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Dark Depths)
+Player B shuffles their library
+Player B puts Dark Depths to the battlefield
+Dark Depths enters with 10 ICE counter(s).
+Player B draws Boseiju, Who Endures
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Boseiju, Who Endures)
+Player B played Boseiju, Who Endures
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Malevolent Rumble
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Malevolent Rumble)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Thespian's Stage for 1(C)
+Player B casts Malevolent Rumble
+Resolving ability (category: Dig)
+Player B looks at the top 4 card(s) of their library.
+Player B reveals Grafdigger's Cage from the top of their library.
+Player B reveals Exploration from the top of their library.
+Player B reveals Urza's Saga from the top of their library.
+Player B reveals Ancient Tomb from the top of their library.
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Take nothing (rest go into the graveyard)
+|   1: Grafdigger's Cage
+|   2: Exploration
+|   3: Urza's Saga
+|   4: Ancient Tomb
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Grafdigger's Cage)
+Player B reveals Grafdigger's Cage and puts it into hand.
+Player B puts Exploration into their graveyard.
+Player B puts Urza's Saga into their graveyard.
+Player B puts Ancient Tomb into their graveyard.
+Resolving ability (category: Token)
+Token created: 0/1 Eldrazi Spawn
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Grafdigger's Cage
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Grafdigger's Cage)
+Player B sacrifices Eldrazi Spawn
+Player B activated Eldrazi Spawn for 1(C)
+Player B casts Grafdigger's Cage
+Eldrazi Spawn (token) is put into the graveyard and ceases to exist.
+Grafdigger's Cage enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 37: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Malevolent Rumble
+| decision 38: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Malevolent Rumble
+|   2: Activate Expedition Map (ChangeZone)
+|   3: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Malevolent Rumble)
+Player A activated Mox Diamond for 1(G)
+Player A activated Mox Diamond for 1(W)
+Player A casts Malevolent Rumble
+Resolving ability (category: Dig)
+Player A looks at the top 4 card(s) of their library.
+Player A reveals Malevolent Rumble from the top of their library.
+Player A reveals Thespian's Stage from the top of their library.
+Player A reveals Ancient Tomb from the top of their library.
+Player A reveals Urza's Saga from the top of their library.
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Take nothing (rest go into the graveyard)
+|   1: Thespian's Stage
+|   2: Ancient Tomb
+|   3: Urza's Saga
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thespian's Stage)
+Player A reveals Thespian's Stage and puts it into hand.
+Player A puts Malevolent Rumble into their graveyard.
+Player A puts Ancient Tomb into their graveyard.
+Player A puts Urza's Saga into their graveyard.
+Resolving ability (category: Token)
+Token created: 0/1 Eldrazi Spawn
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+|   2: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thespian's Stage)
+Player A played Thespian's Stage
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+|   2: Equip Skateboard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Expedition Map (ChangeZone))
+Player A activated Thespian's Stage for 1(C)
+Player A sacrifices Eldrazi Spawn
+Player A activated Eldrazi Spawn for 1(C)
+Player A sacrifices Expedition Map
+Player A's Expedition Map ability is on the stack
+Eldrazi Spawn (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Blast Zone
+|   2: Bojuka Bog
+|   3: Boseiju, Who Endures
+|   4: Forest
+|   5: Ghost Quarter
+|   6: Karakas
+|   7: Maze of Ith
+|   8: Rishadan Port
+|   9: Savannah
+|   10: The Tabernacle at Pendrell Vale
+|   11: Thespian's Stage
+|   12: Urza's Saga
+|   13: Wasteland
+|   14: Yavimaya, Cradle of Growth
+(REPLAY) [T6 | First Main | Player A] Input: 12
+| >> Player A: 12 (Urza's Saga)
+Player A shuffles their library
+Player A reveals Urza's Saga and puts it to hand
+
+--- Declare Attackers (Player A) ---
+| decision 44: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [4/4]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [4/4])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [4/4] -> Player B
+| decision 45: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 4 damage to Player B (now at 16 life)
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+Player B draws Ghost Quarter
+| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Ghost Quarter)
+Player B played Ghost Quarter
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Ghost Quarter (Destroy)
+|   3: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Depths
+|   1: Thespian's Stage
+|   2: Boseiju, Who Endures
+|   3: Dark Depths
+|   4: Ghost Quarter
+|   5: Thespian's Stage
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Dark Depths)
+Targeting choice 3
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Ghost Quarter for 1(C)
+Player B's Thespian's Stage ability targeting Dark Depths is on the stack
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player B controls 2 copies of Dark Depths; choose one to keep.
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+Player B sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+| decision 50: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 51: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Boseiju, Who Endures
+|   1: Ghost Quarter
+|   2: Dark Depths
+|   3: Thespian's Stage
+(REPLAY) [T8 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Dark Depths)
+Targeting choice 2
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A's Thespian's Stage ability targeting Dark Depths is on the stack
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+| decision 52: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+Player A sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+Player A draws Sphere of Resistance
+| decision 53: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Equip Skateboard)
+Choose target for Skateboard:
+| decision 55: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Construct token
+|   1: Marit Lage token
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Construct token)
+Targeting choice 0
+Player A activated Urza's Saga for 1(C)
+Player A's Skateboard ability targeting Construct token is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Construct token gains 1/0 Haste (always)
+
+--- Declare Attackers (Player A) ---
+| decision 56: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [5/4]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 10 (Player B) --------
+| decision 57: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ghost Quarter (Destroy)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Life from the Loam
+| decision 58: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ghost Quarter (Destroy)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 59: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 60: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ancient Tomb
+|   2: Dark Depths
+|   3: Savannah
+|   4: Thespian's Stage
+|   5: Urza's Saga
+(REPLAY) [T9 | First Main | Player B] Input: 5
+| >> Player B: 5 (Urza's Saga)
+Targeting choice 7
+Choose target for Life from the Loam:
+| decision 61: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ancient Tomb
+|   2: Dark Depths
+|   3: Savannah
+|   4: Thespian's Stage
+|   5: Urza's Saga
+(REPLAY) [T9 | First Main | Player B] Input: 5
+| >> Player B: 5 (Urza's Saga)
+Targeting choice 7
+Choose target for Life from the Loam:
+| decision 62: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ancient Tomb
+|   2: Dark Depths
+|   3: Savannah
+|   4: Thespian's Stage
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Ghost Quarter for 1(C)
+Player B casts Life from the Loam targeting Urza's Saga
+Resolving ability (category: ChangeZone)
+Urza's Saga is moved to hand
+Urza's Saga is moved to hand
+| decision 63: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Urza's Saga
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+
+--- Declare Attackers (Player B) ---
+| decision 65: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Marit Lage token [20/20] -> Player A
+| decision 66: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Marit Lage token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Marit Lage token [20/20]
+Your creatures:
+| decision 67: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Select attacker for Marit Lage token to block:
+| decision 68: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Marit Lage token [20/20]
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Marit Lage token blocking Marit Lage token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Marit Lage token [20/20]
+Your creatures:
+  (assigned) Marit Lage token [20/20] blocking Marit Lage token
+| decision 69: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Confirm blockers)
+
+Blockers declared:
+  Marit Lage token blocking Marit Lage token
+
+--- Combat Damage ---
+  Marit Lage token deals 20 damage to Marit Lage token
+  Marit Lage token deals 20 damage to Marit Lage token
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+Player A draws Rishadan Port
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 70: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Rishadan Port
+|   2: Cast Sphere of Resistance
+|   3: Equip Skateboard
+|   4: Activate Urza's Saga (Token)
+(REPLAY) [T10 | First Main | Player A] Input: 4
+| >> Player A: 4 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Mox Diamond for 1(W)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 71: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Rishadan Port
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Rishadan Port)
+Player A played Rishadan Port
+| decision 72: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Skateboard
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 73: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [6/5]
+|   1: Marit Lage token [20/20]
+|   2: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [6/5])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/5] -> Player B
+| decision 74: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [6/5] -> Player B
+  [attacking] Marit Lage token [20/20] -> Player B
+| decision 75: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Construct token -> Player B
+  Marit Lage token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player B (now at 10 life)
+  Marit Lage token deals 20 damage to Player B (now at -10 life)
+--- End Combat Damage ---
+
+
+Player B has -10 life - Player A wins!
+GAME_RESULT: 1 Player A wins

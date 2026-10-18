@@ -13,7 +13,10 @@ game state and the engine is deterministic given a seed, so an unchanged engine 
 agent + card data reproduces each transcript byte-for-byte. (The agent's BQUERY
 vector view keeps pinned games of its own: ``test_agent_parity.py``.)
 
-  record  — play each scenario, write train/regression/corpus/<name>.txt
+  record  — play each scenario, write train/regression/corpus/<name>.txt, and the
+            game's decision log <name>.rmlog (the engine's --decision-log); then
+            `robomage_check --tier replay --record` writes each log's replay
+            baseline <name>.replay (the C++ gate's replay tier checks those)
   check   — replay each scenario, diff against the recorded transcript (exit 1
             on any drift). Wired as the `replay` tier of train/ci_check.py.
 
@@ -29,6 +32,7 @@ Usage (from repo root):
 """
 
 import os
+import subprocess
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
@@ -81,7 +85,7 @@ for _i, _a in enumerate(LEAGUE_DECKS):
         SCENARIOS.append((f"lg_{_a}__{_b}", f"league/{_a}", f"league/{_b}"))
 
 
-def _play(deck_a: str, deck_b: str, seed: int) -> str:
+def _play(deck_a: str, deck_b: str, seed: int, decision_log=None) -> str:
     """Drive one scripted deck-vs-deck game and return its full transcript.
 
     Uses the RMSTATE driver (rm_driver.run_games) with the scripted (hard) agent
@@ -89,7 +93,9 @@ def _play(deck_a: str, deck_b: str, seed: int) -> str:
     function of game state and the engine is deterministic given a seed, so an
     unchanged engine + agent + card data reproduces the transcript
     byte-for-byte. Libraries shuffle with the seeded RNG (natural games,
-    deterministic given the frozen SEED)."""
+    deterministic given the frozen SEED). With `decision_log`, the engine also
+    writes the game's decision log there (--decision-log, which changes no
+    transcript line)."""
     import io
 
     import rm_driver  # noqa: E402
@@ -97,22 +103,24 @@ def _play(deck_a: str, deck_b: str, seed: int) -> str:
     buf = io.StringIO()
     rm_driver.run_games("scripted", "scripted", label_a="A", label_b="B",
                         binary=str(_BINARY), deck_a=deck_a, deck_b=deck_b,
-                        n_games=1, seed=seed, transcript="verbose", out=buf)
+                        n_games=1, seed=seed, transcript="verbose", out=buf,
+                        engine_flags=["--decision-log", str(decision_log)] if decision_log else ())
     return buf.getvalue()
 
 
-def _play_scenario(scenario) -> str:
+def _play_scenario(task) -> str:
     """_play for one SCENARIOS entry (a picklable process-pool task)."""
-    _name, deck_a, deck_b = scenario
-    return _play(deck_a, deck_b, SEED)
+    (name, deck_a, deck_b), record = task
+    return _play(deck_a, deck_b, SEED, _CORPUS / f"{name}.rmlog" if record else None)
 
 
-def _play_all():
-    """Every scenario's transcript, in SCENARIOS order. The games are
+def _play_all(record=False):
+    """Every scenario's transcript, in SCENARIOS order (with `record`, each
+    game's decision log written into the corpus too). The games are
     independent (each its own engine process, seeded by SEED), so they run in
     a process pool; a transcript does not depend on which worker played it."""
     with ProcessPoolExecutor(max_workers=min(16, os.cpu_count() or 4)) as ex:
-        return list(ex.map(_play_scenario, SCENARIOS))
+        return list(ex.map(_play_scenario, [(sc, record) for sc in SCENARIOS]))
 
 
 def cmd_record() -> int:
@@ -121,10 +129,20 @@ def cmd_record() -> int:
     # the deterministic scripted transcript no longer needs them.
     for stale in _CORPUS.glob("*.actions"):
         stale.unlink()
-    for (name, _deck_a, _deck_b), transcript in zip(SCENARIOS, _play_all()):
+    names = {name for name, _a, _b in SCENARIOS}
+    for stale in list(_CORPUS.glob("*.rmlog")) + list(_CORPUS.glob("*.replay")):
+        if stale.stem not in names:
+            stale.unlink()
+    for (name, _deck_a, _deck_b), transcript in zip(SCENARIOS, _play_all(record=True)):
         (_CORPUS / f"{name}.txt").write_text(transcript)
         print(f"  recorded {name}: {len(transcript)} bytes")
     print(f"Recorded {len(SCENARIOS)} scenarios (seed {SEED}) to {_CORPUS}")
+    # The decision logs' replay baselines, written by the C++ gate's replay tier.
+    gate = _BINARY.parent / "robomage_check"
+    r = subprocess.run([str(gate), "--tier", "replay", "--record", "--binary", str(_BINARY)])
+    if r.returncode != 0:
+        print(f"robomage_check --tier replay --record failed (exit {r.returncode})")
+        return 1
     return 0
 
 

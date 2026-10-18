@@ -1,0 +1,1615 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from delver_vs_mav.rmlog
+REPLAY MODE: Using embedded decks 'delver' / 'mav' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Dragon's Rage Channeler
+Player A draws Wasteland
+Player A draws Scalding Tarn
+Player A draws Daze
+Player A draws Misty Rainforest
+Player A draws Daze
+Player A draws Ponder
+Player B draws Savannah
+Player B draws Swords to Plowshares
+Player B draws Windswept Heath
+Player B draws Talon Gates of Madara
+Player B draws Keen-Eyed Curator
+Player B draws Green Sun's Zenith
+Player B draws Once Upon a Time
+Player A hand:
+Dragon's Rage Channeler
+Daze
+Daze
+Ponder
+Misty Rainforest
+Scalding Tarn
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Green Sun's Zenith
+Keen-Eyed Curator
+Once Upon a Time
+Savannah
+Swords to Plowshares
+Talon Gates of Madara
+Windswept Heath
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Once Upon a Time (alternate cost))
+Player B casts for free (alternate cost)
+Player B casts Once Upon a Time
+Resolving ability (category: Dig)
+Player B looks at the top 5 card(s) of their library.
+| decision 4: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Wasteland
+|   2: Knight of the Reliquary
+|   3: Endurance
+|   4: Ignoble Hierarch
+(REPLAY) [T0 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Wasteland)
+Player B reveals Wasteland and puts it into hand.
+Player B puts 4 card(s) on the bottom of their library.
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+|   3: Thundering Falls
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Ponder
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Knight of the Reliquary
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Talon Gates of Madara
+|   3: Play Wasteland
+|   4: Play Windswept Heath
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Swords to Plowshares
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player B activated Savannah for 1(W)
+Player B casts Swords to Plowshares targeting Dragon's Rage Channeler
+| decision 13: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 14: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Swords to Plowshares
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Swords to Plowshares)
+Targeting choice 0
+| decision 15: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Volcanic Island)
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Swords to Plowshares
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Unholy Heat
+| decision 16: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Unholy Heat on top of library)
+Resolving ability (category: Counter)
+Swords to Plowshares's controller may pay {1} to save it:
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Swords to Plowshares is countered)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Swords to Plowshares is countered))
+Swords to Plowshares is countered
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Unholy Heat
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+|   2: Cast Ponder
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Volcanic Island for 1(R)
+Player A casts Unholy Heat targeting Dragon's Rage Channeler
+Dragon's Rage Channeler triggered
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Scalding Tarn
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Scalding Tarn on top of library
+|   1: Put Scalding Tarn into graveyard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Scalding Tarn on top of library)
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 2 damage to Dragon's Rage Channeler
+Dragon's Rage Channeler is destroyed (lethal damage)
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Wasteland
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Talon Gates of Madara
+|   2: Play Wasteland
+|   3: Play Wasteland
+|   4: Play Windswept Heath
+|   5: Cast Green Sun's Zenith
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Talon Gates of Madara)
+Player B played Talon Gates of Madara
+Choose target for Talon Gates of Madara:
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (No target)
+Targeting choice 0
+Talon Gates of Madara triggered
+Resolving ability (category: Phases)
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (X = 1)
+Player B chooses X = 1
+Player B activated Savannah for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Green Sun's Zenith
+| decision 28: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 29: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Green Sun's Zenith
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Green Sun's Zenith)
+Targeting choice 0
+| decision 30: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Volcanic Island
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Volcanic Island)
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Green Sun's Zenith
+Resolving ability (category: Counter)
+Green Sun's Zenith's controller may pay {1} to save it:
+| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't pay (Green Sun's Zenith is countered)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't pay (Green Sun's Zenith is countered))
+Green Sun's Zenith is countered
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Scalding Tarn
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Scalding Tarn
+|   3: Play Scalding Tarn
+|   4: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mishra's Bauble
+|   1: Volcanic Island
+|   2: Murktide Regent
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Volcanic Island)
+Choose which card goes 2 from top:
+| decision 35: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Mishra's Bauble
+|   1: Murktide Regent
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Mishra's Bauble)
+| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Murktide Regent
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Noble Hierarch
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Play Windswept Heath
+|   4: Cast Noble Hierarch
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Noble Hierarch)
+Player B activated Savannah for 1(G)
+Player B casts Noble Hierarch
+Noble Hierarch enters the battlefield
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Play Windswept Heath
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Volcanic Island
+|   1: Savannah
+|   2: Talon Gates of Madara
+|   3: Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Volcanic Island)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy)
+Volcanic Island is destroyed
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Mishra's Bauble
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+|   4: Cast Mishra's Bauble
+(REPLAY) [T6 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scalding Tarn)
+Player A played Scalding Tarn
+| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 44: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+|   4: Thundering Falls
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Windswept Heath
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Scalding Tarn
+Player B draws Windswept Heath
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Windswept Heath
+|   3: Play Windswept Heath
+|   4: Cast Keen-Eyed Curator
+|   5: Cast Knight of the Reliquary
+(REPLAY) [T7 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Keen-Eyed Curator)
+Player B activated Noble Hierarch for 1(G)
+Player B activated Savannah for 1(G)
+Player B casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Windswept Heath
+|   3: Play Windswept Heath
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Mishra's Bauble
+|   2: Daze
+|   3: Unholy Heat
+|   4: Ponder
+|   5: Volcanic Island
+|   6: Misty Rainforest
+|   7: Scalding Tarn
+|   8: Green Sun's Zenith
+|   9: Once Upon a Time
+|   10: Swords to Plowshares
+|   11: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player B activated Wasteland for 1(C)
+Player B's Keen-Eyed Curator ability targeting Dragon's Rage Channeler is on the stack
+| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Dragon's Rage Channeler is moved to exile
+| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Mishra's Bauble
+|   1: Daze
+|   2: Unholy Heat
+|   3: Ponder
+|   4: Volcanic Island
+|   5: Misty Rainforest
+|   6: Scalding Tarn
+|   7: Green Sun's Zenith
+|   8: Once Upon a Time
+|   9: Swords to Plowshares
+|   10: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Mishra's Bauble)
+Targeting choice 0
+Player B activated Talon Gates of Madara for 1(C)
+Player B's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+Resolving ability (category: ChangeZone)
+Mishra's Bauble is moved to exile
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Ponder
+| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+|   4: Cast Ponder
+(REPLAY) [T8 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 55: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Daze
+|   1: Wasteland
+|   2: Delver of Secrets
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Wasteland)
+Choose which card goes 2 from top:
+| decision 56: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Daze
+|   1: Delver of Secrets
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Daze)
+| decision 57: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Delver of Secrets
+| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Scalding Tarn
+|   3: Play Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scalding Tarn)
+Player A played Scalding Tarn
+| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mountain
+|   3: Volcanic Island
+|   4: Thundering Falls
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Delver of Secrets
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Delver of Secrets)
+Player A activated Volcanic Island for 1(U)
+Player A casts Delver of Secrets
+Delver of Secrets enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 62: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Green Sun's Zenith
+| decision 63: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Play Windswept Heath
+|   3: Cast Green Sun's Zenith
+|   4: Cast Knight of the Reliquary
+|   5: Activate Keen-Eyed Curator (ChangeZone)
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Green Sun's Zenith)
+Choose X value (0-3):
+| decision 65: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+|   2: X = 2
+|   3: X = 3
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (X = 3)
+Player B chooses X = 3
+Player B activated Noble Hierarch for 1(G)
+Player B activated Wasteland for 1(C)
+Player B activated Savannah for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Birds of Paradise
+|   2: Collector Ouphe
+|   3: Dryad Arbor
+|   4: Endurance
+|   5: Ignoble Hierarch
+|   6: Keen-Eyed Curator
+|   7: Knight of the Reliquary
+|   8: Noble Hierarch
+|   9: Scryb Ranger
+|   10: Scythecat Cub
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Endurance)
+Player B shuffles their library
+Player B puts Endurance to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+Choose target for Endurance:
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+|   1: Player A (17 life)
+|   2: Player B (20 life)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Player A (17 life))
+Targeting choice 1
+Endurance triggered
+Resolving ability (category: ChangeZoneAll)
+Player A moves Ponder to the bottom of their library
+Player A moves Misty Rainforest to the bottom of their library
+Player A moves Scalding Tarn to the bottom of their library
+Player A moves Unholy Heat to the bottom of their library
+Player A moves Volcanic Island to the bottom of their library
+Player A moves Daze to the bottom of their library
+Player A moves Daze to the bottom of their library
+Player A moves Scalding Tarn to the bottom of their library
+Player A moves Ponder to the bottom of their library
+Player A moves 9 card(s) to the bottom of their library
+| decision 68: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Play Windswept Heath
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Windswept Heath)
+Player B played Windswept Heath
+| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Windswept Heath (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 70: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Plains
+|   4: Savannah
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 71: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 72: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Green Sun's Zenith
+|   1: Once Upon a Time
+|   2: Swords to Plowshares
+|   3: Wasteland
+|   4: Windswept Heath
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Green Sun's Zenith)
+Targeting choice 0
+Player B activated Savannah for 1(G)
+Player B's Keen-Eyed Curator ability targeting Green Sun's Zenith is on the stack
+Resolving ability (category: ChangeZone)
+Green Sun's Zenith is moved to exile
+
+--- Declare Attackers (Player B) ---
+| decision 73: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [3/3]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [3/3])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player A
+| decision 74: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [4/4]
+Your creatures:
+| decision 75: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 4 damage to Player A (now at 13 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Brainstorm
+| decision 76: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Don't reveal)
+Player A draws Brainstorm
+| decision 77: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T10 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Volcanic Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Ponder
+Player A draws Murktide Regent
+Player A draws Lightning Bolt
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 78: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Murktide Regent
+|   1: Murktide Regent
+|   2: Lightning Bolt
+|   3: Ponder
+|   4: Scalding Tarn
+|   5: Wasteland
+(REPLAY) [T10 | Draw | Player A] Input: 4
+| >> Player A: 4 (Scalding Tarn)
+Player A puts Scalding Tarn to top of library
+Player A chooses a card from Player A hand:
+| decision 79: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Murktide Regent
+|   1: Murktide Regent
+|   2: Lightning Bolt
+|   3: Ponder
+|   4: Wasteland
+(REPLAY) [T10 | Draw | Player A] Input: 4
+| >> Player A: 4 (Wasteland)
+Player A puts Wasteland to top of library
+| decision 80: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T10 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 81: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Player B (19 life)
+|   1: Player A (13 life)
+|   2: Endurance
+|   3: Keen-Eyed Curator
+|   4: Noble Hierarch
+|   5: Delver of Secrets
+(REPLAY) [T10 | Draw | Player A] Input: 3
+| >> Player A: 3 (Keen-Eyed Curator)
+Targeting choice 3
+Player A activated Volcanic Island for 1(R)
+Player A casts Lightning Bolt targeting Keen-Eyed Curator
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Keen-Eyed Curator
+Keen-Eyed Curator is destroyed (lethal damage)
+
+--- Declare Attackers (Player A) ---
+| decision 82: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 12 (Player B) --------
+| decision 83: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Scryb Ranger
+| decision 84: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scryb Ranger
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Scryb Ranger)
+Player B activated Noble Hierarch for 1(G)
+Player B activated Wasteland for 1(C)
+Player B casts Scryb Ranger
+Scryb Ranger enters the battlefield
+| decision 85: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 86: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Cast Knight of the Reliquary
+|   3: Activate Scryb Ranger (Untap)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Knight of the Reliquary)
+Player B activated Savannah for 1(W)
+Player B activated Savannah for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Knight of the Reliquary
+| decision 87: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 88: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+|   1: Endurance
+|   2: Noble Hierarch
+|   3: Scryb Ranger
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets)
+Targeting choice 0
+| decision 89: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+|   1: Return Savannah to hand
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Delver of Secrets is on the stack
+Resolving ability (category: Untap)
+Delver of Secrets untaps
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+| decision 90: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Windswept Heath
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+
+--- Declare Attackers (Player B) ---
+| decision 91: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Endurance [3/4]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Endurance [3/4])
+Endurance attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+| decision 92: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Endurance -> Player A
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Endurance gets +1/+1 until end of turn.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Endurance [4/5]
+Your creatures:
+| decision 93: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T11 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Endurance deals 4 damage to Player A (now at 9 life)
+--- End Combat Damage ---
+
+
+-------- TURN 13 (Player A) --------
+Delver of Secrets triggered
+| decision 94: Player B (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T12 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Top card of library: Wasteland
+| decision 95: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Don't reveal)
+| decision 96: Player B (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T12 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Wasteland
+| decision 97: Player B (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T12 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 98: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Ponder
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+| decision 99: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T12 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 100: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Delver of Secrets
+|   1: Endurance
+|   2: Knight of the Reliquary
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets)
+Targeting choice 0
+| decision 101: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Return Savannah to hand
+|   1: Return Savannah to hand
+(REPLAY) [T12 | First Main | Player B] Input: 1
+| >> Player B: 1 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Delver of Secrets is on the stack
+Resolving ability (category: Untap)
+Delver of Secrets untaps
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 102: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Scalding Tarn
+|   1: Thundering Falls
+|   2: Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Scalding Tarn)
+Choose which card goes 2 from top:
+| decision 103: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thundering Falls
+|   1: Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thundering Falls)
+| decision 104: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Wasteland
+| decision 105: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 106: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 107: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Savannah
+|   1: Talon Gates of Madara
+|   2: Wasteland
+|   3: Volcanic Island
+|   4: Volcanic Island
+|   5: Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Savannah)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Savannah is on the stack
+| decision 108: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Savannah for (G)
+|   2: Tap Savannah for (W)
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Savannah is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 109: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 14 (Player B) --------
+| decision 110: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wooded Foothills
+| decision 111: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 112: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Windswept Heath
+|   3: Play Wooded Foothills
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 113: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 114: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Savannah)
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+| decision 115: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 116: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Volcanic Island
+|   1: Volcanic Island
+|   2: Talon Gates of Madara
+|   3: Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Volcanic Island)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy)
+Volcanic Island is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 117: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Gaea's Cradle
+|   4: Horizon Canopy
+|   5: Karakas
+|   6: Plains
+|   7: Savannah
+|   8: Wasteland
+|   9: Windswept Heath
+|   10: Wooded Foothills
+(REPLAY) [T13 | First Main | Player B] Input: 7
+| >> Player B: 7 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 118: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 119: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+|   1: Endurance
+|   2: Knight of the Reliquary
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets)
+Targeting choice 0
+| decision 120: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Delver of Secrets is on the stack
+Resolving ability (category: Untap)
+Delver of Secrets untaps
+
+--- Declare Attackers (Player B) ---
+| decision 121: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Endurance [3/4]
+|   1: Noble Hierarch [0/1]
+|   2: Scryb Ranger [1/1]
+|   3: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Endurance [3/4])
+Endurance attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+| decision 122: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch [0/1]
+|   1: Scryb Ranger [1/1]
+|   2: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 123: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch [0/1]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  Endurance -> Player A
+  Scryb Ranger -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Endurance [3/4]
+  1: Scryb Ranger [1/1]
+Your creatures:
+| decision 124: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Endurance deals 3 damage to Player A (now at 6 life)
+  Scryb Ranger deals 1 damage to Player A (now at 5 life)
+--- End Combat Damage ---
+
+
+-------- TURN 15 (Player A) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Thundering Falls
+| decision 125: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Reveal)
+Revealed: Thundering Falls
+Player A draws Thundering Falls
+| decision 126: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Thundering Falls
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 127: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 128: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Talon Gates of Madara
+|   1: Volcanic Island
+|   2: Wasteland
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Talon Gates of Madara)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Talon Gates of Madara is on the stack
+| decision 129: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Talon Gates of Madara for (C)
+|   2: Tap Talon Gates of Madara for (W)
+|   3: Tap Talon Gates of Madara for (U)
+|   4: Tap Talon Gates of Madara for (B)
+|   5: Tap Talon Gates of Madara for (R)
+|   6: Tap Talon Gates of Madara for (G)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Talon Gates of Madara is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 130: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Delver of Secrets [1/1])
+Delver of Secrets attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Delver of Secrets [1/1] -> Player B
+| decision 131: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Delver of Secrets -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Delver of Secrets [1/1]
+Your creatures:
+| decision 132: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Noble Hierarch [0/1]
+|   1: Confirm blockers
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player B (now at 18 life)
+--- End Combat Damage ---
+
+
+-------- TURN 16 (Player B) --------
+Player B draws Life from the Loam
+| decision 133: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Windswept Heath
+|   3: Play Wooded Foothills
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 134: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Activate Knight of the Reliquary (ChangeZone)
+|   3: Activate Scryb Ranger (Untap)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 135: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Savannah
+|   2: Talon Gates of Madara
+|   3: Wasteland
+|   4: Windswept Heath
+(REPLAY) [T15 | First Main | Player B] Input: 3
+| >> Player B: 3 (Wasteland)
+Targeting choice 4
+Choose target for Life from the Loam:
+| decision 136: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Savannah
+|   2: Talon Gates of Madara
+|   3: Wasteland
+|   4: Windswept Heath
+(REPLAY) [T15 | First Main | Player B] Input: 3
+| >> Player B: 3 (Wasteland)
+Targeting choice 4
+Choose target for Life from the Loam:
+| decision 137: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Savannah
+|   2: Talon Gates of Madara
+|   3: Windswept Heath
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(G)
+Player B activated Savannah for 1(G)
+Player B casts Life from the Loam targeting Wasteland
+| decision 138: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 139: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Savannah
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Savannah)
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 140: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Forest
+|   3: Gaea's Cradle
+|   4: Horizon Canopy
+|   5: Karakas
+|   6: Plains
+|   7: Savannah
+|   8: Wasteland
+|   9: Windswept Heath
+|   10: Wooded Foothills
+(REPLAY) [T15 | First Main | Player B] Input: 7
+| >> Player B: 7 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 141: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 142: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Delver of Secrets
+|   1: Endurance
+|   2: Knight of the Reliquary
+|   3: Noble Hierarch
+|   4: Scryb Ranger
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Delver of Secrets)
+Targeting choice 0
+| decision 143: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Savannah to hand
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Savannah to hand)
+Player B returns Savannah to hand
+Player B's Scryb Ranger ability targeting Delver of Secrets is on the stack
+Resolving ability (category: Untap)
+Delver of Secrets untaps
+Resolving ability (category: ChangeZone)
+Wasteland is moved to hand
+Wasteland is moved to hand
+
+--- Declare Attackers (Player B) ---
+| decision 144: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Endurance [3/4]
+|   1: Scryb Ranger [1/1]
+|   2: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Endurance [3/4])
+Endurance attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+| decision 145: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scryb Ranger [1/1])
+Scryb Ranger attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+  [attacking] Scryb Ranger [1/1] -> Player A
+| decision 146: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Endurance -> Player A
+  Scryb Ranger -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Endurance [3/4]
+  1: Scryb Ranger [1/1]
+Your creatures:
+| decision 147: Player A (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Delver of Secrets [1/1]
+|   1: Confirm blockers
+(REPLAY) [T15 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Endurance deals 3 damage to Player A (now at 2 life)
+  Scryb Ranger deals 1 damage to Player A (now at 1 life)
+--- End Combat Damage ---
+
+
+-------- TURN 17 (Player A) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal)
+Top card of library: Scalding Tarn
+| decision 148: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Don't reveal
+|   1: Reveal
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Don't reveal)
+Player A draws Scalding Tarn
+| decision 149: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Thundering Falls
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Scalding Tarn)
+Player A played Scalding Tarn
+| decision 150: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scalding Tarn (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

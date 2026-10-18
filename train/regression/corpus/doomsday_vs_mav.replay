@@ -1,0 +1,1751 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from doomsday_vs_mav.rmlog
+REPLAY MODE: Using embedded decks 'doomsday' / 'mav' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Thoughtseize
+Player A draws Misty Rainforest
+Player A draws Island
+Player A draws Street Wraith
+Player A draws Underground Sea
+Player A draws Edge of Autumn
+Player A draws Ponder
+Player B draws Savannah
+Player B draws Swords to Plowshares
+Player B draws Windswept Heath
+Player B draws Talon Gates of Madara
+Player B draws Keen-Eyed Curator
+Player B draws Green Sun's Zenith
+Player B draws Once Upon a Time
+Player A hand:
+Thoughtseize
+Street Wraith
+Edge of Autumn
+Ponder
+Underground Sea
+Island
+Misty Rainforest
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Polluted Delta
+Player A draws Thoughtseize
+Player A draws Force of Will
+Player A draws Thoughtseize
+Player A draws Polluted Delta
+Player A draws Brainstorm
+Player A draws Dark Ritual
+Player B hand:
+Green Sun's Zenith
+Keen-Eyed Curator
+Once Upon a Time
+Savannah
+Swords to Plowshares
+Talon Gates of Madara
+Windswept Heath
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Force of Will
+Thoughtseize
+Thoughtseize
+Dark Ritual
+Brainstorm
+Polluted Delta
+Polluted Delta
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Thoughtseize
+|   2: Thoughtseize
+|   3: Dark Ritual
+|   4: Brainstorm
+|   5: Polluted Delta
+|   6: Polluted Delta
+(REPLAY) [T0 | Untap | Player A] Input: 4
+| >> Player A: 4 (Brainstorm)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Once Upon a Time (alternate cost))
+Player B casts for free (alternate cost)
+Player B casts Once Upon a Time
+Resolving ability (category: Dig)
+Player B looks at the top 5 card(s) of their library.
+| decision 6: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Wasteland
+|   2: Knight of the Reliquary
+|   3: Endurance
+|   4: Ignoble Hierarch
+(REPLAY) [T0 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Wasteland)
+Player B reveals Wasteland and puts it into hand.
+Player B puts 4 card(s) on the bottom of their library.
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Polluted Delta
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+|   4: Island
+(REPLAY) [T0 | First Main | Player A] Input: 3
+| >> Player A: 3 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Thoughtseize
+|   3: Cast Dark Ritual
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Green Sun's Zenith
+  Keen-Eyed Curator
+  Savannah
+  Swords to Plowshares
+  Talon Gates of Madara
+  Wasteland
+  Windswept Heath
+Player A chooses a card to discard:
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Green Sun's Zenith
+|   1: Keen-Eyed Curator
+|   2: Swords to Plowshares
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Swords to Plowshares)
+Player B discards Swords to Plowshares
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 17)
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Knight of the Reliquary
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Talon Gates of Madara
+|   3: Play Wasteland
+|   4: Play Windswept Heath
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Savannah)
+Player B played Savannah
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 15: Player B (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+(REPLAY) [T1 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+| decision 16: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Misty Rainforest
+| decision 17: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Misty Rainforest
+|   3: Cast Thoughtseize
+|   4: Cast Dark Ritual
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (17 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Green Sun's Zenith
+  Keen-Eyed Curator
+  Knight of the Reliquary
+  Talon Gates of Madara
+  Wasteland
+  Windswept Heath
+Player A chooses a card to discard:
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Green Sun's Zenith
+|   1: Keen-Eyed Curator
+|   2: Knight of the Reliquary
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Knight of the Reliquary)
+Player B discards Knight of the Reliquary
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 15)
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Misty Rainforest
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Polluted Delta)
+Player A played Polluted Delta
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Polluted Delta (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+|   4: Island
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 25: Player A (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 26: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 27: Player A (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 28: Player A (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 29: Player A (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 30: Player A (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Wasteland
+| decision 31: Player A (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 32: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Talon Gates of Madara
+|   2: Play Wasteland
+|   3: Play Wasteland
+|   4: Play Windswept Heath
+|   5: Cast Green Sun's Zenith
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Talon Gates of Madara)
+Player B played Talon Gates of Madara
+Choose target for Talon Gates of Madara:
+| decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (No target)
+Targeting choice 0
+Talon Gates of Madara triggered
+| decision 34: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Phases)
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 36: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (X = 1)
+Player B chooses X = 1
+Player B activated Savannah for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Green Sun's Zenith
+| decision 37: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Birds of Paradise
+|   2: Dryad Arbor
+|   3: Ignoble Hierarch
+|   4: Noble Hierarch
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Birds of Paradise)
+Player B shuffles their library
+Player B puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+| decision 39: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 41: Player A (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 42: Player A (game 0, turn 3, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 43: Player A (game 0, turn 3, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 44: Player A (game 0, turn 3, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T3 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 5 (Player A) --------
+| decision 45: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Daze
+| decision 46: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Cast Dark Ritual
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 48: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+| decision 49: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 50: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+|   3: Island
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Underground Sea)
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+| decision 51: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 52: Player A (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 53: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 54: Player A (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 55: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 56: Player A (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T4 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 57: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Noble Hierarch
+| decision 58: Player A (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 59: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Play Windswept Heath
+|   4: Cast Keen-Eyed Curator
+|   5: Cast Noble Hierarch
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Keen-Eyed Curator)
+Player B activated Birds of Paradise for 1(G)
+Player B activated Savannah for 1(G)
+Player B casts Keen-Eyed Curator
+| decision 60: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Daze
+|   3: Cast Daze (alternate cost)
+|   4: Cast Dark Ritual
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Keen-Eyed Curator enters the battlefield
+| decision 61: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Play Windswept Heath
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 62: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Noble Hierarch
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Noble Hierarch)
+Player B activated Wasteland for 1(C)
+Player B activated Talon Gates of Madara for 1(G)
+Player B casts Noble Hierarch
+| decision 63: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Daze
+|   3: Cast Daze (alternate cost)
+|   4: Cast Dark Ritual
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Noble Hierarch enters the battlefield
+| decision 64: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 65: Player A (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 66: Player A (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 67: Player A (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 68: Player A (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 69: Player A (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T5 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 70: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Thoughtseize
+| decision 71: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 72: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+|   2: Cast Dark Ritual
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 73: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (13 life)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A casts Thoughtseize targeting Player B
+| decision 74: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Daze
+|   3: Cast Daze (alternate cost)
+|   4: Cast Dark Ritual
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Wasteland
+  Windswept Heath
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 11)
+| decision 75: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 76: Player A (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 77: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 78: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 79: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 80: Player A (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T6 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 81: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 82: Player A (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Wooded Foothills
+| decision 83: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 84: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 85: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Windswept Heath
+|   3: Play Wooded Foothills
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 86: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 87: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+|   1: Polluted Delta
+|   2: Misty Rainforest
+|   3: Knight of the Reliquary
+|   4: Once Upon a Time
+|   5: Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thoughtseize)
+Targeting choice 0
+Player B activated Birds of Paradise for 1(W)
+Player B's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
+| decision 88: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 89: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Underground Sea
+|   1: Underground Sea
+|   2: Underground Sea
+|   3: Savannah
+|   4: Talon Gates of Madara
+|   5: Wasteland
+|   6: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Underground Sea)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Underground Sea is on the stack
+| decision 90: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 91: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Underground Sea
+|   1: Underground Sea
+|   2: Underground Sea
+|   3: Savannah
+|   4: Talon Gates of Madara
+|   5: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Underground Sea)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Underground Sea is on the stack
+| decision 92: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 93: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Underground Sea is destroyed
+| decision 94: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 95: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Destroy fizzles
+| decision 96: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 97: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thoughtseize is moved to exile
+| decision 98: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 99: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+|   1: Polluted Delta
+|   2: Underground Sea
+|   3: Misty Rainforest
+|   4: Knight of the Reliquary
+|   5: Once Upon a Time
+|   6: Swords to Plowshares
+|   7: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thoughtseize)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(W)
+Player B's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
+| decision 100: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 101: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thoughtseize is moved to exile
+| decision 102: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 103: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thoughtseize
+|   1: Polluted Delta
+|   2: Underground Sea
+|   3: Misty Rainforest
+|   4: Knight of the Reliquary
+|   5: Once Upon a Time
+|   6: Swords to Plowshares
+|   7: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thoughtseize)
+Targeting choice 0
+Player B activated Savannah for 1(G)
+Player B's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
+| decision 104: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 105: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thoughtseize is moved to exile
+| decision 106: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 107: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Polluted Delta
+|   1: Underground Sea
+|   2: Misty Rainforest
+|   3: Knight of the Reliquary
+|   4: Once Upon a Time
+|   5: Swords to Plowshares
+|   6: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Polluted Delta)
+Targeting choice 0
+Player B activated Talon Gates of Madara for 1(C)
+Player B's Keen-Eyed Curator ability targeting Polluted Delta is on the stack
+| decision 108: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Polluted Delta is moved to exile
+| decision 109: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 110: Player A (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 111: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [3/3]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [3/3])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player A
+| decision 112: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+Noble Hierarch triggered
+| decision 113: Player A (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+| decision 114: Player A (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 115: Player A (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 4 damage to Player A (now at 7 life)
+--- End Combat Damage ---
+
+| decision 116: Player A (game 0, turn 7, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 117: Player A (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 118: Player A (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 119: Player A (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T7 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+| decision 120: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Island
+| decision 121: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 122: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Cast Dark Ritual
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Island)
+Player A played Island
+| decision 123: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 124: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 125: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 126: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 127: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 128: Player A (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T8 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+| decision 129: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 130: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Dryad Arbor
+| decision 131: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 132: Player A (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 133: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dryad Arbor
+|   2: Play Windswept Heath
+|   3: Play Wooded Foothills
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dryad Arbor)
+Player B played Dryad Arbor
+| decision 134: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 135: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Polluted Delta
+|   1: Underground Sea
+|   2: Misty Rainforest
+|   3: Knight of the Reliquary
+|   4: Once Upon a Time
+|   5: Swords to Plowshares
+|   6: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Polluted Delta)
+Targeting choice 0
+Player B activated Birds of Paradise for 1(W)
+Player B's Keen-Eyed Curator ability targeting Polluted Delta is on the stack
+| decision 136: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 137: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Polluted Delta is moved to exile
+| decision 138: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 139: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Underground Sea
+|   1: Misty Rainforest
+|   2: Knight of the Reliquary
+|   3: Once Upon a Time
+|   4: Swords to Plowshares
+|   5: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Underground Sea)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(W)
+Player B's Keen-Eyed Curator ability targeting Underground Sea is on the stack
+| decision 140: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 141: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Underground Sea is moved to exile
+| decision 142: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 143: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Misty Rainforest
+|   1: Knight of the Reliquary
+|   2: Once Upon a Time
+|   3: Swords to Plowshares
+|   4: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Misty Rainforest)
+Targeting choice 0
+Player B activated Savannah for 1(G)
+Player B's Keen-Eyed Curator ability targeting Misty Rainforest is on the stack
+| decision 144: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 145: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Misty Rainforest is moved to exile
+| decision 146: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 147: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Knight of the Reliquary
+|   1: Once Upon a Time
+|   2: Swords to Plowshares
+|   3: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Knight of the Reliquary)
+Targeting choice 0
+Player B activated Talon Gates of Madara for 1(C)
+Player B's Keen-Eyed Curator ability targeting Knight of the Reliquary is on the stack
+| decision 148: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Knight of the Reliquary is moved to exile
+| decision 149: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 150: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 151: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [3/3]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [3/3])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player A
+| decision 152: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+Noble Hierarch triggered
+| decision 153: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+| decision 154: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 155: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 4 damage to Player A (now at 3 life)
+--- End Combat Damage ---
+
+| decision 156: Player A (game 0, turn 9, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 157: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 158: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 159: Player A (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T9 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+| decision 160: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Dark Ritual
+| decision 161: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 162: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 163: Player A (game 0, turn 10, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 164: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 165: Player A (game 0, turn 10, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 166: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 167: Player A (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T10 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 12 (Player B) --------
+| decision 168: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 169: Player A (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Noble Hierarch
+| decision 170: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 171: Player A (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 172: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Play Wooded Foothills
+|   3: Cast Noble Hierarch
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Noble Hierarch)
+Player B activated Dryad Arbor for 1(G)
+Player B casts Noble Hierarch
+| decision 173: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 174: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Daze
+|   3: Cast Daze (alternate cost)
+|   4: Cast Dark Ritual
+|   5: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Noble Hierarch enters the battlefield
+| decision 175: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Play Wooded Foothills
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Windswept Heath)
+Player B played Windswept Heath
+| decision 176: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 177: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Once Upon a Time
+|   1: Swords to Plowshares
+|   2: Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Once Upon a Time)
+Targeting choice 0
+Player B activated Birds of Paradise for 1(W)
+Player B's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+| decision 178: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Windswept Heath (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+| decision 179: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 180: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 181: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+|   2: Plains
+|   3: Savannah
+(REPLAY) [T11 | First Main | Player B] Input: 3
+| >> Player B: 3 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 182: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 183: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Once Upon a Time is moved to exile
+Keen-Eyed Curator gains 4/4 Trample (always)
+| decision 184: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 185: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Wasteland
+|   2: Windswept Heath
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Swords to Plowshares)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(W)
+Player B's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
+| decision 186: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 187: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Swords to Plowshares is moved to exile
+| decision 188: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 189: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Wasteland
+|   1: Windswept Heath
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Wasteland)
+Targeting choice 0
+Player B activated Savannah for 1(G)
+Player B's Keen-Eyed Curator ability targeting Wasteland is on the stack
+| decision 190: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 191: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Wasteland is moved to exile
+| decision 192: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 193: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Wasteland
+|   1: Windswept Heath
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Wasteland)
+Targeting choice 0
+Player B activated Savannah for 1(G)
+Player B's Keen-Eyed Curator ability targeting Wasteland is on the stack
+| decision 194: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 195: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Wasteland is moved to exile
+| decision 196: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 197: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Windswept Heath
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Windswept Heath)
+Targeting choice 0
+Player B activated Talon Gates of Madara for 1(C)
+Player B's Keen-Eyed Curator ability targeting Windswept Heath is on the stack
+| decision 198: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Windswept Heath is moved to exile
+| decision 199: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 200: Player A (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 201: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [7/7]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [7/7])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [7/7] -> Player A
+| decision 202: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 203: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Noble Hierarch (ExaltedBonus)
+|   1: Noble Hierarch (ExaltedBonus)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Noble Hierarch (ExaltedBonus))
+Noble Hierarch triggered
+Noble Hierarch triggered
+| decision 204: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+| decision 205: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ExaltedBonus)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+| decision 206: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 207: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Cast Dark Ritual
+(REPLAY) [T11 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 9 damage to Player A (now at -6 life)
+--- End Combat Damage ---
+
+
+Player A has -6 life - Player B wins!
+GAME_RESULT: 1 Player B wins

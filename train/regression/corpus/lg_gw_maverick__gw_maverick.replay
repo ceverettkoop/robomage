@@ -1,0 +1,1904 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_gw_maverick__gw_maverick.rmlog
+REPLAY MODE: Using embedded decks 'league/gw_maverick' / 'league/gw_maverick' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Forest
+Player A draws Wasteland
+Player A draws Wasteland
+Player A draws Once Upon a Time
+Player A draws Thalia, Guardian of Thraben
+Player A draws Once Upon a Time
+Player A draws Savannah
+Player B draws Once Upon a Time
+Player B draws Scythecat Cub
+Player B draws Wasteland
+Player B draws Swords to Plowshares
+Player B draws Green Sun's Zenith
+Player B draws Dryad Arbor
+Player B draws Misty Rainforest
+Player A hand:
+Forest
+Once Upon a Time
+Once Upon a Time
+Savannah
+Thalia, Guardian of Thraben
+Wasteland
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Dryad Arbor
+Green Sun's Zenith
+Misty Rainforest
+Once Upon a Time
+Scythecat Cub
+Swords to Plowshares
+Wasteland
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+|   2: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time (alternate cost))
+Player A casts for free (alternate cost)
+Player A casts Once Upon a Time
+| decision 4: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time (alternate cost)
+(REPLAY) [T0 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Once Upon a Time (alternate cost))
+Player B casts for free (alternate cost)
+Player B casts Once Upon a Time
+Resolving ability (category: Dig)
+Player B looks at the top 5 card(s) of their library.
+| decision 5: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Karakas
+|   3: Badgermole Cub
+|   4: Gaea's Cradle
+|   5: Horizon Canopy
+(REPLAY) [T0 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Thalia, Guardian of Thraben)
+Player B reveals Thalia, Guardian of Thraben and puts it into hand.
+Player B puts 4 card(s) on the bottom of their library.
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 6: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Badgermole Cub
+|   2: Endurance
+|   3: Collector Ouphe
+(REPLAY) [T0 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Badgermole Cub)
+Player A reveals Badgermole Cub and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Savannah
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Keen-Eyed Curator
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dryad Arbor
+|   2: Play Misty Rainforest
+|   3: Play Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dryad Arbor)
+Player B played Dryad Arbor
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Swords to Plowshares
+| decision 9: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Savannah)
+Player A played Savannah
+| decision 10: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Badgermole Cub
+|   2: Cast Once Upon a Time
+|   3: Cast Swords to Plowshares
+|   4: Cast Thalia, Guardian of Thraben
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Badgermole Cub)
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Badgermole Cub
+Badgermole Cub enters the battlefield
+Choose target for Badgermole Cub:
+| decision 11: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Forest
+|   1: Savannah
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Forest)
+Targeting choice 0
+Badgermole Cub triggered
+Resolving ability (category: Earthbend)
+Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Thalia, Guardian of Thraben
+| decision 12: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Wasteland
+|   3: Cast Green Sun's Zenith
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Misty Rainforest)
+Player B played Misty Rainforest
+| decision 13: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Misty Rainforest (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+|   2: Savannah
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Savannah)
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Keen-Eyed Curator
+|   3: Cast Scythecat Cub
+|   4: Cast Swords to Plowshares
+|   5: Cast Thalia, Guardian of Thraben
+|   6: Cast Thalia, Guardian of Thraben
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (X = 1)
+Player B chooses X = 1
+Player B activated Dryad Arbor for 1(G)
+Player B activated Savannah for 1(G)
+Player B casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Birds of Paradise
+|   2: Noble Hierarch
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Birds of Paradise)
+Player B shuffles their library
+Player B puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 18: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time)
+Badgermole Cub adds an additional 1(G).
+Player A activated Forest for 1(G)
+Player A casts Once Upon a Time
+| decision 19: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 20: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Birds of Paradise
+|   1: Dryad Arbor
+|   2: Badgermole Cub
+|   3: Forest
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Dryad Arbor)
+Targeting choice 1
+Player A activated Savannah for 1(W)
+Player A casts Swords to Plowshares targeting Dryad Arbor
+Resolving ability (category: ChangeZone)
+Dryad Arbor is moved to exile
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 20)
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 21: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Thalia, Guardian of Thraben
+|   2: Verdant Catacombs
+|   3: Talon Gates of Madara
+|   4: Noble Hierarch
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Thalia, Guardian of Thraben)
+Player A reveals Thalia, Guardian of Thraben and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+Player A draws Green Sun's Zenith
+| decision 22: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 23: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 24: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Savannah
+|   1: Savannah
+|   2: Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Savannah)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Savannah is on the stack
+Resolving ability (category: Destroy)
+Savannah is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 25: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [2/2])
+Badgermole Cub attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Badgermole Cub [2/2] -> Player B
+| decision 26: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Badgermole Cub -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Badgermole Cub [2/2]
+Your creatures:
+| decision 27: Player B (game 0, turn 4, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Birds of Paradise [0/1]
+|   1: Confirm blockers
+(REPLAY) [T4 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Player B (now at 18 life)
+--- End Combat Damage ---
+
+
+-------- TURN 6 (Player B) --------
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Badgermole Cub
+|   1: Forest
+|   2: Birds of Paradise
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Badgermole Cub)
+Targeting choice 0
+Player B activated Birds of Paradise for 1(W)
+Player B casts Swords to Plowshares targeting Badgermole Cub
+Resolving ability (category: ChangeZone)
+Badgermole Cub is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player A gains 2 life (now at 22)
+Player B draws Gaea's Cradle
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Gaea's Cradle
+|   2: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Gaea's Cradle)
+Player B played Gaea's Cradle
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Gaea's Cradle
+| decision 31: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Gaea's Cradle
+|   2: Play Wasteland
+|   3: Cast Green Sun's Zenith
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Cast Thalia, Guardian of Thraben
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 32: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (X = 1)
+Player A chooses X = 1
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 33: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Birds of Paradise
+|   2: Dryad Arbor
+|   3: Noble Hierarch
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Birds of Paradise)
+Player A shuffles their library
+Player A puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+| decision 34: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Gaea's Cradle
+|   2: Play Wasteland
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Gaea's Cradle)
+Player A played Gaea's Cradle
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Green Sun's Zenith
+| decision 35: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Green Sun's Zenith
+|   3: Cast Keen-Eyed Curator
+|   4: Cast Scythecat Cub
+|   5: Cast Thalia, Guardian of Thraben
+|   6: Cast Thalia, Guardian of Thraben
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Keen-Eyed Curator)
+Player B activated Gaea's Cradle for 1(G)
+Player B activated Birds of Paradise for 1(G)
+Player B casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+| decision 36: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 37: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 38: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Once Upon a Time
+|   1: Swords to Plowshares
+|   2: Wasteland
+|   3: Misty Rainforest
+|   4: Once Upon a Time
+|   5: Savannah
+|   6: Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Once Upon a Time)
+Targeting choice 0
+Player B activated Wasteland for 1(C)
+Player B's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+Resolving ability (category: ChangeZone)
+Once Upon a Time is moved to exile
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Misty Rainforest
+| decision 39: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Wasteland
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Cast Thalia, Guardian of Thraben
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Thalia, Guardian of Thraben)
+Player A activated Birds of Paradise for 1(W)
+Player A activated Forest for 1(G)
+Player A casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+| decision 40: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Wasteland
+|   3: Cast Thalia, Guardian of Thraben
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Thalia, Guardian of Thraben)
+Player A activated Savannah for 1(W)
+Player A activated Gaea's Cradle for 3(G)
+Player A casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
+| decision 41: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Keep Thalia, Guardian of Thraben
+|   1: Keep Thalia, Guardian of Thraben
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Keep Thalia, Guardian of Thraben)
+Thalia, Guardian of Thraben is put into the graveyard (legend rule)
+| decision 42: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 43: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 44: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Savannah
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 45: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 46: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 47: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Forest
+|   2: Thalia, Guardian of Thraben
+|   3: Birds of Paradise
+|   4: Keen-Eyed Curator
+(REPLAY) [T9 | Draw | Player B] Input: 2
+| >> Player B: 2 (Thalia, Guardian of Thraben)
+Targeting choice 2
+Player B activated Birds of Paradise for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Swords to Plowshares targeting Thalia, Guardian of Thraben
+| decision 48: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player A gains 2 life (now at 23)
+| decision 49: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 50: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Green Sun's Zenith
+|   2: Cast Scythecat Cub
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Scythecat Cub)
+Player B activated Gaea's Cradle for 2(G)
+Player B casts Scythecat Cub
+Scythecat Cub enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 51: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [3/3]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [3/3])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player A
+| decision 52: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 3 damage to Player A (now at 20 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+Player A draws Knight of the Reliquary
+| decision 53: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Knight of the Reliquary
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Knight of the Reliquary)
+Player A activated Birds of Paradise for 1(W)
+Player A activated Forest for 1(G)
+Player A activated Gaea's Cradle for 2(G)
+Player A casts Knight of the Reliquary
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+| decision 54: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 55: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 56: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Wasteland
+|   2: Gaea's Cradle
+|   3: Savannah
+|   4: Savannah
+|   5: Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Gaea's Cradle)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Gaea's Cradle is on the stack
+Resolving ability (category: Destroy)
+Gaea's Cradle is destroyed
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+| decision 57: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wasteland
+| decision 58: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 59: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Green Sun's Zenith
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Activate Keen-Eyed Curator (ChangeZone)
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Green Sun's Zenith)
+Choose X value (0-1):
+| decision 60: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (X = 1)
+Player B chooses X = 1
+Player B activated Birds of Paradise for 1(G)
+Player B activated Wasteland for 1(C)
+Player B casts Green Sun's Zenith
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 61: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Noble Hierarch
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Noble Hierarch)
+Player B shuffles their library
+Player B puts Noble Hierarch to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+| decision 62: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+Choose target for Scythecat Cub:
+| decision 63: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keen-Eyed Curator)
+Targeting choice 1
+Scythecat Cub triggered
+| decision 64: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 65: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Savannah
+|   2: Savannah
+|   3: Wasteland
+|   4: Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Gaea's Cradle)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Gaea's Cradle is on the stack
+Resolving ability (category: Destroy)
+Gaea's Cradle is destroyed
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 4/4).
+Resolving ability (category: MultiplyCounter)
+
+--- Declare Attackers (Player B) ---
+| decision 66: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [4/4]
+|   1: Scythecat Cub [2/2]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 13 (Player A) --------
+| decision 67: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Badgermole Cub
+| decision 68: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 69: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Badgermole Cub
+|   2: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Badgermole Cub)
+Player A activated Forest for 1(G)
+Player A activated Birds of Paradise for 1(W)
+Player A casts Badgermole Cub
+| decision 70: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 71: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sacrifice Forest
+|   1: Sacrifice Savannah
+|   2: Sacrifice Savannah
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Forest)
+Player A sacrifices Forest
+Player A's Knight of the Reliquary ability is on the stack
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Forest is moved to the battlefield
+Forest enters tapped.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 72: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bojuka Bog
+|   2: Dryad Arbor
+|   3: Horizon Canopy
+|   4: Karakas
+|   5: Misty Rainforest
+|   6: Plains
+|   7: Savannah
+|   8: Talon Gates of Madara
+|   9: Verdant Catacombs
+|   10: Wasteland
+|   11: Windswept Heath
+(REPLAY) [T12 | First Main | Player A] Input: 7
+| >> Player A: 7 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+Badgermole Cub enters the battlefield
+Choose target for Badgermole Cub:
+| decision 73: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Forest
+|   1: Savannah
+|   2: Savannah
+|   3: Savannah
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Forest)
+Targeting choice 0
+Badgermole Cub triggered
+Resolving ability (category: Earthbend)
+Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+No creatures eligible to attack.
+
+-------- TURN 14 (Player B) --------
+| decision 74: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Scythecat Cub
+| decision 75: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 76: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scythecat Cub
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Scythecat Cub)
+Player B activated Birds of Paradise for 1(G)
+Player B activated Wasteland for 1(C)
+Player B casts Scythecat Cub
+| decision 77: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Scythecat Cub enters the battlefield
+| decision 78: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 79: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Misty Rainforest
+|   2: Once Upon a Time
+|   3: Swords to Plowshares
+|   4: Thalia, Guardian of Thraben
+|   5: Wasteland
+|   6: Gaea's Cradle
+|   7: Misty Rainforest
+|   8: Once Upon a Time
+|   9: Savannah
+|   10: Swords to Plowshares
+|   11: Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Gaea's Cradle)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(W)
+Player B's Keen-Eyed Curator ability targeting Gaea's Cradle is on the stack
+Resolving ability (category: ChangeZone)
+Gaea's Cradle is moved to exile
+
+--- Declare Attackers (Player B) ---
+| decision 80: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [4/4]
+|   1: Scythecat Cub [2/2]
+|   2: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [4/4])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [4/4] -> Player A
+| decision 81: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [4/4] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+| decision 82: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+  Scythecat Cub -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [4/4]
+  1: Scythecat Cub [2/2]
+Your creatures:
+| decision 83: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 4 damage to Player A (now at 16 life)
+  Scythecat Cub deals 2 damage to Player A (now at 14 life)
+--- End Combat Damage ---
+
+
+-------- TURN 15 (Player A) --------
+| decision 84: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Scryb Ranger
+| decision 85: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Scryb Ranger
+|   2: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T14 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Scryb Ranger)
+Badgermole Cub adds an additional 1(G).
+Player A activated Forest for 1(G)
+Player A casts Scryb Ranger
+| decision 86: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Scryb Ranger enters the battlefield
+| decision 87: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 88: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 89: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sacrifice Forest
+|   1: Sacrifice Savannah
+|   2: Sacrifice Savannah
+|   3: Sacrifice Savannah
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Forest)
+Player A sacrifices Forest
+Player A's Knight of the Reliquary ability is on the stack
+Delayed trigger fires.
+| decision 90: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 91: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Badgermole Cub
+|   6: Birds of Paradise
+|   7: Knight of the Reliquary
+|   8: Scryb Ranger
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Keen-Eyed Curator)
+Targeting choice 1
+| decision 92: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Return Savannah to hand
+|   1: Return Savannah to hand
+|   2: Return Savannah to hand
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Savannah to hand)
+Player A returns Savannah to hand
+Player A's Scryb Ranger ability targeting Keen-Eyed Curator is on the stack
+Resolving ability (category: Untap)
+Keen-Eyed Curator untaps
+Resolving ability (category: ChangeZone)
+Forest is moved to the battlefield
+Forest enters tapped.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 93: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bojuka Bog
+|   2: Dryad Arbor
+|   3: Horizon Canopy
+|   4: Karakas
+|   5: Misty Rainforest
+|   6: Plains
+|   7: Talon Gates of Madara
+|   8: Verdant Catacombs
+|   9: Wasteland
+|   10: Windswept Heath
+(REPLAY) [T14 | First Main | Player A] Input: 2
+| >> Player A: 2 (Dryad Arbor)
+Player A shuffles their library
+Player A puts Dryad Arbor to the battlefield
+| decision 94: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Savannah
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Savannah)
+Player A played Savannah
+
+--- Declare Attackers (Player A) ---
+| decision 95: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Birds of Paradise [0/1]
+|   2: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 2
+| >> Player A: 2 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 16 (Player B) --------
+| decision 96: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 97: Player A (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T15 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Bojuka Bog
+| decision 98: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 99: Player A (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T15 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 100: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Bojuka Bog
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Cast Thalia, Guardian of Thraben
+|   4: Activate Keen-Eyed Curator (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thalia, Guardian of Thraben)
+Player B activated Birds of Paradise for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Thalia, Guardian of Thraben
+| decision 101: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 102: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T15 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 103: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Badgermole Cub
+|   6: Birds of Paradise
+|   7: Dryad Arbor
+|   8: Knight of the Reliquary
+|   9: Scryb Ranger
+(REPLAY) [T15 | First Main | Player A] Input: 1
+| >> Player A: 1 (Keen-Eyed Curator)
+Targeting choice 1
+| decision 104: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Dryad Arbor to hand
+|   1: Return Forest to hand
+|   2: Return Savannah to hand
+|   3: Return Savannah to hand
+|   4: Return Savannah to hand
+(REPLAY) [T15 | First Main | Player A] Input: 1
+| >> Player A: 1 (Return Forest to hand)
+Player A returns Forest to hand
+Player A's Scryb Ranger ability targeting Keen-Eyed Curator is on the stack
+| decision 105: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Untap)
+Keen-Eyed Curator untaps
+| decision 106: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Thalia, Guardian of Thraben enters the battlefield
+| decision 107: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Bojuka Bog
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Bojuka Bog)
+Player B played Bojuka Bog
+Bojuka Bog enters tapped.
+Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 108: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bojuka Bog (ChangeZoneAll, targeted)
+|   1: Scythecat Cub (Pump, targeted)
+|   2: Scythecat Cub (Pump, targeted)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Bojuka Bog (ChangeZoneAll, targeted))
+Choose target for Bojuka Bog:
+| decision 109: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (14 life)
+|   1: Player B (18 life)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (14 life))
+Targeting choice 0
+Bojuka Bog triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 110: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Scythecat Cub (Pump, targeted)
+|   1: Scythecat Cub (Pump, targeted)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub (Pump, targeted))
+Choose target for Scythecat Cub:
+| decision 111: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keen-Eyed Curator)
+Targeting choice 1
+Scythecat Cub triggered
+Choose target for Scythecat Cub:
+| decision 112: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keen-Eyed Curator)
+Targeting choice 1
+Scythecat Cub triggered
+| decision 113: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 5/5).
+Resolving ability (category: MultiplyCounter)
+| decision 114: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 6/6).
+Resolving ability (category: MultiplyCounter)
+| decision 115: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZoneAll)
+Player A moves Misty Rainforest to exile
+Player A moves Once Upon a Time to exile
+Player A moves Swords to Plowshares to exile
+Player A moves Thalia, Guardian of Thraben to exile
+Player A moves Wasteland to exile
+Player A moves Wasteland to exile
+Player A moves 6 card(s) to exile
+| decision 116: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Keen-Eyed Curator (ChangeZone))
+Choose target for Keen-Eyed Curator:
+| decision 117: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Gaea's Cradle
+|   1: Misty Rainforest
+|   2: Once Upon a Time
+|   3: Savannah
+|   4: Swords to Plowshares
+|   5: Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Gaea's Cradle)
+Targeting choice 0
+Player B activated Noble Hierarch for 1(W)
+Player B's Keen-Eyed Curator ability targeting Gaea's Cradle is on the stack
+Resolving ability (category: ChangeZone)
+Gaea's Cradle is moved to exile
+
+--- Declare Attackers (Player B) ---
+| decision 118: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [6/6]
+|   1: Scythecat Cub [2/2]
+|   2: Scythecat Cub [2/2]
+|   3: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [6/6])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [6/6] -> Player A
+| decision 119: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Scythecat Cub [2/2]
+|   2: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [6/6] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+| decision 120: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [6/6] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+| decision 121: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+  Scythecat Cub -> Player A
+  Scythecat Cub -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [6/6]
+  1: Scythecat Cub [2/2]
+  2: Scythecat Cub [2/2]
+Your creatures:
+| decision 122: Player A (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Birds of Paradise [0/1]
+|   2: Dryad Arbor [1/1]
+|   3: Scryb Ranger [1/1]
+|   4: Confirm blockers
+(REPLAY) [T15 | Declare Blockers | Player A] Input: 4
+| >> Player A: 4 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Keen-Eyed Curator deals 6 damage to Player A (now at 8 life)
+  Scythecat Cub deals 2 damage to Player A (now at 6 life)
+  Scythecat Cub deals 2 damage to Player A (now at 4 life)
+--- End Combat Damage ---
+
+
+-------- TURN 17 (Player A) --------
+| decision 123: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Once Upon a Time
+| decision 124: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Once Upon a Time
+|   2: Activate Knight of the Reliquary (ChangeZone)
+|   3: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Once Upon a Time)
+Badgermole Cub adds an additional 1(G).
+Player A activated Dryad Arbor for 1(G)
+Badgermole Cub adds an additional 1(G).
+Player A activated Birds of Paradise for 1(W)
+Player A casts Once Upon a Time
+| decision 125: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player A looks at the top 5 card(s) of their library.
+| decision 126: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Take nothing (rest go to the bottom of library)
+|   1: Knight of the Reliquary
+|   2: Windswept Heath
+|   3: Talon Gates of Madara
+|   4: Thalia, Guardian of Thraben
+(REPLAY) [T16 | Draw | Player A] Input: 1
+| >> Player A: 1 (Knight of the Reliquary)
+Player A reveals Knight of the Reliquary and puts it into hand.
+Player A puts 4 card(s) on the bottom of their library.
+| decision 127: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 128: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Cast Knight of the Reliquary
+|   3: Activate Knight of the Reliquary (ChangeZone)
+|   4: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Knight of the Reliquary)
+Player A activated Savannah for 1(W)
+Player A activated Savannah for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Knight of the Reliquary
+| decision 129: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Knight of the Reliquary (ChangeZone)
+|   2: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Knight of the Reliquary (ChangeZone))
+| decision 130: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sacrifice Dryad Arbor
+|   1: Sacrifice Savannah
+|   2: Sacrifice Savannah
+|   3: Sacrifice Savannah
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Sacrifice Savannah)
+Player A sacrifices Savannah
+Player A's Knight of the Reliquary ability is on the stack
+| decision 131: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 132: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+|   6: Badgermole Cub
+|   7: Birds of Paradise
+|   8: Dryad Arbor
+|   9: Knight of the Reliquary
+|   10: Scryb Ranger
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Keen-Eyed Curator)
+Targeting choice 1
+| decision 133: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Return Dryad Arbor to hand
+|   1: Return Savannah to hand
+|   2: Return Savannah to hand
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Return Savannah to hand)
+Player A returns Savannah to hand
+Player A's Scryb Ranger ability targeting Keen-Eyed Curator is on the stack
+Resolving ability (category: Untap)
+Keen-Eyed Curator untaps
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 134: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bojuka Bog
+|   2: Horizon Canopy
+|   3: Karakas
+|   4: Misty Rainforest
+|   5: Plains
+|   6: Talon Gates of Madara
+|   7: Verdant Catacombs
+|   8: Wasteland
+|   9: Windswept Heath
+(REPLAY) [T16 | First Main | Player A] Input: 5
+| >> Player A: 5 (Plains)
+Player A shuffles their library
+Player A puts Plains to the battlefield
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+| decision 135: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Savannah
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+
+--- Declare Attackers (Player A) ---
+| decision 136: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Scryb Ranger [1/1]
+|   2: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 2
+| >> Player A: 2 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 18 (Player B) --------
+| decision 137: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 138: Player A (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T17 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Horizon Canopy
+| decision 139: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 140: Player A (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T17 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 141: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Horizon Canopy
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Activate Keen-Eyed Curator (ChangeZone)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thalia, Guardian of Thraben)
+Player B activated Birds of Paradise for 1(W)
+Player B activated Bojuka Bog for 1(B)
+Player B casts Thalia, Guardian of Thraben
+| decision 142: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 143: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dryad Arbor
+|   1: Savannah
+|   2: Bojuka Bog
+|   3: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dryad Arbor)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Dryad Arbor is on the stack
+| decision 144: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 145: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scryb Ranger (Untap)
+(REPLAY) [T17 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Scryb Ranger (Untap))
+Choose target for Scryb Ranger:
+| decision 146: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+|   6: Badgermole Cub
+|   7: Birds of Paradise
+|   8: Dryad Arbor
+|   9: Knight of the Reliquary
+|   10: Knight of the Reliquary
+|   11: Scryb Ranger
+(REPLAY) [T17 | First Main | Player A] Input: 1
+| >> Player A: 1 (Keen-Eyed Curator)
+Targeting choice 1
+| decision 147: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Dryad Arbor to hand
+|   1: Return Forest to hand
+|   2: Return Savannah to hand
+(REPLAY) [T17 | First Main | Player A] Input: 2
+| >> Player A: 2 (Return Savannah to hand)
+Player A returns Savannah to hand
+Player A's Scryb Ranger ability targeting Keen-Eyed Curator is on the stack
+| decision 148: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Untap)
+Keen-Eyed Curator untaps
+| decision 149: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Dryad Arbor is destroyed
+| decision 150: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Thalia, Guardian of Thraben enters the battlefield
+Legend rule: Player B controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
+| decision 151: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Thalia, Guardian of Thraben
+|   1: Keep Thalia, Guardian of Thraben
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Thalia, Guardian of Thraben)
+Thalia, Guardian of Thraben is put into the graveyard (legend rule)
+| decision 152: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Horizon Canopy
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Horizon Canopy)
+Player B played Horizon Canopy
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 153: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Scythecat Cub (Pump, targeted)
+|   1: Scythecat Cub (Pump, targeted)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub (Pump, targeted))
+Choose target for Scythecat Cub:
+| decision 154: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keen-Eyed Curator)
+Targeting choice 1
+Scythecat Cub triggered
+Choose target for Scythecat Cub:
+| decision 155: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Birds of Paradise
+|   1: Keen-Eyed Curator
+|   2: Noble Hierarch
+|   3: Scythecat Cub
+|   4: Scythecat Cub
+|   5: Thalia, Guardian of Thraben
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keen-Eyed Curator)
+Targeting choice 1
+Scythecat Cub triggered
+| decision 156: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Horizon Canopy (Draw)
+|   2: Activate Keen-Eyed Curator (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Horizon Canopy (Draw))
+Player B activated Noble Hierarch for 1(W)
+Player B sacrifices Horizon Canopy
+Player B's Horizon Canopy ability is on the stack
+Resolving ability (category: Draw, amount: 1)
+Player B draws Green Sun's Zenith
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 7/7).
+Resolving ability (category: MultiplyCounter)
+Resolving ability (category: Pump)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 +1/+1 counter(s) on creature (now 8/8).
+Resolving ability (category: MultiplyCounter)
+
+--- Declare Attackers (Player B) ---
+| decision 157: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [8/8]
+|   1: Scythecat Cub [2/2]
+|   2: Scythecat Cub [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+|   4: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Keen-Eyed Curator [8/8])
+Keen-Eyed Curator attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [8/8] -> Player A
+| decision 158: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Scythecat Cub [2/2]
+|   2: Thalia, Guardian of Thraben [2/1]
+|   3: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [8/8] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+| decision 159: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Scythecat Cub [2/2]
+|   1: Thalia, Guardian of Thraben [2/1]
+|   2: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Scythecat Cub [2/2])
+Scythecat Cub attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [8/8] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+| decision 160: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Keen-Eyed Curator [8/8] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 161: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Keen-Eyed Curator -> Player A
+  Scythecat Cub -> Player A
+  Scythecat Cub -> Player A
+  Thalia, Guardian of Thraben -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [8/8]
+  1: Scythecat Cub [2/2]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+| decision 162: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Knight of the Reliquary [4/4]
+|   2: Scryb Ranger [1/1]
+|   3: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Knight of the Reliquary [4/4])
+Select attacker for Knight of the Reliquary to block:
+| decision 163: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [8/8]
+|   1: Scythecat Cub [2/2]
+|   2: Scythecat Cub [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Scythecat Cub [2/2])
+Knight of the Reliquary blocking Scythecat Cub.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [8/8]
+  1: Scythecat Cub [2/2]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+  (assigned) Knight of the Reliquary [4/4] blocking Scythecat Cub
+| decision 164: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Badgermole Cub [2/2]
+|   1: Scryb Ranger [1/1]
+|   2: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Badgermole Cub [2/2])
+Select attacker for Badgermole Cub to block:
+| decision 165: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [8/8]
+|   1: Scythecat Cub [2/2]
+|   2: Scythecat Cub [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Keen-Eyed Curator [8/8])
+Badgermole Cub blocking Keen-Eyed Curator.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [8/8]
+  1: Scythecat Cub [2/2]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+  (assigned) Badgermole Cub [2/2] blocking Keen-Eyed Curator
+  (assigned) Knight of the Reliquary [4/4] blocking Scythecat Cub
+| decision 166: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Scryb Ranger [1/1]
+|   1: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Scryb Ranger [1/1])
+Select attacker for Scryb Ranger to block:
+| decision 167: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Keen-Eyed Curator [8/8]
+|   1: Scythecat Cub [2/2]
+|   2: Scythecat Cub [2/2]
+|   3: Thalia, Guardian of Thraben [2/1]
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Keen-Eyed Curator [8/8])
+Scryb Ranger blocking Keen-Eyed Curator.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Keen-Eyed Curator [8/8]
+  1: Scythecat Cub [2/2]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+  (assigned) Badgermole Cub [2/2] blocking Keen-Eyed Curator
+  (assigned) Knight of the Reliquary [4/4] blocking Scythecat Cub
+  (assigned) Scryb Ranger [1/1] blocking Keen-Eyed Curator
+| decision 168: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Confirm blockers)
+
+Blockers declared:
+  Badgermole Cub blocking Keen-Eyed Curator
+  Knight of the Reliquary blocking Scythecat Cub
+  Scryb Ranger blocking Keen-Eyed Curator
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A (now at 2 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Badgermole Cub deals 2 damage to Keen-Eyed Curator
+  Keen-Eyed Curator deals 2 damage to Badgermole Cub
+  Scryb Ranger deals 1 damage to Keen-Eyed Curator
+  Keen-Eyed Curator deals 6 damage to Scryb Ranger
+  Knight of the Reliquary deals 4 damage to Scythecat Cub
+  Scythecat Cub deals 2 damage to Knight of the Reliquary
+  Scythecat Cub deals 2 damage to Player A (now at 0 life)
+--- End Combat Damage ---
+
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

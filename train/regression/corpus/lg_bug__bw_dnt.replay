@@ -1,0 +1,2064 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bug__bw_dnt.rmlog
+REPLAY MODE: Using embedded decks 'league/bug' / 'league/bw_dnt' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Verdant Catacombs
+Player A draws Polluted Delta
+Player A draws Underground Sea
+Player A draws Polluted Delta
+Player A draws Sheoldred's Edict
+Player B draws Witch Enchanter
+Player B draws Prismatic Vista
+Player B draws White Orchid Phantom
+Player B draws Meteor Sword
+Player B draws Plains
+Player B draws Aether Vial
+Player B draws Shadowy Backstreet
+Player A hand:
+Flow State
+Polluted Delta
+Polluted Delta
+Sheoldred's Edict
+Underground Sea
+Verdant Catacombs
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Witherbloom Command
+Player A draws Undercity Sewers
+Player A draws Uro, Titan of Nature's Wrath
+Player A draws Orcish Bowmasters
+Player A draws Fatal Push
+Player A draws Tropical Island
+Player A draws Polluted Delta
+Player B hand:
+Aether Vial
+Meteor Sword
+Plains
+Prismatic Vista
+Shadowy Backstreet
+White Orchid Phantom
+Witch Enchanter
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Fatal Push
+Orcish Bowmasters
+Polluted Delta
+Tropical Island
+Undercity Sewers
+Uro, Titan of Nature's Wrath
+Witherbloom Command
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Fatal Push
+|   1: Orcish Bowmasters
+|   2: Polluted Delta
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Uro, Titan of Nature's Wrath
+|   6: Witherbloom Command
+(REPLAY) [T0 | Untap | Player A] Input: 2
+| >> Player A: 2 (Polluted Delta)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Play Undercity Sewers
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Windswept Heath
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Prismatic Vista
+|   3: Play Shadowy Backstreet
+|   4: Play Windswept Heath
+|   5: Play Witch-Blessed Meadow
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Aether Vial
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Aether Vial)
+Player B activated Plains for 1(W)
+Player B casts Aether Vial
+Aether Vial enters the battlefield
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Fail to find)
+Player B fails to find
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Tropical Island
+| decision 10: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Play Undercity Sewers
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Aether Vial triggered
+| decision 11: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 12: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 13: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Prismatic Vista
+| decision 14: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Prismatic Vista
+|   2: Play Prismatic Vista
+|   3: Play Shadowy Backstreet
+|   4: Play Windswept Heath
+|   5: Play Witch-Blessed Meadow
+|   6: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Prismatic Vista)
+Player B played Prismatic Vista
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Prismatic Vista (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Prismatic Vista (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Prismatic Vista (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Prismatic Vista
+Player B's Prismatic Vista ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Swamp
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Plains)
+Player B shuffles their library
+Player B puts Plains to the battlefield
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Fail to find)
+Player B fails to find
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast White Orchid Phantom
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast White Orchid Phantom)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts White Orchid Phantom
+White Orchid Phantom enters the battlefield
+Choose target for White Orchid Phantom:
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+|   1: Tropical Island
+|   2: Tropical Island
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tropical Island)
+Targeting choice 1
+White Orchid Phantom triggered
+| decision 22: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Tropical Island for (G)
+|   2: Tap Tropical Island for (U)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Tropical Island is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 23: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+|   2: Island
+|   3: Swamp
+(REPLAY) [T3 | First Main | Player A] Input: 3
+| >> Player A: 3 (Swamp)
+Player A shuffles their library
+Player A puts Swamp to the battlefield
+Swamp enters tapped.
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+|   2: Cast Orcish Bowmasters
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Fatal Push)
+Choose target for Fatal Push:
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: White Orchid Phantom
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom)
+Targeting choice 0
+Player A activated Swamp for 1(B)
+Player A casts Fatal Push targeting White Orchid Phantom
+Resolving ability (category: Destroy)
+White Orchid Phantom is destroyed
+Player A draws Force of Will
+| decision 26: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Undercity Sewers
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Undercity Sewers)
+Player A played Undercity Sewers
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Misty Rainforest
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Misty Rainforest on top of library
+|   1: Put Misty Rainforest into graveyard
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Misty Rainforest on top of library)
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Aether Vial triggered
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Karakas
+| decision 31: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Play Prismatic Vista
+|   3: Play Shadowy Backstreet
+|   4: Play Windswept Heath
+|   5: Play Witch-Blessed Meadow
+|   6: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Karakas)
+Player B played Karakas
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Fail to find)
+Player B fails to find
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Companion: pay {3}, put Yorion, Sky Nomad into your hand)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Karakas for 1(W)
+Player B pays {3} and puts Yorion, Sky Nomad into their hand from outside the game
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 36: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Orcish Bowmasters)
+Player A activated Swamp for 1(B)
+Player A activated Tropical Island for 1(G)
+Player A casts Orcish Bowmasters
+| decision 37: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 38: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Player B (19 life)
+|   1: Player A (20 life)
+|   2: Orcish Bowmasters
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (19 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 18 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 1/1.
+Player A draws Misty Rainforest
+| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bayou
+|   2: Forest
+|   3: Island
+|   4: Tropical Island
+|   5: Underground Sea
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Bayou)
+Player A shuffles their library
+Player A puts Bayou to the battlefield
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Witherbloom Command
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Witherbloom Command)
+Choose mode:
+| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Target player mills three cards, then you return a land card from your graveyard to your hand.
+|   1: Destroy target noncreature, nonland permanent with mana value 2 or less.
+|   2: Target creature gets -3/-1 until end of turn.
+|   3: Target opponent loses 2 life and you gain 2 life.
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Target player mills three cards, then you return a land card from your graveyard to your hand.)
+Player A chooses mode — Target player mills three cards, then you return a land card from your graveyard to your hand.
+Choose target for Witherbloom Command:
+| decision 44: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (18 life)
+|   1: Player A (19 life)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (18 life))
+Targeting choice 0
+Choose mode:
+| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Destroy target noncreature, nonland permanent with mana value 2 or less.
+|   1: Target creature gets -3/-1 until end of turn.
+|   2: Target opponent loses 2 life and you gain 2 life.
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Destroy target noncreature, nonland permanent with mana value 2 or less.)
+Player A chooses mode — Destroy target noncreature, nonland permanent with mana value 2 or less.
+Choose target for Witherbloom Command:
+| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Aether Vial
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Aether Vial)
+Targeting choice 0
+Player A activated Bayou for 1(G)
+Player A activated Undercity Sewers for 1(B)
+Player A casts Witherbloom Command
+| decision 47: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Charm)
+Resolving ability (category: Mill, amount: 3)
+Player B mills Karakas.
+Player B mills Pre-War Formalwear.
+Player B mills Flickerwisp.
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A graveyard:
+| decision 48: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Misty Rainforest
+|   1: Tropical Island
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Misty Rainforest)
+Player A puts Misty Rainforest to hand
+Resolving ability (category: Destroy)
+Aether Vial is destroyed
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Swords to Plowshares
+| decision 49: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 50: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Orcish Bowmasters
+|   1: Orc Army token
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters)
+Targeting choice 0
+Player B activated Plains for 1(W)
+Player B casts Swords to Plowshares targeting Orcish Bowmasters
+| decision 51: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T7 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 52: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Swords to Plowshares
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Swords to Plowshares)
+Targeting choice 0
+| decision 53: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Exile Uro, Titan of Nature's Wrath
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Exile Uro, Titan of Nature's Wrath)
+Player A pays 1 life
+Player A exiles Uro, Titan of Nature's Wrath
+Player A casts Force of Will targeting Swords to Plowshares
+Resolving ability (category: Counter)
+Swords to Plowshares is countered
+| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Prismatic Vista
+|   2: Play Shadowy Backstreet
+|   3: Play Windswept Heath
+|   4: Play Witch-Blessed Meadow
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Prismatic Vista)
+Player B played Prismatic Vista
+| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Prismatic Vista (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Prismatic Vista (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Prismatic Vista
+Player B's Prismatic Vista ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Swamp
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Plains)
+Player B shuffles their library
+Player B puts Plains to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Flow State
+| decision 57: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Cast Flow State
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Flow State)
+Player A activated Tropical Island for 1(U)
+Player A activated Bayou for 1(G)
+Player A casts Flow State
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sheoldred's Edict
+|   1: Brainstorm
+|   2: Kaito, Bane of Nightmares
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Brainstorm)
+| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Sheoldred's Edict
+|   1: Kaito, Bane of Nightmares
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Kaito, Bane of Nightmares)
+Player A puts Brainstorm into hand.
+Player A puts Kaito, Bane of Nightmares into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Cast Brainstorm
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Brainstorm)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Flow State
+Player A draws Tamiyo, Inquisitive Student
+Player A draws Wasteland
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Flow State
+|   1: Kaito, Bane of Nightmares
+|   2: Misty Rainforest
+|   3: Tamiyo, Inquisitive Student
+|   4: Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Misty Rainforest)
+Player A puts Misty Rainforest to top of library
+Player A chooses a card from Player A hand:
+| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Flow State
+|   1: Kaito, Bane of Nightmares
+|   2: Tamiyo, Inquisitive Student
+|   3: Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Wasteland)
+Player A puts Wasteland to top of library
+
+--- Declare Attackers (Player A) ---
+| decision 63: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 64: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| decision 65: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
+  Orc Army token deals 1 damage to Player B (now at 15 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Swords to Plowshares
+| decision 66: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 67: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Orcish Bowmasters
+|   1: Orc Army token
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters)
+Targeting choice 0
+Player B activated Plains for 1(W)
+Player B casts Swords to Plowshares targeting Orcish Bowmasters
+Resolving ability (category: ChangeZone)
+Orcish Bowmasters is moved to exile
+Resolving ability (category: GainLife, amount: 1)
+Player A gains 1 life (now at 19)
+| decision 68: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Shadowy Backstreet
+|   2: Play Windswept Heath
+|   3: Play Witch-Blessed Meadow
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Shadowy Backstreet)
+Player B played Shadowy Backstreet
+Shadowy Backstreet enters tapped.
+Shadowy Backstreet triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Phelia, Exuberant Shepherd
+| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Phelia, Exuberant Shepherd on top of library
+|   1: Put Phelia, Exuberant Shepherd into graveyard
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Phelia, Exuberant Shepherd on top of library)
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Wasteland
+| decision 70: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Flow State
+|   3: Cast Kaito, Bane of Nightmares
+|   4: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Flow State)
+Player A activated Tropical Island for 1(U)
+Player A activated Bayou for 1(G)
+Player A casts Flow State
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 71: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Misty Rainforest
+|   1: Orcish Bowmasters
+|   2: Force of Will
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Orcish Bowmasters)
+| decision 72: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Misty Rainforest
+|   1: Force of Will
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Force of Will)
+Player A puts Orcish Bowmasters into hand.
+Player A puts Force of Will into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 73: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Orcish Bowmasters
+|   3: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Orcish Bowmasters)
+Player A activated Swamp for 1(B)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Orcish Bowmasters
+| decision 74: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 75: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (15 life)
+|   1: Player A (19 life)
+|   2: Orcish Bowmasters
+|   3: Orc Army token
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (15 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 2/2.
+| decision 76: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 77: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 78: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Karakas
+|   1: Shadowy Backstreet
+|   2: Bayou
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Karakas)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Karakas is on the stack
+| decision 79: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Karakas for (W)
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Karakas is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 80: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [2/2])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orc Army token [2/2] -> Player B
+| decision 81: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Orc Army token deals 2 damage to Player B (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+Player B draws Phelia, Exuberant Shepherd
+| decision 82: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+(REPLAY) [T11 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Phelia, Exuberant Shepherd)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Phelia, Exuberant Shepherd
+| decision 83: Player A (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T11 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 84: Player A (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd
+(REPLAY) [T11 | Draw | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd)
+Targeting choice 0
+| decision 85: Player A (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Exile Kaito, Bane of Nightmares
+|   1: Exile Tamiyo, Inquisitive Student
+(REPLAY) [T11 | Draw | Player A] Input: 0
+| >> Player A: 0 (Exile Kaito, Bane of Nightmares)
+Player A pays 1 life
+Player A exiles Kaito, Bane of Nightmares
+Player A casts Force of Will targeting Phelia, Exuberant Shepherd
+Resolving ability (category: Counter)
+Phelia, Exuberant Shepherd is countered
+| decision 86: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Windswept Heath
+|   2: Play Witch-Blessed Meadow
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Windswept Heath)
+Player B played Windswept Heath
+| decision 87: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Windswept Heath (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 88: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Scrubland
+|   3: Shadowy Backstreet
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Scrubland)
+Player B shuffles their library
+Player B puts Scrubland to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+Player A draws Baleful Strix
+| decision 89: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Baleful Strix
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Baleful Strix)
+Player A activated Tropical Island for 1(U)
+Player A activated Swamp for 1(B)
+Player A casts Baleful Strix
+Baleful Strix enters the battlefield
+Baleful Strix triggered
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+| decision 90: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Wasteland
+Player A draws Ponder
+Player A draws Orcish Bowmasters
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 91: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Orcish Bowmasters
+|   1: Ponder
+|   2: Tamiyo, Inquisitive Student
+|   3: Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Wasteland)
+Player A puts Wasteland to top of library
+Player A chooses a card from Player A hand:
+| decision 92: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Orcish Bowmasters
+|   1: Ponder
+|   2: Tamiyo, Inquisitive Student
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Ponder)
+Player A puts Ponder to top of library
+
+--- Declare Attackers (Player A) ---
+| decision 93: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 94: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [2/2])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orc Army token [2/2] -> Player B
+| decision 95: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 10 life)
+  Orc Army token deals 2 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+Player B draws Aether Vial
+| decision 96: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Cast Aether Vial
+|   3: Cast Witch Enchanter
+|   4: Cast Yorion, Sky Nomad
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Aether Vial)
+Player B activated Plains for 1(W)
+Player B casts Aether Vial
+Aether Vial enters the battlefield
+| decision 97: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Cast Witch Enchanter
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Witch Enchanter)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Scrubland for 1(W)
+Player B activated Shadowy Backstreet for 1(W)
+Player B casts Witch Enchanter
+| decision 98: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Witch Enchanter enters the battlefield
+Choose target for Witch Enchanter:
+| decision 99: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Baleful Strix
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Baleful Strix)
+Targeting choice 0
+Witch Enchanter triggered
+| decision 100: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Baleful Strix is destroyed
+| decision 101: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 103: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 104: Player B (game 0, turn 13, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 105: Player B (game 0, turn 13, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 106: Player B (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 15 (Player A) --------
+| decision 107: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Orcish Bowmasters)
+Player A activated Swamp for 1(B)
+Player A activated Bayou for 1(G)
+Player A casts Orcish Bowmasters
+| decision 108: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 109: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Player B (8 life)
+|   1: Player A (18 life)
+|   2: Witch Enchanter
+|   3: Orcish Bowmasters
+|   4: Orcish Bowmasters
+|   5: Orc Army token
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+| decision 110: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 7 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 3/3.
+| decision 111: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Ponder
+| decision 112: Player B (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 113: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Tropical Island for 1(U)
+Player A casts Ponder
+| decision 114: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 115: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Wasteland
+|   1: Underground Sea
+|   2: Flow State
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Wasteland)
+Choose which card goes 2 from top:
+| decision 116: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Underground Sea
+|   1: Flow State
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Underground Sea)
+| decision 117: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Flow State
+| decision 118: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Tamiyo, Inquisitive Student)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Tamiyo, Inquisitive Student
+| decision 119: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Tamiyo, Inquisitive Student enters the battlefield
+| decision 120: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 121: Player B (game 0, turn 14, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 122: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [3/3]
+|   2: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Orc Army token [3/3])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orc Army token [3/3] -> Player B
+| decision 123: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  Orc Army token -> Player B
+| decision 124: Player B (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Orc Army token [3/3]
+Your creatures:
+| decision 125: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Witch Enchanter [2/2]
+|   1: Confirm blockers
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 126: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orc Army token deals 3 damage to Player B (now at 4 life)
+--- End Combat Damage ---
+
+| decision 127: Player B (game 0, turn 14, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 128: Player B (game 0, turn 14, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 129: Player B (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 130: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 16 (Player B) --------
+Aether Vial triggered
+| decision 131: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 132: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T15 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 133: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 134: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 135: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Orcish Bowmasters
+|   1: Orcish Bowmasters
+|   2: Tamiyo, Inquisitive Student
+|   3: Orc Army token
+|   4: Witch Enchanter
+(REPLAY) [T15 | Draw | Player B] Input: 3
+| >> Player B: 3 (Orc Army token)
+Targeting choice 3
+Player B activated Plains for 1(W)
+Player B casts Swords to Plowshares targeting Orc Army token
+| decision 136: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Orc Army token is moved to exile
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 21)
+Orc Army (token) is put into exile and ceases to exist.
+| decision 137: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 138: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 139: Player B (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 140: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Witch Enchanter [2/2]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Witch Enchanter [2/2])
+Witch Enchanter attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Witch Enchanter [2/2] -> Player A
+| decision 141: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Witch Enchanter -> Player A
+| decision 142: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Witch Enchanter [2/2]
+Your creatures:
+| decision 143: Player A (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Tamiyo, Inquisitive Student [0/3]
+|   3: Confirm blockers
+(REPLAY) [T15 | Declare Blockers | Player A] Input: 3
+| >> Player A: 3 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 144: Player B (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Witch Enchanter deals 2 damage to Player A (now at 19 life)
+--- End Combat Damage ---
+
+| decision 145: Player B (game 0, turn 15, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 146: Player B (game 0, turn 15, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 147: Player B (game 0, turn 15, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 148: Player B (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 17 (Player A) --------
+| decision 149: Player B (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Underground Sea
+| decision 150: Player B (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 151: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Cast Flow State
+(REPLAY) [T16 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Flow State)
+Player A activated Tropical Island for 1(U)
+Player A activated Bayou for 1(G)
+Player A casts Flow State
+| decision 152: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 153: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Wasteland
+|   1: Force of Will
+|   2: Orcish Bowmasters
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Force of Will)
+| decision 154: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Wasteland
+|   1: Orcish Bowmasters
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Orcish Bowmasters)
+Player A puts Force of Will into hand.
+Player A puts Orcish Bowmasters into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 155: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Cast Orcish Bowmasters
+(REPLAY) [T16 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Orcish Bowmasters)
+Player A activated Swamp for 1(B)
+Player A activated Undercity Sewers for 1(U)
+Player A casts Orcish Bowmasters
+| decision 156: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 157: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (4 life)
+|   1: Player A (19 life)
+|   2: Witch Enchanter
+|   3: Orcish Bowmasters
+|   4: Orcish Bowmasters
+|   5: Orcish Bowmasters
+|   6: Tamiyo, Inquisitive Student
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (4 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+| decision 158: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 3 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 1/1.
+| decision 159: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Underground Sea)
+Player A played Underground Sea
+| decision 160: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 161: Player B (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 162: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Tamiyo, Inquisitive Student [0/3]
+|   3: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 163: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Tamiyo, Inquisitive Student [0/3]
+|   2: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 164: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 165: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Orcish Bowmasters -> Player B
+  Tamiyo, Inquisitive Student -> Player B
+Tamiyo, Inquisitive Student triggered
+| decision 166: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+| decision 167: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 168: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 2 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 1 life)
+--- End Combat Damage ---
+
+| decision 169: Player B (game 0, turn 16, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 170: Player B (game 0, turn 16, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 171: Player B (game 0, turn 16, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 172: Player B (game 0, turn 16, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 18 (Player B) --------
+Aether Vial triggered
+| decision 173: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 174: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 175: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wasteland
+| decision 176: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 177: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Yorion, Sky Nomad
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Yorion, Sky Nomad)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Scrubland for 1(W)
+Player B activated Shadowy Backstreet for 1(W)
+Player B casts Yorion, Sky Nomad
+| decision 178: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Yorion, Sky Nomad enters the battlefield
+Yorion, Sky Nomad triggered
+| decision 179: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+| decision 180: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Aether Vial
+|   1: Exile Witch Enchanter
+|   2: Done (exile no more)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Aether Vial)
+Player B exiles Aether Vial
+| decision 181: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Witch Enchanter
+|   1: Done (exile no more)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Witch Enchanter)
+Player B exiles Witch Enchanter
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+| decision 182: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 183: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 184: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bayou
+|   1: Tropical Island
+|   2: Undercity Sewers
+|   3: Underground Sea
+|   4: Scrubland
+|   5: Shadowy Backstreet
+|   6: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Bayou)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Bayou is on the stack
+Resolving ability (category: Destroy)
+Bayou is destroyed
+No creatures eligible to attack.
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Aether Vial is moved to the battlefield
+Witch Enchanter is moved to the battlefield
+Resolving ability (category: Cleanup)
+Choose target for Witch Enchanter:
+| decision 185: Player B (game 0, turn 17, END_STEP, Player B active)
+| menu:
+|   0: Clue token
+(REPLAY) [T17 | End Step | Player B] Input: 0
+| >> Player B: 0 (Clue token)
+Targeting choice 0
+Witch Enchanter triggered
+| decision 186: Player B (game 0, turn 17, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Clue token is destroyed
+Clue (token) is put into the graveyard and ceases to exist.
+| decision 187: Player B (game 0, turn 17, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 19 (Player A) --------
+| decision 188: Player B (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Witherbloom Command
+| decision 189: Player B (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 190: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Witherbloom Command
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Witherbloom Command)
+Choose mode:
+| decision 191: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Target player mills three cards, then you return a land card from your graveyard to your hand.
+|   1: Destroy target noncreature, nonland permanent with mana value 2 or less.
+|   2: Target creature gets -3/-1 until end of turn.
+|   3: Target opponent loses 2 life and you gain 2 life.
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Target player mills three cards, then you return a land card from your graveyard to your hand.)
+Player A chooses mode — Target player mills three cards, then you return a land card from your graveyard to your hand.
+Choose target for Witherbloom Command:
+| decision 192: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (1 life)
+|   1: Player A (19 life)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (1 life))
+Targeting choice 0
+Choose mode:
+| decision 193: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Destroy target noncreature, nonland permanent with mana value 2 or less.
+|   1: Target creature gets -3/-1 until end of turn.
+|   2: Target opponent loses 2 life and you gain 2 life.
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Destroy target noncreature, nonland permanent with mana value 2 or less.)
+Player A chooses mode — Destroy target noncreature, nonland permanent with mana value 2 or less.
+Choose target for Witherbloom Command:
+| decision 194: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Aether Vial
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Aether Vial)
+Targeting choice 0
+Player A activated Tropical Island for 1(G)
+Player A activated Swamp for 1(B)
+Player A casts Witherbloom Command
+| decision 195: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Charm)
+Resolving ability (category: Mill, amount: 3)
+Player B mills Aether Vial.
+Player B mills Recruiter of the Guard.
+Player B mills White Orchid Phantom.
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A graveyard:
+| decision 196: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Bayou
+|   1: Tropical Island
+|   2: Wasteland
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Bayou)
+Player A puts Bayou to hand
+Resolving ability (category: Destroy)
+Aether Vial is destroyed
+| decision 197: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Bayou
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Bayou)
+Player A played Bayou
+
+--- Declare Attackers (Player A) ---
+| decision 198: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Tamiyo, Inquisitive Student [0/3]
+|   4: Orc Army token [1/1]
+|   5: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 199: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Tamiyo, Inquisitive Student [0/3]
+|   3: Orc Army token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 200: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Tamiyo, Inquisitive Student [0/3]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 201: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 202: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| decision 203: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Orcish Bowmasters -> Player B
+  Orcish Bowmasters -> Player B
+  Orcish Bowmasters -> Player B
+  Tamiyo, Inquisitive Student -> Player B
+  Orc Army token -> Player B
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+| decision 204: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Orcish Bowmasters [1/1]
+  1: Orcish Bowmasters [1/1]
+  2: Orcish Bowmasters [1/1]
+  3: Tamiyo, Inquisitive Student [0/3]
+  4: Orc Army token [1/1]
+Your creatures:
+| decision 205: Player B (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Witch Enchanter [2/2]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm blockers
+(REPLAY) [T18 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Yorion, Sky Nomad [4/5])
+Select attacker for Yorion, Sky Nomad to block:
+| decision 206: Player B (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Tamiyo, Inquisitive Student [0/3]
+|   4: Orc Army token [1/1]
+(REPLAY) [T18 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters [1/1])
+Yorion, Sky Nomad blocking Orcish Bowmasters.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Orcish Bowmasters [1/1]
+  1: Orcish Bowmasters [1/1]
+  2: Orcish Bowmasters [1/1]
+  3: Tamiyo, Inquisitive Student [0/3]
+  4: Orc Army token [1/1]
+Your creatures:
+  (assigned) Yorion, Sky Nomad [4/5] blocking Orcish Bowmasters
+| decision 207: Player B (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Witch Enchanter [2/2]
+|   1: Confirm blockers
+(REPLAY) [T18 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Witch Enchanter [2/2])
+Select attacker for Witch Enchanter to block:
+| decision 208: Player B (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Orc Army token [1/1]
+(REPLAY) [T18 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters [1/1])
+Witch Enchanter blocking Orcish Bowmasters.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Orcish Bowmasters [1/1]
+  1: Orcish Bowmasters [1/1]
+  2: Orcish Bowmasters [1/1]
+  3: Tamiyo, Inquisitive Student [0/3]
+  4: Orc Army token [1/1]
+Your creatures:
+  (assigned) Witch Enchanter [2/2] blocking Orcish Bowmasters
+  (assigned) Yorion, Sky Nomad [4/5] blocking Orcish Bowmasters
+| decision 209: Player B (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Confirm blockers
+(REPLAY) [T18 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Confirm blockers)
+
+Blockers declared:
+  Witch Enchanter blocking Orcish Bowmasters
+  Yorion, Sky Nomad blocking Orcish Bowmasters
+| decision 210: Player A (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+(REPLAY) [T18 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Witch Enchanter deals 2 damage to Orcish Bowmasters
+  Orcish Bowmasters deals 1 damage to Witch Enchanter
+  Yorion, Sky Nomad deals 4 damage to Orcish Bowmasters
+  Orcish Bowmasters deals 1 damage to Player B (now at 0 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at -1 life)
+  Orc Army token deals 1 damage to Player B (now at -2 life)
+--- End Combat Damage ---
+
+
+Player B has -2 life - Player A wins!
+GAME_RESULT: 1 Player A wins

@@ -1,0 +1,1378 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bug__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/bug' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Verdant Catacombs
+Player A draws Polluted Delta
+Player A draws Underground Sea
+Player A draws Polluted Delta
+Player A draws Sheoldred's Edict
+Player B draws Ocelot Pride
+Player B draws Scrubland
+Player B draws Voice of Victory
+Player B draws Swords to Plowshares
+Player B draws Cabal Therapy
+Player B draws Amped Raptor
+Player B draws Marsh Flats
+Player A hand:
+Flow State
+Polluted Delta
+Polluted Delta
+Sheoldred's Edict
+Underground Sea
+Verdant Catacombs
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Thoughtseize
+Player A draws Fatal Push
+Player A draws Brainstorm
+Player A draws Fatal Push
+Player A draws Tropical Island
+Player A draws Sheoldred's Edict
+Player A draws Force of Will
+Player B hand:
+Amped Raptor
+Cabal Therapy
+Marsh Flats
+Ocelot Pride
+Scrubland
+Swords to Plowshares
+Voice of Victory
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Brainstorm
+Fatal Push
+Fatal Push
+Force of Will
+Sheoldred's Edict
+Thoughtseize
+Tropical Island
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Fatal Push
+|   2: Fatal Push
+|   3: Force of Will
+|   4: Sheoldred's Edict
+|   5: Thoughtseize
+|   6: Tropical Island
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Brainstorm)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Thoughtseize
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Scrubland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Elegant Parlor
+|   3: Plains
+|   4: Plateau
+|   5: Scrubland
+|   6: Shadowy Backstreet
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy
+|   2: Cast Thoughtseize
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Force of Will
+|   2: Name card: Orcish Bowmasters
+|   3: Name card: Ponder
+|   4: Name card: Fatal Push
+|   5: Name card: Flow State
+|   6: Name card: Tamiyo, Inquisitive Student
+|   7: Name card: Baleful Strix
+|   8: Name card: Carpet of Flowers
+|   9: Name card: Consign to Memory
+|   10: Name card: Endurance
+|   11: Name card: Pernicious Deed
+|   12: Name card: Sheoldred's Edict
+|   13: Name card: Thoughtseize
+|   14: Name card: Uro, Titan of Nature's Wrath
+|   15: Name card: Witherbloom Command
+|   16: Name card: Force of Negation
+|   17: Name card: Force of Vigor
+|   18: Name card: Hydroblast
+|   19: Name card: Kaito, Bane of Nightmares
+|   20: Name card: Life from the Loam
+|   21: Name card: Lórien Revealed
+|   22: Name card: Null Rod
+|   23: Name card: Surgical Extraction
+|   24: Name card: Toxic Deluge
+|   25: Name card: Veil of Summer
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Name card: Force of Will)
+Player B names card: Force of Will
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Fatal Push
+  Fatal Push
+  Force of Will
+  Sheoldred's Edict
+  Thoughtseize
+Player A discards Force of Will
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Orcish Bowmasters
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Wasteland
+| decision 12: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Play Wasteland
+|   3: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 13: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Fatal Push
+  Fatal Push
+  Orcish Bowmasters
+  Sheoldred's Edict
+  Thoughtseize
+Player B chooses a card to discard:
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fatal Push
+|   1: Fatal Push
+|   2: Orcish Bowmasters
+|   3: Sheoldred's Edict
+|   4: Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Sheoldred's Edict)
+Player A discards Sheoldred's Edict
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 17)
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Play Wasteland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ocelot Pride)
+Player B activated Scrubland for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy (flashback)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (17 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Ocelot Pride)
+Player B sacrifices Ocelot Pride
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Force of Will
+|   2: Name card: Orcish Bowmasters
+|   3: Name card: Ponder
+|   4: Name card: Fatal Push
+|   5: Name card: Flow State
+|   6: Name card: Tamiyo, Inquisitive Student
+|   7: Name card: Baleful Strix
+|   8: Name card: Carpet of Flowers
+|   9: Name card: Consign to Memory
+|   10: Name card: Endurance
+|   11: Name card: Pernicious Deed
+|   12: Name card: Sheoldred's Edict
+|   13: Name card: Thoughtseize
+|   14: Name card: Uro, Titan of Nature's Wrath
+|   15: Name card: Witherbloom Command
+|   16: Name card: Force of Negation
+|   17: Name card: Force of Vigor
+|   18: Name card: Hydroblast
+|   19: Name card: Kaito, Bane of Nightmares
+|   20: Name card: Life from the Loam
+|   21: Name card: Lórien Revealed
+|   22: Name card: Null Rod
+|   23: Name card: Surgical Extraction
+|   24: Name card: Toxic Deluge
+|   25: Name card: Veil of Summer
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Name card: Orcish Bowmasters)
+Player B names card: Orcish Bowmasters
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Fatal Push
+  Fatal Push
+  Orcish Bowmasters
+  Thoughtseize
+Player A discards Orcish Bowmasters
+Cabal Therapy is exiled (flashback)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Tamiyo, Inquisitive Student
+| decision 21: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Tamiyo, Inquisitive Student)
+Player A activated Tropical Island for 1(U)
+Player A casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 22: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 23: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 24: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Amped Raptor
+|   3: Cast Swords to Plowshares
+|   4: Cast Swords to Plowshares
+|   5: Cast Voice of Victory
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Amped Raptor)
+Player B activated Badlands for 1(R)
+Player B activated Scrubland for 1(W)
+Player B casts Amped Raptor
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+Resolving ability (category: DigUntil)
+Player B reveals Arid Mesa.
+Player B reveals Marsh Flats.
+Player B reveals Arid Mesa.
+Player B reveals Elegant Parlor.
+Player B reveals Orcish Bowmasters.
+Player B exiles Orcish Bowmasters.
+Resolving ability (category: Play)
+Player B may cast Orcish Bowmasters by paying 2 energy rather than its mana cost.
+| decision 25: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Orcish Bowmasters
+|   1: Cast Orcish Bowmasters
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Orcish Bowmasters)
+Player B pays 2 energy
+Player B casts Orcish Bowmasters
+Resolving ability (category: Cleanup)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 26: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (17 life)
+|   2: Tamiyo, Inquisitive Student
+|   3: Amped Raptor
+|   4: Orcish Bowmasters
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player A (now at 19 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player B Army is now 1/1.
+| decision 27: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 28: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tropical Island
+|   1: Badlands
+|   2: Scrubland
+|   3: Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tropical Island)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Tropical Island is on the stack
+Resolving ability (category: Destroy)
+Tropical Island is destroyed
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Tropical Island
+| decision 30: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+
+--- Declare Attackers (Player A) ---
+| decision 31: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 32: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+| decision 33: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Cabal Therapy
+| decision 34: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 35: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy
+|   2: Cast Swords to Plowshares
+|   3: Cast Swords to Plowshares
+|   4: Cast Voice of Victory
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 36: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (17 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Cabal Therapy
+| decision 37: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 38: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Force of Will
+|   2: Name card: Orcish Bowmasters
+|   3: Name card: Ponder
+|   4: Name card: Fatal Push
+|   5: Name card: Flow State
+|   6: Name card: Tamiyo, Inquisitive Student
+|   7: Name card: Baleful Strix
+|   8: Name card: Carpet of Flowers
+|   9: Name card: Consign to Memory
+|   10: Name card: Endurance
+|   11: Name card: Pernicious Deed
+|   12: Name card: Sheoldred's Edict
+|   13: Name card: Thoughtseize
+|   14: Name card: Uro, Titan of Nature's Wrath
+|   15: Name card: Witherbloom Command
+|   16: Name card: Force of Negation
+|   17: Name card: Force of Vigor
+|   18: Name card: Hydroblast
+|   19: Name card: Kaito, Bane of Nightmares
+|   20: Name card: Life from the Loam
+|   21: Name card: Lórien Revealed
+|   22: Name card: Null Rod
+|   23: Name card: Surgical Extraction
+|   24: Name card: Toxic Deluge
+|   25: Name card: Veil of Summer
+(REPLAY) [T7 | First Main | Player B] Input: 4
+| >> Player B: 4 (Name card: Fatal Push)
+Player B names card: Fatal Push
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Fatal Push
+  Fatal Push
+  Thoughtseize
+Player A discards Fatal Push
+Player A discards Fatal Push
+| decision 39: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Cabal Therapy (flashback)
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 40: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (17 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Amped Raptor
+|   1: Sacrifice Orcish Bowmasters
+|   2: Sacrifice Orc Army
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Sacrifice Orc Army)
+Player B sacrifices Orc Army
+Player B casts Cabal Therapy
+Orc Army (token) is put into the graveyard and ceases to exist.
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Force of Will
+|   2: Name card: Orcish Bowmasters
+|   3: Name card: Ponder
+|   4: Name card: Fatal Push
+|   5: Name card: Flow State
+|   6: Name card: Tamiyo, Inquisitive Student
+|   7: Name card: Baleful Strix
+|   8: Name card: Carpet of Flowers
+|   9: Name card: Consign to Memory
+|   10: Name card: Endurance
+|   11: Name card: Pernicious Deed
+|   12: Name card: Sheoldred's Edict
+|   13: Name card: Thoughtseize
+|   14: Name card: Uro, Titan of Nature's Wrath
+|   15: Name card: Witherbloom Command
+|   16: Name card: Force of Negation
+|   17: Name card: Force of Vigor
+|   18: Name card: Hydroblast
+|   19: Name card: Kaito, Bane of Nightmares
+|   20: Name card: Life from the Loam
+|   21: Name card: Lórien Revealed
+|   22: Name card: Null Rod
+|   23: Name card: Surgical Extraction
+|   24: Name card: Toxic Deluge
+|   25: Name card: Veil of Summer
+(REPLAY) [T7 | First Main | Player B] Input: 13
+| >> Player B: 13 (Name card: Thoughtseize)
+Player B names card: Thoughtseize
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Thoughtseize
+Player A discards Thoughtseize
+Cabal Therapy is exiled (flashback)
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 45: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 46: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 47: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+| decision 48: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Amped Raptor -> Player A
+  Orcish Bowmasters -> Player A
+| decision 49: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 50: Player B (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 17 life)
+--- End First Strike Combat Damage ---
+
+| decision 51: Player B (game 0, turn 7, FIRST_STRIKE_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | First Strike Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player A (now at 16 life)
+--- End Combat Damage ---
+
+| decision 52: Player B (game 0, turn 7, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 53: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 54: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 55: Player B (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T7 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+| decision 56: Player B (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Baleful Strix
+| decision 57: Player B (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 58: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 59: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 60: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 61: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+Tamiyo, Inquisitive Student triggered
+| decision 62: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+| decision 63: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 64: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+| decision 65: Player B (game 0, turn 8, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 66: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 67: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 68: Player B (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T8 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+| decision 69: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Ajani, Nacatl Pariah
+| decision 70: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 71: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ajani, Nacatl Pariah
+|   2: Cast Swords to Plowshares
+|   3: Cast Swords to Plowshares
+|   4: Cast Voice of Victory
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ajani, Nacatl Pariah)
+Player B activated Scrubland for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Ajani, Nacatl Pariah
+Ajani, Nacatl Pariah enters the battlefield
+Ajani, Nacatl Pariah triggered
+Resolving ability (category: Token)
+Token created: 2/1 Cat Warrior
+
+--- Declare Attackers (Player B) ---
+| decision 72: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 73: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+| decision 74: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Amped Raptor -> Player A
+  Orcish Bowmasters -> Player A
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 14 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player A (now at 13 life)
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+Player A draws Swamp
+| decision 75: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Swamp
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Swamp)
+Player A played Swamp
+| decision 76: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Baleful Strix
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Baleful Strix)
+Player A activated Tropical Island for 1(U)
+Player A activated Swamp for 1(B)
+Player A casts Baleful Strix
+Baleful Strix enters the battlefield
+Baleful Strix triggered
+Resolving ability (category: Draw, amount: 1)
+Player A draws Misty Rainforest
+Choose target for Orcish Bowmasters:
+| decision 77: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player A (13 life)
+|   1: Player B (17 life)
+|   2: Baleful Strix
+|   3: Tamiyo, Inquisitive Student
+|   4: Ajani, Nacatl Pariah
+|   5: Amped Raptor
+|   6: Orcish Bowmasters
+|   7: Cat Warrior token
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (13 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player A (now at 12 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player B Army is now 1/1.
+
+--- Declare Attackers (Player A) ---
+| decision 78: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 79: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+| decision 80: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 81: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Baleful Strix
+|   1: Tamiyo, Inquisitive Student
+|   2: Ajani, Nacatl Pariah
+|   3: Amped Raptor
+|   4: Orcish Bowmasters
+|   5: Cat Warrior token
+|   6: Orc Army token
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Baleful Strix)
+Targeting choice 0
+Player B activated Scrubland for 1(W)
+Player B casts Swords to Plowshares targeting Baleful Strix
+Resolving ability (category: ChangeZone)
+Baleful Strix is moved to exile
+Resolving ability (category: GainLife, amount: 1)
+Player A gains 1 life (now at 13)
+Player B draws Voice of Victory
+
+--- Declare Attackers (Player B) ---
+| decision 82: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ajani, Nacatl Pariah [1/2]
+|   1: Amped Raptor [2/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Cat Warrior token [2/1]
+|   4: Orc Army token [1/1]
+|   5: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ajani, Nacatl Pariah [1/2])
+Ajani, Nacatl Pariah attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+| decision 83: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Cat Warrior token [2/1]
+|   3: Orc Army token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 84: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Cat Warrior token [2/1]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+| decision 85: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [2/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [2/1])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+  [attacking] Cat Warrior token [2/1] -> Player A
+| decision 86: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Orc Army token [1/1])
+Orc Army token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+  [attacking] Cat Warrior token [2/1] -> Player A
+  [attacking] Orc Army token [1/1] -> Player A
+| decision 87: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ajani, Nacatl Pariah -> Player A
+  Amped Raptor -> Player A
+  Orcish Bowmasters -> Player A
+  Cat Warrior token -> Player A
+  Orc Army token -> Player A
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 11 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Ajani, Nacatl Pariah deals 1 damage to Player A (now at 10 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 9 life)
+  Cat Warrior token deals 2 damage to Player A (now at 7 life)
+  Orc Army token deals 1 damage to Player A (now at 6 life)
+--- End Combat Damage ---
+
+
+-------- TURN 13 (Player A) --------
+| decision 88: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Lórien Revealed
+| decision 89: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+|   4: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 90: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+|   4: Activate Clue token (Draw)
+|   5: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 91: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+|   4: Activate Clue token (Draw)
+|   5: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+| decision 92: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Clue token (Draw)
+|   2: Activate Clue token (Draw)
+|   3: Activate Clue token (Draw)
+|   4: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Clue token (Draw))
+Player A activated Swamp for 1(B)
+Player A activated Tropical Island for 1(G)
+Player A sacrifices Clue token
+Player A's Clue ability is on the stack
+Clue (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Force of Will
+Choose target for Orcish Bowmasters:
+| decision 93: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player A (5 life)
+|   1: Player B (17 life)
+|   2: Tamiyo, Inquisitive Student
+|   3: Ajani, Nacatl Pariah
+|   4: Amped Raptor
+|   5: Orcish Bowmasters
+|   6: Cat Warrior token
+|   7: Orc Army token
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (5 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player A (now at 4 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player B Army is now 2/2.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 94: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bayou
+|   2: Forest
+|   3: Island
+|   4: Tropical Island
+|   5: Undercity Sewers
+|   6: Underground Sea
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Bayou)
+Player A shuffles their library
+Player A puts Bayou to the battlefield
+| decision 95: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Lórien Revealed from hand (ChangeZone))
+Player A activated Bayou for 1(G)
+Player A activates Lórien Revealed from hand
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 96: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Tropical Island
+|   3: Undercity Sewers
+|   4: Underground Sea
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tropical Island)
+Player A shuffles their library
+Player A reveals Tropical Island and puts it to hand
+
+--- Declare Attackers (Player A) ---
+| decision 97: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 98: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Confirm attackers)
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+Tamiyo, Inquisitive Student triggered
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+No creatures eligible to block.
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+| decision 99: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Guide of Souls
+| decision 100: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 101: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Guide of Souls
+|   2: Cast Swords to Plowshares
+|   3: Cast Voice of Victory
+|   4: Cast Voice of Victory
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Guide of Souls)
+Player B activated Scrubland for 1(W)
+Player B casts Guide of Souls
+Guide of Souls enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 102: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ajani, Nacatl Pariah [1/2]
+|   1: Amped Raptor [2/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Cat Warrior token [2/1]
+|   4: Orc Army token [2/2]
+|   5: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Ajani, Nacatl Pariah [1/2])
+Ajani, Nacatl Pariah attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+| decision 103: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Cat Warrior token [2/1]
+|   3: Orc Army token [2/2]
+|   4: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+| decision 104: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Cat Warrior token [2/1]
+|   2: Orc Army token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+| decision 105: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [2/1]
+|   1: Orc Army token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [2/1])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+  [attacking] Cat Warrior token [2/1] -> Player A
+| decision 106: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Orc Army token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Orc Army token [2/2])
+Orc Army token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+  [attacking] Amped Raptor [2/1] -> Player A
+  [attacking] Orcish Bowmasters [1/1] -> Player A
+  [attacking] Cat Warrior token [2/1] -> Player A
+  [attacking] Orc Army token [2/2] -> Player A
+| decision 107: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Confirm attackers)
+
+Attackers declared:
+  Ajani, Nacatl Pariah -> Player A
+  Amped Raptor -> Player A
+  Orcish Bowmasters -> Player A
+  Cat Warrior token -> Player A
+  Orc Army token -> Player A
+Guide of Souls triggered
+Resolving ability (category: ImmediateTrigger)
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 2 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Ajani, Nacatl Pariah deals 1 damage to Player A (now at 1 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 0 life)
+  Cat Warrior token deals 2 damage to Player A (now at -2 life)
+  Orc Army token deals 2 damage to Player A (now at -4 life)
+--- End Combat Damage ---
+
+
+Player A has -4 life - Player B wins!
+GAME_RESULT: 1 Player B wins
