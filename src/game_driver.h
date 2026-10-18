@@ -15,7 +15,6 @@
 
 #include "classes/deck.h"
 #include "classes/game.h"
-#include "classes/gamestate.h"
 #include "classes/match_context.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"

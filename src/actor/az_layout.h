@@ -7,5 +7,8 @@
 // observation is no longer built anywhere (plan step 3b); the step-5 evaluator replaces this
 // constant with its own input layout.
 constexpr int ACTOR_OBS_SIZE = 6922;
+// The policy head's width those checkpoints were exported with (the BQUERY-era menu cap): the
+// logits, the legal-action mask and the handshake's `MAX_ACTIONS` are this wide.
+constexpr int ACTOR_MAX_ACTIONS = 64;
 
 #endif /* ACTOR_AZ_LAYOUT_H */

@@ -32,7 +32,6 @@
 #include "queries/players.h"
 #include "queries/zones.h"
 #include "input_logger.h"
-#include "machine_io.h"
 #include "snapshot.h"
 #include "state_format/events.h"
 #include "state_format/stream.h"
@@ -51,6 +50,8 @@ static int sideboard_copy_ordinal(size_t copies);
 static constexpr int SIDEBOARD_ORDINAL_MAX = 63;
 // Completed swaps per sideboarding player in machine mode (run_sideboard_phase).
 static constexpr int SIDEBOARD_SWAP_CAP = 15;
+// The widest sideboarding menu run_sideboard_phase may emit (fatal past it).
+static constexpr size_t SIDEBOARD_MENU_LIMIT = 64;
 static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
                                std::vector<std::pair<size_t, std::string>> &to,
                                size_t from_idx);
@@ -88,9 +89,6 @@ bool human_seat[2] = {false, false};
 bool log_viewer_set = false;
 Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
 
-// The board print_game_state prints for a --replay without --machine (every other run is in
-// machine mode: a human seat renders its own frames, cli/board.h).
-static GameState gs;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
@@ -607,9 +605,6 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // actions, no SBE trigger scan, no new decisions (CR 104.1: the game
         // ends immediately) — so exit now.
         if (cur_game.ended) break;
-        Zone::Ownership viewer = (has_human_player)
-            ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
-            : Zone::UNKNOWN;
 
         if (!resolution_just_completed) {
             if ((!InputLogger::instance().is_machine_mode() || narrative_mode) &&
@@ -690,12 +685,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             continue;
         }
 
-        // The board of a --replay without --machine (machine mode prints none).
         g_priority_window_open = true;
-        if (!machine_mode) {
-            populate_gamestate(&gs, viewer);
-            print_game_state(&gs);
-        }
         // The priority decision is loop-safe: the whole state lives in cur_game +
         // ECS here, and re-entering the loop top on that data re-derives this
         // same decision (the snapshot round-trip CI test proves it byte-for-byte).
@@ -1297,12 +1287,12 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
 
         // The one-shot locks bound the menu to Done + (distinct sideboard) while
         // balanced, and to (distinct maindeck) — or the lone forced cut — at +1,
-        // comfortably inside MAX_ACTIONS for any real deck; a wider menu means the
+        // comfortably inside SIDEBOARD_MENU_LIMIT for any real deck; a wider menu means the
         // locks failed, so it is fatal.
-        if (actions.size() > MAX_ACTIONS)
+        if (actions.size() > SIDEBOARD_MENU_LIMIT)
             fatal_error("sideboard menu has " + std::to_string(actions.size()) +
-                        " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
-                        " — choices beyond that would be unreachable");
+                        " entries, exceeds SIDEBOARD_MENU_LIMIT=" + std::to_string(SIDEBOARD_MENU_LIMIT) +
+                        " (the swap locks failed)");
 
         // Cap completed swaps, for every consumer, so a runaway agent cannot spin here.
         // Checked only while balanced: interrupting mid-move would strand the deck
@@ -1330,8 +1320,6 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // source so the observation shows WHICH card the balancing move is for.
         // Entity 0 is the "none" sentinel, so this is a no-op while balanced.
         PendingDecisionScope pending(balanced ? 0 : load_card(st.unpaired_name));
-        populate_gamestate(&gs, player);
-        if (balanced) print_game_state(&gs);
         // Loop-safe: the menu above is a pure function of (deck, the one-shot name
         // sets, delta, unpaired_name, force_done), all of which live in `st` and are
         // restored wholesale, so re-entry after a rollback re-derives this exact
@@ -1506,7 +1494,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                 ctx.a_goes_first = (winner != Zone::PLAYER_A);
 
             // sideboarding phase - ECS from the just-ended game is still valid
-            // (player entities exist for populate_gamestate, card_db works for load_card)
+            // (card_db works for load_card)
             ctx.sb = SideboardPhaseState();
             ctx.sb.player = Zone::PLAYER_A;
             ctx.stage = MatchContext::SIDEBOARD_A;

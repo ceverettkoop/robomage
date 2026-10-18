@@ -495,8 +495,8 @@ sections above are not repeated here.
   — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator;
   `src/mana_system.cpp` — mana pools, payment and auto-pay
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
-  accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
-  `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
+  accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`,
+  `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
   controller, `Defined$` player), `affected` (the objects / player an effect acts on:
   targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
@@ -545,9 +545,7 @@ sections above are not repeated here.
   the engine state, and the knowledge state across the snapshot check's restore;
   `SELFCHECK-KNOWLEDGE:` summary
 - `src/snapshot.{h,cpp}` — in-process state snapshot/restore and the loop-safe decision marker
-- `src/machine_io.{h,cpp}` — the board a `--replay` without `--machine` prints (`populate_gamestate`
-  / `GameState`, `src/classes/gamestate.h`; goes in plan step 4b part 2) and `action_card_vocab_idx`;
-  `src/cli_output.cpp` — `game_log`, that board's printer and `cli_print_help`
+- `src/cli_output.cpp` — `game_log` (the narrative) and `cli_print_help`
 - `src/cli/` — the C++ CLI: `board.h` renders one seat's decoded frames as text (board, pending
   decision and cost, menu, knowledge panel, zones, card details, events; also `--trace-decisions`),
   `human.h` the human seat (an in-process agent reading stdin: menu rows and the `board` / `zone` /

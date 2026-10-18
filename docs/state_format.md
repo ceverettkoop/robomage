@@ -1063,5 +1063,5 @@ FIRE_LEAVES_BATTLEFIELD), `EffectKind` (`effect_kind`: None, then the categories
 `effect_kinds.def`, included as an X-macro). The type lists `all_types`, `all_subtypes`,
 `all_supertypes` (`src/constants.cpp`, sorted) give `card_type`, `subtype`, `supertype`; the
 parser's keyword table (`kKeywordTable`, `src/parse.cpp`, via `parser_keyword_names`) followed
-by the observation's evergreen keywords it lacks (`OBS_KEYWORDS`, `src/machine_io.h`) gives
+by the observation's evergreen keywords it lacks (`EVERGREEN_KEYWORDS`, `src/state_format/enum_names.cpp`) gives
 `keyword`. The SCHEMA frame lists the format's enums first, then these.

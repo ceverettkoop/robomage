@@ -7,7 +7,6 @@
 
 #include "classes/action.h"
 #include "classes/game.h"
-#include "classes/gamestate.h"
 #include "components/zone.h"
 
 // Startup / meta
@@ -16,9 +15,6 @@ void cli_print_help(const char* program, const char* version);
 void cli_print_seed(unsigned int seed);
 void cli_print_pregame_header();
 void cli_print_turn_header(size_t turn, bool player_a_turn);
-
-// Game state display (reads from GameState only — no ECS access)
-void print_game_state(const GameState* gs);
 
 // Errors (replaces error.cpp printfs)
 void cli_warning(const std::string& msg);

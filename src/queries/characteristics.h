@@ -122,4 +122,10 @@ inline bool is_planeswalker_permanent(Entity e) {
 // characteristics.cpp.
 std::string entity_name(Entity e);
 
+// Card vocab index of an object or an ability's source (card_vocab.h), by its name as it is now:
+// a permanent's current name, a token's token-band index (else TOKEN_SENTINEL), a card's CardData
+// name; an ability entity resolves to its source. A source that ceased to exist (a token, CR 111.7)
+// is identified by its last-known information. -1 for entity 0 or an object with neither.
+int source_vocab_idx(Entity e);
+
 #endif /* QUERIES_CHARACTERISTICS_H */

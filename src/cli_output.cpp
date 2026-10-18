@@ -1,19 +1,10 @@
 #include "cli_output.h"
 
-#include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
-#include "card_vocab.h"
-#include "classes/colors.h"
 #include "input_logger.h"
-
-// Formats a player's non-mana resource counters (poison, energy) into `buf` as a
-// " poison N, energy N" suffix, listing only the counters that are nonzero. Writes
-// an empty string when the player has neither. Display only.
-static void format_player_resources(const PlayerState& ps, char* buf, size_t buf_len);
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 
@@ -152,8 +143,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      in-process agent (with --play: the human takes over once the\n");
     printf("                      script runs out). With --machine every other seat needs an\n");
     printf("                      agent or a script (the human seat reads stdin). Under\n");
-    printf("                      --replay: the seat whose view --narrative's one-sided lines\n");
-    printf("                      are limited to\n");
+    printf("                      --replay there is no human seat: the narrative's one-sided\n");
+    printf("                      lines are limited to that seat's view, as with --log-viewer\n");
     printf("  --machine           Machine mode (speak RMSTATE; the decisions are the same\n");
     printf("                      for every consumer). Outside\n");
     printf("                      --replay, each seat that has no in-process agent and is\n");
@@ -223,9 +214,10 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --replay <logfile>  Replay a previously logged game. The log's RMLOG v2\n");
     printf("                      header alone determines the setup (decks, seed, --bo3,\n");
     printf("                      --no-shuffle, test setup); those flags given alongside\n");
-    printf("                      --replay are ignored with a warning. Output flags\n");
-    printf("                      (--machine, --narrative, --player, --log-viewer,\n");
-    printf("                      --trace-visibility, --trace-handles,\n");
+    printf("                      --replay are ignored with a warning. It prints the\n");
+    printf("                      narrative (under --machine, only with --narrative).\n");
+    printf("                      Output flags (--machine, --narrative, --player,\n");
+    printf("                      --log-viewer, --trace-visibility, --trace-handles,\n");
     printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
     printf("                      --knowledge-a/-b, --selfcheck-state, --selfcheck-knowledge)\n");
     printf("                      still apply; --log-decisions has no effect\n");
@@ -284,122 +276,6 @@ void cli_print_turn_header(size_t turn, bool player_a_turn) {
     // Game::turn_state.turn counts from 0; display 1-based so the first header reads "TURN 1"
     // (never "TURN 0"). Display-only — the 0-based counter itself is untouched.
     game_log("\n-------- TURN %zu (%s) --------\n", turn + 1, name);
-}
-
-// ── Game state display ────────────────────────────────────────────────────────
-
-static void format_player_resources(const PlayerState& ps, char* buf, size_t buf_len) {
-    buf[0] = '\0';
-    size_t off = 0;
-    const char* sep = " ";
-    if (ps.poison_counters > 0) {
-        off += snprintf(buf + off, buf_len - off, "%spoison %d", sep, ps.poison_counters);
-        sep = ", ";
-    }
-    if (ps.energy > 0) {
-        off += snprintf(buf + off, buf_len - off, "%senergy %d", sep, ps.energy);
-        sep = ", ";
-    }
-}
-
-void print_game_state(const GameState* gs) {
-    if (InputLogger::instance().is_machine_mode()) return;
-
-    const char* self_name   = gs->self_is_player_a ? "Player A" : "Player B";
-    const char* opp_name    = gs->self_is_player_a ? "Player B" : "Player A";
-    const char* active_name = gs->is_active_player  ? self_name : opp_name;
-
-    game_log("\n--- Turn %d - %s's %s ---\n", gs->turn, active_name, step_to_string(gs->cur_step));
-    game_log("Life: Player A=%d, Player B=%d\n",
-             gs->self_is_player_a ? gs->self.life : gs->opponent.life,
-             gs->self_is_player_a ? gs->opponent.life : gs->self.life);
-
-    // Non-mana resources (poison, energy) shown only when a player actually has some.
-    const PlayerState& player_a = gs->self_is_player_a ? gs->self : gs->opponent;
-    const PlayerState& player_b = gs->self_is_player_a ? gs->opponent : gs->self;
-    char res_buf[64];
-    format_player_resources(player_a, res_buf, sizeof(res_buf));
-    if (res_buf[0]) game_log("  Player A:%s\n", res_buf);
-    format_player_resources(player_b, res_buf, sizeof(res_buf));
-    if (res_buf[0]) game_log("  Player B:%s\n", res_buf);
-
-    if (gs->stack_size > 0) {
-        game_log("STACK:\n");
-        int display = gs->stack_size < MAX_STACK_DISPLAY ? gs->stack_size : MAX_STACK_DISPLAY;
-        for (int i = 0; i < display; i++) {
-            const StackEntry* se = &gs->stack[i];
-            const char* cname = se->card_vocab_idx >= 0 ? card_index_to_name(se->card_vocab_idx) : "Unknown";
-            game_log("  %d: %s\n", i, cname);
-        }
-    }
-
-    game_log("\n--- BATTLEFIELD ---\n");
-
-    const PermanentState* perm_arrays[2] = { gs->self_permanents, gs->opp_permanents };
-    const char* perm_names[2] = { self_name, opp_name };
-
-    for (int p = 0; p < 2; p++) {
-        game_log("%s:\n", perm_names[p]);
-        bool found_any = false;
-        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-            const PermanentState* slot = &perm_arrays[p][i];
-            if (slot->card_vocab_idx < 0) continue;
-            found_any = true;
-            char line[512];
-            int len = snprintf(line, sizeof(line), "  %s", card_index_to_name(slot->card_vocab_idx));
-            if (slot->is_creature && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " [%d/%d]", slot->power, slot->toughness);
-            if (slot->is_tapped && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (TAPPED)");
-            if (slot->has_summoning_sickness && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
-            if (slot->damage > 0 && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
-            if (slot->counters[0] != '\0' && len < (int)sizeof(line))
-                snprintf(line + len, (size_t)((int)sizeof(line) - len), " {%s}", slot->counters);
-            game_log("%s\n", line);
-        }
-        if (!found_any) game_log("  (no permanents)\n");
-    }
-
-    bool header_printed = false;
-    const PlayerState* players[2] = { &gs->self, &gs->opponent };
-    const char* player_names_arr[2] = { self_name, opp_name };
-    for (int p = 0; p < 2; p++) {
-        bool has_mana = false;
-        for (int i = 0; i < 6; i++) {
-            if (players[p]->mana[i] > 0) { has_mana = true; break; }
-        }
-        if (!has_mana) continue;
-        if (!header_printed) {
-            game_log("\n--- MANA POOLS ---\n");
-            header_printed = true;
-        }
-        char line[256];
-        int len = snprintf(line, sizeof(line), "%s:", player_names_arr[p]);
-        for (int i = 0; i < 6; i++) {
-            for (int n = 0; n < players[p]->mana[i]; n++) {
-                if (len < (int)sizeof(line))
-                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%s)",
-                                    mana_symbol_str((Colors)i));
-            }
-        }
-        game_log("%s\n", line);
-    }
-
-    extern bool has_human_player;
-    extern bool human_player_is_a;
-    bool show_hand = !has_human_player || (human_player_is_a == gs->self_is_player_a);
-    if (show_hand) {
-        game_log("\n%s hand:\n", self_name);
-        bool hand_empty = true;
-        for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-            if (gs->self_hand[i] < 0) continue;
-            hand_empty = false;
-            game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
-        }
-        if (hand_empty) game_log("  (empty)\n");
-    }
 }
 
 // ── Errors ────────────────────────────────────────────────────────────────────
