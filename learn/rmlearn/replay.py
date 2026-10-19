@@ -144,8 +144,9 @@ class ReplayWindow:
                 n += 1
         return n
 
-    def add(self, ep):
-        """Adds one Episode (ingestion order = age); False when skipped."""
+    def add(self, ep, fresh=True):
+        """Adds one Episode (ingestion order = age); False when skipped. With `fresh` False it is not
+        offered by ``take_fresh`` (a resumed learner's episodes it had already taken)."""
         if not ep.steps:
             self.counts["skipped_empty"] += 1
             return False
@@ -159,7 +160,8 @@ class ReplayWindow:
         ep.added_at = time.time()
         with self._lock:
             self._eps.append(ep)
-            self._fresh.append(ep)
+            if fresh:
+                self._fresh.append(ep)
             self.decisions += ep.steps
             self.bytes += ep.nbytes
             self.counts["ingested"] += 1
@@ -183,6 +185,15 @@ class ReplayWindow:
                     pass
         while self._fresh and getattr(self._fresh[0], "evicted", False):
             self._fresh.popleft()
+
+    def skip(self, paths):
+        """Marks `paths` as seen: ``poll`` never ingests them (a resume leaving older files out)."""
+        self._seen.update(paths)
+
+    def files(self):
+        """(the window's episode paths in ingestion order, the paths not yet taken by take_fresh)."""
+        with self._lock:
+            return [e.path for e in self._eps], [e.path for e in self._fresh]
 
     def start(self):
         """Polls on a background thread every poll_interval seconds."""

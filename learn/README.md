@@ -25,8 +25,10 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |
 | `rmlearn/rnad.py` | R-NaD's math, a port of OpenSpiel's `rnad.py` (8156646): `v_trace`, `get_loss_v`, `get_loss_nerd`, `EntropySchedule`, `FineTuning` (= `src/agents/policy_projection.cpp`) |
 | `rmlearn/rnad_learner.py` | `RNaDConfig`, `trainable_episodes`, `RNaDLearner` (on `replay.TrajectoryBatch`; (`step`, the iteration boundary, `state_dict` / `from_state_dict`, `from_bc_checkpoint`, `configure`), `ServerLink` (pushes to `InferenceServer`) |
+| `rmtrain`, `rmlearn/rmtrain.py`, `rmlearn/orchestrator/` | the training program (`docs/rmtrain.md`): config, run directory, control socket, actor pool, the GPU process (learner + server), evaluation registry, exporter, the phases B0–B5 |
 | `check.py` | the CPU-only correctness checks |
 | `check_rnad.py` | the R-NaD learner's CPU-only checks (a numpy oracle of the reference, the engine's projection, synthetic games, resume) |
+| `check_rmtrain.py` | rmtrain's CPU checks, and `--smoke`: a tiny end-to-end run (GPU, engine) |
 | `bench_rnad.py` | the learner step's throughput and memory |
 | `integration.py` | checks and benches against the C++ actor (`robomage_nn`): `actor`, `server`, `bench` |
 

@@ -1,0 +1,10 @@
+#!/bin/sh
+# rmtrain: the training program (docs/rmtrain.md). Runs learn/rmlearn/rmtrain.py with the learner's
+# venv (learn/.venv), or $RMTRAIN_PYTHON.
+here=$(cd "$(dirname "$0")" && pwd)
+py=${RMTRAIN_PYTHON:-$here/.venv/bin/python}
+if [ ! -x "$py" ]; then
+    echo "rmtrain: no python at $py (create learn/.venv from learn/requirements.txt, or set RMTRAIN_PYTHON)" >&2
+    exit 1
+fi
+PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}" exec "$py" -m rmlearn.rmtrain "$@"

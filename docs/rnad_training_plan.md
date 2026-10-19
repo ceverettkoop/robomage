@@ -520,6 +520,27 @@ the engine, the gate or `python/` imports it.
     from the files alone when the run is not running.
   - Actors that crash are restarted, and their last game is written off; the GPU process
     crashing stops the run, which resumes from the last checkpoint.
+
+  Done (as built): `learn/rmtrain` (`learn/rmlearn/rmtrain.py`, `learn/rmlearn/orchestrator/`),
+  documented in [`docs/rmtrain.md`](rmtrain.md). A TOML / JSON config over defaults for every key
+  (`rmtrain defaults`), `--set` overrides, the resolved `config.json` in the run directory; `start`
+  detaches under `systemd-run --user` (`MemoryMax`, `KillMode=mixed`, `Restart=on-failure`, so a
+  crashed or killed run resumes by itself; a double-fork daemon with a warning without systemd) and
+  returns once the control socket answers. Processes: the orchestrator (no GPU), one GPU process
+  (the learner — BC or R-NaD — and the RMIP server, holding the flock `run.gpu_lock`), N actors
+  (`robomage_nn --actor`, GPU hidden; teachers started by them), evaluation actors and a CPU-only
+  exporter. The phases run by themselves: B0 (teacher corpus through the actors, or a reused
+  corpus), B1 (BC until held-out agreement plateaus or a step cap, then an evaluation), B2 (DAgger
+  rounds: the BC policy through `nn:remote` with the teacher labelling both seats at a decaying
+  mix, BC continuing on the growing window; exit when the win rate against scripted:hard stops
+  improving or at the round cap), B3 (`from_bc_checkpoint`), B4 (self-play on policies 0, 1, 2,
+  fixed points saved and exported at each boundary, an evaluation per iteration against the fixed
+  opponents and a ladder of past fixed points), B5 (the learner's projection, evaluation with
+  `thresh=0.03:disc=16`); `phase hold|release|next`. Evaluation is a registry of evaluators (the
+  extension point for T8). Checkpoints on a cadence and at phase ends, `state.json` written
+  atomically, `metrics.jsonl` / `evals.jsonl`; a resume re-reads the replay window's checkpointed
+  episodes and restarts actors after their last match. `learn/check_rmtrain.py`: CPU checks and a
+  `--smoke` tiny end-to-end run (B0 → done in ~6.5 min including a `kill -9` in B4 and a stop/start).
 - **Environment.** `learn/` lives in this repository with `learn/requirements.txt` (torch
   2.10.0+rocm7.0, the build that runs on this GPU) and its own `learn/.venv`.
 
