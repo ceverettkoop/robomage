@@ -44,7 +44,9 @@ The options are output only: not recorded in the decision log, honored under `--
 uncategorised choices with it) and resets its per-game state at each match of its stream, so its
 labels are a function of the stream; with `--seed` equal to `--game-seed` they are the decisions
 `rm_driver.py` would take with `scripted:<tier>` on that seat. One teacher process serves the whole
-run.
+run; under `--actor` (`docs/actor.md` §6) it serves a seat's matches as long as they name the same
+command, and its labels in each are what a fresh `teacher.py` with the same `--seed` gives on that
+match's stream.
 
 - **Labels.** `teacher` is the reply as a menu row; `-1` (the last row) is recorded as that row. A
   concession sentinel (`-2` / `-3`) is recorded as −1 (no label) and never played. Every decision of
@@ -84,7 +86,8 @@ run.
   log (`rm_driver.py --rmlog-dir` names each `<deck a>-<deck b>.<bo1|bo3>.seed<seed>.rmlog`).
 - **Atomic.** Each file is written whole when its game ends (or the run stops at
   `--max-decisions`, or a human seat quits), to `<name>.tmp` and renamed into place, so a reader
-  polling DIR for `*.rmtraj` never sees part of one.
+  polling DIR for `*.rmtraj` never sees part of one. An actor stopped by a signal writes none for
+  its unfinished game.
 - **Re-featurization.** The frames are a function of the decision log, so `--replay LOG
   --trajectory-out` writes byte-identical tensors (and every other array but the behaviour
   policy's: `has_mu`, `mu`, `policy_version`, `eval_*`; and `teacher` unless the replay has the
@@ -127,6 +130,7 @@ How an episode ends (`end_reason`, results per seat +1 / −1 / 0):
 | a drawn game (CR 104.4a) | `draw` | 0 / 0 |
 | a match conceded (`-3`) in the sideboarding phase before game `n` | `concession` | the conceder −1; game `n` was never played: no `GAME_RESULT`, `first` empty, `game_engine_seed` −1 |
 | the run stopped at `--max-decisions` (the cap, recorded in the decision log's setup flags, applies to a replay too) | `cap` | 0 / 0 |
+| the game stopped at `--max-game-decisions` (the per-game cap, also recorded, `docs/actor.md` §5): the match stops with it | `cap` | 0 / 0 |
 | a human seat quit, or `--replay` reached a log's `QUIT` | `quit` | 0 / 0 |
 
 A `-2` read in the sideboarding phase is ignored by the engine (nothing to concede) and is

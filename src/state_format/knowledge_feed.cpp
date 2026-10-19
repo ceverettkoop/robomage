@@ -93,6 +93,14 @@ static void pass_errors(ObsConsumer consumer, int seat, std::vector<std::string>
     }
 }
 
+void knowledge_feed_reset() {
+    for (Channel(&row)[2] : channels)
+        for (Channel &ch : row) {
+            ch.know.reset();
+            ch.errors = 0;
+        }
+}
+
 void knowledge_feed_match_frame(ObsConsumer consumer, Zone::Ownership viewer, const std::string &payload) {
     const int seat = seat_index(viewer);
     if (seat < 0) return;

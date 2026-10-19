@@ -32,11 +32,15 @@ class Knowledge;
 //
 // Lifetime: the instances live outside Game, for the whole match (match memory persists across
 // the per-game reset; each instance resets its networks itself at game_start), and are made at a
-// writer's first frame for that seat. When the first is made, a snapshot hook is registered
-// (snapshot_set_sidecar_hooks, snapshot.h) that saves every instance's state (Knowledge::serialize)
-// with each engine snapshot and restores it with it, so a restored decision rebuilds the same
-// frames, k_* tables included. With no RMSTATE writer on, no instance exists, no hook is
-// registered and nothing here runs.
+// writer's first frame for that seat (and again after knowledge_feed_reset). When the first is
+// made, a snapshot hook is registered (snapshot_set_sidecar_hooks, snapshot.h) that saves every
+// instance's state (Knowledge::serialize) with each engine snapshot and restores it with it, so a
+// restored decision rebuilds the same frames, k_* tables included. With no RMSTATE writer on, no
+// instance exists, no hook is registered and nothing here runs.
+
+// Before a match (agents_install): every instance is dropped, so each writer's next frame for a
+// seat makes a new one at the seat's current level.
+void knowledge_feed_reset();
 
 // `viewer`'s knowledge level (--knowledge-a / --knowledge-b; OFF for the omniscient viewer, which
 // has no sidecar): what its STATE frames' header.knowledge says.

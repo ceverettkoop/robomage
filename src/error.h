@@ -11,6 +11,9 @@ void non_fatal_error(std::string err);
 // deck_state.cpp) is provably terminal and can never fall
 // through to the code below it.
 [[noreturn]] void fatal_error(std::string err);
+// Called with each non_fatal_error's message (`fatal` false) and with fatal_error's before the
+// process exits (`fatal` true): the actor's status file (agents/actor.h). One hook; nullptr unsets.
+void set_error_hook(void (*hook)(const std::string &message, bool fatal));
 
 #ifndef NDEBUG
 void dump_entity(Entity e);

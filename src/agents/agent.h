@@ -97,6 +97,13 @@ class Agent {
         virtual std::string label() const = 0;
         // The last decision's behaviour distribution (a policy agent), or nullptr.
         virtual const Behaviour *last_behaviour() const { return nullptr; }
+        // Before each match the agent plays (agents_install; an actor's agents play many): drops
+        // whatever it kept from an earlier match (an in-process nn: model reloads its file when the
+        // file changed). False with `err` ends the run with a fatal error.
+        virtual bool begin_match(std::string *err) {
+            (void)err;
+            return true;
+        }
         // Why decide() returned AGENT_FAILED.
         const std::string &failure() const { return failure_; }
 

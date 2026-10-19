@@ -47,6 +47,15 @@ class InputLogger {
     void init_replay(const std::string& log_path);
     void init_machine(unsigned int seed, const std::string& resource_dir, bool enable_log,
                       const DecisionLogHeader& header);
+    // A process that plays several matches (agents/actor.h): closes the decision log of the last
+    // match, if one is open, and starts the next one's at `path` (its header for `seed`), in machine
+    // mode, with the run's decision counts back at 0. False (with a non-fatal error printed) when
+    // the log cannot be opened.
+    bool begin_match_log(unsigned int seed, const std::string &path, const DecisionLogHeader &header);
+    // Closes the decision log being written, if one is.
+    void end_match_log();
+    // A game starts (play_single_game): its decision count, which --max-game-decisions caps, is 0.
+    void begin_game();
     // --decision-log FILE: the decision log init_logging / init_machine open is FILE instead of
     // resources/logs/game_<seed>.log, and no "Logging inputs to" line is printed (the caller
     // named the file). Call before either init.
@@ -92,6 +101,11 @@ class InputLogger {
     // line, so --replay of the log stops cleanly at this decision (end_run_at_recorded_quit), and
     // exits with status 0.
     [[noreturn]] void end_run_by_quit();
+    // A stop was requested (an actor's SIGTERM / SIGINT, agents/actor.h) and the decision being
+    // read has not been decided: writes QUIT_MARKER as the decision log's last line (a replay stops
+    // cleanly there), writes no episode for the unfinished game, lets the actor record its stop and
+    // exits with status 0.
+    [[noreturn]] void end_run_by_signal();
 
    private:
     InputLogger() = default;
@@ -134,6 +148,11 @@ class InputLogger {
     int read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat);
     // Decisions read so far in the run (for --max-decisions and the decision trace).
     size_t decisions_read = 0;
+    // Decisions read so far in the current game, its sideboarding before it left out (for
+    // --max-game-decisions).
+    size_t game_decisions_read = 0;
+    // Writes QUIT_MARKER as the decision log's last line, if one is open.
+    void write_quit_marker();
     // The reply of the decision just read, as the decision log holds it: a menu row of the menu as
     // offered, or a concession sentinel (read_choice returns the unwind's first choice for one).
     int last_reply = 0;

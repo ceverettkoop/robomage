@@ -1,14 +1,12 @@
 #include "trajectory.h"
 
-#include <sys/stat.h>
-
-#include <cerrno>
 #include <cstdio>
 #include <memory>
 #include <set>
 
 #include "../error.h"
 #include "../featurize/setup.h"
+#include "../file_util.h"
 #include "../game_driver.h"
 #include "../input_logger.h"
 #include "../state_format/cards_file.h"
@@ -63,11 +61,13 @@ struct TrajectoryRun {
 
 }  // namespace
 
+// The writer of the match being played (null when it records nothing), and the one the process
+// keeps across matches (its featurizer's inputs are loaded once).
 static TrajectoryRun *traj = nullptr;
+static TrajectoryRun *traj_store = nullptr;
 
 static std::string default_log_name(unsigned int engine_seed);
 static std::string stem_of(const std::string &log_path);
-static bool make_dirs(const std::string &path);
 static void parse_seats();
 static OpenEpisode &open_episode();
 static void omniscient_decision(const rmstate::DecodedFrame &seat_frame, const std::vector<LegalAction> &actions);
@@ -88,17 +88,6 @@ static std::string stem_of(const std::string &log_path) {
     const size_t dot = name.rfind('.');
     if (dot != std::string::npos && dot > 0) name.erase(dot);
     return name;
-}
-
-// mkdir -p.
-static bool make_dirs(const std::string &path) {
-    for (size_t at = path.find('/', 1);; at = path.find('/', at + 1)) {
-        const std::string part = at == std::string::npos ? path : path.substr(0, at);
-        if (!part.empty() && mkdir(part.c_str(), 0777) != 0 && errno != EEXIST) return false;
-        if (at == std::string::npos) break;
-    }
-    struct stat st;
-    return stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode);
 }
 
 static void parse_seats() {
@@ -127,16 +116,24 @@ void trajectory_configure_decision_log(unsigned int engine_seed) {
 }
 
 void trajectory_install(unsigned int engine_seed, const std::string agent_specs[2]) {
+    traj = nullptr;
     if (!trajectory_enabled()) {
         if (trajectory_omniscient || trajectory_seats_option != "AB")
             fatal_error("--trajectory-seats and --trajectory-omniscient need --trajectory-out DIR");
         return;
     }
-    traj = new TrajectoryRun();
+    if (!traj_store) {
+        traj_store = new TrajectoryRun();
+        std::string err;
+        if (!load_engine_featurization(&traj_store->featurization, &err)) fatal_error("--trajectory-out: " + err);
+    }
+    traj = traj_store;
+    traj->episode.reset();
+    traj->omni = OmniscientInputs();
+    traj->seat = -1;
+    traj->frame = nullptr;
     parse_seats();
     if (!make_dirs(trajectory_out_dir)) fatal_error("--trajectory-out: cannot create " + trajectory_out_dir);
-    std::string err;
-    if (!load_engine_featurization(&traj->featurization, &err)) fatal_error("--trajectory-out: " + err);
     traj->engine_seed = engine_seed;
     traj->stem = stem_of(replay_mode ? replay_file_path : decision_log_path);
     for (int s = 0; s < 2; ++s) traj->agent_spec[s] = agent_specs[s];
@@ -245,9 +242,10 @@ void trajectory_game_start(bool a_goes_first, unsigned int game_engine_seed) {
 void trajectory_game_end(int winner) {
     if (!traj || !traj->episode) return;
     const int result_a = winner == Zone::PLAYER_A ? 1 : winner == Zone::PLAYER_B ? -1 : 0;
-    const featurize::EndReason reason = traj->episode->conceded ? featurize::EndReason::CONCESSION
-                                        : result_a == 0         ? featurize::EndReason::DRAW
-                                                                : featurize::EndReason::WIN;
+    const featurize::EndReason reason = game_capped()             ? featurize::EndReason::CAP
+                                        : traj->episode->conceded ? featurize::EndReason::CONCESSION
+                                        : result_a == 0           ? featurize::EndReason::DRAW
+                                                                  : featurize::EndReason::WIN;
     write_episode(reason, result_a);
 }
 

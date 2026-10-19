@@ -70,6 +70,7 @@ void tier_replay(const Options &opt, Report &rep);
 void tier_state(const Options &opt, Report &rep);
 void tier_featurize(const Options &opt, Report &rep);
 void tier_traj(const Options &opt, Report &rep);
+void tier_actorloop(const Options &opt, Report &rep);
 void tier_actor(const Options &opt, Report &rep);
 void tier_knowledge(const Options &opt, Report &rep);
 void tier_fuzz(const Options &opt, Report &rep);

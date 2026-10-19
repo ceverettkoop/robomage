@@ -195,8 +195,15 @@ void warning(std::string err) {
 #endif
 }
 
+static void (*error_hook)(const std::string &message, bool fatal) = nullptr;
+
+void set_error_hook(void (*hook)(const std::string &message, bool fatal)) {
+    error_hook = hook;
+}
+
 void non_fatal_error(std::string err) {
     cli_error(err);
+    if (error_hook) error_hook(err, false);
 #ifndef NDEBUG
     print_backtrace();
 #endif
@@ -206,5 +213,9 @@ void non_fatal_error(std::string err) {
 #ifndef NDEBUG
     print_backtrace();
 #endif
+    // The hook runs once: a failure inside it ends the process here.
+    void (*hook)(const std::string &, bool) = error_hook;
+    error_hook = nullptr;
+    if (hook) hook(err, true);
     cli_fatal_error(err);
 }

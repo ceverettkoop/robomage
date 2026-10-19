@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "agents/actor.h"
 #include "agents/driver.h"
 #include "agents/trajectory.h"
 #include "card_vocab.h"
@@ -292,14 +293,44 @@ static bool parse_logged_choice(const std::string &token, int *choice) {
     return true;
 }
 
+void InputLogger::write_quit_marker() {
+    if (!log_file.is_open()) return;
+    log_file << QUIT_MARKER << std::endl;
+    log_file.flush();
+}
+
 void InputLogger::end_run_by_quit() {
     trajectory_end_run(featurize::EndReason::QUIT);
-    if (log_file.is_open()) {
-        log_file << QUIT_MARKER << std::endl;
-        log_file.flush();
-    }
+    write_quit_marker();
     std::fflush(stdout);
     std::exit(0);
+}
+
+void InputLogger::end_run_by_signal() {
+    write_quit_marker();
+    actor_stopped_at_decision();
+    std::fflush(stdout);
+    std::exit(0);
+}
+
+bool InputLogger::begin_match_log(unsigned int seed, const std::string &path, const DecisionLogHeader &header) {
+    end_match_log();
+    machine_mode = true;
+    replay_mode = false;
+    decisions_read = 0;
+    game_decisions_read = 0;
+    last_reply = 0;
+    named_log_path = path;
+    return open_log(seed, RESOURCE_DIR, header);
+}
+
+void InputLogger::end_match_log() {
+    if (log_file.is_open()) log_file.close();
+    log_file.clear();
+}
+
+void InputLogger::begin_game() {
+    game_decisions_read = 0;
 }
 
 void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int choice) {
@@ -378,6 +409,14 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // consumes exactly the decisions the recorded run committed.
     if (concede_unwind_pending()) return concede_unwind_choice();
 
+    // --max-game-decisions: a live game past the cap stops before this decision is asked
+    // (cap_current_game), and the unwind answers it.
+    if (max_game_decisions >= 0 && !sideboard_phase && !cur_game.ended &&
+        game_decisions_read >= static_cast<size_t>(max_game_decisions)) {
+        cap_current_game(game_decisions_read);
+        return concede_unwind_choice();
+    }
+
     // --trace-handles: every viewer's handle table as of this decision (state_format/handles.h).
     if (trace_handles) trace_handle_tables();
 
@@ -394,7 +433,10 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // --max-decisions: the run stops at the first decision past the cap, before anyone decides it.
     if (max_decisions >= 0 && decisions_read >= static_cast<size_t>(max_decisions))
         end_run_at_decision_cap(decisions_read);
+    // An actor asked to stop (agents/actor.h): the run ends before this decision is decided.
+    if (actor_stop_requested()) end_run_by_signal();
     ++decisions_read;
+    if (!sideboard_phase) ++game_decisions_read;
 
     // The in-process agents' frames for this decision, its --trace-decisions block and the
     // trajectory writer's record (agents/driver.h).

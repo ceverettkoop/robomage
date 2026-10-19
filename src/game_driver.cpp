@@ -178,6 +178,8 @@ std::vector<std::string> library_a_cards;
 std::vector<std::string> library_b_cards;
 // --max-decisions N: the run stops at decision N + 1 (end_run_at_decision_cap); -1 = no cap.
 long max_decisions = -1;
+// --max-game-decisions N: a game stops at its decision N + 1 (cap_current_game); -1 = no cap.
+long max_game_decisions = -1;
 // --agent-a / --agent-b: a seat's in-process agent spec (agents/agent.h); empty = none.
 std::string agent_a_spec;
 std::string agent_b_spec;
@@ -233,6 +235,11 @@ static const int CONCEDE_UNWIND_CAP = 10000;
 // Latched by CONCEDE_MATCH until the match ends (reset per match).
 static bool g_match_conceded = false;
 static Zone::Ownership g_match_conceder = Zone::UNKNOWN;
+
+// The per-game decision cap (cap_current_game): the current game was stopped by it, and the
+// match stops after it (reset per match).
+static bool g_game_capped = false;
+static bool g_match_capped = false;
 
 // Set whenever a concession sentinel is read at a decision (in
 // concede_current_game). run_sideboard_phase queries it so the choice-0 the
@@ -298,6 +305,40 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
     cur_game.player_loses(conceder, player_name(conceder) + " concedes");
     g_concede_unwinding = true;
     g_concede_unwind_count = 0;
+}
+
+void cap_current_game(size_t game_decisions) {
+    g_game_capped = true;
+    g_match_capped = true;
+    cur_game.end_game_at_cap("Decision cap: " + std::to_string(game_decisions) + " decisions (--max-game-decisions)");
+    g_concede_unwinding = true;
+    g_concede_unwind_count = 0;
+}
+
+bool game_capped() {
+    return g_game_capped;
+}
+
+void reset_match_state() {
+    match_game_number = -1;
+    match_wins_a = 0;
+    match_wins_b = 0;
+    g_match_conceded = false;
+    g_match_conceder = Zone::UNKNOWN;
+    g_match_capped = false;
+    deck_state_reset();
+}
+
+void report_game_end(int game_number, int winner) {
+    if (g_game_capped) {
+        std::fflush(stdout);
+        std::printf("GAME_CAP: %d stopped after %ld decisions (--max-game-decisions; no result)\n", game_number,
+            max_game_decisions);
+        std::fflush(stdout);
+    } else {
+        print_game_result(game_number, winner);
+    }
+    trajectory_game_end(winner);
 }
 
 // The conceded game's suspended state (CR 104.3a: the conceder leaves the game
@@ -378,6 +419,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // A concession belongs to the game it was made in: never carry its unwind
     // latch into this game (the previous game of a bo3 may have ended on one).
     concede_reset_unwind();
+    g_game_capped = false;
+    InputLogger::instance().begin_game();
     // Decklist stores for the state serializer (see deck_state.h for why there
     // are two). The REGISTERED list is what the opponent sees, so it is captured
     // ONCE per match, from the pre-board Deck structs: match_game_number is -1
@@ -1443,13 +1486,9 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     ctx.wins_b = 0;
     ctx.stage = MatchContext::PLAY_GAME;
 
-    match_wins_a = 0;
-    match_wins_b = 0;
-    g_match_conceded = false;  // concessions never carry across matches
-    g_match_conceder = Zone::UNKNOWN;
-    // Drop the previous match's decklists so neither store can bleed across
-    // matches; game 1's play_single_game repopulates both.
-    deck_state_reset();
+    // Concessions, caps and decklists never carry across matches; game 1's play_single_game
+    // repopulates both decklist stores.
+    reset_match_state();
 
     bool match_done = false;
     while (!match_done) {
@@ -1492,10 +1531,15 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                 ctx.wins_b++;
                 match_wins_b = ctx.wins_b;
             }
-            print_game_result(ctx.game_num + 1, winner);
-            trajectory_game_end(winner);
+            report_game_end(ctx.game_num + 1, winner);
 
             if (after_game) after_game(ctx.game_num, winner);
+
+            // The decision cap stopped this game: the match stops with it, with no result.
+            if (g_match_capped) {
+                match_done = true;
+                break;
+            }
 
             // A CONCEDE_MATCH sentinel taken during this game: the game result
             // above stands (it is an ordinary loss), and the match ends now.
@@ -1547,8 +1591,9 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     }
 
     // A conceded match is won by the conceder's opponent regardless of the game
-    // tally (which can be level, or even in the conceder's favour).
-    const int result = g_match_conceded          ? static_cast<int>(opponent_of(g_match_conceder))
+    // tally (which can be level, or even in the conceder's favour); a capped one has no winner.
+    const int result = g_match_capped            ? static_cast<int>(Zone::UNKNOWN)
+                       : g_match_conceded        ? static_cast<int>(opponent_of(g_match_conceder))
                        : ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A
                                                  : Zone::PLAYER_B;
     obs_match_end(result, ctx.wins_a, ctx.wins_b);

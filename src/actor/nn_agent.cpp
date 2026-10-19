@@ -1,5 +1,7 @@
 #include "nn_agent.h"
 
+#include <sys/stat.h>
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -89,15 +91,43 @@ static std::unique_ptr<agents::Agent> make_nn_agent(const std::string &args, age
         *err = "nn: the featurizer's inputs: " + *err;
         return nullptr;
     }
+    const actor::ModelStamp stamp = opt.remote.empty() ? actor::model_stamp(opt.model) : actor::ModelStamp();
     std::unique_ptr<actor::Evaluator> e = make_evaluator(opt, *f, err);
     if (!e) {
         *err = "nn: " + *err;
         return nullptr;
     }
-    return std::unique_ptr<agents::Agent>(new actor::NnAgent(std::move(opt), rng, std::move(f), std::move(e)));
+    return std::unique_ptr<agents::Agent>(new actor::NnAgent(std::move(opt), rng, std::move(f), std::move(e), stamp));
 }
 
 namespace actor {
+
+ModelStamp model_stamp(const std::string &path) {
+    ModelStamp m;
+    struct stat st;
+    if (stat(path.c_str(), &st) != 0) return m;
+    m.ok = true;
+    m.mtime_ns = static_cast<int64_t>(st.st_mtim.tv_sec) * 1000000000 + static_cast<int64_t>(st.st_mtim.tv_nsec);
+    m.size = static_cast<int64_t>(st.st_size);
+    m.ino = static_cast<uint64_t>(st.st_ino);
+    m.dev = static_cast<uint64_t>(st.st_dev);
+    return m;
+}
+
+bool NnAgent::begin_match(std::string *err) {
+    if (!opt_.remote.empty()) return true;
+    const ModelStamp now = model_stamp(opt_.model);
+    if (now == stamp_) return true;
+    std::unique_ptr<Evaluator> e = make_evaluator(opt_, *featurization_, err);
+    if (!e) {
+        *err = "nn: reloading " + opt_.model + ": " + *err;
+        return false;
+    }
+    evaluator_ = std::move(e);
+    stamp_ = now;
+    ++reloads_;
+    return true;
+}
 
 bool NnAgent::parse_options(const std::string &args, NnOptions *out, std::string *err) {
     const std::vector<std::string> parts = split(args, ':');
@@ -184,8 +214,8 @@ bool NnAgent::parse_keys(const std::vector<std::string> &parts, size_t first, Nn
 }
 
 NnAgent::NnAgent(NnOptions opt, agents::PyRandom *rng, std::unique_ptr<featurize::Featurization> f,
-    std::unique_ptr<Evaluator> evaluator)
-    : opt_(std::move(opt)), rng_(rng), featurization_(std::move(f)), evaluator_(std::move(evaluator)) {
+    std::unique_ptr<Evaluator> evaluator, ModelStamp stamp)
+    : opt_(std::move(opt)), rng_(rng), featurization_(std::move(f)), evaluator_(std::move(evaluator)), stamp_(stamp) {
     if (opt_.dump.empty() && opt_.evals.empty() && !opt_.stats) return;
     if (finishing().empty()) std::atexit(finish_all);
     finishing().push_back(this);
@@ -316,12 +346,13 @@ void NnAgent::finish() {
     if (!opt_.evals.empty() && !featurize::rmtb_write_file(opt_.evals, evaluations_file(), &err))
         std::printf("ERROR: nn: evals: %s\n", err.c_str());
     if (opt_.stats)
-        std::printf("NN-STATS: seat %s decisions=%zu featurize_s=%.3f evaluate_s=%.3f model=%s format=%s%s\n",
+        std::printf(
+            "NN-STATS: seat %s decisions=%zu featurize_s=%.3f evaluate_s=%.3f model=%s format=%s reloads=%zu%s\n",
             seat_ == 0   ? "A"
             : seat_ == 1 ? "B"
                          : "-",
             decisions_, featurize_s_, evaluate_s_, evaluator_->info().path.c_str(), evaluator_->info().format.c_str(),
-            evaluator_->stats().c_str());
+            reloads_, evaluator_->stats().c_str());
     std::fflush(stdout);
 }
 

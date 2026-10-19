@@ -223,6 +223,38 @@ indefinitely:
   loop-safe decisions only), so one process can batch requests from several games. Measure the
   snapshot cost first; plain one-game-per-process actors may be enough, given ~20 processes.
 
+Done: `--actor` (`--actor-schedule FILE`, `--actor-out DIR`, `--actor-id k`, `--actor-seed S`,
+`--actor-start i`, `--actor-matches N`; `src/agents/actor.h`), documented in
+[`docs/actor.md`](actor.md). The loop is over **matches** (a bo3 match is the unit a schedule entry
+draws; every game of it is scored and recorded on its own). Match *i* of actor *k* has game seed
+`actor_game_seed(S, k, i)` (SplitMix64 rounds over S, k, i; 62 bits), the engine seed the drivers
+derive from it (so `--game-seed g` replays the same game: 50 of 50 actor matches had the decisions
+of the one-process-per-match runs), its own decision log `a<k>-m<i>.rmlog` (replays alone) and its
+episodes `a<k>-m<i>.g<n>.rmtraj`. Between matches the process resets what is match-scoped
+(`reset_match_state`, the agents' generator and decoded streams, the in-process feed's
+once-per-match frames, the knowledge instances, the trajectory writer, the teacher coin); agents are
+reused when a seat's spec repeats (`Agent::begin_match`). The per-game cap is
+`--max-game-decisions N` (a recorded setup option, default 5000 under `--actor`): the game stops
+with end reason `cap` and the match with it, and the actor goes on. Hot reload: `nn:remote:`
+versions come from the server; an in-process `nn:<model>` is reloaded before a match when its file
+changed. The status file (`a<k>.status.json`, every 2 s and per match: counts, rates, caps, draws,
+the current match, the schedule's version and error, the policy versions seen, the exit reason) and
+the results file (`a<k>.results.jsonl`, one line per game: entry, purpose, seats, decks, agents,
+teachers, first player, score, results, end reason, decisions, policy versions, log and episode)
+are the orchestrator's interface. SIGTERM / SIGINT stop it before the next decision (the log ends
+with `QUIT`, the unfinished game writes no episode, exit 0); SIGHUP re-reads the schedule; a fatal
+error exits 1 with the reason in the status file. Teachers keep running across matches while a
+seat's command is unchanged; `teacher.py` reseeds with its constant `--seed` at each match of its
+stream, so its labels in a match are a fresh `teacher.py`'s on that match's stream (the match seed is
+not passed to it: no frame carries the seed). Measured (release build, explore vs explore, five
+league pairings, bo3, knowledge `expert` on both seats, one core, other work on the box): 50 matches
+(115 games, 18,315 decisions) in one actor process at ~2,180 decisions/s (~6 matches/s), against
+~1,940 decisions/s for the same matches one process each; ~1,810 decisions/s with trajectories
+written. RSS does not grow: 17.6 MB after 10 matches and 18.0–19.2 MB after 150–200 (bo3, no
+trajectories), 24–33 MB with no trend from match 10 to match 600 with trajectories written. The gate's `actorloop` tier checks
+the loop (replays, a byte-identical rerun, the cap, a taught entry, a schedule change, SIGTERM) and
+the `actor` tier the hot reload.
+
 ### T4. Teacher channel (labels from the scripted agent)
 
 DAgger needs the teacher's choice at states the *network* reaches. The scripted agent is Python
@@ -277,6 +309,17 @@ The actor reads a schedule file (written by the orchestrator, section 4 L6):
 - which games are training data and which are evaluation only. R-NaD trains on self-play
   trajectories; games against the scripted agent and past checkpoints are evaluation, or
   imitation data in phases B0–B2.
+
+Done: the schedule file (`src/agents/actor_schedule.h`, [`docs/actor.md`](actor.md) §2): JSON
+written whole by the orchestrator and re-read between matches when it changes (a file that does not
+parse leaves the last good one in use, its error in the status file). Entries carry a weight, a
+purpose (`train` writes episodes, `eval` by default only decision logs; output directories per
+purpose or per entry), both decks, the format (bo3 default), both sides' agent specs, teachers,
+`teacher_mix` and knowledge levels, the per-game cap and the trajectory options; `swap: decks`
+exchanges the decks and `swap: sides` everything of the two sides, on a coin drawn from the match's
+game seed. The opponent pool is entries: self-play, a past checkpoint (`nn:<export>` in process or a
+second server policy), `scripted:hard` (`first` plus the scripted teacher at `teacher_mix: 1`),
+`explore`.
 
 ### T6. Policy post-processing in the `nn:` agent
 

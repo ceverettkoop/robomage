@@ -46,7 +46,11 @@
 // The labels need no in-process decider: a stream seat, a human seat or a seat of --replay is
 // labelled too (its frames are built for the teacher by the in-process feed). The teacher process
 // lives for the run; it gets end of input when the run ends, and a teacher that then exits with a
-// status other than 0 is a fatal error too.
+// status other than 0 is a fatal error too. An actor (agents/actor.h) installs the channel again
+// before each match: the coin is reseeded with that match's game seed, and a seat's teacher keeps
+// running across matches (it sees each match's frames from its SCHEMA frame to its terminal frame)
+// until a match names another command for the seat, or none; it then gets end of input and must
+// exit with status 0 like at the end of the run, and the new command starts.
 
 // The options.
 extern std::string teacher_command[2];
@@ -60,9 +64,10 @@ bool teacher_on(int s);
 // Whether --teacher-mix is above 0 (then every taught seat is decided in process).
 bool teacher_mixing();
 
-// Before the match (agents_install): validates the options (`in_process[s]`: seat s is decided by
-// an in-process agent or script that is not a human seat) and starts each teacher; `coin_seed` is
-// the game seed (the engine seed without one). Fatal on a bad option.
+// Before the match (agents_install; an actor's every match): validates the options (`in_process[s]`:
+// seat s is decided by an in-process agent or script that is not a human seat; null for none) and
+// starts each teacher not already running with its command; `coin_seed` is the game seed (the
+// engine seed without one). Fatal on a bad option.
 void teacher_install(uint64_t coin_seed, const bool in_process[2]);
 
 // At a decision of taught seat `s`: writes its frames for this decision (the once-per-match frames

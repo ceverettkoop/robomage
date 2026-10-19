@@ -71,6 +71,7 @@ static void write_all(int s, const std::string &data);
 static void write_record(int s, const std::string &payload);
 static std::string read_line(int s);
 static int parse_label(int s, const std::string &line);
+static void finish_proc(int s, const char *when);
 
 static const char *seat_name(int s) {
     return s == 0 ? "A" : "B";
@@ -104,26 +105,33 @@ bool teacher_mixing() {
 }
 
 void teacher_install(uint64_t coin_seed, const bool in_process[2]) {
-    if (!teacher_enabled()) {
+    const bool running = teacher && (teacher->proc[0].pid > 0 || teacher->proc[1].pid > 0);
+    if (!teacher_enabled() && !running) {
         if (!teacher_mix_option.empty() || !teacher_timeout_option.empty())
             fatal_error("--teacher-mix and --teacher-timeout need --teacher-a or --teacher-b");
         return;
     }
-    teacher = new TeacherRun();
-    if (!teacher_mix_option.empty()) teacher->mix = parse_number("--teacher-mix", teacher_mix_option, 0, 1);
-    if (!teacher_timeout_option.empty())
-        teacher->timeout_s = parse_number("--teacher-timeout", teacher_timeout_option, 0.001, 1e9);
+    if (!teacher) {
+        teacher = new TeacherRun();
+        std::atexit(cleanup_at_exit);
+    }
+    teacher->mix = teacher_mix_option.empty() ? 0 : parse_number("--teacher-mix", teacher_mix_option, 0, 1);
+    teacher->timeout_s =
+        teacher_timeout_option.empty() ? 60 : parse_number("--teacher-timeout", teacher_timeout_option, 0.001, 1e9);
     if (teacher->mix > 0 && replay_mode)
         fatal_error("--teacher-mix: under --replay the decision log decides every reply; a teacher only labels");
     for (int s = 0; s < 2; ++s)
-        if (!teacher_command[s].empty() && teacher->mix > 0 && !in_process[s])
+        if (!teacher_command[s].empty() && teacher->mix > 0 && !(in_process && in_process[s]))
             fatal_error(std::string("--teacher-mix: seat ") + seat_name(s) +
                         " is taught but not decided by an in-process agent or script (--agent-" + (s == 0 ? "a" : "b") +
                         ", --play, --actions); its replies cannot be mixed");
     teacher->coin.seed_int(coin_seed + (uint64_t{1} << 32));
-    std::atexit(cleanup_at_exit);
-    for (int s = 0; s < 2; ++s)
-        if (!teacher_command[s].empty()) spawn(s);
+    teacher->seat = -1;
+    for (int s = 0; s < 2; ++s) {
+        if (teacher->proc[s].pid > 0 && teacher->proc[s].command != teacher_command[s])
+            finish_proc(s, "when the match's teacher of its seat changed");
+        if (!teacher_command[s].empty() && teacher->proc[s].pid <= 0) spawn(s);
+    }
 }
 
 // Starts seat s's teacher: /bin/sh -c <command>, its stdin and stdout one end of a stream socket
@@ -141,6 +149,8 @@ static void spawn(int s) {
     const pid_t pid = fork();
     if (pid < 0) fatal_error(std::string("--teacher-") + (s == 0 ? "a" : "b") + ": fork: " + std::strerror(errno));
     if (pid == 0) {
+        // The engine ends its teacher (end of input); a terminal's interrupt is the engine's to handle.
+        signal(SIGINT, SIG_IGN);
         if (dup2(sv[1], STDIN_FILENO) < 0 || dup2(sv[1], STDOUT_FILENO) < 0) _exit(127);
         close_fds_from(STDERR_FILENO + 1, bound);
         execl("/bin/sh", "sh", "-c", p.command.c_str(), static_cast<char *>(nullptr));
@@ -350,25 +360,30 @@ void teacher_match_over() {
     }
 }
 
+// Ends seat s's teacher: end of input, then it must exit with status 0 having written nothing more
+// (`when` names the moment in a failure's message).
+static void finish_proc(int s, const char *when) {
+    TeacherProc &p = teacher->proc[s];
+    shutdown(p.fd, SHUT_WR);
+    const Clock::time_point deadline = deadline_from_now();
+    for (;;) {
+        wait_ready(s, POLLIN, deadline, "exiting at the end of its input");
+        char buf[4096];
+        const ssize_t n = recv(p.fd, buf, sizeof buf, 0);
+        if (n == 0) break;
+        if (n < 0 && (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)) continue;
+        if (n < 0) break;
+        p.in.append(buf, static_cast<size_t>(n));
+    }
+    if (!p.in.empty()) teacher_failed(s, "wrote '" + p.in.substr(0, 40) + "' after its last decision");
+    const std::string name = who(s);
+    const std::string ended = reap(s, teacher->timeout_s);
+    if (ended != "exited with status 0") fatal_error(name + ": " + ended + " " + when);
+    p.in.clear();
+}
+
 void teacher_finish() {
     if (!teacher) return;
-    for (int s = 0; s < 2; ++s) {
-        TeacherProc &p = teacher->proc[s];
-        if (p.pid <= 0) continue;
-        shutdown(p.fd, SHUT_WR);
-        const Clock::time_point deadline = deadline_from_now();
-        for (;;) {
-            wait_ready(s, POLLIN, deadline, "exiting at the end of its input");
-            char buf[4096];
-            const ssize_t n = recv(p.fd, buf, sizeof buf, 0);
-            if (n == 0) break;
-            if (n < 0 && (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)) continue;
-            if (n < 0) break;
-            p.in.append(buf, static_cast<size_t>(n));
-        }
-        if (!p.in.empty()) teacher_failed(s, "wrote '" + p.in.substr(0, 40) + "' after its last decision");
-        const std::string name = who(s);
-        const std::string ended = reap(s, teacher->timeout_s);
-        if (ended != "exited with status 0") fatal_error(name + ": " + ended + " at the end of the run");
-    }
+    for (int s = 0; s < 2; ++s)
+        if (teacher->proc[s].pid > 0) finish_proc(s, "at the end of the run");
 }

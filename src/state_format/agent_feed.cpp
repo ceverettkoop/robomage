@@ -19,6 +19,10 @@ void agent_feed_serve(Zone::Ownership seat) {
     if (is_seat(seat)) served[seat] = true;
 }
 
+void agent_feed_reset() {
+    for (int p = 0; p < 3; ++p) served[p] = match_frames_built[p] = false;
+}
+
 bool agent_feed_enabled() {
     return served[Zone::PLAYER_A] || served[Zone::PLAYER_B];
 }

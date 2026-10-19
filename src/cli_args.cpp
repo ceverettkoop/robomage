@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "agents/actor.h"
 #include "agents/game_seed.h"
 #include "agents/teacher.h"
 #include "agents/trajectory.h"
@@ -118,6 +119,13 @@ static const CliOption OPTIONS[] = {
         [](DecisionLogHeader &h, const std::string &k) {
             if (max_decisions >= 0) h.add_flag(k, std::to_string(max_decisions));
         }},
+    // Stop each game at its decision N + 1 with no result, the match with it (cap_current_game);
+    // recorded, so a replay caps at the same decision.
+    {"--max-game-decisions", nullptr, true, true,
+        [](const char *v) { max_game_decisions = non_negative_value("--max-game-decisions", v); },
+        [](DecisionLogHeader &h, const std::string &k) {
+            if (max_game_decisions >= 0) h.add_flag(k, std::to_string(max_game_decisions));
+        }},
 
     // Setup options recorded in their own header fields (DECK_A / DECK_B / SEED)
     {"--deck", nullptr, true, true,
@@ -226,6 +234,23 @@ static const CliOption OPTIONS[] = {
     {"--teacher-b", nullptr, true, false, [](const char *v) { teacher_command[1] = v; }, nullptr},
     {"--teacher-mix", nullptr, true, false, [](const char *v) { teacher_mix_option = v; }, nullptr},
     {"--teacher-timeout", nullptr, true, false, [](const char *v) { teacher_timeout_option = v; }, nullptr},
+    // The actor (agents/actor.h): match after match from a schedule; its files, id, seeds and count.
+    {"--actor", nullptr, false, false,
+        [](const char *) {
+            actor_mode = true;
+            machine_mode = true;
+        },
+        nullptr},
+    {"--actor-schedule", nullptr, true, false, [](const char *v) { actor_schedule_path = v; }, nullptr},
+    {"--actor-out", nullptr, true, false, [](const char *v) { actor_out_dir = v; }, nullptr},
+    {"--actor-id", nullptr, true, false, [](const char *v) { actor_id = non_negative_value("--actor-id", v); },
+        nullptr},
+    {"--actor-seed", nullptr, true, false,
+        [](const char *v) { actor_run_seed = static_cast<uint64_t>(non_negative_value("--actor-seed", v)); }, nullptr},
+    {"--actor-start", nullptr, true, false,
+        [](const char *v) { actor_start = non_negative_value("--actor-start", v); }, nullptr},
+    {"--actor-matches", nullptr, true, false,
+        [](const char *v) { actor_matches = non_negative_value("--actor-matches", v); }, nullptr},
     // Check the decks' cards against the card vocabulary and their scripts instead of playing
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
@@ -481,6 +506,16 @@ void record_header_flags(DecisionLogHeader &header) {
     for (const CliOption &option : OPTIONS) {
         if (option.record) option.record(header, header_key(option));
     }
+}
+
+DecisionLogHeader match_log_header(const Deck &deck_a, const Deck &deck_b) {
+    DecisionLogHeader hdr;
+    record_header_flags(hdr);
+    hdr.deck_a_name = deck_a_name;
+    hdr.deck_a_text = deck_a.raw_text;
+    hdr.deck_b_name = deck_b_name;
+    hdr.deck_b_text = deck_b.raw_text;
+    return hdr;
 }
 
 bool is_bare_header_flag(const std::string &token) {

@@ -67,6 +67,10 @@ void check_projected_evals(
 // robomage_nn, the Python server tools/nn/serve_check.py, under <out>/actor/remote/.
 void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a);
 
+// The actor tier's hot reload check (tier_actor_reload.cpp, agents/actor.h): robomage_nn --actor
+// picking up a replaced in-process model between matches, under <out>/actor/reload/.
+void actor_reload_check(const Options &opt, Report &rep, const ActorSetup &a);
+
 }  // namespace rmcheck
 
 #endif /* ROBOMAGE_CHECK_ACTOR_H */

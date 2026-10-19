@@ -25,6 +25,10 @@ CliParseResult parse_command_line(int argc, char const *argv[]);
 // which have their own header fields, is written here.
 void record_header_flags(DecisionLogHeader &header);
 
+// The decision log header of the match about to be played: every setup option in effect
+// (record_header_flags) and both decks, named deck_a_name / deck_b_name, with their file text.
+DecisionLogHeader match_log_header(const Deck &deck_a, const Deck &deck_b);
+
 // True when `token` is the FLAGS key of an option that takes no value (e.g. "no-shuffle"), i.e. a
 // complete token on its own rather than the continuation of a key=value token split at a space.
 bool is_bare_header_flag(const std::string &token);

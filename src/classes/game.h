@@ -911,6 +911,10 @@ struct Game {
         // 104.3a, see concede_current_game in game_driver.h). The first game-ending event
         // decides the game: a call on an already-ended game changes nothing.
         void end_game(Zone::Ownership result, const std::string &reason);
+        // The engine's per-game decision cap (--max-game-decisions, game_driver.h) stops the game:
+        // not a rules outcome. Marks the game over with no winner and prints "\n<reason> - the game
+        // stops with no result."; no-op on an already-ended game.
+        void end_game_at_cap(const std::string &reason);
         // A player LOSING decides the game for their opponent (a two-player game, so the last
         // player standing wins — CR 104.2a); see end_game.
         void player_loses(Zone::Ownership loser, const std::string &reason);

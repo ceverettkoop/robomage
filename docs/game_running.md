@@ -305,6 +305,22 @@ the game is the one `rm_driver.py --player-a scripted --seed N` plays (as long a
 draws nothing from Python's `random`). Semantics, μ under mixing and failures:
 [`trajectory_format.md`](trajectory_format.md) §1.1 and `src/agents/teacher.h`.
 
+## The continuous actor: `--actor`
+
+For training and evaluation runs one engine process plays match after match: `--actor` draws each
+match (decks, format, agents, teachers, seats, purpose) from a schedule file the orchestrator
+writes and re-reads between matches, derives the match's seeds from (run seed, actor id, match
+index), writes each match's decision log (and, for training, its episodes) and reports through a
+status file and a per-game results file; SIGTERM stops it cleanly. A per-game decision cap
+(`--max-game-decisions N`, recorded in the decision log) ends a runaway game with end reason `cap`.
+
+```bash
+cd bin
+./release/robomage --actor --actor-schedule RUN/schedule.json --actor-out RUN/actors --actor-id 3 --actor-seed 42
+```
+
+Everything about it: [`actor.md`](actor.md).
+
 ## State dumps
 
 `--rmstate-dump FILE` writes every viewer's frames (A, B and omniscient) at each decision beside

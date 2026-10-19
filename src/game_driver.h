@@ -80,6 +80,7 @@ extern std::vector<std::string> hand_b_cards;
 extern std::vector<std::string> library_a_cards;
 extern std::vector<std::string> library_b_cards;
 extern long max_decisions;
+extern long max_game_decisions;
 extern std::string agent_a_spec;
 extern std::string agent_b_spec;
 extern bool play_script_given;
@@ -176,6 +177,34 @@ void concede_clear_read_flag();
 bool match_conceded();
 Zone::Ownership match_conceder();
 
+// ── The per-game decision cap (--max-game-decisions N) ─────────────────────────────────────
+// A setup option, recorded in the RMLOG header (so a replay caps at the same decision). A game
+// that reaches its (N + 1)th decision (the game's own decisions, its pregame included; the
+// sideboarding before it does not count) while it is live stops there, before that decision is
+// asked: Game::end_game_at_cap ends it with no winner, and the cooperative unwind of a concession
+// (see concede_current_game) carries control back to the decision loop, which exits. The match
+// stops with that game: report_game_end prints "GAME_CAP: <n> stopped after <d> decisions
+// (--max-game-decisions; no result)" instead of a GAME_RESULT line, a bo3 match prints no
+// MATCH_RESULT, and the trajectory writer's episode ends with end reason `cap`. The frames show
+// the game ending with no winner. The process goes on (an actor plays its next match,
+// agents/actor.h). -1 (the default) is no cap.
+//
+// Called by InputLogger::choose at a decision of a live game past the cap: stops the game as above
+// and arms the unwind; the decision is then answered by the unwind (concede_unwind_choice).
+void cap_current_game(size_t game_decisions);
+// Whether the current (or last) game was stopped by the cap; reset as each game starts.
+bool game_capped();
+
+// The match-scoped state a new match starts from: no match score, no concession or cap latched,
+// no decklists (deck_state_reset), match_game_number -1. play_bo3_match calls it; a process that
+// plays several matches (agents/actor.h) calls it before each single game too.
+void reset_match_state();
+
+// The end of game `game_number` (1-based) with `winner`: its GAME_RESULT line (print_game_result),
+// or the GAME_CAP line when the cap stopped it, then the trajectory writer's episode
+// (trajectory_game_end).
+void report_game_end(int game_number, int winner);
+
 struct EcsSystems {
     std::shared_ptr<Orderer> orderer;
     std::shared_ptr<StateManager> state_manager;
@@ -225,7 +254,8 @@ void print_game_result(int game_number, int winner);
 // Callers must `std::srand(seed)` before calling (main.cpp does) — the per-game
 // engine RNG is seeded from `seed + game_num` inside.
 // `before_game`/`after_game` may be empty. Returns the match winner
-// (Zone::PLAYER_A or Zone::PLAYER_B).
+// (Zone::PLAYER_A or Zone::PLAYER_B), or Zone::UNKNOWN when the decision cap stopped a game
+// (--max-game-decisions: the match stops after that game).
 int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                    const std::function<void(int game_num, bool a_goes_first)> &before_game = {},
                    const std::function<void(int game_num, int winner)> &after_game = {});

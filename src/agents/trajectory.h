@@ -53,8 +53,9 @@ bool trajectory_records_seat(int s);
 // when no --decision-log was given and turns logging on. No-op unless --trajectory-out is given.
 void trajectory_configure_decision_log(unsigned int engine_seed);
 
-// Before the match (agents_install): validates the options, creates DIR and loads the featurizer's
-// inputs; fatal on a bad option. `agent_specs` describe each seat's decider for the header.
+// Before the match (agents_install; an actor's every match, whose options may differ): validates
+// the options, creates DIR and loads the featurizer's inputs (once per process); fatal on a bad
+// option. `agent_specs` describe each seat's decider for the header. No episode is open after it.
 void trajectory_install(unsigned int engine_seed, const std::string agent_specs[2]);
 
 // Every decision, as it is read (agents_begin_decision), after the deciding seat's frame was
@@ -69,7 +70,8 @@ void trajectory_end_decision(int reply, const agents::Behaviour *behaviour, int 
 
 // Game boundaries (game_driver.cpp): a game starts (play_single_game: who plays first and its
 // engine seed; the match score and game number from the match globals), a game ended with
-// `winner` (Zone::PLAYER_A / PLAYER_B, else a draw): its episode is written.
+// `winner` (Zone::PLAYER_A / PLAYER_B, else a draw; end reason cap, results 0, when
+// --max-game-decisions stopped it): its episode is written.
 void trajectory_game_start(bool a_goes_first, unsigned int game_engine_seed);
 void trajectory_game_end(int winner);
 // The match is over: an episode left open (sideboarding before a game the match was conceded

@@ -45,8 +45,8 @@
 //                log_pi [ΣA, P] over each decision's menu rows, menu_offsets [D + 1]), with the
 //                behaviour distribution it chose from (mu [ΣA], f32) and the row it took (chosen [D])
 //   stats        at process exit, an NN-STATS: line (decisions, seconds featurizing and
-//                evaluating; remote: requests, the server's compute time attributed to them and
-//                the mean server batch) on stdout
+//                evaluating, the model, the hot reloads; remote: requests, the server's compute
+//                time attributed to them and the mean server batch) on stdout
 //
 // and for nn:remote: only
 //
@@ -69,8 +69,27 @@
 // draw. Any featurizer or evaluator failure (for nn:remote:, the server refusing, erring, going
 // away or not answering) ends the run as a fatal error naming the model or endpoint, never a
 // default action.
+//
+// Hot reload (an actor's matches, agents/actor.h): before each match the agent plays
+// (begin_match), an in-process model whose file changed since it was loaded (its modification
+// time, size, inode or device) is loaded again and checked like the first time; a file that does
+// not load is a fatal error. The new model's policy_version is what the match's decisions record.
+// A remote policy is versioned by its server, response by response.
 
 namespace actor {
+
+// What identifies a model file's contents for the hot reload: its stat fields.
+struct ModelStamp {
+        bool ok = false;  // the file could be stat'ed
+        int64_t mtime_ns = 0, size = 0;
+        uint64_t ino = 0, dev = 0;
+        bool operator==(const ModelStamp &o) const {
+            return ok == o.ok && mtime_ns == o.mtime_ns && size == o.size && ino == o.ino && dev == o.dev;
+        }
+};
+
+// The stamp of the file at `path` (ok false when it cannot be stat'ed).
+ModelStamp model_stamp(const std::string &path);
 
 struct NnOptions {
         std::string model;   // in process
@@ -88,9 +107,12 @@ struct NnOptions {
 
 class NnAgent : public agents::Agent {
     public:
+        // `stamp`: the model file's, taken before it was loaded (in process).
         NnAgent(NnOptions opt, agents::PyRandom *rng, std::unique_ptr<featurize::Featurization> f,
-            std::unique_ptr<Evaluator> evaluator);
+            std::unique_ptr<Evaluator> evaluator, ModelStamp stamp = ModelStamp());
         int decide(const agents::Decision &d) override;
+        // The hot reload (above).
+        bool begin_match(std::string *err) override;
         std::string label() const override { return "nn"; }
         const agents::Behaviour *last_behaviour() const override { return have_behaviour_ ? &behaviour_ : nullptr; }
         const NnOptions &options() const { return opt_; }
@@ -121,6 +143,8 @@ class NnAgent : public agents::Agent {
         std::vector<Evaluation> evaluated_;
         std::vector<double> evaluated_mu_;     // evals=: each decision's behaviour_.mu, in order
         std::vector<int64_t> evaluated_rows_;  // evals=: each decision's row
+        ModelStamp stamp_;
+        size_t reloads_ = 0;
         int seat_ = -1;
         size_t decisions_ = 0;
         double featurize_s_ = 0, evaluate_s_ = 0;

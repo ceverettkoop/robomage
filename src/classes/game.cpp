@@ -97,6 +97,13 @@ void Game::end_game(Zone::Ownership result, const std::string &reason) {
         printf("\n%s - %s wins!\n", reason.c_str(), player_name(result).c_str());
 }
 
+void Game::end_game_at_cap(const std::string &reason) {
+    if (ended) return;
+    ended = true;
+    winner = static_cast<int>(Zone::UNKNOWN);
+    printf("\n%s - the game stops with no result.\n", reason.c_str());
+}
+
 void Game::player_loses(Zone::Ownership loser, const std::string &reason) {
     end_game(opponent_of(loser), reason);
 }

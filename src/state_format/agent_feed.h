@@ -21,6 +21,9 @@
 
 // Serves `seat` from now on (a seat, before the first game starts).
 void agent_feed_serve(Zone::Ownership seat);
+// Before a match (agents_install): no seat is served and no seat has had its once-per-match frames,
+// so each seat served in the match gets them again the first time it decides.
+void agent_feed_reset();
 // Whether any seat is served.
 bool agent_feed_enabled();
 // Whether `viewer` is a served seat.

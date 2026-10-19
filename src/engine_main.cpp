@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "agents/actor.h"
 #include "agents/driver.h"
 #include "agents/teacher.h"
 #include "agents/trajectory.h"
@@ -60,14 +61,9 @@ static void game_loop() {
         }
         // v2 log header: record everything that shapes the initial game state so
         // the log replays without re-supplying decks or flags.
-        DecisionLogHeader hdr;
-        record_header_flags(hdr);
+        const DecisionLogHeader hdr = match_log_header(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
         trajectory_configure_decision_log(seed);
         if (!decision_log_path.empty()) InputLogger::instance().set_log_path(decision_log_path);
-        hdr.deck_a_name = deck_a_name;
-        hdr.deck_a_text = DEFAULT_DECK_ONE.raw_text;
-        hdr.deck_b_name = deck_b_name;
-        hdr.deck_b_text = DEFAULT_DECK_TWO.raw_text;
         if (machine_mode) {
             InputLogger::instance().init_machine(seed, RESOURCE_DIR, log_decisions_flag, hdr);
         } else {
@@ -86,8 +82,7 @@ static void game_loop() {
     } else {
         auto sys = init_ecs();
         const int winner = play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed);
-        print_game_result(1, winner);
-        trajectory_game_end(winner);
+        report_game_end(1, winner);
     }
     teacher_finish();
 }
@@ -113,6 +108,9 @@ int engine_main(int argc, char const *argv[]) {
 
     // --rmstate-read: an offline stream check; no game is played.
     if (!rmstate_read_path.empty()) return rmstate_read_stream(rmstate_read_path, state_dump_json);
+
+    // --actor: match after match from a schedule, every seat decided in process (agents/actor.h).
+    if (actor_mode) return actor_main();
     rmstate_outputs_init();
 
     game_loop();

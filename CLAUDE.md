@@ -139,7 +139,8 @@ background** and make the live output inspectable by the user:
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
   | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
-  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
+  | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode |
+  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
@@ -338,7 +339,8 @@ re-enters with the answer. All state lives in `cur_game`/ECS, never in statics, 
 when both players lose at once (CR 104.4a) — after every game, bo1 and bo3 (`print_game_result`);
 `MATCH_RESULT: Player A|B wins X-Y` ends a bo3 match. A drawn bo3 game counts for neither player:
 the match plays on until someone has won two games (fatal past `MAX_MATCH_GAMES`), and the player
-who went first in the drawn game goes first again. Every game end goes through `Game::end_game`.
+who went first in the drawn game goes first again. Every game end goes through `Game::end_game`
+(the per-game decision cap's, which is no rules outcome, through `Game::end_game_at_cap`).
 
 ### Ability resolution
 
@@ -528,6 +530,8 @@ sections above are not repeated here.
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
 - `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
+- `src/file_util.{h,cpp}` — `make_dirs` (mkdir -p) and `write_file_atomic` (a temporary file renamed
+  into place)
 - `src/stable_rng.h` — every gameplay random draw (platform-portable; never `std::shuffle` /
   `std::uniform_int_distribution` / `rand()` on the game RNG)
 - `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on
@@ -624,7 +628,12 @@ sections above are not repeated here.
   deciding agent's `last_behaviour` (μ, versions, evaluations) and the game boundaries;
   `teacher.h`: the teacher channel (`--teacher-a/-b <command>`, `--teacher-mix p`,
   `--teacher-timeout s`): a seat's `--machine` stream to a subprocess whose replies are the
-  trajectory's `teacher` labels, played with probability p on the teacher's own seeded coin
+  trajectory's `teacher` labels, played with probability p on the teacher's own seeded coin;
+  `actor.h`: the continuous actor (`--actor`, `--actor-schedule`, `--actor-out`, `--actor-id`,
+  `--actor-seed`, `--actor-start`, `--actor-matches`; `docs/actor.md`): match after match drawn
+  from a schedule (`actor_schedule.h`: entries, weights, seat swaps, purposes, outputs), the
+  match-scoped resets, per-match seeds from (run seed, actor, match), the status and results files,
+  SIGTERM / SIGHUP; the per-game cap `--max-game-decisions` (`cap_current_game`, game_driver.h)
 
 **The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
 `Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`,
@@ -641,7 +650,7 @@ handshake JSON, the shared region, request / response layouts.
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
   the gate, engine subprocesses only (links the std-only decoder and frame reader, no engine TU);
   one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
-  `traj.*` (episode reading and comparisons, the `traj` and `actor` tiers),
+  `traj.*` (episode reading and comparisons, the `traj`, `actorloop` and `actor` tiers),
   `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
   `--out-dir` (default `ci_out/`), `--fuzz-games`, `--smoke-games`, `--matchups`, `--mode`,
   `--scenario GLOB --show output|narrative|dump`, `--record`
@@ -704,5 +713,6 @@ handshake JSON, the shared region, request / response layouts.
 
 **Docs (`docs/`)** — `ci.md` (the gate), `game_running.md` (running games), `state_format.md`
 (RMSTATE), `knowledge_store.md` (the sidecar), `featurizer.md` (the featurizer and the network
-contract), `trajectory_format.md` (trajectory episodes), `inference_protocol.md` (remote evaluation),
+contract), `trajectory_format.md` (trajectory episodes), `actor.md` (the continuous actor, its
+schedule, status and results files), `inference_protocol.md` (remote evaluation),
 `rules_deviations.md`, `engine_fork_plan.md` (the plan), `rnad_training_plan.md` (the training plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.

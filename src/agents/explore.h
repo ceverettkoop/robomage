@@ -33,6 +33,11 @@ class ExploreAgent : public Agent {
         ExploreAgent(PyRandom *rng, bool patient) : rng_(rng), patient_(patient) {}
         int decide(const Decision &d) override;
         std::string label() const override { return patient_ ? "explore:patient" : "explore"; }
+        // The novelty set starts empty.
+        bool begin_match(std::string *) override {
+            seen_.clear();
+            return true;
+        }
 
     private:
         PyRandom *rng_;

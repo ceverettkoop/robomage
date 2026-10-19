@@ -35,7 +35,12 @@
 
 // Validates the options and installs the agents, the decision hook and the trajectory writer,
 // before the match: the shared generator is seeded with the game seed (--game-seed) when given,
-// else `engine_seed`. Fatal on an unknown spec or a conflicting option.
+// else `engine_seed`. Fatal on an unknown spec or a conflicting option. An actor (agents/actor.h)
+// calls it before each of its matches, with that match's options: the generator is reseeded, each
+// seat gets its agent (an agent of an earlier match with the same spec is reused, after its
+// begin_match), each seat's decoded stream starts empty, the in-process feed and the knowledge
+// sidecar start the match afresh (every seat gets its once-per-match frames again), and the
+// trajectory writer and the teacher channel are installed again.
 void agents_install(unsigned int engine_seed);
 
 // Called as each decision is read (InputLogger::choose), after the frame writers and before the

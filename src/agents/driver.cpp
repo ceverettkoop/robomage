@@ -14,7 +14,9 @@
 #include "../input_logger.h"
 #include "../state_format/agent_feed.h"
 #include "../state_format/cards_file.h"
+#include "../state_format/knowledge_feed.h"
 #include "../state_format/stream.h"
+#include "actor.h"
 #include "agent.h"
 #include "play_spec.h"
 #include "teacher.h"
@@ -27,12 +29,15 @@ namespace {
 struct AgentRun {
         agents::PyRandom rng;
         std::unique_ptr<agents::Agent> seat_agent[2];
+        std::string seat_spec[2];  // seat_agent's spec
+        // Agents of earlier matches no seat plays now, with their specs (seat_agent_for_match reuses them).
+        std::vector<std::pair<std::string, std::unique_ptr<agents::Agent>>> idle;
         std::unique_ptr<agents::Agent> human[2];  // a human seat's CLI (cli/human.h)
         std::unique_ptr<agents::Agent> first[2];  // a seat's player under a script when it has no agent
         std::unique_ptr<agents::Agent> script;    // --play / --actions
         agents::PlayScript *play = nullptr;       // `script` when it is a --play script
         bool decides[2] = {false, false};
-        agents::SeatStream streams[2];
+        std::unique_ptr<agents::SeatStream> streams[2];  // made anew for each match
         // The current decision, as built by agents_begin_decision.
         int seat = -1;
         size_t number = 0;
@@ -55,6 +60,7 @@ static AgentRun *run = nullptr;
 
 static int seat_index(Zone::Ownership seat);
 static std::unique_ptr<agents::Agent> agent_for(const std::string &spec, const char *flag);
+static void seat_agent_for_match(int s, const std::string &spec, const char *flag);
 static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions);
 static void report_script();
 static void report_featurized();
@@ -71,6 +77,24 @@ static std::unique_ptr<agents::Agent> agent_for(const std::string &spec, const c
     std::unique_ptr<agents::Agent> agent = agents::make_agent(spec, &run->rng, &err);
     if (!agent) fatal_error(std::string(flag) + ": " + err);
     return agent;
+}
+
+// Seat s's agent for the match about to start: the one an earlier match left idle with the same
+// spec (the seat's own first), else a new one; the seat's agent of the last match goes idle. Its
+// begin_match runs; fatal when it fails. No agent for an empty spec.
+static void seat_agent_for_match(int s, const std::string &spec, const char *flag) {
+    if (run->seat_agent[s]) run->idle.emplace_back(run->seat_spec[s], std::move(run->seat_agent[s]));
+    run->seat_spec[s] = spec;
+    if (spec.empty()) return;
+    for (size_t i = run->idle.size(); i-- > 0;)
+        if (run->idle[i].first == spec) {
+            run->seat_agent[s] = std::move(run->idle[i].second);
+            run->idle.erase(run->idle.begin() + static_cast<std::ptrdiff_t>(i));
+            break;
+        }
+    if (!run->seat_agent[s]) run->seat_agent[s] = agent_for(spec, flag);
+    std::string err;
+    if (!run->seat_agent[s]->begin_match(&err)) fatal_error(std::string(flag) + ": " + err);
 }
 
 // The game log channel: stdout (stderr's descriptor while the RMSTATE stream is on).
@@ -91,16 +115,18 @@ void agents_install(unsigned int engine_seed) {
     if (any_agent && replay_mode)
         fatal_error("--agent-a/--agent-b, --play and --actions cannot be combined with --replay (the log decides)");
     if (play_script_given && actions_script_given) fatal_error("--play and --actions are exclusive");
-    run = new AgentRun();
+    const bool first_match = !run;
+    if (first_match) run = new AgentRun();
     run->rng.seed_int(game_seed_given ? game_seed_value : engine_seed);
     const std::string *specs[2] = {&agent_a_spec, &agent_b_spec};
     const char *flags[2] = {"--agent-a", "--agent-b"};
     for (int s = 0; s < 2; ++s) {
-        if (!specs[s]->empty()) run->seat_agent[s] = agent_for(*specs[s], flags[s]);
-        if (human_seat[s]) run->human[s].reset(new cli::HumanAgent(human_seat[0] && human_seat[1]));
+        seat_agent_for_match(s, *specs[s], flags[s]);
+        if (human_seat[s] && !run->human[s]) run->human[s].reset(new cli::HumanAgent(human_seat[0] && human_seat[1]));
         run->decides[s] = scripted || run->seat_agent[s] || run->human[s];
+        run->streams[s].reset(new agents::SeatStream());
     }
-    if (scripted) {
+    if (scripted && first_match) {
         agents::Agent *players[2];
         for (int s = 0; s < 2; ++s) {
             if (!run->seat_agent[s] && !run->human[s]) run->first[s] = agent_for("first", flags[s]);
@@ -119,7 +145,7 @@ void agents_install(unsigned int engine_seed) {
         }
         std::atexit(report_script);
     }
-    if (featurize_seats) {
+    if (featurize_seats && first_match) {
         if (!run->decides[0] && !run->decides[1])
             fatal_error(
                 "--featurize-seats: no seat is decided by an in-process agent (--agent-a/-b, --play, --actions)");
@@ -133,12 +159,16 @@ void agents_install(unsigned int engine_seed) {
     trajectory_install(engine_seed, specs_for_trajectory);
     const bool in_process[2] = {run->decides[0] && !run->human[0], run->decides[1] && !run->human[1]};
     teacher_install(coin_seed, in_process);
+    agent_feed_reset();
+    knowledge_feed_reset();
     for (int s = 0; s < 2; ++s)
         if (run->decides[s] || trace_decisions || trajectory_records_seat(s) || teacher_on(s))
             agent_feed_serve(s == 0 ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run->decides[0] || run->decides[1])
         InputLogger::instance().set_input_provider(decide, run->decides[0], run->decides[1], true);
-    if (any_human && !InputLogger::instance().log_file_name().empty()) {
+    else
+        InputLogger::instance().clear_input_provider();
+    if (any_human && first_match && !InputLogger::instance().log_file_name().empty()) {
         print_line("Decision log: " + InputLogger::instance().log_file_name());
         std::fflush(stdout);
     }
@@ -151,6 +181,7 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     run->behaviour = nullptr;
     const Zone::Ownership seat = rmstate_deciding_seat();
     const int s = seat_index(seat);
+    run->seat = s;
     if (s < 0 || !agent_feed_serves(seat)) {
         trajectory_begin_decision(s, nullptr, actions);
         return;
@@ -159,12 +190,11 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     std::string state;
     agent_feed_decision(seat, actions, &match_frames, &state);
     teacher_send(s, match_frames, state, actions.size(), number);
-    agents::SeatStream &stream = run->streams[s];
+    agents::SeatStream &stream = *run->streams[s];
     std::string err;
     for (const std::string &payload : match_frames)
         if (!stream.feed_match_frame(payload, &err)) fatal_error("in-process agent frames: " + err);
     if (!stream.decode_state(state, &run->frame, &err)) fatal_error("in-process agent frames: " + err);
-    run->seat = s;
     run->number = number;
     run->view.emplace(stream, run->frame, s);
     if (run->featurization && run->decides[s]) featurize_decision();
@@ -183,6 +213,7 @@ void agents_end_decision(int choice, int reply) {
     }
     const int label = teacher_take_label();
     trajectory_end_decision(reply, run->behaviour, label);
+    actor_note_decision(run->seat, reply, run->behaviour);
 }
 
 // The decision hook: the deciding seat's agent (or the script) on the view agents_begin_decision
