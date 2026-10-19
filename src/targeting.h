@@ -64,4 +64,28 @@ bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
 int effective_target_min(const Ability &ab, Zone::Ownership perspective,
                          std::shared_ptr<Orderer> orderer, bool x_announced);
 
+// ── Target classes (CR 115.1, 115.4) ────────────────────────────────────────
+// The kinds of object a definition's targeting admits, read from the definition alone through
+// is_legal_target's branches: stack objects when TargetType$ names them (a spell, an activated or
+// triggered ability), a card in a graveyard for a graveyard target (TgtZone$ Graveyard, a
+// graveyard-origin ChangeZone), else the players and permanents of ValidTgts$. A permanent
+// alternative is classed by its head: a permanent card type, or for a Permanent / Card head every
+// permanent type its non<Type> qualifiers leave; any other head (a subtype) is permanent_other.
+// "Any" is a creature, planeswalker, battle or player (CR 115.4). All false when the definition
+// does not target (ValidTgts$ absent).
+struct TargetClasses {
+        bool creature = false;
+        bool planeswalker = false;
+        bool artifact = false;
+        bool enchantment = false;
+        bool land = false;
+        bool battle = false;
+        bool permanent_other = false;
+        bool player = false;
+        bool spell = false;
+        bool ability = false;
+        bool card_graveyard = false;
+};
+TargetClasses target_classes(const AbilityDef &def);
+
 #endif /* TARGETING_H */

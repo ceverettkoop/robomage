@@ -58,10 +58,14 @@ static bool player_target_alternative(const std::string &alt, bool &opponent_onl
 }
 
 bool target_spec_names_players(const std::string &valid_tgts) {
-    bool opp_only = false, you_only = false;
     for (const auto &alt : split(valid_tgts, ',', /*skip_empty=*/true))
-        if (player_target_alternative(alt, opp_only, you_only)) return true;
+        if (target_alternative_names_player(alt)) return true;
     return false;
+}
+
+bool target_alternative_names_player(const std::string &alt) {
+    bool opp_only = false, you_only = false;
+    return player_target_alternative(alt, opp_only, you_only);
 }
 
 bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zone::Ownership you) {

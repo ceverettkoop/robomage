@@ -38,6 +38,8 @@ Zone::Ownership active_seat();
 // player at all; `player_matches_target_spec` whether `player` satisfies one of them.
 bool target_spec_names_players(const std::string &valid_tgts);
 bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zone::Ownership you);
+// Whether one comma-OR alternative of a ValidTgts$ spec names a player.
+bool target_alternative_names_player(const std::string &alt);
 
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
 // Who controls an object: its live Permanent.controller while on the battlefield, a spell's

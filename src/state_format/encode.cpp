@@ -39,6 +39,7 @@
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
 #include "../systems/rules_modifying.h"
+#include "../targeting.h"
 #include "../type_constants.h"
 #include "enum_names.h"
 #include "handles.h"
@@ -73,6 +74,16 @@ struct CardAbility {
         const AbilityDef *def = nullptr;
         const StaticAbility *stat = nullptr;
         const Effect::Replacement *repl = nullptr;
+};
+
+// One sub-ability or mode of a card_ability row's definition (a card_ability_part row): its
+// definition and kind, the part index of the part it hangs off (none when it hangs off the
+// ability itself) and its depth (1 for the ability's own sub-abilities and modes).
+struct AbilityPart {
+        const AbilityDef *def = nullptr;
+        rmstate::PartKind kind = rmstate::PartKind::SUB;
+        uint64_t parent = NONE16;
+        int depth = 1;
 };
 
 // The zone counts of one seat (player table).
@@ -117,6 +128,16 @@ static bool sees_decklist(Zone::Ownership viewer, Zone::Ownership owner);
 static void write_card_face(
     FrameWriter &w, int card_id, const CardData &face, rmstate::Face which, int face_card, const std::string &script);
 static void write_card_abilities(FrameWriter &w, int card_id, const std::vector<CardAbility> &list, const CardData *cd);
+static void collect_ability_parts(const AbilityDef &def, uint64_t parent, int depth, std::vector<AbilityPart> &out);
+static void append_ability_part(
+    const AbilityDef &def, rmstate::PartKind kind, uint64_t parent, int depth, std::vector<AbilityPart> &out);
+static void write_ability_parts(FrameWriter &w, int card_id, size_t ability, const std::vector<AbilityPart> &parts);
+static void ability_amount(const AbilityDef &def, rmstate::AmountKind *kind, int64_t *amount);
+static void ability_pt_mod(const AbilityDef &def, rmstate::AmountKind *kind, int64_t *power, int64_t *toughness);
+static uint64_t target_class_mask(const AbilityDef &def);
+static uint64_t target_bound(int bound, bool variable);
+static void put_ability_params(Row &r, const AbilityDef *def);
+static uint64_t charm_num_of(const AbilityDef &def);
 static void write_token_card(FrameWriter &w, int card_id, const Token &tok);
 static Zone::Ownership plays_first_seat();
 static int match_game_index();
@@ -486,19 +507,160 @@ static void write_card_abilities(
     FrameWriter &w, int card_id, const std::vector<CardAbility> &list, const CardData *cd) {
     for (size_t i = 0; i < list.size(); ++i) {
         const CardAbility &a = list[i];
-        Row r = w.row(TableId::CARD_ABILITY);
-        r.u16(card_or_none(card_id)).u16(i).u8(static_cast<uint64_t>(a.face)).u8(static_cast<uint64_t>(a.kind));
-        if (a.def) {
-            const CardData *face = cd && a.face == rmstate::Face::BACK && cd->backside ? cd->backside.get() : cd;
-            r.u8(static_cast<uint64_t>(a.def->kind)).text(a.def->ref_key).text(cost_text(a.def->script_line));
-            r.u8(a.def->tap_cost ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
-            r.u8(u8_count(a.def->activation_limit)).text(a.def->script_line);
-        } else {
-            const uint32_t line = a.stat ? a.stat->script_line : a.repl->script_line;
-            r.u8(NONE8).text("").text("").u8(0).u8(static_cast<uint64_t>(rmstate::Timing::ANY)).u8(0);
-            r.text(script_line_text(line));
+        std::vector<AbilityPart> parts;
+        if (a.def) collect_ability_parts(*a.def, NONE16, 1, parts);
+        {
+            Row r = w.row(TableId::CARD_ABILITY);
+            r.u16(card_or_none(card_id)).u16(i).u8(static_cast<uint64_t>(a.face)).u8(static_cast<uint64_t>(a.kind));
+            if (a.def) {
+                const CardData *face = cd && a.face == rmstate::Face::BACK && cd->backside ? cd->backside.get() : cd;
+                r.u8(static_cast<uint64_t>(a.def->kind)).text(a.def->ref_key).text(cost_text(a.def->script_line));
+                r.u8(a.def->tap_cost ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
+                r.u8(u8_count(a.def->activation_limit)).text(a.def->script_line);
+            } else {
+                const uint32_t line = a.stat ? a.stat->script_line : a.repl->script_line;
+                r.u8(NONE8).text("").text("").u8(0).u8(static_cast<uint64_t>(rmstate::Timing::ANY)).u8(0);
+                r.text(script_line_text(line));
+            }
+            put_ability_params(r, a.def);
+            r.u8(u8_count(static_cast<int64_t>(parts.size()))).u8(a.def ? charm_num_of(*a.def) : 0);
+        }
+        write_ability_parts(w, card_id, i, parts);
+    }
+}
+
+// Appends the parts of `def` (card_ability_part), depth-first in definition order: its modes, then
+// its sub-abilities (the SubAbility$ chain, which resolves after the modes), each part followed by
+// its own parts.
+static void collect_ability_parts(const AbilityDef &def, uint64_t parent, int depth, std::vector<AbilityPart> &out) {
+    for (const AbilityDef &mode : def.charm_choices)
+        append_ability_part(mode, rmstate::PartKind::MODE, parent, depth, out);
+    for (const AbilityDef &sub : def.subabilities) append_ability_part(sub, rmstate::PartKind::SUB, parent, depth, out);
+}
+
+static void append_ability_part(
+    const AbilityDef &def, rmstate::PartKind kind, uint64_t parent, int depth, std::vector<AbilityPart> &out) {
+    AbilityPart p;
+    p.def = &def;
+    p.kind = kind;
+    p.parent = parent;
+    p.depth = depth;
+    out.push_back(p);
+    collect_ability_parts(def, out.size() - 1, depth + 1, out);
+}
+
+// The card_ability_part rows of card_ability row `ability` of card `card_id`.
+static void write_ability_parts(FrameWriter &w, int card_id, size_t ability, const std::vector<AbilityPart> &parts) {
+    for (size_t i = 0; i < parts.size(); ++i) {
+        const AbilityPart &p = parts[i];
+        Row r = w.row(TableId::CARD_ABILITY_PART);
+        r.u16(card_or_none(card_id)).u16(ability).u16(i).u16(p.parent).u8(static_cast<uint64_t>(p.kind));
+        r.u8(u8_count(p.depth)).u8(static_cast<uint64_t>(p.def->kind));
+        put_ability_params(r, p.def);
+    }
+}
+
+// The effect's number (Appendix A.4 `amount`): AbilityDef::amount, variable when the parser kept
+// an expression for it (an X or count-SVar, a conditional, delirium-scaled or damage-dealt
+// amount); else the effect's own count (CounterNum$, PeekAmount$, DigNum$); none when it has none.
+static void ability_amount(const AbilityDef &def, rmstate::AmountKind *kind, int64_t *amount) {
+    *kind = rmstate::AmountKind::VARIABLE;
+    *amount = 0;
+    const DamageParams *dp = std::get_if<DamageParams>(&def.params);
+    if (!def.dynamic_amount_expr.empty() || !def.amount_svar.empty() || def.amount_from_damage ||
+        def.cond_amount_active || (dp && dp->is_delirium_scale))
+        return;
+    *kind = rmstate::AmountKind::FIXED;
+    if (def.amount > 0) {
+        *amount = static_cast<int64_t>(def.amount);
+        return;
+    }
+    if (const CounterParams *cp = std::get_if<CounterParams>(&def.params)) {
+        if (!cp->count_expr.empty()) {
+            *kind = rmstate::AmountKind::VARIABLE;
+            return;
+        }
+        if (cp->count > 0) {
+            *amount = cp->count;
+            return;
         }
     }
+    if (const PeekParams *pp = std::get_if<PeekParams>(&def.params)) {
+        *amount = pp->peek_amount;
+        return;
+    }
+    if (!def.dig_num_expr.empty()) {
+        *kind = rmstate::AmountKind::VARIABLE;
+        return;
+    }
+    if (def.dig_num > 0) {
+        *amount = static_cast<int64_t>(def.dig_num);
+        return;
+    }
+    *kind = rmstate::AmountKind::NONE;
+}
+
+// A Pump's power and toughness modifiers (NumAtt$ / NumDef$): fixed values, or variable when
+// either is an expression, whose side then holds the expression's sign (+1 for +X, -1 for -X).
+static void ability_pt_mod(const AbilityDef &def, rmstate::AmountKind *kind, int64_t *power, int64_t *toughness) {
+    *kind = rmstate::AmountKind::NONE;
+    *power = *toughness = 0;
+    const PumpParams *pp = std::get_if<PumpParams>(&def.params);
+    if (!pp) return;
+    const bool var_power = !pp->att_expr.empty(), var_toughness = !pp->def_expr.empty();
+    *power = var_power ? pp->att_sign : pp->att;
+    *toughness = var_toughness ? pp->def_sign : pp->def;
+    if (var_power || var_toughness)
+        *kind = rmstate::AmountKind::VARIABLE;
+    else if (pp->att != 0 || pp->def != 0)
+        *kind = rmstate::AmountKind::FIXED;
+}
+
+// The definition's target classes (target_classes, targeting.h) as a mask:target_class.
+static uint64_t target_class_mask(const AbilityDef &def) {
+    const TargetClasses tc = target_classes(def);
+    const std::pair<bool, rmstate::TargetClass> bits[] = {{tc.creature, rmstate::TargetClass::CREATURE},
+        {tc.planeswalker, rmstate::TargetClass::PLANESWALKER}, {tc.artifact, rmstate::TargetClass::ARTIFACT},
+        {tc.enchantment, rmstate::TargetClass::ENCHANTMENT}, {tc.land, rmstate::TargetClass::LAND},
+        {tc.battle, rmstate::TargetClass::BATTLE}, {tc.permanent_other, rmstate::TargetClass::PERMANENT_OTHER},
+        {tc.player, rmstate::TargetClass::PLAYER}, {tc.spell, rmstate::TargetClass::SPELL},
+        {tc.ability, rmstate::TargetClass::ABILITY}, {tc.card_graveyard, rmstate::TargetClass::CARD_GRAVEYARD}};
+    uint64_t m = 0;
+    for (const auto &b : bits)
+        if (b.first) m |= 1u << static_cast<int>(b.second);
+    return m;
+}
+
+// A target-count bound: 0xFF when it comes from X or a count expression, else its value.
+static uint64_t target_bound(int bound, bool variable) {
+    return variable ? NONE8 : static_cast<uint64_t>(std::max(0, std::min(bound, 0xFE)));
+}
+
+// The parameter columns of one definition (card_ability and card_ability_part, register 41);
+// none / 0 for a row with no definition (a static or replacement).
+static void put_ability_params(Row &r, const AbilityDef *def) {
+    rmstate::AmountKind amount_kind = rmstate::AmountKind::NONE, pt_kind = rmstate::AmountKind::NONE;
+    int64_t amount = 0, power = 0, toughness = 0;
+    uint64_t targets = 0, target_min = 0, target_max = 0;
+    if (def) {
+        ability_amount(*def, &amount_kind, &amount);
+        ability_pt_mod(*def, &pt_kind, &power, &toughness);
+        targets = target_class_mask(*def);
+        if (def->valid_tgts != "N_A") {
+            target_min =
+                target_bound(def->target_min, def->target_min_from_xpaid || !def->target_min_count_expr.empty());
+            target_max =
+                target_bound(def->target_max, def->target_max_from_xpaid || !def->target_max_count_expr.empty() ||
+                                                  def->target_max >= static_cast<int>(MAX_ENTITIES));
+        }
+    }
+    r.u16(u16_count(amount)).u8(static_cast<uint64_t>(amount_kind)).i16(power).i16(toughness);
+    r.u8(static_cast<uint64_t>(pt_kind)).u16(targets).u8(target_min).u8(target_max);
+}
+
+// How many modes a modal ability chooses (CharmNum$, default 1); 0 for an ability with no modes.
+static uint64_t charm_num_of(const AbilityDef &def) {
+    return def.kind == EffectKind::Charm ? u8_count(def.charm_num) : 0;
 }
 
 static void write_token_card(FrameWriter &w, int card_id, const Token &tok) {

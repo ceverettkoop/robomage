@@ -19,6 +19,7 @@ static void col_handle(TableDef &t, const std::string &name);
 static void col_card(TableDef &t, const std::string &name);
 static void col_count(TableDef &t, const std::string &name, Storage s);
 static void col_enum(TableDef &t, const std::string &name, Storage s, const std::string &enum_name);
+static void col_ability_params(TableDef &t);
 static std::vector<TableDef> build_table_defs();
 static void define_schema_tables(std::vector<TableDef> &out);
 static void define_cards_tables(std::vector<TableDef> &out);
@@ -101,6 +102,19 @@ static void col_enum(TableDef &t, const std::string &name, Storage s, const std:
     col(t, name, s, "enum:" + enum_name);
 }
 
+// The effect parameters of one ability definition (Appendix A.4, register 41), shared by
+// card_ability and card_ability_part.
+static void col_ability_params(TableDef &t) {
+    col_count(t, "amount", Storage::U16);
+    col_enum(t, "amount_kind", Storage::U8, "amount_kind");
+    col(t, "power_mod", Storage::I16, "signed");
+    col(t, "toughness_mod", Storage::I16, "signed");
+    col_enum(t, "pt_kind", Storage::U8, "amount_kind");
+    col(t, "targets", Storage::U16, "mask:target_class");
+    col_count(t, "target_min", Storage::U8);
+    col_count(t, "target_max", Storage::U8);
+}
+
 // ── Table definitions (Appendix A.3-A.6) ──────────────────────────────────────────────────────
 
 static void define_schema_tables(std::vector<TableDef> &out) {
@@ -134,6 +148,17 @@ static void define_schema_tables(std::vector<TableDef> &out) {
 }
 
 static void define_cards_tables(std::vector<TableDef> &out) {
+    add_table(out, TableId::CARD_ABILITY_PART, "card_ability_part", FrameKind::CARDS);
+    TableDef &ap = out.back();
+    col_card(ap, "card");
+    col(ap, "ability", Storage::U16, "index");
+    col(ap, "part", Storage::U16, "index");
+    col(ap, "parent", Storage::U16, "index");
+    col_enum(ap, "kind", Storage::U8, "part_kind");
+    col_count(ap, "depth", Storage::U8);
+    col_enum(ap, "category", Storage::U8, "effect_kind");
+    col_ability_params(ap);
+
     add_table(out, TableId::CARD, "card", FrameKind::CARDS);
     TableDef &c = out.back();
     col_card(c, "card");
@@ -180,6 +205,9 @@ static void define_cards_tables(std::vector<TableDef> &out) {
     col_enum(a, "timing", Storage::U8, "timing");
     col_count(a, "limit", Storage::U8);
     col_text(a, "line");
+    col_ability_params(a);
+    col_count(a, "n_parts", Storage::U8);
+    col_count(a, "charm_num", Storage::U8);
 
     add_table(out, TableId::CARD_PIP, "card_pip", FrameKind::CARDS);
     col_card(out.back(), "card");
@@ -710,6 +738,9 @@ std::vector<EnumTable> format_enums() {
         {"cast_variant", {RMSTATE_CAST_VARIANT(RMSTATE_ENUM_NAME)}},
         {"knowledge_level", {RMSTATE_KNOWLEDGE_LEVEL(RMSTATE_ENUM_NAME)}},
         {"pool_kind", {RMSTATE_POOL_KIND(RMSTATE_ENUM_NAME)}},
+        {"amount_kind", {RMSTATE_AMOUNT_KIND(RMSTATE_ENUM_NAME)}},
+        {"target_class", {RMSTATE_TARGET_CLASS(RMSTATE_ENUM_NAME)}},
+        {"part_kind", {RMSTATE_PART_KIND(RMSTATE_ENUM_NAME)}},
     };
 }
 #undef RMSTATE_ENUM_NAME

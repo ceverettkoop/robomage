@@ -37,6 +37,14 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
 static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep);
 static std::string normpath(const std::string &path);
+static void check_card_params(const rmcheck::Options &opt, rmcheck::Report &rep);
+static int64_t card_id_named(const rmcheck::Rows &card, const std::string &name);
+static long first_ability_row(const rmcheck::Rows &ab, int64_t card);
+static std::vector<size_t> ability_part_rows(const rmcheck::Rows &part, int64_t card, uint64_t ability);
+static uint64_t enum_mask(const rmstate::Schema &schema, const char *enum_name, const std::vector<std::string> &names);
+static void expect_cell(const rmcheck::Rows &t, size_t row, const char *col, const std::string &want,
+    const std::string &what, std::vector<std::string> *fails);
+static void check_part_structure(const rmcheck::Rows &ab, const rmcheck::Rows &part, std::vector<std::string> *fails);
 
 static std::vector<std::string> selfcheck_flags(bool every_decision) {
     if (every_decision) return {"--selfcheck-state", "--selfcheck-state-sample", "1"};
@@ -466,6 +474,169 @@ static std::string normpath(const std::string &path) {
     return rmcheck::join(parts, "/");
 }
 
+// The id of the card whose front row is named `name` in a CARDS frame's card table, or -1.
+static int64_t card_id_named(const rmcheck::Rows &card, const std::string &name) {
+    for (size_t r = 0; r < card.size(); ++r)
+        if (card.name(r, card.col("face")) == "FRONT" && card.text(r, card.col("name")) == name)
+            return static_cast<int64_t>(card.u(r, card.col("card")));
+    return -1;
+}
+
+// The card_ability row of `card`'s ability 0, or -1.
+static long first_ability_row(const rmcheck::Rows &ab, int64_t card) {
+    for (size_t r = 0; r < ab.size(); ++r)
+        if (static_cast<int64_t>(ab.u(r, ab.col("card"))) == card && ab.u(r, ab.col("index")) == 0)
+            return static_cast<long>(r);
+    return -1;
+}
+
+// The card_ability_part rows of `card`'s ability `ability`, in frame order.
+static std::vector<size_t> ability_part_rows(const rmcheck::Rows &part, int64_t card, uint64_t ability) {
+    std::vector<size_t> out;
+    for (size_t r = 0; r < part.size(); ++r)
+        if (static_cast<int64_t>(part.u(r, part.col("card"))) == card && part.u(r, part.col("ability")) == ability)
+            out.push_back(r);
+    return out;
+}
+
+// The mask over enum `enum_name` with the bits of `names` set (0 for a name it lacks).
+static uint64_t enum_mask(const rmstate::Schema &schema, const char *enum_name, const std::vector<std::string> &names) {
+    const rmstate::EnumTable *e = schema.find_enum(enum_name);
+    uint64_t m = 0;
+    if (!e) return 0;
+    for (const std::string &n : names)
+        for (size_t i = 0; i < e->values.size(); ++i)
+            if (e->values[i] == n) m |= uint64_t{1} << i;
+    return m;
+}
+
+// Fails unless cell `col` of `row` reads `want` (an enum column by its value name, a null cell as
+// "null", anything else as its number).
+static void expect_cell(const rmcheck::Rows &t, size_t row, const char *col, const std::string &want,
+    const std::string &what, std::vector<std::string> *fails) {
+    const int c = t.col(col);
+    if (c < 0) {
+        fails->push_back(what + ": no column " + col);
+        return;
+    }
+    const std::string got = t.null(row, c) ? "null" : t.name(row, c);
+    if (got != want) fails->push_back(what + ": " + col + " is " + got + ", expected " + want);
+}
+
+// Every card_ability row's n_parts equals its card_ability_part rows, which number 0, 1, … in
+// order, each with a parent before it (or none at depth 1); charm_num is nonzero exactly for a
+// Charm.
+static void check_part_structure(const rmcheck::Rows &ab, const rmcheck::Rows &part, std::vector<std::string> *fails) {
+    std::map<std::pair<uint64_t, uint64_t>, std::vector<size_t>> by_ability;
+    for (size_t r = 0; r < part.size(); ++r)
+        by_ability[{part.u(r, part.col("card")), part.u(r, part.col("ability"))}].push_back(r);
+    for (size_t r = 0; r < ab.size(); ++r) {
+        const uint64_t card = ab.u(r, ab.col("card")), index = ab.u(r, ab.col("index"));
+        const std::string what = "card " + std::to_string(card) + " ability " + std::to_string(index);
+        const auto it = by_ability.find({card, index});
+        const std::vector<size_t> rows = it == by_ability.end() ? std::vector<size_t>() : it->second;
+        if (ab.u(r, ab.col("n_parts")) != rows.size()) fails->push_back(what + ": n_parts disagrees with its parts");
+        const bool charm = ab.name(r, ab.col("category")) == "Charm";
+        if (charm != (ab.u(r, ab.col("charm_num")) != 0)) fails->push_back(what + ": charm_num on a non-Charm");
+        for (size_t k = 0; k < rows.size(); ++k) {
+            const size_t p = rows[k];
+            const bool top = part.null(p, part.col("parent"));
+            if (part.u(p, part.col("part")) != k || (!top && part.u(p, part.col("parent")) >= k) ||
+                top != (part.u(p, part.col("depth")) == 1))
+                fails->push_back(what + ": part " + std::to_string(k) + " is out of order");
+        }
+    }
+}
+
+// The CARDS frame's ability parameters (register 41) over every vocab card (--closed-decklist):
+// Lightning Bolt's damage and targets, Brainstorm's SubAbility$ part, Kozilek's Command's modes,
+// and every ability's parts in order.
+static void check_card_params(const rmcheck::Options &opt, rmcheck::Report &rep) {
+    const std::string label = "card ability parameters";
+    StreamGame g;
+    g.deck_a = "league/burn";
+    g.deck_b = "league/burn";
+    g.seed = 1;
+    g.flags = {"--closed-decklist"};
+    const rmcheck::StreamRun run = rmcheck::play_stream_session(opt, g, "", 1);
+    if (!run.error.empty()) {
+        rep.error("state", label + ": " + run.error);
+        return;
+    }
+    rmcheck::FrameDecoder dec;
+    rmstate::DecodedFrame cards;
+    bool found = false;
+    std::string err;
+    for (const std::string &p : run.payloads) {
+        rmstate::DecodedFrame f;
+        if (!dec.feed(p, &f, &err)) {
+            rep.error("state", label + ": " + err);
+            return;
+        }
+        if (rmcheck::frame_viewer(p) != rmcheck::VIEWER_A || rmcheck::frame_kind(p) != rmcheck::KIND_CARDS) continue;
+        cards = std::move(f);
+        found = true;
+        break;
+    }
+    if (!found) {
+        rep.error("state", label + ": Player A got no CARDS frame");
+        return;
+    }
+    const rmstate::Schema &schema = *dec.schema(rmcheck::VIEWER_A);
+    const rmcheck::Rows card(cards, schema, "card"), ab(cards, schema, "card_ability"),
+        part(cards, schema, "card_ability_part");
+    std::vector<std::string> fails;
+    const int64_t bolt = card_id_named(card, "Lightning Bolt"), brainstorm = card_id_named(card, "Brainstorm"),
+                  command = card_id_named(card, "Kozilek's Command");
+    const long bolt_row = first_ability_row(ab, bolt), brainstorm_row = first_ability_row(ab, brainstorm),
+               command_row = first_ability_row(ab, command);
+    if (bolt_row < 0 || brainstorm_row < 0 || command_row < 0) {
+        rep.error("state", label + ": CARDS lacks Lightning Bolt, Brainstorm or Kozilek's Command");
+        return;
+    }
+    const size_t b = static_cast<size_t>(bolt_row);
+    expect_cell(ab, b, "category", "DealDamage", "Lightning Bolt", &fails);
+    expect_cell(ab, b, "amount", "3", "Lightning Bolt", &fails);
+    expect_cell(ab, b, "amount_kind", "FIXED", "Lightning Bolt", &fails);
+    expect_cell(ab, b, "target_min", "1", "Lightning Bolt", &fails);
+    expect_cell(ab, b, "target_max", "1", "Lightning Bolt", &fails);
+    expect_cell(ab, b, "n_parts", "0", "Lightning Bolt", &fails);
+    expect_cell(ab, b, "charm_num", "0", "Lightning Bolt", &fails);
+    const uint64_t any_target = enum_mask(schema, "target_class", {"CREATURE", "PLANESWALKER", "BATTLE", "PLAYER"});
+    if (ab.u(b, ab.col("targets")) != any_target) fails.push_back("Lightning Bolt: targets is not any target");
+    const std::vector<size_t> bs = ability_part_rows(part, brainstorm, 0);
+    if (bs.size() != 1) {
+        fails.push_back("Brainstorm: " + std::to_string(bs.size()) + " parts, expected 1");
+    } else {
+        expect_cell(part, bs[0], "kind", "SUB", "Brainstorm part 0", &fails);
+        expect_cell(part, bs[0], "category", "ChangeZone", "Brainstorm part 0", &fails);
+        expect_cell(part, bs[0], "amount", "2", "Brainstorm part 0", &fails);
+        expect_cell(part, bs[0], "parent", "null", "Brainstorm part 0", &fails);
+    }
+    const size_t c = static_cast<size_t>(command_row);
+    expect_cell(ab, c, "category", "Charm", "Kozilek's Command", &fails);
+    expect_cell(ab, c, "charm_num", "2", "Kozilek's Command", &fails);
+    expect_cell(ab, c, "n_parts", "5", "Kozilek's Command", &fails);
+    const std::vector<size_t> cs = ability_part_rows(part, command, 0);
+    const char *kinds[] = {"MODE", "MODE", "SUB", "MODE", "MODE"};
+    for (size_t k = 0; k < cs.size() && k < 5; ++k)
+        expect_cell(part, cs[k], "kind", kinds[k], "Kozilek's Command part " + std::to_string(k), &fails);
+    if (cs.size() == 5) {
+        expect_cell(part, cs[2], "parent", "1", "Kozilek's Command part 2", &fails);
+        expect_cell(part, cs[2], "depth", "2", "Kozilek's Command part 2", &fails);
+        expect_cell(part, cs[0], "amount_kind", "VARIABLE", "Kozilek's Command part 0", &fails);
+        expect_cell(part, cs[4], "target_min", "0", "Kozilek's Command part 4", &fails);
+        expect_cell(part, cs[4], "target_max", "255", "Kozilek's Command part 4", &fails);
+        if (part.u(cs[4], part.col("targets")) != enum_mask(schema, "target_class", {"CARD_GRAVEYARD"}))
+            fails.push_back("Kozilek's Command part 4: targets is not a card in a graveyard");
+    }
+    check_part_structure(ab, part, &fails);
+    for (const std::string &f : fails) rep.error("state", label + ": " + f);
+    if (fails.empty())
+        rep.info("OK   " + label + ": " + std::to_string(ab.size()) + " abilities, " + std::to_string(part.size()) +
+                 " parts");
+}
+
 // The knowledge-side sources include only the standard library and the std-only headers.
 static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     static const std::set<std::string> std_headers = {"algorithm", "any", "array", "atomic", "bitset", "cassert",
@@ -536,7 +707,7 @@ namespace rmcheck {
 
 // The state tier: the step-1b self-checks over the replayed corpus, explore fuzz games and the scenarios; the dumps'
 // re-encoding and the decoders' refusals; RMSTATE sessions against their dumps; the name-a-card
-// candidate menus; the knowledge-side include isolation.
+// candidate menus; the CARDS frame's ability parameters; the knowledge-side include isolation.
 void tier_state(const Options &opt, Report &rep) {
     const double t0 = now_seconds();
     corpus_part(opt, rep);
@@ -546,6 +717,7 @@ void tier_state(const Options &opt, Report &rep) {
     scenarios_part(opt, rep);
     const double t3 = now_seconds();
     decode_part(opt, rep, dumps);
+    check_card_params(opt, rep);
     isolation_part(opt, rep);
     for (const std::string &d : dumps) {
         remove_tree(d);
