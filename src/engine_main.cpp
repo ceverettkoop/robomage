@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include "agents/driver.h"
+#include "agents/teacher.h"
 #include "agents/trajectory.h"
 #include "classes/deck.h"
 #include "classes/game.h"
@@ -88,6 +89,7 @@ static void game_loop() {
         print_game_result(1, winner);
         trajectory_game_end(winner);
     }
+    teacher_finish();
 }
 
 int engine_main(int argc, char const *argv[]) {

@@ -31,5 +31,9 @@ bool agent_feed_serves(Zone::Ownership viewer);
 // receives its STATE frame.
 void agent_feed_decision(Zone::Ownership seat, const std::vector<LegalAction> &actions,
     std::vector<std::string> *match_frames, std::string *state);
+// The match is over: served seat `seat`'s terminal STATE frame (no menu, its last events; the
+// stream's for the seat, state_format/stream.h) in `state`, after its once-per-match frames in
+// `match_frames` when it never decided in the match.
+void agent_feed_terminal(Zone::Ownership seat, std::vector<std::string> *match_frames, std::string *state);
 
 #endif /* STATE_FORMAT_AGENT_FEED_H */

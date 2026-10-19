@@ -42,8 +42,6 @@ const size_t MAX_FAILS = 20;
 static std::vector<TrajGame> traj_games(const rmcheck::Options &opt);
 static bool load_featurization(const rmcheck::Options &opt, rmcheck::Report &rep, Featurization *f);
 static void run_game(const rmcheck::Options &opt, TrajGame *g);
-static std::vector<int64_t> logged_replies(const std::string &rmlog);
-static std::map<int, int> game_results(const std::string &out);
 static void check_steps(const TrajGame &g, const rmcheck::EpisodeFile &e, std::vector<std::string> *fails);
 static void check_game(
     const TrajGame &g, const std::vector<rmcheck::EpisodeFile> &eps, std::vector<std::string> *fails);
@@ -139,30 +137,6 @@ static void run_game(const rmcheck::Options &opt, TrajGame *g) {
     g->replay = rmcheck::run_process(replay);
 }
 
-// The decision lines of a decision log (menu rows and concession sentinels), in order.
-static std::vector<int64_t> logged_replies(const std::string &rmlog) {
-    std::string text;
-    std::vector<int64_t> out;
-    if (!rmcheck::read_file(rmlog, &text)) return out;
-    bool decisions = false;
-    for (const std::string &line : rmcheck::split_lines(text)) {
-        if (decisions && line != "QUIT") out.push_back(std::strtoll(line.c_str(), nullptr, 10));
-        decisions = decisions || line == "DECISIONS";
-    }
-    return out;
-}
-
-// Each GAME_RESULT line's game number and Player A's result (+1, -1, 0).
-static std::map<int, int> game_results(const std::string &out) {
-    std::map<int, int> results;
-    for (const std::string &line : rmcheck::split_lines(out)) {
-        if (!rmcheck::starts_with(line, "GAME_RESULT: ")) continue;
-        const int n = std::atoi(line.c_str() + 13);
-        results[n] = rmcheck::contains(line, "Player A wins") ? 1 : rmcheck::contains(line, "Player B wins") ? -1 : 0;
-    }
-    return results;
-}
-
 // One episode's steps: the game and seats, sideboarding before the game, μ a distribution with
 // mass at the reply, the replies menu rows or sentinels, the omniscient part as requested.
 static void check_steps(const TrajGame &g, const rmcheck::EpisodeFile &e, std::vector<std::string> *fails) {
@@ -208,7 +182,7 @@ static void check_steps(const TrajGame &g, const rmcheck::EpisodeFile &e, std::v
 // footers as the GAME_RESULT lines say, the replies those of the decision log.
 static void check_game(
     const TrajGame &g, const std::vector<rmcheck::EpisodeFile> &eps, std::vector<std::string> *fails) {
-    const std::map<int, int> results = game_results(g.live.out);
+    const std::map<int, int> results = rmcheck::game_results(g.live.out);
     for (size_t i = 0; i < eps.size(); ++i) {
         const rmcheck::EpisodeFile &e = eps[i];
         const featurize::RmtbFile &f = e.ep.file;
@@ -239,7 +213,7 @@ static void check_game(
     for (const auto &r : results)
         if (r.first < 1 || r.first > static_cast<int>(eps.size()))
             fails->push_back(g.name + ": GAME_RESULT " + std::to_string(r.first) + " has no episode");
-    const std::vector<int64_t> logged = logged_replies(g.rmlog);
+    const std::vector<int64_t> logged = rmcheck::logged_replies(g.rmlog);
     std::vector<int64_t> recorded;
     int64_t game_decisions = 0;
     for (const rmcheck::EpisodeFile &e : eps) {
@@ -556,6 +530,7 @@ void tier_traj(const Options &opt, Report &rep) {
     if (live[1].size() > 1) for_python.emplace_back("bo3_g2", &live[1][1]);
     python_part(opt, rep, f, for_python);
     driver_part(opt, rep);
+    traj_teacher_part(opt, rep);
     rep.info("traj: " + std::to_string(episodes) + " episodes, " + std::to_string(steps) + " decisions (" +
              std::to_string(framed) + " against the dumps' frames) in " + fmt1(now_seconds() - t0) + "s");
 }

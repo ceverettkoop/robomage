@@ -17,6 +17,7 @@
 #include "../state_format/stream.h"
 #include "agent.h"
 #include "play_spec.h"
+#include "teacher.h"
 #include "trace.h"
 #include "trajectory.h"
 
@@ -38,7 +39,9 @@ struct AgentRun {
         rmstate::DecodedFrame frame;
         std::optional<agents::DecisionView> view;
         bool traced = false;
-        const agents::Agent *decider = nullptr;  // the agent that decided the decision (decide())
+        // The behaviour distribution the decision's reply was drawn from (decide(): the deciding
+        // agent's, or the teacher channel's mixture), for the trajectory writer.
+        const agents::Behaviour *behaviour = nullptr;
         // --featurize-seats: the inputs, the last tensors and the totals.
         std::unique_ptr<featurize::Featurization> featurization;
         featurize::Tensors tensors;
@@ -79,8 +82,10 @@ void agents_install(unsigned int engine_seed) {
     const bool scripted = play_script_given || actions_script_given;
     const bool any_agent = !agent_a_spec.empty() || !agent_b_spec.empty() || scripted;
     const bool any_human = human_seat[0] || human_seat[1];
-    if (!any_agent && !any_human && !trace_decisions && !trajectory_enabled()) {
+    const uint64_t coin_seed = game_seed_given ? game_seed_value : engine_seed;
+    if (!any_agent && !any_human && !trace_decisions && !trajectory_enabled() && !teacher_enabled()) {
         trajectory_install(engine_seed, nullptr);
+        teacher_install(coin_seed, nullptr);
         return;
     }
     if (any_agent && replay_mode)
@@ -126,8 +131,10 @@ void agents_install(unsigned int engine_seed) {
     std::string specs_for_trajectory[2];
     seat_specs(specs_for_trajectory);
     trajectory_install(engine_seed, specs_for_trajectory);
+    const bool in_process[2] = {run->decides[0] && !run->human[0], run->decides[1] && !run->human[1]};
+    teacher_install(coin_seed, in_process);
     for (int s = 0; s < 2; ++s)
-        if (run->decides[s] || trace_decisions || trajectory_records_seat(s))
+        if (run->decides[s] || trace_decisions || trajectory_records_seat(s) || teacher_on(s))
             agent_feed_serve(s == 0 ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run->decides[0] || run->decides[1])
         InputLogger::instance().set_input_provider(decide, run->decides[0], run->decides[1], true);
@@ -141,7 +148,7 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     if (!run) return;
     run->view.reset();
     run->traced = false;
-    run->decider = nullptr;
+    run->behaviour = nullptr;
     const Zone::Ownership seat = rmstate_deciding_seat();
     const int s = seat_index(seat);
     if (s < 0 || !agent_feed_serves(seat)) {
@@ -151,6 +158,7 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     std::vector<std::string> match_frames;
     std::string state;
     agent_feed_decision(seat, actions, &match_frames, &state);
+    teacher_send(s, match_frames, state, actions.size(), number);
     agents::SeatStream &stream = run->streams[s];
     std::string err;
     for (const std::string &payload : match_frames)
@@ -173,24 +181,23 @@ void agents_end_decision(int choice, int reply) {
         print_line(agents::trace_choice_line(*run->view, choice));
         run->traced = false;
     }
-    trajectory_end_decision(reply, run->decider);
+    const int label = teacher_take_label();
+    trajectory_end_decision(reply, run->behaviour, label);
 }
 
 // The decision hook: the deciding seat's agent (or the script) on the view agents_begin_decision
-// built for this decision.
+// built for this decision, its reply mixed with a teacher's label under --teacher-mix.
 static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions) {
-    (void)actions;
     const int s = seat_index(seat);
     if (s < 0 || !run->view || run->seat != s) fatal_error("in-process agent: no frame was built for this decision");
     agents::Agent *agent = run->script          ? run->script.get()
                            : run->seat_agent[s] ? run->seat_agent[s].get()
                                                 : run->human[s].get();
     const agents::Decision d{*run->view, run->number > 0 ? run->number - 1 : 0};
-    run->decider = agent;
     const int choice = agent->decide(d);
     if (choice == agents::AGENT_FAILED) fatal_error(agent->failure());
     if (choice == agents::AGENT_QUIT) InputLogger::instance().end_run_by_quit();
-    return choice;
+    return teacher_mix(choice, agent->last_behaviour(), actions.size(), &run->behaviour);
 }
 
 // Each seat's decider as the trajectory writer's header names it: the --replay log, the --play /

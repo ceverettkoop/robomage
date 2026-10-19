@@ -287,6 +287,24 @@ behaviour distribution, the reply, the result) and keeps the decision log; `--re
 --trajectory-out DIR` re-featurizes a logged game, such as a `rm_driver.py --rmlog-dir` corpus.
 Format and flags: [`trajectory_format.md`](trajectory_format.md).
 
+`--teacher-a / --teacher-b <command>` streams a seat's frames (the `--machine` protocol's bytes) to
+a teacher process whose reply at each decision is recorded as the trajectory's `teacher` label;
+`--teacher-mix p` plays the label with probability p (training plan T4, DAgger). The scripted agent
+is the teacher: `python3 ../python/teacher.py [--tier hard] [--seed N]`.
+
+```bash
+cd bin
+# explore decides seat A; scripted:hard labels every A decision; half of them its label is played
+./release/robomage --agent-a explore --agent-b explore --deck-a league/bug --deck-b league/burn \
+  --bo3 --game-seed 7 --teacher-a "python3 ../python/teacher.py --seed 7" --teacher-mix 0.5 \
+  --trajectory-out /tmp/episodes
+```
+
+With `--teacher-mix 1`, `--teacher-a "python3 ../python/teacher.py --seed N"` and `--game-seed N`
+the game is the one `rm_driver.py --player-a scripted --seed N` plays (as long as the other seat
+draws nothing from Python's `random`). Semantics, μ under mixing and failures:
+[`trajectory_format.md`](trajectory_format.md) §1.1 and `src/agents/teacher.h`.
+
 ## State dumps
 
 `--rmstate-dump FILE` writes every viewer's frames (A, B and omniscient) at each decision beside

@@ -15,9 +15,10 @@ template <typename T>
 static bool slice_of(const featurize::RmtbFile &f, const std::string &name, size_t d, size_t width, std::vector<T> *out,
     std::string *err);
 
-// The arrays only the live run's behaviour policy fills.
+// The arrays only the live run's behaviour policy (and teacher channel) fills.
 static bool behaviour_array(const std::string &name) {
-    return name == "has_mu" || name == "mu" || name == "policy_version" || rmcheck::starts_with(name, "eval_");
+    return name == "has_mu" || name == "mu" || name == "policy_version" || name == "teacher" ||
+           rmcheck::starts_with(name, "eval_");
 }
 
 // The attrs that name the deciders (and what only the live run knows of them).
@@ -87,6 +88,28 @@ static bool tensors_of_file(const featurize::RmtbFile &f, std::vector<featurize:
 }
 
 namespace rmcheck {
+
+std::vector<int64_t> logged_replies(const std::string &rmlog) {
+    std::string text;
+    std::vector<int64_t> out;
+    if (!read_file(rmlog, &text)) return out;
+    bool decisions = false;
+    for (const std::string &line : split_lines(text)) {
+        if (decisions && line != "QUIT") out.push_back(std::strtoll(line.c_str(), nullptr, 10));
+        decisions = decisions || line == "DECISIONS";
+    }
+    return out;
+}
+
+std::map<int, int> game_results(const std::string &out) {
+    std::map<int, int> results;
+    for (const std::string &line : split_lines(out)) {
+        if (!starts_with(line, "GAME_RESULT: ")) continue;
+        const int n = std::atoi(line.c_str() + 13);
+        results[n] = contains(line, "Player A wins") ? 1 : contains(line, "Player B wins") ? -1 : 0;
+    }
+    return results;
+}
 
 bool read_episodes(const std::string &dir, std::vector<EpisodeFile> *out, std::string *err) {
     out->clear();

@@ -138,7 +138,7 @@ background** and make the live output inspectable by the user:
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
-  | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized |
+  | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
   | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
@@ -621,7 +621,10 @@ sections above are not repeated here.
   `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace;
   `trajectory.h` too: the trajectory writer (`--trajectory-out DIR`, `--trajectory-seats`,
   `--trajectory-omniscient`), one episode file per game from the recorded seats' decoded frames, the
-  deciding agent's `last_behaviour` (μ, versions, evaluations) and the game boundaries
+  deciding agent's `last_behaviour` (μ, versions, evaluations) and the game boundaries;
+  `teacher.h`: the teacher channel (`--teacher-a/-b <command>`, `--teacher-mix p`,
+  `--teacher-timeout s`): a seat's `--machine` stream to a subprocess whose replies are the
+  trajectory's `teacher` labels, played with probability p on the teacher's own seeded coin
 
 **The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
 `Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`,
@@ -678,6 +681,9 @@ handshake JSON, the shared region, request / response layouts.
   write; scripted tiers, explore, `first`, `actions:`; `run_games` / `play_game`; its own CLI
   (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
 - `rmtb.py` — RMTB reader (`docs/featurizer.md` §4.4), stdlib `struct`
+- `teacher.py` — the scripted agent (`--tier`, default hard) as a labeller on the machine protocol
+  (stdin frames, stdout replies; the engine's `--teacher-a/-b`); reseeds `random` with `--seed` and
+  resets at each match of the stream, `--record FILE` keeps the bytes read
 - `rmtraj.py` — trajectory episode reader (`docs/trajectory_format.md`): each step's tensors
   expanded to the featurizer's layout
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the

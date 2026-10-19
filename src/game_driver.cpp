@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "action_processor.h"
+#include "agents/teacher.h"
 #include "agents/trajectory.h"
 #include "card_db.h"
 #include "companion.h"
@@ -740,6 +741,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         obs_match_end(
             cur_game.winner, cur_game.winner == Zone::PLAYER_A ? 1 : 0, cur_game.winner == Zone::PLAYER_B ? 1 : 0);
         rmstate_match_over();
+        teacher_match_over();
     }
     return cur_game.winner;
 }
@@ -1551,6 +1553,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                                                  : Zone::PLAYER_B;
     obs_match_end(result, ctx.wins_a, ctx.wins_b);
     rmstate_match_over();
+    teacher_match_over();
     trajectory_match_over();
     match_game_number = -1;
     ctx.active = false;

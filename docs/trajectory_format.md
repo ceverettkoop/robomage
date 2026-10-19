@@ -31,6 +31,49 @@ for f in LOGS/*.rmlog; do ./release/robomage --replay "$f" --trajectory-out EPIS
 
 The options are output only: not recorded in the decision log, honored under `--replay`.
 
+### 1.1 Teacher labels (`--teacher-a / --teacher-b`, training plan T4)
+
+| Flag | Meaning |
+|---|---|
+| `--teacher-a <command>` / `--teacher-b <command>` | run `<command>` (`/bin/sh -c`, working directory `bin/`) as that seat's teacher: it gets the seat's frames, exactly the `--machine` protocol's bytes (`docs/state_format.md` §9: `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME` the first time the seat decides in the match, a `STATE` frame at each of its decisions, sideboarding included, and its terminal frame at the match's end) on its stdin, and answers each decision frame with one integer line on its stdout. Its reply is the step's `teacher` label |
+| `--teacher-mix <p>` | play the teacher's label with probability p (default 0: labels only; 1: the teacher plays the seat) |
+| `--teacher-timeout <s>` | the wait for a teacher to read its frames or reply (default 60 s) |
+
+`python/teacher.py` is the scripted agent as a teacher: `python3 ../python/teacher.py [--tier hard]
+[--seed N] [--record FILE]`. It seeds Python's `random` with `--seed` (the hard tier breaks ties of
+uncategorised choices with it) and resets its per-game state at each match of its stream, so its
+labels are a function of the stream; with `--seed` equal to `--game-seed` they are the decisions
+`rm_driver.py` would take with `scripted:<tier>` on that seat. One teacher process serves the whole
+run.
+
+- **Labels.** `teacher` is the reply as a menu row; `-1` (the last row) is recorded as that row. A
+  concession sentinel (`-2` / `-3`) is recorded as −1 (no label) and never played. Every decision of
+  a taught seat is labelled, whoever decides it: an in-process agent, a script, a human seat, the
+  RMSTATE stream, or `--replay` (which re-labels a logged game: its frames are the live run's).
+- **Mixing.** At each decision of a taught seat an in-process agent (or script) decides, the agent
+  decides first, as without a teacher; then one coin `u = random()` is drawn from the teacher
+  channel's own generator, Python's `random.Random(s + 2**32)` with `s` the game seed (`--game-seed`,
+  else the engine seed), one draw per such decision in decision order over the match. When `u < p`
+  and the label is a menu row the label is played, else the agent's reply. No other generator is
+  drawn from, and at p = 0 play is unchanged (the decision log is byte for byte the run's without a
+  teacher). `--teacher-mix > 0` needs every taught seat decided in process (not a human seat, the
+  stream or `--replay`).
+- **μ under mixing.** The reply was drawn from the mixture, so the step's μ is
+  `p·onehot(teacher) + (1 − p)·μ_agent` when the agent gave μ_agent (its policy version and
+  evaluations kept), `onehot(teacher)` at p = 1 when it gave none (policy version 0), μ_agent itself
+  when the label is −1 or p = 0, and absent otherwise.
+- **Replay.** The decision log records the reply played, so `--replay` needs no teacher; a replay's
+  episodes carry the labels only when a teacher is attached to it.
+- **Failures.** A teacher that exits or closes its output, does not read its frames or reply within
+  the timeout, replies anything but a menu row, −1, −2 or −3, or exits with a status other than 0
+  when its input ends at the end of the run, ends the run with a fatal error naming the seat. There
+  is no default label.
+- **Cost** (release build, explore on both seats, league bo3 matches, one engine and its teachers
+  per match): ~1,790 decisions/s without a teacher, ~1,400 with one seat taught and ~1,180 with both
+  (each teacher process's ~30 ms start included); `teacher.py` itself labels ~4,800 decisions/s on
+  one core, its start left out. The teacher thinks while the engine decodes the frame and the agent
+  decides.
+
 - **The decision log is always kept.** Outside `--replay`, `--trajectory-out` turns decision
   logging on: `--decision-log FILE` when given, else `DIR/s<engine seed>.rmlog`. Under bo3 one log
   covers the match; each episode records which game it is. Under `--replay` the replayed log is the
@@ -44,7 +87,8 @@ The options are output only: not recorded in the decision log, honored under `--
   polling DIR for `*.rmtraj` never sees part of one.
 - **Re-featurization.** The frames are a function of the decision log, so `--replay LOG
   --trajectory-out` writes byte-identical tensors (and every other array but the behaviour
-  policy's: `has_mu`, `mu`, `policy_version`, `eval_*`). This is how old games are re-featurized
+  policy's: `has_mu`, `mu`, `policy_version`, `eval_*`; and `teacher` unless the replay has the
+  same teachers). This is how old games are re-featurized
   after a feature-spec change, and how the scripted agent's corpus becomes tensors. The knowledge
   level (`--knowledge-a/-b`) shapes the `k_*` tokens and is output only, so a replay must be given
   the same levels as the live run (each episode records them).
@@ -138,7 +182,7 @@ In this order; integers unless marked as strings.
 | `chosen` | i32 | `[D]` | the reply as the decision log holds it: a menu row, or −2 / −3 (a concession) |
 | `has_mu` | u8 | `[D]` | 1 when the decider gave a behaviour distribution |
 | `policy_version` | i64 | `[D]` | the version of the policy μ came from; −1 without μ (0 for an unversioned model and the random agent) |
-| `teacher` | i32 | `[D]` | the teacher's label (a menu row, training plan T4); −1 none |
+| `teacher` | i32 | `[D]` | the teacher's label (a menu row, §1.1); −1 none |
 | `menu_offsets` | i64 | `[D + 1]` | menu rows per step (`A` = the step's `act_tok` length) |
 | `tok_offsets`, `rel_offsets` | i64 | `[D + 1]` | tokens and relations per step |
 | `tok_type` | u8 | `[ΣN]` | each token's type |

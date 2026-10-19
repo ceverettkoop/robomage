@@ -221,6 +221,17 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --trajectory-seats A|B|AB  The seats whose decisions are recorded (default AB)\n");
     printf("  --trajectory-omniscient  Each decision also carries the omniscient frame's\n");
     printf("                      featurization and the learner targets\n");
+    printf("  --teacher-a <command> / --teacher-b <command>\n");
+    printf("                      Stream that seat's RMSTATE frames (the --machine protocol's\n");
+    printf("                      bytes) to <command> (/bin/sh -c) and read one integer line per\n");
+    printf("                      decision: the teacher's label, recorded in the trajectory\n");
+    printf("                      (python/teacher.py: the scripted agent). A teacher that exits,\n");
+    printf("                      hangs or replies garbage is fatal. Play is unchanged unless\n");
+    printf("  --teacher-mix <p>   plays the teacher's label with probability p at each taught\n");
+    printf("                      decision an in-process agent decides (default 0; a coin from\n");
+    printf("                      the game seed's own generator; the decision log records the\n");
+    printf("                      reply played)\n");
+    printf("  --teacher-timeout <s>  Wait at most <s> seconds for a teacher (default 60)\n");
     printf("  --trace-decisions   Print every decision's board, pending decision and menu, as\n");
     printf("                      the CLI renders the deciding seat's RMSTATE frame, and the\n");
     printf("                      choice made (lines starting \"| \" in the game log)\n");

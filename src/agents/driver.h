@@ -20,8 +20,9 @@
 //                      state_format/cards_file.h) and the tensors dropped; at exit
 //                      "FEATURIZE-SEATS: <n> decisions in <s> s". Play is unchanged: the bench
 //                      tier's featurizer stage
-// The trajectory writer (--trajectory-out, agents/trajectory.h) is installed here too: the seats it
-// records are served by the in-process feed whatever decides them.
+// The trajectory writer (--trajectory-out, agents/trajectory.h) and the teacher channel
+// (--teacher-a/-b, agents/teacher.h) are installed here too: the seats they record or teach are
+// served by the in-process feed whatever decides them.
 // Any of the first three implies --machine; a seat with no agent and no script keeps its own
 // input path: the RMSTATE stream on stdin/stdout, or, for a human seat (cli_args.cpp: the
 // --player seat, or every seat of a run without --machine), the CLI (cli/human.h), installed
@@ -39,12 +40,14 @@ void agents_install(unsigned int engine_seed);
 
 // Called as each decision is read (InputLogger::choose), after the frame writers and before the
 // input is read: for a seat an agent decides, a seat the trajectory writer records
-// (agents/trajectory.h) or under --trace-decisions, builds and decodes the deciding seat's frames
-// and prints the trace block; then hands the decision to the trajectory writer.
+// (agents/trajectory.h), a taught seat (agents/teacher.h: its frames are sent to its teacher) or
+// under --trace-decisions, builds and decodes the deciding seat's frames and prints the trace
+// block; then hands the decision to the trajectory writer.
 void agents_begin_decision(const std::vector<LegalAction> &actions, size_t number);
 // After the decision: `choice` the action index taken (the choice line of a traced decision),
 // `reply` what the decision log holds for it (a menu row or a concession sentinel), for the
-// trajectory writer's record.
+// trajectory writer's record (with the teacher's label, read here when a taught seat's reply was
+// not needed earlier).
 void agents_end_decision(int choice, int reply);
 
 #endif /* AGENTS_DRIVER_H */

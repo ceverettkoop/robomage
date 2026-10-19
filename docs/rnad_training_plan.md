@@ -247,6 +247,25 @@ and reads a seat's RMSTATE stream, so:
 - with `--teacher-mix 0` the play is unchanged by the teacher's presence (the RMLOG is identical
   with and without `--teacher-*`).
 
+Done: `--teacher-a / --teacher-b <command>`, `--teacher-mix p`, `--teacher-timeout s`
+(`src/agents/teacher.h`) and `python/teacher.py` (`--tier`, default hard; `--seed`; `--record`),
+documented in [`docs/trajectory_format.md`](trajectory_format.md) §1.1. The teacher gets the seat's
+in-process feed frames, which are the `--machine` stream's bytes (terminal frames included), over a
+Unix socket on its stdin/stdout, and thinks while the engine decodes the frame and the agent
+decides. Its reply is the step's `teacher` label (−1 the last row; a concession sentinel −1, never
+played). Mixing draws one coin per taught in-process decision from `random.Random(seed + 2**32)`
+after the agent has decided, so μ = p·onehot(label) + (1 − p)·μ_agent is exactly the distribution
+the played reply came from; the decision log records the reply played. A teacher that exits,
+hangs past the timeout, replies garbage or exits nonzero is fatal, naming the seat. `--replay LOG
+--teacher-a …` relabels a logged game. `teacher.py` reseeds `random` with `--seed` and resets at
+each match boundary of its stream (a `SCHEMA` frame after a terminal frame), so one process labels
+successive matches. Measured (release, explore on both seats, league bo3): ~1,790 decisions/s
+untaught, ~1,400 with one seat taught, ~1,180 with both (teacher start ~30 ms per process
+included); `teacher.py` alone labels ~4,800 decisions/s per core. The `traj` gate tier checks the
+tests above (bo3 with sideboarding, against `rm_driver.py` and byte for byte against the
+`--machine` stream), the labels against `teacher.py` rerun on the recorded streams, an intermediate
+mix's coin, μ and replay, and the failure modes.
+
 ### T5. Matchup schedule and opponent pool
 
 The actor reads a schedule file (written by the orchestrator, section 4 L6):

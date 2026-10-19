@@ -1,6 +1,8 @@
 #ifndef ROBOMAGE_CHECK_TRAJ_H
 #define ROBOMAGE_CHECK_TRAJ_H
 
+#include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -20,6 +22,11 @@ struct EpisodeFile {
         featurize::Episode ep;
 };
 
+// The decision lines of a decision log (menu rows and concession sentinels), in order.
+std::vector<int64_t> logged_replies(const std::string &rmlog);
+// Each GAME_RESULT line's game number and Player A's result (+1, -1, 0).
+std::map<int, int> game_results(const std::string &out);
+
 // The episodes of `dir` (*.rmtraj) in game order, read; false with `err` (a file that does not
 // read, or a temporary file left behind).
 bool read_episodes(const std::string &dir, std::vector<EpisodeFile> *out, std::string *err);
@@ -30,7 +37,8 @@ std::string compare_tensors(const featurize::Tensors &episode, const featurize::
 
 // Failures where the episodes of a --replay of the run's decision log differ from the live ones:
 // the same files, every array byte for byte but the behaviour policy's (has_mu, mu, policy_version,
-// eval_*), the same attrs but the agents', the game seed and the policy versions.
+// eval_*) and the teacher labels, the same attrs but the agents', the game seed and the policy
+// versions.
 std::vector<std::string> compare_replayed(
     const std::vector<EpisodeFile> &live, const std::vector<EpisodeFile> &replayed);
 
@@ -44,6 +52,9 @@ std::vector<std::string> check_against_evals(
 // file (compare_tensors, step by step).
 std::vector<std::string> check_against_dump(
     const std::vector<EpisodeFile> &eps, int seat, const std::string &dump, size_t *checked);
+
+// The traj tier's teacher channel checks (traj_teacher.cpp, --teacher-a/-b, training plan T4).
+void traj_teacher_part(const Options &opt, Report &rep);
 
 }  // namespace rmcheck
 

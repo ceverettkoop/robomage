@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "agents/game_seed.h"
+#include "agents/teacher.h"
 #include "agents/trajectory.h"
 #include "cli_output.h"
 #include "components/zone.h"
@@ -219,6 +220,12 @@ static const CliOption OPTIONS[] = {
     {"--trajectory-out", nullptr, true, false, [](const char *v) { trajectory_out_dir = v; }, nullptr},
     {"--trajectory-seats", nullptr, true, false, [](const char *v) { trajectory_seats_option = v; }, nullptr},
     {"--trajectory-omniscient", nullptr, false, false, [](const char *) { trajectory_omniscient = true; }, nullptr},
+    // A seat's teacher (agents/teacher.h): the command its frames are streamed to, each decision's
+    // reply its label; the probability a label is played; the wait for a teacher.
+    {"--teacher-a", nullptr, true, false, [](const char *v) { teacher_command[0] = v; }, nullptr},
+    {"--teacher-b", nullptr, true, false, [](const char *v) { teacher_command[1] = v; }, nullptr},
+    {"--teacher-mix", nullptr, true, false, [](const char *v) { teacher_mix_option = v; }, nullptr},
+    {"--teacher-timeout", nullptr, true, false, [](const char *v) { teacher_timeout_option = v; }, nullptr},
     // Check the decks' cards against the card vocabulary and their scripts instead of playing
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},

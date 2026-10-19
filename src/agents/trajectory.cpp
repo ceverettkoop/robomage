@@ -191,7 +191,7 @@ void trajectory_begin_decision(int seat, const rmstate::DecodedFrame *frame, con
     if (traj->frame && trajectory_omniscient) omniscient_decision(*traj->frame, actions);
 }
 
-void trajectory_end_decision(int reply, const agents::Agent *agent) {
+void trajectory_end_decision(int reply, const agents::Behaviour *behaviour, int teacher) {
     if (!traj) return;
     OpenEpisode &ep = open_episode();
     if ((reply == CONCEDE_GAME && !sideboard_phase) || reply == CONCEDE_MATCH) {
@@ -200,7 +200,7 @@ void trajectory_end_decision(int reply, const agents::Agent *agent) {
     }
     if (!traj->frame) return;
     const featurize::Featurization &f = traj->featurization;
-    const agents::Behaviour *b = agent ? agent->last_behaviour() : nullptr;
+    const agents::Behaviour *b = behaviour;
     featurize::EpisodeStep step;
     std::string err;
     if (b && b->tensors && b->spec_hash == f.spec.hash) {
@@ -213,6 +213,7 @@ void trajectory_end_decision(int reply, const agents::Agent *agent) {
     step.decision = step.tensors.decision;
     step.sideboarding = step.tensors.sideboarding;
     step.chosen = reply;
+    step.teacher = teacher;
     if (b && b->mu.size() == step.tensors.a()) {
         step.has_mu = true;
         step.mu.assign(b->mu.begin(), b->mu.end());

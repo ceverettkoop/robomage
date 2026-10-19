@@ -27,8 +27,9 @@
 // (featurize_seat), or taken from the deciding nn: agent, which featurized that same frame
 // (Behaviour::tensors). The behaviour distribution μ, the policy version and every policy's
 // evaluation come from the deciding agent's last_behaviour (absent for an agent with none: explore,
-// first, a script's own rows, a stream seat, every decision of --replay); the reply is the
-// decision log's (a menu row or a concession sentinel).
+// first, a script's own rows, a stream seat, every decision of --replay), or under --teacher-mix
+// from the teacher channel's mixture (agents/teacher.h); the reply is the decision log's (a menu
+// row or a concession sentinel); the teacher label the channel's for a taught seat, else -1.
 //
 // Outside --replay a decision log is always written: --decision-log when given, else
 // DIR/s<engine seed>.rmlog. Files: DIR/<stem>.g<n>.rmtraj for game n (1-based) of the match, <stem>
@@ -60,10 +61,11 @@ void trajectory_install(unsigned int engine_seed, const std::string agent_specs[
 // decoded: `seat` (0, 1, or -1 for none) and its decoded STATE frame (null when the seat is not
 // recorded), with the menu as offered. Builds the omniscient featurization when asked.
 void trajectory_begin_decision(int seat, const rmstate::DecodedFrame *frame, const std::vector<LegalAction> &actions);
-// After the decision: the reply as the decision log holds it (a menu row or a concession sentinel)
-// and the agent that decided (null for a stream seat or --replay). Appends the record of a recorded
-// seat's decision.
-void trajectory_end_decision(int reply, const agents::Agent *agent);
+// After the decision: the reply as the decision log holds it (a menu row or a concession sentinel),
+// the behaviour distribution it was drawn from (the deciding agent's last_behaviour or the teacher
+// channel's mixture, agents/teacher.h; null for none, a stream seat or --replay) and the teacher's
+// label (-1 none). Appends the record of a recorded seat's decision.
+void trajectory_end_decision(int reply, const agents::Behaviour *behaviour, int teacher);
 
 // Game boundaries (game_driver.cpp): a game starts (play_single_game: who plays first and its
 // engine seed; the match score and game number from the match globals), a game ended with
