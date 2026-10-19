@@ -14,7 +14,12 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/export.py` | `export_policy` (TorchScript `.ts.pt`, AOTInductor `.pt2`, optional ONNX, with the four metadata strings), `read_metadata`, `load` |
 | `rmlearn/server.py` | `InferenceServer`: RMIP v1 (`docs/inference_protocol.md`) inside the host process; `python -m rmlearn.server` runs it standalone |
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |
+| `rmlearn/rnad.py` | R-NaD's math, a port of OpenSpiel's `rnad.py` (8156646): `v_trace`, `get_loss_v`, `get_loss_nerd`, `EntropySchedule`, `FineTuning` (= `src/agents/policy_projection.cpp`) |
+| `rmlearn/rnad_data.py` | episodes for R-NaD: `read_episode` (numpy), `from_rmtraj`, `filter_episodes`, `RNaDBatch` (full games time-major, chunked) |
+| `rmlearn/rnad_learner.py` | `RNaDConfig`, `RNaDLearner` (`step`, the iteration boundary, `state_dict` / `from_state_dict`, `from_bc_checkpoint`), `ServerLink` (pushes to `InferenceServer`) |
 | `check.py` | the CPU-only correctness checks |
+| `check_rnad.py` | the R-NaD learner's CPU-only checks (a numpy oracle of the reference, the engine's projection, synthetic games, resume) |
+| `bench_rnad.py` | the learner step's throughput and memory |
 | `integration.py` | checks and benches against the C++ actor (`robomage_nn`): `actor`, `server`, `bench` |
 
 ## Using it
@@ -36,6 +41,12 @@ srv.stats(); srv.stop()
 ```sh
 learn/.venv/bin/python learn/check.py --tables DIR --tensors A.rmtb [--omniscient O.rmtb --targets T.rmtb]
 learn/.venv/bin/python learn/check.py --engine-dir bin/debug --bin-dir bin    # makes the inputs first
+```
+
+```sh
+learn/.venv/bin/python learn/check_rnad.py [--tables DIR --episodes DIR [--omni-episodes DIR]]   # RNAD-CHECK: ok
+HSA_OVERRIDE_GFX_VERSION=10.3.0 flock /tmp/rm-gpu.lock learn/.venv/bin/python learn/bench_rnad.py \
+    --tables DIR --episodes DIR --games 32 --chunk 8 --precision fp32,fp16 --recorded-regs
 ```
 
 `check.py` hides the GPU from itself and needs no engine when given its inputs; it ends with

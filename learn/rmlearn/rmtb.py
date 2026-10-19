@@ -22,7 +22,7 @@ MAGIC = b"RMTB"
 VERSION = 1
 _HEADER = struct.Struct("<4sII")
 DTYPES = {"f32": np.dtype("<f4"), "f16": np.dtype("<f2"), "i64": np.dtype("<i8"), "i32": np.dtype("<i4"),
-          "u16": np.dtype("<u2"), "u8": np.dtype("u1")}
+          "i16": np.dtype("<i2"), "u16": np.dtype("<u2"), "u8": np.dtype("u1")}
 # File-level meta keys in the order the format fixes (featurizer.md §4.4); `arrays` comes last.
 META_ORDER = ["kind", "vocab_hash", "spec_hash", "model", "pooling", "norm_version", "rows_meta"]
 
