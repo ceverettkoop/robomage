@@ -40,8 +40,8 @@ corpus/
 ci_out/
 draw_*.txt
 
-# In-process AlphaZero actor binary (Phase D) — built by `make actor`
-bin/*/az_actor
+# The actor binary (plan step 5d) — built by `make actor`
+bin/*/robomage_nn
 
 # Cached Scryfall card art of the PySide6 board (archived on branch archive/rl-stack) —
 # downloaded on demand, never committed.

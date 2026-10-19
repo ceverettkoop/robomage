@@ -134,13 +134,13 @@ refetch:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) check
 
-# ── make actor — the libtorch TUs of src/actor/, NOT in the default build ──
-# src/actor/ holds the TorchScript evaluator (az_evaluator.cpp), compiled with exceptions ON
-# against libtorch. There is no actor binary until plan step 5 adds a main: `make actor` compiles
-# the actor objects, and that binary will link $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS).
-# Auto-detect libtorch from the torch package $(PYTHON) imports (an active venv's included), only
-# when asked to build the actor; override with `make actor LIBTORCH_DIR=/path`. Fail early (with a
-# clear message) when there is none.
+# ── make actor — bin/<config>/robomage_nn, the engine with the nn: agent (plan step 5d), NOT in the default build ──
+# src/actor/ (the evaluator and the nn: agent, docs/featurizer.md §6) is compiled with exceptions ON
+# and C++20 (libtorch 2.10+ headers require it) against libtorch, and linked with every engine
+# object but main.o: robomage_nn's own main (src/actor/robomage_nn.cpp) registers the nn: agent
+# kind, then runs the engine's entry (src/engine_main.h). Auto-detect libtorch from the torch
+# package $(PYTHON) imports (an active venv's included), only when asked to build the actor; override
+# with `make actor LIBTORCH_DIR=/path`. Fail early (with a clear message) when there is none.
 ifneq (,$(filter actor rmembed,$(MAKECMDGOALS)))
 LIBTORCH_DIR ?= $(shell $(PYTHON) -c 'import os, torch; print(os.path.dirname(torch.__file__))' 2>/dev/null)
 ifeq ($(strip $(LIBTORCH_DIR)),)
@@ -156,9 +156,10 @@ ENGINE_OBJ_NO_MAIN := $(filter-out $(ODIR)/main.o,$(C_OBJ) $(CXX_OBJ))
 # torch headers are noisy under -Wconversion etc.; -isystem silences them. ABI is
 # 1 in the pip torch builds (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
 TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/include/torch/csrc/api/include
-# Same base flags as the engine MINUS -fno-exceptions (torch throws), PLUS torch
-# includes and -I$(SRCDIR) (actor TUs use non-relative engine includes).
-ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
+# Same base flags as the engine MINUS -fno-exceptions (torch throws) and with C++20 (libtorch 2.10+
+# headers require it), PLUS torch includes and -I$(SRCDIR) (actor TUs use non-relative engine
+# includes).
+ACTOR_CXXFLAGS := $(patsubst -std=c++17,-std=c++20,$(filter-out -fno-exceptions,$(CXXFLAGS))) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
 # When the torch is a ROCm build (libtorch_hip.so present), link the HIP
@@ -174,20 +175,22 @@ endif
 ACTOR_LDFLAGS := $(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
                  -L$(LIBTORCH_DIR)/lib $(ACTOR_TORCH_LIBS) -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
-actor: $(ACTOR_OBJ)
+actor: $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/robomage_nn $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS)
 
 # ── bin/<config>/rmembed — the oracle-text table's generator (plan step 5c, docs/featurizer.md §5) ──
 # tools/rmembed/ (the BERT encoder in the libtorch C++ API and its safetensors reader), compiled like
 # the actor TUs (exceptions on, torch includes), linked with src/featurize/ (std only: RMTB, the
-# WordPiece tokenizer, the text-table inputs) and the std-only schema (FNV-1a), no engine TU. NOT
-# part of the default build: `make rmembed` (LIBTORCH_DIR as for `make actor`), or `make text-table`
-# when the table is stale.
+# WordPiece tokenizer, the text-table inputs; the featurizer beside them needs the decoder) and the
+# std-only decoder and schema (FNV-1a), no engine TU. NOT part of the default build: `make rmembed`
+# (LIBTORCH_DIR as for `make actor`), or `make text-table` when the table is stale.
 RMEMBED_SRCS := $(wildcard tools/rmembed/*.cpp)
 RMEMBED_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMEMBED_SRCS))
-RMEMBED_LIB_OBJ := $(ODIR)/state_format/schema.o \
+RMEMBED_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
                    $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
-# libtorch 2.10+ headers require C++20; only these TUs are built with it.
-RMEMBED_CXXFLAGS := $(patsubst -std=c++17,-std=c++20,$(ACTOR_CXXFLAGS))
+# The actor TUs' flags (C++20, exceptions on, torch includes).
+RMEMBED_CXXFLAGS := $(ACTOR_CXXFLAGS)
 
 # Defined before the generic $(ODIR)/tools/%.o rule (Apple's make 3.81 picks pattern rules by
 # definition order; see the actor rule above).
@@ -284,7 +287,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # resources/ and decks.
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),

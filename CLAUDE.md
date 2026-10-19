@@ -98,9 +98,9 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   `tools/embed/MODEL_PIN` (`robomage --text-table-check`); when rows are stale, fetch the pinned
   model (`tools/embed/fetch_model.py`, network) and regenerate only those rows with `rmembed`
   (`docs/featurizer.md` §5). Part of `all`: a current committed table needs no network or libtorch
-- `make actor` — compiles the libtorch TUs of `src/actor/` (the TorchScript evaluator kept as the
-  base of plan step 5; no binary until step 5 adds a main). Needs a torch importable by `python3`,
-  or `LIBTORCH_DIR=…`; not part of plain `make`
+- `make actor` — `bin/<config>/robomage_nn`: the engine plus the libtorch TUs of `src/actor/`
+  (exceptions on, C++20), which add the `nn:<model>` agent (`docs/featurizer.md` §6). Needs a
+  torch importable by `python3`, or `LIBTORCH_DIR=…`; not part of plain `make`
 - `make clean`
 
 **Which binary the tooling runs is independent of which one you just built.** The gate
@@ -136,9 +136,10 @@ background** and make the live output inspectable by the user:
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
+  | `actor` | opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches, `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
-  | `bench` | decisions per second of a fixed explore workload (no threshold) |
+  | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples) |
 
 - Non fatal errors are not acceptable
@@ -184,9 +185,10 @@ the test-setup presets and `--play`; `--help` lists every flag (zone presets
   fragile) is ONE global script for both seats. It makes every decision until it runs out; then
   each seat's `--agent-a/-b` agent decides (default `first` = action 0, so the game
   auto-advances; e.g. `explore`). Agent specs: `first` (`auto`), `random`, `explore`,
-  `explore:patient`, `actions:<i,i,…>`, `play:<specs>` (`src/agents/agent.h`). **Claude cannot
-  play a seat interactively** (no TTY; a seat without `--play`, `--actions` or an agent reads the
-  RMSTATE stream on stdin) — use `--play`. A `--play` run prints `resolved --actions: …` for exact
+  `explore:patient`, `actions:<i,i,…>`, `play:<specs>` (`src/agents/agent.h`), and in
+  `robomage_nn` only `nn:<model>[:temp=<t>][:argmax]` (a learned policy, `src/actor/nn_agent.h`).
+  **Claude cannot play a seat interactively** (no TTY; a seat without `--play`, `--actions` or an
+  agent reads the RMSTATE stream on stdin) — use `--play`. A `--play` run prints `resolved --actions: …` for exact
   replay (and `SCRIPT INCOMPLETE: …` when specs were left unapplied); keep `--game-seed` fixed while
   extending a line.
 
@@ -314,8 +316,8 @@ and rules-modifying prohibitions (`rules_mod::`, `rules_modifying.*`).
 flags), `combat`, `pending` (every suspended-decision state), `resolved_effects` (effects that
 belong to no permanent, emblems), `rng`, `identity` (object stamps), plus the timestamp, delayed
 triggers and last-known information; `reset_turn_counters` is the one turn-end reset of "this
-turn" counts. `main.cpp` only parses flags; the loop is `play_single_game` in
-`src/game_driver.cpp` (bo3 sequencing is `play_bo3_match`). Each
+turn" counts. `engine_main.cpp` parses flags and runs the no-game modes or the match; the loop is
+`play_single_game` in `src/game_driver.cpp` (bo3 sequencing is `play_bo3_match`). Each
 iteration: emit a parked `pending.query` → pregame stage
 → turn-based actions → mandatory choice (`proc_mandatory_choice`) → SBEs → `advance_step` (resolve
 top of stack / next step once both players pass) → SBEs → `determine_legal_actions` (a lone pass is
@@ -492,8 +494,10 @@ A where-is-X index. Module docstrings / header comments hold the detail; files d
 sections above are not repeated here.
 
 **Engine (`src/`)**
-- `src/main.cpp` — flag parsing only; `src/game_driver.cpp` — the per-game decision loop
-  (`play_single_game`, `play_bo3_match`), ECS init, test-setup presets, concession
+- `src/main.cpp` — `engine_main` alone; `src/engine_main.{h,cpp}` — the process entry (flags, the
+  no-game modes, the match), shared with `robomage_nn`'s main; `src/game_driver.cpp` — the
+  per-game decision loop (`play_single_game`, `play_bo3_match`), ECS init, test-setup presets,
+  concession
 - `src/action_processor.cpp` — executes a chosen action (`process_action`), cast/activation/targeting
   flows, `proc_mandatory_choice`
 - `src/systems/state_manager*.cpp` — SBAs + `determine_legal_actions`, split by concern (`_actions`,
@@ -582,9 +586,11 @@ sections above are not repeated here.
   per-table column plans, `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
   entry point, refusing a non-seat frame; `featurize_viewer`, learner-side; the tensors file),
   `targets` (learner targets from the omniscient frame), `frame_stream` (a recorded stream frame by
-  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported)
+  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported),
+  `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays)
 - `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA, whole-vocab CARDS and
-  METAGAME frames for the card tables; plays no game
+  METAGAME frames for the card tables; plays no game. `load_engine_featurization`: the same
+  records and the text table as the featurizer's inputs in process (`nn:`, `--featurize-seats`)
 - `src/state_format/selfcheck_featurize.{h,cpp}` — `--selfcheck-featurize`: each seat's tensors
   from the actor entry point equal under the scramble and permutation checks' frames, the
   omniscient frame refused; `SELFCHECK-FEATURIZE:` summary
@@ -603,13 +609,16 @@ sections above are not repeated here.
   `seat_frames.h`, `decision_view.h`: the decoded stream and decision; `py_random.h`: Python's
   `random.Random` bit for bit; `game_seed.h`: the driver's engine seed of a game seed;
   `explore.h`: `python/explore_agent.py` ported, same games; `play_spec.h`: the `--play` resolver
-  and its global script; `trace.h`: `--trace-decisions`). `driver.h` is the engine side:
+  and its global script; `trace.h`: `--trace-decisions`; `register_agent_kind`: a kind a binary
+  adds, `nn:` in `robomage_nn`). `driver.h` is the engine side:
   `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace
 
-**libtorch plumbing (`src/actor/`, `make actor`)** — `az_evaluator.{h,cpp}` (TorchScript loading
-and evaluation, frozen as the base of the step-5 evaluator; its comments still name the archived
-Python stack) and `az_layout.h` (the archived checkpoints' frozen input width). No binary until
-step 5 adds a main.
+**The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
+`Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`
+and version, and a value; the in-process one loads TorchScript or an AOTInductor `.pt2`, checks the
+model's spec / vocab / text-model metadata), `nn_agent.{h,cpp}` (the `nn:` agent: options, sampling
+on the shared generator, the behaviour distribution, `dump=` / `stats`), `robomage_nn.cpp` (the
+binary's main: registers `nn:`, then `engine_main`).
 
 **Tools (`tools/`)**
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
@@ -632,6 +641,9 @@ step 5 adds a main.
 - `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`
   (stdlib download into `.cache/embed/`), `make_goldens.py` (needs torch + transformers, never run
   by `make`: the tokenizer golden, the encoder and table checks against transformers)
+- `tools/nn/make_reference_policy.py` — needs torch (+ onnx, onnxscript, onnxruntime), never run by
+  `make`: `build` the network contract's reference policy from the exported tables (seeded) as
+  TorchScript, `.pt2` and ONNX with the hashes; `check` the three exports agree on a tensors file
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
   `.dk` scraper (stdlib only, its own README)
 

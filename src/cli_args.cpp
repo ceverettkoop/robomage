@@ -210,6 +210,9 @@ static const CliOption OPTIONS[] = {
         nullptr},
     // The board and menu of every decision on the game log (agents/trace.h).
     {"--trace-decisions", nullptr, false, false, [](const char *) { trace_decisions = true; }, nullptr},
+    // Featurize every decision an in-process agent seat makes and drop the tensors (the bench tier's
+    // featurizer stage; agents/driver.h).
+    {"--featurize-seats", nullptr, false, false, [](const char *) { featurize_seats = true; }, nullptr},
     // Check the decks' cards against the card vocabulary and their scripts instead of playing
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},

@@ -207,6 +207,10 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      the actor entry point and require the same tensors from the\n");
     printf("                      scramble and permutation checks' frames; the omniscient frame\n");
     printf("                      must be refused. Failures print ERROR: lines; play is unchanged\n");
+    printf("  --featurize-seats   Featurize every decision of an in-process agent seat (the\n");
+    printf("                      featurizer's actor entry point on the seat's frame) and drop\n");
+    printf("                      the tensors; at exit a FEATURIZE-SEATS: line with the count\n");
+    printf("                      and time. Play is unchanged (the bench tier's featurizer stage)\n");
     printf("  --trace-decisions   Print every decision's board, pending decision and menu, as\n");
     printf("                      the CLI renders the deciding seat's RMSTATE frame, and the\n");
     printf("                      choice made (lines starting \"| \" in the game log)\n");
@@ -244,8 +248,10 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      That seat's decisions go to an in-process agent reading the\n");
     printf("                      seat's RMSTATE frames: first (row 0), random, explore,\n");
     printf("                      explore:patient, actions:<i,i,...> (then row 0) or\n");
-    printf("                      play:<specs> (then row 0). A seat without one keeps its\n");
-    printf("                      input path (the RMSTATE stream, or a --player human seat)\n");
+    printf("                      play:<specs> (then row 0); in robomage_nn (make actor) also\n");
+    printf("                      nn:<model>[:temp=<t>][:argmax][:dump=<file>][:stats], a\n");
+    printf("                      learned policy. A seat without one keeps its input path\n");
+    printf("                      (the RMSTATE stream, or a --player human seat)\n");
     printf("  --play <specs>      One --play script for both seats: comma-separated semantic\n");
     printf("                      specs (cast:<card>, target:<card>@opp, A:attack:<card>, ...),\n");
     printf("                      each resolved against its decision's menu; once it runs out\n");

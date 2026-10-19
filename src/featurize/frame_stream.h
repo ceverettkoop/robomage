@@ -34,6 +34,9 @@ bool read_stream(const std::string &path,
 // SCHEMA, CARDS and METAGAME) into `out`. False with `err` on an unreadable file, a decode error, a
 // STATE frame, or frames of more than one viewer or none.
 bool read_match_frames(const std::string &path, ViewerFrames *out, std::string *err);
+// The same from the file's bytes in memory (`records`: the stream records robomage --cards-frame
+// writes).
+bool read_match_records(const std::string &records, ViewerFrames *out, std::string *err);
 
 }  // namespace featurize
 

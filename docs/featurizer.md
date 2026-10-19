@@ -342,6 +342,21 @@ files when the model is built; the model exports `spec_hash`, `vocab_hash` and `
 attributes, and the actor refuses a model whose values differ from its own spec and tables.
 Logits at padded menu rows are ignored; the actor takes the argmax (or samples) over real rows.
 
+**Padding** (`featurize::pad_batch`, `src/featurize/batch.h`, std only): a batch is padded to its
+largest `N`, `R` and `A`, each rounded up to a multiple of 8 and at least 8 (so no dimension is 0 or
+1, which `torch.export` would specialise); pads are 0 (`tok_card`, `tok_ability` -1) and every mask
+0; `rel_mask` marks the real relations. The buffers are reused from batch to batch.
+
+**Model files and their metadata.** A model carries four strings: `spec_hash`, `vocab_hash` (16 hex
+digits each), `text_model` (the text table's `model`) and `policy_version` (an unsigned integer,
+`"0"` when absent), each in its export's own metadata, never in a sidecar file: a TorchScript
+module's string attributes, an AOTInductor package's metadata (written by the export's inductor
+config `aot_inductor.metadata`, read with `AOTIModelPackageLoader::get_metadata`) and an ONNX
+model's `metadata_props`. The evaluator tells the two it loads apart by the zip archive's records
+(an AOTInductor package has `archive_format`, a TorchScript module `constants.pkl`), not by the
+file name. An AOTInductor package holds machine code compiled for the exporting CPU's ISA
+(`AOTI_CPU_ISA` in its metadata); TorchScript is portable.
+
 **Export-friendly.** Inputs are padded tensors and masks only, and a conforming model has no
 control flow that depends on the data: real rows are selected by masks, relations applied by
 gathers and scatters, never by loops over real rows or shape-dependent branches. So one model
@@ -349,26 +364,52 @@ exports as TorchScript, as a `torch.export` / AOTInductor `.pt2` package and as 
 actor's evaluator loads the first two, ONNX is for other runtimes. TorchScript is in maintenance
 mode upstream and is not the contract.
 
-**Batched evaluation.** The actor evaluates through `Evaluator::evaluate(batch)`: a batch of
-featurized decisions (from one game or many), returning per decision the logits over its menu
-rows, the value and the policy version. Implementations: in-process (the actor's model, CPU) and
-remote (`nn:remote:<endpoint>`), over the protocol of `docs/inference_protocol.md`: decisions in
-shared memory, a Unix socket for signalling, the spec hash on every request; a request may name
-several policies (the training plan's current and two regularisation policies) and gets `log π`
-per menu row for each, with each policy's version. A server that goes away fails the actor
-loudly. `rmserve` (C++, libtorch, CPU) is the reference server; the training plan's GPU server
-speaks the same protocol.
+**Batched evaluation.** The actor evaluates through `actor::Evaluator::evaluate(batch, &out,
+&err)` (`src/actor/evaluator.h`): a batch of featurized decisions (from one game or many),
+returning per decision an `Evaluation`: the value and, per policy the evaluator serves (policy 0
+first, the one the actor samples from), the logits over its menu rows, their `log π` (log-softmax
+over the menu rows) and the policy's version. A failure is `false` with a message, never a default
+action. Implementations: in-process (`load_model_evaluator`: the actor's model, CPU, one thread,
+TorchScript through `torch::jit::load` or AOTInductor through `AOTIModelPackageLoader`; one
+policy) and remote (`nn:remote:<endpoint>`, 5d part 2), over the protocol of
+`docs/inference_protocol.md`: decisions in shared memory, a Unix socket for signalling, the spec
+hash on every request; a request may name several policies (the training plan's current and two
+regularisation policies) and gets `log π` per menu row for each, with each policy's version, as
+more entries of the same `Evaluation`. A server that goes away fails the actor loudly. `rmserve`
+(C++, libtorch, CPU) is the reference server; the training plan's GPU server speaks the same
+protocol.
 
-**The `nn:` agent.** `nn:<model>[:<key>=<value>…]`, keys `temp=` (sampling temperature) and
-`argmax`; the training plan adds `thresh=` and `disc=`. It keeps the exact distribution it sampled
-from over every menu row (after temperature and any projection) and the policy version for its
-last decision, for the training plan's trajectory writer.
+**The `nn:` agent** (`src/actor/nn_agent.h`). `nn:<model>[:<key>=<value>…]`, keys `temp=<t>`
+(sampling temperature, default 1; drawn with the agents' shared generator, so a game replays from
+its seed) and `argmax` (the largest logit; rows within 1e-5, absolute plus relative, of it tie and
+the first is taken, so float drift between two exports of one model cannot reorder rows equal in
+exact arithmetic, such as two identical cards in hand), plus two for tests and the bench:
+`dump=<file>` (every decision it featurized, written at exit as one `tensors` file, the bytes
+`rmfeat --featurize` writes for that seat) and `stats` (an `NN-STATS:` line at exit); an unknown key
+fails loudly. The training plan adds `thresh=` and `disc=`. It keeps the exact distribution it
+sampled from over every menu row (after temperature and any projection; one-hot under `argmax`)
+and the policy version for its last decision (`Agent::last_behaviour`, `agents/agent.h`), for the
+training plan's trajectory writer. The featurizer's inputs are built once, before the match, in
+process from the engine (`load_engine_featurization`, `src/state_format/cards_file.h`: the
+whole-vocab records `--cards-frame` writes and the committed text table), so they are what
+`rmfeat` builds from that file; at each decision the agent reads only the seat's decoded `STATE`
+frame. It runs in `bin/<config>/robomage_nn` (`make actor`): the engine's objects and entry
+(`src/engine_main.h`) with the actor's TUs, whose `main` registers the `nn:` kind
+(`agents::register_agent_kind`) first; the plain engine refuses `nn:`, naming `make actor`.
 
 **Recommended model family** (the reference policy, `tools/nn/make_reference_policy.py`): per
 token type a linear projection of `tok_num`, plus embeddings of `tok_cat`, plus projections of
 the gathered card, text and ability rows, summed into a width-`D` token; an entity transformer
 whose attention adds a learned bias per relation type for `(src, dst)` pairs; a pointer head (an
-MLP over each `act_tok` token's output) for logits; a value head over the mean of real tokens.
+MLP over each `act_tok` token's output) for logits; a value head over the mean of real tokens. The
+reference policy's `build` (torch; never run by `make`) reads the exported tables
+(`rmfeat --export-tables`) and the text table, initialises the model from a seed (width 64, 4
+heads, 2 layers; a bias per relation type at `(src, dst)` and another at `(dst, src)`, scattered
+into `[B, H, N, N]` with `index_add`; the ability rows average their part rows in; the tables'
+projections folded into frozen buffers, constants of the weights, so a forward gathers rows rather
+than projecting the whole vocab) and exports it as
+`<prefix>.ts.pt`, `.pt2` and `.onnx`; `check` evaluates the three on a `tensors` file's decisions
+alone and in padded batches and requires them to agree within 1e-4 (absolute plus relative).
 
 ## 7. Tests
 
@@ -393,3 +434,6 @@ export and `rmserve` ones come with 5d):
   the scramble self-check; the actor entry point refuses an omniscient or other-seat frame;
 - the reference policy's TorchScript, `.pt2` and ONNX exports give the same logits and values;
   in-process and `rmserve` evaluation agree.
+
+The gate's `actor` tier (`docs/ci.md`) runs the `nn:`, re-featurization and export checks when the
+actor binary and a Python with torch are available; `rmserve` is 5d part 2.

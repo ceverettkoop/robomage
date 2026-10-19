@@ -28,8 +28,17 @@ bool Featurization::read_tables_dir(const std::string &dir, CardTables *out, uin
 
 bool Featurization::load(const std::string &cards_path, const std::string &text_table_path,
     const std::string &tables_dir, std::string *err) {
+    return read_match_frames(cards_path, &source, err) && build(text_table_path, tables_dir, err);
+}
+
+bool Featurization::load_records(
+    const std::string &records, const std::string &text_table_path, const std::string &tables_dir, std::string *err) {
+    return read_match_records(records, &source, err) && build(text_table_path, tables_dir, err);
+}
+
+bool Featurization::build(const std::string &text_table_path, const std::string &tables_dir, std::string *err) {
     RmtbFile text;
-    if (!read_match_frames(cards_path, &source, err) || !rmtb_read_file(text_table_path, &text, err)) return false;
+    if (!rmtb_read_file(text_table_path, &text, err)) return false;
     const RmtbArray *vectors = text_vectors(text);
     if (!vectors || !text.has_vocab_hash) {
         *err = text_table_path + ": not a text table with a vocab hash and an f32 vectors array";
@@ -48,6 +57,7 @@ bool Featurization::load(const std::string &cards_path, const std::string &text_
     }
     tables.text_rows = vectors->shape[0];
     tables.text_width = vectors->shape[1];
+    text_model = text.model;
     if (!build_spec(source.schema, source.metagame, tables, &spec, err)) return false;
     if (!tables_dir.empty() && want_spec != spec.hash) {
         *err =

@@ -779,6 +779,24 @@ weights as frozen buffers, but the exported file stays the interface and the sou
 
 ### 5d. In-process actor (`src/actor/`, exceptions-enabled TUs)
 
+**Status: part 1 done** (the in-process actor). `src/actor/`: the `Evaluator` interface and its
+in-process implementation (`evaluator.h`: a batch of featurized decisions padded by the std-only
+batcher `src/featurize/batch.h`, TorchScript or an AOTInductor `.pt2` told apart by the archive,
+the model's `spec_hash`, `vocab_hash` and `text_model` metadata checked on load, per decision
+`log π` per policy so a multi-policy server needs no API change), the `nn:` agent (`nn_agent.h`:
+`temp=`, `argmax`, `dump=`, `stats`; the behaviour distribution and policy version of its last
+decision through `Agent::last_behaviour`), and `bin/<config>/robomage_nn` (`make actor`): every
+engine object but `main.o` plus the actor's TUs, whose `main` registers the `nn:` kind and runs the
+engine's entry (`src/engine_main.h`); the plain engine refuses `nn:`, naming `make actor`. The
+featurizer's inputs come from the engine in process (the whole-vocab `--cards-frame` records and
+the committed text table). The reference policy is `tools/nn/make_reference_policy.py` (TorchScript,
+`.pt2` and ONNX exports; `check` compares them). The gate's `actor` tier (opt-in: the actor binary
+and `$ROBOMAGE_TORCH_PYTHON`, `docs/ci.md`) plays `nn:` bo3 matches, the `.pt2` export the same
+argmax match as the TorchScript one, checks exact re-featurization and the exports' agreement;
+`bench` reports the per-stage breakdown below (`--featurize-seats` is its featurizer stage).
+`az_evaluator.*` and `az_layout.h` are gone. Part 2 is the remote evaluator:
+`docs/inference_protocol.md`, `nn:remote:<endpoint>` and `rmserve`.
+
 - **Evaluator:** loads a policy exported as TorchScript or as an AOTInductor `.pt2` package (5a's
   export-friendly contract; ONNX exports are for other runtimes). It starts from the kept
   `az_evaluator.{h,cpp}` base, whose comments and frozen input width `az_layout.h` still describe

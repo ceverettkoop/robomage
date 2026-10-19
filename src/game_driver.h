@@ -87,6 +87,7 @@ extern std::string play_script_specs;
 extern bool actions_script_given;
 extern std::string actions_script;
 extern bool trace_decisions;
+extern bool featurize_seats;
 extern bool game_seed_given;
 extern uint64_t game_seed_value;
 extern bool check_decks_flag;
