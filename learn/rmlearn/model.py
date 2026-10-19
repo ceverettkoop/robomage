@@ -36,6 +36,17 @@ same design over the omniscient featurization of the same decision, with the dec
 embedding added to every token (the omniscient frame is A-relative), and its own value head
 (``critic_value``). It shares the card and ability rows with the policy.
 
+**Cost on the GPU** (the RX 6700 XT, rocBLAS; profiled, docs/rnad_training_plan.md §4 L4): a token's
+card, ability and slot parts are one ``embedding_bag`` over a per-batch table (``token_table``: per
+card slot every card's row plus the slot's vector; under id-dropout a second copy with the
+unknown-card vector), its categorical and type parts another (bag gradients rather than one sorted
+embedding gradient per table); every layer's relation biases are one gather; with gradients the
+scores are one GEMM onto the additive bias (key mask + relation biases), without them (inference, the
+R-NaD target network) the key mask rides an extra q·k column (padded to a width of 16) and the
+relation biases are added in place; the softmax stays in the scores' precision; the token-wise
+linear maps (``Linear``) compute their weight gradient in the orientation rocBLAS tiles well and the
+width-1 maps are products and sums. All of it is the same function as the plain formulation.
+
 Export-friendly: no control flow that depends on the data; gathers, scatter-adds and masks only.
 ``InferencePolicy`` holds the card and ability rows folded into buffers (constants of the weights)
 and the four metadata strings; ``export.py`` writes it as TorchScript and AOTInductor ``.pt2``.
@@ -44,6 +55,7 @@ and the four metadata strings; ``export.py`` writes it as TorchScript and AOTInd
 import copy
 import math
 from dataclasses import asdict, dataclass
+from typing import List
 
 import torch
 import torch.nn as nn
@@ -73,6 +85,51 @@ class ModelConfig:
 
 # ── blocks ────────────────────────────────────────────────────────────────────────────────────
 
+class _LinearFn(torch.autograd.Function):
+    """y = x Wᵀ + b, its weight gradient computed as whichever of (gᵀ x) and (xᵀ g)ᵀ has the narrow
+    side first: rocBLAS picks a tiny-tile kernel for the other orientation when the token count (the
+    summed dimension) is large, several times slower. Autocast's casts are made here, once."""
+
+    @staticmethod
+    def forward(ctx, x, weight, bias):
+        dev = x.device.type
+        if torch.is_autocast_enabled(dev):
+            dt = torch.get_autocast_dtype(dev)
+            x, weight = x.to(dt), weight.to(dt)
+            bias = bias.to(dt) if bias is not None else None
+        ctx.save_for_backward(x, weight)
+        ctx.has_bias = bias is not None
+        with torch.autocast(dev, enabled=False):
+            return Fn.linear(x, weight, bias)
+
+    @staticmethod
+    def backward(ctx, g):
+        x, w = ctx.saved_tensors
+        g2 = g.reshape(-1, g.shape[-1]).to(x.dtype)
+        gx = gw = gb = None
+        if ctx.needs_input_grad[0]:
+            gx = torch.mm(g2, w).view(x.shape)
+        if ctx.needs_input_grad[1]:
+            x2 = x.reshape(-1, x.shape[-1])
+            gw = torch.mm(x2.t(), g2).t() if w.shape[0] >= w.shape[1] else torch.mm(g2.t(), x2)
+        if ctx.has_bias and ctx.needs_input_grad[2]:
+            gb = g2.sum(0)
+        return gx, gw, gb
+
+
+class Linear(nn.Linear):
+    """``nn.Linear`` (same parameters) whose training-mode backward is ``_LinearFn``'s."""
+
+    def forward(self, x):
+        if self.training and not torch.jit.is_scripting():
+            return self._train_forward(x)
+        return Fn.linear(x, self.weight, self.bias)
+
+    @torch.jit.unused
+    def _train_forward(self, x):
+        return _LinearFn.apply(x, self.weight, self.bias)
+
+
 class Layer(nn.Module):
     """A pre-LayerNorm transformer block with per-head relation biases."""
 
@@ -80,38 +137,55 @@ class Layer(nn.Module):
         super().__init__()
         self.heads = heads
         self.dh = d // heads
+        self.scale = 1.0 / math.sqrt(self.dh)
+        self.ext = (self.dh + 16) // 16 * 16     # the head width plus the key-mask column, padded
         self.n_rel = n_rel
         self.ln1 = nn.LayerNorm(d)
         self.ln2 = nn.LayerNorm(d)
-        self.qkv = nn.Linear(d, 3 * d)
-        self.out = nn.Linear(d, d)
-        self.ff1 = nn.Linear(d, ff)
-        self.ff2 = nn.Linear(ff, d)
+        self.qkv = Linear(d, 3 * d)
+        self.out = Linear(d, d)
+        self.ff1 = Linear(d, ff)
+        self.ff2 = Linear(ff, d)
         # Per relation type a bias per head at (src, dst) (rows 0..n_rel-1) and at (dst, src) (rows n_rel..).
         self.rel_bias = nn.Embedding(2 * max(n_rel, 1), heads)
         nn.init.zeros_(self.rel_bias.weight)
 
-    def forward(self, x, idx_fwd, idx_rev, rel_type, rel_w, key_col):
+    def forward(self, x, rel_idx, rel_vals, key_bias):
+        """`rel_idx` [B, 2R]: the flat score cell (row · N + column) of each relation's bias;
+        `rel_vals` [B, 2R, H]: this layer's bias there (0 for a padded relation); `key_bias`
+        [B, 1, 1, N]: 0 at a real key, MASK at a padded one."""
         b, n, d = x.shape
         h = self.heads
-        y = self.ln1(x)
-        qkv = self.qkv(y).view(b, n, 3, h, self.dh).permute(2, 0, 3, 1, 4)
-        q, k, v = qkv[0], qkv[1], qkv[2]
-        # The scores (the attention matrix is the memory-bound part, so no extra pass over it): the
-        # padded keys masked through one more q·k dimension (1 · key_col: 0 for a real key, MASK for
-        # a padded one), then the relation biases scatter-added in place at their (src, dst) and
-        # (dst, src) cells.
-        qa = torch.cat([q * (1.0 / math.sqrt(self.dh)), torch.ones_like(q[:, :, :, :1])], -1)
-        ka = torch.cat([k, key_col.to(k.dtype).expand(b, h, n, 1)], -1)
-        att = torch.matmul(qa, ka.transpose(-1, -2))
-        r = idx_fwd.shape[1]
-        vf = (self.rel_bias(rel_type) * rel_w).permute(0, 2, 1).to(att.dtype)          # [B, H, R]
-        vr = (self.rel_bias(rel_type + self.n_rel) * rel_w).permute(0, 2, 1).to(att.dtype)
-        flat = att.view(b, h, n * n)
-        flat.scatter_add_(2, idx_fwd.unsqueeze(1).expand(b, h, r), vf)
-        flat.scatter_add_(2, idx_rev.unsqueeze(1).expand(b, h, r), vr)
-        att = torch.softmax(att, dim=-1)
-        y = torch.matmul(att, v).permute(0, 2, 1, 3).reshape(b, n, d)
+        dh = self.dh
+        qkv = self.qkv(self.ln1(x)).view(b, n, 3, h, dh).permute(2, 0, 3, 1, 4)
+        r2 = rel_idx.shape[1]
+        if torch.is_grad_enabled():
+            # Heads folded into the GEMM batch; the scores as one GEMM onto the additive bias (in the
+            # scores' precision): the key mask broadcast with the relation biases scatter-added at
+            # their cells (into a copy, not a view, so autograd records no slice copy).
+            qkv = qkv.reshape(3, b * h, n, dh)
+            q, k, v = qkv[0], qkv[1], qkv[2]
+            bias = key_bias.to(q.dtype).expand(b, h, n, n).reshape(b * h, n * n)
+            bias.scatter_add_(1, rel_idx.repeat_interleave(h, 0),
+                              rel_vals.to(q.dtype).permute(0, 2, 1).reshape(b * h, r2))
+            att = torch.baddbmm(bias.view(b * h, n, n), q, k.transpose(1, 2), alpha=self.scale)
+            # In the scores' precision (the kernel accumulates in f32), not autocast's f32 copy.
+            att = torch._softmax(att, -1, False)
+            y = torch.bmm(att, v).view(b, h, n, dh)
+        else:
+            # Without gradients (inference, exports) no pass over the scores but the GEMM's: the key
+            # mask through one more q·k dimension (1 · the key's mask value; zero columns pad the width
+            # to a multiple of 16, which rocBLAS tiles well), the relation biases added in place.
+            q, k, v = qkv[0], qkv[1], qkv[2]
+            pad = torch.zeros(b, h, n, self.ext - dh - 1, dtype=q.dtype, device=q.device)
+            qa = torch.cat([q * self.scale, torch.ones_like(q[:, :, :, :1]), pad], -1)
+            ka = torch.cat([k, key_bias.to(k.dtype).view(b, 1, n, 1).expand(b, h, n, 1), pad], -1)
+            att = torch.matmul(qa, ka.transpose(-1, -2))
+            att.view(b, h, n * n).scatter_add_(2, rel_idx.unsqueeze(1).expand(b, h, r2),
+                                               rel_vals.to(att.dtype).permute(0, 2, 1))
+            att = torch._softmax(att, -1, False)
+            y = torch.matmul(att, v)
+        y = y.transpose(1, 2).reshape(b, n, d)
         x = x + self.out(y)
         return x + self.ff2(Fn.gelu(self.ff1(self.ln2(x))))
 
@@ -127,10 +201,11 @@ class TokenEmbed(nn.Module):
             offsets.append(offsets[-1] + c)
         self.G = sum(counts)
         self.F = spec.F
+        self.cat_size = int(spec.categorical_size)
         self.register_buffer("num_offset", torch.tensor(offsets, dtype=torch.int64), persistent=False)
         self.register_buffer("num_count", torch.tensor(counts, dtype=torch.int64), persistent=False)
         self.register_buffer("slot", torch.arange(spec.F, dtype=torch.int64), persistent=False)
-        self.num_proj = nn.Linear(self.G, d, bias=False)
+        self.num_proj = Linear(self.G, d, bias=False)
         self.type_emb = nn.Embedding(spec.n_types, d)
         self.cat_emb = nn.Embedding(spec.categorical_size, d, padding_idx=0)
         nn.init.normal_(self.num_proj.weight, std=1.0 / math.sqrt(8.0))
@@ -149,7 +224,10 @@ class TokenEmbed(nn.Module):
         dense = torch.zeros(b, n, self.G + 1, dtype=tok_num.dtype, device=tok_num.device)
         dense = dense.scatter_add(2, col, tok_num)
         x = self.num_proj(dense[:, :, :self.G])
-        return x + self.type_emb(tok_type) + self.cat_emb(tok_cat).sum(2)
+        # The categorical slots' rows and the type's row in one bag (id 0, the pad, skipped).
+        table = torch.cat([self.cat_emb.weight, self.type_emb.weight], 0)
+        idx = torch.cat([tok_cat, (tok_type + self.cat_size).unsqueeze(-1)], 2).view(b * n, -1)
+        return x + Fn.embedding_bag(idx, table, mode="sum", padding_idx=0).view(b, n, -1)
 
 
 class Encoder(nn.Module):
@@ -159,24 +237,32 @@ class Encoder(nn.Module):
         super().__init__()
         self.embed = TokenEmbed(spec, d)
         self.n_rel = spec.n_rel
+        self.heads = heads
         self.layers = nn.ModuleList([Layer(d, heads, ff, spec.n_rel) for _ in range(layers)])
         self.ln_f = nn.LayerNorm(d)
 
     def forward(self, tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra):
         """`extra` [B, N, d]: the gathered card and ability parts (plus anything else per token)."""
         x = self.embed(tok_type, tok_num, tok_cat) + extra
-        tok_w = tok_mask.to(x.dtype).unsqueeze(-1)
-        x = x * tok_w
+        x = x * tok_mask.to(x.dtype).unsqueeze(-1)
         b, n = tok_type.shape
         src = rel[:, :, 0]
         dst = rel[:, :, 1]
-        idx_fwd = src * n + dst
-        idx_rev = dst * n + src
         rel_type = rel[:, :, 2]
-        rel_w = rel_mask.to(x.dtype).unsqueeze(-1)
-        key_col = (1.0 - tok_mask.to(x.dtype)).view(b, 1, n, 1) * -30000.0
+        # Each relation's bias row at (src, dst) and its reverse row at (dst, src), every layer's at
+        # once from the layers' bias tables side by side (zero for a padded relation).
+        rel_idx = torch.cat([src * n + dst, dst * n + src], 1)
+        rows = torch.cat([rel_type, rel_type + self.n_rel], 1)
+        tables: List[torch.Tensor] = []
         for layer in self.layers:
-            x = layer(x, idx_fwd, idx_rev, rel_type, rel_w, key_col)
+            tables.append(layer.rel_bias.weight)
+        rel_vals = Fn.embedding(rows, torch.cat(tables, 1)) * rel_mask.repeat(1, 2).unsqueeze(-1).to(x.dtype)
+        key_bias = ((~tok_mask).to(x.dtype) * -30000.0).view(b, 1, 1, n)
+        h = self.heads
+        i = 0
+        for layer in self.layers:
+            x = layer(x, rel_idx, rel_vals[:, :, i * h:(i + 1) * h], key_bias)
+            i += 1
         return self.ln_f(x)
 
 
@@ -186,12 +272,13 @@ class Summary(nn.Module):
     def __init__(self, d: int):
         super().__init__()
         self.score = nn.Linear(d, 1)
-        self.mix = nn.Linear(2 * d, d)
+        self.mix = Linear(2 * d, d)
 
     def forward(self, x, tok_mask):
         w = tok_mask.to(x.dtype).unsqueeze(-1)
         mean = (x * w).sum(1) / w.sum(1).clamp(min=1.0)
-        s = self.score(x) + (1.0 - w) * -1e9
+        # The width-1 linear maps as products and sums (a GEMM with one output column tiles badly).
+        s = (x * self.score.weight[0].to(x.dtype)).sum(-1, keepdim=True) + self.score.bias + (1.0 - w) * -1e9
         pool = (torch.softmax(s, dim=1) * x).sum(1)
         return Fn.gelu(self.mix(torch.cat([mean, pool], -1)))
 
@@ -201,7 +288,7 @@ class PointerHead(nn.Module):
 
     def __init__(self, d: int):
         super().__init__()
-        self.fc1 = nn.Linear(3 * d, d)
+        self.fc1 = Linear(3 * d, d)
         self.fc2 = nn.Linear(d, 1)
 
     def forward(self, x, g, act_tok, act_mask):
@@ -209,7 +296,8 @@ class PointerHead(nn.Module):
         d = x.shape[2]
         acts = x.gather(1, act_tok.unsqueeze(-1).expand(b, a, d))
         ge = g.unsqueeze(1).expand(b, a, d)
-        logits = self.fc2(Fn.gelu(self.fc1(torch.cat([acts, ge, acts * ge], -1)))).squeeze(-1).float()
+        hid = Fn.gelu(self.fc1(torch.cat([acts, ge, acts * ge], -1)))
+        logits = (hid * self.fc2.weight[0].to(hid.dtype)).sum(-1, dtype=torch.float32) + self.fc2.bias.float()
         return torch.where(act_mask, logits, torch.full_like(logits, -1e9))
 
 
@@ -223,15 +311,20 @@ class ValueHead(nn.Module):
         return torch.tanh(self.fc2(Fn.gelu(self.fc1(g)))).squeeze(-1)
 
 
-def gather_rows(idx, rows, none_row: int):
-    """Σ over slots of rows[idx] ([B, N, S] → [B, N, d]), a -1 slot reading the zero row `none_row`."""
-    i = torch.where(idx < 0, torch.full_like(idx, none_row), idx)
-    return Fn.embedding(i, rows).sum(2)
-
-
-def slot_vectors(idx, slot):
-    """Σ over present slots of the slot's vector ([B, N, S] @ [S, d])."""
-    return torch.matmul((idx >= 0).to(slot.dtype), slot)
+def gather_tokens(card_idx, tok_card, tok_ability, table, card_rows: int, n_abilities: int):
+    """[B, N, d]: per token the sum over its present card slots of the card's row plus the slot's
+    vector, and over its present ability slots of the ability's row plus the slot's vector, as one
+    bag over `table` (``CardRows.token_table``: per card slot `card_rows` rows, then per ability slot
+    `n_abilities` rows, a zero row last). `card_idx` is each card slot's row (`tok_card`, or a
+    substitute row), read where `tok_card` ≥ 0; a -1 slot adds nothing."""
+    b, n, k = tok_card.shape
+    q = tok_ability.shape[2]
+    pad = table.shape[0] - 1
+    card_off = torch.arange(k, dtype=tok_card.dtype, device=tok_card.device) * card_rows
+    ability_off = torch.arange(q, dtype=tok_ability.dtype, device=tok_ability.device) * n_abilities + k * card_rows
+    idx = torch.cat([torch.where(tok_card >= 0, card_idx + card_off, torch.full_like(tok_card, pad)),
+                     torch.where(tok_ability >= 0, tok_ability + ability_off, torch.full_like(tok_ability, pad))], 2)
+    return Fn.embedding_bag(idx.view(b * n, -1), table, mode="sum", padding_idx=pad).view(b, n, -1)
 
 
 # ── the learner's model ──────────────────────────────────────────────────────────────────────
@@ -284,21 +377,30 @@ class CardRows(nn.Module):
         rows = self.ability_proj(self.ability_table) + part_sum / self.part_n
         return torch.cat([rows, torch.zeros(1, d, dtype=rows.dtype, device=rows.device)], 0)
 
+    def token_table(self, dropout_rows: bool = False):
+        """[rows, d] f32, ``gather_tokens``' table: per card slot the card rows plus the slot's vector
+        (with `dropout_rows` followed by the same with the unknown-card vector in place of the id
+        embedding), per ability slot the ability rows plus the slot's vector, and a zero row."""
+        feat = self.card_feature_rows().float()
+        cards = feat + self.card_id_rows()
+        if dropout_rows:
+            cards = torch.cat([cards, feat + self.unknown_id], 0)
+        d = feat.shape[1]
+        abilities = self.ability_rows()[:-1].float()
+        return torch.cat([(cards.unsqueeze(0) + self.card_slot.unsqueeze(1)).reshape(-1, d),
+                          (abilities.unsqueeze(0) + self.ability_slot.unsqueeze(1)).reshape(-1, d),
+                          torch.zeros(1, d, dtype=feat.dtype, device=feat.device)], 0)
+
     def gather(self, tok_card, tok_ability, id_dropout: float):
-        """[B, N, d]: each token's card and ability parts; id-dropout when training."""
-        feat = self.card_feature_rows()
-        ids = self.card_id_rows()
-        none = self.n_cards - 1
-        x = gather_rows(tok_card, feat, none) + slot_vectors(tok_card, self.card_slot)
-        i = torch.where(tok_card < 0, torch.full_like(tok_card, none), tok_card)
-        id_part = Fn.embedding(i, ids)
-        if self.training and id_dropout > 0:
+        """[B, N, d]: each token's card and ability parts; id-dropout when training (a dropped slot
+        reads its card's unknown-id row)."""
+        drop_on = self.training and id_dropout > 0
+        card_idx = tok_card
+        if drop_on:
             drop = (torch.rand(tok_card.shape, device=tok_card.device) < id_dropout) & (tok_card >= 0)
-            id_part = torch.where(drop.unsqueeze(-1), self.unknown_id.to(id_part.dtype), id_part)
-        x = x + id_part.sum(2)
-        x = x + gather_rows(tok_ability, self.ability_rows(), self.n_abilities) + \
-            slot_vectors(tok_ability, self.ability_slot)
-        return x
+            card_idx = tok_card + drop.to(tok_card.dtype) * self.n_cards
+        card_rows = 2 * self.n_cards if drop_on else self.n_cards
+        return gather_tokens(card_idx, tok_card, tok_ability, self.token_table(drop_on), card_rows, self.n_abilities)
 
 
 class Critic(nn.Module):
@@ -448,22 +550,18 @@ class InferencePolicy(nn.Module):
         with torch.no_grad():
             was = cards.training
             cards.eval()
-            card_rows = cards.card_rows().detach().float().cpu().clone()
-            ability_rows = cards.ability_rows().detach().float().cpu().clone()
+            token_table = cards.token_table().detach().float().cpu().clone()
             cards.train(was)
-        self.register_buffer("card_rows", card_rows)
-        self.register_buffer("ability_rows", ability_rows)
-        self.register_buffer("card_slot", cards.card_slot.detach().float().cpu().clone())
-        self.register_buffer("ability_slot", cards.ability_slot.detach().float().cpu().clone())
-        self.none_card = int(card_rows.shape[0] - 1)
-        self.none_ability = int(ability_rows.shape[0] - 1)
+        self.register_buffer("token_table", token_table)
+        self.n_cards = int(cards.n_cards)
+        self.n_abilities = int(cards.n_abilities)
+        self.none_card = int(cards.n_cards - 1)
+        self.none_ability = int(cards.n_abilities)
         self.eval()
 
     def forward(self, tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok,
                 act_mask):
-        extra = gather_rows(tok_card, self.card_rows, self.none_card) + slot_vectors(tok_card, self.card_slot)
-        extra = extra + gather_rows(tok_ability, self.ability_rows, self.none_ability) + \
-            slot_vectors(tok_ability, self.ability_slot)
+        extra = gather_tokens(tok_card, tok_card, tok_ability, self.token_table, self.n_cards, self.n_abilities)
         x = self.encoder(tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra)
         g = self.summary(x, tok_mask)
         return self.pointer(x, g, act_tok, act_mask), self.value(g)
