@@ -88,15 +88,18 @@ def _rate(c):
     return (c["win"] + 0.5 * c["draw"]) / n if n else None
 
 
-def summarize(out_dir):
-    """Per opponent (the entry id's prefix) the policy's per-game record from the results files."""
+def summarize(out_dir, subject=None):
+    """Per opponent (the entry id's prefix) the policy's per-game record from the results files.
+    `subject(agent_spec)` says which seat's agent is the evaluated policy (default: the ``nn:`` one;
+    side a when both are)."""
+    subject = subject or (lambda agent: str(agent).startswith("nn:"))
     out = {}
     for path in glob.glob(os.path.join(out_dir, "a*.results.jsonl")):
         with open(path) as fp:
             for line in fp:
                 r = json.loads(line)
                 opp, pair = r["entry"].split("|", 1)
-                seat = "a" if str(r["agent_a"]).startswith("nn:") else "b"
+                seat = "a" if subject(r["agent_a"]) else "b"
                 res = r["result_" + seat]
                 kind = "win" if res > 0 else "loss" if res < 0 else "draw"
                 o = out.setdefault(opp, {"all": _zero(), "game1": _zero(), "games23": _zero(), "pairs": {}})
