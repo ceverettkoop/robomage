@@ -392,6 +392,64 @@ Done:
 - A `traj` gate tier (T1 tests) and an `actor` smoke tier (a short continuous run with a
   random-initialised model and a CPU evaluator, no GPU) join `make check`.
 
+Done:
+- **The runner** (`learn/rmlearn/matches.py`, `sprt.py`): `run_sprt(policy, opponent, SPRTConfig,
+  out_dir)` → a result dict (`sprt.json`, `summary.txt`), `python -m rmlearn.sprt`. The policy is an
+  export (`nn:<path>:<options>` in process, CPU: argmax, sampled, projected) or any `nn:` /
+  `nn:remote:` spec; the opponent `scripted[:tier]` (`first` + `teacher.py` at mix 1), `explore`,
+  `random`, an export or a spec. N actors (default 8) over the league pairs (configurable, weighted),
+  bo3, every pair in **both orders** with `swap: sides` (a side's deck moves with it, so one order
+  alone gives the policy one deck of each pair — the B1 evaluation above saw half the decks); the
+  results files are read as games finish; Wald's test on the per-game win rate (H1 0.55 / H0 0.45,
+  α = β = 0.05, no verdict before 30 decisive games, since the first games in are the short ones),
+  draws and caps excluded and listed as findings; SIGTERM to the actors when it decides, `undecided`
+  at the game cap. Reports: verdict, llr, games, per-game win rate with a Wilson interval, the
+  binomial and the match-clustered standard error (design effect), game 1 apart from games 2–3
+  (the selection note), per game number, matchup, own deck, seat, on the play / draw.
+- **The ladder** (`ladder.py`): fixed points (an export or spec with its options and version),
+  pairings played by the runner (a fixed budget, or SPRT), a Bradley–Terry fit (MM, a weak prior,
+  the Elo scale) over every pairing; `Ladder(dir)` (`ladder.json`), `add_fixed_point`,
+  `evaluate_against_ladder`, `record_counts`, `ratings`; `python -m rmlearn.ladder add|eval|ratings`.
+- **The exploiter** (`exploiter.py`): `run_exploiter(victim, init, ExploiterConfig, out_dir,
+  tables)` (standalone: its own `InferenceServer`) and `ExploiterSession` (the same, ticked by a
+  host: rmtrain's GPU process). PPO (clipped surrogate on μ recorded by the actors, GAE(λ) over the
+  exploiter's decisions with γ = 1, value head, Adam, fp16 autocast) on a copy of the victim (or
+  BC); exploiter and victim are two policy ids of one server, each seat `nn:remote:…:policies=<id>`
+  (the agent samples from its first id; no engine change needed); only the exploiter's side
+  recorded. Phases: baseline games at version 0, training for the budget, then games of the frozen
+  final version; reports both records, a win-rate curve per update, PPO's statistics.
+- **rmtrain** (`orchestrator/evaluation.py`, docs/rmtrain.md §7): evaluators `sprt` (per R-NaD
+  iteration by default: the evaluation stops when the test decides), `exploiter` (inside the GPU
+  process, the learner idle meanwhile; off by default, `eval.exploiter_every_minutes` or `rmtrain
+  eval --evaluators exploiter`), and the ladder record behind every evaluation (ratings in `status`
+  and `evals.jsonl`).
+- **The actor smoke run** joins the `actor` tier (docs/ci.md): `robomage_nn --actor`, four bo3
+  matches of the reference policy (random-initialised, CPU) on both seats, one taught at mix 0.5,
+  the other projected: status / results / footers, μ, labels and versions, replays (~3 s).
+- **Found on the way:** `.pt2` exports ran their compiled kernels on every core (inductor's
+  `cpp.threads` defaults to the machine's): 12 in-process actors were ~30× slower than with the
+  single-threaded export (`export.py`, `make_reference_policy.py` now compile with `cpp.threads` 1;
+  `runs/bc1/bc/ckpt/p1.pt2` predates it).
+- **Measured** (7950X, other jobs on the box; BC = `runs/bc1/bc`, re-exported single-threaded, argmax):
+  SPRT against `scripted:hard` over all 45 league pairs: **H0** after 153 decisive games (73–91,
+  44.5% [37.1, 52.2]; game 1 46.4%, games 2–3 43.2%), 164 games in 10 s on 12 actors (~2,100
+  decisions/s; the old multi-threaded export: H0 after 203 games, 45.9%, in 302 s); against
+  `explore`: **H1** after 30 decisive games (28–3, 90.3%) in 3 s. Ladder, 100 games a pairing (~13 s
+  each): BC beat the random-initialised policy 94–6, BC sampled with the projection
+  (`temp=1:thresh=0.03:disc=16`) beat it 92–11 and BC argmax 55–46; ratings random-init 0,
+  BC +406, BC-projected +418. Exploiter against BC (both sampled at temperature 1, init BC, all league
+  pairs, 12 actors, 20 min, ~700 decisions/s in the actors, ~90 PPO updates, ~385k trained
+  decisions, ~6,100 games): the baseline (version 0, the symmetric pairing) 48.4% [39.7, 57.1]
+  over 122 games, as it should be; the final frozen version **did not rise above 50%**: 36.2%
+  [27.6, 45.7] (entropy bonus 0.01, GAE λ 0.95, lr 1e-4), 36.0% (no entropy bonus), 39.2% [30.3,
+  48.9] (no bonus, full-game returns, lr 3e-5, now the defaults). In every run the policy's entropy
+  rose steadily (0.23 → 0.6–1.0 nats) with no rise in the win rate: from a nearly deterministic BC
+  start, ~60 games per update of a ±1 terminal reward is mostly noise, and noise on saturated
+  logits raises entropy (the update's first-minibatch KL is ~0: the served and trained networks
+  agree). So the tooling works end to end, but a 20-minute PPO exploiter is not yet a measure of
+  BC's exploitability; it needs larger rollouts per update, a KL anchor to the initial policy, or a
+  much longer budget — to be tuned before it is read as R-NaD's exploitability.
+
 ---
 
 ## 4. Learner side (new: `learn/`, PyTorch)

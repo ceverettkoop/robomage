@@ -22,9 +22,11 @@ adds ln(p1/p0) (a win) or ln((1−p1)/(1−p0)) (a loss) to the log-likelihood r
 llr ≥ ln((1−β)/α), H0 at llr ≤ ln(β/(1−α)) (α = β = 0.05: ±2.94). Draws and capped games are not
 evidence for either hypothesis: they are counted, excluded from the test and from the win rate, and
 listed as findings (under self-play they are bugs to inspect). Games are consumed in the order the
-actors finish them; the test is checked after every game. At the game cap (``max_games``) the
-verdict is ``undecided`` (with the llr and the win rate so far); ``sequential=False`` plays the cap
-whatever the llr (the ladder's fixed budget) and reports the test at the end.
+actors finish them; the test is checked after every game, from ``min_games`` decisive games on
+(30: the first games to finish are the short ones, a biased sample). At the game cap
+(``max_games``) the verdict is ``undecided`` (with the llr and the win rate so far);
+``sequential=False`` plays the cap whatever the llr (the ladder's fixed budget) and reports the
+test at the end.
 
 **Independence.** The SPRT treats games as independent Bernoulli trials, as decided (the plan scores
 games, not matches), but games of one match are correlated (same decks, sideboarding against what
@@ -60,7 +62,8 @@ class SPRTConfig:
     alpha: float = 0.05
     beta: float = 0.05
     max_games: int = 600            # the game cap (verdict "undecided" there)
-    min_games: int = 0              # no verdict before this many decisive games
+    min_games: int = 30             # no verdict before this many decisive games (the first games in are
+                                    # the shortest ones: a floor against deciding on them alone)
     sequential: bool = True         # False: play max_games whatever the test says
     actors: int = 8
     pairs: list = None              # deck pairs [(a, b)] (None: every league pair)
@@ -249,7 +252,7 @@ def main(argv=None):
     ap.add_argument("--alpha", type=float, default=0.05)
     ap.add_argument("--beta", type=float, default=0.05)
     ap.add_argument("--max-games", type=int, default=600)
-    ap.add_argument("--min-games", type=int, default=0)
+    ap.add_argument("--min-games", type=int, default=30)
     ap.add_argument("--fixed", action="store_true", help="play --max-games whatever the test says")
     add_common_args(ap)
     a = ap.parse_args(argv)

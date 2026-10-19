@@ -116,7 +116,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `eval.exploiter_every_minutes`, `exploiter_minutes` | 0 (off), 20 | the exploiter's B4/B5 cadence and training time |
 | `eval.exploiter_actors`, `exploiter_pause_learner` | 8, true | its actors (beside the training actors); the learner idles while it trains |
 | `eval.exploiter_baseline_games`, `exploiter_final_games` | 100, 100 | games of its initial policy (= the victim) and of its frozen final version |
-| `eval.exploiter_pairs`, `exploiter_victim_options`, `exploiter_lr`, `exploiter_rollout_decisions` | `eval.pairs`, `""`, 1e-4, 4096 | |
+| `eval.exploiter_pairs`, `exploiter_victim_options`, `exploiter_lr`, `exploiter_rollout_decisions` | `eval.pairs`, `""`, 3e-5, 4096 | |
 | `checkpoint.every_minutes`, `keep`, `export_formats` | 15, 3, ts + pt2 | |
 
 ## 4. The run directory
@@ -235,7 +235,9 @@ the matches with `eval.actors` evaluation actors (`--actor-matches`), scores eve
   `exploiter-final`; the full result, with the win-rate curve per update and PPO's statistics,
   under `exploiter` in `evals.jsonl`, files in `eval/<seq>-<label>/`). Off by default
   (`eval.exploiter_every_minutes` 0): at ~20 minutes of the GPU per run it costs the learner that
-  time; run one with `rmtrain eval <run> --evaluators exploiter`, or set the cadence.
+  time; run one with `rmtrain eval <run> --evaluators exploiter`, or set the cadence. Its PPO is not yet tuned: against
+  the BC policy a 20-minute exploiter stayed below 50% (plan T8, measured), so read its figure as a
+  lower bound on exploitability until it is.
 - `ladder` also feeds the **ladder record** (`rmlearn/ladder.py`, `<run>/ladder/ladder.json`): after
   every evaluation (exploiters aside) each group's games are recorded as a pairing of the evaluated
   policy (`v<version>`) against the group's opponent (a rung by its label, `bc`, `m<k>`; a fixed

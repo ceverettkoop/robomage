@@ -183,7 +183,7 @@ SPEC = {
         ("exploiter_final_games", 100, "games of the frozen final exploiter: its reported win rate"),
         ("exploiter_pairs", [], "its deck pairs (empty: eval.pairs)"),
         ("exploiter_victim_options", "", "the victim's nn: options (empty: temperature 1; argmax)"),
-        ("exploiter_lr", 1e-4, "the exploiter's PPO learning rate"),
+        ("exploiter_lr", 3e-5, "the exploiter's PPO learning rate"),
         ("exploiter_rollout_decisions", 4096, "exploiter decisions per PPO update"),
     ],
     "checkpoint": [

@@ -127,7 +127,7 @@ def sprt(ctx):
     eval.sprt_p0) that stops the group when it decides, or at eval.sprt_max_games games."""
     e = ctx.cfg["eval"]
     test = {"p0": e["sprt_p0"], "p1": e["sprt_p1"], "alpha": e["sprt_alpha"], "beta": e["sprt_beta"],
-            "max_games": e["sprt_max_games"], "min_games": 0}
+            "max_games": e["sprt_max_games"], "min_games": min(30, e["sprt_max_games"])}
     pairs = _league_or(ctx.cfg, e["sprt_pairs"])
     return [Group("sprt-" + opp, _pairs_entries("sprt-" + opp, ctx.subject, *EV.opponent_side(opp), pairs),
                   e["sprt_max_games"], sprt=test) for opp in e["sprt_opponents"] if e["sprt_max_games"] > 0]
