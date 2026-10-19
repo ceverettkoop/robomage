@@ -180,6 +180,10 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (- = stdin), re-encode it and compare the bytes; ERROR:\n");
     printf("                      lines and a summary on stderr, exit status 1 on any\n");
     printf("                      mismatch. With --state-dump json, the JSON lines on stdout\n");
+    printf("  --cards-frame <file>  Play no game: write the SCHEMA frame, the CARDS frame of\n");
+    printf("                      every vocab card and its tokens (the --closed-decklist set)\n");
+    printf("                      and the METAGAME frame to <file> as RMSTATE records, the\n");
+    printf("                      card tables' source (rmfeat --export-tables)\n");
     printf("  --knowledge-a <off|expert|expert+belief>  --knowledge-b <...>\n");
     printf("                      That seat's knowledge sidecar in its RMSTATE frames (the\n");
     printf("                      k_* tables: recall and sound deduction from the seat's\n");
@@ -198,6 +202,11 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      seats' frames against the true world at every decision,\n");
     printf("                      and the knowledge state across the snapshot check's restore.\n");
     printf("                      Failures print ERROR: lines; play is unchanged\n");
+    printf("  --selfcheck-featurize\n");
+    printf("                      Implies --selfcheck-state. Featurize each seat's frame with\n");
+    printf("                      the actor entry point and require the same tensors from the\n");
+    printf("                      scramble and permutation checks' frames; the omniscient frame\n");
+    printf("                      must be refused. Failures print ERROR: lines; play is unchanged\n");
     printf("  --trace-decisions   Print every decision's board, pending decision and menu, as\n");
     printf("                      the CLI renders the deciding seat's RMSTATE frame, and the\n");
     printf("                      choice made (lines starting \"| \" in the game log)\n");

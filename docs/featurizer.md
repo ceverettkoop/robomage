@@ -32,22 +32,25 @@ text-table generator `bin/<config>/rmembed` (libtorch) and the actor in `src/act
 | Frame | Used for |
 |---|---|
 | `SCHEMA` | every table, column, tag and enum string table; the spec is built from it |
-| `CARDS` | the match's cards (only to map a physical card and face to the face's vocab id; card features come from the whole-vocab tables) |
+| `CARDS` | not read per decision: card features, and the map from a physical card to its back face's vocab id (the card table's `back_face`, §4.1), come from the whole-vocab tables, so a decision needs only its `STATE` frame |
 | `METAGAME` | the number of reference lists and archetype labels (categorical sizes in the spec) |
 | `STATE` | the snapshot tables (ids 20-48) and knowledge tables (90-99); event tables (80-82) are not featurized (memory is the sidecar's job, `knowledge_store.md`) |
 
 The **actor entry point** (`featurize::featurize_seat`, what `nn:` calls) takes the deciding seat's
-frames only and refuses a frame whose header viewer is not a seat. The **learner entry points**
-(§3.5) also take the omniscient viewer's frames; only `rmfeat` and learner-facing writers (the
-training plan's trajectory writer) call them.
+frames only and refuses a frame whose header viewer is not a seat (and any frame that is not a
+`STATE` frame of the spec's schema). The **learner entry points** (§3.5) also take the omniscient
+viewer's frames; only `rmfeat` and learner-facing writers (the training plan's trajectory writer)
+call them.
 
 ## 3. Per-decision tensors
 
 A decision is a set of **tokens**, one per row of every featurized `STATE` table, plus relations
 between them and the menu. The featurizer emits one decision unpadded (the shapes below); a
 batcher pads and stacks decisions to the network contract's leading batch dimension `B` (§6). On
-disk a decision (or a list of them) is an RMTB file of kind `tensors`, one array per tensor, a list
-stored ragged (values plus offsets).
+disk a decision (or a list of them) is an RMTB file of kind `tensors` (`featurize::tensors_file`):
+per decision its `viewer`, `game`, `decision` and `sideboarding` (i64), then per tensor its values
+over every decision concatenated along the first dimension and `<tensor>_offsets` (i64, decisions
++ 1 entries, in that tensor's rows); the masks are stored as `u8`.
 
 | Tensor | Shape | dtype | Contents |
 |---|---|---|---|
@@ -67,8 +70,9 @@ decision; padding is a runtime option of the batcher, never a format cap.
 ### 3.1 Token types
 
 Every `STATE` table with id 20-48 or 90-99 is a token type, in ascending table id, except
-`strings`. Single-row tables (`header`, `turn`, `pending`, `pending_cost`, `match`, `k_meta`) are
-one token each, so global state is a few tokens rather than a special vector. Child tables
+`strings`; a table's rows are its tokens in frame order. Single-row tables (`header`, `turn`,
+`pending`, `pending_cost`, `match`, `k_meta`) are one token each, so global state is a few tokens
+rather than a special vector. Child tables
 (`object_keyword`, `object_counter`, `stack_target`, `k_pool_card`, …) are tokens of their own,
 related to their parent (§3.3).
 
@@ -82,24 +86,29 @@ related to their parent (§3.3).
 | `prob` | one numeric slot, `x / 10^9` |
 | `index` (a position: `pos`, `order`, `_pos` of a libpos) | one numeric slot, `log1p(x)`, `-1` → slot 0 and the none flag below |
 | `mask:<e>` | one numeric slot per value of `e` (its string table's length) |
-| `enum:<e>` | one categorical slot: the id range of `e` |
+| `enum:<e>` | one categorical slot: the id range of `e` (its `n` values take `n + 1` ids; the first is the cell's none: all ones or out of range) |
 | `player-rel` | one categorical slot (none, self, opponent); the absolute `enum:seat` beside it is dropped, so a model is seat-symmetric |
 | `card` | one `tok_card` slot |
 | `handle`, `row:<t>` | a relation (§3.3), no feature |
 | `text` | dropped, except the columns §3.4 hashes |
 
-Every column whose cell can hold its none value (all ones: `card`, `index`, `row:`, nullable
-`enum`) also gets a numeric none flag. The global categorical id space is the concatenation of
-every (token type, categorical column) range, with id 0 the pad; one embedding table covers it.
+A `card` or `index` column also gets a numeric none flag (1 at all ones); an enum's none is its
+slot's first id, and a `row:` column's is the missing relation. The global categorical id space is
+the concatenation of every (token type, categorical column) range, with id 0 the pad; one embedding
+table covers it. A composite is recognised by its column names: a seat pair `<n>` / `<n>_rel`, a
+library position `<n>_anchor` / `<n>_pos` / `<n>_span` (each part by its tag) and an ability
+reference `ab_card`, `ab_index`, `ab_key` (§3.3).
 
 ### 3.3 Relations and ability references
 
-- **Identity.** A table whose first column is a `handle` named `handle` (`object`, `stack`) owns
-  that handle; `object` wins over `stack` (a stack object is an `object` row too).
+- **Identity.** A table whose first column is a `handle` named `handle` (`object`, `stack`,
+  `reveal`) owns that handle; the lowest table id wins, so `object` wins over `stack` (a stack
+  object is an `object` row too).
 - **Handle columns** (`obj`, `source`, `target`, `attached_to`, `attacker`, `blocker`, `for`, …)
   give a relation from the row's token to the token owning that handle, typed by
-  `(table, column)`. A handle no token owns gives no relation (it names an object the viewer
-  cannot identify).
+  `(table, column)`; so does an owning table's own `handle` column when another table wins the
+  handle (a `stack` row relates to its `object` row). A handle no token owns gives no relation (it
+  names an object the viewer cannot identify).
 - **`row:<t>` columns** give a relation to row `v` of table `t`'s tokens (`k_pool_card.pool`,
   `stack_target.lki`, `delayed_subject.trigger`, …), typed the same way. A `row:` into a frame the
   featurizer does not tokenize (`row:meta_list`, `row:meta_archetype`, into `METAGAME`) is instead
@@ -115,8 +124,9 @@ every (token type, categorical column) range, with id 0 the pad; one embedding t
 | Column | Treatment | Why |
 |---|---|---|
 | `object.card` | also a second `tok_card` slot: the face as it is now (the back face's vocab id when `transformed`) | the card tables are per face |
-| `object_counter.kind`, `player_counter.kind`, `object_keyword.text`, `player_effect.filter`, the `ab_key` of an abref | categorical: FNV-1a 64 of the text modulo 256 buckets | counter kinds and keyword parameters have no enum |
+| `object_counter.kind`, `player_counter.kind`, `object_keyword.text`, `player_effect.filter`, the `ab_key` of an abref | categorical: 1 + FNV-1a 64 of the text modulo 256 buckets (the empty text is the slot's none) | counter kinds and keyword parameters have no enum |
 | `menu.description` | dropped | free text, covered by the structured columns |
+| `k_template.list`, `b_list.list`, `k_archetype.archetype`, `b_archetype.archetype` | categorical over the `METAGAME` frame's `meta_list` / `meta_archetype` rows, as a `row:` into `METAGAME` | tagged `index`, but each is a row of a `METAGAME` table, not a position |
 
 ### 3.5 Learner-side: the omniscient featurization and targets
 
@@ -125,22 +135,32 @@ every (token type, categorical column) range, with id 0 the pad; one embedding t
   tokens with their cards, and the `k_*` token types have no rows (the omniscient viewer has no
   knowledge tables). Seat-relative columns read as the omniscient frame defines them (self = A),
   so a learner pairs it with the deciding seat explicitly. For a critic that sees the whole game.
-- **Targets** (`rmfeat --targets`), per decision of a seat, from the omniscient frame beside the
-  seat's: the opponent's hand as a multiset of vocab ids; the opponent's registered list and
-  archetype (`METAGAME` row indices); the seat's own library, top first, as vocab ids up to a
-  depth the spec fixes; the opponent's library likewise. An RMTB `targets` file, for auxiliary
-  heads.
-- **Isolation.** Neither reaches a decision: the in-process feed carries seat frames only, the
-  actor entry point refuses other viewers, and the gate checks that an `nn:` seat's tensors equal
-  `rmfeat`'s featurization of that seat's own stream and are unchanged by the scramble self-check
-  (hidden identities rotated).
+- **Targets** (`rmfeat --targets`, `src/featurize/targets.h`), per decision of a seat, from the
+  omniscient frame of the same decision: the opponent's hand as a multiset of card ids (ascending);
+  the opponent's registered list and archetype (`METAGAME` row indices, -1 none): the
+  classification of `knowledge_store.md` §10.4 of the omniscient `DECKLISTS` frame's list (the
+  reference list of the same deck name, else the one with the most cards in common), the row the
+  opponent's own frames mark `registered` in `k_template` (the gate checks they agree); the seat's
+  own library, top first (`object.pos`), as card ids up to the spec's `library_depth` (10); the
+  opponent's library likewise. An RMTB `targets` file: per decision `seat`, `game`, `decision`,
+  `sideboarding`, `opp_list`, `opp_archetype`, and `opp_hand`, `own_library`, `opp_library` each
+  as values plus `_offsets`, for auxiliary heads.
+- **Isolation.** Neither reaches a decision: the in-process feed carries seat frames only and the
+  actor entry point refuses other viewers. The engine's `--selfcheck-featurize`
+  (`src/state_format/selfcheck_featurize.h`) featurizes each seat's frame at every decision with
+  the actor entry point and requires the same tensors from the scramble check's frame (hidden
+  identities rotated) and the permutation check's (hidden zones permuted), and the omniscient frame
+  refused; the gate (5d) adds that an `nn:` seat's tensors equal `rmfeat`'s featurization of that
+  seat's own stream.
 
 ## 4. The card tables
 
 Three whole-vocab tables, the same for every match, indexed by vocab id (`src/card_vocab.h`; ids
 `0 … N_CARD_TYPES-1`, the token band from 900, the token sentinel 1023). They are built from a
-**whole-vocab `CARDS` frame** (the engine's `--cards-frame FILE`: `SCHEMA` + `CARDS` records, the
-`--closed-decklist` card set) by `rmfeat --export-tables`, by the same tag rules.
+**whole-vocab `CARDS` frame** (the engine's `--cards-frame FILE`: `SCHEMA`, `CARDS` and `METAGAME`
+records, the `--closed-decklist` card set) by `rmfeat --export-tables` (`src/featurize/card_tables.h`),
+by the same tag rules. The featurizer reads `N_CARD_TYPES + 1` from the text table's row count,
+never from an engine header.
 
 ### 4.1 Card table `[N_CARD_TYPES + 1, Fc]` f32
 
@@ -148,13 +168,18 @@ One row per **face vocab id**: the `card` row whose `face_card` is that id (a fr
 `face_card` is its own id; a back face's is the back face's id). Columns:
 
 - the `card` row's numeric and mask columns by §3.2 (mana value, pips, colours, types,
-  supertypes, P/T, loyalty, token) and its enums one-hot (`layout`);
-- multi-hot over `subtype` from `card_subtype`, over `keyword` from `card_keyword`, and per
-  `pip_kind` counts from `card_pip`, each for that face;
+  supertypes, P/T, loyalty, token) and its enums one-hot (`face`, `layout`);
+- per `(card, face)` child table of `CARDS` (`card_subtype`, `card_keyword`, `card_pip`), the count
+  of the face's rows per value of each enum column: multi-hot over `subtype` and `keyword`, per
+  `pip_kind` counts;
 - `n_abilities`: `log1p` of the face's `card_ability` rows;
 - a `present` slot (0 for an id with no card).
 
-Row `N_CARD_TYPES` is the none row (all zeros): a `-1` card slot reads it.
+Columns are named `<col>`, `<col>:<VALUE>` (a mask bit), `<col>=<VALUE>` (one-hot) and
+`<table>.<col>=<VALUE>` (a child count), in that order. Row `N_CARD_TYPES` is the none row (all
+zeros): a `-1` card slot reads it. The file also holds `back_face` (i64, a row per card id): a
+physical card's back face's vocab id (itself when it has none, -1 for a back face with no id of its
+own), which gives `object.card`'s current-face slot (§3.4).
 
 ### 4.2 Text table `[N_CARD_TYPES + 1, 384]` f32
 
@@ -165,14 +190,26 @@ elsewhere and at the none row. Committed (§5).
 
 - **Ability rows**: one per `card_ability` row of every vocab card, in `(card, index)` order,
   then one per `ab_key` of the spec's fixed key list (abilities with no card row: granted or
-  engine-built). Columns: `ability_kind`, `category`, `timing` one-hot; `tap`, `limit`; the
-  structured parameters (`state_format.md` register 41: amount and its kind, power/toughness
-  modifiers, target classes, target bounds); `n_parts`.
-- **Part rows**: one per `card_ability_part` row (sub-abilities and modes), with the same
-  parameter columns, the part kind and depth, and `ability`: the ability row it belongs to (an i64
-  column of the file, not a feature).
-- The ability index `ability_index.json` maps `"<card>:<index>"` and `"key:<ab_key>"` to rows;
-  the featurizer resolves `tok_ability` with it.
+  engine-built). Columns: the row's by the tag rules (`face`, `ability_kind`, `category`, `timing`
+  one-hot; `tap`, `limit`; the structured parameters, `state_format.md` register 41: amount and
+  its kind, power/toughness modifiers, target classes, target bounds; `n_parts`, `charm_num`) and
+  `keyed` (1 for a key row).
+- **The fixed key list**: every distinct non-empty `card_ability.key` of the frame (keyword-built
+  abilities: `Equip`, `Cycling`, `Reconfigure:unattach`), plus the key forms Appendix A.1 gives
+  engine-built definitions that the `SCHEMA` frame enumerates: `keyword:<k>` for each `keyword`
+  value (keyword-derived triggers), `subtype_mana:<c>` for each `color` value (a land type's mana
+  ability) and `LandType`; sorted. A key row that is some card row's key has the features of the
+  first such row; the others only `keyed`. Keys an abref can carry outside the list (a granted
+  trigger's `granted_trigger:<script>`, `enchant:<filter>`, the engine's delayed-trigger keys such
+  as `return_from_exile:<n>`) are built during play from text no frame enumerates; they resolve to
+  `-1`, and the hashed `ab_key` categorical (§3.4) still tells them apart.
+- **Part rows**: one per `card_ability_part` row (sub-abilities and modes), in `(card, ability,
+  part)` order, with the same parameter columns, the part kind, depth and parent, and `ability`:
+  the ability row it belongs to (an i64 array of the file, not a feature).
+- **The ability index** is in the ability file: `ab_card` and `ab_index` (i64, per row its card
+  and index; -1 for a key row) and `key_rows` (i64, per key its row; the array's `columns` are the
+  keys). The featurizer resolves `tok_ability` with it: the row of `(ab_card, ab_index)`, else of
+  `ab_key`, else `-1`.
 
 ### 4.4 Files: RMTB
 
@@ -280,13 +317,17 @@ Readers: `src/featurize/rmtb.{h,cpp}` (C++, std only; also the writer and the f1
 
 ## 6. The spec and the network contract
 
-**`FEATURE_SPEC`** is a JSON document `rmfeat --spec` writes from a `SCHEMA`, `CARDS` and
-`METAGAME` frame (and that the actor builds in memory): the token-type list; per type its numeric
-slots (name, source column, transform) and categorical slots (name, id offset, size); `F`, `C`,
-`K`, `Q`; the relation types; the global categorical size; the hashed-text bucket count; the §3.4
-overrides; the card tables' widths and column names. Its `spec_hash` (FNV-1a 64 of the document
-bytes) is in every exported file and in a model. A JSON document rather than an RMSTATE frame, so
-consumers outside C++ read it with any JSON parser.
+**`FEATURE_SPEC`** is a JSON document `rmfeat --spec` writes (`src/featurize/feature_spec.h`) from
+the whole-vocab cards file's `SCHEMA` and `METAGAME` frames and the card tables its `CARDS` frame
+gives (and that the actor builds in memory from the same inputs): the schema and vocab hashes; the
+hashed-text bucket count; the targets' library depth; the `METAGAME` row counts it sizes slots by;
+`F`, `C`, `K`, `Q`; the global categorical size; the menu's token type; the token-type list, per
+type its numeric slots (name, source column, transform), categorical slots (name, source, id
+offset, size), card slots, ability slots and relation types; the relation types `(table, column,
+target)`; the §3.4 overrides; the card, text, ability and part tables' rows, widths and column
+names; the fixed key list. One line, its keys in a fixed order. Its `spec_hash` (FNV-1a 64 of the
+document bytes) is in every exported file and in a model. A JSON document rather than an RMSTATE
+frame, so consumers outside C++ read it with any JSON parser.
 
 **Network contract** (the step-5 actor; a policy in any framework follows the same tensors):
 
@@ -331,10 +372,18 @@ MLP over each `act_tok` token's output) for logits; a value head over the mean o
 
 ## 7. Tests
 
+The gate's `featurize` tier (`docs/ci.md`) runs those of this list that need no model, over the
+replayed corpus's dumps and explore games' (the text table's are the `vocab` tier's; the `nn:`,
+export and `rmserve` ones come with 5d):
+
 - deterministic: the same frames give identical tensors;
 - shapes and slot meanings agree with the spec; every `rel` and `act_tok` index is a real token;
   every `tok_card` is `-1` or a card-table row, every `tok_ability` `-1` or an ability row;
-- invariant to row order where the format says order is meaningless (a permuted hidden zone);
+- invariant to row order where the format says order is meaningless: the engine's permutation
+  self-check (a permuted hidden zone) gives the same frame bytes and so, under
+  `--selfcheck-featurize`, the same tensors; and every token table but `menu` (whose row is the
+  reply) with its rows shuffled and every `row:` reference into it renumbered gives the same
+  tensors up to the matching token permutation;
 - the exported tables equal a standard-library Python reader's view of the same files;
 - the text table check passes on a clean checkout; regenerating a deleted row leaves every other
   row's bytes unchanged; the tokenizer matches the golden ids and the encoder the golden vectors

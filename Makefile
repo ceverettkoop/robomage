@@ -93,7 +93,7 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 .DEFAULT_GOAL := all
 
 # text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
-all: program rmknow robomage_check text-table
+all: program rmknow rmfeat robomage_check text-table
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -245,6 +245,19 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmknow $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
+# ── bin/<config>/rmfeat — the featurizer over recorded RMSTATE frames (docs/featurizer.md) ──
+# tools/rmfeat/ linked with ONLY the std-only RMSTATE decoder and schema and src/featurize/ (no engine
+# TU, like rmknow): FEATURE_SPEC, the card tables' export, per-decision tensors and learner targets
+# from an --rmstate-dump. Part of the default build; `make rmfeat` builds it alone.
+RMFEAT_SRCS := $(wildcard tools/rmfeat/*.cpp)
+RMFEAT_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMFEAT_SRCS))
+RMFEAT_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                  $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
+
+rmfeat: $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmfeat $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
+
 # ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
 # tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
 # the std-only RMSTATE decoder and schema, the agents' std-only frame reader and Python-compatible
@@ -260,7 +273,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmembed text-table rmknow robomage_check
+.PHONY: all check regen refetch clean actor rmembed text-table rmknow rmfeat robomage_check
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -271,7 +284,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # resources/ and decks.
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/robomage_check bin/*/rmembed
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -279,5 +292,6 @@ clean:
 # header they share with the engine leaves stale actor objects behind.
 -include $(ACTOR_OBJ:.o=.d)
 -include $(RMKNOW_OBJ:.o=.d)
+-include $(RMFEAT_OBJ:.o=.d)
 -include $(RMCHECK_OBJ:.o=.d)
 -include $(RMEMBED_OBJ:.o=.d)

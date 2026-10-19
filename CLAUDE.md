@@ -81,9 +81,10 @@ update it when you knowingly deviate or leave a rules gap.
 Card scripts are not tracked; provision them first on a fresh clone (the SessionStart hook does
 it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
 
-- `make` — debug build (`-ggdb`, warnings, `-D_GLIBCXX_ASSERTIONS`, no `-O2`) of the three
+- `make` — debug build (`-ggdb`, warnings, `-D_GLIBCXX_ASSERTIONS`, no `-O2`) of the four
   binaries: `bin/debug/robomage` (the engine), `bin/debug/rmknow` (the knowledge sidecar over a
-  recorded stream) and `bin/debug/robomage_check` (the test gate)
+  recorded stream), `bin/debug/rmfeat` (the featurizer over a recorded stream: FEATURE_SPEC, the
+  card tables, tensors, learner targets) and `bin/debug/robomage_check` (the test gate)
 - `make BUILD=RELEASE` — the same into `bin/release/` (`-O2 -flto -march=native`; separate obj/bin
   trees per config, so switching `BUILD` never needs `make clean`)
 - `make check` — build, then `bin/debug/robomage_check` (every tier; below and `docs/ci.md`)
@@ -134,6 +135,7 @@ background** and make the live output inspectable by the user:
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
+  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | decisions per second of a fixed explore workload (no threshold) |
@@ -470,7 +472,9 @@ the match (even from the sideboard phase, where `-2` is a no-op). Python constan
 
 **Other frame writers:** `--rmstate-dump FILE` (every viewer's frames — A, B, omniscient — at each
 decision, beside any protocol; `--state-dump json` adds `FILE.jsonl`), `--rmstate-read FILE`
-(decode → re-encode byte check), the in-process agents' feed and `--trace-decisions`. The format
+(decode → re-encode byte check), `--cards-frame FILE` (the SCHEMA, whole-vocab CARDS and METAGAME
+frames, the featurizer's card-table source; plays no game), the in-process agents' feed and
+`--trace-decisions`. The format
 is defined once in `src/state_format/schema.cpp`; decoders build themselves from the SCHEMA frame
 (C++ `src/state_format/decode.h`, Python `python/rmstate.py`), so no constant is copied.
 
@@ -572,7 +576,18 @@ sections above are not repeated here.
 - `src/featurize/` — std only (include-isolated like `src/knowledge/`): `json` (the shared JSON
   reader), `rmtb` (RMTB named-array files, `docs/featurizer.md` §4.4), `oracle_text` (text
   normalisation, text / vocab hashes, the model pin, staleness, the inputs file), `wordpiece`
-  (the BERT WordPiece tokenizer)
+  (the BERT WordPiece tokenizer); the featurizer (`docs/featurizer.md`): `columns` (the tag rules),
+  `card_tables` (the card, ability and part tables from a whole-vocab CARDS frame, their RMTB
+  files and the ability index), `feature_spec` (FEATURE_SPEC: token types, slots, relations,
+  per-table column plans, `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
+  entry point, refusing a non-seat frame; `featurize_viewer`, learner-side; the tensors file),
+  `targets` (learner targets from the omniscient frame), `frame_stream` (a recorded stream frame by
+  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported)
+- `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA, whole-vocab CARDS and
+  METAGAME frames for the card tables; plays no game
+- `src/state_format/selfcheck_featurize.{h,cpp}` — `--selfcheck-featurize`: each seat's tensors
+  from the actor entry point equal under the scramble and permutation checks' frames, the
+  omniscient frame refused; `SELFCHECK-FEATURIZE:` summary
 - `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
   card loads and is in the vocab; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
@@ -608,6 +623,10 @@ step 5 adds a main.
   engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
   `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
   `generative.h`, the belief model played out directly)
+- `tools/rmfeat/` — `bin/<config>/rmfeat` (part of `make`; std + the decoder + `src/featurize/`, no
+  engine TU): `--spec --cards CARDS`, `--export-tables CARDS OUTDIR`, `--featurize DUMP --viewer
+  A|B|omniscient --out FILE`, `--targets DUMP --seat A|B --out FILE`, `--stats` (token counts,
+  timing); `--tables DIR`, `--text-table FILE`
 - `tools/rmembed/` — `bin/<config>/rmembed` (`make rmembed`, libtorch): the BERT encoder in the
   libtorch C++ API and its safetensors reader; writes the oracle-text table
 - `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`

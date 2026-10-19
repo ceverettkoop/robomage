@@ -4,6 +4,7 @@ bin/*/robomage
 bin/*/rmknow
 bin/*/robomage_check
 bin/*/rmembed
+bin/*/rmfeat
 compile_commands.json
 obj/*.o
 obj/*/*.o

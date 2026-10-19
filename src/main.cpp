@@ -14,6 +14,7 @@
 #include "deck_check.h"
 #include "game_driver.h"
 #include "input_logger.h"
+#include "state_format/cards_file.h"
 #include "state_format/recode.h"
 #include "state_format/stream.h"
 #include "text_table.h"
@@ -97,6 +98,9 @@ int main(int argc, char const *argv[]) {
 
     // --text-table-check / --text-table-inputs: the oracle-text table; no game is played.
     if (text_table_requested()) return run_text_table();
+
+    // --cards-frame: the whole-vocab CARDS frame for the card tables; no game is played.
+    if (!cards_frame_path.empty()) return write_cards_frame_file(cards_frame_path);
 
     // --rmstate-read: an offline stream check; no game is played.
     if (!rmstate_read_path.empty()) return rmstate_read_stream(rmstate_read_path, state_dump_json);

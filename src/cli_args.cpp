@@ -8,6 +8,8 @@
 #include "components/zone.h"
 #include "error.h"
 #include "game_driver.h"
+#include "state_format/cards_file.h"
+#include "state_format/selfcheck_featurize.h"
 #include "text_table.h"
 
 // One command-line option. The option table below is the single definition of which flags
@@ -256,6 +258,9 @@ static const CliOption OPTIONS[] = {
             state_dump_json = true;
         },
         nullptr},
+    // Write the whole-vocab CARDS frame (with the SCHEMA and METAGAME frames) instead of playing
+    // (state_format/cards_file.h).
+    {"--cards-frame", nullptr, true, false, [](const char *v) { cards_frame_path = v; }, nullptr},
     // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
     {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
     // Each seat's knowledge sidecar level in its RMSTATE frames (state_format/knowledge_feed.h).
@@ -271,6 +276,14 @@ static const CliOption OPTIONS[] = {
     {"--selfcheck-knowledge", nullptr, false, false,
         [](const char *) {
             selfcheck_knowledge = true;
+            selfcheck_state = true;
+        },
+        nullptr},
+    // Check the featurizer under the state self-check (state_format/selfcheck_featurize.h); implies
+    // --selfcheck-state, whose scramble and permutation frames it featurizes.
+    {"--selfcheck-featurize", nullptr, false, false,
+        [](const char *) {
+            selfcheck_featurize = true;
             selfcheck_state = true;
         },
         nullptr},

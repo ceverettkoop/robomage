@@ -762,7 +762,8 @@ per-player parts in `event_player`; both point at their `event` row.
 ascending card id, then every registered token those cards can make, in ascending card id. Under `--closed-decklist` it holds every vocab
 card instead (by front face; a back face's own vocab entry is that card's back row), for every
 viewer: the opponent's cards need rows, and listing only the seat's own would show which are the
-opponent's. A card no deck holds is read from the parse cache (`card_data_by_name`,
+opponent's (the engine's `--cards-frame FILE` writes this whole-vocab frame, beside the `SCHEMA` and
+`METAGAME` frames, for the featurizer's card tables, `docs/featurizer.md` §4). A card no deck holds is read from the parse cache (`card_data_by_name`,
 `src/card_db.h`), which creates no entity. A card's tokens are found from its parsed definitions: each `TokenScript$` of its abilities (sub-abilities, modes,
 floating and granted abilities included), the engine-synthesized ones (Investigate → Clue,
 Amass → the subtype's Army, Mobilize → Warrior, `src/effects/effects.h`), then the tokens those

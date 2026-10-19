@@ -24,8 +24,9 @@ when the engine binary or the card scripts are missing, or when `--tier` names a
 `tools/robomage_check/` builds `bin/<config>/robomage_check` (part of `make`). It runs the engine
 as subprocesses, in parallel (`-j N`, default the number of cores), with `bin/` as their working
 directory, and links no engine translation unit: only the std-only RMSTATE decoder
-(`src/state_format/decode.*`, `schema.*`) and the agents' frame reader and Python-compatible
-generator (`src/agents/seat_frames.*`, `py_random.*`). It is built like the engine
+(`src/state_format/decode.*`, `schema.*`), the agents' frame reader and Python-compatible
+generator (`src/agents/seat_frames.*`, `py_random.*`) and `src/featurize/` (std only: RMTB, the
+tokenizer, the featurizer the `featurize` tier runs in-process). It is built like the engine
 (`-fno-exceptions`; a scenario regex is compiled in a forked child first, so a malformed one is
 reported, not an abort).
 
@@ -45,7 +46,7 @@ robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR
 | `--tier a,b` | run these tiers, in the order listed (default: all, in the table's order) |
 | `-j N` / `--jobs N` | parallel engine processes (default: the cores) |
 | `--seed N` | base seed of the `fuzz` and `smoke` games (default 1) |
-| `--binary PATH` | the engine (default `robomage` beside the gate, so `bin/release/robomage_check` tests the release build); `rmknow` is taken from the same directory |
+| `--binary PATH` | the engine (default `robomage` beside the gate, so `bin/release/robomage_check` tests the release build); `rmknow` and `rmfeat` are taken from the same directory |
 | `--out-dir DIR` | transcripts, engine stderr and draw logs (default `ci_out/`) |
 | `--fuzz-games N` / `--smoke-games N` | games per matchup (default 8 / 2) |
 | `--manual-mana-games N` | `fuzz` tier: `--no-auto-mana` games per ring matchup (default 2; 0 skips them) |
@@ -57,7 +58,7 @@ robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR
 
 ### The tiers
 
-Times are wall clock for the debug build on 4 cores (`make check` total about 5.3 minutes).
+Times are wall clock for the debug build on 4 cores (`make check` total about 6.3 minutes).
 
 | Tier | Checks | Time |
 |---|---|---|
@@ -67,6 +68,7 @@ Times are wall clock for the debug build on 4 cores (`make check` total about 5.
 | `cli` | the human CLI's golden transcripts (`tests/cli/`, 6 sessions): each `<name>.json` is an engine command line and the lines a person types; the engine runs it (`--decision-log` under the out dir) with those lines on stdin, then end of input, must exit 0 with nothing on stderr, and its stdout, the `Decision log:` path reduced to `<name>.rmlog`, must match `<name>.out` byte for byte (a drift's actual output goes to `ci_out/cli/<name>.out`); `--replay` of the session's decision log must exit 0 with no error, stopping at the session's quit (`QUIT: ...`) when it ended by `quit` or end of input. Human vs explore, hotseat, `--no-auto-mana` payment, auto-pass, a bo3 match conceded, a split card | <1 s |
 | `replay` | each corpus decision log replayed (`robomage --replay <name>.rmlog --machine --narrative --trace-decisions`), its stdout against `<name>.replay` byte for byte (66 games) | ~17 s |
 | `state` | the corpus replayed under `--selfcheck-knowledge` (same output, clean `SELFCHECK-STATE` / `SELFCHECK-KNOWLEDGE` summaries); 16 explore fuzz games with the self-checks and dumps; every scenario at `--selfcheck-state-sample 1`; `--rmstate-read` on the dumps; the decoder's refusals of mutated frames; two RMSTATE stream sessions against their dumps (with and without one written); the name-a-card menus with open and closed decklists; the `CARDS` frame's ability parameters (register 41: Lightning Bolt, Brainstorm's sub-ability, Kozilek's Command's modes, every ability's parts in order); the include isolation of the std-only sources (`src/knowledge/`, `src/featurize/`) | ~2.2 min |
+| `featurize` | the featurizer (`docs/featurizer.md` §7): `robomage --cards-frame`, then the card tables and FEATURE_SPEC built from it in-process, exported, read back (the same tables and spec bytes) and equal to `rmfeat --spec` / `--export-tables`'s; the corpus replayed with dumps and four explore games (bo1, bo3, `--closed-decklist`, seat A at `expert+belief`) under `--selfcheck-featurize` (clean `SELFCHECK-STATE` / `SELFCHECK-FEATURIZE` summaries: each seat's tensors from the actor entry point equal under the scramble and permutation checks' frames, the omniscient frame refused) with dumps; every decision with a menu of every dump featurized (seat frames by the actor entry point, which must refuse the omniscient frame): widths and every categorical, card, ability, relation and action index against the spec and the tables, `act_tok` one per menu row; every third decision featurized twice to the same tensors and, with every token table but `menu` reshuffled (and its `row:` references renumbered), to the same tensors up to the token permutation; each seat decision's targets against the seat's frame (hand and library sizes) and the opponent's (its `k_template` registered row); `rmfeat --featurize` / `--targets` over one dump equal to the in-process files; `python/pycheck.py --part featurize` reads the tables, a tensors and a targets file to the values written, with the spec's hashes, shapes and indices | ~1 min |
 | `knowledge` | `rmknow --selftest`, `--exactness 40`, `--belief-exactness 10`; six explore games under `--selfcheck-knowledge`; three stream sessions and two `expert+belief` sessions against their dumps (`k_*` / `b_*` included); `rmknow --isolation` on every dump and saved stream, `--truth` on every dump; four archetype-inference sessions against `archetypes.json`; the belief calibration sessions and their report | ~75 s |
 | `fuzz` | C++ explore vs explore in-process (`--agent-a/-b <mode>`) over the matchups (default the ten league mirrors), `--fuzz-games` bo1 games each (matchup `k` game `i`: game seed `seed + 1000k + i`), then one bo3 `explore:patient` match per ring matchup (seed `seed + 500000 + k`), then `--manual-mana-games` bo1 games per ring matchup under `--no-auto-mana`, so manual mana payment is covered (every mana ability offered at priority, each cost paid in the payment loop; ring matchup `k` game `i`: seed `seed + 700000 + 1000k + i`); transcripts `ci_out/fuzz_<a>__<b>.txt`, `fuzz_bo3_<a>__<b>.txt`, `fuzz_manual_<a>__<b>.txt` | ~50 s |
 | `bench` | decisions per second of explore vs explore, bo1, three league pairings × three games, one engine at a time (reported, no threshold) | ~8 s |
@@ -161,8 +163,10 @@ add-only, so a stale cache within a pin only re-fetches the delta.
    transcripts.
 
 **Engine self-checks on any game.** `--selfcheck-state` runs the state format's self-checks
-(`src/state_format/selfcheck.h`, `docs/state_format.md` §10) and `--selfcheck-knowledge` adds the
-knowledge sidecar's soundness check (`docs/knowledge_store.md` §9.5); neither changes any other
+(`src/state_format/selfcheck.h`, `docs/state_format.md` §10), `--selfcheck-featurize` adds the
+featurizer's (`src/state_format/selfcheck_featurize.h`; `SELFCHECK-FEATURIZE: … errors=N`) and
+`--selfcheck-knowledge` adds the knowledge sidecar's soundness check (`docs/knowledge_store.md`
+§9.5); none changes any other
 output (the replay corpus stays byte-identical under them), failures are `ERROR:` lines on the
 engine's stderr, and each engine prints a `SELFCHECK-STATE: … errors=N` /
 `SELFCHECK-KNOWLEDGE: … errors=N` summary at match end. `--selfcheck-state-sample N` (default 8)

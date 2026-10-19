@@ -24,6 +24,13 @@ playing does not:
             table, and their meta and values, ``--rmtb-samples FILE``) to exactly those values,
             floats bit for bit, the f16 halves equal to ``struct``'s rounding of their sources; and
             the committed text table, when there is one, has zero rows outside its rows_meta.
+  featurize ``python/rmtb.py`` reads the featurizer's files ``robomage_check``'s featurize tier wrote
+            and lists (``--featurize-expected FILE``: the exported card, ability and part tables, a
+            tensors file and a targets file, each array's FNV-1a 64 of the values the C++ side
+            built): every array's values repacked hash the same, every file carries the spec's
+            hash (FNV-1a 64 of ``spec.json``'s bytes) and vocab hash, and the shapes and indices
+            agree with the spec (the tables' rows, widths and column names, the key list, F, C, K
+            and Q, every relation, action, card and ability index in range).
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -33,7 +40,7 @@ Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: �
 exit 1 on any finding::
 
     python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,selfkill,driver]
-                              [--rmtb-samples FILE]
+                              [--rmtb-samples FILE] [--featurize-expected FILE]
 """
 from __future__ import annotations
 
@@ -55,7 +62,7 @@ import rm_driver  # noqa: E402
 import rmstate  # noqa: E402
 import rmtb  # noqa: E402
 
-PARTS = ("decode", "refusals", "selfkill", "driver", "rmtb")
+PARTS = ("decode", "refusals", "selfkill", "driver", "rmtb", "featurize")
 # The committed oracle-text table (docs/featurizer.md §5).
 TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
@@ -387,7 +394,128 @@ def check_rmtb(samples):
     return fails
 
 
-def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None):
+# ── The featurizer's files ────────────────────────────────────────────────────────────────────
+
+_PACK = {"f32": "f", "f16": "e", "i64": "q", "i32": "i", "u16": "H", "u8": "B"}
+
+
+def _fnv1a64(data):
+    h = 0xcbf29ce484222325
+    for b in data:
+        h = ((h ^ b) * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF
+    return h
+
+
+def _table_fails(kind, arrays, want, spec):
+    """An exported table's shapes against the spec's card_tables entry."""
+    feats = arrays["features"]
+    fails = []
+    if feats.shape != [want["rows"], want["width"]] or feats.columns != want["columns"]:
+        fails.append(f"featurize: the {kind} table's features are {feats.shape}, the spec says "
+                     f"[{want['rows']}, {want['width']}] with its columns")
+    if kind == "card" and arrays["back_face"].shape != [want["rows"]]:
+        fails.append("featurize: the card table's back_face is not one entry per card row")
+    if kind == "ability":
+        keys = arrays["key_rows"]
+        if keys.columns != spec["ab_keys"] or any(not 0 <= r < want["rows"] for r in keys.values):
+            fails.append("featurize: the ability table's key_rows are not the spec's keys within its rows")
+    if kind == "part":
+        rows = spec["card_tables"]["ability"]["rows"]
+        if any(not 0 <= r < rows for r in arrays["ability"].values):
+            fails.append("featurize: a part row names no ability row")
+    return fails
+
+
+def _tensor_fails(arrays, spec):
+    """A tensors file's per-decision shapes and indices against the spec."""
+    widths = {"tok_num": spec["F"], "tok_cat": spec["C"], "tok_card": spec["K"], "tok_ability": spec["Q"], "rel": 3}
+    fails = []
+    for name, w in widths.items():
+        if arrays[name].shape[1:] != [w]:
+            fails.append(f"featurize: {name} has shape {arrays[name].shape}, width {w} in the spec")
+    if fails:
+        return fails
+    types = spec["token_types"]
+    menu = next(i for i, t in enumerate(types) if t["name"] == spec["menu"])
+    cards, abilities = spec["card_tables"]["card"]["rows"], spec["card_tables"]["ability"]["rows"]
+    tok_off, rel_off, act_off = (arrays[n + "_offsets"].values for n in ("tok_type", "rel", "act_tok"))
+    for name in ("tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask"):
+        if arrays[name + "_offsets"].values != tok_off:
+            fails.append(f"featurize: {name}_offsets differ from tok_type_offsets")
+    tt, rel, act = arrays["tok_type"].values, arrays["rel"].values, arrays["act_tok"].values
+    if any(not 0 <= t < len(types) for t in tt):
+        fails.append("featurize: a tok_type is no token type")
+    if any(not -1 <= c < cards for c in arrays["tok_card"].values):
+        fails.append("featurize: a tok_card is no card row")
+    if any(not -1 <= a < abilities for a in arrays["tok_ability"].values):
+        fails.append("featurize: a tok_ability is no ability row")
+    if any(not 0 <= c < spec["categorical_size"] for c in arrays["tok_cat"].values):
+        fails.append("featurize: a tok_cat is outside the categorical id space")
+    for d in range(len(tok_off) - 1):
+        n = tok_off[d + 1] - tok_off[d]
+        for r in range(rel_off[d], rel_off[d + 1]):
+            src, dst, ty = rel[3 * r:3 * r + 3]
+            if not (0 <= src < n and 0 <= dst < n and 0 <= ty < len(spec["relation_types"])):
+                fails.append(f"featurize: decision {d}: a relation outside its tokens")
+                break
+        for a in act[act_off[d]:act_off[d + 1]]:
+            if not 0 <= a < n or tt[tok_off[d] + a] != menu:
+                fails.append(f"featurize: decision {d}: an act_tok that is no menu token")
+                break
+    return fails[:10]
+
+
+def check_featurize(expected_path):
+    """The featurize part; returns failures."""
+    if not expected_path:
+        print("  OK   featurize: nothing to read (no --featurize-expected)", flush=True)
+        return []
+    with open(expected_path, encoding="utf-8") as f:
+        expected = json.load(f)
+    with open(expected["spec"], "rb") as f:
+        spec_bytes = f.read().rstrip(b"\n")
+    spec = json.loads(spec_bytes.decode("utf-8"))
+    spec_hash = "%016x" % _fnv1a64(spec_bytes)
+    fails = []
+    for want in expected["files"]:
+        name = os.path.basename(want["path"])
+        try:
+            meta, arrays = rmtb.read(want["path"])
+        except (OSError, ValueError) as e:
+            fails.append(f"featurize: {name}: {e}")
+            continue
+        if meta.get("kind") != want["kind"] or meta.get("spec_hash") != spec_hash or \
+                meta.get("vocab_hash") != spec["vocab_hash"]:
+            fails.append(f"featurize: {name}: kind, spec_hash or vocab_hash is not {want['kind']}, {spec_hash}, "
+                         f"{spec['vocab_hash']}")
+        for aname, a_want in want["arrays"].items():
+            a = arrays.get(aname)
+            if a is None:
+                fails.append(f"featurize: {name}: no array {aname}")
+                continue
+            packed = struct.pack("<%d%s" % (len(a.values), _PACK[a.dtype]), *a.values)
+            if a.shape != a_want["shape"] or "%016x" % _fnv1a64(packed) != a_want["fnv"]:
+                fails.append(f"featurize: {name}: {aname} does not read as the values written")
+        kind = want["kind"]
+        if kind in ("card", "ability", "part"):
+            fails += _table_fails(kind, arrays, spec["card_tables"][kind], spec)
+        elif kind == "tensors":
+            fails += _tensor_fails(arrays, spec)
+        elif kind == "targets":
+            depth, lists = spec["library_depth"], spec["metagame"].get("meta_list", 0)
+            for lib in ("own_library", "opp_library"):
+                off = arrays[lib + "_offsets"].values
+                if any(off[d + 1] - off[d] > depth for d in range(len(off) - 1)):
+                    fails.append(f"featurize: {name}: {lib} deeper than {depth}")
+            if any(not -1 <= v < lists for v in arrays["opp_list"].values):
+                fails.append(f"featurize: {name}: an opp_list is no meta_list row")
+    if not fails:
+        print(f"  OK   featurize: {len(expected['files'])} files read as written, spec {spec_hash}: shapes and "
+              "indices agree", flush=True)
+    return fails
+
+
+def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected=None):
     """The requested parts; returns the failure messages (empty = pass)."""
     binary = os.path.abspath(binary)
     if out_dir:
@@ -412,6 +540,8 @@ def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None):
             fails += check_driver(binary, work)
         if "rmtb" in parts:
             fails += check_rmtb(rmtb_samples)
+        if "featurize" in parts:
+            fails += check_featurize(featurize_expected)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return fails
@@ -425,12 +555,14 @@ def main(argv=None) -> int:
     ap.add_argument("--part", default=",".join(PARTS), help=f"comma list of {', '.join(PARTS)} (default all)")
     ap.add_argument("--rmtb-samples", default=None, help="the rmtb part's samples (robomage_check's smoke tier "
                     "writes them)")
+    ap.add_argument("--featurize-expected", default=None, help="the featurize part's file list (robomage_check's "
+                    "featurize tier writes it)")
     args = ap.parse_args(argv)
     parts = [p for p in args.part.split(",") if p]
     unknown = [p for p in parts if p not in PARTS]
     if unknown:
         ap.error(f"unknown part(s) {', '.join(unknown)}")
-    fails = run(args.binary, args.out_dir, parts, args.rmtb_samples)
+    fails = run(args.binary, args.out_dir, parts, args.rmtb_samples, args.featurize_expected)
     for f in fails:
         print(f"FAIL: {f}", flush=True)
     return 1 if fails else 0

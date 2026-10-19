@@ -25,6 +25,7 @@ static const TierEntry TIERS[] = {
     {"cli", rmcheck::tier_cli},
     {"replay", rmcheck::tier_replay},
     {"state", rmcheck::tier_state},
+    {"featurize", rmcheck::tier_featurize},
     {"knowledge", rmcheck::tier_knowledge},
     {"fuzz", rmcheck::tier_fuzz},
     {"bench", rmcheck::tier_bench},
@@ -155,6 +156,7 @@ int gate_main(int argc, char **argv) {
         if (getcwd(cwd, sizeof cwd)) opt.out_dir = rmcheck::path_join(cwd, opt.out_dir);
     }
     opt.rmknow = rmcheck::path_join(rmcheck::dirname_of(opt.binary), "rmknow");
+    opt.rmfeat = rmcheck::path_join(rmcheck::dirname_of(opt.binary), "rmfeat");
     opt.python = find_python();
     std::vector<const TierEntry *> tiers;
     for (const std::string &name : rmcheck::split(tiers_arg, ',')) {
