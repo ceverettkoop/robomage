@@ -50,6 +50,8 @@ bool Featurization::build(const std::string &text_table_path, const std::string 
             return false;
     } else if (!read_tables_dir(tables_dir, &tables, &want_spec, err)) {
         return false;
+    } else {
+        build_printed_rows(source.schema, source.cards, &tables);
     }
     if (tables.vocab_hash != text.vocab_hash || tables.card_rows != vectors->shape[0]) {
         *err = "the card tables are not of the text table's vocab";

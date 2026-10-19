@@ -18,8 +18,8 @@
 // featurize_seat for a seat). --targets writes the learner targets of every decision of the seat that
 // has a menu, from the omniscient frame of the same decision (targets.h). --stats featurizes every
 // decision of every viewer with a menu (with --featurize: of that viewer) and prints token counts
-// per token type and the timing (RMFEAT_STATS lines). Errors go to stderr as `rmfeat: …`; exit 0,
-// 1 on an error in the data, 2 on bad arguments or files.
+// per token type (mean and most per decision) and the timing (RMFEAT_STATS lines). Errors go to stderr as `rmfeat: …`;
+// exit 0, 1 on an error in the data, 2 on bad arguments or files.
 
 #include <algorithm>
 #include <chrono>
@@ -47,7 +47,7 @@ struct Options {
 // Per token type rows, and the decisions' totals, for --stats.
 struct Stats {
         size_t decisions = 0, tokens = 0, max_tokens = 0, relations = 0, actions = 0;
-        std::vector<size_t> rows;
+        std::vector<size_t> rows, max_rows;  // per token type: tokens over all decisions, most in one
         double featurize_s = 0, total_s = 0;
 };
 
@@ -162,7 +162,12 @@ static void count(const featurize::Tensors &t, Stats *s) {
     s->max_tokens = std::max(s->max_tokens, t.n());
     s->relations += t.r();
     s->actions += t.a();
-    for (const int64_t ty : t.tok_type) ++s->rows[static_cast<size_t>(ty)];
+    std::vector<size_t> here(s->rows.size(), 0);
+    for (const int64_t ty : t.tok_type) ++here[static_cast<size_t>(ty)];
+    for (size_t i = 0; i < here.size(); ++i) {
+        s->rows[i] += here[i];
+        s->max_rows[i] = std::max(s->max_rows[i], here[i]);
+    }
 }
 
 static void print_stats(const featurize::FeatureSpec &spec, const Stats &s) {
@@ -172,8 +177,8 @@ static void print_stats(const featurize::FeatureSpec &spec, const Stats &s) {
         static_cast<double>(s.actions) / d);
     for (size_t i = 0; i < spec.types.size(); ++i)
         if (s.rows[i])
-            std::printf("RMFEAT_STATS: type %s rows_mean=%.2f\n", spec.types[i].name.c_str(),
-                static_cast<double>(s.rows[i]) / d);
+            std::printf("RMFEAT_STATS: type %s rows_mean=%.2f rows_max=%zu\n", spec.types[i].name.c_str(),
+                static_cast<double>(s.rows[i]) / d, s.max_rows[i]);
     std::printf("RMFEAT_STATS: featurize_s=%.3f decode_s=%.3f featurize_per_s=%.0f end_to_end_per_s=%.0f\n",
         s.featurize_s, s.total_s - s.featurize_s, s.featurize_s > 0 ? d / s.featurize_s : 0.0,
         s.total_s > 0 ? d / s.total_s : 0.0);
@@ -184,6 +189,7 @@ static int run_featurize(const Options &opt, const featurize::Featurization &f, 
     std::vector<featurize::Tensors> list;
     Stats stats;
     stats.rows.assign(f.spec.types.size(), 0);
+    stats.max_rows.assign(f.spec.types.size(), 0);
     featurize::Tensors t;
     const auto t0 = std::chrono::steady_clock::now();
     std::string err;

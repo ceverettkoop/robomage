@@ -22,8 +22,56 @@ const featurize::Override OVERRIDES[] = {
     {"b_archetype", "archetype", "row:meta_archetype"},
 };
 
+// The folds (docs/featurizer.md §3.6): a LEDGER or PIVOT rule folds the whole table into the
+// synthetic type `into`; a FILTERED or DELTA rule keeps the table's type, of that kind (`printed`:
+// the CARDS table a delta compares with).
+struct FoldRule {
+        const char *table, *into, *rows;
+        featurize::TypeKind kind;
+        const char *printed;
+};
+
+const FoldRule FOLDS[] = {
+    {"own_deck", "ledger", "every row", featurize::TypeKind::LEDGER, ""},
+    {"k_seen", "ledger", "every row", featurize::TypeKind::LEDGER, ""},
+    {"k_known_hand", "ledger", "every row", featurize::TypeKind::LEDGER, ""},
+    {"k_pool_card", "ledger",
+        "the rows of a HAND or SIDEBOARD pool and of a player's only LIBRARY_RANGE pool when it is a run",
+        featurize::TypeKind::FILTERED, ""},
+    {"k_template", "lists", "every row", featurize::TypeKind::PIVOT, ""},
+    {"k_archetype", "lists", "every row", featurize::TypeKind::PIVOT, ""},
+    {"b_list", "b_lists", "every row", featurize::TypeKind::PIVOT, ""},
+    {"b_archetype", "b_lists", "every row", featurize::TypeKind::PIVOT, ""},
+    {"object_subtype", "object_subtype", "the differences from card_subtype", featurize::TypeKind::DELTA,
+        "card_subtype"},
+    {"object_keyword", "object_keyword", "the differences from card_keyword", featurize::TypeKind::DELTA,
+        "card_keyword"},
+};
+
+// The ledger's numeric slots (featurize::LedgerSlot order): name, source, transform.
+struct LedgerSlotDef {
+        const char *name, *column;
+        featurize::Transform transform;
+};
+
+const LedgerSlotDef LEDGER_SLOTS[] = {
+    {"deck", "own_deck", featurize::Transform::BOOL},
+    {"main", "own_deck.main", featurize::Transform::LOG1P},
+    {"side", "own_deck.side", featurize::Transform::LOG1P},
+    {"seen_game", "k_seen.game", featurize::Transform::LOG1P},
+    {"seen_match", "k_seen.match", featurize::Transform::LOG1P},
+    {"known_hand", "k_known_hand.copies", featurize::Transform::LOG1P},
+    {"hand_min", "k_pool_card.min", featurize::Transform::LOG1P},
+    {"hand_max", "k_pool_card.max", featurize::Transform::LOG1P},
+    {"library_min", "k_pool_card.min,k_position", featurize::Transform::LOG1P},
+    {"library_max", "k_pool_card.max,k_position", featurize::Transform::LOG1P},
+    {"sideboard_min", "k_pool_card.min", featurize::Transform::LOG1P},
+    {"sideboard_max", "k_pool_card.max", featurize::Transform::LOG1P},
+};
+
 }  // namespace
 
+static const FoldRule *find_fold(const std::string &table);
 static bool is_token_table(const rmstate::TableDef &def);
 static const featurize::Override *find_override(const std::string &table, const std::string &column);
 static bool is_abref_at(const rmstate::TableDef &def, size_t c);
@@ -42,9 +90,26 @@ static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFra
     const rmstate::TableDef &def, size_t c, featurize::FeatureSpec *spec, featurize::TokenType *t);
 static void plan_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
     const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t);
+static bool plan_delta(
+    const rmstate::Schema &schema, const rmstate::TableDef &def, const FoldRule &rule, featurize::TokenType *t);
+static std::string meta_row_name(
+    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const std::string &table, uint64_t row);
+static void plan_pivot_source(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
+    const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t);
+static void add_rel_slot(featurize::FeatureSpec *spec, featurize::TokenType *t);
+static void plan_ledger(const rmstate::Schema &schema, featurize::FeatureSpec *spec, featurize::TokenType *t);
+static void plan_synthetic(
+    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, featurize::FeatureSpec *spec);
+static void plan_object(const rmstate::Schema &schema, featurize::FeatureSpec *spec);
 static std::string json_strings(const std::vector<std::string> &items);
 static std::string json_type(const featurize::TokenType &t, size_t id);
 static std::string json_table(uint64_t rows, size_t width, const std::vector<std::string> *columns);
+
+static const FoldRule *find_fold(const std::string &table) {
+    for (const FoldRule &f : FOLDS)
+        if (table == f.table) return &f;
+    return nullptr;
+}
 
 // A token type: a STATE snapshot (20-48) or knowledge (90-99) table.
 static bool is_token_table(const rmstate::TableDef &def) {
@@ -238,10 +303,189 @@ static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFra
 static void plan_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
     const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t) {
     t->owns_handles = !def.columns.empty() && def.columns[0].name == "handle" && def.columns[0].tag == "handle";
+    t->columns = static_cast<uint16_t>(def.columns.size());
     for (size_t c = 0; c < def.columns.size(); ++c) {
         plan_column(schema, metagame, def, c, spec, t);
         if (is_abref_at(def, c)) ++c;  // ab_index belongs to the reference; ab_key is planned next
     }
+}
+
+// A DELTA type: every column but `obj` is a column of the printed table (after card and face), and
+// every printed column is one of them. False leaves `t` a TABLE type.
+static bool plan_delta(
+    const rmstate::Schema &schema, const rmstate::TableDef &def, const FoldRule &rule, featurize::TokenType *t) {
+    const rmstate::TableDef *printed = featurize::table_named(schema, rule.printed);
+    const int obj = featurize::column_index(def, "obj");
+    if (!printed || obj < 0 || printed->columns.size() < 2 || def.columns.size() != printed->columns.size() - 1)
+        return false;
+    std::vector<uint16_t> cols;
+    std::vector<uint8_t> text;
+    for (size_t c = 2; c < printed->columns.size(); ++c) {
+        const int at = featurize::column_index(def, printed->columns[c].name);
+        if (at < 0 || at == obj || def.columns[static_cast<size_t>(at)].storage != printed->columns[c].storage)
+            return false;
+        cols.push_back(static_cast<uint16_t>(at));
+        text.push_back(printed->columns[c].storage == rmstate::Storage::TEXT ? 1 : 0);
+    }
+    t->kind = featurize::TypeKind::DELTA;
+    t->printed = rule.printed;
+    t->obj_col = static_cast<uint16_t>(obj);
+    t->value_cols = cols;
+    t->value_text = text;
+    t->removed_slot = static_cast<int32_t>(t->numeric.size());
+    add_numeric(t, "removed", "", featurize::Transform::BOOL, 0);
+    return true;
+}
+
+// The `name` of row `row` of METAGAME table `table`, else "<table>#<row>".
+static std::string meta_row_name(
+    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const std::string &table, uint64_t row) {
+    const rmstate::TableDef *def = featurize::table_named(schema, table);
+    const rmstate::DecodedTable *t = def ? metagame.table(static_cast<uint16_t>(def->id)) : nullptr;
+    const int name = def ? featurize::column_index(*def, "name") : -1;
+    if (t && name >= 0 && row < t->rows.size() && !t->rows[row][static_cast<size_t>(name)].text.empty())
+        return t->rows[row][static_cast<size_t>(name)].text;
+    return table + "#" + std::to_string(row);
+}
+
+// One table of a PIVOT type: its key (the column whose override is a row: into METAGAME) and, per
+// METAGAME row, a numeric slot per other scalar column (the seat pair left out).
+static void plan_pivot_source(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
+    const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t) {
+    featurize::PivotSource src;
+    src.table = def.name;
+    src.table_id = static_cast<uint16_t>(def.id);
+    const int rel = featurize::column_index(def, "player_rel");
+    int key = -1;
+    for (size_t c = 0; c < def.columns.size() && key < 0; ++c) {
+        const featurize::Override *ov = find_override(def.name, def.columns[c].name);
+        if (ov && ov->treatment.compare(0, 4, "row:") == 0) {
+            key = static_cast<int>(c);
+            src.key = def.columns[c].name;
+            src.meta = ov->treatment.substr(4);
+        }
+    }
+    if (rel < 0 || key < 0) return;
+    bool is_meta = false;
+    src.keys = metagame_rows(schema, metagame, src.meta, &is_meta);
+    if (!is_meta) return;
+    note_metagame(spec, src.meta, src.keys);
+    src.rel_col = static_cast<uint16_t>(rel);
+    src.key_col = static_cast<uint16_t>(key);
+    for (size_t c = 0; c < def.columns.size(); ++c) {
+        featurize::Transform tr;
+        if (static_cast<int>(c) == key || seat_with_partner(def, c) || def.columns[c].tag == "player-rel" ||
+            !featurize::scalar_transform(featurize::parse_tag(def.columns[c].tag).kind, &tr))
+            continue;
+        src.cols.push_back(static_cast<uint16_t>(c));
+        src.transforms.push_back(tr);
+        src.storages.push_back(def.columns[c].storage);
+    }
+    src.first_slot = static_cast<uint32_t>(t->numeric.size());
+    for (uint64_t k = 0; k < src.keys; ++k) {
+        const std::string row = meta_row_name(schema, metagame, src.meta, k);
+        for (size_t i = 0; i < src.cols.size(); ++i)
+            add_numeric(t, row + ":" + def.columns[src.cols[i]].name, def.name + "." + def.columns[src.cols[i]].name,
+                src.transforms[i], 0);
+    }
+    t->pivot.push_back(src);
+}
+
+// The player_rel categorical of a synthetic type (none, self, opponent).
+static void add_rel_slot(featurize::FeatureSpec *spec, featurize::TokenType *t) {
+    featurize::ColumnOp op;
+    add_categorical(spec, t, "player_rel", "player-rel", 3, &op);
+    t->rel_offset = op.offset;
+    t->rel_values = op.width;
+}
+
+// The ledger's slots and the columns it reads.
+static void plan_ledger(const rmstate::Schema &schema, featurize::FeatureSpec *spec, featurize::TokenType *t) {
+    featurize::LedgerPlan &l = spec->ledger;
+    for (const LedgerSlotDef &d : LEDGER_SLOTS) add_numeric(t, d.name, d.column, d.transform, 0);
+    add_rel_slot(spec, t);
+    t->cards.push_back({"card", "card", false});
+    const auto table = [&schema](const char *name) {
+        const rmstate::TableDef *def = featurize::table_named(schema, name);
+        return def && def->frame_kind == rmstate::FrameKind::STATE ? def : nullptr;
+    };
+    const auto col = [](const rmstate::TableDef *def, const char *name) {
+        return def ? featurize::column_index(*def, name) : -1;
+    };
+    const rmstate::TableDef *deck = table("own_deck"), *seen = table("k_seen"), *known = table("k_known_hand"),
+                            *pool = table("k_pool"), *pc = table("k_pool_card"), *pos = table("k_position");
+    l.own_deck = deck ? static_cast<int32_t>(deck->id) : -1;
+    l.k_seen = seen ? static_cast<int32_t>(seen->id) : -1;
+    l.k_known_hand = known ? static_cast<int32_t>(known->id) : -1;
+    l.k_pool = pool ? static_cast<int32_t>(pool->id) : -1;
+    l.k_pool_card = pc ? static_cast<int32_t>(pc->id) : -1;
+    l.k_position = pos ? static_cast<int32_t>(pos->id) : -1;
+    l.deck_rel = col(deck, "player_rel");
+    l.deck_card = col(deck, "card");
+    l.deck_main = col(deck, "main");
+    l.deck_side = col(deck, "side");
+    l.seen_rel = col(seen, "player_rel");
+    l.seen_card = col(seen, "card");
+    l.seen_game = col(seen, "game");
+    l.seen_match = col(seen, "match");
+    l.known_card = col(known, "card");
+    l.known_copies = col(known, "copies");
+    l.pool_rel = col(pool, "owner_rel");
+    l.pool_kind = col(pool, "kind");
+    l.pool_anchor = col(pool, "range_anchor");
+    l.pool_pos = col(pool, "range_pos");
+    l.pool_span = col(pool, "range_span");
+    l.pc_pool = col(pc, "pool");
+    l.pc_card = col(pc, "card");
+    l.pc_min = col(pc, "min");
+    l.pc_max = col(pc, "max");
+    l.pos_rel = col(pos, "owner_rel");
+    l.pos_anchor = col(pos, "at_anchor");
+    l.pos_pos = col(pos, "at_pos");
+    l.pos_card = col(pos, "card");
+    if (l.pos_card >= 0) l.pos_card_storage = pos->columns[static_cast<size_t>(l.pos_card)].storage;
+    const std::vector<std::string> &kinds = featurize::enum_values(schema, "pool_kind");
+    for (size_t k = 0; k < kinds.size(); ++k) {
+        if (kinds[k] == "HAND") l.kind_hand = k;
+        if (kinds[k] == "LIBRARY_RANGE") l.kind_library = k;
+        if (kinds[k] == "SIDEBOARD") l.kind_sideboard = k;
+    }
+}
+
+// The synthetic types, after the table types: the ledger, then each pivot, in fold order.
+static void plan_synthetic(
+    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, featurize::FeatureSpec *spec) {
+    for (const FoldRule &f : FOLDS) {
+        if (f.kind != featurize::TypeKind::LEDGER && f.kind != featurize::TypeKind::PIVOT) continue;
+        const rmstate::TableDef *def = featurize::table_named(schema, f.table);
+        if (!def || !is_token_table(*def)) continue;
+        size_t at = 0;
+        while (at < spec->types.size() && spec->types[at].name != f.into) ++at;
+        if (at == spec->types.size()) {
+            spec->types.emplace_back();
+            spec->types.back().kind = f.kind;
+            spec->types.back().name = f.into;
+            if (f.kind == featurize::TypeKind::LEDGER) {
+                spec->ledger.type = static_cast<int32_t>(at);
+                plan_ledger(schema, spec, &spec->types.back());
+            } else {
+                add_rel_slot(spec, &spec->types.back());
+            }
+        }
+        if (f.kind == featurize::TypeKind::PIVOT) plan_pivot_source(schema, metagame, *def, spec, &spec->types[at]);
+    }
+}
+
+// The object table's type and the columns a delta reads.
+static void plan_object(const rmstate::Schema &schema, featurize::FeatureSpec *spec) {
+    const rmstate::TableDef *def = featurize::table_named(schema, "object");
+    if (!def) return;
+    spec->object_type = spec->type_of_table[static_cast<uint16_t>(def->id)];
+    spec->object_handle = featurize::column_index(*def, "handle");
+    spec->object_card = featurize::column_index(*def, "card");
+    spec->object_transformed = featurize::column_index(*def, "transformed");
+    if (spec->object_card >= 0)
+        spec->object_card_storage = def->columns[static_cast<size_t>(spec->object_card)].storage;
 }
 
 static std::string json_strings(const std::vector<std::string> &items) {
@@ -251,9 +495,20 @@ static std::string json_strings(const std::vector<std::string> &items) {
 }
 
 static std::string json_type(const featurize::TokenType &t, size_t id) {
-    std::string out = "{\"id\":" + std::to_string(id) + ",\"table\":" + std::to_string(t.table) +
-                      ",\"name\":" + featurize::json_quote(t.name) +
-                      ",\"owns_handles\":" + (t.owns_handles ? "true" : "false") + ",\"numeric\":[";
+    std::string out = "{\"id\":" + std::to_string(id) +
+                      ",\"table\":" + (t.synthetic() ? std::string("null") : std::to_string(t.table)) +
+                      ",\"name\":" + featurize::json_quote(t.name) + ",\"kind\":\"" +
+                      featurize::type_kind_name(t.kind) + "\"";
+    if (t.kind == featurize::TypeKind::DELTA) out += ",\"printed\":" + featurize::json_quote(t.printed);
+    if (t.kind == featurize::TypeKind::PIVOT) {
+        out += ",\"sources\":[";
+        for (size_t i = 0; i < t.pivot.size(); ++i)
+            out += std::string(i ? "," : "") + "{\"table\":" + featurize::json_quote(t.pivot[i].table) +
+                   ",\"key\":" + featurize::json_quote(t.pivot[i].key) +
+                   ",\"meta\":" + featurize::json_quote(t.pivot[i].meta) + "}";
+        out += "]";
+    }
+    out += std::string(",\"owns_handles\":") + (t.owns_handles ? "true" : "false") + ",\"numeric\":[";
     for (size_t i = 0; i < t.numeric.size(); ++i) {
         const featurize::NumSlot &s = t.numeric[i];
         out += std::string(i ? "," : "") + "{\"name\":" + featurize::json_quote(s.name) +
@@ -300,20 +555,30 @@ bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &meta
     out->type_of_table.assign(65536, -1);
     for (const rmstate::TableDef &def : schema.tables) {
         if (!is_token_table(def)) continue;
+        const FoldRule *fold = find_fold(def.name);
+        if (fold && (fold->kind == TypeKind::LEDGER || fold->kind == TypeKind::PIVOT)) continue;
         out->type_of_table[static_cast<uint16_t>(def.id)] = static_cast<int32_t>(out->types.size());
         out->types.emplace_back();
         out->types.back().table = static_cast<uint16_t>(def.id);
         out->types.back().name = def.name;
+        if (fold && fold->kind == TypeKind::FILTERED) out->types.back().kind = TypeKind::FILTERED;
     }
     for (TokenType &t : out->types) {
         const rmstate::TableDef &def = *schema.find_table(t.table);
         plan_type(schema, metagame, def, out, &t);
+        const FoldRule *fold = find_fold(def.name);
+        if (fold && fold->kind == TypeKind::DELTA) plan_delta(schema, def, *fold, &t);
+    }
+    plan_object(schema, out);
+    plan_synthetic(schema, metagame, out);
+    for (TokenType &t : out->types) {
         out->F = std::max(out->F, t.numeric.size());
         out->C = std::max(out->C, t.categorical.size());
         out->K = std::max(out->K, t.cards.size());
         out->Q = std::max(out->Q, t.abilities.size());
         if (t.name == "menu") out->menu_type = static_cast<int32_t>(&t - &out->types[0]);
-        if (t.name == "header") {
+        if (t.name == "header" && !t.synthetic()) {
+            const rmstate::TableDef &def = *schema.find_table(t.table);
             out->header_type = static_cast<int32_t>(&t - &out->types[0]);
             out->header_game = column_index(def, "game");
             out->header_decision = column_index(def, "decision");
@@ -326,6 +591,7 @@ bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &meta
         return false;
     }
     for (const Override &o : OVERRIDES) out->overrides.push_back(o);
+    for (const FoldRule &f : FOLDS) out->folds.push_back({f.table, f.into, f.rows});
     out->card_rows = tables.card_rows;
     out->text_rows = tables.text_rows;
     out->text_width = tables.text_width;
@@ -338,6 +604,22 @@ bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &meta
     out->json = spec_json(*out);
     out->hash = rmstate::fnv1a64(out->json.data(), out->json.size());
     return true;
+}
+
+const char *type_kind_name(TypeKind k) {
+    switch (k) {
+        case TypeKind::TABLE:
+            return "table";
+        case TypeKind::FILTERED:
+            return "filtered";
+        case TypeKind::DELTA:
+            return "delta";
+        case TypeKind::LEDGER:
+            return "ledger";
+        case TypeKind::PIVOT:
+            return "pivot";
+    }
+    return "?";
 }
 
 std::string spec_json(const FeatureSpec &spec) {
@@ -364,6 +646,10 @@ std::string spec_json(const FeatureSpec &spec) {
         out += std::string(i ? "," : "") + "{\"table\":" + json_quote(spec.overrides[i].table) +
                ",\"column\":" + json_quote(spec.overrides[i].column) +
                ",\"treatment\":" + json_quote(spec.overrides[i].treatment) + "}";
+    out += "],\"folds\":[";
+    for (size_t i = 0; i < spec.folds.size(); ++i)
+        out += std::string(i ? "," : "") + "{\"table\":" + json_quote(spec.folds[i].table) +
+               ",\"into\":" + json_quote(spec.folds[i].into) + ",\"rows\":" + json_quote(spec.folds[i].rows) + "}";
     out += "],\"card_tables\":{\"card\":" + json_table(spec.card_rows, spec.card_columns.size(), &spec.card_columns) +
            ",\"text\":" + json_table(spec.text_rows, spec.text_width, nullptr) +
            ",\"ability\":" + json_table(spec.ability_rows, spec.ability_columns.size(), &spec.ability_columns) +

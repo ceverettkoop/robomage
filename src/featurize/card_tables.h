@@ -39,8 +39,25 @@
 // Files (RMTB, §4.4): kind `card` (`features`, `back_face`), `ability` (`features`, `ab_card`,
 // `ab_index`, `key_rows` whose columns are the keys) and `part` (`features`, `ability`), each with
 // vocab_hash and spec_hash.
+//
+// Beside the tables, the printed rows the object deltas compare with (docs/featurizer.md §3.6):
+// per (card, face) child table of CARDS and face vocab id, the rows of the face (the columns after
+// card and face), sorted. They are not exported: build_printed_rows makes them from the CARDS frame
+// the tables were built from.
 
 namespace featurize {
+
+// A (card, face) child table's printed rows per face vocab id (card_subtype: its subtypes).
+struct PrintedRows {
+        std::string table;                              // card_subtype, card_keyword, card_pip
+        std::vector<std::string> columns;               // the columns after card and face
+        std::vector<uint64_t> offsets;                  // [card_rows + 1]: face f's rows are rows[offsets[f] …)
+        std::vector<std::vector<rmstate::Value>> rows;  // per face sorted by printed_row_less; a text
+                                                        // column's bits (a string-pool offset) are 0
+};
+
+// The order of a printed row's values: column by column, text by its bytes, then by bits.
+bool printed_row_less(const std::vector<rmstate::Value> &a, const std::vector<rmstate::Value> &b);
 
 struct CardTables {
         uint64_t vocab_hash = 0;
@@ -59,6 +76,9 @@ struct CardTables {
         std::vector<std::string> part_columns;
         std::vector<float> part;            // [part_rows(), part_columns.size()]
         std::vector<int64_t> part_ability;  // per part row: its ability row
+        // Per face vocab id whether a card row describes it, and the printed child rows.
+        std::vector<uint8_t> present;
+        std::vector<PrintedRows> printed;
         // Lookup (rebuilt by build_index): per card id its first ability row (-1 none) and count.
         std::vector<int64_t> first_ability;
         std::vector<int64_t> n_abilities;
@@ -69,6 +89,8 @@ struct CardTables {
         int64_t ability_row(uint64_t card, uint64_t index) const;
         // The ability row of key `key`, or -1.
         int64_t key_row(const std::string &key) const;
+        // The printed rows of child table `table`, or nullptr.
+        const PrintedRows *printed_rows(const std::string &table) const;
         // Rebuilds first_ability / n_abilities from ability_card; false when a card's rows are not
         // indices 0 … n-1 in order.
         bool build_index();
@@ -84,11 +106,16 @@ struct CardTableFiles {
 bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, uint64_t card_rows,
     uint64_t vocab_hash, CardTables *out, std::string *err);
 
+// The presence flags and printed rows of `out` (card_rows set) from the whole-vocab CARDS frame;
+// build_card_tables calls it, a reader of the exported files calls it with the cards file's frame.
+void build_printed_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, CardTables *out);
+
 // The tables as RMTB files, stamped with `spec_hash`.
 CardTableFiles card_table_files(const CardTables &t, uint64_t spec_hash);
 
-// The tables read back from their files (text_rows / text_width are left 0). False with `err` on a
-// file of another kind, a missing array or a shape that does not agree.
+// The tables read back from their files (text_rows / text_width are left 0, the printed rows
+// empty: build_printed_rows). False with `err` on a file of another kind, a missing array or a
+// shape that does not agree.
 bool read_card_tables(const CardTableFiles &files, CardTables *out, std::string *err);
 
 }  // namespace featurize

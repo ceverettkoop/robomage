@@ -254,16 +254,18 @@ rule of `docs/featurizer.md` §3.5).
 
 ## 5. Size and cost
 
-Measured on explore/random games (league decks, debug-built episodes; the sizes do not depend on
-the build):
+Measured on an explore bo3 match (burn vs uw_control, 209 recorded decisions; the sizes do not
+depend on the build), feature spec version 2 (the folds of `docs/featurizer.md` §3.6; ~126 seat
+tokens per decision):
 
 | Part | Bytes per decision |
 |---|---|
-| seat tensors | ~5.3 KB: `tok_num` index + value ~2.5 KB (about 600 nonzero of ~4,300 per-type slots), `tok_cat` ~0.9 KB, `rel` ~0.75 KB, `tok_card` ~0.7 KB, `tok_type` ~0.3 KB, the rest < 0.1 KB |
-| omniscient tensors and targets | ~8.8 KB more |
+| seat tensors | ~3.7 KB: `tok_num` index + value ~2.3 KB (about 580 nonzero values), `tok_cat` ~0.6 KB, `tok_card` ~0.5 KB, `tok_type` ~0.13 KB, `rel` ~0.1 KB, the rest < 0.1 KB |
+| omniscient tensors and targets | ~8.0 KB more |
 
-For comparison, the featurizer's own tensors file (`rmfeat --featurize`: f32 and i64, every slot
-of `[N, F]`) is ~100 KB per decision.
+(Spec version 1, before the folds, ~264 seat tokens: ~4.7 KB and ~8.9 KB on the same match.) For
+comparison, the featurizer's own tensors file (`rmfeat --featurize`: f32 and i64, every slot of
+`[N, F]`) is ~40 KB per seat decision.
 
 Cost (release build, explore vs explore bo3, one process per match, both seats already served by the
 in-process feed): ~470 µs per decision without trajectories, ~520 µs with (`featurize_seat` on the

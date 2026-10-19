@@ -531,7 +531,8 @@ tokenises it, so sideboarding needs no format change and no head of its own:
 - between games the sideboarding seat gets `STATE` frames with `header.sideboarding = 1`, whose
   `game` is the upcoming game;
 - the `match` token (game number, wins, who plays first next, `sideboard_phase`, `sb_swaps`,
-  `sb_drift`) and the `own_deck` tokens (the seat's current 75, main and side counts per card);
+  `sb_drift`) and the ledger tokens (`docs/featurizer.md` §3.6: per card of the seat's current 75
+  its `own_deck` main and side counts);
   the opponent's sideboard is a count and its post-board configuration stays hidden;
 - the menu's `SIDEBOARD_IN` / `SIDEBOARD_OUT` / `SIDEBOARD_DONE` rows, each with `source_card`
   (the card's vocab id) and `ordinal` (copies). The engine offers a swap in-first (a card in,

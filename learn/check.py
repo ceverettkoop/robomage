@@ -283,14 +283,15 @@ def check_server(args, tables, model, decs):
         srv.set_policy(0, model, 6)
         r = cl.evaluate(decs.select([0]))
         ok(r["versions"] == [9, 6], "after set_policy the version is %r" % r["versions"])
-        # Request refusals (each ends the connection).
+        # Request refusals (each ends the connection), on a decision with relations to tamper with.
+        with_rel = next((i for i in range(len(decs)) if decs.sizes["r"][i] > 0), 0)
         bad = [("act_tok", lambda name, a: a + 100000 if name == "act_tok" else a, "request"),
                ("rel", lambda name, a: a + 100000 if name == "rel" else a, "request"),
                ("tok_card", lambda name, a: a + 100000 if name == "tok_card" else a, "request")]
         for what, tamper, code in bad:
             c2 = CL.Client(sock, tables.hashes, tables.spec.dims(), policies=[0])
             try:
-                c2.evaluate(decs.select([0]), tamper=tamper)
+                c2.evaluate(decs.select([with_rel]), tamper=tamper)
                 ok(False, "a request with a bad %s was answered" % what)
             except CL.RmipError as e:
                 ok(e.code == code, "a bad %s refused with %s, expected %s" % (what, e.code, code))

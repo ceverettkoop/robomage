@@ -34,6 +34,32 @@ static std::vector<StaticCol> static_layout(
 static void fill_static(const std::vector<rmstate::Value> &row, const std::vector<StaticCol> &layout, float *out);
 static std::vector<std::string> layout_names(const std::vector<StaticCol> &layout);
 static bool is_face_child(const rmstate::TableDef &def);
+static std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_ids(
+    const rmstate::TableDef &card, const std::vector<std::vector<rmstate::Value>> &rows, uint64_t card_rows);
+// The face vocab id each (card, face) of the `card` rows describes: the row's face_card, the first
+// row (front rows first) naming an id taking it; a face with no id of its own, or one another row
+// took, describes none.
+static std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_ids(
+    const rmstate::TableDef &card, const std::vector<std::vector<rmstate::Value>> &rows, uint64_t card_rows) {
+    const int c_card = featurize::column_index(card, "card"), c_face = featurize::column_index(card, "face"),
+              c_face_card = featurize::column_index(card, "face_card");
+    const uint64_t none_id = card_rows - 1;
+    std::vector<uint8_t> taken(card_rows, 0);
+    std::map<std::pair<uint64_t, uint64_t>, uint64_t> out;
+    for (int pass = 0; pass < 2; ++pass)
+        for (const std::vector<rmstate::Value> &row : rows) {
+            const uint64_t cid = row[static_cast<size_t>(c_card)].bits, face = row[static_cast<size_t>(c_face)].bits;
+            if ((face != 0) != (pass == 1)) continue;
+            const rmstate::Value &fv = row[static_cast<size_t>(c_face_card)];
+            if (rmstate::value_is_all_ones(fv, card.columns[static_cast<size_t>(c_face_card)].storage) ||
+                fv.bits >= none_id || taken[fv.bits])
+                continue;
+            taken[fv.bits] = 1;
+            out[{cid, face}] = fv.bits;
+        }
+    return out;
+}
+
 static const std::vector<std::vector<rmstate::Value>> &rows_of(
     const rmstate::DecodedFrame &frame, const rmstate::TableDef *def);
 static std::vector<size_t> sorted_rows(
@@ -184,24 +210,22 @@ static bool build_card_rows(
     out->back_face.resize(out->card_rows);
     for (size_t c = 0; c < out->card_rows; ++c) out->back_face[c] = static_cast<int64_t>(c);
     const uint64_t none_id = out->card_rows - 1;
-    // Per face id, the (card, face) it was read from; front rows first.
-    std::vector<std::pair<uint64_t, uint64_t>> source(out->card_rows, {UINT64_MAX, UINT64_MAX});
-    std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_of;
     const std::vector<std::vector<rmstate::Value>> &rows = rows_of(cards, card);
-    for (int pass = 0; pass < 2; ++pass)
-        for (const std::vector<rmstate::Value> &row : rows) {
-            const uint64_t cid = row[static_cast<size_t>(c_card)].bits, face = row[static_cast<size_t>(c_face)].bits;
-            if ((face != 0) != (pass == 1)) continue;
-            const rmstate::Value &fv = row[static_cast<size_t>(c_face_card)];
-            const bool fnone = rmstate::value_is_all_ones(fv, card->columns[static_cast<size_t>(c_face_card)].storage);
-            if (face != 0 && cid < none_id) out->back_face[cid] = fnone ? -1 : static_cast<int64_t>(fv.bits);
-            if (fnone || fv.bits >= none_id || source[fv.bits].first != UINT64_MAX) continue;
-            source[fv.bits] = {cid, face};
-            face_of[{cid, face}] = fv.bits;
-            float *dst = &out->card[fv.bits * width];
-            fill_static(row, layout, dst);
-            dst[present_col] = 1.0f;
-        }
+    const std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_of = face_ids(*card, rows, out->card_rows);
+    for (const std::vector<rmstate::Value> &row : rows) {
+        const uint64_t cid = row[static_cast<size_t>(c_card)].bits, face = row[static_cast<size_t>(c_face)].bits;
+        const rmstate::Value &fv = row[static_cast<size_t>(c_face_card)];
+        if (face != 0 && cid < none_id)
+            out->back_face[cid] =
+                rmstate::value_is_all_ones(fv, card->columns[static_cast<size_t>(c_face_card)].storage)
+                    ? -1
+                    : static_cast<int64_t>(fv.bits);
+        auto it = face_of.find({cid, face});
+        if (it == face_of.end() || it->second != fv.bits) continue;
+        float *dst = &out->card[fv.bits * width];
+        fill_static(row, layout, dst);
+        dst[present_col] = 1.0f;
+    }
     size_t at = layout.size();
     for (const auto &child : children) {
         for (const std::vector<rmstate::Value> &row : rows_of(cards, child.first)) {
@@ -342,6 +366,51 @@ int64_t CardTables::ability_row(uint64_t card, uint64_t index) const {
     return index < static_cast<uint64_t>(n_abilities[card]) ? first_ability[card] + static_cast<int64_t>(index) : -1;
 }
 
+const PrintedRows *CardTables::printed_rows(const std::string &table) const {
+    for (const PrintedRows &p : printed)
+        if (p.table == table) return &p;
+    return nullptr;
+}
+
+bool printed_row_less(const std::vector<rmstate::Value> &a, const std::vector<rmstate::Value> &b) {
+    for (size_t i = 0; i < a.size() && i < b.size(); ++i) {
+        if (a[i].text != b[i].text) return a[i].text < b[i].text;
+        if (a[i].bits != b[i].bits) return a[i].bits < b[i].bits;
+    }
+    return a.size() < b.size();
+}
+
+void build_printed_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, CardTables *out) {
+    out->present.assign(out->card_rows, 0);
+    out->printed.clear();
+    const rmstate::TableDef *card = table_named(schema, "card");
+    if (!card || out->card_rows < 1) return;
+    const std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_of =
+        face_ids(*card, rows_of(cards, card), out->card_rows);
+    for (const auto &f : face_of) out->present[f.second] = 1;
+    for (const rmstate::TableDef &def : schema.tables) {
+        if (!is_face_child(def)) continue;
+        PrintedRows p;
+        p.table = def.name;
+        for (size_t c = 2; c < def.columns.size(); ++c) p.columns.push_back(def.columns[c].name);
+        std::vector<std::vector<std::vector<rmstate::Value>>> per_face(out->card_rows);
+        for (const std::vector<rmstate::Value> &row : rows_of(cards, &def)) {
+            auto it = face_of.find({row[0].bits, row[1].bits});
+            if (it == face_of.end()) continue;
+            per_face[it->second].emplace_back(row.begin() + 2, row.end());
+            for (size_t c = 2; c < def.columns.size(); ++c)
+                if (def.columns[c].storage == rmstate::Storage::TEXT) per_face[it->second].back()[c - 2].bits = 0;
+        }
+        p.offsets.push_back(0);
+        for (std::vector<std::vector<rmstate::Value>> &rows : per_face) {
+            std::sort(rows.begin(), rows.end(), printed_row_less);
+            for (std::vector<rmstate::Value> &r : rows) p.rows.push_back(std::move(r));
+            p.offsets.push_back(p.rows.size());
+        }
+        out->printed.push_back(std::move(p));
+    }
+}
+
 int64_t CardTables::key_row(const std::string &key) const {
     auto it = std::lower_bound(ab_keys.begin(), ab_keys.end(), key);
     if (it == ab_keys.end() || *it != key) return -1;
@@ -373,8 +442,11 @@ bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFram
         *err = "the card tables need at least one card row and the none row";
         return false;
     }
-    return build_card_rows(schema, cards, out, err) && build_ability_rows(schema, cards, out, err) &&
-           build_part_rows(schema, cards, out, err);
+    if (!build_card_rows(schema, cards, out, err) || !build_ability_rows(schema, cards, out, err) ||
+        !build_part_rows(schema, cards, out, err))
+        return false;
+    build_printed_rows(schema, cards, out);
+    return true;
 }
 
 CardTableFiles card_table_files(const CardTables &t, uint64_t spec_hash) {

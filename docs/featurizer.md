@@ -70,11 +70,14 @@ decision; padding is a runtime option of the batcher, never a format cap.
 ### 3.1 Token types
 
 Every `STATE` table with id 20-48 or 90-99 is a token type, in ascending table id, except
-`strings`; a table's rows are its tokens in frame order. Single-row tables (`header`, `turn`,
-`pending`, `pending_cost`, `match`, `k_meta`) are one token each, so global state is a few tokens
-rather than a special vector. Child tables
-(`object_keyword`, `object_counter`, `stack_target`, `k_pool_card`, …) are tokens of their own,
-related to their parent (§3.3).
+`strings` and the tables a fold takes whole (§3.6: `own_deck`, `k_seen`, `k_known_hand`,
+`k_template`, `k_archetype`, `b_list`, `b_archetype`); a table's rows are its tokens in frame order,
+except where a fold filters them (`k_pool_card`) or keeps only an object's differences from its card
+(`object_subtype`, `object_keyword`). The folds' synthetic types follow, in a fixed order: `ledger`,
+`lists`, `b_lists`. Single-row tables (`header`, `turn`, `pending`, `pending_cost`, `match`,
+`k_meta`) are one token each, so global state is a few tokens rather than a special vector. Child
+tables (`object_keyword`, `object_counter`, `stack_target`, `k_pool_card`, …) are tokens of their
+own, related to their parent (§3.3).
 
 ### 3.2 Columns by tag
 
@@ -126,14 +129,14 @@ reference `ab_card`, `ab_index`, `ab_key` (§3.3).
 | `object.card` | also a second `tok_card` slot: the face as it is now (the back face's vocab id when `transformed`) | the card tables are per face |
 | `object_counter.kind`, `player_counter.kind`, `object_keyword.text`, `player_effect.filter`, the `ab_key` of an abref | categorical: 1 + FNV-1a 64 of the text modulo 256 buckets (the empty text is the slot's none) | counter kinds and keyword parameters have no enum |
 | `menu.description` | dropped | free text, covered by the structured columns |
-| `k_template.list`, `b_list.list`, `k_archetype.archetype`, `b_archetype.archetype` | categorical over the `METAGAME` frame's `meta_list` / `meta_archetype` rows, as a `row:` into `METAGAME` | tagged `index`, but each is a row of a `METAGAME` table, not a position |
+| `k_template.list`, `b_list.list`, `k_archetype.archetype`, `b_archetype.archetype` | the key of their pivot (§3.6): which `METAGAME` `meta_list` / `meta_archetype` row's slots the row's columns fill | tagged `index`, but each is a row of a `METAGAME` table, not a position |
 
 ### 3.5 Learner-side: the omniscient featurization and targets
 
 - **Omniscient featurization.** The same spec featurizes the omniscient viewer's frame (as
   `--rmstate-dump` writes it at every decision): every object is identified, hidden zones are
-  tokens with their cards, and the `k_*` token types have no rows (the omniscient viewer has no
-  knowledge tables). Seat-relative columns read as the omniscient frame defines them (self = A),
+  tokens with their cards, and the `k_*` token types and the list summaries have no rows (the
+  omniscient viewer has no knowledge tables; its ledger holds both players' `own_deck`). Seat-relative columns read as the omniscient frame defines them (self = A),
   so a learner pairs it with the deciding seat explicitly. For a critic that sees the whole game.
 - **Targets** (`rmfeat --targets`, `src/featurize/targets.h`), per decision of a seat, from the
   omniscient frame of the same decision: the opponent's hand as a multiset of card ids (ascending);
@@ -152,6 +155,99 @@ reference `ab_card`, `ab_index`, `ab_key` (§3.3).
   identities rotated) and the permutation check's (hidden zones permuted), and the omniscient frame
   refused; the gate (5d) adds that an `nn:` seat's tensors equal `rmfeat`'s featurization of that
   seat's own stream.
+
+### 3.6 Folds (listed in the spec)
+
+Three folds make fewer tokens of the same facts (spec version 2; `src/featurize/folds.{h,cpp}`). Each
+is lossless: every number of a folded row lands in a numeric slot of a merged token, and a folded
+row's identity (its player, card, list or object) is that token's categorical, card slot or
+relation. The gate's `featurize` tier reads every decision's folds back (below). RMSTATE and the
+knowledge sidecar are unchanged.
+
+**The card ledger** (type `ledger`): one token per (player, card) of the cards the frame's
+`own_deck`, `k_seen`, `k_known_hand`, `k_pool_card` and exact `k_position` rows name, in ascending
+(`player_rel`, card id) order. That is the player's universe as the viewer has it: their own current
+75 (`own_deck`; for the omniscient frame both players'), and for the opponent the registered list
+under open decklists (every card of it is in some hidden pool with a maximum above 0, or seen) or
+the cards known under `--closed-decklist`. Slots: `player_rel` (categorical), the card (a `tok_card`
+slot) and twelve numeric slots, `log1p` of a count except the first:
+
+| Slot | Value |
+|---|---|
+| `deck` | 1 when the card has an `own_deck` row (only the viewer's own list: the opponent's registered counts and post-sideboarding split are not in a seat's `STATE` frame, as before) |
+| `main`, `side` | `own_deck.main`, `own_deck.side` |
+| `seen_game`, `seen_match` | `k_seen.game`, `k_seen.match` |
+| `known_hand` | `k_known_hand.copies` (the opponent's) |
+| `hand_min`, `hand_max` | the `HAND` pool's `k_pool_card` min / max (the opponent's hand) |
+| `library_min`, `library_max` | the sum over the player's library **runs** of the run's `k_pool_card` min / max, plus the player's `k_position` rows naming the card exactly |
+| `sideboard_min`, `sideboard_max` | the `SIDEBOARD` pool's `k_pool_card` min / max (the opponent's sideboard) |
+
+A library pool (kind `LIBRARY_RANGE`) is a run when no other library pool of its owner lies strictly
+inside its range and no exact `k_position` of its owner inside it; the others are blocks of runs
+(`knowledge_store.md` §6). Exact positions are runs whose card is determined, which have no pool. So
+the library bounds are sound always (each run's bound holds, the positions are known) and exact when
+the library has one undetermined run.
+
+Which `k_pool_card` rows fold (their pool's bounds are then the ledger's slots) and which stay
+tokens (type `k_pool_card`, kind `filtered`):
+
+- fold: every row of a `HAND` or `SIDEBOARD` pool; every row of a player's library pool when it is
+  the player's only `LIBRARY_RANGE` pool (one undetermined run: its bounds are the ledger's library
+  slots less the exact positions, exactly);
+- stay: the rows of every library pool when a player has several (the runs after a put-back or a
+  scry, and the blocks, which carry joint facts the per-card sums cannot), and of `FACE_DOWN` and
+  `SET_ASIDE` pools.
+
+Every `k_pool` row stays a token (its owner, kind, size, range and handle), so a `k_position.pool`
+reference keeps its relation. A folded `k_pool_card` row's relation to its pool is replaced by the
+slot it lands in (its pool is the `HAND` / `SIDEBOARD` / only library pool of the token's player); a
+kept row's `pool` relation points at its pool's token as before (row references into a filtered
+type are renumbered to its tokens).
+
+**The list summaries** (types `lists` and `b_lists`, kind `pivot`): one token per player with rows,
+self first. `lists` folds `k_template` and `k_archetype`: per `meta_list` row (13 today) the slots
+`<list>:consistent`, `<list>:exact`, `<list>:registered`, then per `meta_archetype` row (8)
+`<label>:possible`, `<label>:exact`: 55 numeric slots. `b_lists` (level `expert+belief` only) folds
+`b_list` and `b_archetype`: per list `<list>:prob`, `<list>:loglik`, `<list>:exact`, per label
+`<label>:prob`: 47 slots. Each slot by its column's tag (§3.2); the counts follow the `METAGAME`
+frame's row counts and the slot names its `name` columns. Two types rather than one: together they
+would need 102 slots, past the object's 74 that set `F`, which stays 74.
+
+**Object deltas** (types `object_subtype`, `object_keyword`, kind `delta`): the card table already
+holds each face's printed subtypes and keywords (§4.1: `card_subtype.subtype=…` multi-hot,
+`card_keyword.kw=…` counts), so an object's rows are emitted only where they differ from its
+**current face's printed rows** (`object.card`, its back face when `transformed`: the token's
+`card:face` slot), compared as multisets of the rows' columns other than `obj` (`subtype`; `kw` and
+`text`, the keyword's parameters included), read from the `CARDS` frame's `card_subtype` /
+`card_keyword` rows of that face:
+
+- a row the object has and the printed rows lack is a token, `removed` = 0 (a granted keyword, an
+  added creature type, a different keyword parameter);
+- a printed row the object lacks is a token with that row's values and `removed` = 1 (a keyword or
+  subtype lost);
+- an object whose face the viewer cannot see (face down, `card` none), whose face has no card row
+  (a back face with no vocab id of its own, a token with no card row), keeps every row with
+  `removed` 0; so do rows whose handle no object row has.
+
+So the object's rows are its printed rows plus the `removed` = 0 tokens less the `removed` = 1
+ones. Tokens come per object row in frame order, the added rows sorted by value, then the removed
+ones. The printed rows are not an exported table: the featurizer builds them from the whole-vocab
+`CARDS` frame it builds the card tables from (`build_printed_rows`, `card_tables.h`; with tables
+read from files, from the cards file given beside them).
+
+**Checks** (the `featurize` tier, every decision of the corpus's and the explore games' dumps, seat
+and omniscient frames): from the tensors alone each object's subtype and keyword rows rebuilt (its
+face's printed rows plus and less the delta tokens) equal the frame's; every `own_deck`, `k_seen`,
+`k_known_hand` row and every folded `k_pool_card` row has its ledger token with its values (the
+library slots with the exact positions added), the kept `k_pool_card` tokens are the unfolded rows
+and there is no other ledger token; every pivot row's columns are in its player's token. The
+row-order check (§7) shuffles the folded tables too and finds every token by its origin
+(`featurize_traced`), so the canonical orders are tested. Deliberately broken folds (half the
+removed rows dropped; a sideboard maximum off by one) fail it.
+
+**Sizes** (explore games, release build; seat decisions with a menu): bo3 burn vs uw_control
+(209 decisions): 263.5 → 126.0 tokens per decision (max 432 → 257); five league matchups
+(813 decisions): 306.8 → 157.4 (max 611 → 353); their omniscient frames 400.5 → 247.6.
 
 ## 4. The card tables
 
@@ -326,7 +422,9 @@ hashed-text bucket count; the targets' library depth; the `METAGAME` row counts 
 `F`, `C`, `K`, `Q`; the global categorical size; the menu's token type; the token-type list, per
 type its numeric slots (name, source column, transform), categorical slots (name, source, id
 offset, size), card slots, ability slots and relation types; the relation types `(table, column,
-target)`; the §3.4 overrides; the card, text, ability and part tables' rows, widths and column
+target)`; the §3.4 overrides; the §3.6 folds (per type its `kind`: `table`, `filtered`, `delta`
+with the `printed` table it compares with, `ledger`, `pivot` with its `sources`; a synthetic type's
+`table` is null); the card, text, ability and part tables' rows, widths and column
 names; the fixed key list. One line, its keys in a fixed order. Its `spec_hash` (FNV-1a 64 of the
 document bytes) is in every exported file and in a model. A JSON document rather than an RMSTATE
 frame, so consumers outside C++ read it with any JSON parser.
@@ -449,13 +547,15 @@ replayed corpus's dumps and explore games' (the text table's are the `vocab` tie
 export and `rmserve` ones come with 5d):
 
 - deterministic: the same frames give identical tensors;
+- the folds lose nothing (§3.6): the deltas, the ledger and the pivots read back to the frame's rows;
 - shapes and slot meanings agree with the spec; every `rel` and `act_tok` index is a real token;
   every `tok_card` is `-1` or a card-table row, every `tok_ability` `-1` or an ability row;
 - invariant to row order where the format says order is meaningless: the engine's permutation
   self-check (a permuted hidden zone) gives the same frame bytes and so, under
   `--selfcheck-featurize`, the same tensors; and every token table but `menu` (whose row is the
-  reply) with its rows shuffled and every `row:` reference into it renumbered gives the same
-  tensors up to the matching token permutation;
+  reply), the folded ones included, with its rows shuffled and every `row:` reference into it
+  renumbered gives the same tensors up to the matching token permutation (each token found by its
+  origin: its table row, or its place in a fold's canonical order);
 - the exported tables equal a standard-library Python reader's view of the same files;
 - the text table check passes on a clean checkout; regenerating a deleted row leaves every other
   row's bytes unchanged; the tokenizer matches the golden ids and the encoder the golden vectors
