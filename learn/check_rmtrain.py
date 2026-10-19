@@ -13,8 +13,10 @@ is gone; the resume bookkeeping: an actor's first match after a crash (the match
 off, never below its results), the results tail (offsets, a torn line, counts per schedule version,
 the state round trip), the actor pool against a fake engine (a crash restarted at the next match,
 crash-loop back-off, SIGTERM on stop), the replay window's restore (recent files by budget, a
-checkpoint's window with its fresh episodes, older files left out), checkpoint pruning, and the
-phase schedules.
+checkpoint's window with its fresh episodes, older files left out), checkpoint pruning, the
+phase schedules, and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
+the test decides, the exploiter's spec, the split of a request into separate evaluations, the
+ladder record and ratings).
 
 **The smoke** (``--smoke``; needs ``bin/release/robomage_nn`` and ``rmfeat``, the learner's venv and
 the GPU): a tiny run (3 actors, a d 64 / 2-layer model, B0 a few thousand decisions, B1 a few
@@ -22,7 +24,9 @@ hundred BC steps ended by ``phase next``, one short DAgger round, R-NaD with Δm
 (``systemd-run --user`` when available), every CLI command exercised against it, everything
 ``kill -9``'ed in B4 and the run resumed from its checkpoint (by systemd's restart, else by
 ``start``; same phase, learner step not behind the checkpoint), then ``stop`` and ``start`` again,
-then run to its end (B5, done). Prints per-phase timings and ``RMTRAIN-SMOKE: ok``.
+then run to its end (B5, done); per-iteration SPRT evaluations and one exploiter (``rmtrain eval
+--evaluators exploiter``) run on the way, and the ladder's ratings land in ``state.json``. Prints
+per-phase timings and ``RMTRAIN-SMOKE: ok``.
 """
 
 import os
@@ -437,6 +441,82 @@ def check_schedules(tmp):
     check(raises(lambda: EVAL.build(ctx, ["nope"]), "no evaluator"), "an unknown evaluator is refused")
 
 
+def check_t8(tmp):
+    """The T8 evaluators: sprt (groups, the test stopping an evaluation), exploiter (its spec and the
+    GPU process's config), the request split, the ladder record and ratings."""
+    from rmlearn import exploiter as X
+    from rmlearn.orchestrator.orchestrator import Orchestrator
+    run = RD.RunDir(os.path.join(tmp, "t8"))
+    run.make()
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]", "eval.sprt_max_games=40"])
+    check(raises(lambda: C.validate(C.set_key(C.resolve(None, []), "eval.sprt_p0", 0.6)), "eval.sprt_p0"),
+          "config: sprt_p0 >= sprt_p1 refused")
+    check(EVAL.split_request(["sprt", "fixed", "exploiter", "ladder"]) == [["fixed", "ladder"], ["sprt"], ["exploiter"]],
+          "the request split: sprt and exploiter on their own")
+    o = Orchestrator.__new__(Orchestrator)
+    o.state = {"eval": {"queue": []}, "phase": "B4"}
+    o.eval_job = None
+    o.log = lambda m: None
+    o.queue_eval("it3", "", ["sprt", "fixed", "ladder"])
+    o.queue_eval("manual9", "", ["exploiter"])
+    check([(x["label"], x["evaluators"]) for x in o.state["eval"]["queue"]] ==
+          [("it3", ["fixed", "ladder"]), ("it3-sprt", ["sprt"]), ("manual9", ["exploiter"])],
+          "queue_eval splits the separate evaluators (%s)" % [x["label"] for x in o.state["eval"]["queue"]])
+    check(o.eval_queued_kind("exploiter") and not o.eval_queued_kind("nope"), "an exploiter is queued")
+    ctx = EVAL.Context(run, cfg, "", [])
+    groups = EVAL.build(ctx, ["sprt"])
+    g = groups[0]
+    decks = sorted({(e["deck_a"], e["deck_b"]) for e in g.entries})
+    check(g.name == "sprt-scripted" and g.sprt["max_games"] == 40 and len(g.entries) == 6 and
+          ("league/a", "league/b") in decks and ("league/b", "league/a") in decks and
+          all(e["swap"] == "sides" and e["teacher_b"] for e in g.entries),
+          "sprt evaluator: every league pair in both orders vs scripted:hard")
+    spec = EVAL.build(EVAL.Context(run, C.set_key(cfg, "eval.exploiter_minutes", 0.5), "", []), ["exploiter"])[0]
+    xc = X.ExploiterConfig(**dict(spec.config, pairs=[tuple(p) for p in spec.config["pairs"]], device="cpu"))
+    check(isinstance(spec, EVAL.ExploitSpec) and xc.minutes == 0.5 and spec.pause_learner,
+          "exploiter evaluator: its config is an ExploiterConfig")
+    # An SPRT evaluation stops when its test decides: 30 games, the subject losing 25.
+    job = EVAL.EvalJob(run, cfg, 1, "it3-sprt", groups, {"version": 7, "label": "it3-sprt"}, "/bin/false", tmp,
+                       lambda m: None)
+    os.makedirs(job.dir, exist_ok=True)
+
+    class _Pool:
+        stopped = False
+
+        def tick(self):
+            return []
+
+        def finished(self):
+            return False
+
+        def stop_all(self, timeout=None):
+            _Pool.stopped = True
+
+    job.pool = _Pool()
+    job.reader = EVAL.MT.ResultsReader(job.dir)
+    job.started = time.time()
+    check(not job.poll(), "sprt job: undecided without games")
+    with open(os.path.join(job.dir, "a0.results.jsonl"), "w") as fp:
+        for i in range(30):
+            side_a = "AB"[i % 2]
+            res = 1 if i % 6 == 0 else -1
+            fp.write(json.dumps({"actor": 0, "match": i // 2, "game": 1 + i % 2, "entry": "sprt-scripted|a-b",
+                                 "side_a_seat": side_a, "first": "A", "deck_a": "league/a", "deck_b": "league/b",
+                                 "agent_a": "nn:remote:s:policies=3" if side_a == "A" else "first",
+                                 "agent_b": "first" if side_a == "A" else "nn:remote:s:policies=3",
+                                 "result_a": res if side_a == "A" else -res, "result_b": -res if side_a == "A" else res,
+                                 "end_reason": "win", "decisions": 50}) + "\n")
+    check(job.poll() and _Pool.stopped, "sprt job: stops its actors once the test decides")
+    sg = job.result["groups"]["sprt-scripted"]
+    check(sg["sprt"]["verdict"] == "H0" and sg["report"]["all"]["wins"] + sg["report"]["all"]["losses"] == 30 and
+          abs(sg["win_rate"] - 5 / 30) < 1e-9, "sprt job: verdict H0 and the per-game record (%s)" % sg["sprt"])
+    ratings = EVAL.record_ladder(run, dict(job.result, version=7, options=""), [])
+    check(ratings["scripted"]["elo"] == 0 and ratings["v7"]["elo"] < -100 and ratings["v7"]["games"] == 30,
+          "ladder: the evaluation recorded, rated against scripted (%s)" % ratings)
+    check(os.path.exists(os.path.join(run.path, "ladder", "ladder.json")), "ladder: ladder.json in the run")
+    check("SPRT H0" in EVAL.brief(job.result)["sprt-scripted"], "the brief names the verdict")
+
+
 # ── the smoke ───────────────────────────────────────────────────────────────────────────────
 
 SMOKE_CONFIG = """
@@ -492,6 +572,13 @@ ladder_matches = 2
 actors = 2
 opponents = ["scripted", "random"]
 every_minutes = 0
+evaluators = ["sprt", "fixed", "ladder"]
+sprt_max_games = 4
+exploiter_minutes = 0.3
+exploiter_actors = 2
+exploiter_baseline_games = 2
+exploiter_final_games = 2
+exploiter_rollout_decisions = 256
 [checkpoint]
 every_minutes = 0.5
 """
@@ -575,6 +662,7 @@ def smoke(args):
     # B1's end, its evaluation, DAgger, R-NaD.
     wait(lambda s: s.get("phase") == "B4" and (s.get("progress") or {}).get("learner_steps", 0) >= 20, "B4", 1800)
     check(sh([rmtrain, "eval", run.path]).returncode == 0, "eval")
+    check(sh([rmtrain, "eval", run.path, "--evaluators", "exploiter"]).returncode == 0, "eval --evaluators exploiter")
     s = wait(lambda s: (s.get("progress") or {}).get("iterations", 0) >= 2 and (s.get("checkpoint") or {}).get(
         "kind") == "rnad" and (s["checkpoint"].get("learner_steps") or 0) >= 60, "two R-NaD iterations", 1200)
     ck_steps = s["checkpoint"]["learner_steps"]
@@ -629,6 +717,10 @@ def smoke(args):
     print("smoke: evaluations %s" % [(e["label"], {k: v["win_rate"] for k, v in e["results"].items()}) for e in evs])
     check(any(e["label"] == "b1" for e in evs) and any(e["label"].startswith("b2-r") for e in evs) and
           any(e["label"].startswith("it") for e in evs), "B1, DAgger and per-iteration evaluations ran")
+    check(any(e["label"].endswith("-sprt") and "sprt-scripted" in e["results"] for e in evs),
+          "per-iteration SPRT evaluations ran")
+    check(any("exploiter-baseline" in e["results"] for e in evs), "an exploiter ran (rmtrain eval --evaluators)")
+    check(bool((RD.read_json(run.state) or {}).get("eval", {}).get("ratings")), "ladder ratings in state.json")
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
@@ -685,6 +777,7 @@ def main():
             check_orchestrator(tmp)
             check_resume(tmp)
             check_schedules(tmp)
+            check_t8(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
         tag = "RMTRAIN-CHECK"

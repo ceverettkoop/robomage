@@ -66,7 +66,8 @@ smoothed π_0,reg while it is still a regularisation policy), `rnad.push_every`,
 `b1.*` but `play_eval`, `b2.rounds_*`, `b2.decisions_per_round`, `b2.min_steps_per_round`,
 `b2.min_improvement`, `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options`,
 `b5.max_learner_steps`); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
-`eval.every_minutes`, `eval.per_iteration`; `checkpoint.every_minutes`. The schedule's Δm is the
+`eval.every_minutes`, `eval.per_iteration`, `eval.sprt_max_games`, `eval.exploiter_every_minutes`,
+`eval.exploiter_minutes`; `checkpoint.every_minutes`. The schedule's Δm is the
 reference's function of the learner step, so a changed Δm can move α and the next boundary.
 
 ## 3. The config
@@ -105,11 +106,17 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `rnad.push_every` | 50 | learner steps between pushes of policy 0 |
 | `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options` | 0, 0, `""` | B4's exit (0: until `phase next`); self-play sampling options |
 | `b5.max_learner_steps` | 0 | the run's end (0: never) |
-| `eval.evaluators` | `["fixed", "ladder"]` | |
+| `eval.evaluators` | `["sprt", "fixed", "ladder"]` | the evaluators of a per-iteration / cadence evaluation (`exploiter` too; §7) |
 | `eval.opponents`, `eval.pairs`, `eval.matches` | scripted, explore, random; 4 pairs; 48 | |
 | `eval.ladder`, `eval.ladder_matches` | 3, 24 | |
 | `eval.actors`, `eval.every_minutes`, `eval.per_iteration` | 4, 60, true | |
 | `eval.nn_options_bc` / `_rnad` / `_finetune` | `argmax` / `""` / `thresh=0.03:disc=16` | the evaluated policy's options per phase |
+| `eval.sprt_opponents`, `sprt_pairs` | `["scripted"]`, every league pair | the `sprt` evaluator's opponents and deck pairs |
+| `eval.sprt_p0`, `sprt_p1`, `sprt_alpha`, `sprt_beta`, `sprt_max_games` | 0.45, 0.55, 0.05, 0.05, 400 | its test on the per-game win rate; the game cap (undecided there) |
+| `eval.exploiter_every_minutes`, `exploiter_minutes` | 0 (off), 20 | the exploiter's B4/B5 cadence and training time |
+| `eval.exploiter_actors`, `exploiter_pause_learner` | 8, true | its actors (beside the training actors); the learner idles while it trains |
+| `eval.exploiter_baseline_games`, `exploiter_final_games` | 100, 100 | games of its initial policy (= the victim) and of its frozen final version |
+| `eval.exploiter_pairs`, `exploiter_victim_options`, `exploiter_lr`, `exploiter_rollout_decisions` | `eval.pairs`, `""`, 1e-4, 4096 | |
 | `checkpoint.every_minutes`, `keep`, `export_formats` | 15, 3, ts + pt2 | |
 
 ## 4. The run directory
@@ -150,7 +157,7 @@ runs/<name>/
 **Served policies:** 0 the current policy (BC: pushed at each DAgger round's start; R-NaD:
 `ServerLink`, every `rnad.push_every` steps), 1 and 2 the regularisation policies (π_m,reg,
 π_m−1,reg; raw networks, the learner smooths π_0,reg itself), 3 the evaluation snapshot, 10+ the
-ladder rungs of an evaluation.
+ladder rungs of an evaluation, 20 and 21 an exploiter in training and its victim (§7).
 
 **Actor crashes.** An actor that exits unasked is restarted after `actors.restart_delay_s` at its
 next match index: the status file's `next_match`, + 1 when a match was in progress (written off),
@@ -205,9 +212,44 @@ the matches with `eval.actors` evaluation actors (`--actor-matches`), scores eve
 - `ladder`: against the BC policy and the most recent `eval.ladder` R-NaD fixed points, each a server
   policy (10 + j) played with `eval.opponent_nn_options`.
 
-Evaluations run one at a time, queued: at B1's end, after each DAgger round, at each R-NaD
-iteration, on the `eval.every_minutes` cadence in B4–B5, and on `rmtrain eval`. The T8 SPRT runner
-and the exploiter are to be added as evaluators.
+- `sprt` (plan T8; `rmlearn/sprt.py`'s test): against each of `eval.sprt_opponents` (default
+  scripted:hard) over `eval.sprt_pairs` (default every league pair), a Wald test on the **per-game**
+  win rate, H1 p = `sprt_p1` (0.55) against H0 p = `sprt_p0` (0.45), α = β = 0.05, fed game by game
+  as the evaluation actors finish them; the evaluation stops its actors as soon as every test
+  decides, or at `sprt_max_games` games (verdict `undecided`). Draws and caps are excluded and
+  listed. The result group `sprt-<opponent>` carries the verdict, the llr and its bounds, and the
+  full per-game report (`matches.report`: game 1 apart from games 2–3 — game 3 is played only at
+  1–1, a selected sample —, per matchup, deck, seat, play / draw, the Wilson interval and the
+  match-clustered standard error). Games of one match are correlated, so the test's error rates are
+  somewhat optimistic; the clustered SE and design effect show by how much.
+- `exploiter` (plan T8; `rmlearn/exploiter.py`): a short best response against the current policy,
+  trained by PPO **inside the GPU process** (one GPU process for the run): `exploit_start` freezes a
+  copy of the current network as the victim (server policy 21) and trains another copy as the
+  exploiter (policy 20, a new version per PPO update) between the learner's units; with
+  `eval.exploiter_pause_learner` (default) the learner idles meanwhile, so the two never compete for
+  the GPU (the training actors play on). `eval.exploiter_actors` evaluation actors play exploiter
+  (side a, recorded) against victim (side b) over `eval.exploiter_pairs` (both decks and seats);
+  first `exploiter_baseline_games` games of the initial exploiter (the policy itself: ~50% by
+  symmetry), then `exploiter_minutes` of training, then `exploiter_final_games` games of the frozen
+  final version: its win rate is the measured exploitability (groups `exploiter-baseline`,
+  `exploiter-final`; the full result, with the win-rate curve per update and PPO's statistics,
+  under `exploiter` in `evals.jsonl`, files in `eval/<seq>-<label>/`). Off by default
+  (`eval.exploiter_every_minutes` 0): at ~20 minutes of the GPU per run it costs the learner that
+  time; run one with `rmtrain eval <run> --evaluators exploiter`, or set the cadence.
+- `ladder` also feeds the **ladder record** (`rmlearn/ladder.py`, `<run>/ladder/ladder.json`): after
+  every evaluation (exploiters aside) each group's games are recorded as a pairing of the evaluated
+  policy (`v<version>`) against the group's opponent (a rung by its label, `bc`, `m<k>`; a fixed
+  opponent by name, `scripted`, `explore`, `random`), and a Bradley–Terry fit over every pairing so
+  far (per game, a weak prior, the Elo scale, `scripted` at 0) is written into `state.json`,
+  `status` (`ratings`) and the evaluation's line in `evals.jsonl`.
+
+`sprt` and `exploiter` stop on their own terms, so each runs as an evaluation of its own: a request
+naming them with others is split (`it3` → `it3`, `it3-sprt`). Evaluations run one at a time,
+queued: at B1's end, after each DAgger round, at each R-NaD iteration, on the `eval.every_minutes`
+cadence in B4–B5 (the exploiter on `eval.exploiter_every_minutes`), and on `rmtrain eval`.
+
+Evaluation schedules give the evaluated policy both decks of each pair: `swap: sides` moves a
+side's deck with its agent (docs/actor.md §2), so every pair is two entries, one per order.
 
 ## 8. Durability
 
@@ -221,7 +263,8 @@ and the exploiter are to be added as evaluators.
   `state.json`; BC reloads its checkpoint and re-reads the newest episodes up to the window's
   limit; R-NaD reloads the learner and re-reads the checkpoint's window (its untaken games fresh
   again, files older than its oldest left out, newer ones polled as fresh); the results files are
-  read on from the recorded offsets; actors start after their last match. At most one checkpoint
+  read on from the recorded offsets; actors start after their last match. An evaluation that was running
+  (`state.json`'s `eval.running`) is queued again and played from its start. At most one checkpoint
   interval of learning is lost (and the games played in it are trained on again or skipped).
 - A transient failure of a command to the GPU process is fatal for the run (exit 2) by design:
   the restart resumes from the checkpoint.
@@ -236,11 +279,13 @@ learn/.venv/bin/python learn/check_rmtrain.py --smoke    # GPU + bin/release: RM
 The CPU checks: config parsing and validation, the control protocol, an orchestrator over a fake
 run driven through its socket and its status from the files, and the resume bookkeeping (actor
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
-the window restore, checkpoint pruning, the schedules and evaluators). The smoke runs a tiny run
+the window restore, checkpoint pruning, the schedules and evaluators, an SPRT evaluation stopping
+when its test decides, the request split, the ladder's ratings). The smoke runs a tiny run
 (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`, one DAgger round of
 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises every command, kills
 the whole unit with SIGKILL in B4 (systemd restarts it; it resumes at the checkpoint), stops and
-starts it again, and runs it to `done`.
+starts it again, and runs it to `done`; per-iteration SPRT evaluations and one exploiter
+(`rmtrain eval --evaluators exploiter`) run on the way.
 
 Measured (the training box, after T7; other agents' jobs on the GPU and CPU): B0 ~2 s (5,300
 decisions on 3 actors), B1 ~20 s (the commands exercised, then `phase next`), B2 ~14 s (one round:

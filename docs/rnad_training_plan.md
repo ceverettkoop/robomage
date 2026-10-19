@@ -607,9 +607,10 @@ on the RX 6700 XT at ~1,200 decisions/s (14,500 steps, ~2.3 passes; the loader n
 Held-out agreement with the teacher 97.6% (in-game 97.7%, mulligan 95.0%, sideboarding 100%; the
 weakest categories `NAME_CARD` 52%, `DIG_CHOICE` 72%, `KEEP_LEGEND` 72%, `SELECT_BLOCKER` 76%);
 the value memorises (MSE 0.14 train against 0.72 held out, sign 78.5%), so BC's value is a weak
-start. Played argmax as `nn:` in the actors over four league pairs (both decks and seats), per
-game: 24% against `scripted:hard` (game 1 26%, games 2–3 23%), 69% against `explore`, 76% against
-`random`. The losses to `random` show the compounding error DAgger (B2) is for: e.g. bug dredging
+start. Played argmax as `nn:` in the actors over four league pairs (both seats, but only the first
+deck of each pair: `swap: sides` moves a side's deck with it, see T8), per game: 24% against
+`scripted:hard` (game 1 26%, games 2–3 23%), 69% against `explore`, 76% against `random`; over
+every league pair with both decks (T8's SPRT) it is ~45% against `scripted:hard`. The losses to `random` show the compounding error DAgger (B2) is for: e.g. bug dredging
 Life from the Loam at every draw instead of drawing, a state the teacher's games rarely reach.
 
 ### B2. DAgger, 3–5 rounds

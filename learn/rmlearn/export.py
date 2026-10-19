@@ -9,7 +9,7 @@ checks: ``spec_hash``, ``vocab_hash``, ``text_model`` and ``policy_version``:
 - ``PREFIX.ts.pt``: TorchScript (``torch.jit.script``), the strings as module attributes;
 - ``PREFIX.pt2``: an AOTInductor package (``torch.export`` + ``aoti_compile_and_package``, CPU),
   the strings in the package metadata (inductor config ``aot_inductor.metadata``); machine code for
-  this CPU's ISA;
+  this CPU's ISA, single-threaded (``cpp.threads`` 1: one decision at a time per actor process);
 - ``PREFIX.onnx`` (optional; needs onnx + onnxscript): the dynamo exporter, the strings in
   ``metadata_props``.
 
@@ -79,8 +79,12 @@ def export_pt2(policy, path, example=None):
     ex = example if example is not None else example_inputs(policy)
     ep = torch.export.export(policy, ex, dynamic_shapes=dynamic_shapes(), strict=False)
     tmp = path + ".tmp.pt2"
+    # cpp.threads 1: the compiled kernels' OpenMP regions otherwise take every core of the machine
+    # they were compiled on (the actor evaluates one decision at a time, single-threaded like the
+    # TorchScript path; 12 actors each spinning 32 threads ran ~10x slower).
     torch._inductor.aoti_compile_and_package(ep, package_path=tmp,
-                                             inductor_configs={"aot_inductor.metadata": metadata(policy)})
+                                             inductor_configs={"aot_inductor.metadata": metadata(policy),
+                                                               "cpp.threads": 1})
     os.replace(tmp, path)
     return path
 

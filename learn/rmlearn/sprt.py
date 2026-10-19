@@ -44,7 +44,6 @@ Output: ``out_dir/sprt.json`` (the result dict) and ``out_dir/summary.txt``; the
 """
 
 import argparse
-import json
 import math
 import os
 import time
@@ -149,8 +148,8 @@ def run_sprt(policy, opponent, cfg=None, out_dir="sprt", log=print, on_game=None
     records = []
     reason = None
     t0 = time.time()
-    log("sprt: %s vs %s, %d actors, %d pairs, cap %d games -> %s"
-        % (policy_spec, opponent_spec, cfg.actors, len(sched["entries"]), cfg.max_games, out_dir))
+    log("sprt: %s vs %s (%s), %d actors, %d entries, cap %d games -> %s"
+        % (policy_spec, opponent, opponent_spec, cfg.actors, len(sched["entries"]), cfg.max_games, out_dir))
     pool.start()
     try:
         while reason is None:
@@ -200,7 +199,8 @@ def run_sprt(policy, opponent, cfg=None, out_dir="sprt", log=print, on_game=None
 
 def format_result(r):
     s = r["sprt"]
-    head = ["SPRT %s vs %s: %s (%s)" % (r["policy_spec"], r["opponent_spec"], r["verdict"], r["reason"]),
+    opp = r["opponent_spec"] if r["opponent_spec"] == r["opponent"] else "%s (%s)" % (r["opponent"], r["opponent_spec"])
+    head = ["SPRT %s vs %s: %s (%s)" % (r["policy_spec"], opp, r["verdict"], r["reason"]),
             "  H1 p=%.2f vs H0 p=%.2f, alpha %.2f, beta %.2f: llr %.3f in [%.3f, %.3f] over %d decisive games "
             "(%d-%d)%s" % (s["p1"], s["p0"], s["alpha"], s["beta"], s["llr"], s["lower"], s["upper"], s["n"],
                            s["wins"], s["losses"],

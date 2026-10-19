@@ -152,7 +152,8 @@ SPEC = {
         ("max_learner_steps", 0, "learner steps at which the run ends (0: never)"),
     ],
     "eval": [
-        ("evaluators", ["fixed", "ladder"], "the evaluators of an evaluation (the registry's names)"),
+        ("evaluators", ["sprt", "fixed", "ladder"], "the evaluators of an evaluation (the registry's names: sprt, "
+         "fixed, ladder, exploiter; sprt and exploiter run as evaluations of their own)"),
         ("opponents", ["scripted", "explore", "random"], "the fixed opponents (scripted = scripted:hard)"),
         ("pairs", copy.deepcopy(EVAL_PAIRS), "evaluation deck pairs (both decks and seats each)"),
         ("matches", 48, "matches per fixed opponent (live)"),
@@ -165,6 +166,25 @@ SPEC = {
         ("nn_options_rnad", "", "in B4 (empty: temp 1 sampling)"),
         ("nn_options_finetune", "thresh=0.03:disc=16", "in B5"),
         ("opponent_nn_options", "argmax", "ladder opponents' options"),
+        ("sprt_opponents", ["scripted"], "the sprt evaluator's opponents (scripted = scripted:hard)"),
+        ("sprt_pairs", [], "its deck pairs ([[a, b], ...]; empty: every league pair, both decks and seats each)"),
+        ("sprt_p0", 0.45, "H0: the per-game win rate p0"),
+        ("sprt_p1", 0.55, "H1: p1 (> p0)"),
+        ("sprt_alpha", 0.05, "the test's error rates"),
+        ("sprt_beta", 0.05, ""),
+        ("sprt_max_games", 400, "games per opponent at which the test stops undecided (0: no sprt) (live)"),
+        ("exploiter_every_minutes", 0.0, "B4/B5 exploiter cadence in minutes (0: off; `rmtrain eval --evaluators "
+         "exploiter` runs one) (live)"),
+        ("exploiter_minutes", 20.0, "an exploiter's training time (live)"),
+        ("exploiter_actors", 8, "its actors (beside the training actors)"),
+        ("exploiter_pause_learner", True, "the learner idles while the exploiter trains (one GPU process: they "
+         "would otherwise share the GPU)"),
+        ("exploiter_baseline_games", 100, "games of the initial exploiter (= the policy) before its first update"),
+        ("exploiter_final_games", 100, "games of the frozen final exploiter: its reported win rate"),
+        ("exploiter_pairs", [], "its deck pairs (empty: eval.pairs)"),
+        ("exploiter_victim_options", "", "the victim's nn: options (empty: temperature 1; argmax)"),
+        ("exploiter_lr", 1e-4, "the exploiter's PPO learning rate"),
+        ("exploiter_rollout_decisions", 4096, "exploiter decisions per PPO update"),
     ],
     "checkpoint": [
         ("every_minutes", 15.0, "checkpoint cadence (live)"),
@@ -191,7 +211,8 @@ LIVE = {
     "rnad.reg_eps", "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
     "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
     "actors.count", "eval.matches", "eval.ladder", "eval.ladder_matches", "eval.actors", "eval.every_minutes",
-    "eval.per_iteration", "checkpoint.every_minutes",
+    "eval.per_iteration", "eval.sprt_max_games", "eval.exploiter_every_minutes", "eval.exploiter_minutes",
+    "checkpoint.every_minutes",
 }
 
 # Live keys the GPU process applies (the others are the orchestrator's).
@@ -356,6 +377,13 @@ def validate(cfg):
     need(e["actors"] >= 1 and e["matches"] >= 0 and e["ladder_matches"] >= 0, "eval.actors >= 1, matches >= 0")
     need(all(isinstance(p, list) and len(p) == 2 for p in e["pairs"]) and e["pairs"], "eval.pairs are [a, b] pairs")
     need(e["every_minutes"] >= 0, "eval.every_minutes >= 0")
+    need(0 < e["sprt_p0"] < e["sprt_p1"] < 1, "eval.sprt_p0 < eval.sprt_p1, both in (0, 1)")
+    need(0 < e["sprt_alpha"] < 0.5 and 0 < e["sprt_beta"] < 0.5, "eval.sprt_alpha, sprt_beta in (0, 0.5)")
+    need(e["sprt_max_games"] >= 0, "eval.sprt_max_games >= 0")
+    need(e["exploiter_every_minutes"] >= 0 and e["exploiter_minutes"] >= 0 and e["exploiter_actors"] >= 1,
+         "eval.exploiter_every_minutes, exploiter_minutes >= 0, exploiter_actors >= 1")
+    for k in ("sprt_pairs", "exploiter_pairs"):
+        need(all(isinstance(p, list) and len(p) == 2 for p in e[k]), "eval.%s are [a, b] pairs" % k)
     c = cfg["checkpoint"]
     need(c["every_minutes"] > 0 and c["keep"] >= 1, "checkpoint.every_minutes > 0, keep >= 1")
     need(all(f in ("ts", "pt2", "onnx") for f in c["export_formats"]), "checkpoint.export_formats: ts, pt2, onnx")

@@ -331,8 +331,9 @@ def build(args):
 
     ep = torch.export.export(model, ex, dynamic_shapes=dynamic_shapes(), strict=False)
     metadata = dict(hashes)
+    # cpp.threads 1: single-threaded kernels, as the actor evaluates (else every core of the machine).
     torch._inductor.aoti_compile_and_package(ep, package_path=args.out + ".pt2",
-                                             inductor_configs={"aot_inductor.metadata": metadata})
+                                             inductor_configs={"aot_inductor.metadata": metadata, "cpp.threads": 1})
     print("make_reference_policy: wrote %s.pt2" % args.out)
 
     import onnx

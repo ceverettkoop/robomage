@@ -261,6 +261,7 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
         path_join(opt.bin_dir, TEXT_TABLE)};
     build.timeout_s = 1800;
     build.merge_stderr = true;
+    build.env = {"HIP_VISIBLE_DEVICES=-1", "CUDA_VISIBLE_DEVICES=-1"};  // a CPU export; never the GPU
     const ProcResult r = run_process(build);
     const std::string log = path_join(a.dir, "build_reference_policy.txt");
     write_file(log, r.out);

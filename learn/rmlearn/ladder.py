@@ -92,6 +92,18 @@ class Ladder:
         self.save()
         return p
 
+    def record_counts(self, a, b, wins, losses, draws=0, caps=0, meta=None):
+        """Records a pairing from its counts alone (`a`'s wins and losses against `b`): games played
+        elsewhere, e.g. rmtrain's evaluations (orchestrator/evaluation.py record_ladder)."""
+        n = wins + losses
+        t = {"games": wins + losses + draws + caps, "wins": wins, "losses": losses, "draws": draws, "caps": caps,
+             "win_rate": wins / n if n else None, "wilson95": list(MT.wilson(wins, n)) if n else None}
+        p = {"a": a, "b": b, "at": time.time(), "verdict": None, "all": t}
+        p.update(meta or {})
+        self.doc["pairings"].append(p)
+        self.save()
+        return p
+
     def pairings(self, fid=None):
         return [p for p in self.doc["pairings"] if fid is None or fid in (p["a"], p["b"])]
 

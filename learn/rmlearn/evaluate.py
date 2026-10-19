@@ -9,8 +9,9 @@
 The policy plays as ``nn:<model>`` in process (``robomage_nn``, CPU, the GPU hidden; ``--nn-options``
 e.g. ``argmax`` or ``temp=1``) against each opponent: ``scripted`` (side ``first`` with the scripted
 teacher at ``teacher_mix: 1``, i.e. scripted:hard), ``explore``, ``random`` or any agent spec. Each
-opponent is one ``eval`` schedule entry per deck pair with ``swap: sides`` (the policy plays both
-decks and both seats). ``summarize`` reads the actors' results files: per opponent the games won,
+opponent is two ``eval`` schedule entries per deck pair, one per order, each with ``swap: sides``
+(which moves a side's deck with it, so the second order gives the policy the other deck: it plays
+both decks from both seats). ``summarize`` reads the actors' results files: per opponent the games won,
 lost, drawn or capped, the win rate (draws and caps count half), game 1 (pre-board) apart from games
 2–3 (post-board; game 3 is played only at 1–1, so a selected sample), and per deck pair.
 """
@@ -39,7 +40,8 @@ def make_eval_schedule(model_spec, out_dir, opponents, pairs=DEFAULT_PAIRS, fmt=
     entries = []
     for opp in opponents:
         agent, teacher = opponent_side(opp)
-        for a, b in pairs:
+        # Both orders of each pair: swap: sides moves a side's deck with its agent (side a keeps deck a).
+        for a, b in [p for pair in pairs for p in (tuple(pair), tuple(pair)[::-1])]:
             e = {"id": "%s|%s-%s" % (opp, a, b), "purpose": "eval", "deck_a": "league/" + a, "deck_b": "league/" + b,
                  "swap": "sides", "agent_a": model_spec, "agent_b": agent}
             if teacher:

@@ -10,9 +10,11 @@ finish, and their per-game reports (docs/rnad_training_plan.md T8): the shared m
     rep = report([...records...])                              # per game, game 1 vs games 2–3, ...
     print(format_report(rep, "p3 vs scripted"))
 
-**Sides.** An evaluation schedule has one entry per deck pair, side a the evaluated policy and side
-b the opponent, with ``swap: sides`` (the coin of each match's seed puts each side in either seat,
-so the policy plays both decks of the pair and both seats). A results line names seats; the
+**Sides.** An evaluation schedule has two entries per deck pair, one per order, side a the evaluated
+policy and side b the opponent, each with ``swap: sides`` (the coin of each match's seed puts each
+side, with its deck, in either seat): ``swap: sides`` moves a side's deck with it, so it is the
+second order that gives the policy the pair's other deck; together it plays both decks of the pair
+from both seats. A results line names seats; the
 policy's seat is its ``side_a_seat``, and ``game_record`` turns a line into the side's view: its
 result, deck, seat, whether it played first.
 
@@ -34,6 +36,7 @@ same opponent read, sideboarding against what was seen, game 3 only at 1–1), s
 """
 
 import ctypes
+import glob
 import itertools
 import json
 import math
@@ -103,17 +106,17 @@ def agent_side(name, options="argmax", teacher_seed=0):
 def eval_schedule(policy, opponent, out_dir, pairs=None, weights=None, fmt="bo3", knowledge="expert",
                   max_game_decisions=5000, version="eval", policy_options="argmax", opponent_options="argmax",
                   purpose="eval", trajectory_dir=None, trajectory_seats=None, teacher_seed=0):
-    """The actor schedule (a dict) of `policy` (side a) against `opponent` (side b): one entry per
-    deck pair (`pairs`, default every league pair; `weights` {"a-b" or (a, b): weight}), ``swap:
-    sides``. Decision logs under `out_dir`/rmlog; episodes only with `trajectory_dir` (then
-    `purpose` should be "train")."""
+    """The actor schedule (a dict) of `policy` (side a) against `opponent` (side b): two entries per
+    deck pair (`pairs`, default every league pair; `weights` {"a-b" or (a, b): weight}), one per
+    order (``both_orders``), ``swap: sides``. Decision logs under `out_dir`/rmlog; episodes only
+    with `trajectory_dir` (then `purpose` should be "train")."""
     pairs = list(pairs or league_pairs())
     weights = {parse_pair(k): float(v) for k, v in (weights or {}).items()}
     pa, ta = agent_side(policy, policy_options, teacher_seed)
     pb, tb = agent_side(opponent, opponent_options, teacher_seed)
     entries = []
-    for a, b in pairs:
-        e = {"id": "%s-%s" % (a, b), "weight": weights.get((a, b), 1.0), "purpose": purpose,
+    for a, b, w in both_orders(pairs, weights):
+        e = {"id": "%s-%s" % (a, b), "weight": w, "purpose": purpose,
              "deck_a": deck_stem(a), "deck_b": deck_stem(b), "swap": "sides", "agent_a": pa, "agent_b": pb}
         mix = False
         if ta:
@@ -134,6 +137,18 @@ def eval_schedule(policy, opponent, out_dir, pairs=None, weights=None, fmt="bo3"
             "defaults": {"format": fmt, "knowledge_a": knowledge, "knowledge_b": knowledge,
                          "max_game_decisions": int(max_game_decisions)},
             "entries": entries}
+
+
+def both_orders(pairs, weights=None):
+    """[(a, b, weight)]: each deck pair in both orders, half its weight each (`weights` {(a, b): w},
+    either order, default 1). ``swap: sides`` moves a side's agent *and deck* between the seats, so
+    side a keeps deck a: an entry per order is what gives the evaluated policy both decks."""
+    weights = weights or {}
+    out = []
+    for a, b in pairs:
+        w = weights.get((a, b), weights.get((b, a), 1.0))
+        out += [(a, b, w / 2.0), (b, a, w / 2.0)]
+    return out
 
 
 def write_json(path, doc):
@@ -161,6 +176,38 @@ def _die_with_parent():
         _PRCTL(_PR_SET_PDEATHSIG, _SIGTERM)
 
 
+class ResultsReader:
+    """The results lines (parsed) that appeared since the last ``poll()`` in the ``a<k>.results.jsonl``
+    files of `out_dir` (actor ids `ids`, default every file there), each file in its order; a torn
+    last line waits for its newline."""
+
+    def __init__(self, out_dir, ids=None):
+        self.out_dir = out_dir
+        self.ids = ids
+        self._offsets = {}
+        self._partial = {}
+
+    def _paths(self):
+        if self.ids is not None:
+            return [os.path.join(self.out_dir, "a%d.results.jsonl" % k) for k in self.ids]
+        return sorted(glob.glob(os.path.join(self.out_dir, "a*.results.jsonl")))
+
+    def poll(self):
+        out = []
+        for path in self._paths():
+            try:
+                with open(path, "rb") as fp:
+                    fp.seek(self._offsets.get(path, 0))
+                    data = fp.read()
+            except FileNotFoundError:
+                continue
+            self._offsets[path] = self._offsets.get(path, 0) + len(data)
+            lines = (self._partial.get(path, b"") + data).split(b"\n")
+            self._partial[path] = lines.pop()
+            out += [json.loads(ln) for ln in lines if ln.strip()]
+        return out
+
+
 class ActorPool:
     """`actors` engine actor processes playing `schedule` (a dict, written to `out_dir`/schedule.json)
     until stopped (or `matches_per_actor` each). ``poll()`` returns the results lines (dicts) that
@@ -182,8 +229,7 @@ class ActorPool:
         self.schedule_path = os.path.join(self.out_dir, "schedule.json")
         write_json(self.schedule_path, schedule)
         self.procs = {}
-        self._offsets = {}
-        self._partial = {}
+        self.results = ResultsReader(self.out_dir, self.ids())
         self._logs = {}
         self.started_at = None
         self.exit_codes = {}
@@ -208,27 +254,10 @@ class ActorPool:
             self._logs[k] = log
             self.procs[k] = subprocess.Popen(argv, cwd=self.bin_dir, stdout=log, stderr=subprocess.STDOUT,
                                              env=self.env, preexec_fn=_die_with_parent)
-            self._offsets[k] = 0
-            self._partial[k] = b""
 
     def poll(self):
         """The new results lines (parsed) of every actor."""
-        out = []
-        for k in self.ids():
-            path = os.path.join(self.out_dir, "a%d.results.jsonl" % k)
-            try:
-                with open(path, "rb") as fp:
-                    fp.seek(self._offsets.get(k, 0))
-                    data = fp.read()
-            except FileNotFoundError:
-                continue
-            self._offsets[k] = self._offsets.get(k, 0) + len(data)
-            data = self._partial.get(k, b"") + data
-            lines = data.split(b"\n")
-            self._partial[k] = lines.pop()          # an incomplete last line waits for its newline
-            for ln in lines:
-                if ln.strip():
-                    out.append(json.loads(ln))
+        out = self.results.poll()
         for k, p in self.procs.items():
             if k not in self.exit_codes and p.poll() is not None:
                 self.exit_codes[k] = p.returncode

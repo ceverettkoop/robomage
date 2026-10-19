@@ -381,6 +381,14 @@ def format_status(d):
         L.append("last eval %s (%s, version %s):" % (last.get("label"), last.get("phase"), last.get("version")))
         for k, v in (last.get("brief") or {}).items():
             L.append("  %-16s %s" % (k, v))
+    if ev.get("exploiter"):
+        x = ev["exploiter"]
+        L.append("exploiter: %s, version %s, %s games, rolling win rate %s" % (
+            x.get("phase"), x.get("version"), x.get("games"), _n(x.get("recent_win_rate"))))
+    if ev.get("ratings"):
+        top = sorted(ev["ratings"].items(), key=lambda kv: -kv[1]["elo"])[:8]
+        L.append("ratings (Bradley-Terry, Elo scale): " + ", ".join("%s %+.0f (%d g)" % (k, r["elo"], r["games"])
+                                                                   for k, r in top))
     ck = d.get("checkpoint")
     if ck:
         L.append("checkpoint %s, %s ago" % (ck.get("path"), _dur(now - ck.get("at", now))))

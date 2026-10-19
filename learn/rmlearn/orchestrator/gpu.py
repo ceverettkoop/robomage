@@ -21,7 +21,13 @@ episode directories, in units of ``bc.unit_steps`` steps, a ``bc_train`` event e
 
 **Served policies** (``InferenceServer``): 0 the current policy (BC: pushed by ``serve``; R-NaD:
 ``ServerLink``, every ``rnad.push_every`` steps), 1 and 2 the regularisation policies (R-NaD), 3 the
-evaluation snapshot (``snapshot``), 10+ the evaluation ladder (``load_policy``).
+evaluation snapshot (``snapshot``), 10+ the evaluation ladder (``load_policy``), 20 and 21 an
+exploiter and its victim.
+
+**Exploiter** (``exploit_start`` / ``exploit_status`` / ``exploit_finish`` / ``exploit_cancel``;
+``rmlearn/exploiter.py``): an ``ExploiterSession`` against the current policy, ticked once per loop
+iteration between the learner's units (its PPO updates on this GPU); with ``pause_learner`` the
+learner idles until it finishes, so the two never compete for the GPU.
 """
 
 import fcntl
@@ -77,6 +83,8 @@ class Worker:
         self.agg = None
         self.last_bc_eval = 0
         self.eof = False
+        self.exploit = None             # an exploiter.ExploiterSession (exploit_start … exploit_finish)
+        self.exploit_pause = False      # the learner idles while it trains
 
     # ── protocol ──
 
@@ -386,6 +394,24 @@ class Worker:
             if self.learner.cfg.finetune_from_learner_steps < 0:
                 self.learner.configure(finetune_from_learner_steps=self.learner.learner_steps)
             return {"from": self.learner.cfg.finetune_from_learner_steps}
+        if cmd == "exploit_start":
+            return self.exploit_start(msg)
+        if cmd == "exploit_status":
+            if self.exploit is None:
+                raise ValueError("no exploiter running")
+            return self.exploit.status()
+        if cmd == "exploit_finish":
+            if self.exploit is None:
+                raise ValueError("no exploiter running")
+            x, self.exploit = self.exploit, None
+            self.exploit_pause = False
+            return {"result": x.result(int(msg.get("decisions", 0)))}
+        if cmd == "exploit_cancel":
+            if self.exploit is not None:
+                x, self.exploit = self.exploit, None
+                self.exploit_pause = False
+                x.close()
+            return {}
         if cmd == "stop":
             raise _Stop()
         if cmd == "_eof":
@@ -393,6 +419,27 @@ class Worker:
         if cmd == "crash":         # tests: the GPU process dies
             os._exit(int(msg.get("code", 9)))
         raise ValueError("unknown command %r" % cmd)
+
+    def exploit_start(self, msg):
+        """An exploiter (rmlearn/exploiter.py) against the current policy, trained in this process
+        between the learner's units: the victim a frozen copy of the current network (served at
+        pids[1]), the exploiter a trainable copy (pids[0]); the actors' schedule in the reply."""
+        import copy
+        from .. import exploiter as X
+        if self.exploit is not None:
+            raise ValueError("an exploiter is already running")
+        model, version = self.current_model()
+        victim = copy.deepcopy(model).eval()
+        init = copy.deepcopy(model)
+        conf = dict(msg.get("config") or {})
+        if conf.get("pairs"):
+            conf["pairs"] = [tuple(p) for p in conf["pairs"]]
+        cfg = X.ExploiterConfig(**dict(conf, device=self.device))
+        self.exploit = X.ExploiterSession(self.server, init, victim, cfg, msg["dir"], pids=tuple(msg["pids"]),
+                                          victim_version=version, labels={"victim": "v%d" % version,
+                                                                          "init": "v%d" % version}, log=log)
+        self.exploit_pause = bool(msg.get("pause_learner", True))
+        return {"schedule": self.exploit.schedule(), "victim_version": version}
 
     def checkpoint(self, path, keep):
         import torch
@@ -481,6 +528,11 @@ class Worker:
                     log("command %s failed: %s\n%s" % (msg.get("cmd"), err, traceback.format_exc()))
                     self.send({"re": msg.get("id"), "ok": False, "error": "%s: %s" % (type(err).__name__, err)})
                 continue
+            if self.exploit is not None:
+                self.exploit.tick()
+                if self.exploit_pause:
+                    time.sleep(0.05)
+                    continue
             if self.paused:
                 continue
             if self.mode == "bc":

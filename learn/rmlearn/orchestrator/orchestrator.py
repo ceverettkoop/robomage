@@ -133,6 +133,9 @@ class Orchestrator:
         self.run.make()
         self.state = read_json(self.run.state) or self.new_state()
         self.state["starts"] = self.state.get("starts", 0) + 1
+        lost = self.state.get("eval", {}).pop("running", None)
+        if lost:            # an evaluation the last orchestrator died in: played again from its start
+            self.state["eval"]["queue"].insert(0, lost)
         self.metrics = JsonLines(self.run.metrics)
         self.evals_file = JsonLines(self.run.evals)
         res = self.state.get("results", {})
@@ -488,6 +491,10 @@ class Orchestrator:
             if e["every_minutes"] > 0 and time.time() - last > 60 * e["every_minutes"] and not self.eval_job \
                     and not st["eval"]["queue"]:
                 self.queue_eval("t%d" % st["rnad"]["learner_steps"], self.eval_options(), self.cfg["eval"]["evaluators"])
+            last_x = st["eval"].get("exploiter_last_at") or st["phase_started"]
+            if e["exploiter_every_minutes"] > 0 and time.time() - last_x > 60 * e["exploiter_every_minutes"] and \
+                    not self.eval_queued_kind("exploiter"):
+                self.queue_eval("x%d" % st["rnad"]["learner_steps"], self.eval_options(), ["exploiter"])
         self.force_next = False
 
     # B1
@@ -630,11 +637,22 @@ class Orchestrator:
     # ── evaluation ──────────────────────────────────────────────────────────────────────────
 
     def queue_eval(self, label, options, evaluators):
+        """Queues an evaluation; the SEPARATE evaluators (sprt, exploiter) of `evaluators` become their
+        own evaluations, labelled ``<label>-<name>`` (``<label>`` alone when only one is named)."""
         q = self.state["eval"]["queue"]
-        if any(x["label"] == label for x in q) or (self.eval_job and self.eval_job.label == label):
-            return
-        q.append({"label": label, "options": options, "evaluators": list(evaluators), "phase": self.state["phase"]})
-        self.log("evaluation %s queued (%s)" % (label, ", ".join(evaluators)))
+        parts = EVAL.split_request(list(evaluators))
+        for names in parts:
+            lab = label if len(parts) == 1 or names[0] not in EVAL.SEPARATE else "%s-%s" % (label, names[0])
+            if any(x["label"] == lab for x in q) or (self.eval_job and self.eval_job.label == lab):
+                continue
+            q.append({"label": lab, "options": options, "evaluators": names, "phase": self.state["phase"]})
+            self.log("evaluation %s queued (%s)" % (lab, ", ".join(names)))
+
+    def eval_queued_kind(self, name):
+        """An evaluation naming evaluator `name` is running or queued."""
+        running = self.eval_job is not None and name in (getattr(self.eval_job, "request", None) or {}).get(
+            "evaluators", [])
+        return running or any(name in x["evaluators"] for x in self.state["eval"]["queue"])
 
     def eval_queued(self, label):
         return (self.eval_job is not None and self.eval_job.label == label) or \
@@ -645,6 +663,7 @@ class Orchestrator:
             self.eval_job.cancel()
             self.log("evaluation %s cancelled" % self.eval_job.label)
             self.eval_job = None
+            self.state["eval"].pop("running", None)
         self.state["eval"]["queue"] = [x for x in self.state["eval"]["queue"] if label is not None and
                                        x["label"] != label]
 
@@ -654,6 +673,7 @@ class Orchestrator:
             if st["paused"]:
                 self.eval_job.cancel()
                 st["eval"]["queue"].insert(0, self.eval_job.request)
+                st["eval"].pop("running", None)
                 self.log("evaluation %s stopped by the pause (queued again)" % self.eval_job.label)
                 self.eval_job = None
                 return
@@ -672,6 +692,17 @@ class Orchestrator:
         if not groups:
             self.log("evaluation %s: nothing to play" % req["label"])
             return
+        spec = next((g for g in groups if isinstance(g, EVAL.ExploitSpec)), None)
+        if spec is not None:
+            meta = {"phase": st["phase"], "version": None, "options": "", "evaluators": req["evaluators"],
+                    "started_at": time.time()}
+            job = EVAL.ExploitJob(self.run, self.cfg, seq, req["label"], spec, self.gpu, meta, self.engine,
+                                  self.bin_dir, self.log)
+            job.request = req
+            st["eval"]["running"] = req
+            job.start()
+            self.eval_job = job
+            return
         snap = self.gpu.call("snapshot", pid=EVAL.SUBJECT_PID)
         for ld in [x for g in groups for x in g.loads]:
             self.gpu.call("load_policy", pid=ld["pid"], path=ld["path"], version=ld["version"])
@@ -679,15 +710,25 @@ class Orchestrator:
                 "evaluators": req["evaluators"], "started_at": time.time()}
         job = EVAL.EvalJob(self.run, self.cfg, seq, req["label"], groups, meta, self.engine, self.bin_dir, self.log)
         job.request = req
+        st["eval"]["running"] = req
         job.start()
         self.eval_job = job
 
     def finish_eval(self, job):
         st = self.state
+        st["eval"].pop("running", None)
         res = job.result
         pids = [ld["pid"] for ld in job.loads()]
         if pids and self.gpu is not None:
             self.gpu.call("unload", pids=pids)
+        if not isinstance(job, EVAL.ExploitJob):
+            try:
+                res["ratings"] = st["eval"]["ratings"] = EVAL.record_ladder(self.run, res, st["ladder"])
+            except (OSError, ValueError, KeyError) as err:      # the ratings are a report, never fatal
+                self.log("evaluation %s: ladder: %s" % (res["label"], err))
+        else:
+            st["eval"]["exploiter_last_at"] = time.time()
+            st["eval"]["exploiter_last"] = EVAL.brief(res)
         st["eval"]["last"] = {"label": res["label"], "seq": res["seq"], "phase": res["phase"],
                               "version": res["version"], "brief": EVAL.brief(res), "seconds": res["seconds"]}
         st["eval"]["last_at"] = time.time()
@@ -908,7 +949,10 @@ class Orchestrator:
                           "restarts": sum(a["restarts"] for a in health), "health": health},
                "gpu": self.gpu_stats if running else {}, "metrics": self.last_metrics,
                "eval": {"running": self.eval_job.label if self.eval_job else None,
-                        "queue": [x["label"] for x in st["eval"]["queue"]], "last": st["eval"]["last"]},
+                        "queue": [x["label"] for x in st["eval"]["queue"]], "last": st["eval"]["last"],
+                        "ratings": st["eval"].get("ratings"), "exploiter_last": st["eval"].get("exploiter_last"),
+                        "exploiter": getattr(self.eval_job, "status", None) if isinstance(
+                            self.eval_job, EVAL.ExploitJob) else None},
                "exports": {"running": self.export_job[1] if self.export_proc else None,
                            "queue": [x[1] for x in self.export_queue], "done": len(st["exports"])},
                "checkpoint": st["checkpoint"], "transitions": st["transitions"][-6:],
@@ -927,6 +971,7 @@ class Orchestrator:
             if self.eval_job is not None:
                 self.eval_job.cancel()
                 self.state["eval"]["queue"].insert(0, self.eval_job.request)
+                self.state["eval"].pop("running", None)
                 self.eval_job = None
             if self.pool is not None:
                 self.pool.stop_all()
@@ -972,6 +1017,7 @@ def status_from_files(run):
         doc["checkpoint"] = st.get("checkpoint")
         doc["transitions"] = st.get("transitions", [])[-6:]
         doc.setdefault("eval", {})["last"] = (st.get("eval") or {}).get("last")
+        doc["eval"]["ratings"] = (st.get("eval") or {}).get("ratings")
     doc["running"] = False
     doc.pop("stopping", None)
     if st.get("phase") == "done":
