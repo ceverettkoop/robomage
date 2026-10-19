@@ -17,9 +17,15 @@ text-table generator `bin/<config>/rmembed` (libtorch) and the actor in `src/act
 - **No card vector per decision.** Cards travel as vocab ids, which are row indices into the card
   tables; a model gathers the rows it needs.
 - **Framework-neutral.** The tensors, the spec and the card tables are plain arrays and JSON,
-  defined here without reference to any ML library. The TorchScript contract (§6) is one consumer.
+  defined here without reference to any ML library. The network contract (§6) is one consumer.
 - **Deterministic.** The same frames give the same bytes; row order follows the frame, which is
-  canonical where the format says order is meaningless (tested: §7).
+  canonical where the format says order is meaningless (tested: §7). Since the frames are a
+  function of the RMLOG, featurizing a `--replay` of a game's decision log reproduces what its
+  `nn:` seats featurized live, byte for byte; `docs/rnad_training_plan.md` re-featurizes old games
+  on that.
+- **Decoded structs in.** The input is the decoded tables (`rmstate::DecodedFrame`, what the
+  in-process agent feed already holds), never frame bytes, and nothing is re-encoded. A later
+  path that builds those tables straight from the engine needs no featurizer change.
 
 ## 2. Inputs the featurizer reads
 
@@ -30,11 +36,18 @@ text-table generator `bin/<config>/rmembed` (libtorch) and the actor in `src/act
 | `METAGAME` | the number of reference lists and archetype labels (categorical sizes in the spec) |
 | `STATE` | the snapshot tables (ids 20-48) and knowledge tables (90-99); event tables (80-82) are not featurized (memory is the sidecar's job, `knowledge_store.md`) |
 
+The **actor entry point** (`featurize::featurize_seat`, what `nn:` calls) takes the deciding seat's
+frames only and refuses a frame whose header viewer is not a seat. The **learner entry points**
+(§3.5) also take the omniscient viewer's frames; only `rmfeat` and learner-facing writers (the
+training plan's trajectory writer) call them.
+
 ## 3. Per-decision tensors
 
 A decision is a set of **tokens**, one per row of every featurized `STATE` table, plus relations
-between them and the menu. All tensors carry a leading batch dimension `B` in the network
-contract (§6); the featurizer emits `B = 1` and a batcher pads and stacks.
+between them and the menu. The featurizer emits one decision unpadded (the shapes below); a
+batcher pads and stacks decisions to the network contract's leading batch dimension `B` (§6). On
+disk a decision (or a list of them) is an RMTB file of kind `tensors`, one array per tensor, a list
+stored ragged (values plus offsets).
 
 | Tensor | Shape | dtype | Contents |
 |---|---|---|---|
@@ -104,6 +117,23 @@ every (token type, categorical column) range, with id 0 the pad; one embedding t
 | `object.card` | also a second `tok_card` slot: the face as it is now (the back face's vocab id when `transformed`) | the card tables are per face |
 | `object_counter.kind`, `player_counter.kind`, `object_keyword.text`, `player_effect.filter`, the `ab_key` of an abref | categorical: FNV-1a 64 of the text modulo 256 buckets | counter kinds and keyword parameters have no enum |
 | `menu.description` | dropped | free text, covered by the structured columns |
+
+### 3.5 Learner-side: the omniscient featurization and targets
+
+- **Omniscient featurization.** The same spec featurizes the omniscient viewer's frame (as
+  `--rmstate-dump` writes it at every decision): every object is identified, hidden zones are
+  tokens with their cards, and the `k_*` token types have no rows (the omniscient viewer has no
+  knowledge tables). Seat-relative columns read as the omniscient frame defines them (self = A),
+  so a learner pairs it with the deciding seat explicitly. For a critic that sees the whole game.
+- **Targets** (`rmfeat --targets`), per decision of a seat, from the omniscient frame beside the
+  seat's: the opponent's hand as a multiset of vocab ids; the opponent's registered list and
+  archetype (`METAGAME` row indices); the seat's own library, top first, as vocab ids up to a
+  depth the spec fixes; the opponent's library likewise. An RMTB `targets` file, for auxiliary
+  heads.
+- **Isolation.** Neither reaches a decision: the in-process feed carries seat frames only, the
+  actor entry point refuses other viewers, and the gate checks that an `nn:` seat's tensors equal
+  `rmfeat`'s featurization of that seat's own stream and are unchanged by the scramble self-check
+  (hidden identities rotated).
 
 ## 4. The card tables
 
@@ -258,7 +288,7 @@ overrides; the card tables' widths and column names. Its `spec_hash` (FNV-1a 64 
 bytes) is in every exported file and in a model. A JSON document rather than an RMSTATE frame, so
 consumers outside C++ read it with any JSON parser.
 
-**TorchScript contract** (the step-5 actor; a policy in any framework follows the same tensors):
+**Network contract** (the step-5 actor; a policy in any framework follows the same tensors):
 
 ```
 forward(tok_type [B,N] i64, tok_num [B,N,F] f32, tok_cat [B,N,C] i64, tok_card [B,N,K] i64,
@@ -270,6 +300,28 @@ The card, text, ability and part tables are the model's frozen buffers, loaded f
 files when the model is built; the model exports `spec_hash`, `vocab_hash` and `text_model` as
 attributes, and the actor refuses a model whose values differ from its own spec and tables.
 Logits at padded menu rows are ignored; the actor takes the argmax (or samples) over real rows.
+
+**Export-friendly.** Inputs are padded tensors and masks only, and a conforming model has no
+control flow that depends on the data: real rows are selected by masks, relations applied by
+gathers and scatters, never by loops over real rows or shape-dependent branches. So one model
+exports as TorchScript, as a `torch.export` / AOTInductor `.pt2` package and as ONNX; the
+actor's evaluator loads the first two, ONNX is for other runtimes. TorchScript is in maintenance
+mode upstream and is not the contract.
+
+**Batched evaluation.** The actor evaluates through `Evaluator::evaluate(batch)`: a batch of
+featurized decisions (from one game or many), returning per decision the logits over its menu
+rows, the value and the policy version. Implementations: in-process (the actor's model, CPU) and
+remote (`nn:remote:<endpoint>`), over the protocol of `docs/inference_protocol.md`: decisions in
+shared memory, a Unix socket for signalling, the spec hash on every request; a request may name
+several policies (the training plan's current and two regularisation policies) and gets `log π`
+per menu row for each, with each policy's version. A server that goes away fails the actor
+loudly. `rmserve` (C++, libtorch, CPU) is the reference server; the training plan's GPU server
+speaks the same protocol.
+
+**The `nn:` agent.** `nn:<model>[:<key>=<value>…]`, keys `temp=` (sampling temperature) and
+`argmax`; the training plan adds `thresh=` and `disc=`. It keeps the exact distribution it sampled
+from over every menu row (after temperature and any projection) and the policy version for its
+last decision, for the training plan's trajectory writer.
 
 **Recommended model family** (the reference policy, `tools/nn/make_reference_policy.py`): per
 token type a linear projection of `tok_num`, plus embeddings of `tok_cat`, plus projections of
@@ -286,4 +338,9 @@ MLP over each `act_tok` token's output) for logits; a value head over the mean o
 - the exported tables equal a standard-library Python reader's view of the same files;
 - the text table check passes on a clean checkout; regenerating a deleted row leaves every other
   row's bytes unchanged; the tokenizer matches the golden ids and the encoder the golden vectors
-  (cosine ≥ 0.9999).
+  (cosine ≥ 0.9999);
+- exact re-featurization: `rmfeat` over a `--replay` of an `nn:` game equals what `nn:` featurized;
+- isolation (§3.5): an `nn:` seat's tensors equal `rmfeat`'s for that seat's stream, unchanged by
+  the scramble self-check; the actor entry point refuses an omniscient or other-seat frame;
+- the reference policy's TorchScript, `.pt2` and ONNX exports give the same logits and values;
+  in-process and `rmserve` evaluation agree.
