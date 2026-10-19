@@ -7,8 +7,8 @@ and peak memory of ``RNaDLearner.step`` for the given model, batch shapes and pr
 
 G games per batch are drawn round-robin from the episodes in ``--episodes`` (any *.rmtraj with μ; the
 random agent's will do). Each configuration runs ``--warmup`` steps, then ``--steps`` timed ones on
-the same batch, its chunks padded beforehand (``RNaDBatch.prepare``, a loader thread's work, timed
-apart as ``prep``). ``--recorded-regs`` marks every step's regularisation log π as recorded at the
+the same batch (``replay.TrajectoryBatch``; ``prep`` is building it, the chunks' inputs are
+expanded inside the step). ``--recorded-regs`` marks every step's regularisation log π as recorded at the
 learner's versions (the server-supplied path: no recompute forwards); without it the learner
 recomputes them (one extra forward while π_0,reg sits in both slots). On the GPU this must be the
 only process on it (``flock /tmp/rm-gpu.lock``).
@@ -27,14 +27,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 from rmlearn import model as M  # noqa: E402
-from rmlearn import rnad_data as RD  # noqa: E402
+from rmlearn import episodes as EP  # noqa: E402
+from rmlearn import replay as RP  # noqa: E402
 from rmlearn import rnad_learner as RL  # noqa: E402
 from rmlearn import spec as S  # noqa: E402
 
 
 def make_batch(eps, games, chunk, recorded, omniscient, learner):
     pick = [eps[i % len(eps)] for i in range(games)]
-    b = RD.RNaDBatch(pick, chunk_len=chunk, policies=(1, 2), omniscient=omniscient)
+    b = RP.TrajectoryBatch(pick, chunk_len=chunk, policies=(1, 2), omniscient=omniscient)
     if recorded:
         for k, pid in enumerate(learner.cfg.reg_policy_ids):
             ev = b.evals[pid]
@@ -62,10 +63,10 @@ def main():
     args = ap.parse_args()
     dev = torch.device(args.device)
     tables = S.load_tables(args.tables)
-    eps = [RD.read_episode(f) for f in sorted(glob.glob(os.path.join(args.episodes, "*.rmtraj")))]
-    eps, dropped = RD.filter_episodes(eps, spec_hash=tables.hashes["spec_hash"])
+    eps = [EP.read_episode(f) for f in sorted(glob.glob(os.path.join(args.episodes, "*.rmtraj")))]
+    eps, dropped = RL.trainable_episodes(eps, spec_hash=tables.hashes["spec_hash"])
     lens = np.array([e.steps for e in eps])
-    toks = np.concatenate([e.decs.sizes["n"] for e in eps])
+    toks = np.concatenate([np.diff(e.seat_feat.tok_off) for e in eps])
     print("episodes: %d (%s dropped), decisions per game mean %.0f max %d, tokens per decision mean %.0f max %d"
           % (len(eps), dropped or "none", lens.mean(), lens.max(), toks.mean(), toks.max()), flush=True)
     for prec in args.precision.split(","):
@@ -76,7 +77,7 @@ def main():
                 cfg = RL.RNaDConfig(chunk_len=chunk, precision=prec, forward_tokens=args.forward_tokens)
                 learner = RL.RNaDLearner(net, cfg, device=dev)
                 t = time.time()
-                batch = make_batch(eps, games, chunk, args.recorded_regs, args.omniscient, learner).prepare()
+                batch = make_batch(eps, games, chunk, args.recorded_regs, args.omniscient, learner)
                 prep = time.time() - t
                 if dev.type == "cuda":
                     torch.cuda.synchronize(dev)

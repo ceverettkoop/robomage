@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The R-NaD learner's CPU-only checks (learn/rmlearn/rnad.py, rnad_learner.py, rnad_data.py;
+"""The R-NaD learner's CPU-only checks (learn/rmlearn/rnad.py, rnad_learner.py, on L1's
+replay.TrajectoryBatch;
 docs/rnad_training_plan.md §4 L4). The GPU is hidden from this process.
 
     learn/.venv/bin/python learn/check_rnad.py                      # the self-contained checks
@@ -23,9 +24,10 @@ Checks:
 - **projection**: ``threshold_policy`` / ``discretize_policy`` against the engine's
   ``src/agents/policy_projection.cpp`` (compiled into a small harness with ``g++``) on random and
   known inputs, and against the reference's plain-ceiling rounding;
-- **real data** (with ``--tables`` / ``--episodes``): episodes read with numpy and with
-  ``python/rmtraj.py`` agree; learner steps with the default model on CPU are finite (and the
-  omniscient critic with ``--omni-episodes``).
+- **real data** (with ``--tables`` / ``--episodes``): engine episodes (L1's reader and
+  ``TrajectoryBatch``) through learner steps with the default model on CPU, finite (and the
+  omniscient critic with ``--omni-episodes``; with ``--bc-checkpoint`` the B3 seeding from a
+  behaviour-cloning checkpoint, then steps).
 
 Prints ``RNAD-CHECK: ok`` and exits 0, or the failures and exits 1.
 """
@@ -55,7 +57,9 @@ sys.path.insert(0, HERE)
 
 from rmlearn import model as M  # noqa: E402
 from rmlearn import rnad as R  # noqa: E402
-from rmlearn import rnad_data as RD  # noqa: E402
+from rmlearn import episodes as EP  # noqa: E402
+from rmlearn import replay as RP  # noqa: E402
+from rmlearn import rmtb  # noqa: E402
 from rmlearn import rnad_learner as RL  # noqa: E402
 from rmlearn import spec as S  # noqa: E402
 from rmlearn.batch import Decisions  # noqa: E402
@@ -545,38 +549,92 @@ def step_tokens(obs, menu, rng=None):
             "act_tok": np.arange(1, n, dtype=np.int64), "act_mask": np.ones(menu, np.uint8)}
 
 
+TENSOR_NAMES = ("tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask", "rel", "act_tok", "act_mask")
+# The fabricated spec's per-type slot widths (num, cat, card, ability): the player token, a menu row.
+FAKE_WIDTHS = np.array([[2, 2, 1, 1], [1, 2, 1, 1]], np.int64)
+
+
 def make_decisions(steps):
-    arrays = {k: np.concatenate([s[k] for s in steps]) for k in RD.TENSOR_NAMES}
+    arrays = {k: np.concatenate([s[k] for s in steps]) for k in TENSOR_NAMES}
     sizes = {"n": np.array([len(s["tok_type"]) for s in steps], np.int64),
              "r": np.array([len(s["rel"]) for s in steps], np.int64),
              "a": np.array([len(s["act_tok"]) for s in steps], np.int64)}
     return Decisions(arrays, sizes)
 
 
+def _starts(sizes):
+    out = np.zeros(len(sizes) + 1, np.int64)
+    np.cumsum(sizes, out=out[1:])
+    return out
+
+
+def _compact(tokens, prefix):
+    """Per-step token dicts → an episode file's compact arrays (docs/trajectory_format.md §3.2)."""
+    w = FAKE_WIDTHS
+    types = np.concatenate([t["tok_type"] for t in tokens])
+    num_i, num_v, num_n, cat, card, ab = [], [], [], [], [], []
+    for t in tokens:
+        flat = t["tok_num"].reshape(-1)
+        nz = np.nonzero(flat)[0]
+        num_i.append(nz)
+        num_v.append(flat[nz])
+        num_n.append(len(nz))
+        for i, ty in enumerate(t["tok_type"]):
+            cat.append(t["tok_cat"][i, :w[ty, 1]])
+            card.append(t["tok_card"][i, :w[ty, 2]])
+            ab.append(t["tok_ability"][i, :w[ty, 3]])
+    return {prefix + "tok_offsets": _starts([len(t["tok_type"]) for t in tokens]),
+            prefix + "rel_offsets": _starts([len(t["rel"]) for t in tokens]),
+            prefix + "tok_type": types.astype(np.uint8),
+            prefix + "tok_num_offsets": _starts(num_n),
+            prefix + "tok_num_index": np.concatenate(num_i).astype(np.uint16),
+            prefix + "tok_num_value": np.concatenate(num_v).astype(np.float16),
+            prefix + "tok_cat": np.concatenate(cat).astype(np.uint16),
+            prefix + "tok_card": np.concatenate(card).astype(np.int16),
+            prefix + "tok_ability": np.concatenate(ab).astype(np.int16),
+            prefix + "rel": np.concatenate([t["rel"] for t in tokens]).reshape(-1, 3).astype(np.uint16)}
+
+
 def make_episode(spec_hash, seats, tokens, mus, chosen, result, sideboarding=None, evals=None, omni_tokens=None,
-                 versions=None):
-    """An rnad_data.Episode from per-step lists. `evals`: per step a list of (policy id, version, log π)."""
+                 versions=None, has_mu=None, end_reason="win"):
+    """An episodes.Episode (L1's reader) of an episode file written from per-step lists. `evals`: per
+    step a list of (policy id, version, log π over the menu)."""
     d = len(seats)
     menus = np.array([len(m) for m in mus], np.int64)
-    menu_off = RD._starts(menus)
+    menu_off = _starts(menus)
     p = max((len(e) for e in evals), default=0) if evals else 0
-    ev_id = np.full((d, p), -1, np.int64)
-    ev_ver = np.full((d, p), -1, np.int64)
-    ev_lp = np.zeros((int(menu_off[-1]), p), np.float32)
-    for i in range(d):
-        for k, (pid, ver, lp) in enumerate(evals[i] if evals else []):
-            ev_id[i, k], ev_ver[i, k] = pid, ver
-            ev_lp[menu_off[i]:menu_off[i + 1], k] = lp
-    fields = {"seat": np.array(seats, np.int64), "game": np.zeros(d, np.int64), "decision": np.arange(1, d + 1),
-              "sideboarding": np.array(sideboarding if sideboarding is not None else [False] * d, np.bool_),
-              "chosen": np.array(chosen, np.int64), "has_mu": np.ones(d, np.bool_),
+    arrays = {"type_widths": FAKE_WIDTHS.astype(np.int32), "seat": np.array(seats, np.uint8),
+              "game": np.zeros(d, np.int32), "decision": np.arange(1, d + 1, dtype=np.int32),
+              "sideboarding": np.array(sideboarding if sideboarding is not None else [0] * d, np.uint8),
+              "chosen": np.array(chosen, np.int32),
+              "has_mu": np.array(has_mu if has_mu is not None else [1] * d, np.uint8),
               "policy_version": np.array(versions if versions is not None else [0] * d, np.int64),
-              "teacher": np.full(d, -1, np.int64)}
-    meta = {"spec_hash": spec_hash, "attrs": {"result_a": float(result[0]), "result_b": float(result[1]),
-                                              "end_reason": "win"}}
-    return RD.Episode(meta, fields, menu_off, np.concatenate([np.asarray(m, np.float32) for m in mus]),
-                      (ev_id, ev_ver, ev_lp), make_decisions(tokens),
-                      make_decisions(omni_tokens) if omni_tokens is not None else None)
+              "teacher": np.full(d, -1, np.int32), "menu_offsets": menu_off}
+    arrays.update(_compact(tokens, ""))
+    arrays["mu"] = np.concatenate([np.asarray(m, np.float32) for m in mus])
+    if p:
+        ev_id = np.full((d, p), -1, np.int64)
+        ev_ver = np.full((d, p), -1, np.int64)
+        ev_lp = np.zeros((int(menu_off[-1]), p), np.float32)
+        for i in range(d):
+            for k, (pid, ver, lp) in enumerate(evals[i]):
+                ev_id[i, k], ev_ver[i, k] = pid, ver
+                ev_lp[menu_off[i]:menu_off[i + 1], k] = lp
+        arrays.update({"eval_policy": ev_id, "eval_version": ev_ver, "eval_value": np.zeros((d, p), np.float32),
+                       "eval_log_pi": ev_lp})
+    if omni_tokens is not None:
+        arrays.update(_compact(omni_tokens, "omni_"))
+        arrays.update({"opp_list": np.full(d, -1, np.int32), "opp_archetype": np.full(d, -1, np.int32)})
+        for n in ("opp_hand", "own_library", "opp_library"):
+            arrays[n] = np.zeros(0, np.int16)
+            arrays[n + "_offsets"] = np.zeros(d + 1, np.int64)
+    attrs = {"episode_version": 1, "F": 2, "C": 2, "K": 1, "Q": 1, "menu_type": 1,
+             "omniscient": int(omni_tokens is not None), "format": "bo1", "game": 0, "engine_seed": 0,
+             "rmlog": "fabricated", "result_a": int(result[0]), "result_b": int(result[1]),
+             "end_reason": end_reason, "decisions": d}
+    meta = {"kind": "episode", "vocab_hash": "00000000000000aa", "spec_hash": spec_hash, "model": "fake@0",
+            "attrs": attrs}
+    return EP.Episode(rmtb.write_bytes(meta, arrays))
 
 
 def tiny_model(tables, seed=0, **kw):
@@ -602,7 +660,7 @@ def policy_of(model, tokens):
     return out
 
 
-def random_episodes(tables, rng, n_games, reg_model=None, reg_version=0, omni=False, full_games=()):
+def random_episodes(tables, rng, n_games, reg_model=None, reg_version=0, omni=False, full_games=(), no_mu=()):
     """Games of 1..9 steps with irregular seats, menus of 1..6 rows, μ random over the menu,
     sideboarding steps, and (with `reg_model`) the regularisation policy's recorded raw log π at
     about half the steps (some at a wrong version)."""
@@ -633,7 +691,7 @@ def random_episodes(tables, rng, n_games, reg_model=None, reg_version=0, omni=Fa
         res = rng.choice([-1.0, 0.0, 1.0])
         omni_tokens = [step_tokens(9 + rng.randint(7), m, rng) for m in menus] if omni else None
         eps.append(make_episode(tables.hashes["spec_hash"], seats, tokens, mus, chosen, (res, -res), sb, evals,
-                                omni_tokens))
+                                omni_tokens, has_mu=[int(not (g in no_mu and i == 0)) for i in range(d)]))
     return eps
 
 
@@ -647,7 +705,7 @@ def learner_inputs(learner, batch, eps):
     v_cur, v_tgt = np.zeros((T, G, 1)), np.zeros((T, G, 1))
     lps = [np.zeros((T, G, A)), np.zeros((T, G, A))]
     for g, ep in enumerate(eps):
-        x = to_torch(pad(ep.decs, {"F": 2, "C": 2, "K": 1, "Q": 1}, {"A": A}))
+        x = to_torch(EP.expand([(ep, d) for d in range(ep.steps)], "seat", {"A": A}))
         with torch.no_grad():
             out = learner.model(*x)
             tout = learner.target(*x)
@@ -684,7 +742,7 @@ def check_composition(tables):
             p.add_(torch.randn_like(p) * 0.3)
     learner.regs = [RL.RegPolicy(learner.regs[0].model, 6, 0.1, 0.3), r1]
     eps = random_episodes(tables, rng, 9, reg_model=learner.regs[0].model, reg_version=6)
-    batch = RD.RNaDBatch(eps, chunk_len=3, policies=(1, 2))
+    batch = RP.TrajectoryBatch(eps, chunk_len=3, policies=(1, 2))
     logits, v_cur, v_tgt, lps = learner_inputs(learner, batch, eps)
     valid = batch.valid.astype(np.float64)
     legal = batch.legal.astype(np.float64).copy()
@@ -712,7 +770,7 @@ def check_composition(tables):
     for L in (2, 5, 32):
         lr = RL.RNaDLearner(tiny_model(tables, seed=2),
                             RL.RNaDConfig(chunk_len=L, forward_tokens=[24, 64, 4096][L % 3]))
-        lr.accumulate_gradients(RD.RNaDBatch(eps, chunk_len=L, policies=(1, 2)), 0.3)
+        lr.accumulate_gradients(RP.TrajectoryBatch(eps, chunk_len=L, policies=(1, 2)), 0.3)
         grads.append(torch.cat([p.grad.flatten() for p in lr.params if p.grad is not None]))
     d = max(float((g - grads[0]).abs().max()) for g in grads) / float(grads[0].abs().max())
     ok(d < 1e-5, "composition: chunk lengths 2 / 5 / 32 give different gradients (relative %.3g)" % d)
@@ -726,13 +784,16 @@ def play_games(learner, n, game, rng):
     """`n` episodes of a two-step game sampled from the learner's current policy (μ = that policy)."""
     obs_tokens = [step_tokens(1, game["menus"][0]), step_tokens(2, game["menus"][1])]
     pol = policy_of(learner.model, obs_tokens)
-    eps = []
+    eps, made = [], {}
     for _ in range(n):
         a = rng.choice(len(pol[0]), p=pol[0] / pol[0].sum())
         b = rng.choice(len(pol[1]), p=pol[1] / pol[1].sum())
         r = game["payoff"](a, b)
-        eps.append(make_episode(learner.model.hashes["spec_hash"], [0, 1], obs_tokens, [pol[0], pol[1]], [a, b],
-                                (r, -r), versions=[learner.learner_steps] * 2))
+        r = 1 if rng.rand() < (1 + r) / 2 else -1       # a game result: ±1 with expectation r
+        if (a, b, r) not in made:
+            made[(a, b, r)] = make_episode(learner.model.hashes["spec_hash"], [0, 1], obs_tokens, [pol[0], pol[1]],
+                                           [a, b], (r, -r), versions=[learner.learner_steps] * 2)
+        eps.append(made[(a, b, r)])
     return eps, pol
 
 
@@ -764,7 +825,7 @@ def run_game(tables, game, cfg, iterations, games_per_step, seed, start=None):
     pols = [policy_of(learner.model, [step_tokens(1, game["menus"][0]), step_tokens(2, game["menus"][1])])]
     for _ in range(total):
         eps, pol = play_games(learner, games_per_step, game, rng)
-        learner.step(RD.RNaDBatch(eps, chunk_len=cfg.chunk_len))
+        learner.step(RP.TrajectoryBatch(eps, chunk_len=cfg.chunk_len))
         if learner.learner_steps % cfg.entropy_schedule_sizes[0] == 0:
             pols.append(pol)
     return learner, pols
@@ -788,7 +849,7 @@ def check_games(tables, quick=False):
     for eta in ((0.2,) if quick else (0.2, 0.0)):
         cfg = RL.RNaDConfig(learning_rate=5e-3, entropy_schedule_sizes=(100,), target_network_avg=0.05, chunk_len=2,
                             reg_eps=0.1, eta=eta)
-        learner, pols = run_game(tables, brps, cfg, iters, 128, seed=5, start=[[0.75, 0.15, 0.1], [0.75, 0.15, 0.1]])
+        learner, pols = run_game(tables, brps, cfg, iters, 256, seed=5, start=[[0.75, 0.15, 0.1], [0.75, 0.15, 0.1]])
         runs[eta] = (learner, pols)
     learner, pols = runs[0.2]
     final = policy_of(learner.target, [step_tokens(1, 3), step_tokens(2, 3)])
@@ -831,7 +892,7 @@ def check_bookkeeping(tables, work):
     print("bookkeeping: boundaries, pushes, stale regularisation, μ, resume, BC seeding", flush=True)
     rng = np.random.RandomState(4)
     eps = random_episodes(tables, rng, 6)
-    batch = RD.RNaDBatch(eps, chunk_len=4, policies=(1, 2))
+    batch = RP.TrajectoryBatch(eps, chunk_len=4, policies=(1, 2))
     cfg = RL.RNaDConfig(entropy_schedule_sizes=(3,), chunk_len=4, learning_rate=1e-3)
     learner = RL.RNaDLearner(tiny_model(tables, seed=3, id_dropout=0.3), cfg)
     srv = FakeServer()
@@ -865,7 +926,7 @@ def check_bookkeeping(tables, work):
     l2 = RL.RNaDLearner(tiny_model(tables, seed=3), cfg2)
     eps_r = random_episodes(tables, np.random.RandomState(5), 6, reg_model=l2.regs[0].model, reg_version=0,
                             full_games=(1, 4))
-    b2 = RD.RNaDBatch(eps_r, chunk_len=4, policies=(1, 2))
+    b2 = RP.TrajectoryBatch(eps_r, chunk_len=4, policies=(1, 2))
     m_rec = l2.step(b2)
     l3 = RL.RNaDLearner(tiny_model(tables, seed=3), RL.RNaDConfig(chunk_len=4, stale_reg="drop"))
     m_drop = l3.step(b2)
@@ -879,21 +940,20 @@ def check_bookkeeping(tables, work):
     info("stale regularisation: recompute %d recorded + %d recomputed log π; drop %d of %d games (%d decisions left)"
          % (m_rec["reg_recorded"], m_rec["reg_recomputed"], m_drop["games_dropped_stale"], b2.G, m_drop["decisions"]))
     # μ missing: refused by the filter (or dropped), and by the step.
-    bad = random_episodes(tables, np.random.RandomState(6), 2)
-    bad[0].has_mu[0] = False
+    bad = random_episodes(tables, np.random.RandomState(6), 2, no_mu=(0,))
     try:
-        RD.filter_episodes(bad)
-        ok(False, "bookkeeping: filter_episodes accepted a step without μ")
+        RL.trainable_episodes(bad)
+        ok(False, "bookkeeping: trainable_episodes accepted a step without μ")
     except ValueError:
         pass
-    kept, dropped = RD.filter_episodes(bad, missing_mu="drop")
+    kept, dropped = RL.trainable_episodes(bad, missing_mu="drop")
     ok(len(kept) == 1 and dropped == {"no_mu": 1}, "bookkeeping: missing μ drop %s" % dropped)
     try:
-        l2.step(RD.RNaDBatch(bad, chunk_len=4))
+        l2.step(RP.TrajectoryBatch(bad, chunk_len=4))
         ok(False, "bookkeeping: a step without μ reached the update")
     except ValueError:
         pass
-    info("a step without μ: filter_episodes raises (missing_mu='error') or drops the game, step() refuses it")
+    info("a step without μ: trainable_episodes raises (missing_mu='error') or drops the game, step() refuses it")
     # Resume: 3 steps, state_dict through torch.save, 4 more == 7 uninterrupted (CPU, bit-identical).
     def fresh(seed):
         return RL.RNaDLearner(tiny_model(tables, seed=seed, id_dropout=0.3),
@@ -952,7 +1012,7 @@ def check_bookkeeping(tables, work):
         lo = RL.RNaDLearner(tiny_model(tables, seed=4, omniscient_critic=True, critic_layers=1),
                             RL.RNaDConfig(chunk_len=4, value_activation=value, learning_rate=1e-3))
         before = params_of(lo.model.critic)
-        m = lo.step(RD.RNaDBatch(eps_o, chunk_len=4, omniscient=True))
+        m = lo.step(RP.TrajectoryBatch(eps_o, chunk_len=4, omniscient=True))
         ok(np.isfinite(m["loss"]) and not torch.equal(before, params_of(lo.model.critic)) and m["loss_value_head"] > 0,
            "bookkeeping: the omniscient critic (%s) step" % value)
     lb = RL.RNaDLearner(tiny_model(tables, seed=4), RL.RNaDConfig(chunk_len=4, precision="bf16"))
@@ -967,35 +1027,39 @@ def check_real(args):
     print("real data: engine episodes through the default model on CPU", flush=True)
     tables = S.load_tables(args.tables)
     files = sorted(glob.glob(os.path.join(args.episodes, "*.rmtraj")))
-    rmtraj = RD.rmtraj_module()
-    eps = []
-    for f in files:
-        a = RD.read_episode(f)
-        b = RD.from_rmtraj(rmtraj.read(f))
-        same = all(np.array_equal(a.decs.arrays[k], b.decs.arrays[k]) for k in RD.TENSOR_NAMES) and \
-            np.array_equal(a.mu, b.mu) and all(np.array_equal(getattr(a, k), getattr(b, k)) for k in RD.STEP_FIELDS)
-        ok(same, "real: %s read with numpy differs from python/rmtraj.py" % f)
-        eps.append(a)
-    kept, dropped = RD.filter_episodes(eps, spec_hash=tables.hashes["spec_hash"])
+    eps = [EP.read_episode(f) for f in files]
+    kept, dropped = RL.trainable_episodes(eps, spec_hash=tables.hashes["spec_hash"])
     if not ok(len(kept) >= 2, "real: %d usable episodes in %s (%s)" % (len(kept), args.episodes, dropped)):
         return
-    info("%d episodes (%d decisions) read with numpy = python/rmtraj.py" % (len(eps), sum(e.steps for e in eps)))
+    info("%d episodes (%d decisions), %d trainable (%s dropped)" % (len(eps), sum(e.steps for e in eps), len(kept),
+                                                                      dropped or "none"))
     torch.manual_seed(0)
     net = M.RMNet(M.ModelConfig(), tables)
     learner = RL.RNaDLearner(net, RL.RNaDConfig(chunk_len=32))
-    batch = RD.RNaDBatch(kept[:4], chunk_len=32, policies=(1, 2))
+    batch = RP.TrajectoryBatch(kept[:4], chunk_len=32, policies=(1, 2))
     for i in range(2):
         m = learner.step(batch)
         ok(all(np.isfinite(m[k]) for k in ("loss", "loss_v", "loss_nerd", "grad_norm")), "real: step %d %s" % (i, m))
         info("step %d: %d decisions of %d games (T %d, A %d): loss_v %.4f, NeuRD %.4f, |∇| %.3g, %d log π_reg "
              "recomputed, %.1f s" % (i, m["decisions"], m["games"], m["T"], batch.A, m["loss_v"], m["loss_nerd"],
                                      m["grad_norm"], m["reg_recomputed"], m["seconds"]))
+    if args.bc_checkpoint:
+        lb = RL.RNaDLearner.from_bc_checkpoint(args.bc_checkpoint, tables, RL.RNaDConfig(chunk_len=32))
+        ok(lb.regs[0] is lb.regs[1] and lb.regs[0].eps == 0.1 and lb.regs[0].eps_sideboarding == 0.25,
+           "real: the B3 seeding's regularisation policies")
+        for i in range(2):
+            m = lb.step(batch)
+            ok(all(np.isfinite(m[k]) for k in ("loss", "loss_v", "loss_nerd", "grad_norm")),
+               "real: BC-seeded step %d %s" % (i, m))
+        info("B3 from %s: network = target = π_0,reg (smoothed ε 0.1 / 0.25); 2 steps: loss_v %.4f, NeuRD %.4f, "
+             "KL(π‖π_reg) %.4f, entropy %.3f" % (args.bc_checkpoint, m["loss_v"], m["loss_nerd"], m["kl_reg"],
+                                                 m["entropy"]))
     if args.omni_episodes:
-        oe = [RD.read_episode(f) for f in sorted(glob.glob(os.path.join(args.omni_episodes, "*.rmtraj")))]
-        oe, _ = RD.filter_episodes(oe, spec_hash=tables.hashes["spec_hash"])
+        oe = [EP.read_episode(f) for f in sorted(glob.glob(os.path.join(args.omni_episodes, "*.rmtraj")))]
+        oe, _ = RL.trainable_episodes(oe, spec_hash=tables.hashes["spec_hash"])
         torch.manual_seed(0)
         lo = RL.RNaDLearner(M.RMNet(M.ModelConfig(omniscient_critic=True), tables), RL.RNaDConfig(chunk_len=32))
-        m = lo.step(RD.RNaDBatch(oe[:2], chunk_len=32, omniscient=True))
+        m = lo.step(RP.TrajectoryBatch(oe[:2], chunk_len=32, omniscient=True))
         ok(np.isfinite(m["loss"]), "real: omniscient critic step %s" % m)
         info("omniscient critic: %d decisions, loss_v %.4f, NeuRD %.4f, value head %.4f, %.1f s"
              % (m["decisions"], m["loss_v"], m["loss_nerd"], m["loss_value_head"], m["seconds"]))
@@ -1006,6 +1070,7 @@ def main():
     ap.add_argument("--tables", help="rmfeat --export-tables DIR (with --episodes: the real-data checks)")
     ap.add_argument("--episodes", help="a directory of *.rmtraj episodes with μ (e.g. random agents)")
     ap.add_argument("--omni-episodes", help="a directory of omniscient *.rmtraj episodes (the critic)")
+    ap.add_argument("--bc-checkpoint", help="a behaviour-cloning checkpoint (model.save_checkpoint) of --tables' spec")
     ap.add_argument("--quick", action="store_true", help="fewer iterations in the games")
     ap.add_argument("--part", default="oracle,projection,composition,games,bookkeeping,real")
     args = ap.parse_args()

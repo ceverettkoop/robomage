@@ -6,7 +6,9 @@ the inference server.
     cfg = RNaDConfig(entropy_schedule_sizes=(10_000,), chunk_len=32)
     learner = RNaDLearner.from_bc_checkpoint("bc/final.pt", tables, cfg, device="cuda")
     learner.add_hook(ServerLink(server, push_every=50))      # pushes now, every 50 steps, at boundaries
-    metrics = learner.step(batch)                             # rnad_data.RNaDBatch (or the same names)
+    eps, dropped = trainable_episodes(window.take_fresh(64, require_mu=True))
+    batch = replay.TrajectoryBatch(eps, chunk_len=cfg.chunk_len, policies=cfg.reg_policy_ids)
+    metrics = learner.step(batch)
     torch.save(learner.state_dict(), "ckpt/learner.pt")       # everything an exact resume needs
     learner = RNaDLearner.from_state_dict(torch.load(...), tables, device="cuda")
 
@@ -53,7 +55,17 @@ the critic loss) replaces the seat value head's; the seat value head is still re
 v-trace targets (``critic_trains_value_head``) so the exported policy's value stays meaningful.
 
 **Steps without μ** cannot be trained on (v-trace's importance ratios divide by μ(a)):
-``rnad_data.filter_episodes`` raises or drops them, and ``step`` raises if one reaches it.
+``trainable_episodes`` raises or drops them, and ``step`` raises if one reaches it.
+
+**The batch** is L1's ``replay.TrajectoryBatch`` (full games time-major, ``[T, G]``, T a multiple of
+``chunk_len``); ``step`` reads only its ``valid``, ``seat``, ``legal``, ``mu``, ``has_mu``,
+``chosen``, ``reward``, ``sideboarding``, ``policy_version``, ``evals[p]`` (``present``, ``version``,
+``log_pi``), ``G``, ``T``, ``A``, ``chunk_len``, ``chunks``, ``omniscient`` and
+``chunk_inputs(c, viewer)``. ``trainable_episodes`` keeps the games R-NaD can train on (counts per
+reason): an ``end_reason`` in ``drop_end_reasons`` (default ``cap``, ``quit``: a truncated game's
+0 / 0 is not its value) is dropped, a step without μ raises (``missing_mu="error"``; self-play steps
+all carry one) or drops the game (``"drop"``), and a step whose reply is no menu row (a concession
+sentinel; the batch's ``chosen`` −1) drops it.
 
 **Differences from the reference** (and rnad.py's list, which this module inherits):
 
@@ -440,7 +452,7 @@ class RNaDLearner:
         return torch.where(legal, s.reshape(shape), torch.zeros_like(lp))
 
     def step(self, batch):
-        """One learner step on `batch` (an ``rnad_data.RNaDBatch`` or an object with its names);
+        """One learner step on `batch` (a ``replay.TrajectoryBatch`` or an object with its names);
         returns a metrics dict."""
         cfg = self.cfg
         t_start = time.time()
@@ -674,6 +686,38 @@ class RNaDLearner:
         new = RegPolicy(_frozen(self.target), self.learner_steps, 0.0, 0.0)
         self.regs = [new, self.regs[0]]
         self.reg_updates += 1
+
+
+def trainable_episodes(eps, missing_mu="error", drop_end_reasons=("cap", "quit"), spec_hash=None):
+    """(the episodes R-NaD trains on, {reason: count dropped}); see the module docstring. `eps` are
+    ``episodes.Episode``s."""
+    if missing_mu not in ("error", "drop"):
+        raise ValueError("missing_mu is 'error' or 'drop'")
+    kept, dropped = [], {}
+
+    def drop(reason):
+        dropped[reason] = dropped.get(reason, 0) + 1
+
+    for ep in eps:
+        end = ep.attrs.get("end_reason", "")
+        if spec_hash is not None and ep.spec_hash != spec_hash:
+            drop("spec")
+        elif ep.steps == 0:
+            drop("empty")
+        elif end in drop_end_reasons:
+            drop("end_" + end)
+        elif not bool(np.asarray(ep.has_mu).all()):
+            if missing_mu == "error":
+                raise ValueError("%s: %d of %d steps carry no behaviour distribution (R-NaD needs μ at every "
+                                 "step; missing_mu='drop' drops such games)"
+                                 % (getattr(ep, "path", None) or "episode", int((np.asarray(ep.has_mu) == 0).sum()),
+                                    ep.steps))
+            drop("no_mu")
+        elif bool((np.asarray(ep.chosen) < 0).any()):
+            drop("no_row_chosen")
+        else:
+            kept.append(ep)
+    return kept, dropped
 
 
 TOKEN_KEYS = ("tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask")

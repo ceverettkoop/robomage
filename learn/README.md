@@ -20,8 +20,7 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/server.py` | `InferenceServer`: RMIP v1 (`docs/inference_protocol.md`) inside the host process; `python -m rmlearn.server` runs it standalone |
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |
 | `rmlearn/rnad.py` | R-NaD's math, a port of OpenSpiel's `rnad.py` (8156646): `v_trace`, `get_loss_v`, `get_loss_nerd`, `EntropySchedule`, `FineTuning` (= `src/agents/policy_projection.cpp`) |
-| `rmlearn/rnad_data.py` | episodes for R-NaD: `read_episode` (numpy), `from_rmtraj`, `filter_episodes`, `RNaDBatch` (full games time-major, chunked) |
-| `rmlearn/rnad_learner.py` | `RNaDConfig`, `RNaDLearner` (`step`, the iteration boundary, `state_dict` / `from_state_dict`, `from_bc_checkpoint`), `ServerLink` (pushes to `InferenceServer`) |
+| `rmlearn/rnad_learner.py` | `RNaDConfig`, `trainable_episodes`, `RNaDLearner` (on `replay.TrajectoryBatch`; (`step`, the iteration boundary, `state_dict` / `from_state_dict`, `from_bc_checkpoint`, `configure`), `ServerLink` (pushes to `InferenceServer`) |
 | `check.py` | the CPU-only correctness checks |
 | `check_rnad.py` | the R-NaD learner's CPU-only checks (a numpy oracle of the reference, the engine's projection, synthetic games, resume) |
 | `bench_rnad.py` | the learner step's throughput and memory |
