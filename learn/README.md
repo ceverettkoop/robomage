@@ -19,7 +19,11 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/evaluate.py` | an export as `nn:<model>` against `scripted` / `explore` / `random` through engine actors, scored per game (game 1 apart from games 2–3): `run_eval`, `summarize` |
 | `rmlearn/server.py` | `InferenceServer`: RMIP v1 (`docs/inference_protocol.md`) inside the host process; `python -m rmlearn.server` runs it standalone |
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |
+| `rmlearn/rnad.py` | R-NaD's math, a port of OpenSpiel's `rnad.py` (8156646): `v_trace`, `get_loss_v`, `get_loss_nerd`, `EntropySchedule`, `FineTuning` (= `src/agents/policy_projection.cpp`) |
+| `rmlearn/rnad_learner.py` | `RNaDConfig`, `trainable_episodes`, `RNaDLearner` (on `replay.TrajectoryBatch`; (`step`, the iteration boundary, `state_dict` / `from_state_dict`, `from_bc_checkpoint`, `configure`), `ServerLink` (pushes to `InferenceServer`) |
 | `check.py` | the CPU-only correctness checks |
+| `check_rnad.py` | the R-NaD learner's CPU-only checks (a numpy oracle of the reference, the engine's projection, synthetic games, resume) |
+| `bench_rnad.py` | the learner step's throughput and memory |
 | `integration.py` | checks and benches against the C++ actor (`robomage_nn`): `actor`, `server`, `bench` |
 
 ## Using it
@@ -61,6 +65,13 @@ learn/.venv/bin/python learn/check.py --engine-dir bin/debug --bin-dir bin    # 
 With `--engine-dir` the check also plays two short bo3 matches (explore vs random, the scripted
 teacher on seat A, omniscient episodes) for the episode reader (against `python/rmtraj.py`), the
 replay window, both batch kinds and a few BC steps (`--episodes DIR` gives them a directory instead).
+
+```sh
+learn/.venv/bin/python learn/check_rnad.py [--tables DIR --episodes DIR [--omni-episodes DIR]]   # RNAD-CHECK: ok
+HSA_OVERRIDE_GFX_VERSION=10.3.0 flock /tmp/rm-gpu.lock learn/.venv/bin/python learn/bench_rnad.py \
+    --tables DIR --episodes DIR --games 32 --chunk 8 --precision fp32,fp16 --recorded-regs
+```
+
 `check.py` hides the GPU from itself and needs no engine when given its inputs; it ends with
 `RMLEARN-CHECK: ok` (exit 0). `integration.py` needs a `robomage_nn` (`make actor`); its `server`
 and `bench` commands use the GPU (`HSA_OVERRIDE_GFX_VERSION=10.3.0` on the RX 6700 XT) and must be
