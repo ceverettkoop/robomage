@@ -399,17 +399,23 @@ no C++; the training plan's GPU server (L5) implements the same protocol.
 (sampling temperature, default 1; drawn with the agents' shared generator, so a game replays from
 its seed) and `argmax` (the largest logit; rows within 1e-5, absolute plus relative, of it tie and
 the first is taken, so float drift between two exports of one model cannot reorder rows equal in
-exact arithmetic, such as two identical cards in hand), plus two for tests and the bench:
+exact arithmetic, such as two identical cards in hand), DeepNash's play-time projection
+(`src/agents/policy_projection.h`, OpenSpiel's `rnad.py` `_threshold` / `_discretize`):
+`thresh=<p>` (rows below p after temperature dropped and the rest renormalised, none dropped when
+every row is below p; default 0, off) and `disc=<n>` (then the probabilities rounded to multiples
+of 1/n summing to 1, the rows taking `ceil(p·n)` in descending order until n is spent; default 0,
+off), applied in that order before the draw; plus three for tests and the bench:
 `dump=<file>` (every decision it featurized, written at exit as one `tensors` file, the bytes
 `rmfeat --featurize` writes for that seat), `evals=<file>` (every evaluation it received, at exit,
 as an RMTB file of kind `evaluations`: per decision and policy the version and value, per menu row
-and policy the logits and `log π`) and `stats` (an `NN-STATS:` line at exit; remote: also the
-requests, the server compute time attributed to them and the mean server batch); an unknown key
-fails loudly. `nn:remote:<endpoint>` takes the same keys plus `policies=<id>,…` (default `0`),
+and policy the logits and `log π`, per menu row the behaviour distribution `mu` and per decision
+the row taken `chosen`) and `stats` (an `NN-STATS:` line at exit; remote: also the requests,
+the server compute time attributed to them and the mean server batch); an unknown key fails
+loudly. `nn:remote:<endpoint>` takes the same keys plus `policies=<id>,…` (default `0`),
 `timeout=<s>` (default 60) and `shm=<MiB>` (the request area, default 32), and needs no model file;
-the featurizer's inputs are built as for `nn:<model>`. The training plan adds `thresh=` and `disc=`. It keeps the exact distribution it
-sampled from over every menu row (after temperature and any projection; one-hot under `argmax`)
-and the policy version for its last decision (`Agent::last_behaviour`, `agents/agent.h`), for the
+the featurizer's inputs are built as for `nn:<model>`. A sideboarding decision goes through the
+same path as any other. It keeps the exact distribution it sampled from over every menu row
+(after temperature and any projection; one-hot under `argmax`) and the policy version for its last decision (`Agent::last_behaviour`, `agents/agent.h`), for the
 training plan's trajectory writer. The featurizer's inputs are built once, before the match, in
 process from the engine (`load_engine_featurization`, `src/state_format/cards_file.h`: the
 whole-vocab records `--cards-frame` writes and the committed text table), so they are what
@@ -455,7 +461,10 @@ export and `rmserve` ones come with 5d):
   the scramble self-check; the actor entry point refuses an omniscient or other-seat frame;
 - the reference policy's TorchScript, `.pt2` and ONNX exports give the same logits and values;
   in-process and `rmserve` evaluation agree (within 1e-5, with batches across clients), and
-  `nn:remote:` through `rmserve` and through the Python server plays the in-process argmax games.
+  `nn:remote:` through `rmserve` and through the Python server plays the in-process argmax games;
+- the play-time projection: known answers and random menus (sums, dropped rows, multiples of 1/n,
+  the most probable row kept, a fixed point), and a sampled `temp=0.02:thresh=0.03:disc=16` bo3 match whose
+  every behaviour distribution is the projection of its logits, the row taken one with mass.
 
 The gate's `actor` tier (`docs/ci.md`) runs the `nn:`, re-featurization, export and remote
 evaluation checks when the actor binary and a Python with torch are available.

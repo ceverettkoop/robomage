@@ -21,6 +21,13 @@ struct ActorMatch {
 
 const char *const TEXT_TABLE = "resources/embeddings/oracle_text.rmtb";
 
+// The projected match's options: DeepNash's play-time projection, after a temperature low enough
+// that the reference policy's nearly flat logits put rows below the threshold.
+const double PROJECT_TEMP = 0.02;
+const double PROJECT_THRESH = 0.03;
+const int PROJECT_DISC = 16;
+const char *const PROJECT_OPTIONS = "temp=0.02:thresh=0.03:disc=16";
+
 }  // namespace
 
 static std::string file_stamp(const std::string &path);
@@ -91,8 +98,10 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
     } cases[] = {
         {opt.binary, "nn:" + a.ts(), "make actor"},
         {a.nn_binary, "nn:" + a.ts() + ":tmep=2", "unknown option"},
-        {a.nn_binary, "nn:remote:" + rmcheck::path_join(a.dir, "none.sock"), "cannot connect"},
+        {a.nn_binary, "nn:remote:" + rmcheck::path_join(a.dir, "none.sock") + ":" + PROJECT_OPTIONS, "cannot connect"},
         {a.nn_binary, "nn:" + a.ts() + ":policies=0", "nn:remote: only"},
+        {a.nn_binary, "nn:" + a.ts() + ":thresh=1", "thresh= expects"},
+        {a.nn_binary, "nn:" + a.ts() + ":disc=-16", "disc= expects"},
     };
     for (const auto &c : cases) {
         rmcheck::ProcSpec spec;
@@ -107,7 +116,7 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
     }
     rep.info(
         "refusals: robomage refuses nn: (naming `make actor`); robomage_nn refuses an unknown key, a remote-only key "
-        "in process and nn:remote: with no server");
+        "in process, a bad thresh= or disc= and nn:remote: (with thresh= and disc=) with no server");
 }
 
 // rmfeat --featurize over a --replay of the match's decision log equals what nn: featurized live.
@@ -229,12 +238,15 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
     return true;
 }
 
-// The actor tier (docs/ci.md): robomage_nn and the reference policy (actor_setup; skipped without
-// them). An nn: (TorchScript, sampled) vs explore bo3 match with no error or warning, its live
-// tensors (nn:...:dump=) equal to rmfeat's over a --replay of its decision log, the .pt2 export
-// playing the same argmax bo3 match as the TorchScript one, the refusals, the three exports'
-// agreement on the match's decisions, then the remote evaluation checks (actor_remote_checks).
+// The actor tier (docs/ci.md): the policy projection's checks (projection_checks), then
+// robomage_nn and the reference policy (actor_setup; skipped without them). An nn: (TorchScript,
+// sampled) vs explore bo3 match with no error or warning, its live tensors (nn:...:dump=) equal to
+// rmfeat's over a --replay of its decision log, a sampled bo3 match under thresh= and disc= whose
+// behaviour distributions are the projection (check_projected_evals), the .pt2 export playing the
+// same argmax bo3 match as the TorchScript one, the refusals, the three exports' agreement on the
+// match's decisions, then the remote evaluation checks (actor_remote_checks).
 void tier_actor(const Options &opt, Report &rep) {
+    projection_checks(rep);
     ActorSetup a;
     std::string skip;
     if (!actor_setup(opt, rep, "actor", &a, &skip)) {
@@ -242,11 +254,16 @@ void tier_actor(const Options &opt, Report &rep) {
         return;
     }
     const std::string live = path_join(a.dir, "match_live.rmtb");
+    const std::string projected = path_join(a.dir, "projected_evals.rmtb");
     const std::string seed = std::to_string(opt.seed + 7);
     std::vector<ActorMatch> matches = {
         {"match",
             {"--agent-a", "nn:" + a.ts() + ":dump=" + live, "--agent-b", "explore", "--deck-a", "league/reanimator",
                 "--deck-b", "league/wrb_energy"},
+            {}},
+        {"projected",
+            {"--agent-a", "nn:" + a.ts() + ":" + PROJECT_OPTIONS + ":evals=" + projected, "--agent-b", "explore",
+                "--deck-a", "league/burn", "--deck-b", "league/uw_control"},
             {}},
         {"argmax_ts",
             {"--agent-a", "nn:" + a.ts() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_delver",
@@ -273,6 +290,8 @@ void tier_actor(const Options &opt, Report &rep) {
         m.result = run_process(spec);
     });
     for (const ActorMatch &m : matches) check_match(rep, a, m);
+    if (matches[1].result.ok())
+        check_projected_evals(rep, projected, PROJECT_OPTIONS, PROJECT_TEMP, PROJECT_THRESH, PROJECT_DISC);
     const std::string ts = decisions_of(path_join(a.dir, "argmax_ts.rmlog"));
     const std::string pt2 = decisions_of(path_join(a.dir, "argmax_pt2.rmlog"));
     if (ts.empty() || ts != pt2)

@@ -27,15 +27,23 @@
 //   temp=<t>     sampling temperature, t > 0 (default 1): row a with probability
 //                softmax(logits / t)[a], drawn with the agents' shared generator (agents/agent.h:
 //                random.choices on the probabilities), so a game replays from its seed
+//   thresh=<p>   DeepNash's thresholding, 0 <= p < 1 (default 0, off): the rows whose probability
+//                (after temperature) is below p are dropped and the rest renormalised; when every
+//                row is below p none is dropped (agents/policy_projection.h threshold_policy)
+//   disc=<n>     DeepNash's discretisation, n >= 0 (default 0, off): the probabilities (after
+//                temperature and thresh=) rounded to multiples of 1/n that sum to 1, the most
+//                probable row keeping the largest share (policy_projection.h discretize_policy)
 //   argmax       take the row of the largest logit, no draw; rows within 1e-5 (absolute plus
 //                relative) of it tie and the first is taken, so the float drift between two
-//                exports of one model does not reorder rows that are equal in exact arithmetic
+//                exports of one model does not reorder rows that are equal in exact arithmetic;
+//                thresh= and disc= leave its one-hot distribution as it is
 //   dump=<file>  write every decision this agent featurized, at process exit, as one RMTB tensors
 //                file (featurizer.h tensors_file): rmfeat --featurize over a --rmstate-dump of a
 //                --replay of the game's decision log writes the same bytes for this seat
 //   evals=<file> write every evaluation this agent received, at process exit, as one RMTB file of
 //                kind `evaluations` (policy [P] ids, version [D, P], value [D, P], logits and
-//                log_pi [ΣA, P] over each decision's menu rows, menu_offsets [D + 1])
+//                log_pi [ΣA, P] over each decision's menu rows, menu_offsets [D + 1]), with the
+//                behaviour distribution it chose from (mu [ΣA], f32) and the row it took (chosen [D])
 //   stats        at process exit, an NN-STATS: line (decisions, seconds featurizing and
 //                evaluating; remote: requests, the server's compute time attributed to them and
 //                the mean server batch) on stdout
@@ -52,12 +60,14 @@
 // state_format/cards_file.h load_engine_featurization, the same bytes robomage --cards-frame
 // writes and rmfeat reads), once, before the match; an in-process model is refused unless its
 // spec_hash, vocab_hash and text_model are theirs (check_model), a server refuses the handshake
-// unless every requested policy's are. At each decision the agent reads nothing but the seat's
-// decoded STATE frame: featurize_seat on it, one evaluation (a batch of one), a row. It keeps the
-// exact distribution it chose from over every menu row and the sampled policy's version
-// (last_behaviour), one-hot under argmax. A menu of one row is taken with no draw. Any featurizer
-// or evaluator failure (for nn:remote:, the server refusing, erring, going away or not answering)
-// ends the run as a fatal error naming the model or endpoint, never a default action.
+// unless every requested policy's are. At each decision (a sideboarding one like any other) the
+// agent reads nothing but the seat's decoded STATE frame: featurize_seat on it, one evaluation (a
+// batch of one), the distribution over the menu rows (softmax(logits / temp), then thresh=, then
+// disc=; or argmax's one-hot), a row drawn from it. It keeps that exact distribution over every
+// menu row and the sampled policy's version (last_behaviour). A menu of one row is taken with no
+// draw. Any featurizer or evaluator failure (for nn:remote:, the server refusing, erring, going
+// away or not answering) ends the run as a fatal error naming the model or endpoint, never a
+// default action.
 
 namespace actor {
 
@@ -65,6 +75,8 @@ struct NnOptions {
         std::string model;   // in process
         std::string remote;  // nn:remote:'s endpoint ("" in process)
         double temp = 1.0;
+        double thresh = 0;  // thresh=; 0 is off
+        int disc = 0;       // disc=; 0 is off
         bool argmax = false;
         std::string dump, evals;
         bool stats = false;
@@ -87,7 +99,8 @@ class NnAgent : public agents::Agent {
         static bool parse_options(const std::string &args, NnOptions *out, std::string *err);
 
     private:
-        // The distribution over the menu rows the choice is drawn from, into behaviour_.mu.
+        // The distribution over the menu rows the choice is drawn from (temperature, thresh=,
+        // disc=; argmax's one-hot), into behaviour_.mu.
         void distribution(const std::vector<float> &logits);
         int choose();
         // The evals= file of evaluated_.
@@ -105,6 +118,8 @@ class NnAgent : public agents::Agent {
         bool have_behaviour_ = false;
         std::vector<featurize::Tensors> dumped_;
         std::vector<Evaluation> evaluated_;
+        std::vector<double> evaluated_mu_;     // evals=: each decision's behaviour_.mu, in order
+        std::vector<int64_t> evaluated_rows_;  // evals=: each decision's row
         int seat_ = -1;
         size_t decisions_ = 0;
         double featurize_s_ = 0, evaluate_s_ = 0;

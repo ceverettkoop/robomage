@@ -367,6 +367,9 @@ def close(a, b):
 def check(args):
     import onnx
     import onnxruntime as ort
+    # aoti_load_package reads torch._inductor.codecache, which torch 2.10 no longer imports with
+    # torch._inductor (build imports it by compiling first).
+    import torch._inductor.codecache  # noqa: F401
     ts = torch.jit.load(args.out + ".ts.pt")
     pt2 = torch._inductor.aoti_load_package(args.out + ".pt2")
     sess = ort.InferenceSession(args.out + ".onnx", providers=["CPUExecutionProvider"])

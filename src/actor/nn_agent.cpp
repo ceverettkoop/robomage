@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <utility>
 
+#include "../agents/policy_projection.h"
 #include "../state_format/cards_file.h"
 #include "../str_util.h"
 #include "remote_evaluator.h"
@@ -134,6 +135,19 @@ bool NnAgent::parse_keys(const std::vector<std::string> &parts, size_t first, Nn
                 *err = "nn: temp= expects a positive number, got '" + value + "'";
                 return false;
             }
+        } else if (key == "thresh" && has_value) {
+            out->thresh = std::strtod(value.c_str(), &end);
+            if (value.empty() || *end != '\0' || !(out->thresh >= 0 && out->thresh < 1)) {
+                *err = "nn: thresh= expects a probability, 0 <= p < 1, got '" + value + "'";
+                return false;
+            }
+        } else if (key == "disc" && has_value) {
+            const unsigned long long n = std::strtoull(value.c_str(), &end, 10);
+            if (value.empty() || *end != '\0' || value[0] == '-' || n > 1000000) {
+                *err = "nn: disc= expects a whole number of steps (0 to 1000000), got '" + value + "'";
+                return false;
+            }
+            out->disc = static_cast<int>(n);
         } else if (key == "dump" && has_value && !value.empty()) {
             out->dump = value;
         } else if (key == "evals" && has_value && !value.empty()) {
@@ -160,7 +174,8 @@ bool NnAgent::parse_keys(const std::vector<std::string> &parts, size_t first, Nn
             *err = "nn: '" + p + "' is an option of nn:remote: only";
             return false;
         } else {
-            *err = "nn: unknown option '" + p + "' (keys: temp=<t>, argmax, dump=<file>, evals=<file>, stats" +
+            *err = "nn: unknown option '" + p +
+                   "' (keys: temp=<t>, thresh=<p>, disc=<n>, argmax, dump=<file>, evals=<file>, stats" +
                    (remote ? ", policies=<ids>, timeout=<s>, shm=<MiB>)" : ")");
             return false;
         }
@@ -195,6 +210,8 @@ void NnAgent::distribution(const std::vector<float> &logits) {
         sum += mu[i];
     }
     for (double &p : mu) p /= sum;
+    agents::threshold_policy(&mu, opt_.thresh);
+    agents::discretize_policy(&mu, opt_.disc);
 }
 
 int NnAgent::choose() {
@@ -234,8 +251,13 @@ int NnAgent::decide(const agents::Decision &d) {
     behaviour_.policy_version = policy.version;
     have_behaviour_ = true;
     if (!opt_.dump.empty()) dumped_.push_back(tensors_);
-    if (!opt_.evals.empty()) evaluated_.push_back(evals_.at(0));
-    return choose();
+    const int row = choose();
+    if (!opt_.evals.empty()) {
+        evaluated_.push_back(evals_.at(0));
+        evaluated_mu_.insert(evaluated_mu_.end(), behaviour_.mu.begin(), behaviour_.mu.end());
+        evaluated_rows_.push_back(row);
+    }
+    return row;
 }
 
 featurize::RmtbFile NnAgent::evaluations_file() const {
@@ -268,6 +290,9 @@ featurize::RmtbFile NnAgent::evaluations_file() const {
     f.arrays.push_back(featurize::rmtb_floats("logits", featurize::Dtype::F32, {a, p}, logits));
     f.arrays.push_back(featurize::rmtb_floats("log_pi", featurize::Dtype::F32, {a, p}, log_pi));
     f.arrays.push_back(featurize::rmtb_ints("menu_offsets", featurize::Dtype::I64, {d + 1}, offsets));
+    const std::vector<float> mu(evaluated_mu_.begin(), evaluated_mu_.end());
+    f.arrays.push_back(featurize::rmtb_floats("mu", featurize::Dtype::F32, {a}, mu));
+    f.arrays.push_back(featurize::rmtb_ints("chosen", featurize::Dtype::I64, {d}, evaluated_rows_));
     return f;
 }
 

@@ -138,7 +138,7 @@ background** and make the live output inspectable by the user:
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
-  | `actor` | opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches, `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
+  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
@@ -188,7 +188,7 @@ the test-setup presets and `--play`; `--help` lists every flag (zone presets
   each seat's `--agent-a/-b` agent decides (default `first` = action 0, so the game
   auto-advances; e.g. `explore`). Agent specs: `first` (`auto`), `random`, `explore`,
   `explore:patient`, `actions:<i,i,…>`, `play:<specs>` (`src/agents/agent.h`), and in
-  `robomage_nn` only `nn:<model>[:temp=<t>][:argmax]` (a learned policy, `src/actor/nn_agent.h`)
+  `robomage_nn` only `nn:<model>[:temp=<t>][:thresh=<p>][:disc=<n>][:argmax]` (a learned policy, `src/actor/nn_agent.h`)
   and `nn:remote:<socket>[:…]` (the same, evaluated by an inference server such as `rmserve`).
   **Claude cannot play a seat interactively** (no TTY; a seat without `--play`, `--actions` or an
   agent reads the RMSTATE stream on stdin) — use `--play`. A `--play` run prints `resolved --actions: …` for exact
@@ -611,7 +611,8 @@ sections above are not repeated here.
   (`agent.h`: the interface, specs `first`/`random`/`actions:`/`play:`/`explore`/`explore:patient`;
   `seat_frames.h`, `decision_view.h`: the decoded stream and decision; `py_random.h`: Python's
   `random.Random` bit for bit; `game_seed.h`: the driver's engine seed of a game seed;
-  `explore.h`: `python/explore_agent.py` ported, same games; `play_spec.h`: the `--play` resolver
+  `explore.h`: `python/explore_agent.py` ported, same games; `policy_projection.h`: DeepNash's
+  play-time thresholding and discretisation, the `nn:` agent's `thresh=` / `disc=`; `play_spec.h`: the `--play` resolver
   and its global script; `trace.h`: `--trace-decisions`; `register_agent_kind`: a kind a binary
   adds, `nn:` in `robomage_nn`). `driver.h` is the engine side:
   `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace

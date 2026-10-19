@@ -286,14 +286,15 @@ rmfeat: $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ)
 
 # ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
 # tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
-# the std-only RMSTATE decoder and schema, the agents' std-only frame reader and Python-compatible
-# generator, src/featurize/ (std only: the JSON reader, RMTB, the WordPiece tokenizer) and
-# src/inference/ (the protocol's wire code, for the actor tier's handshake checks). Built with the
-# engine's flags (-fno-exceptions); `make check` runs every tier.
+# the std-only RMSTATE decoder and schema, the agents' std-only frame reader, Python-compatible
+# generator and policy projection, src/featurize/ (std only: the JSON reader, RMTB, the WordPiece
+# tokenizer) and src/inference/ (the protocol's wire code, for the actor tier's handshake checks).
+# Built with the engine's flags (-fno-exceptions); `make check` runs every tier.
 RMCHECK_SRCS := $(wildcard tools/robomage_check/*.cpp)
 RMCHECK_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMCHECK_SRCS))
 RMCHECK_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
-                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o $(INFERENCE_OBJ) \
+                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o \
+                   $(ODIR)/agents/policy_projection.o $(INFERENCE_OBJ) \
                    $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
 
 robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)

@@ -253,6 +253,11 @@ The actor reads a schedule file (written by the orchestrator, section 4 L6):
   as agent options (`nn:<model>:thresh=0.03:disc=16`).
 - Whatever is applied, the exact distribution sampled from is what T1 records as μ.
 
+Done: `nn:…:thresh=<p>:disc=<n>` (also `nn:remote:`), OpenSpiel's `_threshold` / `_discretize` in
+`src/agents/policy_projection.h` (std only, so the learner side can link or mirror it), applied
+after temperature and before the draw; `last_behaviour` holds the projected μ, and `evals=` writes
+it (`mu`, `chosen`). The `actor` tier checks the projection and a projected bo3 match.
+
 ### T7. Throughput work
 
 Set targets in the `bench` tier and work toward them. Measured today: ~1,850 decisions/s per core

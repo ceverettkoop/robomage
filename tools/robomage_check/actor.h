@@ -54,6 +54,15 @@ bool start_server(const Options &opt, const std::vector<std::string> &argv, cons
 // later is killed and the result says it timed out.
 ProcResult stop_server(ServerRun *s, int sig);
 
+// The policy projection (src/agents/policy_projection.h) on known answers and random menus; the
+// actor tier runs them with or without its opt-in (projection.cpp).
+void projection_checks(Report &rep);
+// The evals= file of an nn: agent run with `options` (temp=<temp>:thresh=<thresh>:disc=<disc>):
+// every decision's mu is the projection of softmax(logits / temp), a distribution of multiples of
+// 1/disc, rows below thresh 0, the chosen row with mass.
+void check_projected_evals(
+    Report &rep, const std::string &path, const std::string &options, double temp, double thresh, int disc);
+
 // The actor tier's remote evaluation checks (tier_actor_remote.cpp): bin/<config>/rmserve beside
 // robomage_nn, the Python server tools/nn/serve_check.py, under <out>/actor/remote/.
 void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a);
