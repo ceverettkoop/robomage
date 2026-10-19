@@ -15,7 +15,8 @@
 // Standard library and the decoder only. Built from a SCHEMA frame (every table, column, tag and
 // enum), a METAGAME frame (its tables' row counts) and the card tables (their widths, column names
 // and fixed key list), so it is the same for every match. Every STATE table with id 20-48 or 90-99
-// is a token type, in ascending id; each column becomes slots by its tag (columns.h, §3.2):
+// that no fold takes whole is a token type, in ascending id, then the folds' synthetic types; each
+// column becomes slots by its tag (columns.h, §3.2):
 //
 //   bool, count, signed, prob   one numeric slot (x, log1p, sign·log1p|x|, x / 10^9)
 //   index                       one numeric slot (log1p, 0 at none) and its none flag
@@ -39,15 +40,32 @@
 // The overrides (§3.4, the only per-column rules) are listed in the spec: object.card's second card
 // slot (the current face), the hashed text columns (FNV-1a 64 modulo HASH_BUCKETS, + 1; empty text
 // is the none id), menu.description dropped, and the knowledge tables' METAGAME row indices
-// (k_template.list, k_archetype.archetype, b_list.list, b_archetype.archetype: categorical over
-// meta_list / meta_archetype rows).
+// (k_template.list, k_archetype.archetype, b_list.list, b_archetype.archetype: the key of their
+// pivot, below).
+//
+// The folds (§3.6) are listed in the spec too; they make tokens otherwise than one per row:
+//
+//   TABLE      one token per row of its table (every type the folds leave alone)
+//   FILTERED   k_pool_card: the rows the ledger does not fold (pools other than a HAND, a SIDEBOARD
+//              and a player's only LIBRARY_RANGE pool when it is a run)
+//   DELTA      object_subtype / object_keyword: per object the rows where it differs from its current
+//              face's printed rows (card_subtype / card_keyword), a printed row it lacks with
+//              `removed` set; the full set for an object whose face has no card row
+//   LEDGER     `ledger`: one token per (player, card) folding own_deck, k_seen, k_known_hand and the
+//              folded k_pool_card rows (LedgerSlot)
+//   PIVOT      `lists` (k_template, k_archetype) and `b_lists` (b_list, b_archetype): one token per
+//              player, a numeric slot per (METAGAME row of the key, other column)
+//
+// Synthetic types (LEDGER, PIVOT) follow the table types; the folded tables have no type of their
+// own. Token order is canonical: the ledger by (player_rel, card), a pivot by player_rel, a delta
+// type by object row, then removed, then value (folds.h).
 //
 // spec_json() writes the document with its keys in a fixed order; spec_hash is FNV-1a 64 of its
 // bytes.
 
 namespace featurize {
 
-const int SPEC_VERSION = 1;
+const int SPEC_VERSION = 2;
 // Buckets of a hashed text column.
 const uint32_t HASH_BUCKETS = 256;
 // The library depth of the learner targets (targets.h).
@@ -69,6 +87,66 @@ struct CatSlot {
 struct CardSlot {
         std::string name, column;
         bool current_face = false;  // the face as it is now (object.card's second slot)
+};
+
+// How a token type's tokens are made (header comment).
+enum class TypeKind : uint8_t {
+    TABLE,
+    FILTERED,
+    DELTA,
+    LEDGER,
+    PIVOT
+};
+
+const char *type_kind_name(TypeKind k);
+
+// The card ledger's numeric slots, in order (docs/featurizer.md §3.6).
+enum LedgerSlot : uint32_t {
+    L_DECK,        // the card has an own_deck row
+    L_MAIN,        // own_deck.main
+    L_SIDE,        // own_deck.side
+    L_SEEN_GAME,   // k_seen.game
+    L_SEEN_MATCH,  // k_seen.match
+    L_KNOWN_HAND,  // k_known_hand.copies (the opponent's)
+    L_HAND_MIN,    // the HAND pool's k_pool_card min / max
+    L_HAND_MAX,
+    L_LIBRARY_MIN,  // Σ over the library runs' k_pool_card min / max, plus the exact k_position rows
+    L_LIBRARY_MAX,
+    L_SIDEBOARD_MIN,  // the SIDEBOARD pool's k_pool_card min / max
+    L_SIDEBOARD_MAX,
+    L_SLOTS,
+};
+
+// One table a PIVOT type folds: per row, the columns but the seat pair and the key take the slots
+// first_slot + key · cols.size() + i.
+struct PivotSource {
+        std::string table, key, meta;  // the table, its key column, the METAGAME table the key indexes
+        uint16_t table_id = 0;
+        uint16_t rel_col = 0, key_col = 0;
+        uint64_t keys = 0;  // the METAGAME table's rows
+        std::vector<uint16_t> cols;
+        std::vector<Transform> transforms;
+        std::vector<rmstate::Storage> storages;
+        uint32_t first_slot = 0;
+};
+
+// The columns the ledger reads (-1: the table or column is not in the schema).
+struct LedgerPlan {
+        int32_t type = -1;  // the ledger's token type
+        int32_t own_deck = -1, k_seen = -1, k_known_hand = -1, k_pool = -1, k_pool_card = -1, k_position = -1;
+        int deck_rel = -1, deck_card = -1, deck_main = -1, deck_side = -1;
+        int seen_rel = -1, seen_card = -1, seen_game = -1, seen_match = -1;
+        int known_card = -1, known_copies = -1;
+        int pool_rel = -1, pool_kind = -1, pool_anchor = -1, pool_pos = -1, pool_span = -1;
+        int pc_pool = -1, pc_card = -1, pc_min = -1, pc_max = -1;
+        int pos_rel = -1, pos_anchor = -1, pos_pos = -1, pos_card = -1;
+        rmstate::Storage pos_card_storage = rmstate::Storage::U16;
+        uint64_t kind_hand = UINT64_MAX, kind_library = UINT64_MAX, kind_sideboard = UINT64_MAX;
+        uint64_t opponent_rel = 2;  // k_known_hand's player
+};
+
+struct Fold {
+        std::string table, into, rows;
 };
 
 struct RelationType {
@@ -107,7 +185,9 @@ struct ColumnOp {
 };
 
 struct TokenType {
-        uint16_t table = 0;
+        TypeKind kind = TypeKind::TABLE;
+        uint16_t table = 0;    // TABLE, FILTERED, DELTA: its table
+        uint16_t columns = 0;  // and its column count
         std::string name;
         bool owns_handles = false;  // first column a handle named `handle`
         uint16_t handle_col = 0;
@@ -117,6 +197,18 @@ struct TokenType {
         std::vector<std::string> abilities;
         std::vector<int32_t> relations;
         std::vector<ColumnOp> ops;  // column order
+        // DELTA: the printed table compared with, the obj column, per printed column its column here,
+        // and the `removed` numeric slot.
+        std::string printed;
+        uint16_t obj_col = 0;
+        std::vector<uint16_t> value_cols;
+        std::vector<uint8_t> value_text;  // per printed column: a text column (compared by its text)
+        int32_t removed_slot = -1;
+        // PIVOT: the tables folded; LEDGER and PIVOT: the player_rel categorical's id offset and values.
+        std::vector<PivotSource> pivot;
+        int64_t rel_offset = 0;
+        uint32_t rel_values = 0;
+        bool synthetic() const { return kind == TypeKind::LEDGER || kind == TypeKind::PIVOT; }
 };
 
 struct Override {
@@ -135,10 +227,17 @@ struct FeatureSpec {
         std::vector<TokenType> types;
         std::vector<RelationType> relations;
         std::vector<Override> overrides;
+        std::vector<Fold> folds;
+        LedgerPlan ledger;
+        // The object table's token type and the columns a delta reads (-1: none).
+        int32_t object_type = -1;
+        int object_handle = -1, object_card = -1, object_transformed = -1;
+        rmstate::Storage object_card_storage = rmstate::Storage::U16;
         // The card tables' shapes and column names (card_tables.h).
         uint64_t card_rows = 0, text_rows = 0, text_width = 0, ability_rows = 0, part_rows = 0;
         std::vector<std::string> card_columns, ability_columns, part_columns, ab_keys;
-        // Lookups: per table id its token type (-1 none); the menu's token type; the header's.
+        // Lookups: per table id its token type (-1 none: not a token table, or folded); the menu's
+        // token type; the header's.
         std::vector<int32_t> type_of_table;
         int32_t menu_type = -1, header_type = -1;
         int32_t header_game = -1, header_decision = -1, header_sideboarding = -1;

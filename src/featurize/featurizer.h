@@ -8,14 +8,16 @@
 #include "../state_format/decode.h"
 #include "card_tables.h"
 #include "feature_spec.h"
+#include "folds.h"
 #include "rmtb.h"
 
 // ── The featurizer: one decoded STATE frame → the per-decision tensors (docs/featurizer.md §3) ─
 //
 // Standard library and the decoder only: a pure function of one viewer's decoded STATE frame
 // (knowledge tables included), the spec and the card tables, reading no engine state and no frame
-// bytes. Tokens are the rows of every token type's table, the types in spec order and each table's
-// rows in frame order; a decision's tensors are unpadded:
+// bytes. Tokens are those the folds decide (folds.h: the rows of a table type's table in frame order,
+// a folded type's in its canonical order), the types in spec order; a decision's tensors are
+// unpadded:
 //
 //   tok_type [N] i64, tok_num [N, F] f32, tok_cat [N, C] i64, tok_card [N, K] i64,
 //   tok_ability [N, Q] i64, tok_mask [N] (1), rel [R, 3] i64 (src, dst, type), act_tok [A] i64,
@@ -59,6 +61,10 @@ bool featurize_seat(const FeatureSpec &spec, const CardTables &tables, const rms
 // The learner entry point: any viewer's STATE frame (the omniscient one included).
 bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
     Tensors *out, std::string *err);
+
+// featurize_viewer with each token's origin (the gate's row-order check).
+bool featurize_traced(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
+    Tensors *out, std::vector<TokenSource> *sources, std::string *err);
 
 // The decisions as one RMTB tensors file, stamped with the spec's and vocab's hashes.
 RmtbFile tensors_file(const FeatureSpec &spec, const std::vector<Tensors> &list);

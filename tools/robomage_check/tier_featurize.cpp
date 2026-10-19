@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <cmath>
 #include <map>
 #include <random>
+#include <set>
 #include <tuple>
 
 #include "../../src/featurize/featurizer.h"
@@ -55,6 +57,16 @@ static bool same_tensors(const Tensors &a, const Tensors &b);
 static std::string check_shapes(
     const featurize::FeatureSpec &spec, const featurize::CardTables &tables, const Tensors &t, size_t menu_rows);
 static size_t table_rows(const rmstate::DecodedFrame &frame, uint16_t id);
+static std::vector<int64_t> row_cat_ids(
+    const featurize::FeatureSpec &spec, const featurize::TokenType &type, const std::vector<rmstate::Value> &row);
+static int32_t type_named(const featurize::FeatureSpec &spec, const std::string &name);
+static std::string check_deltas(
+    const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t, const std::vector<int64_t> &first);
+static std::string check_ledger(const Featurization &f, const rmstate::Schema &schema,
+    const rmstate::DecodedFrame &state, const Tensors &t, const std::vector<int64_t> &first);
+static std::string check_pivots(const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t);
+static std::string check_folds(
+    const Featurization &f, const rmstate::Schema &schema, const rmstate::DecodedFrame &state, const Tensors &t);
 static std::string check_permuted(const Featurization &f, const rmstate::Schema &schema,
     const rmstate::DecodedFrame &state, const Tensors &t, uint32_t seed);
 static SeatFacts seat_facts(
@@ -245,18 +257,242 @@ static size_t table_rows(const rmstate::DecodedFrame &frame, uint16_t id) {
     return t ? t->rows.size() : 0;
 }
 
-// The row-order check: every token table but the menu (whose row is the reply) with its rows
-// shuffled and every row: reference into it renumbered must featurize to the same tensors up to the
-// matching token permutation (the same token rows, the same relation multiset, act_tok the menu's).
+// A row's categorical ids under a type's CATEGORICAL and HASHED columns, in slot order (the gate's
+// own reading of the column rules, docs/featurizer.md §3.2, §3.4).
+static std::vector<int64_t> row_cat_ids(
+    const featurize::FeatureSpec &spec, const featurize::TokenType &type, const std::vector<rmstate::Value> &row) {
+    std::vector<int64_t> out;
+    for (const featurize::ColumnOp &op : type.ops) {
+        const rmstate::Value &v = row[op.col];
+        if (op.kind == featurize::OpKind::CATEGORICAL)
+            out.push_back(op.offset + (v.bits < op.width ? static_cast<int64_t>(v.bits) + 1 : 0));
+        if (op.kind == featurize::OpKind::HASHED)
+            out.push_back(
+                op.offset + (v.text.empty() ? 0
+                                            : 1 + static_cast<int64_t>(rmstate::fnv1a64(v.text.data(), v.text.size()) %
+                                                                       spec.hash_buckets)));
+    }
+    return out;
+}
+
+static int32_t type_named(const featurize::FeatureSpec &spec, const std::string &name) {
+    for (size_t i = 0; i < spec.types.size(); ++i)
+        if (spec.types[i].name == name) return static_cast<int32_t>(i);
+    return -1;
+}
+
+// Every object's rows of each delta type, rebuilt from the tensors (its current face's printed rows
+// when the object token's face card has a card row, plus the delta tokens related to it, less those
+// marked removed; the tokens related to no object for handles no object row has), are the frame's.
+static std::string check_deltas(
+    const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t, const std::vector<int64_t> &first) {
+    const featurize::FeatureSpec &spec = f.spec;
+    if (spec.object_type < 0) return "";
+    const featurize::TokenType &ot = spec.types[static_cast<size_t>(spec.object_type)];
+    const rmstate::DecodedTable *objects = state.table(ot.table);
+    int face_slot = -1;
+    for (size_t c = 0; c < ot.cards.size(); ++c)
+        if (ot.cards[c].current_face) face_slot = static_cast<int>(c);
+    std::map<uint64_t, int64_t> row_of;  // handle -> object row
+    for (size_t r = 0; objects && r < objects->rows.size(); ++r)
+        row_of[objects->rows[r][static_cast<size_t>(spec.object_handle)].bits] = static_cast<int64_t>(r);
+    for (size_t d = 0; d < spec.types.size(); ++d) {
+        const featurize::TokenType &dt = spec.types[d];
+        if (dt.kind != featurize::TypeKind::DELTA) continue;
+        int64_t rel_id = -1;
+        for (size_t i = 0; i < spec.relations.size(); ++i)
+            if (spec.relations[i].table == dt.name && spec.relations[i].column == "obj")
+                rel_id = static_cast<int64_t>(i);
+        typedef std::map<int64_t, std::multiset<std::vector<int64_t>>> PerObject;
+        PerObject want, got;
+        if (const rmstate::DecodedTable *child = state.table(dt.table))
+            for (const std::vector<rmstate::Value> &row : child->rows) {
+                auto it = row_of.find(row[dt.obj_col].bits);
+                want[it == row_of.end() ? -1 : it->second].insert(row_cat_ids(spec, dt, row));
+            }
+        const featurize::PrintedRows *printed = f.tables.printed_rows(dt.printed);
+        for (size_t r = 0; objects && printed && face_slot >= 0 && r < objects->rows.size(); ++r) {
+            const size_t tok = static_cast<size_t>(first[static_cast<size_t>(spec.object_type)]) + r;
+            const int64_t face = t.tok_card[tok * spec.K + static_cast<size_t>(face_slot)];
+            if (face < 0 || static_cast<size_t>(face) >= f.tables.present.size() ||
+                !f.tables.present[static_cast<size_t>(face)])
+                continue;
+            for (uint64_t p = printed->offsets[static_cast<size_t>(face)];
+                p < printed->offsets[static_cast<size_t>(face) + 1]; ++p) {
+                std::vector<rmstate::Value> row(dt.columns);
+                for (size_t i = 0; i < dt.value_cols.size(); ++i) row[dt.value_cols[i]] = printed->rows[p][i];
+                got[static_cast<int64_t>(r)].insert(row_cat_ids(spec, dt, row));
+            }
+        }
+        std::map<int64_t, int64_t> object_of;  // delta token -> object row
+        for (size_t r = 0; r < t.r(); ++r)
+            if (t.rel[3 * r + 2] == rel_id)
+                object_of[t.rel[3 * r]] = t.rel[3 * r + 1] - first[static_cast<size_t>(spec.object_type)];
+        for (size_t k = 0; k < t.n(); ++k) {
+            if (t.tok_type[k] != static_cast<int64_t>(d)) continue;
+            const std::vector<int64_t> ids(t.tok_cat.begin() + static_cast<long>(k * spec.C),
+                t.tok_cat.begin() + static_cast<long>(k * spec.C + dt.categorical.size()));
+            auto it = object_of.find(static_cast<int64_t>(k));
+            const int64_t obj = it == object_of.end() ? -1 : it->second;
+            const bool removed = t.tok_num[k * spec.F + static_cast<size_t>(dt.removed_slot)] != 0.0f;
+            if (!removed) {
+                got[obj].insert(ids);
+                continue;
+            }
+            auto at = got[obj].find(ids);
+            if (at == got[obj].end()) return dt.name + ": a removed token names no printed row";
+            got[obj].erase(at);
+        }
+        for (PerObject *m : {&want, &got})
+            for (auto it = m->begin(); it != m->end();) it = it->second.empty() ? m->erase(it) : std::next(it);
+        if (want != got) return dt.name + ": an object's rows rebuilt from the delta tokens are not the frame's";
+    }
+    return "";
+}
+
+// Every folded row's numbers are in its ledger token (folds.h): own_deck, k_seen and k_known_hand
+// rows, the k_pool_card rows of HAND and SIDEBOARD pools and of an owner's only library pool (with
+// the owner's exact k_position rows of the card); the other k_pool_card rows are tokens; one ledger
+// token per (player_rel, card) of those rows.
+static std::string check_ledger(const Featurization &f, const rmstate::Schema &schema,
+    const rmstate::DecodedFrame &state, const Tensors &t, const std::vector<int64_t> &first) {
+    const featurize::FeatureSpec &spec = f.spec;
+    const int32_t lt = spec.ledger.type, pt = type_named(spec, "k_pool_card");
+    if (lt < 0) return "";
+    const featurize::TokenType &ledger = spec.types[static_cast<size_t>(lt)];
+    std::map<std::pair<uint64_t, uint64_t>, size_t> tok;  // (player_rel, card) -> token
+    for (size_t k = 0; k < t.n(); ++k)
+        if (t.tok_type[k] == lt)
+            tok[{static_cast<uint64_t>(t.tok_cat[k * spec.C] - ledger.rel_offset - 1),
+                static_cast<uint64_t>(t.tok_card[k * spec.K])}] = k;
+    std::set<std::pair<uint64_t, uint64_t>> keys;
+    std::string bad;
+    const auto expect = [&](uint64_t rel, uint64_t card, size_t slot, float value) {
+        keys.insert({rel, card});
+        auto it = tok.find({rel, card});
+        if (it == tok.end()) {
+            bad = "no ledger token for a folded row";
+        } else if (t.tok_num[it->second * spec.F + slot] != value && bad.empty()) {
+            bad = "ledger slot " + ledger.numeric[slot].name + " is not its folded rows' value";
+        }
+    };
+    const auto lg = [](uint64_t x) { return std::log1p(static_cast<float>(x)); };
+    const rmcheck::Rows deck(state, schema, "own_deck"), seen(state, schema, "k_seen"),
+        known(state, schema, "k_known_hand"), pools(state, schema, "k_pool"), pc(state, schema, "k_pool_card"),
+        pos(state, schema, "k_position");
+    for (size_t r = 0; r < deck.size(); ++r) {
+        const uint64_t rel = deck.u(r, deck.col("player_rel")), card = deck.u(r, deck.col("card"));
+        expect(rel, card, featurize::L_DECK, 1.0f);
+        expect(rel, card, featurize::L_MAIN, lg(deck.u(r, deck.col("main"))));
+        expect(rel, card, featurize::L_SIDE, lg(deck.u(r, deck.col("side"))));
+    }
+    for (size_t r = 0; r < seen.size(); ++r) {
+        const uint64_t rel = seen.u(r, seen.col("player_rel")), card = seen.u(r, seen.col("card"));
+        expect(rel, card, featurize::L_SEEN_GAME, lg(seen.u(r, seen.col("game"))));
+        expect(rel, card, featurize::L_SEEN_MATCH, lg(seen.u(r, seen.col("match"))));
+    }
+    for (size_t r = 0; r < known.size(); ++r)
+        expect(2, known.u(r, known.col("card")), featurize::L_KNOWN_HAND, lg(known.u(r, known.col("copies"))));
+    const std::vector<std::string> &kinds = featurize::enum_values(schema, "pool_kind");
+    std::map<uint64_t, int> libraries;
+    for (size_t r = 0; r < pools.size(); ++r)
+        if (kinds[pools.u(r, pools.col("kind"))] == "LIBRARY_RANGE") ++libraries[pools.u(r, pools.col("owner_rel"))];
+    std::map<std::pair<uint64_t, uint64_t>, uint64_t> exact;  // (owner_rel, card) -> exact positions
+    for (size_t r = 0; r < pos.size(); ++r)
+        if (!pos.null(r, pos.col("card"))) ++exact[{pos.u(r, pos.col("owner_rel")), pos.u(r, pos.col("card"))}];
+    size_t kept = 0;
+    for (size_t r = 0; r < pc.size(); ++r) {
+        const uint64_t p = pc.u(r, pc.col("pool")), card = pc.u(r, pc.col("card"));
+        const uint64_t lo = pc.u(r, pc.col("min")), hi = pc.u(r, pc.col("max"));
+        const std::string &kind = kinds[pools.u(static_cast<size_t>(p), pools.col("kind"))];
+        const uint64_t rel = pools.u(static_cast<size_t>(p), pools.col("owner_rel"));
+        keys.insert({rel, card});
+        if (kind == "HAND") {
+            expect(rel, card, featurize::L_HAND_MIN, lg(lo));
+            expect(rel, card, featurize::L_HAND_MAX, lg(hi));
+        } else if (kind == "SIDEBOARD") {
+            expect(rel, card, featurize::L_SIDEBOARD_MIN, lg(lo));
+            expect(rel, card, featurize::L_SIDEBOARD_MAX, lg(hi));
+        } else if (kind == "LIBRARY_RANGE" && libraries[rel] == 1) {
+            const uint64_t e = exact.count({rel, card}) ? exact[{rel, card}] : 0;
+            expect(rel, card, featurize::L_LIBRARY_MIN, lg(lo + e));
+            expect(rel, card, featurize::L_LIBRARY_MAX, lg(hi + e));
+        } else {
+            ++kept;
+        }
+    }
+    for (const auto &e : exact) keys.insert(e.first);
+    if (!bad.empty()) return bad;
+    const size_t pc_tokens =
+        pt >= 0 ? static_cast<size_t>(first[static_cast<size_t>(pt) + 1] - first[static_cast<size_t>(pt)]) : 0;
+    if (pt >= 0 && pc_tokens != kept) return "the k_pool_card tokens are not the rows of the unfolded pools";
+    if (tok.size() != keys.size()) return "the ledger has a token per (player, card) of no folded row";
+    return "";
+}
+
+// Every pivot source row's columns are in its player's token at its key's slots.
+static std::string check_pivots(const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t) {
+    const featurize::FeatureSpec &spec = f.spec;
+    for (size_t p = 0; p < spec.types.size(); ++p) {
+        const featurize::TokenType &pt = spec.types[p];
+        if (pt.kind != featurize::TypeKind::PIVOT) continue;
+        std::map<uint64_t, size_t> tok;
+        for (size_t k = 0; k < t.n(); ++k)
+            if (t.tok_type[k] == static_cast<int64_t>(p))
+                tok[static_cast<uint64_t>(t.tok_cat[k * spec.C] - pt.rel_offset - 1)] = k;
+        std::set<uint64_t> rels;
+        for (const featurize::PivotSource &src : pt.pivot) {
+            const rmstate::DecodedTable *tab = state.table(src.table_id);
+            for (size_t r = 0; tab && r < tab->rows.size(); ++r) {
+                const std::vector<rmstate::Value> &row = tab->rows[r];
+                const uint64_t rel = row[src.rel_col].bits, key = row[src.key_col].bits;
+                rels.insert(rel);
+                auto it = tok.find(rel);
+                if (it == tok.end()) return pt.name + ": no token for a player of " + src.table;
+                for (size_t i = 0; key < src.keys && i < src.cols.size(); ++i)
+                    if (t.tok_num[it->second * spec.F + src.first_slot + key * src.cols.size() + i] !=
+                        featurize::cell_value(src.transforms[i], 0, row[src.cols[i]], src.storages[i]))
+                        return pt.name + ": a slot is not its " + src.table + " row's value";
+            }
+        }
+        if (rels.size() != tok.size()) return pt.name + ": a token for a player with no row";
+    }
+    return "";
+}
+
+// The folds lose nothing (docs/featurizer.md §3.6): the deltas, the ledger and the pivots read back.
+static std::string check_folds(
+    const Featurization &f, const rmstate::Schema &schema, const rmstate::DecodedFrame &state, const Tensors &t) {
+    std::vector<int64_t> first(f.spec.types.size() + 1, 0);  // per type its first token (types are contiguous)
+    for (size_t k = 0; k < t.n(); ++k) ++first[static_cast<size_t>(t.tok_type[k]) + 1];
+    for (size_t i = 0; i < f.spec.types.size(); ++i) first[i + 1] += first[i];
+    std::string e = check_deltas(f, state, t, first);
+    if (e.empty()) e = check_ledger(f, schema, state, t, first);
+    if (e.empty()) e = check_pivots(f, state, t);
+    return e;
+}
+
+// The row-order check: every token table but the menu (whose row is the reply), the folded ones
+// included, with its rows shuffled and every row: reference into it renumbered must featurize to the
+// same tensors up to the matching token permutation (each token found by its origin, folds.h: a table
+// row moved with its row, a folded token in its canonical place; the same token rows, the same
+// relation multiset, act_tok the menu's).
 static std::string check_permuted(const Featurization &f, const rmstate::Schema &schema,
     const rmstate::DecodedFrame &state, const Tensors &t, uint32_t seed) {
     const featurize::FeatureSpec &spec = f.spec;
+    const uint16_t menu = spec.types[static_cast<size_t>(spec.menu_type)].table;
+    std::vector<featurize::TokenSource> src, psrc;
+    Tensors again, p;
+    std::string err;
+    if (!featurize::featurize_traced(spec, f.tables, state, &again, &src, &err)) return "the traced frame: " + err;
+    if (!same_tensors(t, again) || src.size() != t.n()) return "the traced featurization differs";
     rmstate::DecodedFrame copy = state;
     std::map<uint16_t, std::vector<int64_t>> inv;  // table id -> old row -> new row
     std::mt19937 gen(seed);
     for (rmstate::DecodedTable &tab : copy.tables) {
-        const int32_t ty = spec.type_of_table[tab.id];
-        if (ty < 0 || ty == spec.menu_type || tab.rows.size() < 2) continue;
+        const bool token_table = tab.def->frame_kind == rmstate::FrameKind::STATE &&
+                                 ((tab.id >= 20 && tab.id <= 48) || (tab.id >= 90 && tab.id <= 99));
+        if (!token_table || tab.id == menu || tab.rows.size() < 2) continue;
         std::vector<size_t> order(tab.rows.size());
         for (size_t i = 0; i < order.size(); ++i) order[i] = i;
         std::shuffle(order.begin(), order.end(), gen);
@@ -280,19 +516,21 @@ static std::string check_permuted(const Featurization &f, const rmstate::Schema 
                 if (row[c].bits < it->second.size()) row[c].bits = static_cast<uint64_t>(it->second[row[c].bits]);
         }
     }
-    Tensors p;
-    std::string err;
-    if (!featurize::featurize_viewer(spec, f.tables, copy, &p, &err)) return "the permuted frame: " + err;
+    if (!featurize::featurize_traced(spec, f.tables, copy, &p, &psrc, &err)) return "the permuted frame: " + err;
     if (p.n() != t.n() || p.r() != t.r() || p.a() != t.a()) return "the permuted frame has other tensor sizes";
+    std::map<std::tuple<int32_t, int32_t, int64_t, int64_t>, int64_t> where;
+    for (size_t m = 0; m < psrc.size(); ++m)
+        where[std::make_tuple(psrc[m].type, psrc[m].table, psrc[m].row, psrc[m].sub)] = static_cast<int64_t>(m);
     std::vector<int64_t> pi(t.n());
-    int64_t base = 0;
-    for (size_t i = 0; i < spec.types.size(); ++i) {
-        const uint16_t id = spec.types[i].table;
-        const size_t rows = table_rows(state, id);
-        auto it = inv.find(id);
-        for (size_t r = 0; r < rows; ++r)
-            pi[static_cast<size_t>(base) + r] = base + (it == inv.end() ? static_cast<int64_t>(r) : it->second[r]);
-        base += static_cast<int64_t>(rows);
+    for (size_t k = 0; k < t.n(); ++k) {
+        const featurize::TokenSource &s = src[k];
+        auto it = s.table >= 0 ? inv.find(static_cast<uint16_t>(s.table)) : inv.end();
+        const int64_t row = it == inv.end() ? s.row : it->second[static_cast<size_t>(s.row)];
+        auto at = where.find(std::make_tuple(s.type, s.table, row, s.sub));
+        if (at == where.end())
+            return spec.types[static_cast<size_t>(s.type)].name + " token " + std::to_string(k) +
+                   " has no counterpart once the rows are reordered";
+        pi[k] = at->second;
     }
     for (size_t k = 0; k < t.n(); ++k) {
         const size_t m = static_cast<size_t>(pi[k]);
@@ -410,6 +648,8 @@ static DumpResult check_dump(const Featurization &f, const std::string &path, co
             r.relations += t.r();
             const std::string shapes = check_shapes(f.spec, f.tables, t, menu);
             if (!shapes.empty()) add_fail(&r, label, at + ": " + shapes);
+            const std::string folds = check_folds(f, v.schema, state, t);
+            if (!folds.empty()) add_fail(&r, label, at + ": " + folds);
             if (!seat && featurize::featurize_seat(f.spec, f.tables, state, &again, &err))
                 add_fail(&r, label, at + ": the actor entry point featurized the omniscient frame");
             if (r.decisions % SAMPLE_EVERY == 0) {

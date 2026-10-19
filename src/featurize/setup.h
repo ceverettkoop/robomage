@@ -13,8 +13,9 @@
 // A whole-vocab cards file (robomage --cards-frame: SCHEMA, CARDS, METAGAME records) and the text
 // table (its `vectors` row count is N_CARD_TYPES + 1, its vocab_hash the vocab's) give the card
 // tables and the spec: the tables built from the cards file's CARDS frame, or read from their
-// exported files (which must carry the spec's hash), and the spec from its SCHEMA and METAGAME
-// frames and the tables. export_tables writes card.rmtb, ability.rmtb, part.rmtb and spec.json.
+// exported files (which must carry the spec's hash; the printed rows the object deltas compare
+// with still come from the CARDS frame), and the spec from its SCHEMA and METAGAME frames and the
+// tables. export_tables writes card.rmtb, ability.rmtb, part.rmtb and spec.json.
 
 namespace featurize {
 

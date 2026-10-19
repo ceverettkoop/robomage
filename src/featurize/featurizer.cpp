@@ -3,17 +3,24 @@
 #include <algorithm>
 #include <utility>
 
+#include "folds.h"
+
 static bool check_frame(const featurize::FeatureSpec &spec, const rmstate::DecodedFrame &state, std::string *err);
+static int64_t row_token(
+    const featurize::FeatureSpec &spec, const featurize::FoldedRows &folded, size_t type, uint64_t row);
 static void fill_row(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
     const featurize::TokenType &type, const std::vector<rmstate::Value> &row, int64_t tok,
     const std::vector<std::pair<uint64_t, int64_t>> &owners, const std::vector<int64_t> &base,
-    const std::vector<const rmstate::DecodedTable *> &tabs, featurize::Tensors *out);
+    const featurize::FoldedRows &folded, featurize::Tensors *out);
+static void fill_synthetic(const featurize::FeatureSpec &spec, size_t type, const featurize::FoldedRows &folded,
+    int64_t base, featurize::Tensors *out);
 static int64_t owner_of(const std::vector<std::pair<uint64_t, int64_t>> &owners, uint64_t handle);
 static int64_t card_value(const featurize::CardTables &tables, const rmstate::Value &v, rmstate::Storage storage);
 static int64_t ability_value(
     const featurize::CardTables &tables, const featurize::ColumnOp &op, const std::vector<rmstate::Value> &row);
 static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
-    const rmstate::DecodedFrame &state, featurize::Tensors *out, std::string *err);
+    const rmstate::DecodedFrame &state, featurize::Tensors *out, std::vector<featurize::TokenSource> *sources,
+    std::string *err);
 static void read_decision(
     const featurize::FeatureSpec &spec, const rmstate::DecodedTable *header, featurize::Tensors *out);
 template <typename T>
@@ -58,10 +65,20 @@ static int64_t ability_value(
     return r;
 }
 
+// The token row of row `row` of type `type`'s table (a FILTERED type's remapped), or -1.
+static int64_t row_token(
+    const featurize::FeatureSpec &spec, const featurize::FoldedRows &folded, size_t type, uint64_t row) {
+    const featurize::TypeKind kind = spec.types[type].kind;
+    if (kind != featurize::TypeKind::TABLE && kind != featurize::TypeKind::FILTERED) return -1;
+    const std::vector<int64_t> &remap = folded.remap[type];
+    if (!remap.empty()) return row < remap.size() ? remap[static_cast<size_t>(row)] : -1;
+    return row < folded.count[type] ? static_cast<int64_t>(row) : -1;
+}
+
 static void fill_row(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
     const featurize::TokenType &type, const std::vector<rmstate::Value> &row, int64_t tok,
     const std::vector<std::pair<uint64_t, int64_t>> &owners, const std::vector<int64_t> &base,
-    const std::vector<const rmstate::DecodedTable *> &tabs, featurize::Tensors *out) {
+    const featurize::FoldedRows &folded, featurize::Tensors *out) {
     const size_t t = static_cast<size_t>(tok);
     float *num = &out->tok_num[t * spec.F];
     int64_t *cat = spec.C ? &out->tok_cat[t * spec.C] : nullptr;
@@ -110,12 +127,28 @@ static void fill_row(const featurize::FeatureSpec &spec, const featurize::CardTa
             }
             case featurize::OpKind::ROW: {
                 const size_t tt = static_cast<size_t>(op.target);
-                const size_t rows = tabs[tt] ? tabs[tt]->rows.size() : 0;
-                if (!rmstate::value_is_all_ones(v, op.storage) && v.bits < rows)
-                    out->rel.insert(out->rel.end(), {tok, base[tt] + static_cast<int64_t>(v.bits), op.relation});
+                const int64_t dst =
+                    rmstate::value_is_all_ones(v, op.storage) ? -1 : row_token(spec, folded, tt, v.bits);
+                if (dst >= 0) out->rel.insert(out->rel.end(), {tok, base[tt] + dst, op.relation});
                 break;
             }
         }
+    }
+}
+
+// A synthetic type's tokens: their numeric slots, player_rel and (the ledger) card.
+static void fill_synthetic(const featurize::FeatureSpec &spec, size_t type, const featurize::FoldedRows &folded,
+    int64_t base, featurize::Tensors *out) {
+    const featurize::TokenType &t = spec.types[type];
+    const size_t width = t.numeric.size();
+    for (size_t k = 0; k < folded.count[type]; ++k) {
+        const size_t tok = static_cast<size_t>(base) + k;
+        std::copy(folded.num[type].begin() + static_cast<long>(k * width),
+            folded.num[type].begin() + static_cast<long>((k + 1) * width),
+            out->tok_num.begin() + static_cast<long>(tok * spec.F));
+        const uint64_t rel = folded.rel[type][k];
+        out->tok_cat[tok * spec.C] = t.rel_offset + (rel < t.rel_values ? static_cast<int64_t>(rel) + 1 : 0);
+        if (!t.cards.empty()) out->tok_card[tok * spec.K] = folded.card[type][k];
     }
 }
 
@@ -131,7 +164,8 @@ static void read_decision(
 }
 
 static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
-    const rmstate::DecodedFrame &state, featurize::Tensors *out, std::string *err) {
+    const rmstate::DecodedFrame &state, featurize::Tensors *out, std::vector<featurize::TokenSource> *sources,
+    std::string *err) {
     if (!check_frame(spec, state, err)) return false;
     const size_t n_types = spec.types.size();
     std::vector<const rmstate::DecodedTable *> tabs(n_types, nullptr);
@@ -139,9 +173,10 @@ static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize:
         const int32_t ty = spec.type_of_table[t.id];
         if (ty >= 0) tabs[static_cast<size_t>(ty)] = &t;
     }
+    featurize::FoldedRows folded;
+    featurize::fold_rows(spec, tables, state, tabs, sources != nullptr, &folded);
     std::vector<int64_t> base(n_types + 1, 0);
-    for (size_t i = 0; i < n_types; ++i)
-        base[i + 1] = base[i] + static_cast<int64_t>(tabs[i] ? tabs[i]->rows.size() : 0);
+    for (size_t i = 0; i < n_types; ++i) base[i + 1] = base[i] + static_cast<int64_t>(folded.count[i]);
     const size_t n = static_cast<size_t>(base[n_types]);
     out->viewer = state.header.viewer;
     read_decision(spec, tabs[static_cast<size_t>(spec.header_type)], out);
@@ -167,15 +202,27 @@ static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize:
                      }),
         owners.end());
     for (size_t i = 0; i < n_types; ++i) {
-        if (!tabs[i]) continue;
-        for (size_t r = 0; r < tabs[i]->rows.size(); ++r) {
+        const featurize::TokenType &type = spec.types[i];
+        for (size_t k = 0; k < folded.count[i]; ++k)
+            out->tok_type[static_cast<size_t>(base[i]) + k] = static_cast<int64_t>(i);
+        if (type.synthetic()) {
+            fill_synthetic(spec, i, folded, base[i], out);
+            continue;
+        }
+        for (size_t r = 0; r < folded.rows[i].size(); ++r) {
             const int64_t tok = base[i] + static_cast<int64_t>(r);
-            out->tok_type[static_cast<size_t>(tok)] = static_cast<int64_t>(i);
-            fill_row(spec, tables, spec.types[i], tabs[i]->rows[r], tok, owners, base, tabs, out);
+            fill_row(spec, tables, type, *folded.rows[i][r], tok, owners, base, folded, out);
+            if (type.removed_slot >= 0 && folded.removed[i][r])
+                out->tok_num[static_cast<size_t>(tok) * spec.F + static_cast<size_t>(type.removed_slot)] = 1.0f;
         }
     }
+    if (sources) {
+        sources->clear();
+        for (size_t i = 0; i < n_types; ++i)
+            sources->insert(sources->end(), folded.sources[i].begin(), folded.sources[i].end());
+    }
     const size_t m = static_cast<size_t>(spec.menu_type);
-    const size_t a = tabs[m] ? tabs[m]->rows.size() : 0;
+    const size_t a = folded.count[m];
     out->act_tok.resize(a);
     for (size_t i = 0; i < a; ++i) out->act_tok[i] = base[m] + static_cast<int64_t>(i);
     out->act_mask.assign(a, 1);
@@ -217,12 +264,17 @@ bool featurize_seat(const FeatureSpec &spec, const CardTables &tables, const rms
         *err = "the actor entry point takes a seat's frame, not viewer " + std::to_string(state.header.viewer);
         return false;
     }
-    return featurize_frame(spec, tables, state, out, err);
+    return featurize_frame(spec, tables, state, out, nullptr, err);
 }
 
 bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
     Tensors *out, std::string *err) {
-    return featurize_frame(spec, tables, state, out, err);
+    return featurize_frame(spec, tables, state, out, nullptr, err);
+}
+
+bool featurize_traced(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
+    Tensors *out, std::vector<TokenSource> *sources, std::string *err) {
+    return featurize_frame(spec, tables, state, out, sources, err);
 }
 
 RmtbFile tensors_file(const FeatureSpec &spec, const std::vector<Tensors> &list) {
