@@ -687,6 +687,12 @@ handshake JSON, the shared region, request / response layouts.
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
   `.dk` scraper (stdlib only, its own README)
 
+**Learner (`learn/`, torch, its own venv; `learn/README.md`)**
+- `learn/rmtrain` — the training program (`rmlearn/rmtrain.py`, `rmlearn/orchestrator/`): `start` /
+  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` over a run directory
+  (`runs/<name>`), the phases B0–B5, one GPU process (learner + inference server) and the actors
+  ([`docs/rmtrain.md`](docs/rmtrain.md)); checks `learn/check_rmtrain.py` (`--smoke`: a tiny run)
+
 **Python (`python/`, stdlib only)**
 - `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
   tiers) over an abstract view of a decision (card names, engine enum names)
