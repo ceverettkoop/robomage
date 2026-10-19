@@ -10,7 +10,19 @@ ability tables, and an `nn:<model>` agent in `src/actor/`. Where step 5 has to l
 for this plan, section 2 says so.
 
 Reference box (the one this was measured on): Ryzen 9 5900X (12 cores / 24 threads), 62 GB RAM,
-one Radeon RX 6700 XT (12 GB, RDNA2 gfx1031, ROCm with `HSA_OVERRIDE_GFX_VERSION=10.3.0`).
+one Radeon RX 6700 XT (12 GB, RDNA2 gfx1031, ROCm with `HSA_OVERRIDE_GFX_VERSION=10.3.0`). The
+training box is a Ryzen 9 7950X (16 cores / 32 threads) with 124 GB RAM and the same GPU; section 5
+is sized for it.
+
+**The end product** is one training program, `learn/rmtrain`, run from the command line. It runs
+for days without intervention (detached, resuming from its last checkpoint after a crash or a
+reboot), walks the phases of section 6 by itself, and can be queried, inspected and steered from
+the command line while it runs (section 4, L6).
+
+**Format: bo3 matches, scored per game.** Actors and evaluation play bo3 matches with
+sideboarding by default. Every game of a match is scored on its own (+1 / −1, as a bo1 result):
+the reward an episode trains on, the SPRT and every reported win rate count games, never match
+wins. Sideboarding enters training as the decisions before a game (section 6.1).
 
 ---
 
@@ -127,6 +139,12 @@ For each game an actor plays, write one episode record:
 - **Footer:** the result per seat (+1 / −1 / 0), the end reason (win, concession, draw, decision
   cap) and the decision count.
 
+**One episode per game.** In a bo3 match, an episode is one game together with the sideboarding
+phase before it: a sideboarding frame's `header.game` is already the upcoming game, so its
+decisions belong to that game's episode and take that game's result (section 6.1). Game 1's
+episode has no sideboarding decisions. The header records the game number and the match score at
+its start.
+
 Decisions the engine auto-takes (a lone pass) are never asked, so they never appear. The seat
 sequence is therefore irregular, and every record carries its seat explicitly.
 
@@ -221,6 +239,7 @@ and reads a seat's RMSTATE stream, so:
 The actor reads a schedule file (written by the orchestrator, section 4 L6):
 
 - the deck pairs and their weights (league decks first; randomised decks later, section 7);
+- the format, bo3 by default (bo1 per schedule entry);
 - the seat assignments: self-play (`nn:remote` on both seats, the main R-NaD stream), current
   policy vs a past checkpoint, or vs `scripted:hard` through the teacher channel at p = 1;
 - which games are training data and which are evaluation only. R-NaD trains on self-play
@@ -253,7 +272,10 @@ with knowledge on.
 
 - An **SPRT match runner** for a checkpoint against `scripted:hard` over the league matchups
   (the archive's `gate_sprt.py` design: H1 0.55 vs H0 0.45), run by the orchestrator, not by
-  `make check`.
+  `make check`. It plays bo3 matches and scores games, not matches. Reports give the win rate of
+  game 1 (pre-board, a pure bo1 measurement) apart from games 2–3 (post-board); the difference
+  shows what sideboarding gains or loses. Game 3 is played only at 1–1, so the games 2–3 figure is
+  a selected sample, and the reports say so.
 - **Exploiter runs:** periodically train a short best-response policy (PPO on the same pipeline)
   against a frozen checkpoint and report its win rate. Low exploitability is R-NaD's claim, so
   this measures it directly.
@@ -291,11 +313,29 @@ the engine, the gate or `python/` imports it.
   is updated from, so test it against the observation-only critic before committing to it.
 - **L5. Inference server.** GPU, ROCm. It batches requests from all actors (target batch
   256–512, with a micro-timeout), evaluates the current policy and both regularisation policies,
-  and versions the weights it serves.
-- **L6. Orchestrator.** Starts and watches N actors, the server and the learner. It writes the
-  schedule (T5), handles checkpoints and the R-NaD iteration boundary (freezing `π_m,reg`, pushing
-  it to the server), and runs evaluation (T8) on a fixed cadence. Logs go to plain files so they
-  can be followed with `tail -f`.
+  and versions the weights it serves. It speaks RMIP (`docs/inference_protocol.md`) and runs
+  **inside the learner's process**: one process owns the GPU, and new weights reach the server in
+  memory. (Several processes on this GPU at once have reset it before.)
+- **L6. Orchestrator: `learn/rmtrain`.** Starts and watches N actors and the GPU process
+  (learner + server). It writes the schedule (T5), handles checkpoints and the R-NaD iteration
+  boundary (freezing `π_m,reg`, pushing it to the server), and runs evaluation (T8) on a fixed
+  cadence. Its command line:
+  - `rmtrain start <run> [--config FILE]` detaches the run (under `systemd-run --user` with a
+    `MemoryMax`) and returns; `rmtrain start` on an existing run resumes it from its last
+    checkpoint, which is also what happens after a crash or a reboot.
+  - `rmtrain status`, `tail`, `pause`, `resume`, `stop`, `set <param> <value>` (the
+    hyperparameters that may change mid-run: learning rate, η, Δm, ε, actor count, evaluation
+    cadence), `eval` (run an evaluation now), `phase hold|next` (hold or force the next phase
+    transition). These talk to the running orchestrator over a Unix control socket in the run
+    directory.
+  - The run directory holds everything durable: the config as resolved, `metrics.jsonl`, the
+    checkpoints and exported models, the evaluation results, the RMLOGs and per-component logs
+    in plain files that can be followed with `tail -f`. `status` and the metrics are readable
+    from the files alone when the run is not running.
+  - Actors that crash are restarted, and their last game is written off; the GPU process
+    crashing stops the run, which resumes from the last checkpoint.
+- **Environment.** `learn/` lives in this repository with `learn/requirements.txt` (torch
+  2.10.0+rocm7.0, the build that runs on this GPU) and its own `learn/.venv`.
 
 ---
 
@@ -305,9 +345,8 @@ the engine, the gate or `python/` imports it.
 
 | Component | Resources |
 |---|---|
-| Actors | 18–20 engine processes in `--actor` mode, one per hardware thread, leaving about 4 threads for the rest |
-| Inference server | 1 process, GPU |
-| Learner | 1 process, GPU, 1–2 threads for data |
+| Actors | ~26 engine processes in `--actor` mode, one per hardware thread, leaving about 6 threads for the rest (the count is a run setting) |
+| Learner + inference server | 1 process, the only one on the GPU; 1–2 threads for data |
 | Teacher labellers (phases B1–B2 only) | Python scripted agents, which displace actors while running |
 
 **Sharing the GPU.** The server and the learner share one 12 GB card. Keep the model small (about
@@ -316,7 +355,7 @@ the current, target and two regularisation networks plus activations. Prefer lar
 batches; the archive measured about 3 ms per forward at batch 1 and about 8 ms at batch 256.
 
 **Replay in RAM.** Store tensors in fp16 with variable lengths and no padding, at roughly
-10 KB per decision. A window of ~1–2M decisions (10–20 GB) fits in 62 GB with room for the
+10 KB per decision. A window of up to ~4M decisions (~40 GB) fits in 124 GB with room for the
 processes.
 
 **Rough capacity** (to confirm with T7 and L5 measurements):
@@ -334,7 +373,7 @@ processes.
 
 ### B0. Teacher corpus
 
-`scripted:hard` vs `scripted:hard` over every league matchup, bo1, through `rm_driver.py` with
+`scripted:hard` vs `scripted:hard` over every league matchup, bo3, through `rm_driver.py` with
 RMLOGs kept. Add `scripted:hard` vs `explore` games for coverage of bad positions.
 
 At ~400 decisions/s per Python process × 20, about 1M decisions takes around 2–3 minutes; aim for
@@ -359,11 +398,13 @@ The network plays with sampling (T6) while the teacher labels every decision (T4
   deterministic teacher gives untaken actions almost zero probability, and `log(π/π_reg)` would
   then forbid them outright.
 - Use larger ε for decks the scripted agent was not built for.
+- Use a larger ε at sideboarding decisions (about 0.2–0.3): the teacher never sideboards, so its
+  prior there is Done with certainty (section 6.1).
 - The value head starts from the BC value.
 
 ### B4. R-NaD
 
-Self-play on the league matchups, bo1, with DeepNash's settings (η = 0.2, lr 5e-5, the v-trace
+Self-play on the league matchups, bo3, with DeepNash's settings (η = 0.2, lr 5e-5, the v-trace
 and NeuRD parameters). Use short Δm early (about 10k learner steps), so the regularisation target
 leaves the teacher quickly, and lengthen it once evaluation shows steady gains.
 
@@ -379,24 +420,53 @@ projection at evaluation time (T6).
 
 ### B6. Extensions, each with its own plan
 
-- **bo3 and sideboarding:** sideboarding becomes a deployment-style head in the same game, as
-  DeepNash's setup head was. This is the first step toward deck building.
+- **Deck building:** sideboarding (section 6.1) is the first step toward it.
 - **Deck randomisation:** colour-coherent, curve-sane generated decks from the vocab, for
   breadth.
 - **Held-out-card evaluation:** train without one card's decks and test on them.
 - **New cards:** engine work, gated by the fuzz tier as now.
 
+### 6.1 Sideboarding
+
+RMSTATE already carries everything a sideboarding decision needs, and the featurizer already
+tokenises it, so sideboarding needs no format change and no head of its own:
+
+- between games the sideboarding seat gets `STATE` frames with `header.sideboarding = 1`, whose
+  `game` is the upcoming game;
+- the `match` token (game number, wins, who plays first next, `sideboard_phase`, `sb_swaps`,
+  `sb_drift`) and the `own_deck` tokens (the seat's current 75, main and side counts per card);
+  the opponent's sideboard is a count and its post-board configuration stays hidden;
+- the menu's `SIDEBOARD_IN` / `SIDEBOARD_OUT` / `SIDEBOARD_DONE` rows, each with `source_card`
+  (the card's vocab id) and `ordinal` (copies). The engine offers a swap in-first (a card in,
+  then the cut that balances it), withholds Done while the deck is off-size, and caps a phase at
+  15 swaps;
+- the knowledge sidecar's memory of the opponent across games (revealed cards, `k_archetype`).
+
+The pointer head picks sideboarding rows like any other menu rows. A sideboarding decision is part
+of the next game's episode (T1) and is credited with that game's result. Exploration comes from the
+larger sideboarding ε in `π_0,reg` (B3); B1–B2 teach Done there, which is all the teacher does.
+
 ---
 
-## 7. Open decisions
+## 7. Decisions and open issues
 
-1. **Where the learner lives.** `learn/` inside this repository (with its own requirements) or a
-   separate repository that consumes the engine binary and the exported tables.
-2. **Episode tensors vs RMLOG-only storage.** Re-featurizing at learner time saves disk and keeps
-   old games usable across feature-spec changes, but it costs actor-sized CPU. The default above
-   writes tensors and also keeps the RMLOG.
-3. **Omniscient critic:** adopt it after the A/B test in L4, or keep the observation-only critic.
-4. **Several games per process (T3, optional).** Only if one game per process leaves the server
-   underfed, which the measurements will show.
-5. **Teacher smoothing ε and the first Δm.** Tune them on a small run (two matchups, bo1) before
-   the full league.
+Decided (2026-10-19):
+
+1. **Where the learner lives:** `learn/` inside this repository, with its own requirements and
+   virtual environment.
+2. **Storage:** actors write the tensor episodes and every RMLOG is kept (T1's storage policy).
+3. **GPU layout:** one process owns the GPU, the learner with the inference server inside it.
+4. **Several games per process (T3, optional):** not built in this pass.
+5. **Format:** bo3 matches by default, scored per game (section 6.1, T8).
+
+Open:
+
+1. **Omniscient critic:** adopt it after the A/B test in L4, or keep the observation-only critic.
+2. **Teacher smoothing ε and the first Δm.** Tune them on a small run (two matchups) before the
+   full league.
+3. **No teacher for sideboarding.** The scripted agent never sideboards (it always answers Done),
+   so imitation teaches nothing about sideboarding, and sideboarding skill comes only from R-NaD's
+   exploration, credited through one game's result per sideboarding phase: a weak, noisy signal.
+   To refine later: a sideboarding teacher (rules in the scripted agent, or the archive's
+   dead-card rules table, `sb_dead_rules.json` on `archive/rl-stack`), or the user's own guidance
+   per matchup as labels or as a prior in `π_0,reg`.
