@@ -74,13 +74,9 @@ Player A casts Aether Vial
 (REPLAY) [T0 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 6: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
-| menu:
-|   0: Aether Vial
-(REPLAY) [T0 | First Main | Player B] Input: 0
-| >> Player B: 0 (Aether Vial)
+| auto: Player B: Aether Vial
 Targeting choice 0
-| decision 7: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| decision 6: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm
 |   1: Exile Flow State
@@ -95,7 +91,7 @@ No creatures eligible to attack.
 
 -------- TURN 2 (Player B) --------
 Player B draws Cori-Steel Cutter
-| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
@@ -105,7 +101,7 @@ Player B draws Cori-Steel Cutter
 | >> Player B: 3 (Cast Mishra's Bauble)
 Player B casts Mishra's Bauble
 Mishra's Bauble enters the battlefield
-| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
@@ -114,7 +110,7 @@ Mishra's Bauble enters the battlefield
 (REPLAY) [T1 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Polluted Delta)
 Player B played Polluted Delta
-| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Mishra's Bauble (PeekAndReveal)
@@ -122,7 +118,7 @@ Player B played Polluted Delta
 (REPLAY) [T1 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 Choose target for Mishra's Bauble:
-| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (19 life)
@@ -131,7 +127,7 @@ Choose target for Mishra's Bauble:
 Targeting choice 0
 Player B sacrifices Mishra's Bauble
 Player B's Mishra's Bauble ability targeting Player A is on the stack
-| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Polluted Delta (ChangeZone)
@@ -142,7 +138,7 @@ Player B sacrifices Polluted Delta
 Player B's Polluted Delta ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -158,7 +154,7 @@ Thundering Falls triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Dragon's Rage Channeler
-| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Dragon's Rage Channeler on top of library
 |   1: Put Dragon's Rage Channeler into graveyard
@@ -175,7 +171,7 @@ Delayed trigger fires.
 Resolving ability (category: Draw, amount: 1)
 Player B draws Dragon's Rage Channeler
 Player A draws Wasteland
-| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -186,7 +182,7 @@ Player A draws Wasteland
 Player A activated Scrubland for 1(W)
 Player A casts Aether Vial
 Aether Vial enters the battlefield
-| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -195,7 +191,7 @@ Aether Vial enters the battlefield
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -203,14 +199,14 @@ Player A played Wasteland
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Aether Vial (ChangeZone))
 Player A's Aether Vial ability is on the stack
-| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Thundering Falls
 |   1: Scrubland
@@ -224,17 +220,13 @@ Resolving ability (category: Destroy)
 Thundering Falls is destroyed
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Wasteland
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -242,7 +234,7 @@ Player B draws Wasteland
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scalding Tarn)
 Player B played Scalding Tarn
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -253,7 +245,7 @@ Player B sacrifices Scalding Tarn
 Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -263,7 +255,7 @@ Searching Player B's library:
 | >> Player B: 3 (Volcanic Island)
 Player B shuffles their library
 Player B puts Volcanic Island to the battlefield
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -276,13 +268,13 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Aether Vial triggered
-| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 23: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -290,20 +282,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 1).
-| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Witch Enchanter
-| decision 28: Player A (game 0, turn 4, DRAW, Player A active)
+| decision 26: Player A (game 0, turn 4, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -312,7 +304,7 @@ Player A draws Witch Enchanter
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -324,7 +316,7 @@ Player A played Wasteland
 Player A activated Scrubland for 1(B)
 Player A activated Wasteland for 1(C)
 Player A casts Orcish Bowmasters
-| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -333,15 +325,11 @@ Player A casts Orcish Bowmasters
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T4 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Player A (20 life)
@@ -359,7 +347,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Player B draws Mishra's Bauble
-| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -371,14 +359,14 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Mishra's Bauble
-| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Mishra's Bauble on top of library
 |   1: Put Mishra's Bauble into graveyard
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Put Mishra's Bauble on top of library)
 Mishra's Bauble enters the battlefield
-| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -386,7 +374,7 @@ Mishra's Bauble enters the battlefield
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Wasteland)
 Player B played Wasteland
-| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cori-Steel Cutter
@@ -400,14 +388,14 @@ Player B activated Volcanic Island for 1(R)
 Player B activated Wasteland for 1(C)
 Player B casts Cori-Steel Cutter
 Dragon's Rage Channeler triggered
-| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Mishra's Bauble (PeekAndReveal)
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 Choose target for Mishra's Bauble:
-| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (16 life)
@@ -423,7 +411,7 @@ Delayed trigger registered: Draw at next Upkeep.
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Mishra's Bauble
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Mishra's Bauble on top of library
 |   1: Put Mishra's Bauble into graveyard
@@ -432,7 +420,7 @@ Surveil: looking at Mishra's Bauble
 Cori-Steel Cutter enters the battlefield
 
 --- Declare Attackers (Player B) ---
-| decision 41: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 38: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler [1/1]
 |   1: Confirm attackers
@@ -442,11 +430,7 @@ Dragon's Rage Channeler attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
-| decision 42: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -455,7 +439,7 @@ Attackers declared:
 Attackers:
   0: Dragon's Rage Channeler [1/1]
 Your creatures:
-| decision 43: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| decision 39: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Orc Army token [1/1]
@@ -474,7 +458,7 @@ Blockers declared:
 -------- TURN 7 (Player A) --------
 Aether Vial triggered
 Delayed trigger fires.
-| decision 44: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 40: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Phelia, Exuberant Shepherd
@@ -485,14 +469,14 @@ Delayed trigger fires.
 Player A activated Scrubland for 1(W)
 Player A activated Wasteland for 1(C)
 Player A casts Phelia, Exuberant Shepherd
-| decision 45: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 41: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Phelia, Exuberant Shepherd enters the battlefield
-| decision 46: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 42: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -501,7 +485,7 @@ Phelia, Exuberant Shepherd enters the battlefield
 Resolving ability (category: Draw, amount: 1)
 Player B draws Mishra's Bauble
 Choose target for Orcish Bowmasters:
-| decision 47: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 43: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Player B (16 life)
 |   1: Player A (19 life)
@@ -513,7 +497,7 @@ Choose target for Orcish Bowmasters:
 | >> Player A: 0 (Player B (16 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 48: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 44: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -523,13 +507,13 @@ Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player B (now at 15 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 2/2.
-| decision 49: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 45: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 50: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 46: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -537,20 +521,20 @@ Amass Orc 1: Player A Army is now 2/2.
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 2).
-| decision 51: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 47: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws White Orchid Phantom
-| decision 52: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 48: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 49: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Witch-Blessed Meadow
@@ -558,14 +542,14 @@ Player A draws White Orchid Phantom
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Witch-Blessed Meadow)
 Player A played Witch-Blessed Meadow
-| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Decline: pay 3 life so it enters untapped
 |   1: Accept: pay 3 life so it enters untapped
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Accept: pay 3 life so it enters untapped)
 Player A pays 3 life.
-| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -574,7 +558,7 @@ Player A pays 3 life.
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: White Orchid Phantom
@@ -582,7 +566,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 1 (White Orchid Phantom)
 Player A puts White Orchid Phantom to the battlefield
 Choose target for White Orchid Phantom:
-| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Volcanic Island
@@ -598,7 +582,7 @@ Resolving ability (category: Destroy)
 Volcanic Island is destroyed
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 58: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 54: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -609,7 +593,7 @@ Player B puts Island to the battlefield
 Island enters tapped.
 
 --- Declare Attackers (Player A) ---
-| decision 59: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 55: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Orc Army token [2/2]
@@ -620,7 +604,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 60: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 56: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [2/2]
 |   1: Confirm attackers
@@ -631,11 +615,7 @@ Orc Army token attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Orc Army token [2/2] -> Player B
-| decision 61: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
@@ -649,20 +629,20 @@ No creatures eligible to block.
 
 
 -------- TURN 8 (Player B) --------
-| decision 62: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 57: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Wasteland
-| decision 63: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 58: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -678,7 +658,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Polluted Delta
-| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Polluted Delta on top of library
 |   1: Put Polluted Delta into graveyard
@@ -686,7 +666,7 @@ Surveil: looking at Polluted Delta
 | >> Player B: 0 (Put Polluted Delta on top of library)
 Resolving ability (category: Dig)
 Player B looks at the top 3 card(s) of their library.
-| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Polluted Delta
 |   1: Dragon's Rage Channeler
@@ -696,7 +676,7 @@ Player B looks at the top 3 card(s) of their library.
 Player B puts Dragon's Rage Channeler into hand.
 Player B puts 2 card(s) on the bottom of their library.
 Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -705,7 +685,7 @@ Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 | >> Player B: 2 (Cast Mishra's Bauble)
 Player B casts Mishra's Bauble
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Cori-Steel Cutter (Token)
 |   1: Dragon's Rage Channeler (Surveil)
@@ -716,7 +696,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Ponder
-| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Ponder on top of library
 |   1: Put Ponder into graveyard
@@ -725,7 +705,7 @@ Surveil: looking at Ponder
 Resolving ability (category: Token)
 Token created: 1/1 Monk
 Resolving ability (category: Attach)
-| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Decline: attach Cori-Steel Cutter to Monk token
 |   1: Accept: attach Cori-Steel Cutter to Monk token
@@ -735,7 +715,7 @@ Equipment attached.
 Resolving ability (category: Cleanup)
 Monk token gains 1/1 Trample & Haste (always)
 Mishra's Bauble enters the battlefield
-| decision 71: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -743,7 +723,7 @@ Mishra's Bauble enters the battlefield
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Wasteland)
 Player B played Wasteland
-| decision 72: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Mishra's Bauble (PeekAndReveal)
@@ -751,7 +731,7 @@ Player B played Wasteland
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 Choose target for Mishra's Bauble:
-| decision 73: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (16 life)
 |   1: Player B (12 life)
@@ -760,14 +740,14 @@ Choose target for Mishra's Bauble:
 Targeting choice 0
 Player B sacrifices Mishra's Bauble
 Player B's Mishra's Bauble ability targeting Player A is on the stack
-| decision 74: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 75: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Scrubland
 |   1: Wasteland
@@ -789,7 +769,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 76: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 71: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Monk token [2/2]
 |   1: Confirm attackers
@@ -800,11 +780,7 @@ Monk token attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
   [attacking] Monk token [2/2] -> Player A
-| decision 77: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -815,7 +791,7 @@ Attackers:
   0: Dragon's Rage Channeler [3/3]
   1: Monk token [2/2]
 Your creatures:
-| decision 78: Player A (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
+| decision 72: Player A (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: White Orchid Phantom [2/2]
@@ -835,7 +811,7 @@ Blockers declared:
 -------- TURN 9 (Player A) --------
 Aether Vial triggered
 Delayed trigger fires.
-| decision 79: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 73: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -845,7 +821,7 @@ Delayed trigger fires.
 Resolving ability (category: Draw, amount: 1)
 Player B draws Ponder
 Choose target for Orcish Bowmasters:
-| decision 80: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 74: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Player B (12 life)
 |   1: Player A (11 life)
@@ -859,7 +835,7 @@ Choose target for Orcish Bowmasters:
 | >> Player A: 2 (Dragon's Rage Channeler)
 Targeting choice 2
 Orcish Bowmasters triggered
-| decision 81: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 75: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -870,14 +846,14 @@ Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Dragon's Rage Channeler
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 3/3.
-| decision 82: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 76: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 83: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 77: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -885,7 +861,7 @@ Amass Orc 1: Player A Army is now 3/3.
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 3).
-| decision 84: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 78: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -893,14 +869,14 @@ Put 1 CHARGE counter(s) on Aether Vial (now 3).
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws White Orchid Phantom
-| decision 85: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 79: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 86: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 80: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -908,14 +884,14 @@ Player A draws White Orchid Phantom
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Aether Vial (ChangeZone))
 Player A's Aether Vial ability is on the stack
-| decision 87: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 81: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 88: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 82: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Wasteland
 |   1: Wasteland
@@ -929,15 +905,11 @@ Resolving ability (category: Destroy)
 Wasteland is destroyed
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 89: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 
 --- Declare Attackers (Player A) ---
-| decision 90: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 83: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Phelia, Exuberant Shepherd [2/2]
@@ -950,7 +922,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 91: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 84: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: White Orchid Phantom [2/2]
@@ -963,7 +935,7 @@ Phelia, Exuberant Shepherd attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-| decision 92: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 85: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Orc Army token [3/3]
@@ -976,7 +948,7 @@ White Orchid Phantom attacking Player B.
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 93: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 86: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [3/3]
 |   1: Confirm attackers
@@ -989,11 +961,7 @@ Orc Army token attacking Player B.
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] Orc Army token [3/3] -> Player B
-| decision 94: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
@@ -1001,7 +969,7 @@ Attackers declared:
   White Orchid Phantom -> Player B
   Orc Army token -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 95: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 87: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Cori-Steel Cutter
@@ -1042,7 +1010,7 @@ Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
 -------- TURN 10 (Player B) --------
 Player B draws Flow State
-| decision 96: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 88: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ponder
@@ -1051,7 +1019,7 @@ Player B draws Flow State
 Player B activated Island for 1(U)
 Player B casts Ponder
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 97: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 89: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler (Surveil)
 |   1: Monk token (ProwessBonus)
@@ -1064,7 +1032,7 @@ Prowess: creature gets +1/+1 until end of turn.
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Force of Will
-| decision 98: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 90: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Force of Will on top of library
 |   1: Put Force of Will into graveyard
@@ -1073,7 +1041,7 @@ Surveil: looking at Force of Will
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 99: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 91: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Force of Will
 |   1: Volcanic Island
@@ -1081,13 +1049,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T9 | First Main | Player B] Input: 0
 | >> Player B: 0 (Force of Will)
 Choose which card goes 2 from top:
-| decision 100: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 92: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Volcanic Island
 |   1: Cori-Steel Cutter
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cori-Steel Cutter)
-| decision 101: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 93: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -1096,7 +1064,7 @@ Choose which card goes 2 from top:
 Resolving ability (category: Draw, amount: 1)
 Player B draws Volcanic Island
 Choose target for Orcish Bowmasters:
-| decision 102: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 94: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player B (4 life)
 |   1: Player A (11 life)
@@ -1114,14 +1082,14 @@ Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Dragon's Rage Channeler
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 4/4.
-| decision 103: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 95: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Volcanic Island)
 Player B played Volcanic Island
-| decision 104: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 96: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -1133,7 +1101,7 @@ Cori-Steel Cutter triggered
 Resolving ability (category: Token)
 Token created: 1/1 Monk
 Resolving ability (category: Attach)
-| decision 105: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 97: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Decline: attach Cori-Steel Cutter to Monk token
 |   1: Accept: attach Cori-Steel Cutter to Monk token
@@ -1148,7 +1116,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 106: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 98: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Monk token [2/2]
 |   1: Monk token [2/2]
@@ -1160,7 +1128,7 @@ Monk token attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
   [attacking] Monk token [2/2] -> Player A
-| decision 107: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 99: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Monk token [2/2]
 |   1: Confirm attackers
@@ -1172,11 +1140,7 @@ Monk token attacking Player A.
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
   [attacking] Monk token [2/2] -> Player A
   [attacking] Monk token [2/2] -> Player A
-| decision 108: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -1193,13 +1157,13 @@ No creatures eligible to block.
 
 -------- TURN 11 (Player A) --------
 Aether Vial triggered
-| decision 109: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 100: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 110: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 101: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -1207,20 +1171,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 4).
-| decision 111: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 102: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Prismatic Vista
-| decision 112: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 103: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 113: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 104: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Prismatic Vista
@@ -1228,25 +1192,26 @@ Player A draws Prismatic Vista
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Prismatic Vista)
 Player A played Prismatic Vista
-| decision 114: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 105: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Prismatic Vista (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 2
-| >> Player A: 2 (Activate Prismatic Vista (ChangeZone))
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 106: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Prismatic Vista (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Prismatic Vista (ChangeZone))
 Player A pays 1 life
 Player A sacrifices Prismatic Vista
 Player A's Prismatic Vista ability is on the stack
-| decision 115: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 116: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 107: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -1255,25 +1220,22 @@ Searching Player A's library:
 | >> Player A: 1 (Plains)
 Player A shuffles their library
 Player A puts Plains to the battlefield
-| decision 117: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 108: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast White Orchid Phantom
-|   2: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast White Orchid Phantom)
 Player A activated Plains for 1(W)
 Player A activated Witch-Blessed Meadow for 1(W)
 Player A casts White Orchid Phantom
-| decision 118: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 White Orchid Phantom enters the battlefield
 Choose target for White Orchid Phantom:
-| decision 119: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 109: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Volcanic Island
@@ -1282,38 +1244,16 @@ Choose target for White Orchid Phantom:
 | >> Player A: 1 (Volcanic Island)
 Targeting choice 1
 White Orchid Phantom triggered
-| decision 120: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Volcanic Island is destroyed
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 121: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Fail to find)
+| auto: Player B: Fail to find
 Player B shuffles their library
 Player B fails to find
-| decision 122: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 123: Player A (game 0, turn 10, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 124: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 110: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Phelia, Exuberant Shepherd [2/2]
@@ -1326,7 +1266,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 125: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 111: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: White Orchid Phantom [2/2]
@@ -1339,7 +1279,7 @@ Phelia, Exuberant Shepherd attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-| decision 126: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 112: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Orc Army token [4/4]
@@ -1352,7 +1292,7 @@ White Orchid Phantom attacking Player B.
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 127: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 113: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [4/4]
 |   1: Confirm attackers
@@ -1365,11 +1305,7 @@ Orc Army token attacking Player B.
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] Orc Army token [4/4] -> Player B
-| decision 128: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
@@ -1377,7 +1313,7 @@ Attackers declared:
   White Orchid Phantom -> Player B
   Orc Army token -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 129: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 114: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Cori-Steel Cutter
@@ -1394,40 +1330,16 @@ Choose target for Phelia, Exuberant Shepherd:
 | >> Player A: 2 (Dragon's Rage Channeler)
 Targeting choice 2
 Phelia, Exuberant Shepherd triggered
-| decision 130: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Dragon's Rage Channeler is moved to exile
 Resolving ability (category: DelayedTrigger)
 Delayed trigger registered: ChangeZone at next End of Turn.
-| decision 131: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 132: Player A (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- First Strike Combat Damage ---
   White Orchid Phantom deals 2 damage to Player B (now at 2 life)
 --- End First Strike Combat Damage ---
 
-| decision 133: Player A (game 0, turn 10, FIRST_STRIKE_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Strike Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
   Orcish Bowmasters deals 1 damage to Player B (now at 1 life)

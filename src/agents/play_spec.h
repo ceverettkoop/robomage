@@ -81,6 +81,9 @@ ResolveResult resolve_spec(const std::string &token, const std::vector<MenuActio
 char spec_seat(const std::string &token);
 // Whether the spec's verb is `pass` (false for a spec that does not parse).
 bool spec_is_pass(const std::string &token);
+// Whether the spec names a menu row by intent: it parses, and is not `pass`, a literal index or a
+// concession.
+bool spec_names_row(const std::string &token);
 // A comma-separated spec list, each spec trimmed, empty ones dropped.
 std::vector<std::string> parse_spec_list(const std::string &csv);
 // "[0] Pass priority  [1] Cast Lightning Bolt ...": the menu on one line, for error messages.
@@ -106,6 +109,11 @@ class PlayScript : public Agent {
         const std::vector<int> &resolved() const { return resolved_; }
         // The specs not yet applied.
         std::vector<std::string> unused_specs() const;
+        // A one-row menu of seat `seat` ('A' / 'B') the engine took without asking (`row`, index 0;
+        // InputLogger::choose): the next spec is consumed when it is keyed to that seat or unkeyed,
+        // names a row (spec_names_row) and matches `row`, so a script may name such a decision or
+        // leave it out. Nothing is recorded in resolved(): the decision has no reply.
+        void auto_taken(char seat, const MenuAction &row);
 
     private:
         int player_choice(const Decision &d);

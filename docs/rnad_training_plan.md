@@ -145,8 +145,9 @@ decisions belong to that game's episode and take that game's result (section 6.1
 episode has no sideboarding decisions. The header records the game number and the match score at
 its start.
 
-Decisions the engine auto-takes (a lone pass) are never asked, so they never appear. The seat
-sequence is therefore irregular, and every record carries its seat explicitly.
+Decisions the engine auto-takes (a menu with one row: a lone pass, a single legal target, …) are
+never asked, so they never appear. The seat sequence is therefore irregular, and every record
+carries its seat explicitly.
 
 **Format:** framework-neutral, like the step-5 card tables. A small versioned header, then
 little-endian fixed-width records, readable with the standard library; fp16 for scaled features,

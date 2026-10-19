@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../classes/action.h"
 #include "../components/types.h"
 #include "schema.h"
 
@@ -24,6 +25,9 @@ std::vector<rmstate::EnumTable> engine_enums();
 
 // The format's enums followed by the engine's: the string tables of the SCHEMA frame.
 std::vector<rmstate::EnumTable> all_enums();
+
+// An action category's name, as the action_category string table holds it.
+std::string action_category_enum_name(ActionCategory v);
 
 // Indices into the type enums (the sorted all_types / all_subtypes / all_supertypes lists); -1
 // for a name not in the list.

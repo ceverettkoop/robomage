@@ -20,7 +20,7 @@ enum class CliParseResult {
 // Returns SHOW_HELP when --help / -h is present (no option is applied then).
 CliParseResult parse_command_line(int argc, char const *argv[]);
 
-// Appends the RMLOG v2 FLAGS tokens for every setup option in effect (plus the "machine"
+// Appends the RMLOG v3 FLAGS tokens for every setup option in effect (plus the "machine"
 // protocol marker) to `header`. Every setup option other than the decks and the seed,
 // which have their own header fields, is written here.
 void record_header_flags(DecisionLogHeader &header);

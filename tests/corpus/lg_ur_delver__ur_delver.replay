@@ -371,13 +371,9 @@ Player B casts Lightning Bolt targeting Player A
 (REPLAY) [T3 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| decision 32: Player A (game 0, turn 3, DRAW, Player B active)
-| menu:
-|   0: Lightning Bolt
-(REPLAY) [T3 | Draw | Player A] Input: 0
-| >> Player A: 0 (Lightning Bolt)
+| auto: Player A: Lightning Bolt
 Targeting choice 0
-| decision 33: Player A (game 0, turn 3, DRAW, Player B active)
+| decision 32: Player A (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Return Thundering Falls
 |   1: Return Volcanic Island
@@ -385,37 +381,29 @@ Targeting choice 0
 | >> Player A: 0 (Return Thundering Falls)
 Player A returns Thundering Falls to hand
 Player A casts Daze targeting Lightning Bolt
-| decision 34: Player A (game 0, turn 3, DRAW, Player B active)
+| decision 33: Player A (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
 (REPLAY) [T3 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| decision 35: Player A (game 0, turn 3, DRAW, Player B active)
+| decision 34: Player A (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Daze
 |   1: Lightning Bolt
 (REPLAY) [T3 | Draw | Player A] Input: 1
 | >> Player A: 1 (Lightning Bolt)
 Targeting choice 1
-| decision 36: Player A (game 0, turn 3, DRAW, Player B active)
-| menu:
-|   0: Return Volcanic Island
-(REPLAY) [T3 | Draw | Player A] Input: 0
-| >> Player A: 0 (Return Volcanic Island)
+| auto: Player A: Return Volcanic Island
 Player A returns Volcanic Island to hand
 Player A casts Daze targeting Lightning Bolt
 Resolving ability (category: Counter)
 Lightning Bolt's controller may pay {1} to save it:
-| decision 37: Player B (game 0, turn 3, DRAW, Player B active)
-| menu:
-|   0: Don't pay (Lightning Bolt is countered)
-(REPLAY) [T3 | Draw | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Lightning Bolt is countered))
+| auto: Player B: Don't pay (Lightning Bolt is countered)
 Lightning Bolt is countered
 Counter fizzles
-| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -423,7 +411,7 @@ Counter fizzles
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scalding Tarn)
 Player B played Scalding Tarn
-| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -434,7 +422,7 @@ Player B sacrifices Scalding Tarn
 Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 40: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -444,7 +432,7 @@ Searching Player B's library:
 | >> Player B: 3 (Volcanic Island)
 Player B shuffles their library
 Player B puts Volcanic Island to the battlefield
-| decision 41: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -458,7 +446,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Player A draws Mishra's Bauble
-| decision 42: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 39: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -469,7 +457,7 @@ Player A draws Mishra's Bauble
 | >> Player A: 4 (Cast Mishra's Bauble)
 Player A casts Mishra's Bauble
 Mishra's Bauble enters the battlefield
-| decision 43: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 40: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -481,14 +469,14 @@ Mishra's Bauble enters the battlefield
 Player A played Thundering Falls
 Thundering Falls enters tapped.
 Thundering Falls triggered
-| decision 44: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 41: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Mishra's Bauble (PeekAndReveal)
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
 Choose target for Mishra's Bauble:
-| decision 45: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 42: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (18 life)
 |   1: Player A (20 life)
@@ -504,7 +492,7 @@ Delayed trigger registered: Draw at next Upkeep.
 Resolving ability (category: Surveil, amount: 1)
 Player A surveils 1.
 Surveil: looking at Scalding Tarn
-| decision 46: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 43: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Scalding Tarn on top of library
 |   1: Put Scalding Tarn into graveyard
@@ -514,18 +502,14 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Delayed trigger fires.
-| decision 47: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 44: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Unholy Heat
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Unholy Heat)
 Choose target for Unholy Heat:
-| decision 48: Player B (game 0, turn 5, UPKEEP, Player B active)
-| menu:
-|   0: Dragon's Rage Channeler
-(REPLAY) [T5 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Dragon's Rage Channeler)
+| auto: Player B: Dragon's Rage Channeler
 Targeting choice 0
 Player B activated Thundering Falls for 1(R)
 Player B casts Unholy Heat targeting Dragon's Rage Channeler
@@ -533,7 +517,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Island
-| decision 49: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 45: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Put Island on top of library
 |   1: Put Island into graveyard
@@ -545,7 +529,7 @@ Dragon's Rage Channeler is destroyed (lethal damage)
 Resolving ability (category: Draw, amount: 1)
 Player A draws Scalding Tarn
 Player B draws Island
-| decision 50: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -558,7 +542,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Force of Will
 |   1: Cori-Steel Cutter
@@ -566,13 +550,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Force of Will)
 Choose which card goes 2 from top:
-| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Cori-Steel Cutter
 |   1: Lightning Bolt
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Lightning Bolt)
-| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -580,7 +564,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Cori-Steel Cutter
-| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -592,7 +576,7 @@ No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
 Player A draws Unholy Heat
-| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -606,7 +590,7 @@ Player A casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player A looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Preordain
 |   1: Scalding Tarn
@@ -614,13 +598,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Scalding Tarn)
 Choose which card goes 2 from top:
-| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Preordain
 |   1: Lightning Bolt
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Preordain)
-| decision 58: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -628,7 +612,7 @@ Choose which card goes 2 from top:
 | >> Player A: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player A draws Lightning Bolt
-| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -637,7 +621,7 @@ Player A draws Lightning Bolt
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Scalding Tarn)
 Player A played Scalding Tarn
-| decision 60: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -648,7 +632,7 @@ Player A sacrifices Scalding Tarn
 Player A's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -658,14 +642,14 @@ Searching Player A's library:
 | >> Player A: 3 (Volcanic Island)
 Player A shuffles their library
 Player A puts Volcanic Island to the battlefield
-| decision 62: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 63: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (18 life)
 |   1: Player A (19 life)
@@ -680,14 +664,14 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Lightning Bolt
-| decision 64: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 60: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T7 | Draw | Player B] Input: 1
 | >> Player B: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 65: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 61: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Player A (19 life)
 |   1: Player B (15 life)
@@ -698,7 +682,7 @@ Player B activated Thundering Falls for 1(R)
 Player B casts Lightning Bolt targeting Player A
 Resolving ability (category: DealDamage, amount: 3)
 Lightning Bolt deals 3 damage to Player A (now at 16 life)
-| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -710,7 +694,7 @@ Player B activated Volcanic Island for 1(R)
 Player B activated Island for 1(U)
 Player B casts Cori-Steel Cutter
 Cori-Steel Cutter enters the battlefield
-| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -721,7 +705,7 @@ No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
 Player A draws Island
-| decision 68: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -735,7 +719,7 @@ Player A activated Thundering Falls for 1(R)
 Player A activated Volcanic Island for 1(U)
 Player A casts Cori-Steel Cutter
 Cori-Steel Cutter enters the battlefield
-| decision 69: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 65: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -744,7 +728,7 @@ Cori-Steel Cutter enters the battlefield
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Island)
 Player A played Island
-| decision 70: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 66: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Into the Flood Maw
@@ -752,11 +736,7 @@ Player A played Island
 | >> Player B: 1 (Cast Into the Flood Maw)
 Player B promises the gift to Player A
 Choose target for Into the Flood Maw:
-| decision 71: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Cori-Steel Cutter
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Cori-Steel Cutter)
+| auto: Player B: Cori-Steel Cutter
 Targeting choice 0
 Player B activated Volcanic Island for 1(U)
 Player B casts Into the Flood Maw
@@ -769,7 +749,7 @@ No creatures eligible to attack.
 
 -------- TURN 10 (Player B) --------
 Player B draws Force of Will
-| decision 72: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cori-Steel Cutter
@@ -782,18 +762,14 @@ Cori-Steel Cutter enters the battlefield
 No creatures eligible to attack.
 
 -------- TURN 11 (Player A) --------
-| decision 73: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 68: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Unholy Heat
 (REPLAY) [T10 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Unholy Heat)
 Choose target for Unholy Heat:
-| decision 74: Player A (game 0, turn 10, UPKEEP, Player A active)
-| menu:
-|   0: Fish token
-(REPLAY) [T10 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Fish token)
+| auto: Player A: Fish token
 Targeting choice 0
 Player A activated Thundering Falls for 1(R)
 Player A casts Unholy Heat targeting Fish token
@@ -802,7 +778,7 @@ Unholy Heat deals 6 damage to Fish token
 Fish token is destroyed (lethal damage)
 Fish (token) is put into the graveyard and ceases to exist.
 Player A draws Mystic Sanctuary
-| decision 75: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 69: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -816,7 +792,7 @@ Player A activated Volcanic Island for 1(R)
 Player A activated Island for 1(U)
 Player A casts Cori-Steel Cutter
 Cori-Steel Cutter enters the battlefield
-| decision 76: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 70: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -826,7 +802,7 @@ Cori-Steel Cutter enters the battlefield
 | >> Player A: 1 (Play Mystic Sanctuary)
 Player A played Mystic Sanctuary
 Choose target for Mystic Sanctuary:
-| decision 77: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 71: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Brainstorm
 |   1: Daze
@@ -837,7 +813,7 @@ Choose target for Mystic Sanctuary:
 | >> Player A: 1 (Daze)
 Targeting choice 2
 Mystic Sanctuary triggered
-| decision 78: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 72: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Decline: use Mystic Sanctuary's triggered ability
 |   1: Accept: use Mystic Sanctuary's triggered ability
@@ -849,7 +825,7 @@ No creatures eligible to attack.
 
 -------- TURN 12 (Player B) --------
 Player B draws Cori-Steel Cutter
-| decision 79: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 73: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cori-Steel Cutter
@@ -863,7 +839,7 @@ No creatures eligible to attack.
 
 -------- TURN 13 (Player A) --------
 Player A draws Daze
-| decision 80: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 74: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -872,7 +848,7 @@ Player A draws Daze
 (REPLAY) [T12 | First Main | Player A] Input: 3
 | >> Player A: 3 (Cast Murktide Regent)
 Choose how many cards to exile via Delve (3-5):
-| decision 81: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 75: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile 3 cards from graveyard (Delve)
 |   1: Exile 4 cards from graveyard (Delve)
@@ -880,7 +856,7 @@ Choose how many cards to exile via Delve (3-5):
 (REPLAY) [T12 | First Main | Player A] Input: 2
 | >> Player A: 2 (Exile 5 cards from graveyard (Delve))
 Choose a card to exile via Delve (1 of 5):
-| decision 82: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 76: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm (Delve)
 |   1: Exile Daze (Delve)
@@ -892,7 +868,7 @@ Choose a card to exile via Delve (1 of 5):
 (REPLAY) [T12 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Brainstorm (Delve))
 Choose a card to exile via Delve (2 of 5):
-| decision 83: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 77: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm (Delve)
 |   1: Exile Daze (Delve)
@@ -904,7 +880,7 @@ Choose a card to exile via Delve (2 of 5):
 (REPLAY) [T12 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Brainstorm (Delve))
 Choose a card to exile via Delve (3 of 5):
-| decision 84: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 78: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Daze (Delve)
 |   1: Exile Lightning Bolt (Delve)
@@ -915,7 +891,7 @@ Choose a card to exile via Delve (3 of 5):
 (REPLAY) [T12 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Daze (Delve))
 Choose a card to exile via Delve (4 of 5):
-| decision 85: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 79: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Lightning Bolt (Delve)
 |   1: Exile Mishra's Bauble (Delve)
@@ -925,7 +901,7 @@ Choose a card to exile via Delve (4 of 5):
 (REPLAY) [T12 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Lightning Bolt (Delve))
 Choose a card to exile via Delve (5 of 5):
-| decision 86: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 80: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Mishra's Bauble (Delve)
 |   1: Exile Ponder (Delve)
@@ -941,7 +917,7 @@ Player A exiles Daze via Delve.
 Player A exiles Lightning Bolt via Delve.
 Player A exiles Mishra's Bauble via Delve.
 Player A casts Murktide Regent
-| decision 87: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 81: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -950,7 +926,7 @@ Player A casts Murktide Regent
 | >> Player A: 0 (Pass priority)
 Murktide Regent enters the battlefield
 Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
-| decision 88: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 82: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -959,18 +935,14 @@ Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Volcanic Island)
 Player A played Volcanic Island
-| decision 89: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 83: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Equip Cori-Steel Cutter)
 Choose target for Cori-Steel Cutter:
-| decision 90: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Murktide Regent
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Murktide Regent)
+| auto: Player A: Murktide Regent
 Targeting choice 0
 Player A activated Thundering Falls for 1(R)
 Player A activated Volcanic Island for 1(U)
@@ -980,7 +952,7 @@ Equipment attached.
 Murktide Regent gains 1/1 Trample & Haste (always)
 
 --- Declare Attackers (Player A) ---
-| decision 91: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 84: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Murktide Regent [8/8]
 |   1: Confirm attackers
@@ -990,11 +962,7 @@ Murktide Regent attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Murktide Regent [8/8] -> Player B
-| decision 92: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Murktide Regent -> Player B
@@ -1007,7 +975,7 @@ No creatures eligible to block.
 
 -------- TURN 14 (Player B) --------
 Player B draws Ponder
-| decision 93: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 85: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ponder
@@ -1015,7 +983,7 @@ Player B draws Ponder
 | >> Player B: 1 (Cast Ponder)
 Player B activated Island for 1(U)
 Player B casts Ponder
-| decision 94: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 86: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
@@ -1024,7 +992,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 95: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 87: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Daze
 |   1: Polluted Delta
@@ -1032,13 +1000,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T13 | First Main | Player B] Input: 1
 | >> Player B: 1 (Polluted Delta)
 Choose which card goes 2 from top:
-| decision 96: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 88: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Daze
 |   1: Scalding Tarn
 (REPLAY) [T13 | First Main | Player B] Input: 1
 | >> Player B: 1 (Scalding Tarn)
-| decision 97: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 89: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -1050,14 +1018,14 @@ No creatures eligible to attack.
 
 -------- TURN 15 (Player A) --------
 Player A draws Lightning Bolt
-| decision 98: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 90: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T14 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 99: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 91: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Player B (7 life)
 |   1: Player A (16 life)
@@ -1067,14 +1035,14 @@ Choose target for Lightning Bolt:
 Targeting choice 0
 Player A activated Thundering Falls for 1(R)
 Player A casts Lightning Bolt targeting Player B
-| decision 100: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 92: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
 |   2: Cast Daze (alternate cost)
 (REPLAY) [T14 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 101: Player B (game 0, turn 14, DRAW, Player A active)
+| decision 93: Player B (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -1083,16 +1051,12 @@ Player A casts Lightning Bolt targeting Player B
 (REPLAY) [T14 | Draw | Player B] Input: 1
 | >> Player B: 1 (Cast Daze)
 Choose target for Daze:
-| decision 102: Player B (game 0, turn 14, DRAW, Player A active)
-| menu:
-|   0: Lightning Bolt
-(REPLAY) [T14 | Draw | Player B] Input: 0
-| >> Player B: 0 (Lightning Bolt)
+| auto: Player B: Lightning Bolt
 Targeting choice 0
 Player B activated Thundering Falls for 1(U)
 Player B activated Volcanic Island for 1(U)
 Player B casts Daze targeting Lightning Bolt
-| decision 103: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 94: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -1100,7 +1064,7 @@ Player B casts Daze targeting Lightning Bolt
 (REPLAY) [T14 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Daze)
 Choose target for Daze:
-| decision 104: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 95: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Daze
 |   1: Lightning Bolt
@@ -1114,7 +1078,7 @@ Cori-Steel Cutter triggered
 Resolving ability (category: Token)
 Token created: 1/1 Monk
 Resolving ability (category: Attach)
-| decision 105: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 96: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Decline: attach Cori-Steel Cutter to Monk token
 |   1: Accept: attach Cori-Steel Cutter to Monk token
@@ -1125,7 +1089,7 @@ Resolving ability (category: Cleanup)
 Monk token gains 1/1 Trample & Haste (always)
 Resolving ability (category: Counter)
 Daze's controller may pay {1} to save it:
-| decision 106: Player B (game 0, turn 14, DRAW, Player A active)
+| decision 97: Player B (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Tap Volcanic Island for (U)
 |   1: Tap Volcanic Island for (R)
@@ -1133,7 +1097,7 @@ Daze's controller may pay {1} to save it:
 (REPLAY) [T14 | Draw | Player B] Input: 0
 | >> Player B: 0 (Tap Volcanic Island for (U))
 Player B tapped Volcanic Island for {U}
-| decision 107: Player B (game 0, turn 14, DRAW, Player A active)
+| decision 98: Player B (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Pay {1} (Daze is not countered)
 |   1: Don't pay (Daze is countered)
@@ -1142,7 +1106,7 @@ Player B tapped Volcanic Island for {U}
 Player B pays {1} — Daze is not countered
 Resolving ability (category: Counter)
 Lightning Bolt's controller may pay {1} to save it:
-| decision 108: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 99: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Tap Volcanic Island for (U)
 |   1: Tap Volcanic Island for (R)
@@ -1152,7 +1116,7 @@ Lightning Bolt's controller may pay {1} to save it:
 (REPLAY) [T14 | Draw | Player A] Input: 0
 | >> Player A: 0 (Tap Volcanic Island for (U))
 Player A tapped Volcanic Island for {U}
-| decision 109: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 100: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Tap Volcanic Island for (U)
 |   1: Tap Volcanic Island for (R)
@@ -1163,14 +1127,14 @@ Player A tapped Volcanic Island for {U}
 Player A pays {1} — Lightning Bolt is not countered
 Resolving ability (category: DealDamage, amount: 3)
 Lightning Bolt deals 3 damage to Player B (now at 4 life)
-| decision 110: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 101: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
 (REPLAY) [T14 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Volcanic Island)
 Player A played Volcanic Island
-| decision 111: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 102: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
@@ -1178,7 +1142,7 @@ Player A played Volcanic Island
 | >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 112: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Murktide Regent [7/7]
 |   1: Monk token [2/2]
@@ -1189,7 +1153,7 @@ Murktide Regent attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Murktide Regent [7/7] -> Player B
-| decision 113: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 104: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Monk token [2/2]
 |   1: Confirm attackers
@@ -1200,11 +1164,7 @@ Monk token attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Murktide Regent [7/7] -> Player B
   [attacking] Monk token [2/2] -> Player B
-| decision 114: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Murktide Regent -> Player B

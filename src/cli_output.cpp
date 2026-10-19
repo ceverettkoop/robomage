@@ -253,7 +253,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      resources/logs/game_<seed>.log\n");
     printf("  --decision-log <file>  Write the decision log to <file> (implies --log-decisions;\n");
     printf("                      no \"Logging inputs to\" line is printed)\n");
-    printf("  --replay <logfile>  Replay a previously logged game. The log's RMLOG v2\n");
+    printf("  --replay <logfile>  Replay a previously logged game. The log's RMLOG v3\n");
     printf("                      header alone determines the setup (decks, seed, --bo3,\n");
     printf("                      --no-shuffle, test setup); those flags given alongside\n");
     printf("                      --replay are ignored with a warning. It prints the\n");

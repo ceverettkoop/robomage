@@ -1,4 +1,4 @@
-RMLOG v2
+RMLOG v3
 SEED 1187322509
 FLAGS machine
 DECK_A league/wrb_energy
@@ -92,7 +92,6 @@ DECISIONS
 1
 0
 0
-0
 3
 0
 3
@@ -107,7 +106,6 @@ DECISIONS
 0
 0
 0
-0
 1
 0
 1
@@ -115,12 +113,10 @@ DECISIONS
 1
 0
 1
-0
 0
 6
 1
 1
-0
 0
 0
 0
@@ -150,8 +146,6 @@ DECISIONS
 0
 0
 0
-0
 8
 0
 8
-0

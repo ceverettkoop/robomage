@@ -253,13 +253,9 @@ Player A casts Tamiyo, Inquisitive Student
 (REPLAY) [T4 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 20: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
-| menu:
-|   0: Tamiyo, Inquisitive Student
-(REPLAY) [T4 | First Main | Player B] Input: 0
-| >> Player B: 0 (Tamiyo, Inquisitive Student)
+| auto: Player B: Tamiyo, Inquisitive Student
 Targeting choice 0
-| decision 21: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 20: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm
 |   1: Exile Ponder
@@ -274,7 +270,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Player B draws Thoughtseize
-| decision 22: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -289,7 +285,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 23: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Archon of Cruelty
@@ -297,13 +293,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Archon of Cruelty)
 Choose which card goes 2 from top:
-| decision 24: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Underground Sea
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Underground Sea)
-| decision 25: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 24: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -311,7 +307,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Brainstorm
-| decision 26: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 25: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -329,7 +325,7 @@ Player B draws Archon of Cruelty
 Player B draws Force of Will
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 27: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 26: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Archon of Cruelty
 |   1: Force of Will
@@ -342,7 +338,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 0 (Archon of Cruelty)
 Player B puts Archon of Cruelty to top of library
 Player B chooses a card from Player B hand:
-| decision 28: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 27: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Force of Will
 |   1: Reanimate
@@ -353,14 +349,14 @@ Player B chooses a card from Player B hand:
 (REPLAY) [T5 | First Main | Player B] Input: 4
 | >> Player B: 4 (Underground Sea)
 Player B puts Underground Sea to top of library
-| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 28: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Underground Sea)
 Player B played Underground Sea
-| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Reanimate
@@ -369,7 +365,7 @@ Player B played Underground Sea
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Reanimate)
 Choose target for Reanimate:
-| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student
 |   1: Atraxa, Grand Unifier
@@ -398,7 +394,7 @@ Player B reveals Griselbrand from the top of their library
 Resolving ability (category: RepeatEach)
 Resolving ability (category: ChooseCard)
 Player B may put a Creature card from among the revealed cards into their hand:
-| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Archon of Cruelty (Creature) into hand
 |   1: Put Atraxa, Grand Unifier (Creature) into hand
@@ -409,7 +405,7 @@ Player B may put a Creature card from among the revealed cards into their hand:
 Player B chooses Archon of Cruelty
 Resolving ability (category: ChooseCard)
 Player B may put a Enchantment card from among the revealed cards into their hand:
-| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Animate Dead (Enchantment) into hand
 |   1: Put no Enchantment card into hand
@@ -418,7 +414,7 @@ Player B may put a Enchantment card from among the revealed cards into their han
 Player B chooses Animate Dead
 Resolving ability (category: ChooseCard)
 Player B may put a Land card from among the revealed cards into their hand:
-| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Underground Sea (Land) into hand
 |   1: Put Flooded Strand (Land) into hand
@@ -429,7 +425,7 @@ Player B may put a Land card from among the revealed cards into their hand:
 Player B chooses Underground Sea
 Resolving ability (category: ChooseCard)
 Player B may put a Sorcery card from among the revealed cards into their hand:
-| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Ponder (Sorcery) into hand
 |   1: Put Thoughtseize (Sorcery) into hand
@@ -456,7 +452,7 @@ No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
 Player A draws Tropical Island
-| decision 36: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 35: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Tropical Island
@@ -467,7 +463,7 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Flow State
-| decision 37: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -481,7 +477,7 @@ Player B draws Flow State
 Player B activated Undercity Sewers for 1(U)
 Player B activated Undercity Sewers for 1(U)
 Player B casts Flow State
-| decision 38: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -489,14 +485,14 @@ Player B casts Flow State
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Dig)
 Player B looks at the top 3 card(s) of their library.
-| decision 39: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Reanimate
 |   1: Lotus Petal
 |   2: Brainstorm
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Lotus Petal)
-| decision 40: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Reanimate
 |   1: Brainstorm
@@ -505,7 +501,7 @@ Player B looks at the top 3 card(s) of their library.
 Player B puts Lotus Petal into hand.
 Player B puts Brainstorm into hand.
 Player B puts 1 card(s) on the bottom of their library.
-| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -518,7 +514,7 @@ Player B puts 1 card(s) on the bottom of their library.
 | >> Player B: 2 (Cast Brainstorm)
 Player B activated Underground Sea for 1(U)
 Player B casts Brainstorm
-| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -530,7 +526,7 @@ Player B draws Animate Dead
 Player B draws Atraxa, Grand Unifier
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Animate Dead
 |   1: Animate Dead
@@ -547,7 +543,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 2 (Archon of Cruelty)
 Player B puts Archon of Cruelty to top of library
 Player B chooses a card from Player B hand:
-| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Animate Dead
 |   1: Animate Dead
@@ -562,7 +558,7 @@ Player B chooses a card from Player B hand:
 (REPLAY) [T7 | First Main | Player B] Input: 2
 | >> Player B: 2 (Atraxa, Grand Unifier)
 Player B puts Atraxa, Grand Unifier to top of library
-| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -570,14 +566,14 @@ Player B puts Atraxa, Grand Unifier to top of library
 (REPLAY) [T7 | First Main | Player B] Input: 2
 | >> Player B: 2 (Cast Lotus Petal)
 Player B casts Lotus Petal
-| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Lotus Petal enters the battlefield
-| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -590,7 +586,7 @@ Lotus Petal enters the battlefield
 Player B sacrifices Lotus Petal
 Player B activated Lotus Petal for 1(U)
 Player B casts Ponder
-| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -599,7 +595,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Archon of Cruelty
@@ -607,13 +603,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Atraxa, Grand Unifier)
 Choose which card goes 2 from top:
-| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Archon of Cruelty
 |   1: Underground Sea
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Archon of Cruelty)
-| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -621,7 +617,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Underground Sea
-| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -629,7 +625,7 @@ Player B draws Underground Sea
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Underground Sea)
 Player B played Underground Sea
-| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ponder
@@ -642,7 +638,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Archon of Cruelty
 |   1: Atraxa, Grand Unifier
@@ -650,13 +646,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Archon of Cruelty)
 Choose which card goes 2 from top:
-| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Lotus Petal
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Atraxa, Grand Unifier)
-| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -664,7 +660,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Lotus Petal
-| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lotus Petal
@@ -672,7 +668,7 @@ Player B draws Lotus Petal
 | >> Player B: 1 (Cast Lotus Petal)
 Player B casts Lotus Petal
 Lotus Petal enters the battlefield
-| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Reanimate
@@ -680,7 +676,7 @@ Lotus Petal enters the battlefield
 (REPLAY) [T7 | First Main | Player B] Input: 2
 | >> Player B: 2 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (10 life)
@@ -699,7 +695,7 @@ Player A reveals their hand:
   Sheoldred's Edict
   Thoughtseize
 Player B chooses a card to discard:
-| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fatal Push
 |   1: Fatal Push
@@ -714,7 +710,7 @@ Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 8)
 
 --- Declare Attackers (Player B) ---
-| decision 61: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 60: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Atraxa, Grand Unifier [7/7]
 |   1: Confirm attackers
@@ -724,11 +720,7 @@ Atraxa, Grand Unifier attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Atraxa, Grand Unifier [7/7] -> Player A
-| decision 62: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Atraxa, Grand Unifier -> Player A
@@ -746,7 +738,7 @@ No creatures eligible to attack.
 
 -------- TURN 10 (Player B) --------
 Player B draws Atraxa, Grand Unifier
-| decision 63: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 61: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -756,7 +748,7 @@ Player B draws Atraxa, Grand Unifier
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Underground Sea)
 Player B played Underground Sea
-| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 62: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Animate Dead
@@ -766,7 +758,7 @@ Player B played Underground Sea
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 65: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 63: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Atraxa, Grand Unifier [7/7]
 |   1: Confirm attackers
@@ -776,11 +768,7 @@ Atraxa, Grand Unifier attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Atraxa, Grand Unifier [7/7] -> Player A
-| decision 66: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Atraxa, Grand Unifier -> Player A
@@ -791,7 +779,7 @@ No creatures eligible to block.
   Player B gains 7 life (lifelink)
 --- End Combat Damage ---
 
-| decision 67: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Animate Dead
@@ -802,14 +790,14 @@ No creatures eligible to block.
 
 -------- TURN 11 (Player A) --------
 Player A draws Swamp
-| decision 68: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 65: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Swamp
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Swamp)
 Player A played Swamp
-| decision 69: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 66: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Baleful Strix
@@ -823,7 +811,7 @@ Player A played Swamp
 Player A activated Swamp for 1(B)
 Player A activated Tropical Island for 1(U)
 Player A casts Baleful Strix
-| decision 70: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 67: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will
@@ -831,11 +819,7 @@ Player A casts Baleful Strix
 (REPLAY) [T10 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will)
 Choose target for Force of Will:
-| decision 71: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Baleful Strix
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Baleful Strix)
+| auto: Player B: Baleful Strix
 Targeting choice 0
 Player B activated Undercity Sewers for 1(U)
 Player B activated Undercity Sewers for 1(U)
@@ -849,7 +833,7 @@ No creatures eligible to attack.
 
 -------- TURN 12 (Player B) --------
 Player B draws Archon of Cruelty
-| decision 72: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Animate Dead
@@ -859,7 +843,7 @@ Player B draws Archon of Cruelty
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 73: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 69: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Atraxa, Grand Unifier [7/7]
 |   1: Confirm attackers
@@ -869,11 +853,7 @@ Atraxa, Grand Unifier attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Atraxa, Grand Unifier [7/7] -> Player A
-| decision 74: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Atraxa, Grand Unifier -> Player A

@@ -12,7 +12,7 @@ struct Deck {
         Deck() {};
         Deck(std::string path);
         // Build a deck from raw decklist text (same format as a .dk file). Used by
-        // replay to reconstruct the decks embedded in an RMLOG v2 decision log.
+        // replay to reconstruct the decks embedded in an RMLOG v3 decision log.
         static Deck from_string(const std::string& text);
         std::vector<std::pair<size_t, std::string>> main_deck;
         std::vector<std::pair<size_t, std::string>> sideboard;

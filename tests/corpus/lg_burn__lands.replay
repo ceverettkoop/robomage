@@ -170,12 +170,8 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at 14 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 12: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
-| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+| decision 12: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -184,7 +180,7 @@ Player B may pay to copy Chain Lightning:
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Suspend Rift Bolt
@@ -196,7 +192,7 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Sphere of Resistance
-| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Savannah
@@ -208,7 +204,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Rift Bolt triggers: remove a time counter (suspend).
-| decision 16: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 15: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Price of Progress
@@ -228,7 +224,7 @@ Resolving ability (category: SuspendTick)
 Removed a time counter from Rift Bolt (0 remaining).
 Rift Bolt triggers: the last time counter was removed (suspend).
 Resolving ability (category: SuspendCast)
-| decision 17: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 16: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Do not cast Rift Bolt
 |   1: Cast Rift Bolt without paying its mana cost
@@ -236,7 +232,7 @@ Resolving ability (category: SuspendCast)
 | >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
 Player A casts Rift Bolt without paying its mana cost
 Choose target for Rift Bolt:
-| decision 18: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 17: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (10 life)
 |   1: Player A (15 life)
@@ -247,7 +243,7 @@ Player A casts Rift Bolt targeting Player B
 Resolving ability (category: DealDamage, amount: 3)
 Rift Bolt deals 3 damage to Player B (now at 7 life)
 Player A draws Exquisite Firecraft
-| decision 19: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 18: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -259,7 +255,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Player B draws The Tabernacle at Pendrell Vale
-| decision 20: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Savannah
@@ -267,7 +263,7 @@ Player B draws The Tabernacle at Pendrell Vale
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Savannah)
 Player B played Savannah
-| decision 21: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Crop Rotation
@@ -279,7 +275,7 @@ Player B played Savannah
 Player B activated Savannah for 1(G)
 Player B casts Exploration
 Exploration enters the battlefield
-| decision 22: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play The Tabernacle at Pendrell Vale
@@ -289,20 +285,20 @@ Player B played The Tabernacle at Pendrell Vale
 No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
-| decision 23: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 22: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Mountain
-| decision 24: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 23: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 25: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 24: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -312,7 +308,7 @@ Player A draws Mountain
 (REPLAY) [T6 | First Main | Player A] Input: 3
 | >> Player A: 3 (Cast Exquisite Firecraft)
 Choose target for Exquisite Firecraft:
-| decision 26: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 25: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (7 life)
 |   1: Player A (15 life)
@@ -326,7 +322,7 @@ Player A activated Fiery Islet for 1(U)
 Player A casts Exquisite Firecraft targeting Player B
 Resolving ability (category: DealDamage, amount: 4)
 Exquisite Firecraft deals 4 damage to Player B (now at 3 life)
-| decision 27: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 26: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -337,13 +333,13 @@ Player A played Mountain
 No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
-| decision 28: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 27: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Crop Rotation
 (REPLAY) [T7 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Crop Rotation)
-| decision 29: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 28: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Sacrifice Dark Depths
 |   1: Sacrifice Savannah
@@ -356,7 +352,7 @@ Player B sacrifices Savannah
 Player B casts Crop Rotation
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 30: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 29: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Ancient Tomb
@@ -387,7 +383,7 @@ Urza's Saga gets 1 lore counter (now 2).
 Urza's Saga chapter 2 triggers.
 Resolving ability (category: Animate)
 Urza's Saga gains an activated ability.
-| decision 31: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 30: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Expedition Map
@@ -400,20 +396,20 @@ Expedition Map enters the battlefield
 No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
-| decision 32: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 31: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Eidolon of the Great Revel
-| decision 33: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 32: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 34: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 33: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -424,7 +420,7 @@ Player A draws Eidolon of the Great Revel
 Player A activated Mountain for 1(R)
 Player A activated Mountain for 1(R)
 Player A casts Eidolon of the Great Revel
-| decision 35: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 34: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
@@ -436,21 +432,21 @@ Player A's Fiery Islet ability is on the stack
 Resolving ability (category: Draw, amount: 1)
 Player A draws Chain Lightning
 Eidolon of the Great Revel enters the battlefield
-| decision 36: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 35: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 37: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 36: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Chain Lightning
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Chain Lightning)
 Choose target for Chain Lightning:
-| decision 38: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 37: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (3 life)
 |   1: Player A (14 life)
@@ -467,7 +463,7 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at 0 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 39: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 38: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Tap Urza's Saga for (C)
 |   1: Don't pay (Chain Lightning is not copied)

@@ -160,7 +160,7 @@ static void write_reveals(const Ctx &c);
 static void write_pending(const Ctx &c, Zone::Ownership decider);
 static void write_pending_cost(const Ctx &c);
 static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions);
-static bool description_hides_identity(const Ctx &c, const LegalAction &la);
+static bool description_hides_identity(Zone::Ownership viewer, const LegalAction &la);
 static uint16_t cast_variant_mask(const LegalAction &la);
 static void write_match(const Ctx &c);
 static void write_own_deck(const Ctx &c);
@@ -1360,10 +1360,10 @@ static void write_pending_cost(const Ctx &c) {
 // Whether a menu entry's description could name a card the viewer cannot see: it refers to an
 // object whose identity is hidden from them and the choice does not itself make it public. Such a
 // description is replaced (register 12). Decided without reading the hidden identity.
-static bool description_hides_identity(const Ctx &c, const LegalAction &la) {
-    if (la.card_is_public || !is_seat(c.viewer)) return false;
+static bool description_hides_identity(Zone::Ownership viewer, const LegalAction &la) {
+    if (la.card_is_public || !is_seat(viewer)) return false;
     for (Entity e : {la.source_entity, la.target_entity})
-        if (e != 0 && global_coordinator.entity_has_component<Zone>(e) && !identity_visible(e, c.viewer)) return true;
+        if (e != 0 && global_coordinator.entity_has_component<Zone>(e) && !identity_visible(e, viewer)) return true;
     return false;
 }
 
@@ -1392,10 +1392,7 @@ static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
         const bool src_player = src != 0 && global_coordinator.entity_has_component<Player>(src);
         const bool tgt_player = tgt != 0 && global_coordinator.entity_has_component<Player>(tgt);
         const bool src_zoned = src != 0 && global_coordinator.entity_has_component<Zone>(src);
-        const int src_card = src_player           ? -1
-                             : la.named_card >= 0 ? la.named_card
-                             : la.card_is_public  ? public_card_id(src)
-                                                  : visible_card_id(src, c.viewer);
+        const int src_card = menu_row_card(la, c.viewer);
         Row r = c.w.row(TableId::MENU);
         r.u8(static_cast<uint64_t>(la.category)).u8(static_cast<uint64_t>(la.type));
         r.u32(src_zoned ? handle(c, src) : 0)
@@ -1408,11 +1405,19 @@ static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
         r.i16(std::max(-32768, std::min(la.option_ordinal, 32767)))
             .u16(cast_variant_mask(la))
             .u8(la.card_is_public ? 1 : 0);
-        if (description_hides_identity(c, la))
-            r.text("(hidden card)");
-        else
-            r.text(la.description);
+        r.text(menu_row_description(la, c.viewer));
     }
+}
+
+int menu_row_card(const LegalAction &la, Zone::Ownership viewer) {
+    const Entity src = la.source_entity;
+    if (src != 0 && global_coordinator.entity_has_component<Player>(src)) return -1;
+    if (la.named_card >= 0) return la.named_card;
+    return la.card_is_public ? public_card_id(src) : visible_card_id(src, viewer);
+}
+
+std::string menu_row_description(const LegalAction &la, Zone::Ownership viewer) {
+    return description_hides_identity(viewer, la) ? std::string("(hidden card)") : la.description;
 }
 
 static void write_match(const Ctx &c) {

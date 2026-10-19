@@ -217,11 +217,7 @@ Ocelot Pride attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Ocelot Pride [1/1] -> Player B
-| decision 16: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T2 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Ocelot Pride -> Player B
@@ -237,7 +233,7 @@ No creatures eligible to block.
 --- End Combat Damage ---
 
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 17: Player A (game 0, turn 2, END_STEP, Player A active)
+| decision 16: Player A (game 0, turn 2, END_STEP, Player A active)
 | menu:
 |   0: Ocelot Pride (Token)
 |   1: Ocelot Pride (Token)
@@ -254,7 +250,7 @@ Resolving ability (category: CopyPermanent)
 
 -------- TURN 4 (Player B) --------
 Player B draws Arid Mesa
-| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Arid Mesa
@@ -263,7 +259,7 @@ Player B draws Arid Mesa
 (REPLAY) [T3 | First Main | Player B] Input: 3
 | >> Player B: 3 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (18 life)
@@ -279,7 +275,7 @@ Player A reveals their hand:
   Voice of Victory
   Voice of Victory
 Player B chooses a card to discard:
-| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Orcish Bowmasters
 |   1: Thoughtseize
@@ -290,7 +286,7 @@ Player B chooses a card to discard:
 Player A discards Voice of Victory
 Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 16)
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Arid Mesa
@@ -298,7 +294,7 @@ Player B loses 2 life (now at 16)
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Arid Mesa)
 Player B played Arid Mesa
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Arid Mesa (ChangeZone)
@@ -309,7 +305,7 @@ Player B sacrifices Arid Mesa
 Player B's Arid Mesa ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Elegant Parlor
@@ -326,7 +322,7 @@ Elegant Parlor triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Ocelot Pride
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Ocelot Pride on top of library
 |   1: Put Ocelot Pride into graveyard
@@ -335,7 +331,7 @@ Surveil: looking at Ocelot Pride
 No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
-| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -346,7 +342,7 @@ Player A activated Plateau for 1(R)
 Player A casts Orcish Bowmasters
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (15 life)
 |   1: Player A (20 life)
@@ -366,7 +362,7 @@ Amass Orc 1: Player A Army is now 1/1.
 Player A draws Amped Raptor
 
 --- Declare Attackers (Player A) ---
-| decision 27: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 26: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Ocelot Pride [1/1]
 |   1: Ocelot Pride [1/1]
@@ -379,7 +375,7 @@ Ocelot Pride attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Ocelot Pride [1/1] -> Player B
-| decision 28: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 27: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Ocelot Pride [1/1]
 |   1: Cat token [1/1]
@@ -392,7 +388,7 @@ Ocelot Pride attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Ocelot Pride [1/1] -> Player B
-| decision 29: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 28: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Cat token [1/1]
@@ -405,7 +401,7 @@ Cat token attacking Player B.
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 30: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 29: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Confirm attackers
@@ -418,11 +414,7 @@ Cat token attacking Player B.
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 31: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Ocelot Pride -> Player B
@@ -445,7 +437,7 @@ No creatures eligible to block.
 --- End Combat Damage ---
 
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 32: Player A (game 0, turn 4, END_STEP, Player A active)
+| decision 30: Player A (game 0, turn 4, END_STEP, Player A active)
 | menu:
 |   0: Ocelot Pride (Token)
 |   1: Ocelot Pride (Token)
@@ -467,14 +459,14 @@ Orc Army token dies (zero toughness)
 Orc Army (token) is put into the graveyard and ceases to exist.
 
 -------- TURN 6 (Player B) --------
-| decision 33: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 31: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 34: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 32: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Ocelot Pride
 |   1: Ocelot Pride
@@ -496,14 +488,14 @@ Ocelot Pride is moved to exile
 Resolving ability (category: GainLife, amount: 1)
 Player A gains 1 life (now at 23)
 Player B draws Ocelot Pride
-| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scrubland)
 Player B played Scrubland
-| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Amped Raptor
@@ -524,14 +516,14 @@ Player B reveals Swords to Plowshares.
 Player B exiles Swords to Plowshares.
 Resolving ability (category: Play)
 Player B may cast Swords to Plowshares by paying 1 energy rather than its mana cost.
-| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Do not cast Swords to Plowshares
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Ocelot Pride
 |   1: Orcish Bowmasters
@@ -553,30 +545,26 @@ Resolving ability (category: ChangeZone)
 Ocelot Pride is moved to exile
 Resolving ability (category: GainLife, amount: 1)
 Player A gains 1 life (now at 24)
-| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cabal Therapy (flashback)
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Cabal Therapy (flashback))
 Choose target for Cabal Therapy:
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (24 life)
 |   1: Player B (10 life)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Player A (24 life))
 Targeting choice 0
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Sacrifice Amped Raptor
-(REPLAY) [T5 | First Main | Player B] Input: 0
-| >> Player B: 0 (Sacrifice Amped Raptor)
+| auto: Player B: Sacrifice Amped Raptor
 Player B sacrifices Amped Raptor
 Player B casts Cabal Therapy
 Resolving ability (category: NameCard)
 Player B names a card:
-| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Name card: Ajani, Nacatl Pariah
 |   1: Name card: Amped Raptor
@@ -614,7 +602,7 @@ No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
 Player A draws Cabal Therapy
-| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Amped Raptor
@@ -634,7 +622,7 @@ Player A reveals Ajani, Nacatl Pariah.
 Player A exiles Ajani, Nacatl Pariah.
 Resolving ability (category: Play)
 Player A may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
-| decision 44: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Do not cast Ajani, Nacatl Pariah
 |   1: Cast Ajani, Nacatl Pariah
@@ -649,7 +637,7 @@ Resolving ability (category: Token)
 Token created: 2/1 Cat Warrior
 
 --- Declare Attackers (Player A) ---
-| decision 45: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 42: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Cat token [1/1]
@@ -666,7 +654,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 46: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 43: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Cat token [1/1]
@@ -683,7 +671,7 @@ Cat token attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 47: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 44: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Orc Army token [1/1]
@@ -700,7 +688,7 @@ Cat token attacking Player B.
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 48: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 45: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Cat token [1/1]
@@ -717,7 +705,7 @@ Orc Army token attacking Player B.
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
-| decision 49: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 46: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Cat token [1/1]
@@ -734,7 +722,7 @@ Cat token attacking Player B.
   [attacking] Cat token [1/1] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 50: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 47: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Cat token [1/1]
@@ -751,7 +739,7 @@ Cat token attacking Player B.
   [attacking] Orc Army token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 51: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 48: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Cat token [1/1]
@@ -768,7 +756,7 @@ Cat token attacking Player B.
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 52: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 49: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Confirm attackers
@@ -785,11 +773,7 @@ Cat token attacking Player B.
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 53: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
@@ -816,7 +800,7 @@ No creatures eligible to block.
 
 -------- TURN 8 (Player B) --------
 Player B draws Voice of Victory
-| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ocelot Pride
@@ -828,7 +812,7 @@ Player B draws Voice of Victory
 Player B activated Elegant Parlor for 1(W)
 Player B casts Ocelot Pride
 Ocelot Pride enters the battlefield
-| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ocelot Pride
@@ -843,7 +827,7 @@ No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
 Player A draws Goblin Bombardment
-| decision 56: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 52: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cabal Therapy
@@ -852,7 +836,7 @@ Player A draws Goblin Bombardment
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Cabal Therapy)
 Choose target for Cabal Therapy:
-| decision 57: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 53: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (2 life)
 |   1: Player A (24 life)
@@ -863,7 +847,7 @@ Player A activated Scrubland for 1(B)
 Player A casts Cabal Therapy
 Resolving ability (category: NameCard)
 Player A names a card:
-| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Name card: Ajani, Nacatl Pariah
 |   1: Name card: Amped Raptor
@@ -895,21 +879,21 @@ Player B reveals their hand:
   Voice of Victory
   Voice of Victory
 No matching cards to discard.
-| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 55: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cabal Therapy (flashback)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Cabal Therapy (flashback))
 Choose target for Cabal Therapy:
-| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 56: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (2 life)
 |   1: Player A (24 life)
 (REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Player B (2 life))
 Targeting choice 0
-| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Sacrifice Ajani, Nacatl Pariah
 |   1: Sacrifice Amped Raptor
@@ -928,7 +912,7 @@ Player A sacrifices Cat
 Player A casts Cabal Therapy
 Cat (token) is put into the graveyard and ceases to exist.
 Ajani, Nacatl Pariah triggered
-| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Decline: use Ajani, Nacatl Pariah's triggered ability
 |   1: Accept: use Ajani, Nacatl Pariah's triggered ability
@@ -942,7 +926,7 @@ Resolving ability (category: Cleanup)
 Ajani, Nacatl Avenger enters transformed.
 Resolving ability (category: NameCard)
 Player A names a card:
-| decision 63: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Name card: Ajani, Nacatl Pariah
 |   1: Name card: Amped Raptor
@@ -976,7 +960,7 @@ Player B reveals their hand:
 Player B discards Voice of Victory
 Player B discards Voice of Victory
 Cabal Therapy is exiled (flashback)
-| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
@@ -994,7 +978,7 @@ Put 1 P1P1 counter(s) on Cat.
 Put 1 P1P1 counter(s) on Cat Warrior.
 
 --- Declare Attackers (Player A) ---
-| decision 65: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 61: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Amped Raptor [2/1]
 |   1: Orcish Bowmasters [1/1]
@@ -1012,7 +996,7 @@ Amped Raptor attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Amped Raptor [2/1] -> Player B
-| decision 66: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 62: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Cat token [2/2]
@@ -1030,7 +1014,7 @@ Orcish Bowmasters attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Amped Raptor [2/1] -> Player B
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 67: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 63: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [2/2]
 |   1: Orc Army token [1/1]
@@ -1048,7 +1032,7 @@ Cat token attacking Player B.
   [attacking] Amped Raptor [2/1] -> Player B
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Cat token [2/2] -> Player B
-| decision 68: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 64: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Cat token [2/2]
@@ -1066,7 +1050,7 @@ Orc Army token attacking Player B.
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Cat token [2/2] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
-| decision 69: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 65: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [2/2]
 |   1: Cat token [2/2]
@@ -1084,7 +1068,7 @@ Cat token attacking Player B.
   [attacking] Cat token [2/2] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
   [attacking] Cat token [2/2] -> Player B
-| decision 70: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 66: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [2/2]
 |   1: Cat token [2/2]
@@ -1102,7 +1086,7 @@ Cat token attacking Player B.
   [attacking] Orc Army token [1/1] -> Player B
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat token [2/2] -> Player B
-| decision 71: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 67: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [2/2]
 |   1: Cat token [2/2]
@@ -1120,7 +1104,7 @@ Cat token attacking Player B.
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat token [2/2] -> Player B
-| decision 72: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 68: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [2/2]
 |   1: Cat Warrior token [3/2]
@@ -1138,7 +1122,7 @@ Cat token attacking Player B.
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat token [2/2] -> Player B
-| decision 73: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 69: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat Warrior token [3/2]
 |   1: Confirm attackers
@@ -1156,11 +1140,7 @@ Cat Warrior token attacking Player B.
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat token [2/2] -> Player B
   [attacking] Cat Warrior token [3/2] -> Player B
-| decision 74: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Amped Raptor -> Player B
@@ -1185,7 +1165,7 @@ Attackers:
   7: Cat token [2/2]
   8: Cat Warrior token [3/2]
 Your creatures:
-| decision 75: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| decision 70: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Ocelot Pride [1/1]
 |   1: Ocelot Pride [1/1]
@@ -1193,7 +1173,7 @@ Your creatures:
 (REPLAY) [T8 | Declare Blockers | Player B] Input: 0
 | >> Player B: 0 (Ocelot Pride [1/1])
 Select attacker for Ocelot Pride to block:
-| decision 76: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| decision 71: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Amped Raptor [2/1]
 |   1: Orcish Bowmasters [1/1]
@@ -1221,14 +1201,14 @@ Attackers:
   8: Cat Warrior token [3/2]
 Your creatures:
   (assigned) Ocelot Pride [1/1] blocking Cat Warrior token
-| decision 77: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| decision 72: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Ocelot Pride [1/1]
 |   1: Confirm blockers
 (REPLAY) [T8 | Declare Blockers | Player B] Input: 0
 | >> Player B: 0 (Ocelot Pride [1/1])
 Select attacker for Ocelot Pride to block:
-| decision 78: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| decision 73: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Amped Raptor [2/1]
 |   1: Orcish Bowmasters [1/1]
@@ -1257,11 +1237,7 @@ Attackers:
 Your creatures:
   (assigned) Ocelot Pride [1/1] blocking Cat Warrior token
   (assigned) Ocelot Pride [1/1] blocking Cat Warrior token
-| decision 79: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Confirm blockers
-(REPLAY) [T8 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Confirm blockers)
+| auto: Player B: Confirm blockers
 
 Blockers declared:
   Ocelot Pride blocking Cat Warrior token

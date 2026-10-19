@@ -51,6 +51,12 @@ std::vector<std::string> encode_match_frames(Zone::Ownership viewer);
 std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
     const std::vector<ObsEvent> &events, bool terminal = false);
 
+// A menu row as `viewer` reads it in a STATE frame: the card id of its source (-1 for none: a
+// player, or a card whose identity the viewer cannot see) and its description (redacted when it
+// would name a card the viewer cannot see).
+int menu_row_card(const LegalAction &la, Zone::Ownership viewer);
+std::string menu_row_description(const LegalAction &la, Zone::Ownership viewer);
+
 // A STATE frame holding only `events` as `viewer`'s event tables (no snapshot tables): the rows an
 // event projects to, for comparing two builds of one event (--selfcheck-state). Not a frame any
 // stream carries.

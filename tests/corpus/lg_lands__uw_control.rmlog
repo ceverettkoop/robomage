@@ -1,4 +1,4 @@
-RMLOG v2
+RMLOG v3
 SEED 1187322509
 FLAGS machine
 DECK_A league/lands
@@ -83,7 +83,6 @@ DECISIONS
 1
 1
 0
-0
 1
 0
 1
@@ -94,7 +93,6 @@ DECISIONS
 0
 0
 1
-0
 4
 1
 1
@@ -141,10 +139,6 @@ DECISIONS
 0
 0
 0
-0
-0
-0
-0
 1
 1
 1
@@ -152,7 +146,6 @@ DECISIONS
 0
 0
 1
-0
 0
 0
 0
@@ -200,18 +193,13 @@ DECISIONS
 0
 0
 0
-0
-0
-0
 1
 1
-0
 0
 4
 0
 1
 4
-0
 1
 1
 1
@@ -220,8 +208,6 @@ DECISIONS
 3
 0
 1
-0
-0
 0
 1
 0
@@ -248,7 +234,6 @@ DECISIONS
 0
 1
 1
-0
 0
 1
 0
@@ -265,7 +250,6 @@ DECISIONS
 2
 0
 1
-0
 0
 0
 0

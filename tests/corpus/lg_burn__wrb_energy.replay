@@ -207,12 +207,8 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at 13 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 15: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
-| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -221,7 +217,7 @@ Player B may pay to copy Chain Lightning:
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Suspend Rift Bolt
@@ -233,7 +229,7 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Thoughtseize
-| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
@@ -242,7 +238,7 @@ Player B draws Thoughtseize
 (REPLAY) [T3 | First Main | Player B] Input: 2
 | >> Player B: 2 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (18 life)
 |   1: Player B (13 life)
@@ -257,22 +253,18 @@ Player A reveals their hand:
   Mountain
   Price of Progress
 Player B chooses a card to discard:
-| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Price of Progress
-(REPLAY) [T3 | First Main | Player B] Input: 0
-| >> Player B: 0 (Price of Progress)
+| auto: Player B: Price of Progress
 Player A discards Price of Progress
 Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 11)
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scrubland)
 Player B played Scrubland
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ocelot Pride
@@ -282,30 +274,26 @@ Player B played Scrubland
 Player B activated Scrubland for 1(W)
 Player B casts Ocelot Pride
 Ocelot Pride enters the battlefield
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cabal Therapy (flashback)
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Cabal Therapy (flashback))
 Choose target for Cabal Therapy:
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (18 life)
 |   1: Player B (11 life)
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Player A (18 life))
 Targeting choice 0
-| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Sacrifice Ocelot Pride
-(REPLAY) [T3 | First Main | Player B] Input: 0
-| >> Player B: 0 (Sacrifice Ocelot Pride)
+| auto: Player B: Sacrifice Ocelot Pride
 Player B sacrifices Ocelot Pride
 Player B casts Cabal Therapy
 Resolving ability (category: NameCard)
 Player B names a card:
-| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Name card: Chain Lightning
 |   1: Name card: Eidolon of the Great Revel
@@ -337,7 +325,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Rift Bolt triggers: remove a time counter (suspend).
-| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
@@ -346,14 +334,14 @@ Rift Bolt triggers: remove a time counter (suspend).
 Resolving ability (category: SuspendTick)
 Removed a time counter from Rift Bolt (0 remaining).
 Rift Bolt triggers: the last time counter was removed (suspend).
-| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: SuspendCast)
-| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Do not cast Rift Bolt
 |   1: Cast Rift Bolt without paying its mana cost
@@ -361,7 +349,7 @@ Resolving ability (category: SuspendCast)
 | >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
 Player A casts Rift Bolt without paying its mana cost
 Choose target for Rift Bolt:
-| decision 30: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (11 life)
 |   1: Player A (18 life)
@@ -369,7 +357,7 @@ Choose target for Rift Bolt:
 | >> Player A: 0 (Player B (11 life))
 Targeting choice 0
 Player A casts Rift Bolt targeting Player B
-| decision 31: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
@@ -377,20 +365,20 @@ Player A casts Rift Bolt targeting Player B
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 3)
 Rift Bolt deals 3 damage to Player B (now at 8 life)
-| decision 32: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Exquisite Firecraft
-| decision 33: Player A (game 0, turn 4, DRAW, Player A active)
+| decision 30: Player A (game 0, turn 4, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T4 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -399,7 +387,7 @@ Player A draws Exquisite Firecraft
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 35: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Exquisite Firecraft
@@ -407,7 +395,7 @@ Player A played Mountain
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Exquisite Firecraft)
 Choose target for Exquisite Firecraft:
-| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (8 life)
 |   1: Player A (18 life)
@@ -425,7 +413,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Player B draws Marsh Flats
-| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Marsh Flats
@@ -447,21 +435,21 @@ Player B reveals Swords to Plowshares.
 Player B exiles Swords to Plowshares.
 Resolving ability (category: Play)
 Player B may cast Swords to Plowshares by paying 1 energy rather than its mana cost.
-| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Do not cast Swords to Plowshares
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Do not cast Swords to Plowshares)
 Resolving ability (category: Cleanup)
-| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Marsh Flats
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Marsh Flats)
 Player B played Marsh Flats
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Marsh Flats (ChangeZone)
@@ -472,7 +460,7 @@ Player B sacrifices Marsh Flats
 Player B's Marsh Flats ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Elegant Parlor
@@ -489,7 +477,7 @@ Elegant Parlor triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Thoughtseize
-| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Thoughtseize on top of library
 |   1: Put Thoughtseize into graveyard
@@ -498,20 +486,20 @@ Surveil: looking at Thoughtseize
 No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
-| decision 43: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 40: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Mountain
-| decision 44: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 41: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -520,7 +508,7 @@ Player A draws Mountain
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
@@ -531,7 +519,7 @@ Player A sacrifices Fiery Islet
 Player A's Fiery Islet ability is on the stack
 Resolving ability (category: Draw, amount: 1)
 Player A draws Eidolon of the Great Revel
-| decision 47: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 44: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Eidolon of the Great Revel
@@ -544,14 +532,14 @@ Eidolon of the Great Revel enters the battlefield
 No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
-| decision 48: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 45: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T7 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 49: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 46: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Eidolon of the Great Revel
 |   1: Amped Raptor
@@ -568,7 +556,7 @@ Eidolon of the Great Revel is moved to exile
 Resolving ability (category: GainLife, amount: 2)
 Player A gains 2 life (now at 19)
 Player B draws Thoughtseize
-| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thoughtseize
@@ -582,7 +570,7 @@ Player B casts Voice of Victory
 Voice of Victory enters the battlefield
 
 --- Declare Attackers (Player B) ---
-| decision 51: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 48: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Amped Raptor [2/1]
 |   1: Confirm attackers
@@ -592,11 +580,7 @@ Amped Raptor attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Amped Raptor [2/1] -> Player A
-| decision 52: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Amped Raptor -> Player A
@@ -613,7 +597,7 @@ No creatures eligible to block.
 
 -------- TURN 9 (Player A) --------
 Player A draws Chain Lightning
-| decision 53: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 49: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -621,7 +605,7 @@ Player A draws Chain Lightning
 (REPLAY) [T8 | First Main | Player A] Input: 2
 | >> Player A: 2 (Cast Chain Lightning)
 Choose target for Chain Lightning:
-| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (1 life)
 |   1: Player A (17 life)
@@ -636,11 +620,7 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at -2 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 55: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
+| auto: Player B: Don't pay (Chain Lightning is not copied)
 
 Player B has -2 life - Player A wins!
 GAME_RESULT: 1 Player A wins

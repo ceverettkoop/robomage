@@ -731,6 +731,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                         " step=" + std::to_string(static_cast<int>(cur_game.turn_state.step)) + ")");
         }
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
+        // A lone pass is taken here, unasked (InputLogger::get_input takes every other one-row menu).
         if (legal_actions.size() == 1) {
             cur_game.pass_priority();
             continue;

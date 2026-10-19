@@ -82,13 +82,9 @@ Player A casts Mox Diamond
 (REPLAY) [T0 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 6: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
-| menu:
-|   0: Mox Diamond
-(REPLAY) [T0 | First Main | Player B] Input: 0
-| >> Player B: 0 (Mox Diamond)
+| auto: Player B: Mox Diamond
 Targeting choice 0
-| decision 7: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| decision 6: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Ponder
 |   1: Exile Tamiyo, Inquisitive Student
@@ -100,7 +96,7 @@ Player B exiles Ponder
 Player B casts Force of Will targeting Mox Diamond
 Resolving ability (category: Counter)
 Mox Diamond is countered
-| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Mox Diamond
@@ -108,7 +104,7 @@ Mox Diamond is countered
 (REPLAY) [T0 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Mox Diamond)
 Player A casts Mox Diamond
-| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
 | menu:
 |   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
 |   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
@@ -118,7 +114,7 @@ Player A casts Mox Diamond
 | >> Player A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
 Player A discards Dark Depths.
 Mox Diamond enters the battlefield
-| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Skateboard
@@ -128,7 +124,7 @@ Player A activated Mox Diamond for 1(W)
 Player A casts Skateboard
 Skateboard enters the battlefield
 Choose target for Skateboard:
-| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
 | menu:
 |   0: Mox Diamond
 |   1: Skateboard
@@ -143,7 +139,7 @@ No creatures eligible to attack.
 
 -------- TURN 2 (Player B) --------
 Player B draws The One Ring
-| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -151,7 +147,7 @@ Player B draws The One Ring
 (REPLAY) [T1 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Flooded Strand (ChangeZone)
@@ -162,7 +158,7 @@ Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -179,7 +175,7 @@ Meticulous Archive triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Tundra
-| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Tundra on top of library
 |   1: Put Tundra into graveyard
@@ -189,7 +185,7 @@ No creatures eligible to attack.
 
 -------- TURN 3 (Player A) --------
 Player A draws Boseiju, Who Endures
-| decision 16: Player A (game 0, turn 2, DRAW, Player A active)
+| decision 15: Player A (game 0, turn 2, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Boseiju, Who Endures from hand (Destroy)
@@ -197,18 +193,14 @@ Player A draws Boseiju, Who Endures
 | >> Player A: 0 (Pass priority)
 Urza's Saga gets 1 lore counter (now 2).
 Urza's Saga chapter 2 triggers.
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Boseiju, Who Endures from hand (Destroy)
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
 Choose target for this ability:
-| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Meticulous Archive
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Meticulous Archive)
+| auto: Player A: Meticulous Archive
 Targeting choice 0
 Player A activated Mox Diamond for 1(G)
 Player A activated Urza's Saga for 1(C)
@@ -218,7 +210,7 @@ Resolving ability (category: Destroy)
 Meticulous Archive is destroyed
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 19: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 17: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -229,7 +221,7 @@ Searching Player B's library:
 | >> Player B: 4 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 20: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 18: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tune the Narrative
@@ -243,7 +235,7 @@ Resolving ability (category: PutCounter, amount: 2)
 Player B gets 2 ENERGY counter(s) (now 2).
 Resolving ability (category: Animate)
 Urza's Saga gains an activated ability.
-| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Urza's Saga
@@ -259,7 +251,7 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Mystic Sanctuary
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -271,7 +263,7 @@ Player B draws Mystic Sanctuary
 Player B activated Tundra for 1(U)
 Player B casts Tamiyo, Inquisitive Student
 Tamiyo, Inquisitive Student enters the battlefield
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -279,7 +271,7 @@ Tamiyo, Inquisitive Student enters the battlefield
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Misty Rainforest)
 Player B played Misty Rainforest
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -290,7 +282,7 @@ Player B sacrifices Misty Rainforest
 Player B's Misty Rainforest ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -299,7 +291,7 @@ Searching Player B's library:
 | >> Player B: 2 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -310,7 +302,7 @@ Player B activated Tundra for 1(U)
 Player B casts Tamiyo, Inquisitive Student
 Tamiyo, Inquisitive Student enters the battlefield
 Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
-| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Keep Tamiyo, Inquisitive Student
 |   1: Keep Tamiyo, Inquisitive Student
@@ -320,7 +312,7 @@ Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
 No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
-| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Urza's Saga (Token)
@@ -336,7 +328,7 @@ Player A draws Dark Depths
 Urza's Saga gets 1 lore counter (now 3).
 Urza's Saga gets 1 lore counter (now 2).
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Urza's Saga (chapter 3)
 |   1: Urza's Saga (chapter 2)
@@ -348,7 +340,7 @@ Resolving ability (category: Animate)
 Urza's Saga gains an activated ability.
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Expedition Map
@@ -360,7 +352,7 @@ Searching Player A's library:
 Player A shuffles their library
 Player A puts Expedition Map to the battlefield
 Urza's Saga is sacrificed (final chapter completed).
-| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Dark Depths
@@ -372,14 +364,14 @@ Dark Depths enters with 10 ICE counter(s).
 No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
-| decision 32: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 33: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 31: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Construct token
 |   1: Tamiyo, Inquisitive Student
@@ -394,7 +386,7 @@ Resolving ability (category: GainLife, amount: 4)
 Player A gains 4 life (now at 24)
 Construct (token) is put into exile and ceases to exist.
 Player B draws Brainstorm
-| decision 34: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 32: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -408,7 +400,7 @@ Player B draws Spell Pierce
 Player B draws Brainstorm
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 35: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 33: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Mystic Sanctuary
@@ -419,7 +411,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 1 (Mystic Sanctuary)
 Player B puts Mystic Sanctuary to top of library
 Player B chooses a card from Player B hand:
-| decision 36: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 34: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Spell Pierce
@@ -435,7 +427,7 @@ Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: Cleanup)
 Tamiyo, Seasoned Scholar enters transformed.
-| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -448,14 +440,14 @@ A floating triggered ability is created until your next turn.
 No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
-| decision 38: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 36: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Thespian's Stage
-| decision 39: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 37: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
@@ -463,7 +455,7 @@ Player A draws Thespian's Stage
 | >> Player A: 0 (Pass priority)
 Urza's Saga gets 1 lore counter (now 3).
 Urza's Saga chapter 3 triggers.
-| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 38: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
@@ -475,7 +467,7 @@ Player A sacrifices Expedition Map
 Player A's Expedition Map ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Ancient Tomb
@@ -499,7 +491,7 @@ Player A shuffles their library
 Player A reveals Thespian's Stage and puts it to hand
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Grafdigger's Cage
@@ -510,7 +502,7 @@ Searching Player A's library:
 Player A shuffles their library
 Player A puts Grafdigger's Cage to the battlefield
 Urza's Saga is sacrificed (final chapter completed).
-| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thespian's Stage
@@ -522,7 +514,7 @@ Player A played Thespian's Stage
 No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
-| decision 44: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 42: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -530,7 +522,7 @@ No creatures eligible to attack.
 | >> Player B: 1 (Cast Brainstorm)
 Player B activated Tundra for 1(U)
 Player B casts Brainstorm
-| decision 45: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 43: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Spell Pierce
@@ -542,7 +534,7 @@ Player B draws Mystic Sanctuary
 Player B draws Force of Negation
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 46: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 44: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Force of Negation
 |   1: Mystic Sanctuary
@@ -553,7 +545,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 1 (Mystic Sanctuary)
 Player B puts Mystic Sanctuary to top of library
 Player B chooses a card from Player B hand:
-| decision 47: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 45: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Force of Negation
 |   1: Spell Pierce
@@ -563,7 +555,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 3 (The One Ring)
 Player B puts The One Ring to top of library
 Player B draws The One Ring
-| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tamiyo, Inquisitive Student
@@ -574,7 +566,7 @@ Player B draws The One Ring
 Player B activated Tundra for 1(U)
 Player B casts Tamiyo, Inquisitive Student
 Tamiyo, Inquisitive Student enters the battlefield
-| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -589,7 +581,7 @@ No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
 Player A draws Savannah
-| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 48: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Savannah
@@ -598,7 +590,7 @@ Player A draws Savannah
 (REPLAY) [T8 | First Main | Player A] Input: 2
 | >> Player A: 2 (Play Thespian's Stage)
 Player A played Thespian's Stage
-| decision 51: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 49: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Dark Depths (RemoveCounter)
@@ -607,7 +599,7 @@ Player A played Thespian's Stage
 (REPLAY) [T8 | First Main | Player A] Input: 2
 | >> Player A: 2 (Activate Thespian's Stage (Clone))
 Choose target for Thespian's Stage:
-| decision 52: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Tundra
 |   1: Tundra
@@ -623,7 +615,7 @@ Player A's Thespian's Stage ability targeting Dark Depths is on the stack
 Resolving ability (category: Clone)
 Thespian's Stage becomes a copy of Dark Depths.
 Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
-| decision 53: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 51: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Keep Dark Depths
 |   1: Keep Dark Depths
@@ -638,7 +630,7 @@ No creatures eligible to attack.
 
 -------- TURN 10 (Player B) --------
 Player B draws Mystic Sanctuary
-| decision 54: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -648,7 +640,7 @@ Player B draws Mystic Sanctuary
 | >> Player B: 1 (Play Mystic Sanctuary)
 Player B played Mystic Sanctuary
 Mystic Sanctuary enters tapped.
-| decision 55: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 53: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -661,7 +653,7 @@ Resolving ability (category: Effect)
 A floating triggered ability is created until your next turn.
 
 --- Declare Attackers (Player B) ---
-| decision 56: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 54: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -673,13 +665,13 @@ Attackers declared:
 
 -------- TURN 11 (Player A) --------
 Player A draws Boseiju, Who Endures
-| decision 57: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 55: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Boseiju, Who Endures from hand (Destroy)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 58: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 56: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Boseiju, Who Endures
@@ -690,7 +682,7 @@ Player A draws Boseiju, Who Endures
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Boseiju, Who Endures)
 Player A played Boseiju, Who Endures
-| decision 59: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Skateboard
@@ -698,18 +690,14 @@ Player A played Boseiju, Who Endures
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Equip Skateboard)
 Choose target for Skateboard:
-| decision 60: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Marit Lage token
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Marit Lage token)
+| auto: Player A: Marit Lage token
 Targeting choice 0
 Player A activated Mox Diamond for 1(W)
 Player A's Skateboard ability targeting Marit Lage token is on the stack
 Resolving ability (category: Attach)
 Equipment attached.
 Marit Lage token gains 1/0 Haste (always)
-| decision 61: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Skateboard
@@ -717,14 +705,14 @@ Marit Lage token gains 1/0 Haste (always)
 | >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 62: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 59: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Marit Lage token [21/20]
 |   1: Confirm attackers
 (REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Marit Lage token [21/20])
 Select target for Marit Lage token:
-| decision 63: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 60: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Tamiyo, Seasoned Scholar (loyalty 8)
@@ -734,11 +722,7 @@ Marit Lage token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Marit Lage token [21/20] -> Player B
-| decision 64: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Marit Lage token -> Player B
@@ -750,18 +734,14 @@ Marit Lage token gets -1/+0 (now 20/20)
 Attackers:
   0: Marit Lage token [20/20]
 Your creatures:
-| decision 65: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| decision 61: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm blockers
 (REPLAY) [T10 | Declare Blockers | Player B] Input: 0
 | >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
 Select attacker for Tamiyo, Inquisitive Student to block:
-| decision 66: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Marit Lage token [20/20]
-(REPLAY) [T10 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Marit Lage token [20/20])
+| auto: Player B: Marit Lage token [20/20]
 Tamiyo, Inquisitive Student blocking Marit Lage token.
 
 --- Declare Blockers (Player B) ---
@@ -769,11 +749,7 @@ Attackers:
   0: Marit Lage token [20/20]
 Your creatures:
   (assigned) Tamiyo, Inquisitive Student [0/3] blocking Marit Lage token
-| decision 67: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Confirm blockers
-(REPLAY) [T10 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Confirm blockers)
+| auto: Player B: Confirm blockers
 
 Blockers declared:
   Tamiyo, Inquisitive Student blocking Marit Lage token
@@ -783,7 +759,7 @@ Blockers declared:
 --- End Combat Damage ---
 
 Tamiyo, Inquisitive Student is destroyed (lethal damage)
-| decision 68: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
+| decision 62: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Skateboard
@@ -792,7 +768,7 @@ Tamiyo, Inquisitive Student is destroyed (lethal damage)
 
 -------- TURN 12 (Player B) --------
 Player B draws Island
-| decision 69: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -802,7 +778,7 @@ Player B draws Island
 (REPLAY) [T11 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Island)
 Player B played Island
-| decision 70: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast The One Ring
@@ -818,7 +794,7 @@ Player B activated Tundra for 1(U)
 Player B casts The One Ring
 The One Ring enters the battlefield
 The One Ring triggered
-| decision 71: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
@@ -831,7 +807,7 @@ Resolving ability (category: Draw, amount: 1)
 Player B draws Wasteland
 Resolving ability (category: Pump)
 Player B gains protection from everything until their next turn.
-| decision 72: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -846,20 +822,20 @@ A floating triggered ability is created until your next turn.
 No creatures eligible to attack.
 
 -------- TURN 13 (Player A) --------
-| decision 73: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 67: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Thespian's Stage
-| decision 74: Player A (game 0, turn 12, DRAW, Player A active)
+| decision 68: Player A (game 0, turn 12, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 75: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 69: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Savannah
@@ -870,14 +846,14 @@ Player A draws Thespian's Stage
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Savannah)
 Player A played Savannah
-| decision 76: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 70: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Skateboard
 |   2: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 77: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| decision 71: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -885,14 +861,14 @@ Player A played Savannah
 | >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 78: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 72: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Marit Lage token [21/20]
 |   1: Confirm attackers
 (REPLAY) [T12 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Marit Lage token [21/20])
 Select target for Marit Lage token:
-| decision 79: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 73: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Tamiyo, Seasoned Scholar (loyalty 10)
@@ -902,16 +878,12 @@ Marit Lage token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Marit Lage token [21/20] -> Player B
-| decision 80: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Marit Lage token -> Player B
 A floating triggered ability triggers.
-| decision 81: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 74: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -919,14 +891,14 @@ A floating triggered ability triggers.
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Pump, -1/+0)
 Marit Lage token gets -1/+0 (now 20/20)
-| decision 82: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 75: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 83: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| decision 76: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -937,26 +909,26 @@ No creatures eligible to block.
   Player B has protection from everything — 20 damage prevented
 --- End Combat Damage ---
 
-| decision 84: Player A (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| decision 77: Player A (game 0, turn 12, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | Combat Damage | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 85: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
+| decision 78: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 86: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 79: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Skateboard
 |   2: Activate Thespian's Stage (Clone)
 (REPLAY) [T12 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 87: Player A (game 0, turn 12, END_STEP, Player A active)
+| decision 80: Player A (game 0, turn 12, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -965,14 +937,14 @@ No creatures eligible to block.
 
 -------- TURN 14 (Player B) --------
 The One Ring triggered
-| decision 88: Player B (game 0, turn 13, UPKEEP, Player B active)
+| decision 81: Player B (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
 (REPLAY) [T13 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Activate The One Ring (PutCounter))
 Player B's The One Ring ability is on the stack
-| decision 89: Player A (game 0, turn 13, UPKEEP, Player B active)
+| decision 82: Player A (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -983,7 +955,7 @@ Put 1 BURDEN counter(s) on The One Ring (now 2).
 Resolving ability (category: Draw, amount: 2)
 Player B draws Murktide Regent
 Player B draws Flow State
-| decision 90: Player A (game 0, turn 13, UPKEEP, Player B active)
+| decision 83: Player A (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -991,20 +963,20 @@ Player B draws Flow State
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 15)
-| decision 91: Player A (game 0, turn 13, UPKEEP, Player B active)
+| decision 84: Player A (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player B draws The One Ring
-| decision 92: Player A (game 0, turn 13, DRAW, Player B active)
+| decision 85: Player A (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 93: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 86: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -1019,13 +991,13 @@ Player B draws The One Ring
 Player B activated Island for 1(U)
 Player B activated Mystic Sanctuary for 1(U)
 Player B casts Flow State
-| decision 94: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 87: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Spell Pierce
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 95: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 88: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -1033,7 +1005,7 @@ Player B casts Flow State
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Dig)
 Player B looks at the top 3 card(s) of their library.
-| decision 96: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 89: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Ponder
 |   1: Flooded Strand
@@ -1042,7 +1014,7 @@ Player B looks at the top 3 card(s) of their library.
 | >> Player B: 1 (Flooded Strand)
 Player B puts Flooded Strand into hand.
 Player B puts 2 card(s) on the bottom of their library.
-| decision 97: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 90: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -1054,7 +1026,7 @@ Player B puts 2 card(s) on the bottom of their library.
 (REPLAY) [T13 | First Main | Player B] Input: 3
 | >> Player B: 3 (Cast Murktide Regent)
 Choose a card to exile via Delve (1 of 5):
-| decision 98: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 91: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Brainstorm (Delve)
 |   1: Exile Flooded Strand (Delve)
@@ -1068,7 +1040,7 @@ Choose a card to exile via Delve (1 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Brainstorm (Delve))
 Choose a card to exile via Delve (2 of 5):
-| decision 99: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 92: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Brainstorm (Delve)
 |   1: Exile Flooded Strand (Delve)
@@ -1082,7 +1054,7 @@ Choose a card to exile via Delve (2 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Brainstorm (Delve))
 Choose a card to exile via Delve (3 of 5):
-| decision 100: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 93: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Flooded Strand (Delve)
 |   1: Exile Flow State (Delve)
@@ -1095,7 +1067,7 @@ Choose a card to exile via Delve (3 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Flooded Strand (Delve))
 Choose a card to exile via Delve (4 of 5):
-| decision 101: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 94: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Flow State (Delve)
 |   1: Exile Force of Will (Delve)
@@ -1107,7 +1079,7 @@ Choose a card to exile via Delve (4 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Flow State (Delve))
 Choose a card to exile via Delve (5 of 5):
-| decision 102: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 95: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Force of Will (Delve)
 |   1: Exile Meticulous Archive (Delve)
@@ -1125,7 +1097,7 @@ Player B exiles Flooded Strand via Delve.
 Player B exiles Flow State via Delve.
 Player B exiles Force of Will via Delve.
 Player B casts Murktide Regent
-| decision 103: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 96: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -1133,7 +1105,7 @@ Player B casts Murktide Regent
 | >> Player A: 0 (Pass priority)
 Murktide Regent enters the battlefield
 Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
-| decision 104: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 97: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -1144,7 +1116,7 @@ Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
 (REPLAY) [T13 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 105: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 98: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Flooded Strand (ChangeZone)
@@ -1156,7 +1128,7 @@ Player B played Flooded Strand
 Player B pays 1 life
 Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
-| decision 106: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 99: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -1164,7 +1136,7 @@ Player B's Flooded Strand ability is on the stack
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 107: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 100: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -1174,7 +1146,7 @@ Searching Player B's library:
 | >> Player B: 3 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 108: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 101: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -1184,7 +1156,7 @@ Player B puts Tundra to the battlefield
 | >> Player B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
 Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 12)
 Player B's Tamiyo, Seasoned Scholar ability is on the stack
-| decision 109: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 102: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -1192,38 +1164,38 @@ Player B's Tamiyo, Seasoned Scholar ability is on the stack
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Effect)
 A floating triggered ability is created until your next turn.
-| decision 110: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 103: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 111: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| decision 104: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 112: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 105: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 113: Player A (game 0, turn 13, END_OF_COMBAT, Player B active)
+| decision 106: Player A (game 0, turn 13, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 114: Player A (game 0, turn 13, SECOND_MAIN, Player B active)
+| decision 107: Player A (game 0, turn 13, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T13 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 115: Player A (game 0, turn 13, END_STEP, Player B active)
+| decision 108: Player A (game 0, turn 13, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
@@ -1231,20 +1203,20 @@ No creatures eligible to attack.
 | >> Player A: 0 (Pass priority)
 
 -------- TURN 15 (Player A) --------
-| decision 116: Player A (game 0, turn 14, UPKEEP, Player A active)
+| decision 109: Player A (game 0, turn 14, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T14 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Blast Zone
-| decision 117: Player A (game 0, turn 14, DRAW, Player A active)
+| decision 110: Player A (game 0, turn 14, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Thespian's Stage (Clone)
 (REPLAY) [T14 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 118: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 111: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Blast Zone
@@ -1256,7 +1228,7 @@ Player A draws Blast Zone
 | >> Player A: 1 (Play Blast Zone)
 Player A played Blast Zone
 Blast Zone enters with 1 CHARGE counter(s).
-| decision 119: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 112: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1266,7 +1238,7 @@ Blast Zone enters with 1 CHARGE counter(s).
 (REPLAY) [T14 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Blast Zone (PutCounter))
 Choose X value (0-2):
-| decision 120: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 113: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: X = 0
 |   1: X = 1
@@ -1283,14 +1255,14 @@ Resolving ability (category: PutCounter, amount: 2)
 Put 2 CHARGE counter(s) on Blast Zone (now 3).
 
 --- Declare Attackers (Player A) ---
-| decision 121: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 114: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Marit Lage token [21/20]
 |   1: Confirm attackers
 (REPLAY) [T14 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Marit Lage token [21/20])
 Select target for Marit Lage token:
-| decision 122: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 115: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (14 life)
 |   1: Tamiyo, Seasoned Scholar (loyalty 12)
@@ -1300,11 +1272,7 @@ Marit Lage token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Marit Lage token [21/20] -> Player B
-| decision 123: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Marit Lage token -> Player B
@@ -1316,18 +1284,14 @@ Marit Lage token gets -1/+0 (now 20/20)
 Attackers:
   0: Marit Lage token [20/20]
 Your creatures:
-| decision 124: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| decision 116: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Murktide Regent [7/7]
 |   1: Confirm blockers
 (REPLAY) [T14 | Declare Blockers | Player B] Input: 0
 | >> Player B: 0 (Murktide Regent [7/7])
 Select attacker for Murktide Regent to block:
-| decision 125: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Marit Lage token [20/20]
-(REPLAY) [T14 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Marit Lage token [20/20])
+| auto: Player B: Marit Lage token [20/20]
 Murktide Regent blocking Marit Lage token.
 
 --- Declare Blockers (Player B) ---
@@ -1335,11 +1299,7 @@ Attackers:
   0: Marit Lage token [20/20]
 Your creatures:
   (assigned) Murktide Regent [7/7] blocking Marit Lage token
-| decision 126: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Confirm blockers
-(REPLAY) [T14 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Confirm blockers)
+| auto: Player B: Confirm blockers
 
 Blockers declared:
   Murktide Regent blocking Marit Lage token
@@ -1353,7 +1313,7 @@ Murktide Regent is destroyed (lethal damage)
 
 -------- TURN 16 (Player B) --------
 The One Ring triggered
-| decision 127: Player B (game 0, turn 15, UPKEEP, Player B active)
+| decision 117: Player B (game 0, turn 15, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
@@ -1366,22 +1326,18 @@ Resolving ability (category: Draw, amount: 3)
 Player B draws Island
 Player B draws Swords to Plowshares
 Player B draws Flow State
-| decision 128: Player B (game 0, turn 15, UPKEEP, Player B active)
+| decision 118: Player B (game 0, turn 15, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T15 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 129: Player B (game 0, turn 15, UPKEEP, Player B active)
-| menu:
-|   0: Marit Lage token
-(REPLAY) [T15 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Marit Lage token)
+| auto: Player B: Marit Lage token
 Targeting choice 0
 Player B activated Tundra for 1(W)
 Player B casts Swords to Plowshares targeting Marit Lage token
-| decision 130: Player B (game 0, turn 15, UPKEEP, Player B active)
+| decision 119: Player B (game 0, turn 15, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation
@@ -1397,7 +1353,7 @@ Marit Lage (token) is put into exile and ceases to exist.
 Resolving ability (category: LoseLife, amount: 3)
 Player B loses 3 life (now at 11)
 Player B draws Wasteland
-| decision 131: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 120: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -1413,7 +1369,7 @@ Player B draws Wasteland
 Player B activated Island for 1(U)
 Player B activated Mystic Sanctuary for 1(U)
 Player B casts Flow State
-| decision 132: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 121: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Spell Pierce
@@ -1421,7 +1377,7 @@ Player B casts Flow State
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Dig)
 Player B looks at the top 3 card(s) of their library.
-| decision 133: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 122: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Force of Will
 |   1: Wrath of the Skies
@@ -1430,7 +1386,7 @@ Player B looks at the top 3 card(s) of their library.
 | >> Player B: 1 (Wrath of the Skies)
 Player B puts Wrath of the Skies into hand.
 Player B puts 2 card(s) on the bottom of their library.
-| decision 134: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 123: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -1443,18 +1399,14 @@ Player B puts 2 card(s) on the bottom of their library.
 (REPLAY) [T15 | First Main | Player B] Input: 4
 | >> Player B: 4 (Cast Wrath of the Skies)
 Choose X value (0-0):
-| decision 135: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
-| menu:
-|   0: X = 0
-(REPLAY) [T15 | First Main | Player B] Input: 0
-| >> Player B: 0 (X = 0)
+| auto: Player B: X = 0
 Player B chooses X = 0
 Player B activated Tundra for 1(W)
 Player B activated Tundra for 1(W)
 Player B casts Wrath of the Skies
 Resolving ability (category: PutCounter, amount: 0)
 Resolving ability (category: ChooseNumber)
-| decision 136: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 124: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: 0
 |   1: 1
@@ -1467,7 +1419,7 @@ Player B pays 1 energy.
 Grafdigger's Cage is destroyed
 Mox Diamond is destroyed
 Skateboard is destroyed
-| decision 137: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 125: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -1479,7 +1431,7 @@ Skateboard is destroyed
 (REPLAY) [T15 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Island)
 Player B played Island
-| decision 138: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 126: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -1494,7 +1446,7 @@ A floating triggered ability is created until your next turn.
 No creatures eligible to attack.
 
 -------- TURN 17 (Player A) --------
-| decision 139: Player A (game 0, turn 16, UPKEEP, Player A active)
+| decision 127: Player A (game 0, turn 16, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1503,7 +1455,7 @@ No creatures eligible to attack.
 (REPLAY) [T16 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Malevolent Rumble
-| decision 140: Player A (game 0, turn 16, DRAW, Player A active)
+| decision 128: Player A (game 0, turn 16, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1511,7 +1463,7 @@ Player A draws Malevolent Rumble
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T16 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 141: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 129: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thespian's Stage
@@ -1525,13 +1477,13 @@ Player A draws Malevolent Rumble
 Player A activated Boseiju, Who Endures for 1(G)
 Player A activated Savannah for 1(G)
 Player A casts Malevolent Rumble
-| decision 142: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 130: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
 (REPLAY) [T16 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 143: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 131: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation (alternate cost)
@@ -1539,20 +1491,12 @@ Player A casts Malevolent Rumble
 (REPLAY) [T16 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Negation (alternate cost))
 Choose target for Force of Negation:
-| decision 144: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
-| menu:
-|   0: Malevolent Rumble
-(REPLAY) [T16 | First Main | Player B] Input: 0
-| >> Player B: 0 (Malevolent Rumble)
+| auto: Player B: Malevolent Rumble
 Targeting choice 0
-| decision 145: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
-| menu:
-|   0: Exile Spell Pierce
-(REPLAY) [T16 | First Main | Player B] Input: 0
-| >> Player B: 0 (Exile Spell Pierce)
+| auto: Player B: Exile Spell Pierce
 Player B exiles Spell Pierce
 Player B casts Force of Negation targeting Malevolent Rumble
-| decision 146: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 132: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1560,7 +1504,7 @@ Player B casts Force of Negation targeting Malevolent Rumble
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Counter)
 Malevolent Rumble is countered
-| decision 147: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 133: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thespian's Stage
@@ -1569,7 +1513,7 @@ Malevolent Rumble is countered
 (REPLAY) [T16 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Thespian's Stage)
 Player A played Thespian's Stage
-| decision 148: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 134: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1577,7 +1521,7 @@ Player A played Thespian's Stage
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T16 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 149: Player A (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| decision 135: Player A (game 0, turn 16, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1586,7 +1530,7 @@ Player A played Thespian's Stage
 (REPLAY) [T16 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 150: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| decision 136: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1594,7 +1538,7 @@ No creatures eligible to attack.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T16 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 151: Player A (game 0, turn 16, END_OF_COMBAT, Player A active)
+| decision 137: Player A (game 0, turn 16, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1602,7 +1546,7 @@ No creatures eligible to attack.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T16 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 152: Player A (game 0, turn 16, SECOND_MAIN, Player A active)
+| decision 138: Player A (game 0, turn 16, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1610,7 +1554,7 @@ No creatures eligible to attack.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T16 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 153: Player A (game 0, turn 16, END_STEP, Player A active)
+| decision 139: Player A (game 0, turn 16, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1621,14 +1565,14 @@ No creatures eligible to attack.
 
 -------- TURN 18 (Player B) --------
 The One Ring triggered
-| decision 154: Player B (game 0, turn 17, UPKEEP, Player B active)
+| decision 140: Player B (game 0, turn 17, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
 (REPLAY) [T17 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Activate The One Ring (PutCounter))
 Player B's The One Ring ability is on the stack
-| decision 155: Player A (game 0, turn 17, UPKEEP, Player B active)
+| decision 141: Player A (game 0, turn 17, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1643,13 +1587,13 @@ Player B draws Lórien Revealed
 Player B draws Ponder
 Player B draws Wasteland
 Player B draws Murktide Regent
-| decision 156: Player B (game 0, turn 17, UPKEEP, Player B active)
+| decision 142: Player B (game 0, turn 17, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Lórien Revealed from hand (ChangeZone)
 (REPLAY) [T17 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 157: Player A (game 0, turn 17, UPKEEP, Player B active)
+| decision 143: Player A (game 0, turn 17, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1659,13 +1603,13 @@ Player B draws Murktide Regent
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: LoseLife, amount: 4)
 Player B loses 4 life (now at 7)
-| decision 158: Player B (game 0, turn 17, UPKEEP, Player B active)
+| decision 144: Player B (game 0, turn 17, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Lórien Revealed from hand (ChangeZone)
 (REPLAY) [T17 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 159: Player A (game 0, turn 17, UPKEEP, Player B active)
+| decision 145: Player A (game 0, turn 17, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1674,13 +1618,13 @@ Player B loses 4 life (now at 7)
 (REPLAY) [T17 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player B draws Swords to Plowshares
-| decision 160: Player B (game 0, turn 17, DRAW, Player B active)
+| decision 146: Player B (game 0, turn 17, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Lórien Revealed from hand (ChangeZone)
 (REPLAY) [T17 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 161: Player A (game 0, turn 17, DRAW, Player B active)
+| decision 147: Player A (game 0, turn 17, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1688,7 +1632,7 @@ Player B draws Swords to Plowshares
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T17 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 162: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 148: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -1710,7 +1654,7 @@ Player B activated Mystic Sanctuary for 1(U)
 Player B activated Tundra for 1(U)
 Player B activated Tundra for 1(U)
 Player B casts Lórien Revealed
-| decision 163: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 149: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1722,7 +1666,7 @@ Resolving ability (category: Draw, amount: 3)
 Player B draws Force of Will
 Player B draws Misty Rainforest
 Player B draws Tamiyo, Inquisitive Student
-| decision 164: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 150: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -1738,13 +1682,13 @@ Player B draws Tamiyo, Inquisitive Student
 | >> Player B: 5 (Cast Ponder)
 Player B activated Tundra for 1(U)
 Player B casts Ponder
-| decision 165: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 151: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T17 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 166: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 152: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1755,7 +1699,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 167: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 153: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Plains
 |   1: Flow State
@@ -1763,13 +1707,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T17 | First Main | Player B] Input: 0
 | >> Player B: 0 (Plains)
 Choose which card goes 2 from top:
-| decision 168: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 154: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Flow State
 |   1: Ponder
 (REPLAY) [T17 | First Main | Player B] Input: 1
 | >> Player B: 1 (Ponder)
-| decision 169: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 155: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -1777,7 +1721,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Flow State
-| decision 170: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 156: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -1790,7 +1734,7 @@ Player B draws Flow State
 (REPLAY) [T17 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Misty Rainforest)
 Player B played Misty Rainforest
-| decision 171: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 157: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -1802,7 +1746,7 @@ Player B played Misty Rainforest
 Player B pays 1 life
 Player B sacrifices Misty Rainforest
 Player B's Misty Rainforest ability is on the stack
-| decision 172: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 158: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1812,14 +1756,10 @@ Player B's Misty Rainforest ability is on the stack
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 173: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T17 | First Main | Player B] Input: 0
-| >> Player B: 0 (Fail to find)
+| auto: Player B: Fail to find
 Player B shuffles their library
 Player B fails to find
-| decision 174: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 159: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -1829,7 +1769,7 @@ Player B fails to find
 | >> Player B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
 Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 16)
 Player B's Tamiyo, Seasoned Scholar ability is on the stack
-| decision 175: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 160: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1839,7 +1779,7 @@ Player B's Tamiyo, Seasoned Scholar ability is on the stack
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Effect)
 A floating triggered ability is created until your next turn.
-| decision 176: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
+| decision 161: Player A (game 0, turn 17, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1847,7 +1787,7 @@ A floating triggered ability is created until your next turn.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T17 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 177: Player A (game 0, turn 17, BEGIN_COMBAT, Player B active)
+| decision 162: Player A (game 0, turn 17, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1856,7 +1796,7 @@ A floating triggered ability is created until your next turn.
 (REPLAY) [T17 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 178: Player A (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| decision 163: Player A (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1864,7 +1804,7 @@ No creatures eligible to attack.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T17 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 179: Player A (game 0, turn 17, END_OF_COMBAT, Player B active)
+| decision 164: Player A (game 0, turn 17, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1872,7 +1812,7 @@ No creatures eligible to attack.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T17 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 180: Player A (game 0, turn 17, SECOND_MAIN, Player B active)
+| decision 165: Player A (game 0, turn 17, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1880,7 +1820,7 @@ No creatures eligible to attack.
 |   3: Activate Thespian's Stage (Clone)
 (REPLAY) [T17 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 181: Player A (game 0, turn 17, END_STEP, Player B active)
+| decision 166: Player A (game 0, turn 17, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1891,7 +1831,7 @@ No creatures eligible to attack.
 
 --- Discard to hand size (Player B) ---
 Hand (9 cards, must discard to 7):
-| decision 182: Player B (game 0, turn 17, CLEANUP, Player B active)
+| decision 167: Player B (game 0, turn 17, CLEANUP, Player B active)
 | menu:
 |   0: Flow State
 |   1: Force of Will
@@ -1908,7 +1848,7 @@ Player B discards Wasteland.
 
 --- Discard to hand size (Player B) ---
 Hand (8 cards, must discard to 7):
-| decision 183: Player B (game 0, turn 17, CLEANUP, Player B active)
+| decision 168: Player B (game 0, turn 17, CLEANUP, Player B active)
 | menu:
 |   0: Flow State
 |   1: Force of Will
@@ -1923,7 +1863,7 @@ Hand (8 cards, must discard to 7):
 Player B discards The One Ring.
 
 -------- TURN 19 (Player A) --------
-| decision 184: Player A (game 0, turn 18, UPKEEP, Player A active)
+| decision 169: Player A (game 0, turn 18, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1933,7 +1873,7 @@ Player B discards The One Ring.
 (REPLAY) [T18 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Crop Rotation
-| decision 185: Player A (game 0, turn 18, DRAW, Player A active)
+| decision 170: Player A (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Crop Rotation
@@ -1943,7 +1883,7 @@ Player A draws Crop Rotation
 |   5: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Crop Rotation)
-| decision 186: Player A (game 0, turn 18, DRAW, Player A active)
+| decision 171: Player A (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Sacrifice Blast Zone
 |   1: Sacrifice Boseiju, Who Endures
@@ -1955,7 +1895,7 @@ Player A draws Crop Rotation
 Player A activated Savannah for 1(G)
 Player A sacrifices Savannah
 Player A casts Crop Rotation
-| decision 187: Player A (game 0, turn 18, DRAW, Player A active)
+| decision 172: Player A (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1964,20 +1904,16 @@ Player A casts Crop Rotation
 |   4: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 188: Player B (game 0, turn 18, DRAW, Player A active)
+| decision 173: Player B (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T18 | Draw | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 189: Player B (game 0, turn 18, DRAW, Player A active)
-| menu:
-|   0: Crop Rotation
-(REPLAY) [T18 | Draw | Player B] Input: 0
-| >> Player B: 0 (Crop Rotation)
+| auto: Player B: Crop Rotation
 Targeting choice 0
-| decision 190: Player B (game 0, turn 18, DRAW, Player A active)
+| decision 174: Player B (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Exile Flow State
 |   1: Exile Murktide Regent
@@ -1987,7 +1923,7 @@ Targeting choice 0
 Player B pays 1 life
 Player B exiles Flow State
 Player B casts Force of Will targeting Crop Rotation
-| decision 191: Player A (game 0, turn 18, DRAW, Player A active)
+| decision 175: Player A (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1998,7 +1934,7 @@ Player B casts Force of Will targeting Crop Rotation
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Counter)
 Crop Rotation is countered
-| decision 192: Player A (game 0, turn 18, DRAW, Player A active)
+| decision 176: Player A (game 0, turn 18, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2007,7 +1943,7 @@ Crop Rotation is countered
 |   4: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 193: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| decision 177: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -2018,7 +1954,7 @@ Crop Rotation is countered
 (REPLAY) [T18 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 194: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| decision 178: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2029,7 +1965,7 @@ Player A played Wasteland
 (REPLAY) [T18 | First Main | Player A] Input: 5
 | >> Player A: 5 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 195: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| decision 179: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
 | menu:
 |   0: Mystic Sanctuary
 |   1: Tundra
@@ -2045,7 +1981,7 @@ Choose target for Wasteland:
 Targeting choice 0
 Player A sacrifices Wasteland
 Player A's Wasteland ability targeting Mystic Sanctuary is on the stack
-| decision 196: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| decision 180: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2056,7 +1992,7 @@ Player A's Wasteland ability targeting Mystic Sanctuary is on the stack
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Mystic Sanctuary is destroyed
-| decision 197: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| decision 181: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2065,7 +2001,7 @@ Mystic Sanctuary is destroyed
 |   4: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 198: Player A (game 0, turn 18, BEGIN_COMBAT, Player A active)
+| decision 182: Player A (game 0, turn 18, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2075,7 +2011,7 @@ Mystic Sanctuary is destroyed
 (REPLAY) [T18 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 199: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| decision 183: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2084,7 +2020,7 @@ No creatures eligible to attack.
 |   4: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 200: Player A (game 0, turn 18, END_OF_COMBAT, Player A active)
+| decision 184: Player A (game 0, turn 18, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2093,7 +2029,7 @@ No creatures eligible to attack.
 |   4: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 201: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
+| decision 185: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2102,7 +2038,7 @@ No creatures eligible to attack.
 |   4: Activate Thespian's Stage (Clone)
 (REPLAY) [T18 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 202: Player A (game 0, turn 18, END_STEP, Player A active)
+| decision 186: Player A (game 0, turn 18, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2114,14 +2050,14 @@ No creatures eligible to attack.
 
 -------- TURN 20 (Player B) --------
 The One Ring triggered
-| decision 203: Player B (game 0, turn 19, UPKEEP, Player B active)
+| decision 187: Player B (game 0, turn 19, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
 (REPLAY) [T19 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Activate The One Ring (PutCounter))
 Player B's The One Ring ability is on the stack
-| decision 204: Player A (game 0, turn 19, UPKEEP, Player B active)
+| decision 188: Player A (game 0, turn 19, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -2138,7 +2074,7 @@ Player B draws Polluted Delta
 Player B draws Force of Will
 Player B draws Swords to Plowshares
 Player B draws Wrath of the Skies
-| decision 205: Player A (game 0, turn 19, UPKEEP, Player B active)
+| decision 189: Player A (game 0, turn 19, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)

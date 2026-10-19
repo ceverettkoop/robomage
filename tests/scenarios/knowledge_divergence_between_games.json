@@ -1,48 +1,15 @@
 {
   "name": "knowledge_divergence_between_games",
-  "why": "shadow divergence between_games (docs/knowledge_store.md \u00a75 game_end, \u00a76): A's Thoughtseize shows B's hand and A's Bolt ends game 1; while the players sideboard, BQUERY still describes the finished game's board, so the old vector keeps listing B's known hand (opp_known_hand) and the known library tops, while the k_* tables of a sideboarding frame describe no game (no pool, position or known-hand rows) and keep only the match memory (k_seen) (CR 100.4a; step 1 T12 shadow comparison)",
+  "why": "shadow divergence between_games (docs/knowledge_store.md \u00a75 game_end, \u00a76): A's Thoughtseize shows B's hand and A's Bolt ends game 1; while the players sideboard, BQUERY still describes the finished game's board, so the old vector keeps listing B's known hand (opp_known_hand) and the known library tops, while the k_* tables of a sideboarding frame describe no game (no pool, position or known-hand rows) and keep only the match memory (k_seen) (CR 100.4a; step 1 T12 shadow comparison). The decks (tests/between_games_a/b, unshuffled: the first seven cards are the opening hands) have a sideboard, so each player is asked to sideboard (a one-row menu is taken without a frame)",
   "format": "bo3",
-  "hand_a": [
-    "Thoughtseize",
-    "Lightning Bolt",
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain"
+  "deck_a": "tests/between_games_a",
+  "deck_b": "tests/between_games_b",
+  "engine_flags": [
+    "--no-shuffle"
   ],
   "battlefield_a": [
     "Swamp",
     "Mountain"
-  ],
-  "library_a": [
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain",
-    "Mountain"
-  ],
-  "hand_b": [
-    "Ponder",
-    "Daze",
-    "Island",
-    "Island",
-    "Island",
-    "Island",
-    "Island"
-  ],
-  "library_b": [
-    "Island",
-    "Island",
-    "Island",
-    "Island",
-    "Island",
-    "Island",
-    "Island",
-    "Island"
   ],
   "life_b": 3,
   "play": [
@@ -52,7 +19,9 @@
     "A:target:Player B",
     "A:choice:Ponder",
     "A:cast:Lightning Bolt",
-    "A:target:Player B"
+    "A:target:Player B",
+    "A:sb-done",
+    "B:sb-done"
   ],
   "max_decisions": 12,
   "expect_dump": [

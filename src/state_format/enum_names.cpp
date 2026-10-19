@@ -41,6 +41,10 @@ static const std::map<std::string, int> &index_of(const std::set<std::string> &v
     case scope e:                   \
         return #e;
 
+std::string action_category_enum_name(ActionCategory v) {
+    return action_category_name(v);
+}
+
 static const char *step_name(Step v) {
 #define C(e) RMSTATE_NAME_CASE(, e)
     switch (v) {

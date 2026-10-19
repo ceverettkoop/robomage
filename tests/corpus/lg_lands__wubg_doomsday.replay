@@ -677,11 +677,7 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 59: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
@@ -695,7 +691,7 @@ No creatures eligible to block.
 
 
 -------- TURN 5 (Player A) --------
-| decision 60: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 59: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Urza's Saga (Token)
@@ -712,7 +708,7 @@ Urza's Saga gets 1 lore counter (now 3).
 Urza's Saga chapter 3 triggers.
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 60: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Expedition Map
@@ -724,7 +720,7 @@ Searching Player A's library:
 Player A shuffles their library
 Player A puts Expedition Map to the battlefield
 Urza's Saga is sacrificed (final chapter completed).
-| decision 62: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Dark Depths
@@ -735,21 +731,21 @@ Dark Depths enters with 10 ICE counter(s).
 No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
-| decision 63: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 62: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Edge of Autumn
-| decision 64: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 63: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 65: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Edge of Autumn
@@ -761,7 +757,7 @@ Player B draws Edge of Autumn
 Player B activated Tropical Island for 1(U)
 Player B activated Underground Sea for 1(U)
 Player B casts Quantum Riddler
-| decision 66: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -771,7 +767,7 @@ Player B casts Quantum Riddler
 Quantum Riddler enters the battlefield
 Quantum Riddler was cast with warp (exiled at the next end step; castable from exile later).
 Quantum Riddler triggered
-| decision 67: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -779,7 +775,7 @@ Quantum Riddler triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Street Wraith
-| decision 68: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -788,7 +784,7 @@ Player B draws Street Wraith
 | >> Player B: 2 (Activate Street Wraith from hand (Draw))
 Player B pays 2 life
 Player B activates Street Wraith from hand
-| decision 69: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -797,7 +793,7 @@ Player B activates Street Wraith from hand
 Resolving ability (category: Draw, amount: 1)
 Player B draws Thassa's Oracle
 Tamiyo, Inquisitive Student triggered
-| decision 70: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 69: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -809,33 +805,33 @@ Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: Cleanup)
 Tamiyo, Seasoned Scholar enters transformed.
-| decision 71: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 70: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 72: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| decision 71: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 73: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 72: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 74: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| decision 73: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 75: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 74: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -843,7 +839,7 @@ No creatures eligible to attack.
 (REPLAY) [T5 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Delayed trigger fires.
-| decision 76: Player B (game 0, turn 5, END_STEP, Player B active)
+| decision 75: Player B (game 0, turn 5, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -851,7 +847,7 @@ Delayed trigger fires.
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: WarpExile)
 Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
-| decision 77: Player B (game 0, turn 5, END_STEP, Player B active)
+| decision 76: Player B (game 0, turn 5, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -859,32 +855,32 @@ Quantum Riddler is exiled with warp; Player B may cast it from exile for its nor
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 7 (Player A) --------
-| decision 78: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 77: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 79: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 78: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Sphere of Resistance
-| decision 80: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 79: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 81: Player B (game 0, turn 6, DRAW, Player A active)
+| decision 80: Player B (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 82: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 81: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Sphere of Resistance
@@ -895,7 +891,7 @@ Player A draws Sphere of Resistance
 Player A activated Mox Diamond for 1(W)
 Player A activated Mox Diamond for 1(W)
 Player A casts Sphere of Resistance
-| decision 83: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 82: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -903,13 +899,13 @@ Player A casts Sphere of Resistance
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Sphere of Resistance enters the battlefield
-| decision 84: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 83: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 85: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| decision 84: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -917,14 +913,14 @@ Sphere of Resistance enters the battlefield
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 86: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 85: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Construct token [6/6]
 |   1: Confirm attackers
 (REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Construct token [6/6])
 Select target for Construct token:
-| decision 87: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 86: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (8 life)
 |   1: Tamiyo, Seasoned Scholar (loyalty 2)
@@ -934,22 +930,18 @@ Construct token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Construct token [6/6] -> Player B
-| decision 88: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Construct token -> Player B
-| decision 89: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 87: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 90: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| decision 88: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -960,25 +952,25 @@ No creatures eligible to block.
   Construct token deals 6 damage to Player B (now at 2 life)
 --- End Combat Damage ---
 
-| decision 91: Player B (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| decision 89: Player B (game 0, turn 6, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 92: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
+| decision 90: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 93: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
+| decision 91: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 94: Player B (game 0, turn 6, END_STEP, Player A active)
+| decision 92: Player B (game 0, turn 6, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -986,7 +978,7 @@ No creatures eligible to block.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 8 (Player B) --------
-| decision 95: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 93: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -994,7 +986,7 @@ No creatures eligible to block.
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Brainstorm
-| decision 96: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 94: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1002,7 +994,7 @@ Player B draws Brainstorm
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 97: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 95: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1011,7 +1003,7 @@ Player B draws Brainstorm
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 98: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| decision 96: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1020,7 +1012,7 @@ Player B draws Brainstorm
 (REPLAY) [T7 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 99: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 97: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1028,7 +1020,7 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 100: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
+| decision 98: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1036,7 +1028,7 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 101: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
+| decision 99: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1045,7 +1037,7 @@ No creatures eligible to attack.
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 102: Player B (game 0, turn 7, END_STEP, Player B active)
+| decision 100: Player B (game 0, turn 7, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1055,13 +1047,13 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 9 (Player A) --------
-| decision 103: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 101: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 104: Player B (game 0, turn 8, UPKEEP, Player A active)
+| decision 102: Player B (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1070,13 +1062,13 @@ No creatures eligible to attack.
 (REPLAY) [T8 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Malevolent Rumble
-| decision 105: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 103: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 106: Player B (game 0, turn 8, DRAW, Player A active)
+| decision 104: Player B (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1084,7 +1076,7 @@ Player A draws Malevolent Rumble
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 107: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 105: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Expedition Map (ChangeZone)
@@ -1095,7 +1087,7 @@ Player A activated Mox Diamond for 1(W)
 Player A activated Mox Diamond for 1(W)
 Player A sacrifices Expedition Map
 Player A's Expedition Map ability is on the stack
-| decision 108: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 106: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1105,7 +1097,7 @@ Player A's Expedition Map ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 109: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 107: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Ancient Tomb
@@ -1127,29 +1119,25 @@ Searching Player A's library:
 | >> Player A: 12 (Thespian's Stage)
 Player A shuffles their library
 Player A reveals Thespian's Stage and puts it to hand
-| decision 110: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 108: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thespian's Stage
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Thespian's Stage)
 Player A played Thespian's Stage
-| decision 111: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 109: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Skateboard
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Equip Skateboard)
 Choose target for Skateboard:
-| decision 112: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Construct token
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Construct token)
+| auto: Player A: Construct token
 Targeting choice 0
 Player A activated Thespian's Stage for 1(C)
 Player A's Skateboard ability targeting Construct token is on the stack
-| decision 113: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 110: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1160,7 +1148,7 @@ Player A's Skateboard ability targeting Construct token is on the stack
 Resolving ability (category: Attach)
 Equipment attached.
 Construct token gains 1/0 Haste (always)
-| decision 114: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 111: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1168,7 +1156,7 @@ Construct token gains 1/0 Haste (always)
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 115: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| decision 112: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1178,14 +1166,14 @@ Construct token gains 1/0 Haste (always)
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 116: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 113: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Construct token [6/5]
 |   1: Confirm attackers
 (REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Construct token [6/5])
 Select target for Construct token:
-| decision 117: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 114: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (2 life)
 |   1: Tamiyo, Seasoned Scholar (loyalty 2)
@@ -1195,15 +1183,11 @@ Construct token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Construct token [6/5] -> Player B
-| decision 118: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Construct token -> Player B
-| decision 119: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 115: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1212,7 +1196,7 @@ Attackers declared:
 (REPLAY) [T8 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 120: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| decision 116: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm

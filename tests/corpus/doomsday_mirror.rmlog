@@ -1,4 +1,4 @@
-RMLOG v2
+RMLOG v3
 SEED 1187322509
 FLAGS machine
 DECK_A doomsday
@@ -261,9 +261,6 @@ DECISIONS
 12
 12
 1
-0
-0
-0
 1
 2
 0
@@ -314,10 +311,7 @@ DECISIONS
 0
 0
 0
-0
-0
 1
-0
 0
 0
 0

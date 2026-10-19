@@ -355,13 +355,9 @@ Player B casts Tune the Narrative
 (REPLAY) [T3 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| decision 33: Player A (game 0, turn 3, UPKEEP, Player B active)
-| menu:
-|   0: Tune the Narrative
-(REPLAY) [T3 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Tune the Narrative)
+| auto: Player A: Tune the Narrative
 Targeting choice 0
-| decision 34: Player A (game 0, turn 3, UPKEEP, Player B active)
+| decision 33: Player A (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Return Thundering Falls
 |   1: Return Volcanic Island
@@ -369,35 +365,31 @@ Targeting choice 0
 | >> Player A: 0 (Return Thundering Falls)
 Player A returns Thundering Falls to hand
 Player A casts Daze targeting Tune the Narrative
-| decision 35: Player A (game 0, turn 3, UPKEEP, Player B active)
+| decision 34: Player A (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
 (REPLAY) [T3 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| decision 36: Player A (game 0, turn 3, UPKEEP, Player B active)
+| decision 35: Player A (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Daze
 |   1: Tune the Narrative
 (REPLAY) [T3 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Tune the Narrative)
 Targeting choice 1
-| decision 37: Player A (game 0, turn 3, UPKEEP, Player B active)
-| menu:
-|   0: Return Volcanic Island
-(REPLAY) [T3 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Return Volcanic Island)
+| auto: Player A: Return Volcanic Island
 Player A returns Volcanic Island to hand
 Player A casts Daze targeting Tune the Narrative
-| decision 38: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 36: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T3 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 39: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 37: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Daze
 |   1: Daze
@@ -405,7 +397,7 @@ Choose target for Force of Will:
 (REPLAY) [T3 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Daze)
 Targeting choice 0
-| decision 40: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 38: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Exile Ponder
 |   1: Exile Tamiyo, Inquisitive Student
@@ -418,14 +410,10 @@ Resolving ability (category: Counter)
 Daze is countered
 Resolving ability (category: Counter)
 Tune the Narrative's controller may pay {1} to save it:
-| decision 41: Player B (game 0, turn 3, UPKEEP, Player B active)
-| menu:
-|   0: Don't pay (Tune the Narrative is countered)
-(REPLAY) [T3 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Tune the Narrative is countered))
+| auto: Player B: Don't pay (Tune the Narrative is countered)
 Tune the Narrative is countered
 Player B draws Tundra
-| decision 42: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -433,7 +421,7 @@ Player B draws Tundra
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Misty Rainforest)
 Player B played Misty Rainforest
-| decision 43: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -444,7 +432,7 @@ Player B sacrifices Misty Rainforest
 Player B's Misty Rainforest ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -454,7 +442,7 @@ Searching Player B's library:
 | >> Player B: 3 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tamiyo, Inquisitive Student
@@ -467,7 +455,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Player A draws Mishra's Bauble
-| decision 46: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 43: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -478,7 +466,7 @@ Player A draws Mishra's Bauble
 | >> Player A: 4 (Cast Mishra's Bauble)
 Player A casts Mishra's Bauble
 Mishra's Bauble enters the battlefield
-| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 44: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -490,14 +478,14 @@ Mishra's Bauble enters the battlefield
 Player A played Thundering Falls
 Thundering Falls enters tapped.
 Thundering Falls triggered
-| decision 48: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 45: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Mishra's Bauble (PeekAndReveal)
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
 Choose target for Mishra's Bauble:
-| decision 49: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 46: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Player A (20 life)
@@ -513,7 +501,7 @@ Delayed trigger registered: Draw at next Upkeep.
 Resolving ability (category: Surveil, amount: 1)
 Player A surveils 1.
 Surveil: looking at Scalding Tarn
-| decision 50: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Scalding Tarn on top of library
 |   1: Put Scalding Tarn into graveyard
@@ -523,7 +511,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Delayed trigger fires.
-| decision 51: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 48: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -531,20 +519,20 @@ Delayed trigger fires.
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player A draws Scalding Tarn
-| decision 52: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 49: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Polluted Delta
-| decision 53: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 50: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
@@ -553,7 +541,7 @@ Player B draws Polluted Delta
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Polluted Delta)
 Player B played Polluted Delta
-| decision 55: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -563,7 +551,7 @@ Player B played Polluted Delta
 Player B pays 1 life
 Player B sacrifices Polluted Delta
 Player B's Polluted Delta ability is on the stack
-| decision 56: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -571,7 +559,7 @@ Player B's Polluted Delta ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 57: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -581,13 +569,13 @@ Searching Player B's library:
 | >> Player B: 3 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 58: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 55: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 59: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| decision 56: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -595,7 +583,7 @@ Player B puts Tundra to the battlefield
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 60: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 57: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -605,16 +593,12 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 61: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
 Tamiyo, Inquisitive Student triggered
-| decision 62: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 58: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -622,7 +606,7 @@ Tamiyo, Inquisitive Student triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 63: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 59: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -630,7 +614,7 @@ Token created: 0/0 Clue
 (REPLAY) [T5 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 64: Player B (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| decision 60: Player B (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -641,21 +625,21 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 65: Player B (game 0, turn 5, COMBAT_DAMAGE, Player B active)
+| decision 61: Player B (game 0, turn 5, COMBAT_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 |   2: Activate Clue token (Draw)
 (REPLAY) [T5 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 66: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| decision 62: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 |   2: Activate Clue token (Draw)
 (REPLAY) [T5 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 67: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -667,7 +651,7 @@ Player B activated Tundra for 1(U)
 Player B sacrifices Clue token
 Player B's Clue ability is on the stack
 Clue (token) is put into the graveyard and ceases to exist.
-| decision 68: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -675,13 +659,13 @@ Clue (token) is put into the graveyard and ceases to exist.
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Force of Negation
-| decision 69: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 70: Player B (game 0, turn 5, END_STEP, Player B active)
+| decision 66: Player B (game 0, turn 5, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -689,29 +673,25 @@ Player B draws Force of Negation
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 7 (Player A) --------
-| decision 71: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 67: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Unholy Heat
-| decision 72: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 68: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Unholy Heat
 (REPLAY) [T6 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Unholy Heat)
 Choose target for Unholy Heat:
-| decision 73: Player A (game 0, turn 6, DRAW, Player A active)
-| menu:
-|   0: Tamiyo, Inquisitive Student
-(REPLAY) [T6 | Draw | Player A] Input: 0
-| >> Player A: 0 (Tamiyo, Inquisitive Student)
+| auto: Player A: Tamiyo, Inquisitive Student
 Targeting choice 0
 Player A activated Thundering Falls for 1(R)
 Player A casts Unholy Heat targeting Tamiyo, Inquisitive Student
-| decision 74: Player B (game 0, turn 6, DRAW, Player A active)
+| decision 69: Player B (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -719,13 +699,13 @@ Player A casts Unholy Heat targeting Tamiyo, Inquisitive Student
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 2)
 Unholy Heat deals 2 damage to Tamiyo, Inquisitive Student
-| decision 75: Player B (game 0, turn 6, DRAW, Player A active)
+| decision 70: Player B (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 76: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 71: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -734,7 +714,7 @@ Unholy Heat deals 2 damage to Tamiyo, Inquisitive Student
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Scalding Tarn)
 Player A played Scalding Tarn
-| decision 77: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 72: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -743,7 +723,7 @@ Player A played Scalding Tarn
 Player A pays 1 life
 Player A sacrifices Scalding Tarn
 Player A's Scalding Tarn ability is on the stack
-| decision 78: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 73: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -751,7 +731,7 @@ Player A's Scalding Tarn ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 79: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 74: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -761,7 +741,7 @@ Searching Player A's library:
 | >> Player A: 3 (Volcanic Island)
 Player A shuffles their library
 Player A puts Volcanic Island to the battlefield
-| decision 80: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 75: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ponder
@@ -769,7 +749,7 @@ Player A puts Volcanic Island to the battlefield
 | >> Player A: 1 (Cast Ponder)
 Player A activated Volcanic Island for 1(U)
 Player A casts Ponder
-| decision 81: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 76: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -778,7 +758,7 @@ Player A casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player A looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 82: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 77: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Mystic Sanctuary
 |   1: Polluted Delta
@@ -786,13 +766,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Mystic Sanctuary)
 Choose which card goes 2 from top:
-| decision 83: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 78: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Polluted Delta
 |   1: Into the Flood Maw
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Polluted Delta)
-| decision 84: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 79: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -800,38 +780,38 @@ Choose which card goes 2 from top:
 | >> Player A: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player A draws Into the Flood Maw
-| decision 85: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 80: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 86: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| decision 81: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 87: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 82: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 88: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
+| decision 83: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 89: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
+| decision 84: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 90: Player B (game 0, turn 6, END_STEP, Player A active)
+| decision 85: Player B (game 0, turn 6, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -839,20 +819,20 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 8 (Player B) --------
-| decision 91: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 86: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Wrath of the Skies
-| decision 92: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 87: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 93: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 88: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Tundra
@@ -861,7 +841,7 @@ Player B draws Wrath of the Skies
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Tundra)
 Player B played Tundra
-| decision 94: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 89: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -876,7 +856,7 @@ Player B activated Tundra for 1(U)
 Player B casts The One Ring
 The One Ring enters the battlefield
 The One Ring triggered
-| decision 95: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 90: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
@@ -891,7 +871,7 @@ Resolving ability (category: Pump)
 Player B gains protection from everything until their next turn.
 
 --- Declare Attackers (Player B) ---
-| decision 96: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 91: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -901,11 +881,7 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 97: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
@@ -919,28 +895,24 @@ No creatures eligible to block.
 
 
 -------- TURN 9 (Player A) --------
-| decision 98: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 92: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Into the Flood Maw
 (REPLAY) [T8 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Into the Flood Maw)
-| decision 99: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 93: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Decline: promise a tapped Fish to your opponent
 |   1: Accept: promise a tapped Fish to your opponent
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Decline: promise a tapped Fish to your opponent)
 Choose target for Into the Flood Maw:
-| decision 100: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Tamiyo, Inquisitive Student
-(REPLAY) [T8 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Tamiyo, Inquisitive Student)
+| auto: Player A: Tamiyo, Inquisitive Student
 Targeting choice 0
 Player A activated Thundering Falls for 1(U)
 Player A casts Into the Flood Maw targeting Tamiyo, Inquisitive Student
-| decision 101: Player B (game 0, turn 8, UPKEEP, Player A active)
+| decision 94: Player B (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation (alternate cost)
@@ -948,23 +920,15 @@ Player A casts Into the Flood Maw targeting Tamiyo, Inquisitive Student
 (REPLAY) [T8 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Negation (alternate cost))
 Choose target for Force of Negation:
-| decision 102: Player B (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Into the Flood Maw
-(REPLAY) [T8 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Into the Flood Maw)
+| auto: Player B: Into the Flood Maw
 Targeting choice 0
-| decision 103: Player B (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Exile Force of Will
-(REPLAY) [T8 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Exile Force of Will)
+| auto: Player B: Exile Force of Will
 Player B exiles Force of Will
 Player B casts Force of Negation targeting Into the Flood Maw
 Resolving ability (category: Counter)
 Into the Flood Maw is countered
 Player A draws Polluted Delta
-| decision 104: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 95: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
@@ -973,7 +937,7 @@ Player A draws Polluted Delta
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Polluted Delta)
 Player A played Polluted Delta
-| decision 105: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 96: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Polluted Delta (ChangeZone)
@@ -984,7 +948,7 @@ Player A sacrifices Polluted Delta
 Player A's Polluted Delta ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 106: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 97: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -994,7 +958,7 @@ Searching Player A's library:
 | >> Player A: 3 (Volcanic Island)
 Player A shuffles their library
 Player A puts Volcanic Island to the battlefield
-| decision 107: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 98: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cori-Steel Cutter
@@ -1009,7 +973,7 @@ No creatures eligible to attack.
 
 -------- TURN 10 (Player B) --------
 The One Ring triggered
-| decision 108: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 99: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1018,7 +982,7 @@ The One Ring triggered
 (REPLAY) [T9 | Upkeep | Player B] Input: 2
 | >> Player B: 2 (Activate The One Ring (PutCounter))
 Player B's The One Ring ability is on the stack
-| decision 109: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 100: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1030,7 +994,7 @@ Put 1 BURDEN counter(s) on The One Ring (now 2).
 Resolving ability (category: Draw, amount: 2)
 Player B draws Plains
 Player B draws Brainstorm
-| decision 110: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 101: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1040,7 +1004,7 @@ Player B draws Brainstorm
 | >> Player B: 1 (Cast Brainstorm)
 Player B activated Meticulous Archive for 1(U)
 Player B casts Brainstorm
-| decision 111: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 102: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1053,7 +1017,7 @@ Player B draws Tune the Narrative
 Player B draws Force of Negation
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 112: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 103: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Force of Negation
 |   1: Plains
@@ -1065,7 +1029,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 1 (Plains)
 Player B puts Plains to top of library
 Player B chooses a card from Player B hand:
-| decision 113: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 104: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Force of Negation
 |   1: Swords to Plowshares
@@ -1076,7 +1040,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 0 (Force of Negation)
 Player B puts Force of Negation to top of library
 Tamiyo, Inquisitive Student triggered
-| decision 114: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 105: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1086,7 +1050,7 @@ Tamiyo, Inquisitive Student triggered
 | >> Player B: 2 (Cast Tune the Narrative)
 Player B activated Tundra for 1(U)
 Player B casts Tune the Narrative
-| decision 115: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 106: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1097,7 +1061,7 @@ Resolving ability (category: Draw, amount: 1)
 Player B draws Force of Negation
 Resolving ability (category: PutCounter, amount: 2)
 Player B gets 2 ENERGY counter(s) (now 2).
-| decision 116: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 107: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1110,7 +1074,7 @@ Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: Cleanup)
 Tamiyo, Seasoned Scholar enters transformed.
-| decision 117: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 108: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -1118,20 +1082,20 @@ Tamiyo, Seasoned Scholar enters transformed.
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 14)
-| decision 118: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 109: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Plains
-| decision 119: Player B (game 0, turn 9, DRAW, Player B active)
+| decision 110: Player B (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T9 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 120: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 111: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Plains
@@ -1144,7 +1108,7 @@ Player B draws Plains
 Player B activated Tundra for 1(U)
 Player B casts Tamiyo, Inquisitive Student
 Tamiyo, Inquisitive Student enters the battlefield
-| decision 121: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 112: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Plains
@@ -1153,7 +1117,7 @@ Tamiyo, Inquisitive Student enters the battlefield
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Plains)
 Player B played Plains
-| decision 122: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 113: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1164,7 +1128,7 @@ Player B played Plains
 | >> Player B: 3 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
 Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
 Player B's Tamiyo, Seasoned Scholar ability is on the stack
-| decision 123: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 114: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1184,7 +1148,7 @@ No creatures eligible to attack.
 
 -------- TURN 11 (Player A) --------
 Player A draws Misty Rainforest
-| decision 124: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 115: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -1194,14 +1158,14 @@ Player A draws Misty Rainforest
 (REPLAY) [T10 | First Main | Player A] Input: 4
 | >> Player A: 4 (Cast Murktide Regent)
 Choose how many cards to exile via Delve (4-5):
-| decision 125: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 116: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile 4 cards from graveyard (Delve)
 |   1: Exile 5 cards from graveyard (Delve)
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Exile 5 cards from graveyard (Delve))
 Choose a card to exile via Delve (1 of 5):
-| decision 126: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 117: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm (Delve)
 |   1: Exile Daze (Delve)
@@ -1213,7 +1177,7 @@ Choose a card to exile via Delve (1 of 5):
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Brainstorm (Delve))
 Choose a card to exile via Delve (2 of 5):
-| decision 127: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 118: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm (Delve)
 |   1: Exile Daze (Delve)
@@ -1225,7 +1189,7 @@ Choose a card to exile via Delve (2 of 5):
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Brainstorm (Delve))
 Choose a card to exile via Delve (3 of 5):
-| decision 128: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 119: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Daze (Delve)
 |   1: Exile Mishra's Bauble (Delve)
@@ -1236,7 +1200,7 @@ Choose a card to exile via Delve (3 of 5):
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Daze (Delve))
 Choose a card to exile via Delve (4 of 5):
-| decision 129: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 120: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Daze (Delve)
 |   1: Exile Mishra's Bauble (Delve)
@@ -1247,7 +1211,7 @@ Choose a card to exile via Delve (4 of 5):
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Daze (Delve))
 Choose a card to exile via Delve (5 of 5):
-| decision 130: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 121: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Mishra's Bauble (Delve)
 |   1: Exile Polluted Delta (Delve)
@@ -1266,7 +1230,7 @@ Player A exiles Mishra's Bauble via Delve.
 Player A casts Murktide Regent
 Murktide Regent enters the battlefield
 Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
-| decision 131: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 122: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -1275,7 +1239,7 @@ Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Misty Rainforest)
 Player A played Misty Rainforest
-| decision 132: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 123: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -1286,7 +1250,7 @@ Player A sacrifices Misty Rainforest
 Player A's Misty Rainforest ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 133: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 124: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -1295,18 +1259,14 @@ Searching Player A's library:
 | >> Player A: 1 (Island)
 Player A shuffles their library
 Player A puts Island to the battlefield
-| decision 134: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 125: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Equip Cori-Steel Cutter)
 Choose target for Cori-Steel Cutter:
-| decision 135: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Murktide Regent
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Murktide Regent)
+| auto: Player A: Murktide Regent
 Targeting choice 0
 Player A activated Volcanic Island for 1(R)
 Player A activated Island for 1(U)
@@ -1316,14 +1276,14 @@ Equipment attached.
 Murktide Regent gains 1/1 Trample & Haste (always)
 
 --- Declare Attackers (Player A) ---
-| decision 136: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 126: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Murktide Regent [8/8]
 |   1: Confirm attackers
 (REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Murktide Regent [8/8])
 Select target for Murktide Regent:
-| decision 137: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 127: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (14 life)
 |   1: Tamiyo, Seasoned Scholar (loyalty 4)
@@ -1333,11 +1293,7 @@ Murktide Regent attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Murktide Regent [8/8] -> Player B
-| decision 138: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Murktide Regent -> Player B
@@ -1349,7 +1305,7 @@ Murktide Regent gets -1/+0 (now 7/8)
 Attackers:
   0: Murktide Regent [7/8]
 Your creatures:
-| decision 139: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| decision 128: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm blockers
@@ -1366,7 +1322,7 @@ Blockers declared:
 
 -------- TURN 12 (Player B) --------
 The One Ring triggered
-| decision 140: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 129: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1374,7 +1330,7 @@ The One Ring triggered
 (REPLAY) [T11 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 141: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 130: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Murktide Regent
 |   1: Tamiyo, Inquisitive Student
@@ -1383,7 +1339,7 @@ Choose target for Swords to Plowshares:
 Targeting choice 0
 Player B activated Plains for 1(W)
 Player B casts Swords to Plowshares targeting Murktide Regent
-| decision 142: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 131: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation
@@ -1391,7 +1347,7 @@ Player B casts Swords to Plowshares targeting Murktide Regent
 (REPLAY) [T11 | Upkeep | Player B] Input: 2
 | >> Player B: 2 (Activate The One Ring (PutCounter))
 Player B's The One Ring ability is on the stack
-| decision 143: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 132: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation
@@ -1404,7 +1360,7 @@ Player B draws Spell Pierce
 Player B draws Flow State
 Player B draws Force of Will
 Tamiyo, Inquisitive Student triggered
-| decision 144: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 133: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation
@@ -1419,14 +1375,14 @@ Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: Cleanup)
 Tamiyo, Seasoned Scholar enters transformed.
 Legend rule: Player B controls 2 copies of Tamiyo, Seasoned Scholar; choose one to keep.
-| decision 145: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 134: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Keep Tamiyo, Seasoned Scholar
 |   1: Keep Tamiyo, Seasoned Scholar
 (REPLAY) [T11 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Keep Tamiyo, Seasoned Scholar)
 Tamiyo, Seasoned Scholar is put into the graveyard (legend rule)
-| decision 146: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 135: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Negation
@@ -1442,7 +1398,7 @@ Cori-Steel Cutter becomes unattached
 Resolving ability (category: LoseLife, amount: 3)
 Player B loses 3 life (now at 4)
 Player B draws Flooded Strand
-| decision 147: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 136: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -1456,7 +1412,7 @@ Player B draws Flooded Strand
 Player B activated Meticulous Archive for 1(U)
 Player B activated Tundra for 1(U)
 Player B casts Flow State
-| decision 148: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 137: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -1465,7 +1421,7 @@ Player B casts Flow State
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Dig)
 Player B looks at the top 3 card(s) of their library.
-| decision 149: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 138: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Geist of Saint Traft
@@ -1474,7 +1430,7 @@ Player B looks at the top 3 card(s) of their library.
 | >> Player B: 1 (Geist of Saint Traft)
 Player B puts Geist of Saint Traft into hand.
 Player B puts 2 card(s) on the bottom of their library.
-| decision 150: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 139: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -1485,7 +1441,7 @@ Player B puts 2 card(s) on the bottom of their library.
 (REPLAY) [T11 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 151: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 140: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Wrath of the Skies
@@ -1499,7 +1455,7 @@ Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 152: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 141: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -1508,7 +1464,7 @@ Searching Player B's library:
 | >> Player B: 1 (Island)
 Player B shuffles their library
 Player B puts Island to the battlefield
-| decision 153: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 142: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Geist of Saint Traft
@@ -1521,14 +1477,14 @@ Player B activated Tundra for 1(W)
 Player B activated Island for 1(U)
 Player B activated Tundra for 1(U)
 Player B casts Geist of Saint Traft
-| decision 154: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 143: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T11 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Geist of Saint Traft enters the battlefield
-| decision 155: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 144: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -1543,7 +1499,7 @@ No creatures eligible to attack.
 
 -------- TURN 13 (Player A) --------
 Player A draws Daze
-| decision 156: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 145: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -1555,7 +1511,7 @@ No creatures eligible to attack.
 
 -------- TURN 14 (Player B) --------
 The One Ring triggered
-| decision 157: Player B (game 0, turn 13, UPKEEP, Player B active)
+| decision 146: Player B (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate The One Ring (PutCounter)
@@ -1569,7 +1525,7 @@ Player B draws Ponder
 Player B draws Lórien Revealed
 Player B draws Flow State
 Player B draws Flow State
-| decision 158: Player B (game 0, turn 13, UPKEEP, Player B active)
+| decision 147: Player B (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Lórien Revealed from hand (ChangeZone)

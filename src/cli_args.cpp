@@ -27,7 +27,7 @@ struct CliOption {
     // Stores the option in its global (value is nullptr for a flag that takes none); nullptr for
     // --help, which the parser handles itself.
     void (*apply)(const char *value);
-    // Writes the option's RMLOG v2 FLAGS token under `key` (the name without its leading "--")
+    // Writes the option's RMLOG v3 FLAGS token under `key` (the name without its leading "--")
     // when the option is in effect; nullptr for options the FLAGS line does not carry.
     void (*record)(DecisionLogHeader &header, const std::string &key);
 };

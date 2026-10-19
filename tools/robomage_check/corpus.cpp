@@ -13,12 +13,12 @@ static bool trace_menu_row(const std::string &line) {
     return i > 4 && line.compare(i, 2, ": ") == 0;
 }
 
-// A --trace-decisions line of the board (every trace line but the decision header, the menu and
-// the choice).
+// A --trace-decisions line of the board (every trace line but the decision header, the menu, the
+// choice and a one-row menu's "| auto: " line).
 static bool trace_board_line(const std::string &line) {
     if (!rmcheck::starts_with(line, "| ")) return false;
     return !rmcheck::starts_with(line, "| decision ") && !rmcheck::starts_with(line, "| menu:") &&
-           !trace_menu_row(line) && !rmcheck::starts_with(line, "| >> ");
+           !trace_menu_row(line) && !rmcheck::starts_with(line, "| >> ") && !rmcheck::starts_with(line, "| auto: ");
 }
 
 namespace rmcheck {

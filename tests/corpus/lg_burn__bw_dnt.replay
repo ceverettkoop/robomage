@@ -103,11 +103,7 @@ Aether Vial enters the battlefield
 Player B's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T1 | First Main | Player B] Input: 0
-| >> Player B: 0 (Fail to find)
+| auto: Player B: Fail to find
 Player B fails to find
 No creatures eligible to attack.
 
@@ -117,7 +113,7 @@ Resolving ability (category: SuspendTick)
 Removed a time counter from Rift Bolt (0 remaining).
 Rift Bolt triggers: the last time counter was removed (suspend).
 Resolving ability (category: SuspendCast)
-| decision 9: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 8: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Do not cast Rift Bolt
 |   1: Cast Rift Bolt without paying its mana cost
@@ -125,7 +121,7 @@ Resolving ability (category: SuspendCast)
 | >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
 Player A casts Rift Bolt without paying its mana cost
 Choose target for Rift Bolt:
-| decision 10: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 9: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Player B (20 life)
 |   1: Player A (19 life)
@@ -136,7 +132,7 @@ Player A casts Rift Bolt targeting Player B
 Resolving ability (category: DealDamage, amount: 3)
 Rift Bolt deals 3 damage to Player B (now at 17 life)
 Player A draws Chain Lightning
-| decision 11: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 10: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -147,7 +143,7 @@ Player A draws Chain Lightning
 (REPLAY) [T2 | First Main | Player A] Input: 4
 | >> Player A: 4 (Cast Chain Lightning)
 Choose target for Chain Lightning:
-| decision 12: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 11: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Player A (19 life)
@@ -161,12 +157,8 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at 14 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 13: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
-| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+| decision 12: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -175,7 +167,7 @@ Player B may pay to copy Chain Lightning:
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Suspend Rift Bolt
@@ -187,13 +179,13 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Aether Vial triggered
-| decision 16: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 14: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T3 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 17: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 15: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -201,20 +193,20 @@ Aether Vial triggered
 | >> Player B: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 1).
-| decision 18: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 16: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T3 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Prismatic Vista
-| decision 19: Player B (game 0, turn 3, DRAW, Player B active)
+| decision 17: Player B (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T3 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Prismatic Vista
@@ -226,7 +218,7 @@ Player B draws Prismatic Vista
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Prismatic Vista)
 Player B played Prismatic Vista
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -234,7 +226,7 @@ Player B played Prismatic Vista
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Aether Vial (ChangeZone))
 Player B's Aether Vial ability is on the stack
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Prismatic Vista (ChangeZone)
@@ -245,7 +237,7 @@ Player B sacrifices Prismatic Vista
 Player B's Prismatic Vista ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -256,13 +248,9 @@ Player B shuffles their library
 Player B puts Plains to the battlefield
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T3 | First Main | Player B] Input: 0
-| >> Player B: 0 (Fail to find)
+| auto: Player B: Fail to find
 Player B fails to find
-| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast White Orchid Phantom
@@ -273,7 +261,7 @@ Player B activated Plains for 1(W)
 Player B casts White Orchid Phantom
 White Orchid Phantom enters the battlefield
 Choose target for White Orchid Phantom:
-| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: No target
 |   1: Fiery Islet
@@ -285,7 +273,7 @@ Resolving ability (category: Destroy)
 Fiery Islet is destroyed
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 27: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 24: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Mountain
@@ -298,7 +286,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Rift Bolt triggers: remove a time counter (suspend).
-| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Price of Progress
@@ -314,7 +302,7 @@ Resolving ability (category: SuspendTick)
 Removed a time counter from Rift Bolt (0 remaining).
 Rift Bolt triggers: the last time counter was removed (suspend).
 Resolving ability (category: SuspendCast)
-| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Do not cast Rift Bolt
 |   1: Cast Rift Bolt without paying its mana cost
@@ -322,7 +310,7 @@ Resolving ability (category: SuspendCast)
 | >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
 Player A casts Rift Bolt without paying its mana cost
 Choose target for Rift Bolt:
-| decision 30: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (13 life)
 |   1: Player A (18 life)
@@ -334,7 +322,7 @@ Player A casts Rift Bolt targeting Player B
 Resolving ability (category: DealDamage, amount: 3)
 Rift Bolt deals 3 damage to Player B (now at 10 life)
 Player A draws Mountain
-| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -347,13 +335,13 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Aether Vial triggered
-| decision 32: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 33: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -361,21 +349,21 @@ Aether Vial triggered
 | >> Player B: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 2).
-| decision 34: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 31: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Solitude
-| decision 35: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 32: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 |   2: Activate Aether Vial (ChangeZone)
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Prismatic Vista
@@ -387,7 +375,7 @@ Player B draws Solitude
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Prismatic Vista)
 Player B played Prismatic Vista
-| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -396,7 +384,7 @@ Player B played Prismatic Vista
 (REPLAY) [T5 | First Main | Player B] Input: 2
 | >> Player B: 2 (Activate Aether Vial (ChangeZone))
 Player B's Aether Vial ability is on the stack
-| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -406,7 +394,7 @@ Player B's Aether Vial ability is on the stack
 Player B pays 1 life
 Player B sacrifices Prismatic Vista
 Player B's Prismatic Vista ability is on the stack
-| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -414,7 +402,7 @@ Player B's Prismatic Vista ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -423,7 +411,7 @@ Searching Player B's library:
 | >> Player B: 1 (Plains)
 Player B shuffles their library
 Player B puts Plains to the battlefield
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -431,13 +419,9 @@ Player B puts Plains to the battlefield
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T5 | First Main | Player B] Input: 0
-| >> Player B: 0 (Fail to find)
+| auto: Player B: Fail to find
 Player B fails to find
-| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -448,13 +432,13 @@ Player B activated Plains for 1(W)
 Player B activated Plains for 1(W)
 Player B activated Plains for 1(W)
 Player B pays {3} and puts Yorion, Sky Nomad into their hand from outside the game
-| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 45: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| decision 41: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -462,7 +446,7 @@ Player B pays {3} and puts Yorion, Sky Nomad into their hand from outside the ga
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 46: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 42: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Confirm attackers
@@ -472,22 +456,18 @@ White Orchid Phantom attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] White Orchid Phantom [2/2] -> Player A
-| decision 47: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   White Orchid Phantom -> Player A
-| decision 48: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 43: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T5 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 49: Player B (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| decision 44: Player B (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -498,7 +478,7 @@ No creatures eligible to block.
   White Orchid Phantom deals 2 damage to Player A (now at 16 life)
 --- End First Strike Combat Damage ---
 
-| decision 50: Player B (game 0, turn 5, FIRST_STRIKE_DAMAGE, Player B active)
+| decision 45: Player B (game 0, turn 5, FIRST_STRIKE_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -508,25 +488,25 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 51: Player B (game 0, turn 5, COMBAT_DAMAGE, Player B active)
+| decision 46: Player B (game 0, turn 5, COMBAT_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T5 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 52: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| decision 47: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T5 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 53: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T5 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 54: Player B (game 0, turn 5, END_STEP, Player B active)
+| decision 49: Player B (game 0, turn 5, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
@@ -534,20 +514,20 @@ No creatures eligible to block.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 7 (Player A) --------
-| decision 55: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 50: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Monastery Swiftspear
-| decision 56: Player B (game 0, turn 6, DRAW, Player A active)
+| decision 51: Player B (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T6 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -557,14 +537,14 @@ Player A draws Monastery Swiftspear
 | >> Player A: 3 (Cast Monastery Swiftspear)
 Player A activated Mountain for 1(R)
 Player A casts Monastery Swiftspear
-| decision 58: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 53: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Monastery Swiftspear enters the battlefield
-| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -572,13 +552,13 @@ Monastery Swiftspear enters the battlefield
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 60: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 55: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Solitude (alternate cost)
 (REPLAY) [T6 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Solitude (alternate cost))
-| decision 61: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 56: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Witch Enchanter
 |   1: Exile Yorion, Sky Nomad
@@ -588,14 +568,14 @@ Player B exiles Witch Enchanter
 Player B casts Solitude
 Solitude enters the battlefield
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 62: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 57: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Solitude (ChangeZone, targeted)
 |   1: Solitude (evoke: sacrifice)
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Solitude (ChangeZone, targeted))
 Choose target for Solitude:
-| decision 63: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 58: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Monastery Swiftspear
@@ -615,13 +595,13 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Aether Vial triggered
-| decision 64: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 59: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 65: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 60: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -629,20 +609,20 @@ Aether Vial triggered
 | >> Player B: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 3).
-| decision 66: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 61: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Marsh Flats
-| decision 67: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 62: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Marsh Flats
@@ -652,25 +632,26 @@ Player B draws Marsh Flats
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Marsh Flats)
 Player B played Marsh Flats
-| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Marsh Flats (ChangeZone)
-(REPLAY) [T7 | First Main | Player B] Input: 2
-| >> Player B: 2 (Activate Marsh Flats (ChangeZone))
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
 Player B pays 1 life
 Player B sacrifices Marsh Flats
 Player B's Marsh Flats ability is on the stack
-| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 71: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -681,21 +662,13 @@ Searching Player B's library:
 | >> Player B: 2 (Scrubland)
 Player B shuffles their library
 Player B puts Scrubland to the battlefield
-| decision 72: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 73: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
 
 --- Declare Attackers (Player B) ---
-| decision 74: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 67: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Confirm attackers
@@ -705,83 +678,31 @@ White Orchid Phantom attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] White Orchid Phantom [2/2] -> Player A
-| decision 75: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   White Orchid Phantom -> Player A
-| decision 76: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 77: Player B (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- First Strike Combat Damage ---
   White Orchid Phantom deals 2 damage to Player A (now at 15 life)
 --- End First Strike Combat Damage ---
 
-| decision 78: Player B (game 0, turn 7, FIRST_STRIKE_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | First Strike Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 79: Player B (game 0, turn 7, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 80: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 81: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 82: Player B (game 0, turn 7, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 -------- TURN 9 (Player A) --------
-| decision 83: Player B (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Player A draws Fireblast
-| decision 84: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 68: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Fireblast (alternate cost)
 (REPLAY) [T8 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Fireblast (alternate cost))
 Choose target for Fireblast:
-| decision 85: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 69: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Player B (8 life)
 |   1: Player A (15 life)
@@ -789,7 +710,7 @@ Choose target for Fireblast:
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Player B (8 life))
 Targeting choice 0
-| decision 86: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 70: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Sacrifice Mountain
 |   1: Sacrifice Mountain
@@ -797,7 +718,7 @@ Targeting choice 0
 |   3: Sacrifice Mountain
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Sacrifice Mountain)
-| decision 87: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 71: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Sacrifice Mountain
 |   1: Sacrifice Mountain
@@ -807,74 +728,26 @@ Targeting choice 0
 Player A sacrifices Mountain
 Player A sacrifices Mountain
 Player A casts Fireblast targeting Player B
-| decision 88: Player B (game 0, turn 8, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 4)
 Fireblast deals 4 damage to Player B (now at 4 life)
-| decision 89: Player B (game 0, turn 8, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 90: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 72: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 91: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 92: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 93: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 94: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 95: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 96: Player B (game 0, turn 8, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 -------- TURN 10 (Player B) --------
 Aether Vial triggered
-| decision 97: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 73: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 98: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 74: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -882,20 +755,20 @@ Aether Vial triggered
 | >> Player B: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 4).
-| decision 99: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 75: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Marsh Flats
-| decision 100: Player B (game 0, turn 9, DRAW, Player B active)
+| decision 76: Player B (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T9 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 101: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 77: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Marsh Flats
@@ -905,25 +778,26 @@ Player B draws Marsh Flats
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Marsh Flats)
 Player B played Marsh Flats
-| decision 102: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 78: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Marsh Flats (ChangeZone)
-(REPLAY) [T9 | First Main | Player B] Input: 2
-| >> Player B: 2 (Activate Marsh Flats (ChangeZone))
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 79: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
 Player B pays 1 life
 Player B sacrifices Marsh Flats
 Player B's Marsh Flats ability is on the stack
-| decision 103: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 104: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 80: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -934,11 +808,14 @@ Searching Player B's library:
 | >> Player B: 2 (Scrubland)
 Player B shuffles their library
 Player B puts Scrubland to the battlefield
-| decision 105: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 81: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Yorion, Sky Nomad
-|   2: Activate Aether Vial (ChangeZone)
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Yorion, Sky Nomad)
 Player B activated Plains for 1(W)
@@ -947,22 +824,10 @@ Player B activated Plains for 1(W)
 Player B activated Scrubland for 1(W)
 Player B activated Scrubland for 1(W)
 Player B casts Yorion, Sky Nomad
-| decision 106: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Yorion, Sky Nomad enters the battlefield
 Yorion, Sky Nomad triggered
-| decision 107: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
-| decision 108: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Aether Vial
 |   1: Exile White Orchid Phantom
@@ -970,7 +835,7 @@ Resolving ability (category: ChangeZone)
 (REPLAY) [T9 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Aether Vial)
 Player B exiles Aether Vial
-| decision 109: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile White Orchid Phantom
 |   1: Done (exile no more)
@@ -986,7 +851,7 @@ Aether Vial is moved to the battlefield
 White Orchid Phantom is moved to the battlefield
 Resolving ability (category: Cleanup)
 Choose target for White Orchid Phantom:
-| decision 110: Player B (game 0, turn 9, END_STEP, Player B active)
+| decision 84: Player B (game 0, turn 9, END_STEP, Player B active)
 | menu:
 |   0: No target
 |   1: Scrubland
@@ -995,7 +860,7 @@ Choose target for White Orchid Phantom:
 | >> Player B: 0 (No target)
 Targeting choice 0
 White Orchid Phantom triggered
-| decision 111: Player B (game 0, turn 9, END_STEP, Player B active)
+| decision 85: Player B (game 0, turn 9, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -1004,7 +869,7 @@ White Orchid Phantom triggered
 Resolving ability (category: Destroy)
 Destroy: no target chosen
 Resolving ability (category: ChangeZone)
-| decision 112: Player B (game 0, turn 9, END_STEP, Player B active)
+| decision 86: Player B (game 0, turn 9, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -1012,27 +877,27 @@ Resolving ability (category: ChangeZone)
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 11 (Player A) --------
-| decision 113: Player B (game 0, turn 10, UPKEEP, Player A active)
+| decision 87: Player B (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Lava Spike
-| decision 114: Player B (game 0, turn 10, DRAW, Player A active)
+| decision 88: Player B (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 115: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 89: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lava Spike
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Lava Spike)
 Choose target for Lava Spike:
-| decision 116: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 90: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (3 life)
 |   1: Player A (15 life)
@@ -1041,12 +906,17 @@ Choose target for Lava Spike:
 Targeting choice 0
 Player A activated Mountain for 1(R)
 Player A casts Lava Spike targeting Player B
-| decision 117: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 91: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
+(REPLAY) [T10 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
 Resolving ability (category: DealDamage, amount: 3)
 Lava Spike deals 3 damage to Player B (now at 0 life)
 

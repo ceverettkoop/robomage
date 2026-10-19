@@ -101,7 +101,8 @@ match's stream.
   the scripted corpus needs (the reply is the label).
 
 **Which decisions.** Every decision the engine asks of a recorded seat, in order: a decision the
-engine takes itself (a lone pass) is never asked and never appears, so the seat sequence is
+engine takes itself (a menu with one row: a lone pass, a single legal target, …;
+`docs/state_format.md` §9) is never asked and never appears, so the seat sequence is
 irregular and every record carries its seat. Concession unwinding (CR 104.3a) asks nothing.
 
 **What the recorded seat's decider gives.**

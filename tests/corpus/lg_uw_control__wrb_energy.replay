@@ -436,11 +436,7 @@ Amped Raptor triggered
 (REPLAY) [T5 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 36: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Amped Raptor
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Amped Raptor)
+| auto: Player A: Amped Raptor
 Targeting choice 0
 Player A activated Plains for 1(W)
 Player A casts Swords to Plowshares targeting Amped Raptor
@@ -455,7 +451,7 @@ Player B reveals Ajani, Nacatl Pariah.
 Player B exiles Ajani, Nacatl Pariah.
 Resolving ability (category: Play)
 Player B may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
-| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Do not cast Ajani, Nacatl Pariah
 |   1: Cast Ajani, Nacatl Pariah
@@ -468,7 +464,7 @@ Ajani, Nacatl Pariah enters the battlefield
 Ajani, Nacatl Pariah triggered
 Resolving ability (category: Token)
 Token created: 2/1 Cat Warrior
-| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Marsh Flats
@@ -477,14 +473,14 @@ Token created: 2/1 Cat Warrior
 (REPLAY) [T5 | First Main | Player B] Input: 3
 | >> Player B: 3 (Cast Cabal Therapy (flashback))
 Choose target for Cabal Therapy:
-| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (18 life)
 |   1: Player B (18 life)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Player A (18 life))
 Targeting choice 0
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Sacrifice Ajani, Nacatl Pariah
 |   1: Sacrifice Cat Warrior
@@ -494,7 +490,7 @@ Player B sacrifices Cat Warrior
 Player B casts Cabal Therapy
 Cat Warrior (token) is put into the graveyard and ceases to exist.
 Ajani, Nacatl Pariah triggered
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Decline: use Ajani, Nacatl Pariah's triggered ability
 |   1: Accept: use Ajani, Nacatl Pariah's triggered ability
@@ -508,7 +504,7 @@ Resolving ability (category: Cleanup)
 Ajani, Nacatl Avenger enters transformed.
 Resolving ability (category: NameCard)
 Player B names a card:
-| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Name card: Brainstorm
 |   1: Name card: Consign to Memory
@@ -544,7 +540,7 @@ Player A reveals their hand:
   Wasteland
 Player A discards Flow State
 Cabal Therapy is exiled (flashback)
-| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Marsh Flats
@@ -554,7 +550,7 @@ Cabal Therapy is exiled (flashback)
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Marsh Flats)
 Player B played Marsh Flats
-| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
@@ -564,7 +560,7 @@ Player B played Marsh Flats
 | >> Player B: 1 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
 Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 5)
 Player B's Ajani, Nacatl Avenger ability is on the stack
-| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Marsh Flats (ChangeZone)
@@ -575,7 +571,7 @@ Player B sacrifices Marsh Flats
 Player B's Marsh Flats ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -587,7 +583,7 @@ Searching Player B's library:
 Player B shuffles their library
 Player B puts Plateau to the battlefield
 Resolving ability (category: PutCounterAll, amount: 1)
-| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ocelot Pride
@@ -604,14 +600,14 @@ Resolving ability (category: CopyPermanent)
 
 -------- TURN 7 (Player A) --------
 Player A draws Swords to Plowshares
-| decision 48: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 47: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T6 | Draw | Player A] Input: 1
 | >> Player A: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 49: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 48: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Ocelot Pride
 |   1: Cat token
@@ -624,7 +620,7 @@ Resolving ability (category: ChangeZone)
 Ocelot Pride is moved to exile
 Resolving ability (category: GainLife, amount: 1)
 Player B gains 1 life (now at 18)
-| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 49: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Tundra
@@ -633,7 +629,7 @@ Player B gains 1 life (now at 18)
 (REPLAY) [T6 | First Main | Player A] Input: 3
 | >> Player A: 3 (Cast Murktide Regent)
 Choose a card to exile via Delve (1 of 5):
-| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Flooded Strand (Delve)
 |   1: Exile Flow State (Delve)
@@ -645,7 +641,7 @@ Choose a card to exile via Delve (1 of 5):
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Flooded Strand (Delve))
 Choose a card to exile via Delve (2 of 5):
-| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 51: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Flow State (Delve)
 |   1: Exile Polluted Delta (Delve)
@@ -656,7 +652,7 @@ Choose a card to exile via Delve (2 of 5):
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Flow State (Delve))
 Choose a card to exile via Delve (3 of 5):
-| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Polluted Delta (Delve)
 |   1: Exile Ponder (Delve)
@@ -666,7 +662,7 @@ Choose a card to exile via Delve (3 of 5):
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Polluted Delta (Delve))
 Choose a card to exile via Delve (4 of 5):
-| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Ponder (Delve)
 |   1: Exile Swords to Plowshares (Delve)
@@ -675,7 +671,7 @@ Choose a card to exile via Delve (4 of 5):
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Exile Ponder (Delve))
 Choose a card to exile via Delve (5 of 5):
-| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Ponder (Delve)
 |   1: Exile Swords to Plowshares (Delve)
@@ -693,7 +689,7 @@ Player A exiles Ponder via Delve.
 Player A casts Murktide Regent
 Murktide Regent enters the battlefield
 Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
-| decision 56: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Tundra
@@ -704,14 +700,14 @@ Player A played Tundra
 No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
-| decision 57: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 56: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T7 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 58: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 57: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Murktide Regent
 |   1: Cat token
@@ -725,7 +721,7 @@ Murktide Regent is moved to exile
 Resolving ability (category: GainLife, amount: 6)
 Player A gains 6 life (now at 24)
 Player B draws Voice of Victory
-| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
@@ -740,7 +736,7 @@ Player B activated Plateau for 1(W)
 Player B activated Badlands for 1(R)
 Player B casts Voice of Victory
 Voice of Victory enters the battlefield
-| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
@@ -750,7 +746,7 @@ Voice of Victory enters the battlefield
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scrubland)
 Player B played Scrubland
-| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
@@ -764,7 +760,7 @@ Resolving ability (category: PutCounterAll, amount: 1)
 Put 1 P1P1 counter(s) on Cat.
 
 --- Declare Attackers (Player B) ---
-| decision 62: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 61: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Cat token [2/2]
 |   1: Confirm attackers
@@ -774,11 +770,7 @@ Cat token attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Cat token [2/2] -> Player A
-| decision 63: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Cat token -> Player A
@@ -791,21 +783,21 @@ No creatures eligible to block.
 
 -------- TURN 9 (Player A) --------
 Player A draws Force of Will
-| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 65: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 63: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 66: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Badlands
 |   1: Elegant Parlor
@@ -826,7 +818,7 @@ No creatures eligible to attack.
 
 -------- TURN 10 (Player B) --------
 Player B draws Orcish Bowmasters
-| decision 67: Player B (game 0, turn 9, DRAW, Player B active)
+| decision 65: Player B (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -837,7 +829,7 @@ Player B activated Elegant Parlor for 1(R)
 Player B casts Orcish Bowmasters
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 68: Player B (game 0, turn 9, DRAW, Player B active)
+| decision 66: Player B (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Player A (22 life)
 |   1: Player B (18 life)
@@ -853,7 +845,7 @@ Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player A (now at 21 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player B Army is now 1/1.
-| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
@@ -867,7 +859,7 @@ Resolving ability (category: PutCounterAll, amount: 1)
 Put 1 P1P1 counter(s) on Cat.
 
 --- Declare Attackers (Player B) ---
-| decision 70: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 68: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Voice of Victory [1/3]
 |   1: Cat token [3/3]
@@ -878,7 +870,7 @@ Voice of Victory attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Voice of Victory [1/3] -> Player A
-| decision 71: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 69: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Cat token [3/3]
 |   1: Confirm attackers
@@ -889,11 +881,7 @@ Cat token attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Cat token [3/3] -> Player A
-| decision 72: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Voice of Victory -> Player A
@@ -919,7 +907,7 @@ Warrior (token) is put into the graveyard and ceases to exist.
 
 -------- TURN 11 (Player A) --------
 Player A draws Tamiyo, Inquisitive Student
-| decision 73: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 70: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tamiyo, Inquisitive Student
@@ -932,13 +920,13 @@ No creatures eligible to attack.
 
 -------- TURN 12 (Player B) --------
 Player B draws Swords to Plowshares
-| decision 74: Player B (game 0, turn 11, DRAW, Player B active)
+| decision 71: Player B (game 0, turn 11, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T11 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 75: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 72: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -951,14 +939,14 @@ Player B draws Swords to Plowshares
 Player B activated Elegant Parlor for 1(W)
 Player B activated Plateau for 1(R)
 Player B casts Voice of Victory
-| decision 76: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 73: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T11 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Voice of Victory enters the battlefield
-| decision 77: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 74: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -969,7 +957,7 @@ Voice of Victory enters the battlefield
 | >> Player B: 2 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
 Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 11)
 Player B's Ajani, Nacatl Avenger ability is on the stack
-| decision 78: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 75: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -977,13 +965,13 @@ Player B's Ajani, Nacatl Avenger ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: PutCounterAll, amount: 1)
 Put 1 P1P1 counter(s) on Cat.
-| decision 79: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 76: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T11 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 80: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| decision 77: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -991,7 +979,7 @@ Put 1 P1P1 counter(s) on Cat.
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 81: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 78: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Voice of Victory [1/3]
@@ -1004,7 +992,7 @@ Orcish Bowmasters attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Orcish Bowmasters [1/1] -> Player A
-| decision 82: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 79: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Voice of Victory [1/3]
 |   1: Cat token [4/4]
@@ -1017,7 +1005,7 @@ Voice of Victory attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Orcish Bowmasters [1/1] -> Player A
   [attacking] Voice of Victory [1/3] -> Player A
-| decision 83: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 80: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Cat token [4/4]
 |   1: Orc Army token [1/1]
@@ -1030,7 +1018,7 @@ Cat token attacking Player A.
   [attacking] Orcish Bowmasters [1/1] -> Player A
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Cat token [4/4] -> Player A
-| decision 84: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 81: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Confirm attackers
@@ -1043,11 +1031,7 @@ Orc Army token attacking Player A.
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Cat token [4/4] -> Player A
   [attacking] Orc Army token [1/1] -> Player A
-| decision 85: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player A
@@ -1055,7 +1039,7 @@ Attackers declared:
   Cat token -> Player A
   Orc Army token -> Player A
 Voice of Victory triggered
-| decision 86: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 82: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1063,7 +1047,7 @@ Voice of Victory triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Mobilize)
 Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
-| decision 87: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 83: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1079,7 +1063,7 @@ Attackers:
   4: Warrior token [1/1]
   5: Warrior token [1/1]
 Your creatures:
-| decision 88: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 84: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm blockers
@@ -1088,7 +1072,7 @@ Your creatures:
 
 Blockers declared:
   (none)
-| decision 89: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 85: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1104,26 +1088,26 @@ Blockers declared:
   Warrior token deals 1 damage to Player A (now at 6 life)
 --- End Combat Damage ---
 
-| decision 90: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
+| decision 86: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T11 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 91: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| decision 87: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T11 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 92: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| decision 88: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T11 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Delayed trigger fires.
-| decision 93: Player B (game 0, turn 11, END_STEP, Player B active)
+| decision 89: Player B (game 0, turn 11, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1134,7 +1118,7 @@ Mobilize: Warrior is sacrificed.
 Mobilize: Warrior is sacrificed.
 Warrior (token) is put into the graveyard and ceases to exist.
 Warrior (token) is put into the graveyard and ceases to exist.
-| decision 94: Player B (game 0, turn 11, END_STEP, Player B active)
+| decision 90: Player B (game 0, turn 11, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1142,20 +1126,20 @@ Warrior (token) is put into the graveyard and ceases to exist.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 13 (Player A) --------
-| decision 95: Player B (game 0, turn 12, UPKEEP, Player A active)
+| decision 91: Player B (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Flow State
-| decision 96: Player B (game 0, turn 12, DRAW, Player A active)
+| decision 92: Player B (game 0, turn 12, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 97: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 93: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Flow State
@@ -1164,7 +1148,7 @@ Player A draws Flow State
 Player A activated Meticulous Archive for 1(U)
 Player A activated Plains for 1(W)
 Player A casts Flow State
-| decision 98: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 94: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1172,7 +1156,7 @@ Player A casts Flow State
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Dig)
 Player A looks at the top 3 card(s) of their library.
-| decision 99: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 95: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student
 |   1: Flooded Strand
@@ -1181,14 +1165,14 @@ Player A looks at the top 3 card(s) of their library.
 | >> Player A: 1 (Flooded Strand)
 Player A puts Flooded Strand into hand.
 Player A puts 2 card(s) on the bottom of their library.
-| decision 100: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 96: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Flooded Strand)
 Player A played Flooded Strand
-| decision 101: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 97: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Flooded Strand (ChangeZone)
@@ -1197,7 +1181,7 @@ Player A played Flooded Strand
 Player A pays 1 life
 Player A sacrifices Flooded Strand
 Player A's Flooded Strand ability is on the stack
-| decision 102: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 98: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1205,7 +1189,7 @@ Player A's Flooded Strand ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 103: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 99: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -1215,13 +1199,13 @@ Searching Player A's library:
 | >> Player A: 3 (Tundra)
 Player A shuffles their library
 Player A puts Tundra to the battlefield
-| decision 104: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 100: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 105: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| decision 101: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1229,14 +1213,14 @@ Player A puts Tundra to the battlefield
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 106: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 102: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
 (REPLAY) [T12 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
 Select target for Tamiyo, Inquisitive Student:
-| decision 107: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (18 life)
 |   1: Ajani, Nacatl Avenger (loyalty 11)
@@ -1246,16 +1230,12 @@ Tamiyo, Inquisitive Student attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
-| decision 108: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player B
 Tamiyo, Inquisitive Student triggered
-| decision 109: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 104: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1263,26 +1243,26 @@ Tamiyo, Inquisitive Student triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 110: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 105: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T12 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 111: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 106: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 112: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| decision 107: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T12 | Declare Blockers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 113: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| decision 108: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1292,31 +1272,31 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 114: Player A (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| decision 109: Player A (game 0, turn 12, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T12 | Combat Damage | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 115: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| decision 110: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 116: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
+| decision 111: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T12 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 117: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
+| decision 112: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 118: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 113: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -1327,7 +1307,7 @@ Player A activated Tundra for 1(U)
 Player A sacrifices Clue token
 Player A's Clue ability is on the stack
 Clue (token) is put into the graveyard and ceases to exist.
-| decision 119: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 114: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1336,7 +1316,7 @@ Clue (token) is put into the graveyard and ceases to exist.
 Resolving ability (category: Draw, amount: 1)
 Player A draws Misty Rainforest
 Choose target for Orcish Bowmasters:
-| decision 120: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 115: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Player A (5 life)
 |   1: Player B (18 life)
@@ -1351,7 +1331,7 @@ Choose target for Orcish Bowmasters:
 | >> Player B: 0 (Player A (5 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 121: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 116: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1361,13 +1341,13 @@ Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player A (now at 4 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player B Army is now 2/2.
-| decision 122: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 117: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T12 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 123: Player B (game 0, turn 12, END_STEP, Player A active)
+| decision 118: Player B (game 0, turn 12, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1375,20 +1355,20 @@ Amass Orc 1: Player B Army is now 2/2.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 14 (Player B) --------
-| decision 124: Player B (game 0, turn 13, UPKEEP, Player B active)
+| decision 119: Player B (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T13 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Wasteland
-| decision 125: Player B (game 0, turn 13, DRAW, Player B active)
+| decision 120: Player B (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T13 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 126: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 121: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -1399,7 +1379,7 @@ Player B draws Wasteland
 (REPLAY) [T13 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Wasteland)
 Player B played Wasteland
-| decision 127: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 122: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1411,7 +1391,7 @@ Player B played Wasteland
 | >> Player B: 2 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
 Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 13)
 Player B's Ajani, Nacatl Avenger ability is on the stack
-| decision 128: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 123: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1419,7 +1399,7 @@ Player B's Ajani, Nacatl Avenger ability is on the stack
 (REPLAY) [T13 | First Main | Player B] Input: 2
 | >> Player B: 2 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 129: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 124: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Meticulous Archive
 |   1: Tundra
@@ -1434,7 +1414,7 @@ Choose target for Wasteland:
 Targeting choice 0
 Player B sacrifices Wasteland
 Player B's Wasteland ability targeting Meticulous Archive is on the stack
-| decision 130: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 125: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1442,7 +1422,7 @@ Player B's Wasteland ability targeting Meticulous Archive is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Meticulous Archive is destroyed
-| decision 131: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 126: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1450,13 +1430,13 @@ Meticulous Archive is destroyed
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: PutCounterAll, amount: 1)
 Put 1 P1P1 counter(s) on Cat.
-| decision 132: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 127: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 133: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| decision 128: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1464,7 +1444,7 @@ Put 1 P1P1 counter(s) on Cat.
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 134: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 129: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Voice of Victory [1/3]
@@ -1478,7 +1458,7 @@ Orcish Bowmasters attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Orcish Bowmasters [1/1] -> Player A
-| decision 135: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 130: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Voice of Victory [1/3]
 |   1: Voice of Victory [1/3]
@@ -1492,7 +1472,7 @@ Voice of Victory attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Orcish Bowmasters [1/1] -> Player A
   [attacking] Voice of Victory [1/3] -> Player A
-| decision 136: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 131: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Voice of Victory [1/3]
 |   1: Cat token [5/5]
@@ -1506,7 +1486,7 @@ Voice of Victory attacking Player A.
   [attacking] Orcish Bowmasters [1/1] -> Player A
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Voice of Victory [1/3] -> Player A
-| decision 137: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 132: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Cat token [5/5]
 |   1: Orc Army token [2/2]
@@ -1520,7 +1500,7 @@ Cat token attacking Player A.
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Cat token [5/5] -> Player A
-| decision 138: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 133: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Orc Army token [2/2]
 |   1: Confirm attackers
@@ -1534,11 +1514,7 @@ Orc Army token attacking Player A.
   [attacking] Voice of Victory [1/3] -> Player A
   [attacking] Cat token [5/5] -> Player A
   [attacking] Orc Army token [2/2] -> Player A
-| decision 139: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player A
@@ -1547,7 +1523,7 @@ Attackers declared:
   Cat token -> Player A
   Orc Army token -> Player A
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 140: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 134: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Voice of Victory (Mobilize)
 |   1: Voice of Victory (Mobilize)
@@ -1555,7 +1531,7 @@ Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 | >> Player B: 0 (Voice of Victory (Mobilize))
 Voice of Victory triggered
 Voice of Victory triggered
-| decision 141: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 135: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1563,7 +1539,7 @@ Voice of Victory triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Mobilize)
 Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
-| decision 142: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 136: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -1571,14 +1547,14 @@ Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Mobilize)
 Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
-| decision 143: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 137: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T13 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 144: Player B (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| decision 138: Player B (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares

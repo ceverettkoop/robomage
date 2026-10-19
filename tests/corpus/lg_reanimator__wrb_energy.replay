@@ -376,22 +376,18 @@ Player A reveals their hand:
   Thoughtseize
   Undercity Sewers
 Player B chooses a card to discard:
-| decision 29: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Thoughtseize
-(REPLAY) [T3 | First Main | Player B] Input: 0
-| >> Player B: 0 (Thoughtseize)
+| auto: Player B: Thoughtseize
 Player A discards Thoughtseize
 Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 17)
-| decision 30: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 29: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scrubland)
 Player B played Scrubland
-| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 30: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ocelot Pride
@@ -401,30 +397,26 @@ Player B played Scrubland
 Player B activated Scrubland for 1(W)
 Player B casts Ocelot Pride
 Ocelot Pride enters the battlefield
-| decision 32: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cabal Therapy (flashback)
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Cabal Therapy (flashback))
 Choose target for Cabal Therapy:
-| decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 32: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (16 life)
 |   1: Player B (17 life)
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Player A (16 life))
 Targeting choice 0
-| decision 34: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Sacrifice Ocelot Pride
-(REPLAY) [T3 | First Main | Player B] Input: 0
-| >> Player B: 0 (Sacrifice Ocelot Pride)
+| auto: Player B: Sacrifice Ocelot Pride
 Player B sacrifices Ocelot Pride
 Player B casts Cabal Therapy
 Resolving ability (category: NameCard)
 Player B names a card:
-| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Name card: Atraxa, Grand Unifier
 |   1: Name card: Brainstorm
@@ -460,7 +452,7 @@ Cabal Therapy is exiled (flashback)
 No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
-| decision 36: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 34: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Otherworldly Gaze (flashback)
@@ -474,7 +466,7 @@ Player A surveils 3.
 Surveil: looking at Brainstorm
 Surveil: looking at Brainstorm
 Surveil: looking at Polluted Delta
-| decision 37: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 35: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Put Brainstorm on top of library
 |   1: Put Polluted Delta on top of library
@@ -483,13 +475,13 @@ Surveil: looking at Polluted Delta
 (REPLAY) [T4 | Upkeep | Player A] Input: 3
 | >> Player A: 3 (Put Polluted Delta into graveyard)
 Player A puts Polluted Delta into their graveyard.
-| decision 38: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 36: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Put Brainstorm on top of library
 |   1: Put Brainstorm into graveyard
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Put Brainstorm on top of library)
-| decision 39: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 37: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Put Brainstorm on top of library
 |   1: Put Brainstorm into graveyard
@@ -497,7 +489,7 @@ Player A puts Polluted Delta into their graveyard.
 | >> Player A: 0 (Put Brainstorm on top of library)
 Otherworldly Gaze is exiled (flashback)
 Player A draws Brainstorm
-| decision 40: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 38: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Swamp
@@ -509,7 +501,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Player B draws Orcish Bowmasters
-| decision 41: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 39: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -520,7 +512,7 @@ Player B activated Scrubland for 1(W)
 Player B casts Orcish Bowmasters
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 42: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 40: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Player A (16 life)
 |   1: Player B (17 life)
@@ -536,7 +528,7 @@ Amass Orc 1: Player B Army is now 1/1.
 No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
-| decision 43: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 41: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -550,7 +542,7 @@ Player A draws Atraxa, Grand Unifier
 Player A draws Thoughtseize
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 44: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 42: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Brainstorm
@@ -560,7 +552,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 0 (Atraxa, Grand Unifier)
 Player A puts Atraxa, Grand Unifier to top of library
 Player A chooses a card from Player A hand:
-| decision 45: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 43: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Brainstorm
 |   1: Thoughtseize
@@ -569,11 +561,29 @@ Player A chooses a card from Player A hand:
 | >> Player A: 2 (Undercity Sewers)
 Player A puts Undercity Sewers to top of library
 Player B orders 3 simultaneous triggers (pick which goes on the stack next).
-| decision 46: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 44: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Orcish Bowmasters (DealDamage, targeted)
 |   1: Orcish Bowmasters (DealDamage, targeted)
 |   2: Orcish Bowmasters (DealDamage, targeted)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters (DealDamage, targeted))
+Choose target for Orcish Bowmasters:
+| decision 45: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Player A (15 life)
+|   1: Player B (17 life)
+|   2: Orcish Bowmasters
+|   3: Orc Army token
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (15 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 46: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Orcish Bowmasters (DealDamage, targeted)
+|   1: Orcish Bowmasters (DealDamage, targeted)
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Orcish Bowmasters (DealDamage, targeted))
 Choose target for Orcish Bowmasters:
@@ -587,16 +597,9 @@ Choose target for Orcish Bowmasters:
 | >> Player B: 0 (Player A (15 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+Choose target for Orcish Bowmasters:
 | decision 48: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
-|   0: Orcish Bowmasters (DealDamage, targeted)
-|   1: Orcish Bowmasters (DealDamage, targeted)
-(REPLAY) [T6 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Orcish Bowmasters (DealDamage, targeted))
-Choose target for Orcish Bowmasters:
-| decision 49: Player B (game 0, turn 6, UPKEEP, Player A active)
-| menu:
 |   0: Player A (15 life)
 |   1: Player B (17 life)
 |   2: Orcish Bowmasters
@@ -605,18 +608,7 @@ Choose target for Orcish Bowmasters:
 | >> Player B: 0 (Player A (15 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-Choose target for Orcish Bowmasters:
-| decision 50: Player B (game 0, turn 6, UPKEEP, Player A active)
-| menu:
-|   0: Player A (15 life)
-|   1: Player B (17 life)
-|   2: Orcish Bowmasters
-|   3: Orc Army token
-(REPLAY) [T6 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Player A (15 life))
-Targeting choice 0
-Orcish Bowmasters triggered
-| decision 51: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 49: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -630,7 +622,7 @@ Player A draws Atraxa, Grand Unifier
 Player A draws Polluted Delta
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 52: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 50: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Polluted Delta
@@ -640,7 +632,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 1 (Polluted Delta)
 Player A puts Polluted Delta to top of library
 Player A chooses a card from Player A hand:
-| decision 53: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 51: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Thoughtseize
@@ -649,11 +641,29 @@ Player A chooses a card from Player A hand:
 | >> Player A: 0 (Atraxa, Grand Unifier)
 Player A puts Atraxa, Grand Unifier to top of library
 Player B orders 3 simultaneous triggers (pick which goes on the stack next).
-| decision 54: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 52: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Orcish Bowmasters (DealDamage, targeted)
 |   1: Orcish Bowmasters (DealDamage, targeted)
 |   2: Orcish Bowmasters (DealDamage, targeted)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Orcish Bowmasters (DealDamage, targeted))
+Choose target for Orcish Bowmasters:
+| decision 53: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Player A (15 life)
+|   1: Player B (17 life)
+|   2: Orcish Bowmasters
+|   3: Orc Army token
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (15 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 54: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Orcish Bowmasters (DealDamage, targeted)
+|   1: Orcish Bowmasters (DealDamage, targeted)
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Orcish Bowmasters (DealDamage, targeted))
 Choose target for Orcish Bowmasters:
@@ -667,26 +677,8 @@ Choose target for Orcish Bowmasters:
 | >> Player B: 0 (Player A (15 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+Choose target for Orcish Bowmasters:
 | decision 56: Player B (game 0, turn 6, UPKEEP, Player A active)
-| menu:
-|   0: Orcish Bowmasters (DealDamage, targeted)
-|   1: Orcish Bowmasters (DealDamage, targeted)
-(REPLAY) [T6 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Orcish Bowmasters (DealDamage, targeted))
-Choose target for Orcish Bowmasters:
-| decision 57: Player B (game 0, turn 6, UPKEEP, Player A active)
-| menu:
-|   0: Player A (15 life)
-|   1: Player B (17 life)
-|   2: Orcish Bowmasters
-|   3: Orc Army token
-(REPLAY) [T6 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Player A (15 life))
-Targeting choice 0
-Orcish Bowmasters triggered
-Choose target for Orcish Bowmasters:
-| decision 58: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Player A (15 life)
 |   1: Player B (17 life)
@@ -721,7 +713,7 @@ Orcish Bowmasters deals 1 damage to Player A (now at 9 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player B Army is now 7/7.
 Player A draws Atraxa, Grand Unifier
-| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Undercity Sewers
@@ -729,7 +721,7 @@ Player A draws Atraxa, Grand Unifier
 (REPLAY) [T6 | First Main | Player A] Input: 2
 | >> Player A: 2 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 60: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Player A (9 life)
@@ -744,7 +736,7 @@ Player B reveals their hand:
   Swords to Plowshares
   Thoughtseize
 Player A chooses a card to discard:
-| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Amped Raptor
 |   1: Swords to Plowshares
@@ -754,7 +746,7 @@ Player A chooses a card to discard:
 Player B discards Amped Raptor
 Resolving ability (category: LoseLife, amount: 2)
 Player A loses 2 life (now at 7)
-| decision 62: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 60: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Undercity Sewers
@@ -766,7 +758,7 @@ Undercity Sewers triggered
 Resolving ability (category: Surveil, amount: 1)
 Player A surveils 1.
 Surveil: looking at Polluted Delta
-| decision 63: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Polluted Delta on top of library
 |   1: Put Polluted Delta into graveyard
@@ -776,20 +768,20 @@ Player A puts Polluted Delta into their graveyard.
 No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
-| decision 64: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 62: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Ocelot Pride
-| decision 65: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 63: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Ocelot Pride
@@ -800,14 +792,14 @@ Player B draws Ocelot Pride
 Player B activated Scrubland for 1(W)
 Player B casts Ocelot Pride
 Ocelot Pride enters the battlefield
-| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thoughtseize
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (7 life)
 |   1: Player B (17 life)
@@ -820,17 +812,13 @@ Resolving ability (category: Discard)
 Player A reveals their hand:
   Atraxa, Grand Unifier
 Player B chooses a card to discard:
-| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Atraxa, Grand Unifier
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Atraxa, Grand Unifier)
+| auto: Player B: Atraxa, Grand Unifier
 Player A discards Atraxa, Grand Unifier
 Resolving ability (category: LoseLife, amount: 2)
 Player B loses 2 life (now at 15)
 
 --- Declare Attackers (Player B) ---
-| decision 70: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 67: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Orc Army token [7/7]
@@ -841,7 +829,7 @@ Orcish Bowmasters attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Orcish Bowmasters [1/1] -> Player A
-| decision 71: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 68: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Orc Army token [7/7]
 |   1: Confirm attackers
@@ -852,11 +840,7 @@ Orc Army token attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Orcish Bowmasters [1/1] -> Player A
   [attacking] Orc Army token [7/7] -> Player A
-| decision 72: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player A

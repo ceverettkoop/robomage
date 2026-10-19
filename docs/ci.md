@@ -116,7 +116,7 @@ warning are the `ignored_keys` set in `src/parse.cpp`; their review is tracked i
 
 Each corpus game is two files:
 
-- `<name>.rmlog` — its decision log (RMLOG v2: `SEED`, `FLAGS`, both decklists, every decision),
+- `<name>.rmlog` — its decision log (RMLOG v3: `SEED`, `FLAGS`, both decklists, every decision),
   written by the engine's `--decision-log` while `python/record_corpus.py` plays the scripted
   agent (hard, both seats) through `python/rm_driver.py`: one bo1 game per scenario at a frozen
   seed — the curated `delver` / `doomsday` / `mav` decks in every seating (9 games) and every
