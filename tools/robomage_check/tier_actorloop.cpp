@@ -1,11 +1,13 @@
 #include <signal.h>
 
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <map>
 #include <set>
 
 #include "../../src/featurize/json.h"
+#include "actor.h"
 #include "gate.h"
 #include "proc.h"
 #include "scan.h"
@@ -21,6 +23,7 @@ struct ActorRun {
         std::string dir;  // <tier out>/<part>
         std::string out;  // the actor's --actor-out
         std::string schedule;
+        std::string binary;  // the engine ("" = the gate's; robomage_nn for nn: agents)
         rmcheck::ProcResult result;
         std::vector<Json> lines;  // the results file's lines, parsed
         Json status;
@@ -48,16 +51,20 @@ static void check_footers(const ActorRun &a, const std::map<std::string, std::ve
 static void check_replays(const rmcheck::Options &opt, const ActorRun &a,
     const std::map<std::string, std::vector<rmcheck::EpisodeFile>> &eps, const std::string &teacher,
     std::vector<std::string> *fails);
-static void report(rmcheck::Report &rep, const char *part, const std::vector<std::string> &fails);
+static void report(
+    rmcheck::Report &rep, const char *part, const std::vector<std::string> &fails, const char *tier = TIER);
 static void part_main(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void part_cap(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void part_teacher(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void part_change_stop(const rmcheck::Options &opt, rmcheck::Report &rep);
+static void check_smoke_steps(const std::map<std::string, std::vector<rmcheck::EpisodeFile>> &eps,
+    const std::vector<Json> &lines, std::vector<std::string> *fails);
 
 // The actor's command line: its schedule, out dir, id 2, run seed `seed` and `matches` (< 0: until
 // stopped).
 static std::vector<std::string> actor_args(const rmcheck::Options &opt, const ActorRun &a, long matches, long seed) {
-    std::vector<std::string> argv = {opt.binary, "--actor", "--actor-schedule", a.schedule, "--actor-out", a.out,
+    std::vector<std::string> argv = {a.binary.empty() ? opt.binary : a.binary, "--actor", "--actor-schedule",
+        a.schedule, "--actor-out", a.out,
         "--actor-id", "2", "--actor-seed", std::to_string(seed)};
     if (matches >= 0) argv.insert(argv.end(), {"--actor-matches", std::to_string(matches)});
     return argv;
@@ -74,6 +81,7 @@ static void run_actor(const rmcheck::Options &opt, ActorRun *a, long matches, lo
     spec.argv = actor_args(opt, *a, matches, seed);
     spec.cwd = opt.bin_dir;
     spec.timeout_s = 900;
+    if (!a->binary.empty()) spec.env = {"HIP_VISIBLE_DEVICES=-1", "CUDA_VISIBLE_DEVICES=-1"};
     a->result = rmcheck::run_process(spec);
     rmcheck::write_file(a->out + ".txt", a->result.out + "\n=== engine stderr ===\n" + a->result.err);
 }
@@ -315,10 +323,11 @@ static void check_replays(const rmcheck::Options &opt, const ActorRun &a,
     for (const std::vector<std::string> &p : part) fails->insert(fails->end(), p.begin(), p.end());
 }
 
-static void report(rmcheck::Report &rep, const char *part, const std::vector<std::string> &fails) {
-    for (size_t i = 0; i < fails.size() && i < MAX_FAILS; ++i) rep.error(TIER, std::string(part) + ": " + fails[i]);
+static void report(
+    rmcheck::Report &rep, const char *part, const std::vector<std::string> &fails, const char *tier) {
+    for (size_t i = 0; i < fails.size() && i < MAX_FAILS; ++i) rep.error(tier, std::string(part) + ": " + fails[i]);
     if (fails.size() > MAX_FAILS)
-        rep.error(TIER, std::string(part) + ": " + std::to_string(fails.size() - MAX_FAILS) + " more failures");
+        rep.error(tier, std::string(part) + ": " + std::to_string(fails.size() - MAX_FAILS) + " more failures");
 }
 
 // Six matches of a two-entry schedule (a bo1 entry swapping sides, a bo3 entry swapping decks): the
@@ -572,7 +581,101 @@ static void part_change_stop(const rmcheck::Options &opt, rmcheck::Report &rep) 
     report(rep, "change_stop", fails);
 }
 
+// The smoke run's steps: every step carries a behaviour distribution summing to 1 with mass on
+// the reply and the model's policy version (the results lines' one version); side a's steps (taught
+// at mix 0.5) are labelled with mu(label) >= 0.5, side b's (thresh=0.03:disc=16) unlabelled,
+// multiples of 1/16, no row below 0.03 with mass.
+static void check_smoke_steps(const std::map<std::string, std::vector<rmcheck::EpisodeFile>> &eps,
+    const std::vector<Json> &lines, std::vector<std::string> *fails) {
+    std::set<std::string> versions;
+    for (const Json &l : lines)
+        for (const char *k : {"policy_versions_a", "policy_versions_b"})
+            if (const Json *arr = l.get(k)) versions.insert(versions_text(*arr));
+    if (versions.size() != 1 || versions.begin()->find(',') != std::string::npos)
+        fails->push_back("the results lines do not name one policy version for both seats");
+    const int64_t version = versions.size() == 1 ? std::atoll(versions.begin()->c_str()) : -1;
+    size_t steps = 0;
+    for (const Json &l : lines) {
+        auto it = eps.find(stem_of(jstr(l, "rmlog")));
+        if (it == eps.end()) continue;
+        const int taught = jstr(l, "side_a_seat") == "A" ? 0 : 1;
+        for (const rmcheck::EpisodeFile &e : it->second) {
+            if (e.game_number != jint(l, "game")) continue;
+            std::string bad;
+            for (const featurize::EpisodeStep &st : e.ep.steps) {
+                ++steps;
+                double sum = 0;
+                bool sixteenths = true, below = false;
+                for (const float m : st.mu) {
+                    sum += m;
+                    sixteenths = sixteenths && std::fabs(m * 16 - std::round(m * 16)) < 1e-4;
+                    below = below || (m > 0 && m < 0.03 - 1e-6);
+                }
+                const bool reply_ok = st.chosen >= 0 && st.chosen < static_cast<int64_t>(st.mu.size()) &&
+                                      st.mu[static_cast<size_t>(st.chosen)] > 0;
+                if (!st.has_mu || std::fabs(sum - 1) > 1e-4 || !reply_ok)
+                    bad = "a step's mu is not a distribution with mass on the reply";
+                else if (st.policy_version != version)
+                    bad = "a step's policy version is not the results lines'";
+                else if (st.seat == taught && (st.teacher < 0 || st.mu[static_cast<size_t>(st.teacher)] < 0.5 - 1e-5))
+                    bad = "a taught step without a label carrying half the mass";
+                else if (st.seat != taught && (st.teacher >= 0 || !sixteenths || below))
+                    bad = "a projected step labelled, or not multiples of 1/16 above 0.03";
+                if (!bad.empty()) break;
+            }
+            if (!bad.empty()) fails->push_back(e.name + ": " + bad);
+        }
+    }
+    if (steps == 0) fails->push_back("no recorded step");
+}
+
 namespace rmcheck {
+
+// The actor tier's continuous smoke run (plan T8; actor.h).
+void actor_smoke_check(const Options &opt, Report &rep, const ActorSetup &setup) {
+    const char *part = "actor smoke";
+    if (opt.python.empty()) {
+        rep.info("actor smoke: skipped: no python3 on PATH");
+        return;
+    }
+    std::vector<std::string> fails;
+    ActorRun a;
+    a.dir = path_join(setup.dir, "smoke");
+    remove_tree(a.dir);
+    make_dirs(a.dir);
+    a.schedule = path_join(a.dir, "schedule.json");
+    a.out = path_join(a.dir, "run");
+    a.binary = setup.nn_binary;
+    const std::string teacher = "'" + opt.python + "' '" + path_join(opt.repo, "python/teacher.py") + "' --seed 11";
+    ::write_schedule(a.schedule,
+        "{\"version\": \"smoke\", \"entries\": [{\"id\": \"nn_taught\", \"format\": \"bo3\", \"swap\": "
+        "\"sides\", \"deck_a\": \"league/burn\", \"deck_b\": \"league/ur_delver\", \"agent_a\": " +
+            featurize::json_quote("nn:" + setup.ts()) + ", \"agent_b\": " +
+            featurize::json_quote("nn:" + setup.ts() + ":thresh=0.03:disc=16") + ", \"teacher_a\": " +
+            featurize::json_quote(teacher) + ", \"teacher_mix\": 0.5}]}\n");
+    ::run_actor(opt, &a, 4, opt.seed + 950);
+    if (!::read_outputs(&a, &fails)) return ::report(rep, part, fails, "actor");
+    ::check_run(a, 4, "done", &fails);
+    std::map<std::string, std::vector<EpisodeFile>> eps;
+    std::string err;
+    if (!::episodes_by_stem(path_join(a.out, "train/traj"), &eps, &err)) fails.push_back(err);
+    ::check_footers(a, eps, &fails);
+    ::check_smoke_steps(eps, a.lines, &fails);
+    ::check_replays(opt, a, eps, teacher, &fails);
+    int sb_steps = 0, steps = 0;
+    for (const auto &kv : eps)
+        for (const EpisodeFile &e : kv.second)
+            for (const featurize::EpisodeStep &st : e.ep.steps) {
+                ++steps;
+                sb_steps += st.sideboarding;
+            }
+    if (fails.empty())
+        rep.info("actor smoke: robomage_nn --actor, 4 bo3 matches of nn:<reference policy> (taught at mix 0.5) vs "
+                 "nn:<it>:thresh=0.03:disc=16, " + std::to_string(a.lines.size()) + " games, " +
+                 std::to_string(steps) + " recorded steps (" + std::to_string(sb_steps) +
+                 " sideboarding), mu checked, replays and labels identical");
+    ::report(rep, part, fails, "actor");
+}
 
 void tier_actorloop(const Options &opt, Report &rep) {
     const std::vector<void (*)(const Options &, Report &)> parts = {

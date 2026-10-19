@@ -17,6 +17,10 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/bc.py` | behaviour cloning: `BCConfig`, `BCTrainer` (`train(n)`, `evaluate()`, `save`, `restore`, `export` → metric dicts), `python -m rmlearn.bc` |
 | `rmlearn/corpus.py` | the teacher corpus (plan B0): scripted:hard games through engine actors (or `rm_driver.py` + `--replay`) into episodes; `make_schedule`, `run_actor_corpus`; `refeaturize` (`--refeaturize RMLOG_DIR`: the kept logs replayed into episodes after a spec change) |
 | `rmlearn/evaluate.py` | an export as `nn:<model>` against `scripted` / `explore` / `random` through engine actors, scored per game (game 1 apart from games 2–3): `run_eval`, `summarize` |
+| `rmlearn/matches.py` | evaluation matches through engine actors: `eval_schedule` (a policy vs an opponent over deck pairs, `swap: sides`), `ActorPool` (N actors, their results lines as games finish, SIGTERM stop), `game_record`, per-game `tally` / `report` (Wilson interval, match-clustered SE, game 1 apart from games 2–3, per matchup / deck / seat / play-draw, draws and caps as findings) |
+| `rmlearn/sprt.py` | the SPRT match runner (plan T8): `SPRTConfig`, `run_sprt(policy, opponent, cfg, out_dir)` → result dict (`sprt.json`, `summary.txt`), `python -m rmlearn.sprt` |
+| `rmlearn/ladder.py` | past fixed points: `Ladder(dir)` (`ladder.json`), `add_fixed_point`, `evaluate_against_ladder`, `ratings` (Bradley–Terry, Elo scale), `python -m rmlearn.ladder` |
+| `rmlearn/exploiter.py` | a PPO best response against a frozen checkpoint (exploiter and victim served by one `InferenceServer`): `ExploiterConfig`, `run_exploiter(victim, init, cfg, out_dir, tables)`, `python -m rmlearn.exploiter` |
 | `rmlearn/server.py` | `InferenceServer`: RMIP v1 (`docs/inference_protocol.md`) inside the host process; `python -m rmlearn.server` runs it standalone |
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |
 | `rmlearn/rnad.py` | R-NaD's math, a port of OpenSpiel's `rnad.py` (8156646): `v_trace`, `get_loss_v`, `get_loss_nerd`, `EntropySchedule`, `FineTuning` (= `src/agents/policy_projection.cpp`) |
@@ -53,6 +57,11 @@ cd learn
 HSA_OVERRIDE_GFX_VERSION=10.3.0 flock /tmp/rm-gpu.lock .venv/bin/python -m rmlearn.bc --tables T \
     --episodes ../runs/bc1/corpus/episodes --out ../runs/bc1/bc --minutes 25                   # B1
 .venv/bin/python -m rmlearn.evaluate --model ../runs/bc1/bc/ckpt/p1.pt2 --out ../runs/bc1/eval
+.venv/bin/python -m rmlearn.sprt --policy ../runs/bc1/bc/ckpt/p1.pt2 --opponent scripted --out ../runs/bc1/sprt  # T8
+.venv/bin/python -m rmlearn.ladder --dir ../runs/r1/ladder add --id bc --model ../runs/bc1/bc/ckpt/p1.pt2
+.venv/bin/python -m rmlearn.ladder --dir ../runs/r1/ladder eval --id it4 --model P.pt2 --games 100 --add
+HSA_OVERRIDE_GFX_VERSION=10.3.0 flock /tmp/rm-gpu.lock .venv/bin/python -m rmlearn.exploiter \
+    --victim ../runs/bc1/bc/ckpt/bc.pt --tables ../runs/bc1/tables --out ../runs/x1 --minutes 20
 ```
 
 ## Checks
