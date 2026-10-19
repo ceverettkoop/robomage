@@ -50,3 +50,4 @@ bin/resources/card_images/
 bin/az_actor
 bin/robomage
 archive/*
+learn/.venv/
