@@ -757,3 +757,25 @@ Open:
    To refine later: a sideboarding teacher (rules in the scripted agent, or the archive's
    dead-card rules table, `sb_dead_rules.json` on `archive/rl-stack`), or the user's own guidance
    per matchup as labels or as a prior in `π_0,reg`.
+4. **Memory / history.** The network sees the current state only. Candidate: recent-event tokens
+   over a short window (this turn and the previous one), without the fields that fingerprint a game
+   (handles, sequence numbers, exact turn counts), with dropout on them. Behaviour cloning's
+   multi-pass training memorises values (BC1 measured value MSE 0.14 on training data vs 0.72
+   held out, with no history at all), so keep BC's value-loss weight low or freeze the value head
+   during BC. Run it as an A/B judged by the R-NaD learner's first-sight vs after-update value MSE
+   gap (`value_mse_gap`), held-out value MSE and per-game win rate vs `scripted:hard`. A recurrent
+   core is the heavier alternative.
+5. **Engine-computed tactical features.** BC's weakest categories are the computation-heavy ones
+   (SELECT_BLOCKER 76% agreement, DIG_CHOICE 72%, NAME_CARD 52%). Candidates: combat previews per
+   block (damage, deaths), lethal on board, mana available next turn.
+6. **Decision-time search.** If the R-NaD policy plateaus mainly on combat and combo prompts,
+   search them (or use search for evaluation) over worlds sampled from the knowledge / belief
+   layer, with the snapshot/restore that exists, and this network as prior and value.
+7. **Model size for the long run.** R-NaD decisions per second by size (the model-perf step):
+   d192/L4 1,328, d128/L4 1,844, d128/L3 2,249. Decide after a short BC comparison at d128.
+8. **The exploiter gives no meaningful number yet.** Three 20-minute PPO runs against the BC policy
+   ended at 36–39% win rate, below the 48% they started at. It needs larger rollouts, a KL anchor
+   to the start policy, or a longer budget.
+9. **Knowledge error with test-harness presets in bo3 game 2.** "A card is created from zone none
+   with nothing set aside" (found during T7, pre-existing): the knowledge sidecar reports it in
+   game 2 of a bo3 started with test-harness zone presets. It does not occur in training games.
