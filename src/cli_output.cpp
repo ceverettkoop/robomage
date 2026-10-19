@@ -249,9 +249,11 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      seat's RMSTATE frames: first (row 0), random, explore,\n");
     printf("                      explore:patient, actions:<i,i,...> (then row 0) or\n");
     printf("                      play:<specs> (then row 0); in robomage_nn (make actor) also\n");
-    printf("                      nn:<model>[:temp=<t>][:argmax][:dump=<file>][:stats], a\n");
-    printf("                      learned policy. A seat without one keeps its input path\n");
-    printf("                      (the RMSTATE stream, or a --player human seat)\n");
+    printf("                      nn:<model>[:temp=<t>][:argmax][:dump=<file>][:evals=<file>]\n");
+    printf("                      [:stats], a learned policy, or nn:remote:<socket>[:...] with\n");
+    printf("                      [:policies=<ids>][:timeout=<s>][:shm=<MiB>], the same policy\n");
+    printf("                      on an inference server (rmserve). A seat without one keeps its\n");
+    printf("                      input path (the RMSTATE stream, or a --player human seat)\n");
     printf("  --play <specs>      One --play script for both seats: comma-separated semantic\n");
     printf("                      specs (cast:<card>, target:<card>@opp, A:attack:<card>, ...),\n");
     printf("                      each resolved against its decision's menu; once it runs out\n");

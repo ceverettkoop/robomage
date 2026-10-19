@@ -2,8 +2,10 @@
 #define ROBOMAGE_CHECK_ACTOR_H
 
 #include <string>
+#include <vector>
 
 #include "gate.h"
+#include "proc.h"
 
 // ── robomage_check: the actor binary and the reference policy (plan step 5d, docs/ci.md) ──────
 //
@@ -37,6 +39,24 @@ struct ActorSetup {
 // for a `skipped:` line) when the binary or the opt-in is absent; false with `skip` empty after an
 // error reported under `tier`.
 bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *out, std::string *skip);
+
+// An inference server (rmserve, tools/nn/serve_check.py) run as a session.
+struct ServerRun {
+        Session session;
+        std::string socket;
+};
+
+// Starts the server `argv` (in the engine's working directory) and waits for its "listening on"
+// line; false with `err`.
+bool start_server(const Options &opt, const std::vector<std::string> &argv, const std::string &socket, ServerRun *s,
+    std::string *err);
+// Sends the server `sig` and collects its output (its log is stderr); a server still running 30 s
+// later is killed and the result says it timed out.
+ProcResult stop_server(ServerRun *s, int sig);
+
+// The actor tier's remote evaluation checks (tier_actor_remote.cpp): bin/<config>/rmserve beside
+// robomage_nn, the Python server tools/nn/serve_check.py, under <out>/actor/remote/.
+void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a);
 
 }  // namespace rmcheck
 

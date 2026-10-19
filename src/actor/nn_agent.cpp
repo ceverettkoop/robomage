@@ -9,6 +9,7 @@
 
 #include "../state_format/cards_file.h"
 #include "../str_util.h"
+#include "remote_evaluator.h"
 
 namespace {
 
@@ -22,6 +23,9 @@ const double ARGMAX_TIE = 1e-5;
 static std::vector<actor::NnAgent *> &finishing();
 static void finish_all();
 static double seconds_since(std::chrono::steady_clock::time_point t0);
+static bool parse_policies(const std::string &value, std::vector<uint32_t> *out);
+static std::unique_ptr<actor::Evaluator> make_evaluator(
+    const actor::NnOptions &opt, const featurize::Featurization &f, std::string *err);
 static std::unique_ptr<agents::Agent> make_nn_agent(const std::string &args, agents::PyRandom *rng, std::string *err);
 
 // The agents whose dump file and stats line are written at process exit (the in-process agents
@@ -39,25 +43,56 @@ static double seconds_since(std::chrono::steady_clock::time_point t0) {
     return std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
 }
 
-// The nn: factory: the options, the featurizer's inputs from the engine, the model, checked.
+// A comma-separated list of distinct policy ids; false on a bad or repeated entry.
+static bool parse_policies(const std::string &value, std::vector<uint32_t> *out) {
+    out->clear();
+    for (const std::string &id : split(value, ',')) {
+        char *end = nullptr;
+        const unsigned long long v = std::strtoull(id.c_str(), &end, 10);
+        if (id.empty() || *end != '\0' || id[0] == '-' || v > 0xFFFFFFFFull) return false;
+        const uint32_t p = static_cast<uint32_t>(v);
+        if (std::find(out->begin(), out->end(), p) != out->end()) return false;
+        out->push_back(p);
+    }
+    return !out->empty();
+}
+
+// The in-process model, checked against the featurizer, or the server's connection.
+static std::unique_ptr<actor::Evaluator> make_evaluator(
+    const actor::NnOptions &opt, const featurize::Featurization &f, std::string *err) {
+    if (!opt.remote.empty()) {
+        actor::RemoteOptions r;
+        r.endpoint = opt.remote;
+        r.policies = opt.policies;
+        r.timeout_s = opt.timeout;
+        r.request_bytes = opt.shm_mib << 20;
+        return actor::connect_remote_evaluator(r, f, err);
+    }
+    std::unique_ptr<actor::Evaluator> e = actor::load_model_evaluator(opt.model, f.spec, err);
+    if (!e || !actor::check_model(e->info(), f, err)) return nullptr;
+    return e;
+}
+
+// The nn: factory: the options, the featurizer's inputs from the engine, the evaluator.
 static std::unique_ptr<agents::Agent> make_nn_agent(const std::string &args, agents::PyRandom *rng, std::string *err) {
     actor::NnOptions opt;
     if (!actor::NnAgent::parse_options(args, &opt, err)) return nullptr;
+    for (const actor::NnAgent *a : finishing())
+        for (const std::string &file : {opt.dump, opt.evals})
+            if (!file.empty() && (a->options().dump == file || a->options().evals == file)) {
+                *err = "nn: both seats write " + file;
+                return nullptr;
+            }
     std::unique_ptr<featurize::Featurization> f(new featurize::Featurization());
     if (!load_engine_featurization(f.get(), err)) {
         *err = "nn: the featurizer's inputs: " + *err;
         return nullptr;
     }
-    std::unique_ptr<actor::Evaluator> e = actor::load_model_evaluator(opt.model, f->spec, err);
-    if (!e || !actor::check_model(e->info(), *f, err)) {
+    std::unique_ptr<actor::Evaluator> e = make_evaluator(opt, *f, err);
+    if (!e) {
         *err = "nn: " + *err;
         return nullptr;
     }
-    for (const actor::NnAgent *a : finishing())
-        if (!opt.dump.empty() && a->options().dump == opt.dump) {
-            *err = "nn: both seats dump to " + opt.dump;
-            return nullptr;
-        }
     return std::unique_ptr<agents::Agent>(new actor::NnAgent(std::move(opt), rng, std::move(f), std::move(e)));
 }
 
@@ -66,34 +101,67 @@ namespace actor {
 bool NnAgent::parse_options(const std::string &args, NnOptions *out, std::string *err) {
     const std::vector<std::string> parts = split(args, ':');
     if (parts.empty() || parts[0].empty()) {
-        *err = "nn: expects nn:<model>[:<key>=<value>...], got 'nn:" + args + "'";
+        *err = "nn: expects nn:<model>[:<key>=<value>...] or nn:remote:<endpoint>[:...], got 'nn:" + args + "'";
         return false;
     }
-    if (ascii_lower(parts[0]) == "remote") {
-        *err =
-            "nn:remote: the remote evaluator (docs/inference_protocol.md) is not implemented yet (plan step 5d part 2)";
+    if (ascii_lower(parts[0]) != "remote") {
+        out->model = parts[0];
+        return parse_keys(parts, 1, out, err);
+    }
+    if (parts.size() < 2 || parts[1].empty()) {
+        *err = "nn:remote: expects nn:remote:<socket path>[:<key>=<value>...], got 'nn:" + args + "'";
         return false;
     }
-    out->model = parts[0];
-    for (size_t i = 1; i < parts.size(); ++i) {
+    out->remote = parts[1];
+    return parse_keys(parts, 2, out, err);
+}
+
+bool NnAgent::parse_keys(const std::vector<std::string> &parts, size_t first, NnOptions *out, std::string *err) {
+    const bool remote = !out->remote.empty();
+    for (size_t i = first; i < parts.size(); ++i) {
         const std::string &p = parts[i];
         const size_t eq = p.find('=');
         const std::string key = ascii_lower(p.substr(0, eq)), value = eq == std::string::npos ? "" : p.substr(eq + 1);
-        if (key == "argmax" && eq == std::string::npos) {
+        const bool has_value = eq != std::string::npos;
+        char *end = nullptr;
+        if (key == "argmax" && !has_value) {
             out->argmax = true;
-        } else if (key == "stats" && eq == std::string::npos) {
+        } else if (key == "stats" && !has_value) {
             out->stats = true;
-        } else if (key == "temp" && eq != std::string::npos) {
-            char *end = nullptr;
+        } else if (key == "temp" && has_value) {
             out->temp = std::strtod(value.c_str(), &end);
             if (value.empty() || *end != '\0' || !(out->temp > 0) || !std::isfinite(out->temp)) {
                 *err = "nn: temp= expects a positive number, got '" + value + "'";
                 return false;
             }
-        } else if (key == "dump" && eq != std::string::npos && !value.empty()) {
+        } else if (key == "dump" && has_value && !value.empty()) {
             out->dump = value;
+        } else if (key == "evals" && has_value && !value.empty()) {
+            out->evals = value;
+        } else if (remote && key == "policies" && has_value) {
+            if (!parse_policies(value, &out->policies)) {
+                *err = "nn: policies= expects distinct policy ids separated by commas, got '" + value + "'";
+                return false;
+            }
+        } else if (remote && key == "timeout" && has_value) {
+            out->timeout = std::strtod(value.c_str(), &end);
+            if (value.empty() || *end != '\0' || !(out->timeout > 0) || !std::isfinite(out->timeout)) {
+                *err = "nn: timeout= expects a positive number of seconds, got '" + value + "'";
+                return false;
+            }
+        } else if (remote && key == "shm" && has_value) {
+            const unsigned long long mib = std::strtoull(value.c_str(), &end, 10);
+            if (value.empty() || *end != '\0' || value[0] == '-' || mib == 0 || mib > 65536) {
+                *err = "nn: shm= expects a size in MiB (1 to 65536), got '" + value + "'";
+                return false;
+            }
+            out->shm_mib = static_cast<size_t>(mib);
+        } else if (!remote && (key == "policies" || key == "timeout" || key == "shm")) {
+            *err = "nn: '" + p + "' is an option of nn:remote: only";
+            return false;
         } else {
-            *err = "nn: unknown option '" + p + "' (keys: temp=<t>, argmax, dump=<file>, stats)";
+            *err = "nn: unknown option '" + p + "' (keys: temp=<t>, argmax, dump=<file>, evals=<file>, stats" +
+                   (remote ? ", policies=<ids>, timeout=<s>, shm=<MiB>)" : ")");
             return false;
         }
     }
@@ -103,7 +171,7 @@ bool NnAgent::parse_options(const std::string &args, NnOptions *out, std::string
 NnAgent::NnAgent(NnOptions opt, agents::PyRandom *rng, std::unique_ptr<featurize::Featurization> f,
     std::unique_ptr<Evaluator> evaluator)
     : opt_(std::move(opt)), rng_(rng), featurization_(std::move(f)), evaluator_(std::move(evaluator)) {
-    if (opt_.dump.empty() && !opt_.stats) return;
+    if (opt_.dump.empty() && opt_.evals.empty() && !opt_.stats) return;
     if (finishing().empty()) std::atexit(finish_all);
     finishing().push_back(this);
 }
@@ -166,22 +234,58 @@ int NnAgent::decide(const agents::Decision &d) {
     behaviour_.policy_version = policy.version;
     have_behaviour_ = true;
     if (!opt_.dump.empty()) dumped_.push_back(tensors_);
+    if (!opt_.evals.empty()) evaluated_.push_back(evals_.at(0));
     return choose();
+}
+
+featurize::RmtbFile NnAgent::evaluations_file() const {
+    featurize::RmtbFile f;
+    f.kind = "evaluations";
+    f.has_vocab_hash = f.has_spec_hash = true;
+    f.vocab_hash = featurization_->spec.vocab_hash;
+    f.spec_hash = featurization_->spec.hash;
+    const size_t p = evaluator_->policies();
+    std::vector<int64_t> ids, versions, offsets{0};
+    std::vector<float> values, logits, log_pi;
+    for (size_t i = 0; i < p; ++i) ids.push_back(opt_.remote.empty() ? 0 : opt_.policies[i]);
+    for (const Evaluation &e : evaluated_) {
+        const size_t rows = e.policies.at(0).logits.size();
+        for (const PolicyEval &pe : e.policies) {
+            versions.push_back(static_cast<int64_t>(pe.version));
+            values.push_back(pe.value);
+        }
+        for (size_t r = 0; r < rows; ++r)
+            for (const PolicyEval &pe : e.policies) {
+                logits.push_back(pe.logits.at(r));
+                log_pi.push_back(pe.log_pi.at(r));
+            }
+        offsets.push_back(offsets.back() + static_cast<int64_t>(rows));
+    }
+    const uint64_t d = evaluated_.size(), a = static_cast<uint64_t>(offsets.back());
+    f.arrays.push_back(featurize::rmtb_ints("policy", featurize::Dtype::I64, {p}, ids));
+    f.arrays.push_back(featurize::rmtb_ints("version", featurize::Dtype::I64, {d, p}, versions));
+    f.arrays.push_back(featurize::rmtb_floats("value", featurize::Dtype::F32, {d, p}, values));
+    f.arrays.push_back(featurize::rmtb_floats("logits", featurize::Dtype::F32, {a, p}, logits));
+    f.arrays.push_back(featurize::rmtb_floats("log_pi", featurize::Dtype::F32, {a, p}, log_pi));
+    f.arrays.push_back(featurize::rmtb_ints("menu_offsets", featurize::Dtype::I64, {d + 1}, offsets));
+    return f;
 }
 
 void NnAgent::finish() {
     std::fflush(stdout);
-    if (!opt_.dump.empty()) {
-        std::string err;
-        if (!featurize::rmtb_write_file(opt_.dump, featurize::tensors_file(featurization_->spec, dumped_), &err))
-            std::printf("ERROR: nn: dump: %s\n", err.c_str());
-    }
+    std::string err;
+    if (!opt_.dump.empty() &&
+        !featurize::rmtb_write_file(opt_.dump, featurize::tensors_file(featurization_->spec, dumped_), &err))
+        std::printf("ERROR: nn: dump: %s\n", err.c_str());
+    if (!opt_.evals.empty() && !featurize::rmtb_write_file(opt_.evals, evaluations_file(), &err))
+        std::printf("ERROR: nn: evals: %s\n", err.c_str());
     if (opt_.stats)
-        std::printf("NN-STATS: seat %s decisions=%zu featurize_s=%.3f evaluate_s=%.3f model=%s format=%s\n",
+        std::printf("NN-STATS: seat %s decisions=%zu featurize_s=%.3f evaluate_s=%.3f model=%s format=%s%s\n",
             seat_ == 0   ? "A"
             : seat_ == 1 ? "B"
                          : "-",
-            decisions_, featurize_s_, evaluate_s_, evaluator_->info().path.c_str(), evaluator_->info().format.c_str());
+            decisions_, featurize_s_, evaluate_s_, evaluator_->info().path.c_str(), evaluator_->info().format.c_str(),
+            evaluator_->stats().c_str());
     std::fflush(stdout);
 }
 

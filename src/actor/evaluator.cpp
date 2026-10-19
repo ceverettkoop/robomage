@@ -14,6 +14,7 @@
 
 #include "../featurize/batch.h"
 #include "../featurize/rmtb.h"
+#include "../inference/protocol.h"
 
 namespace {
 
@@ -50,7 +51,6 @@ static void single_thread();
 static std::string model_format(const std::string &path, std::string *err);
 static torch::Tensor long_tensor(const std::vector<int64_t> &v, std::initializer_list<int64_t> shape);
 static torch::Tensor bool_tensor(const std::vector<uint8_t> &v, std::initializer_list<int64_t> shape);
-static void log_softmax(const std::vector<float> &logits, std::vector<float> *out);
 
 // One intra-op and one inter-op thread, set once per process (the inter-op count can only be set
 // before any inter-op work; a second call throws, which is ignored).
@@ -81,17 +81,6 @@ static torch::Tensor long_tensor(const std::vector<int64_t> &v, std::initializer
 
 static torch::Tensor bool_tensor(const std::vector<uint8_t> &v, std::initializer_list<int64_t> shape) {
     return torch::from_blob(const_cast<uint8_t *>(v.data()), shape, torch::kUInt8).to(torch::kBool);
-}
-
-static void log_softmax(const std::vector<float> &logits, std::vector<float> *out) {
-    out->resize(logits.size());
-    if (logits.empty()) return;
-    double mx = logits[0];
-    for (float l : logits) mx = std::max(mx, static_cast<double>(l));
-    double sum = 0;
-    for (float l : logits) sum += std::exp(static_cast<double>(l) - mx);
-    const double lse = mx + std::log(sum);
-    for (size_t i = 0; i < logits.size(); ++i) (*out)[i] = static_cast<float>(static_cast<double>(logits[i]) - lse);
 }
 
 bool ModelEvaluator::read_metadata(const std::unordered_map<std::string, std::string> &meta, std::string *err) {
@@ -189,6 +178,7 @@ bool ModelEvaluator::evaluate(
         e.policies.resize(1);
         actor::PolicyEval &pe = e.policies[0];
         pe.version = info_.policy_version;
+        pe.value = e.value;
         const size_t rows = padded_.menu_rows[b];
         pe.logits.assign(lg + b * padded_.A, lg + b * padded_.A + rows);
         for (float l : pe.logits)
@@ -196,7 +186,8 @@ bool ModelEvaluator::evaluate(
                 *err = info_.path + ": a non-finite logit";
                 return false;
             }
-        log_softmax(pe.logits, &pe.log_pi);
+        pe.log_pi.resize(rows);
+        inference::log_softmax(pe.logits.data(), rows, pe.log_pi.data());
     }
     return true;
 }

@@ -248,6 +248,20 @@ bool Session::fill_line() {
     return true;
 }
 
+bool Session::wait_stderr(const std::string &needle) {
+    while (err_.find(needle) == std::string::npos)
+        if (!pump()) return err_.find(needle) != std::string::npos;
+    return true;
+}
+
+void Session::send_signal(int sig) {
+    if (pid_ >= 0) kill(pid_, sig);
+}
+
+void Session::set_timeout(double seconds) {
+    deadline_ = now_seconds() + seconds;
+}
+
 void Session::take(size_t n) {
     out_.erase(0, n);
 }

@@ -163,7 +163,11 @@ Trajectories that straddle an iteration boundary are tagged with the iteration a
 recomputed at the learner or dropped.
 
 **The server** is PyTorch (section 4, L5). The engine side owns only the client and the wire
-format, documented in a new `docs/inference_protocol.md`.
+format, documented in `docs/inference_protocol.md`. Both exist since plan step 5d: `nn:remote:`
+(`src/actor/remote_evaluator.h`, `policies=` naming the current and regularisation policies, each
+response carrying every policy's version and `log π`) and the C++ reference server `rmserve`; what
+remains here is T3's several games per request and T1 recording the regularisation policies'
+`log π` (`tools/nn/serve_check.py` is a minimal Python server to start L5 from).
 
 **Tests:**
 - the remote and in-process evaluators return the same logits for the same model and batch,

@@ -59,9 +59,9 @@ seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and so
 `docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
 and its driver over that protocol, used for agent games and to record the replay corpus.
 
-The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–4
-done — 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer and in-process
-actor). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
+The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–5
+done — 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer, the in-process
+actor and remote batched evaluation; next: `docs/rnad_training_plan.md`). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
 TUI/GUI) is archived in place: branch `archive/rl-stack` (tag `rl-stack-final`, if created), whose
 tip `cf7f97f` is the last commit with both stacks.
 
@@ -99,8 +99,10 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   model (`tools/embed/fetch_model.py`, network) and regenerate only those rows with `rmembed`
   (`docs/featurizer.md` §5). Part of `all`: a current committed table needs no network or libtorch
 - `make actor` — `bin/<config>/robomage_nn`: the engine plus the libtorch TUs of `src/actor/`
-  (exceptions on, C++20), which add the `nn:<model>` agent (`docs/featurizer.md` §6). Needs a
-  torch importable by `python3`, or `LIBTORCH_DIR=…`; not part of plain `make`
+  (exceptions on, C++20), which add the `nn:<model>` and `nn:remote:<socket>` agents
+  (`docs/featurizer.md` §6), and `bin/<config>/rmserve`, the reference inference server
+  (`docs/inference_protocol.md`). Needs a torch importable by `python3`, or `LIBTORCH_DIR=…`; not
+  part of plain `make`
 - `make clean`
 
 **Which binary the tooling runs is independent of which one you just built.** The gate
@@ -136,10 +138,10 @@ background** and make the live output inspectable by the user:
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
-  | `actor` | opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches, `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement |
+  | `actor` | opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches, `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
-  | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation (no threshold) |
+  | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples) |
 
 - Non fatal errors are not acceptable
@@ -186,7 +188,8 @@ the test-setup presets and `--play`; `--help` lists every flag (zone presets
   each seat's `--agent-a/-b` agent decides (default `first` = action 0, so the game
   auto-advances; e.g. `explore`). Agent specs: `first` (`auto`), `random`, `explore`,
   `explore:patient`, `actions:<i,i,…>`, `play:<specs>` (`src/agents/agent.h`), and in
-  `robomage_nn` only `nn:<model>[:temp=<t>][:argmax]` (a learned policy, `src/actor/nn_agent.h`).
+  `robomage_nn` only `nn:<model>[:temp=<t>][:argmax]` (a learned policy, `src/actor/nn_agent.h`)
+  and `nn:remote:<socket>[:…]` (the same, evaluated by an inference server such as `rmserve`).
   **Claude cannot play a seat interactively** (no TTY; a seat without `--play`, `--actions` or an
   agent reads the RMSTATE stream on stdin) — use `--play`. A `--play` run prints `resolved --actions: …` for exact
   replay (and `SCRIPT INCOMPLETE: …` when specs were left unapplied); keep `--game-seed` fixed while
@@ -614,11 +617,15 @@ sections above are not repeated here.
   `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace
 
 **The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
-`Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`
-and version, and a value; the in-process one loads TorchScript or an AOTInductor `.pt2`, checks the
-model's spec / vocab / text-model metadata), `nn_agent.{h,cpp}` (the `nn:` agent: options, sampling
-on the shared generator, the behaviour distribution, `dump=` / `stats`), `robomage_nn.cpp` (the
-binary's main: registers `nn:`, then `engine_main`).
+`Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`,
+value and version; the in-process one loads TorchScript or an AOTInductor `.pt2`, checks the
+model's spec / vocab / text-model metadata), `remote_evaluator.{h,cpp}` (torch-free: the inference
+protocol's client behind `nn:remote:`), `nn_agent.{h,cpp}` (the `nn:` agent: options, sampling
+on the shared generator, the behaviour distribution, `dump=` / `evals=` / `stats`, the remote
+options), `robomage_nn.cpp` (the binary's main: registers `nn:`, then `engine_main`).
+`src/inference/protocol.{h,cpp}` (std + POSIX, not an engine TU; linked by `robomage_nn`, `rmserve`
+and the gate) — the inference protocol's wire code (`docs/inference_protocol.md`): framing,
+handshake JSON, the shared region, request / response layouts.
 
 **Tools (`tools/`)**
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
@@ -644,6 +651,11 @@ binary's main: registers `nn:`, then `engine_main`).
 - `tools/nn/make_reference_policy.py` — needs torch (+ onnx, onnxscript, onnxruntime), never run by
   `make`: `build` the network contract's reference policy from the exported tables (seeded) as
   TorchScript, `.pt2` and ONNX with the hashes; `check` the three exports agree on a tensors file
+- `tools/rmserve/` — `bin/<config>/rmserve` (`make actor`, libtorch): the reference inference server
+  (`--socket PATH --policy ID=MODEL … [--version ID=N] [--max-batch N] [--deadline-us N]
+  [--threads N]`): many clients, batches across them, the in-process evaluator per policy,
+  `RMSERVE-STATS:` on SIGTERM; `tools/nn/serve_check.py` — a minimal Python server of the same
+  protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
   `.dk` scraper (stdlib only, its own README)
 
@@ -674,5 +686,6 @@ binary's main: registers `nn:`, then `engine_main`).
   baseline; `docs/ci.md`)
 
 **Docs (`docs/`)** — `ci.md` (the gate), `game_running.md` (running games), `state_format.md`
-(RMSTATE), `knowledge_store.md` (the sidecar), `rules_deviations.md`, `engine_fork_plan.md` (the
-plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.
+(RMSTATE), `knowledge_store.md` (the sidecar), `featurizer.md` (the featurizer and the network
+contract), `inference_protocol.md` (remote evaluation), `rules_deviations.md`, `engine_fork_plan.md`
+(the plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.

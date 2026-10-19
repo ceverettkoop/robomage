@@ -30,7 +30,8 @@
 //                       then row 0
 //   explore             the coverage fuzzer, python/explore_agent.py ported (agents/explore.h)
 //   explore:patient     its big-mana profile
-//   nn:<model>[:...]    a learned policy (docs/featurizer.md §6): a kind the actor binary
+//   nn:<model>[:...]    a learned policy (docs/featurizer.md §6), or nn:remote:<socket>[:...]
+//                       evaluated by an inference server: a kind the actor binary
 //                       bin/<config>/robomage_nn registers (src/actor/nn_agent.h); this binary
 //                       refuses it, naming `make actor`
 //

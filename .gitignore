@@ -40,8 +40,9 @@ corpus/
 ci_out/
 draw_*.txt
 
-# The actor binary (plan step 5d) — built by `make actor`
+# The actor binaries (plan step 5d) — built by `make actor`
 bin/*/robomage_nn
+bin/*/rmserve
 
 # Cached Scryfall card art of the PySide6 board (archived on branch archive/rl-stack) —
 # downloaded on demand, never committed.

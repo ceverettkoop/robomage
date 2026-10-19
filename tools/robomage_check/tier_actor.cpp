@@ -91,7 +91,8 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
     } cases[] = {
         {opt.binary, "nn:" + a.ts(), "make actor"},
         {a.nn_binary, "nn:" + a.ts() + ":tmep=2", "unknown option"},
-        {a.nn_binary, "nn:remote:/tmp/none.sock", "part 2"},
+        {a.nn_binary, "nn:remote:" + rmcheck::path_join(a.dir, "none.sock"), "cannot connect"},
+        {a.nn_binary, "nn:" + a.ts() + ":policies=0", "nn:remote: only"},
     };
     for (const auto &c : cases) {
         rmcheck::ProcSpec spec;
@@ -104,7 +105,9 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
                                    ": expected a refusal naming '" + c.needle + "', got " + r.status_text() + ": " +
                                    rmcheck::quoted(rmcheck::trim(r.out).substr(0, 200)));
     }
-    rep.info("refusals: robomage refuses nn: (naming `make actor`); robomage_nn refuses an unknown key and nn:remote:");
+    rep.info(
+        "refusals: robomage refuses nn: (naming `make actor`); robomage_nn refuses an unknown key, a remote-only key "
+        "in process and nn:remote: with no server");
 }
 
 // rmfeat --featurize over a --replay of the match's decision log equals what nn: featurized live.
@@ -148,8 +151,8 @@ static void check_refeaturization(const rmcheck::Options &opt, rmcheck::Report &
 // The reference policy's three exports agree on the match's decisions (make_reference_policy.py check).
 static void check_exports(rmcheck::Report &rep, const rmcheck::ActorSetup &a, const std::string &live) {
     rmcheck::ProcSpec spec;
-    spec.argv = {a.python, a.script, "check", "--out", a.prefix, "--tables", a.tables, "--tensors", live, "--decisions",
-        "1000"};
+    spec.argv = {
+        a.python, a.script, "check", "--out", a.prefix, "--tables", a.tables, "--tensors", live, "--decisions", "1000"};
     spec.timeout_s = 1800;
     spec.merge_stderr = true;
     const rmcheck::ProcResult r = rmcheck::run_process(spec);
@@ -229,8 +232,8 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
 // The actor tier (docs/ci.md): robomage_nn and the reference policy (actor_setup; skipped without
 // them). An nn: (TorchScript, sampled) vs explore bo3 match with no error or warning, its live
 // tensors (nn:...:dump=) equal to rmfeat's over a --replay of its decision log, the .pt2 export
-// playing the same argmax bo3 match as the TorchScript one, the refusals, and the three exports'
-// agreement on the match's decisions.
+// playing the same argmax bo3 match as the TorchScript one, the refusals, the three exports'
+// agreement on the match's decisions, then the remote evaluation checks (actor_remote_checks).
 void tier_actor(const Options &opt, Report &rep) {
     ActorSetup a;
     std::string skip;
@@ -278,9 +281,11 @@ void tier_actor(const Options &opt, Report &rep) {
     else
         rep.info("argmax: the .pt2 and TorchScript exports play the same bo3 match (" +
                  std::to_string(split_lines(ts).size() - 1) + " decisions)");
-    if (!matches[0].result.ok()) return;
-    check_refeaturization(opt, rep, a, path_join(a.dir, "match.rmlog"), live);
-    check_exports(rep, a, live);
+    if (matches[0].result.ok()) {
+        check_refeaturization(opt, rep, a, path_join(a.dir, "match.rmlog"), live);
+        check_exports(rep, a, live);
+    }
+    actor_remote_checks(opt, rep, a);
 }
 
 }  // namespace rmcheck

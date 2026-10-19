@@ -15,9 +15,10 @@
 // game or many) and returns, per decision in batch order, an Evaluation: for each policy it serves
 // (policies(); policy 0 is the one an actor samples from) the logits over the decision's menu rows,
 // their log-softmax over those rows (log π) and the policy's version, and the value of policy 0.
-// The in-process implementation serves one policy; a remote one (plan step 5d part 2,
-// docs/inference_protocol.md) may serve the training plan's current and regularisation policies in
-// the same request, filling more entries, so callers index policies and never assume one.
+// The in-process implementation serves one policy; the remote one (remote_evaluator.h,
+// docs/inference_protocol.md) serves the policies its spec names, e.g. the training plan's current
+// and regularisation policies in the same request, filling more entries, so callers index policies
+// and never assume one.
 //
 // The in-process evaluator (load_model_evaluator) runs a model of the network contract on the CPU:
 // the batch padded and stacked by the padding batcher (featurize/batch.h), one forward
@@ -53,6 +54,7 @@ struct ModelInfo {
 // One policy's output for one decision, over its menu rows.
 struct PolicyEval {
         uint64_t version = 0;
+        float value = 0;  // the policy's value, the deciding seat's view
         std::vector<float> logits;
         std::vector<float> log_pi;  // log-softmax of logits over the menu rows
 };
@@ -72,6 +74,8 @@ class Evaluator {
         // Policies in each Evaluation.
         virtual size_t policies() const = 0;
         virtual const ModelInfo &info() const = 0;
+        // Extra ` key=value` fields for the nn: agent's NN-STATS line ("" for none).
+        virtual std::string stats() const { return ""; }
 };
 
 // The in-process evaluator of the model at `path` for decisions of `spec`; nullptr with `err`.

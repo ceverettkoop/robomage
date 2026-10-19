@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -47,6 +48,13 @@ struct BenchStage {
         double start_ms() const { return processes ? start * 1e3 / static_cast<double>(processes) : 0; }
 };
 
+// The nn: agents' NN-STATS lines of a stage, summed.
+struct NnTotals {
+        size_t decisions = 0;
+        double featurize_s = 0, evaluate_s = 0, server_s = 0;
+        std::vector<std::string> logs;  // the stage's decision logs, in game order
+};
+
 static void count_results(GameJob *job);
 static std::string stamp();
 static void report_matchups(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier, const char *leg,
@@ -59,6 +67,9 @@ static bool bench_run(const rmcheck::Options &opt, rmcheck::Report &rep, const s
     const std::string &rmlog, BenchStage *stage);
 static double bench_start(const rmcheck::Options &opt, std::vector<std::string> argv);
 static std::string bench_pad(const std::string &label);
+static bool bench_nn_stage(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::vector<std::pair<std::string, std::string>> &pairs, const std::string &dir, const std::string &nn,
+    const std::string &tag, BenchStage *stage, NnTotals *totals);
 static void bench_evaluation(const rmcheck::Options &opt, rmcheck::Report &rep,
     const std::vector<std::pair<std::string, std::string>> &pairs, const std::string &dir);
 
@@ -266,8 +277,51 @@ static std::string bench_pad(const std::string &label) {
     return label + std::string(label.size() < 36 ? 36 - label.size() : 1, ' ');
 }
 
-// The evaluation stage: nn: (the reference policy, TorchScript, sampled) on both seats of the
-// workload's pairings and seeds through the actor binary; skipped without it (actor.h).
+// One nn: stage of the bench: the agent spec `nn` on both seats of the workload's pairings and
+// seeds through the actor binary, the decision logs <dir>/<tag><k>_<s>.rmlog; false after an error.
+static bool bench_nn_stage(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::vector<std::pair<std::string, std::string>> &pairs, const std::string &dir, const std::string &nn,
+    const std::string &tag, BenchStage *stage, NnTotals *totals) {
+    for (size_t k = 0; k < pairs.size(); ++k)
+        for (long s = 1; s <= 3; ++s) {
+            const std::string log =
+                rmcheck::path_join(dir, tag + std::to_string(k) + "_" + std::to_string(s) + ".rmlog");
+            rmcheck::ProcSpec spec;
+            spec.argv = {a.nn_binary, "--agent-a", nn, "--agent-b", nn, "--game-seed", std::to_string(s), "--deck-a",
+                pairs[k].first, "--deck-b", pairs[k].second, "--decision-log", log};
+            spec.cwd = opt.bin_dir;
+            spec.timeout_s = 1800;
+            const rmcheck::ProcResult r = rmcheck::run_process(spec);
+            if (!r.ok()) {
+                rep.error("bench", "evaluation: " + rmcheck::join(spec.argv, " ") + ": " + r.status_text());
+                return false;
+            }
+            stage->decisions += bench_decisions(log);
+            stage->wall += r.seconds;
+            stage->start += bench_start(opt, spec.argv);
+            ++stage->processes;
+            totals->logs.push_back(log);
+            for (const std::string &line : rmcheck::split_lines(r.out + "\n" + r.err)) {
+                char seat = 0;
+                size_t n = 0;
+                double fs = 0, es = 0;
+                if (std::sscanf(line.c_str(), "NN-STATS: seat %c decisions=%zu featurize_s=%lf evaluate_s=%lf", &seat,
+                        &n, &fs, &es) != 4)
+                    continue;
+                totals->decisions += n;
+                totals->featurize_s += fs;
+                totals->evaluate_s += es;
+                const size_t at = line.find(" server_s=");
+                if (at != std::string::npos) totals->server_s += std::atof(line.c_str() + at + 10);
+            }
+        }
+    return true;
+}
+
+// The evaluation stages: nn: (the reference policy, TorchScript, sampled) on both seats of the
+// workload's pairings and seeds through the actor binary, in process, then through rmserve (one
+// actor at a time, no batching deadline: the round trip's own cost); skipped without them
+// (actor.h).
 static void bench_evaluation(const rmcheck::Options &opt, rmcheck::Report &rep,
     const std::vector<std::pair<std::string, std::string>> &pairs, const std::string &dir) {
     rmcheck::ActorSetup a;
@@ -278,44 +332,40 @@ static void bench_evaluation(const rmcheck::Options &opt, rmcheck::Report &rep,
     }
     BenchStage stage;
     stage.label = "evaluation (robomage_nn)";
-    double featurize_s = 0, evaluate_s = 0;
-    size_t evaluated = 0;
-    const std::string nn = "nn:" + a.ts() + ":stats";
-    for (size_t k = 0; k < pairs.size(); ++k)
-        for (long s = 1; s <= 3; ++s) {
-            const std::string log =
-                rmcheck::path_join(dir, "nn" + std::to_string(k) + "_" + std::to_string(s) + ".rmlog");
-            rmcheck::ProcSpec spec;
-            spec.argv = {a.nn_binary, "--agent-a", nn, "--agent-b", nn, "--game-seed", std::to_string(s), "--deck-a",
-                pairs[k].first, "--deck-b", pairs[k].second, "--decision-log", log};
-            spec.cwd = opt.bin_dir;
-            spec.timeout_s = 1800;
-            const rmcheck::ProcResult r = rmcheck::run_process(spec);
-            if (!r.ok()) {
-                rep.error("bench", "evaluation: " + rmcheck::join(spec.argv, " ") + ": " + r.status_text());
-                return;
-            }
-            stage.decisions += bench_decisions(log);
-            stage.wall += r.seconds;
-            stage.start += bench_start(opt, spec.argv);
-            ++stage.processes;
-            for (const std::string &line : rmcheck::split_lines(r.out + "\n" + r.err)) {
-                char seat = 0;
-                size_t n = 0;
-                double fs = 0, es = 0;
-                if (std::sscanf(line.c_str(), "NN-STATS: seat %c decisions=%zu featurize_s=%lf evaluate_s=%lf", &seat,
-                        &n, &fs, &es) == 4) {
-                    evaluated += n;
-                    featurize_s += fs;
-                    evaluate_s += es;
-                }
-            }
-        }
-    const double per = static_cast<double>(evaluated ? evaluated : 1);
+    NnTotals local;
+    if (!bench_nn_stage(opt, rep, a, pairs, dir, "nn:" + a.ts() + ":stats", "nn", &stage, &local)) return;
+    const double per = static_cast<double>(local.decisions ? local.decisions : 1);
     rep.info("  " + bench_pad(stage.label) + rmcheck::fmt1(stage.net_per_decision()) + " us, start " +
              rmcheck::fmt1(stage.start_ms()) + " ms (nn: vs nn:, " + std::to_string(stage.decisions) +
-             " decisions of other games; in-process featurize " + rmcheck::fmt1(featurize_s * 1e6 / per) +
-             " us + evaluate " + rmcheck::fmt1(evaluate_s * 1e6 / per) + " us per decision, " + a.ts() + ")");
+             " decisions of other games; in-process featurize " + rmcheck::fmt1(local.featurize_s * 1e6 / per) +
+             " us + evaluate " + rmcheck::fmt1(local.evaluate_s * 1e6 / per) + " us per decision, " + a.ts() + ")");
+    const std::string rmserve = rmcheck::path_join(rmcheck::dirname_of(a.nn_binary), "rmserve");
+    const std::string sock = rmcheck::path_join(dir, "rmserve.sock");
+    rmcheck::ServerRun server;
+    if (!rmcheck::start_server(
+            opt, {rmserve, "--socket", sock, "--policy", "0=" + a.ts(), "--deadline-us", "0"}, sock, &server, &skip)) {
+        rep.error("bench", "evaluation: rmserve: " + skip);
+        return;
+    }
+    BenchStage remote;
+    remote.label = "evaluation remote (rmserve)";
+    NnTotals totals;
+    const bool ran = bench_nn_stage(
+        opt, rep, a, pairs, dir, "nn:remote:" + sock + ":stats:timeout=300", "nn_remote", &remote, &totals);
+    rmcheck::stop_server(&server, SIGTERM);
+    if (!ran) return;
+    bool same = local.logs.size() == totals.logs.size();
+    for (size_t i = 0; same && i < local.logs.size(); ++i) {
+        std::string x, y;
+        same = rmcheck::read_file(local.logs[i], &x) && rmcheck::read_file(totals.logs[i], &y) &&
+               x.substr(x.find("DECISIONS")) == y.substr(y.find("DECISIONS"));
+    }
+    const double rper = static_cast<double>(totals.decisions ? totals.decisions : 1);
+    rep.info("  " + bench_pad(remote.label) + rmcheck::fmt1(remote.net_per_decision()) + " us, start " +
+             rmcheck::fmt1(remote.start_ms()) + " ms (" + (same ? "the same games" : "other games") +
+             "; per decision the client's evaluate " + rmcheck::fmt1(totals.evaluate_s * 1e6 / rper) +
+             " us, of it the server's compute " + rmcheck::fmt1(totals.server_s * 1e6 / rper) + " us, round trip " +
+             rmcheck::fmt1((totals.evaluate_s - totals.server_s) * 1e6 / rper) + " us)");
 }
 
 namespace rmcheck {

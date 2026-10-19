@@ -368,16 +368,32 @@ mode upstream and is not the contract.
 &err)` (`src/actor/evaluator.h`): a batch of featurized decisions (from one game or many),
 returning per decision an `Evaluation`: the value and, per policy the evaluator serves (policy 0
 first, the one the actor samples from), the logits over its menu rows, their `log π` (log-softmax
-over the menu rows) and the policy's version. A failure is `false` with a message, never a default
-action. Implementations: in-process (`load_model_evaluator`: the actor's model, CPU, one thread,
-TorchScript through `torch::jit::load` or AOTInductor through `AOTIModelPackageLoader`; one
-policy) and remote (`nn:remote:<endpoint>`, 5d part 2), over the protocol of
-`docs/inference_protocol.md`: decisions in shared memory, a Unix socket for signalling, the spec
-hash on every request; a request may name several policies (the training plan's current and two
-regularisation policies) and gets `log π` per menu row for each, with each policy's version, as
-more entries of the same `Evaluation`. A server that goes away fails the actor loudly. `rmserve`
-(C++, libtorch, CPU) is the reference server; the training plan's GPU server speaks the same
-protocol.
+over the menu rows), its value and the policy's version. A failure is `false` with a message, never
+a default action. Implementations: in-process (`load_model_evaluator`: the actor's model, CPU, one
+thread, TorchScript through `torch::jit::load` or AOTInductor through `AOTIModelPackageLoader`; one
+policy) and remote (`connect_remote_evaluator`, `src/actor/remote_evaluator.h`).
+
+**Remote evaluation** (`nn:remote:<endpoint>`) speaks the inference protocol,
+`docs/inference_protocol.md` (RMIP v1; the wire code is `src/inference/protocol.h`, standard
+library and POSIX): a Unix stream socket at the endpoint carries a handshake (the featurizer's
+`spec_hash`, `vocab_hash`, `text_model` and widths, the policy ids to evaluate) and small
+`EVAL` / `DONE` messages; each connection has a POSIX shared-memory region the client creates,
+names in the handshake and unlinks once the server has it, holding the request (the decisions'
+unpadded tensors, laid out as an RMTB `tensors` file's arrays with per-decision sizes for offsets,
+the spec hash in its header) and the response (per requested policy its version, the values, and
+the logits and `log π` over each decision's menu rows). The server may batch requests across
+clients up to a size or a deadline, refuses a handshake or request whose hashes differ from its
+models', and answers each request with each policy's current version, so weights can be swapped
+between decisions. The client fills one `Evaluation` entry per requested policy (`policies=`, the
+first the one sampled from). A server that refuses, errs, goes away or does not answer within the
+timeout ends the actor with a fatal error naming the endpoint, never a default action. `rmserve`
+(`tools/rmserve/`, C++, libtorch, CPU, built by `make actor`) is the reference server: several
+policies (`--policy <id>=<model>`, `--version <id>=<n>`) each through the in-process evaluator,
+many clients on one poll loop, batches up to `--max-batch` decisions, or `--deadline-us` after the
+oldest queued request, or as soon as every connected client has a request queued; an
+`RMSERVE-STATS:` line on SIGTERM. `tools/nn/serve_check.py` is a minimal server in Python
+(`socket`, `struct`, `multiprocessing.shared_memory`, numpy, torch) that proves the protocol needs
+no C++; the training plan's GPU server (L5) implements the same protocol.
 
 **The `nn:` agent** (`src/actor/nn_agent.h`). `nn:<model>[:<key>=<value>…]`, keys `temp=<t>`
 (sampling temperature, default 1; drawn with the agents' shared generator, so a game replays from
@@ -385,8 +401,13 @@ its seed) and `argmax` (the largest logit; rows within 1e-5, absolute plus relat
 the first is taken, so float drift between two exports of one model cannot reorder rows equal in
 exact arithmetic, such as two identical cards in hand), plus two for tests and the bench:
 `dump=<file>` (every decision it featurized, written at exit as one `tensors` file, the bytes
-`rmfeat --featurize` writes for that seat) and `stats` (an `NN-STATS:` line at exit); an unknown key
-fails loudly. The training plan adds `thresh=` and `disc=`. It keeps the exact distribution it
+`rmfeat --featurize` writes for that seat), `evals=<file>` (every evaluation it received, at exit,
+as an RMTB file of kind `evaluations`: per decision and policy the version and value, per menu row
+and policy the logits and `log π`) and `stats` (an `NN-STATS:` line at exit; remote: also the
+requests, the server compute time attributed to them and the mean server batch); an unknown key
+fails loudly. `nn:remote:<endpoint>` takes the same keys plus `policies=<id>,…` (default `0`),
+`timeout=<s>` (default 60) and `shm=<MiB>` (the request area, default 32), and needs no model file;
+the featurizer's inputs are built as for `nn:<model>`. The training plan adds `thresh=` and `disc=`. It keeps the exact distribution it
 sampled from over every menu row (after temperature and any projection; one-hot under `argmax`)
 and the policy version for its last decision (`Agent::last_behaviour`, `agents/agent.h`), for the
 training plan's trajectory writer. The featurizer's inputs are built once, before the match, in
@@ -433,7 +454,8 @@ export and `rmserve` ones come with 5d):
 - isolation (§3.5): an `nn:` seat's tensors equal `rmfeat`'s for that seat's stream, unchanged by
   the scramble self-check; the actor entry point refuses an omniscient or other-seat frame;
 - the reference policy's TorchScript, `.pt2` and ONNX exports give the same logits and values;
-  in-process and `rmserve` evaluation agree.
+  in-process and `rmserve` evaluation agree (within 1e-5, with batches across clients), and
+  `nn:remote:` through `rmserve` and through the Python server plays the in-process argmax games.
 
-The gate's `actor` tier (`docs/ci.md`) runs the `nn:`, re-featurization and export checks when the
-actor binary and a Python with torch are available; `rmserve` is 5d part 2.
+The gate's `actor` tier (`docs/ci.md`) runs the `nn:`, re-featurization, export and remote
+evaluation checks when the actor binary and a Python with torch are available.
