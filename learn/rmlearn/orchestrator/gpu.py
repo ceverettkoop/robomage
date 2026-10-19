@@ -248,7 +248,8 @@ class Worker:
             learner.configure(**{k: v for k, v in self.rnad_config().to_dict().items()
                                  if k in ("eta", "learning_rate", "entropy_schedule_sizes", "entropy_schedule_repeats",
                                           "reg_eps", "reg_eps_sideboarding", "finetune_threshold",
-                                          "finetune_discretization", "stale_reg", "forward_tokens")})
+                                          "finetune_discretization", "stale_reg", "forward_tokens",
+                                          "value_after_every")})
             window_state = data.get("window")
         else:
             learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device)
@@ -310,9 +311,11 @@ class Worker:
     # ── metrics aggregation ──
 
     def _aggregate(self, m, last_keys, sum_keys):
+        """Adds one unit's metrics: `last_keys` keep the last value, `sum_keys` sum, every other
+        number is averaged over the units that reported it (value_mse_after: the measured steps)."""
         a = self.agg
         if a is None:
-            a = self.agg = {"n": 0, "sums": {}, "last": {}, "t0": time.time()}
+            a = self.agg = {"n": 0, "sums": {}, "counts": {}, "last": {}, "t0": time.time()}
         a["n"] += 1
         for k, v in m.items():
             if isinstance(v, bool):
@@ -325,12 +328,13 @@ class Worker:
                 a["sums"][k] = a["sums"].get(k, 0.0) + v
             else:
                 a["sums"]["mean:" + k] = a["sums"].get("mean:" + k, 0.0) + v
+                a["counts"][k] = a["counts"].get(k, 0) + 1
 
     def _flush(self, step):
         a, self.agg = self.agg, None
         out = dict(a["last"])
         for k, v in a["sums"].items():
-            out[k[5:] if k.startswith("mean:") else k] = v / a["n"] if k.startswith("mean:") else v
+            out[k[5:] if k.startswith("mean:") else k] = v / a["counts"][k[5:]] if k.startswith("mean:") else v
         out["units"] = a["n"]
         out["wall_seconds"] = time.time() - a["t0"]
         out["step"] = step

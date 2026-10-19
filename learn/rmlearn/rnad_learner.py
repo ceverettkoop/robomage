@@ -35,6 +35,13 @@ the torch generators' states.
    network moved toward the new parameters; at a boundary π_m−1,reg ← π_m,reg and π_m,reg ← the
    target network (the reference's ``lax.cond(update_target_net, ...)``); ``hooks``.
 
+**The value diagnostic.** ``value_mse_first_sight``: the seat value head's mean squared error to the
+deciding seat's game result over the batch's valid steps, read from step 3's forward, before the
+update (the batch's games are fresh, so the network has not trained on them). Every
+``value_after_every`` learner steps (0: never) one more forward of the updated network over the same
+steps, without gradient, gives ``value_mse_after`` and ``value_mse_gap`` (first sight − after). A gap
+that widens over a run is the value head fitting the games it trains on rather than generalising.
+
 **Smoothed regularisation (B3).** π_0,reg is the behaviour-cloned network mixed with
 uniform-over-legal: ``(1 − ε)·π + ε/n`` with ``reg_eps`` (``reg_eps_sideboarding`` at sideboarding
 steps). The smoothing is **learner-side**: the server serves every regularisation policy's raw
@@ -142,6 +149,8 @@ class RNaDConfig:
     precision: str = "fp32"
     loss_scale_init: float = 2.0 ** 15
     loss_scale_period: int = 1000
+    # Learner steps between the value diagnostic's after-update forwards (0: never).
+    value_after_every: int = 10
 
     def to_dict(self):
         d = asdict(self)
@@ -492,6 +501,9 @@ class RNaDLearner:
             if update_target_net:
                 self._iteration_boundary()
                 boundary = True
+        value_after = None
+        if not skipped and cfg.value_after_every > 0 and self.learner_steps % cfg.value_after_every == 0:
+            value_after = self.value_mse(batch, info["valid"])
         for p in self.params:
             p.grad = None
         self.totals["reg_recorded"] += recorded
@@ -507,6 +519,7 @@ class RNaDLearner:
                    "loss": sums["loss_v"] + sums["loss_nerd"] + sums["loss_value_head"],
                    "loss_v": sums["loss_v"], "loss_nerd": sums["loss_nerd"],
                    "loss_value_head": sums["loss_value_head"], "kl_reg": sums["kl_reg"] / nv,
+                   "value_mse_first_sight": sums["value_se"] / nv,
                    "entropy": sums["entropy"] / nv, "adv_abs": sums["adv_abs"] / nv,
                    "v_target": sums["v_target"] / nv, "ratio_pi_mu": sums["ratio"] / nv,
                    "grad_norm": grad_norm, "update_max": update_max, "loss_scale": self.loss_scale,
@@ -514,6 +527,9 @@ class RNaDLearner:
                    "reg_recorded": recorded, "reg_recomputed": recomputed, "games_dropped_stale": dropped_games,
                    "policy_lag": float(self.learner_steps - pv.mean()) if len(pv) and (pv >= 0).all() else -1.0,
                    "seconds": time.time() - t_start}
+        if value_after is not None:
+            metrics["value_mse_after"] = value_after
+            metrics["value_mse_gap"] = metrics["value_mse_first_sight"] - value_after
         if not skipped:
             if boundary:
                 self._fire("iteration")
@@ -524,7 +540,7 @@ class RNaDLearner:
         """The reference's loss on `batch` with mixing weight `alpha`, back-propagated chunk by chunk
         into the parameters' ``.grad`` (scaled by the loss scale; cleared first). Returns ``sums``
         (per-batch sums of the losses and diagnostics, tensors), ``decisions``, ``reg_recorded``,
-        ``reg_recomputed``, ``games_dropped_stale``."""
+        ``reg_recomputed``, ``games_dropped_stale`` and ``valid`` (the steps trained on, [T, G])."""
         cfg = self.cfg
         dev = self.device
         T, G, A, L = batch.T, batch.G, batch.A, batch.chunk_len
@@ -539,6 +555,7 @@ class RNaDLearner:
         chosen = nt(batch.chosen)
         reward = nt(batch.reward)
         sideboarding = nt(batch.sideboarding)
+        outcome = _deciding_seat_result(reward, seat)
         if bool(((chosen < 0) & valid).any()):
             raise ValueError("R-NaD step: a valid step without a chosen menu row")
         # Invalid steps get a dummy one-row menu (the reference's dummy state), so no NaN arises.
@@ -574,7 +591,8 @@ class RNaDLearner:
             raise ValueError("R-NaD step: the omniscient critic needs a batch with the omniscient inputs")
         carry = [None, None]
         sums = {k: torch.zeros((), device=dev) for k in ("loss_v", "loss_nerd", "loss_value_head", "kl_reg",
-                                                         "entropy", "adv_abs", "v_target", "ratio")}
+                                                         "entropy", "adv_abs", "v_target", "ratio",
+                                                         "value_se")}
         for p in self.params:
             p.grad = None
         scale = self.loss_scale
@@ -591,7 +609,7 @@ class RNaDLearner:
             if x is not None:
                 xo = batch.chunk_inputs(c, viewer="omni")[0] if critic else None
                 seat_chunk = seat[sl].reshape(-1)
-                parts = {"logits": [], "v": [], "vt": [], "v_head": [], "rows": []}
+                parts = {"logits": [], "v": [], "vt": [], "v_head": [], "value": [], "rows": []}
                 for rows, xg, xog in _row_groups(x, xo, cfg.forward_tokens):
                     inputs = self._inputs(xg)
                     rows_t = idx[torch.from_numpy(rows).to(dev)]
@@ -605,6 +623,7 @@ class RNaDLearner:
                     parts["logits"].append(out["logits"].float())
                     parts["v"].append(self._value(self.model, out, critic).float())
                     parts["vt"].append(self._value(self.target, tout, critic).float().detach())
+                    parts["value"].append(out["value"].float().detach())
                     if critic and cfg.critic_trains_value_head:
                         parts["v_head"].append(self._value(self.model, out, False).float())
                     if cfg.stale_reg == "recompute":
@@ -615,6 +634,9 @@ class RNaDLearner:
                 vt = vt.index_copy(0, rows_all, torch.cat(parts["vt"]))
                 if parts["v_head"]:
                     v_head = torch.zeros(L * G, device=dev).index_copy(0, rows_all, torch.cat(parts["v_head"]))
+                with torch.no_grad():
+                    se = (torch.cat(parts["value"]) - outcome[sl].reshape(-1)[rows_all]) ** 2
+                    sums["value_se"] += (se * valid[sl].reshape(-1)[rows_all].float()).sum()
                 if cfg.stale_reg == "recompute" and self.regs[1] is self.regs[0]:
                     # π_0,reg in both slots: the rows slot 0 recomputed are slot 1's too.
                     lps[1] = torch.where((valid[sl] & ~reg_known[1][sl]).unsqueeze(-1), lps[0], lps[1])
@@ -662,7 +684,37 @@ class RNaDLearner:
                 sums["v_target"] += sum((v_targets[p].squeeze(-1) * own[p]).sum() for p in range(2))
                 sums["ratio"] += (((actions_oh[sl] * pi_d).sum(-1) / (actions_oh[sl] * mu[sl]).sum(-1)) * vf).sum()
         return {"sums": sums, "decisions": n_valid, "reg_recorded": recorded, "reg_recomputed": recomputed,
-                "games_dropped_stale": dropped_games}
+                "games_dropped_stale": dropped_games, "valid": valid}
+
+    def value_mse(self, batch, valid=None):
+        """The current network's seat value head: its mean squared error to the deciding seat's game
+        result over `batch`'s steps in `valid` ([T, G] tensor; default the batch's valid steps), one
+        forward per chunk without gradient in the network's training mode (as the step's forward).
+        Its id-dropout draws come from forked generators, so the training's random stream is unchanged."""
+        cfg = self.cfg
+        dev = self.device
+        G, L = batch.G, batch.chunk_len
+        nt = lambda a: torch.from_numpy(np.ascontiguousarray(a)).to(dev)  # noqa: E731
+        if valid is None:
+            valid = nt(batch.valid)
+        outcome = _deciding_seat_result(nt(batch.reward), nt(batch.seat))
+        cuda = [dev.index if dev.index is not None else torch.cuda.current_device()] if dev.type == "cuda" else []
+        se = torch.zeros((), device=dev)
+        with torch.random.fork_rng(devices=cuda), torch.no_grad():
+            for c in range(batch.chunks):
+                x, flat = batch.chunk_inputs(c)
+                if x is None:
+                    continue
+                t0 = c * L
+                idx = torch.from_numpy(np.asarray(flat, np.int64) - t0 * G).to(dev)
+                val_c = valid[t0:t0 + L].reshape(-1).float()
+                out_c = outcome[t0:t0 + L].reshape(-1)
+                for rows, xg, _ in _row_groups(x, None, cfg.forward_tokens):
+                    rows_t = idx[torch.from_numpy(rows).to(dev)]
+                    with self._autocast():
+                        v = self.model(*self._inputs(xg))["value"].float()
+                    se += ((v - out_c[rows_t]) ** 2 * val_c[rows_t]).sum()
+        return float(se) / max(int(valid.sum()), 1)
 
     def _recompute_reg(self, lps, inputs, rows_t, valid_c, reg_known, sl, n_flat, A):
         """Fills the regularisation policies' raw log π at the forwarded rows `rows_t` (flat chunk
@@ -686,6 +738,13 @@ class RNaDLearner:
         new = RegPolicy(_frozen(self.target), self.learner_steps, 0.0, 0.0)
         self.regs = [new, self.regs[0]]
         self.reg_updates += 1
+
+
+def _deciding_seat_result(reward, seat):
+    """[T, G]: each step's deciding seat's game result (the batch's rewards summed over time: each
+    seat's result sits on its game's last step)."""
+    result = reward.sum(0)                                          # [G, 2]
+    return torch.where(seat == 0, result[:, 0].unsqueeze(0), result[:, 1].unsqueeze(0))
 
 
 def trainable_episodes(eps, missing_mu="error", drop_end_reasons=("cap", "quit"), spec_hash=None):

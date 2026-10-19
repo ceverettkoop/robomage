@@ -20,7 +20,9 @@ Checks:
   with a dominant action (learnt);
 - **bookkeeping**: iteration boundaries (α, the regularisation policies, versions), the server
   pushes, the stale-regularisation drop / recompute counts, missing μ refused, a resume from
-  ``state_dict`` bit-identical to an uninterrupted run, BC seeding;
+  ``state_dict`` bit-identical to an uninterrupted run, BC seeding; the value diagnostic
+  (first-sight and after-update value MSE against the networks' values, its cadence, and training
+  unchanged by it);
 - **projection**: ``threshold_policy`` / ``discretize_policy`` against the engine's
   ``src/agents/policy_projection.cpp`` (compiled into a small harness with ``g++``) on random and
   known inputs, and against the reference's plain-ceiling rounding;
@@ -1021,6 +1023,44 @@ def check_bookkeeping(tables, work):
     info("the omniscient critic (tanh and linear values) trains on the omniscient inputs; a bf16 autocast step runs")
 
 
+def check_value_diagnostic(tables):
+    print("value diagnostic: first-sight and after-update value MSE", flush=True)
+    eps = random_episodes(tables, np.random.RandomState(21), 6)
+    batch = RP.TrajectoryBatch(eps, chunk_len=4, policies=(1, 2))
+    learner = RL.RNaDLearner(tiny_model(tables, seed=5), RL.RNaDConfig(chunk_len=4, learning_rate=1e-2,
+                                                                         value_after_every=1))
+    outcome = np.array([[ep.result[ep.seat[t]] if t < ep.steps else 0.0 for ep in eps] for t in range(batch.T)])
+
+    def mse():
+        v = learner_inputs(learner, batch, eps)[1][..., 0]
+        return float(((v - outcome) ** 2)[batch.valid].mean())
+
+    before = mse()
+    m = learner.step(batch)
+    after = mse()
+    ok(abs(m["value_mse_first_sight"] - before) < 1e-5 and abs(m["value_mse_after"] - after) < 1e-5 and
+       abs(m["value_mse_gap"] - (before - after)) < 1e-5,
+       "value diagnostic: %s vs %.6f before, %.6f after" % ({k: m.get(k) for k in m if k.startswith("value_mse")},
+                                                             before, after))
+    l10 = RL.RNaDLearner(tiny_model(tables, seed=5), RL.RNaDConfig(chunk_len=4))
+    reported = ["value_mse_after" in l10.step(batch) for _ in range(10)]
+    ok(reported == [False] * 9 + [True], "value diagnostic: after-update forwards at steps %s (every 10th)"
+       % [i + 1 for i, r in enumerate(reported) if r])
+    # The after-update forward draws its id-dropout from forked generators: training is unchanged.
+    runs = []
+    for every in (0, 1):
+        torch.manual_seed(77)
+        lr = RL.RNaDLearner(tiny_model(tables, seed=6, id_dropout=0.3), RL.RNaDConfig(chunk_len=4, learning_rate=1e-3,
+                                                                                    value_after_every=every))
+        for _ in range(3):
+            lr.step(batch)
+        runs.append(params_of(lr.model))
+    ok(torch.equal(runs[0], runs[1]), "value diagnostic: the after-update forward changed the training")
+    info("value MSE on the batch: %.4f at first sight (the step's forward) = the oracle's, %.4f after the update "
+         "(gap %.4f); measured every value_after_every steps; id-dropout under the diagnostic leaves training "
+         "bit-identical" % (before, after, before - after))
+
+
 # ── real episodes ────────────────────────────────────────────────────────────────────────────
 
 def check_real(args):
@@ -1087,6 +1127,7 @@ def main():
             check_composition(tables)
         if "bookkeeping" in parts:
             check_bookkeeping(tables, work)
+            check_value_diagnostic(tables)
         if "games" in parts:
             check_games(tables, args.quick)
         if "real" in parts and args.tables and args.episodes:

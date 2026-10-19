@@ -62,7 +62,7 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 `rnad.learning_rate`, `rnad.entropy_schedule_sizes` (Δm; an integer is a one-size schedule),
 `rnad.entropy_schedule_repeats`, `rnad.reg_eps`, `rnad.reg_eps_sideboarding` (also applied to the
 smoothed π_0,reg while it is still a regularisation policy), `rnad.push_every`,
-`rnad.report_every`, `rnad.games_per_step`; `actors.count`; the phase limits (`b0.decisions`,
+`rnad.report_every`, `rnad.games_per_step`, `rnad.value_after_every`; `actors.count`; the phase limits (`b0.decisions`,
 `b1.*` but `play_eval`, `b2.rounds_*`, `b2.decisions_per_round`, `b2.min_steps_per_round`,
 `b2.min_improvement`, `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options`,
 `b5.max_learner_steps`); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
@@ -104,6 +104,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `rnad.games_per_step`, `chunk_len`, `precision` | 32, 32, fp16 | G × chunk (fits a d 192 model in 12 GB) |
 | `rnad.reg_eps`, `reg_eps_sideboarding` | 0.1, 0.25 | π_0,reg's smoothing (B3) |
 | `rnad.push_every` | 50 | learner steps between pushes of policy 0 |
+| `rnad.value_after_every` | 10 | learner steps between the value diagnostic's after-update forwards (0: never): `value_mse_first_sight` (every step), `value_mse_after`, `value_mse_gap` in `rnad_step` and `status` |
 | `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options` | 0, 0, `""` | B4's exit (0: until `phase next`); self-play sampling options |
 | `b5.max_learner_steps` | 0 | the run's end (0: never) |
 | `eval.evaluators` | `["sprt", "fixed", "ladder"]` | the evaluators of a per-iteration / cadence evaluation (`exploiter` too; §7) |

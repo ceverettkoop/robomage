@@ -239,6 +239,18 @@ def check_orchestrator(tmp):
           "status from the files of a run that is not running")
     text = format_status(doc)
     check("NOT RUNNING" in text and "phase B0" in text, "the human status of a stopped run")
+    agg = type("W", (), {"agg": None})()
+    for i in range(4):
+        m = {"learner_steps": i + 1, "loss": 1.0 + i, "value_mse_first_sight": 0.5}
+        if i % 2:
+            m.update(value_mse_after=0.25 * i, value_mse_gap=0.5 - 0.25 * i)
+        G.Worker._aggregate(agg, m, ("learner_steps",), ())
+    out = G.Worker._flush(agg, 4)
+    check(out["loss"] == 2.5 and out["value_mse_first_sight"] == 0.5 and out["value_mse_after"] == 0.5 and
+          out["value_mse_gap"] == 0.0, "metrics aggregation: a mean over the steps that reported it (%s)" % out)
+    doc["metrics"] = {"rnad_step": dict(out, time=time.time())}
+    check("value MSE: first sight 0.5, after the update 0.5, gap 0" in format_status(doc),
+          "the R-NaD value diagnostic in the human status")
     st = RD.read_json(run.state)
     check(st["results"]["offsets"].get("a0.results.jsonl", 0) > 0 and
           st["results"]["counters"]["by_version"]["b0"]["decisions"] == 120,

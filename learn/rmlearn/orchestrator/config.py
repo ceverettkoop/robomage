@@ -142,6 +142,8 @@ SPEC = {
         ("finetune_discretization", 16, "B5's discretisation"),
         ("push_every", 50, "learner steps between pushes of the current policy to the server (live)"),
         ("report_every", 10, "learner steps per metrics line"),
+        ("value_after_every", 10, "learner steps between the value diagnostic's after-update forwards (0: never) "
+         "(live)"),
     ],
     "b4": [
         ("iterations", 0, "R-NaD iterations before B5 (0: stay in B4 until phase next / the step cap)"),
@@ -209,7 +211,7 @@ LIVE = {
     "b2.rounds_min", "b2.rounds_max", "b2.decisions_per_round", "b2.min_steps_per_round", "b2.min_improvement",
     "rnad.eta", "rnad.learning_rate", "rnad.entropy_schedule_sizes", "rnad.entropy_schedule_repeats",
     "rnad.reg_eps", "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
-    "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
+    "rnad.value_after_every", "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
     "actors.count", "eval.matches", "eval.ladder", "eval.ladder_matches", "eval.actors", "eval.every_minutes",
     "eval.per_iteration", "eval.sprt_max_games", "eval.exploiter_every_minutes", "eval.exploiter_minutes",
     "checkpoint.every_minutes",
@@ -218,7 +220,8 @@ LIVE = {
 # Live keys the GPU process applies (the others are the orchestrator's).
 GPU_LIVE = {"bc.lr", "bc.report_every", "bc.eval_every", "rnad.eta", "rnad.learning_rate",
             "rnad.entropy_schedule_sizes", "rnad.entropy_schedule_repeats", "rnad.reg_eps",
-            "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step"}
+            "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
+            "rnad.value_after_every"}
 
 
 def defaults():
@@ -371,6 +374,7 @@ def validate(cfg):
     need(0 <= r["reg_eps"] <= 1 and 0 <= r["reg_eps_sideboarding"] <= 1, "rnad.reg_eps* in [0, 1]")
     need(r["chunk_len"] > 0 and r["games_per_step"] > 0, "rnad.chunk_len and games_per_step are positive")
     need(r["push_every"] >= 0 and r["report_every"] > 0, "rnad.push_every >= 0, report_every > 0")
+    need(r["value_after_every"] >= 0, "rnad.value_after_every >= 0")
     need(0 <= r["finetune_threshold"] < 1 and r["finetune_discretization"] >= 0, "rnad.finetune_* ranges")
     e = cfg["eval"]
     need(all(x in ("fixed", "ladder") or isinstance(x, str) for x in e["evaluators"]), "eval.evaluators are names")

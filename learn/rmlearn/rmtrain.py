@@ -373,6 +373,9 @@ def format_status(d):
             e = m[key]
             L.append("%s @ step %s, %s ago: %s" % (key, e.get("step"), _dur(now - e.get("time", now)),
                                                    ", ".join("%s %s" % (f, _n(e.get(f))) for f in fields if f in e)))
+            if key == "rnad_step" and "value_mse_first_sight" in e:
+                L.append("  value MSE: first sight %s, after the update %s, gap %s" % (
+                    _n(e.get("value_mse_first_sight")), _n(e.get("value_mse_after")), _n(e.get("value_mse_gap"))))
     ev = d.get("eval") or {}
     if ev.get("running") or ev.get("queue"):
         L.append("eval: running %s, queued %s" % (ev.get("running"), ev.get("queue")))
