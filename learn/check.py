@@ -171,6 +171,19 @@ def check_model(args, tables, decs):
     ok(worst <= TOL, "padding invariance: %.3g" % worst)
     info("forward on %d decisions; padding invariance (alone / in a batch / reversed / padded +40 tokens): max %.3g"
          % (n, worst))
+    # With gradients the attention takes the other formulation (the additive bias GEMM): the same
+    # function, padding invariant too.
+    xg = B.to_torch(B.pad(decs.select(idx), model.spec, big))
+    out_g = model(*x)
+    far_g = model(*xg)
+    worst_g = 0.0
+    for i in idx:
+        k = int(a[i])
+        for other in (out_g, far_g):
+            worst_g = max(worst_g, maxdiff(other["logits"][i, :k].detach(), out["logits"][i, :k]),
+                          maxdiff(other["value"][i:i + 1].detach(), out["value"][i:i + 1]))
+    ok(worst_g <= TOL, "the forward with gradients differs from the one without: %.3g" % worst_g)
+    info("forward with gradients (in the batch / padded +40 tokens) vs without: max %.3g" % worst_g)
     pol = model.inference_module(2)
     with torch.no_grad():
         lg, v = pol(*x)

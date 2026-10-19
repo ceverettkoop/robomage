@@ -60,6 +60,8 @@ def main():
     ap.add_argument("--forward-tokens", type=int, default=65536)
     ap.add_argument("--d", type=int, default=192)
     ap.add_argument("--layers", type=int, default=4)
+    ap.add_argument("--heads", type=int, default=4)
+    ap.add_argument("--ff-mult", type=int, default=4)
     args = ap.parse_args()
     dev = torch.device(args.device)
     tables = S.load_tables(args.tables)
@@ -73,7 +75,8 @@ def main():
         for games in (int(x) for x in args.games.split(",")):
             for chunk in (int(x) for x in args.chunk.split(",")):
                 torch.manual_seed(0)
-                net = M.RMNet(M.ModelConfig(d=args.d, layers=args.layers, omniscient_critic=args.omniscient), tables)
+                net = M.RMNet(M.ModelConfig(d=args.d, layers=args.layers, heads=args.heads, ff_mult=args.ff_mult,
+                                            omniscient_critic=args.omniscient), tables)
                 cfg = RL.RNaDConfig(chunk_len=chunk, precision=prec, forward_tokens=args.forward_tokens)
                 learner = RL.RNaDLearner(net, cfg, device=dev)
                 t = time.time()
