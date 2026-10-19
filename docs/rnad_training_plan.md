@@ -39,8 +39,9 @@ search:
   Δm learner steps, `π_reg` is interpolated from the previous regularisation policy to the current
   one (`α_n = min(1, 2n/Δm)`).
 - **Dynamics.** The learner trains toward the fixed point of that shaped game. It uses two-player
-  v-trace for the value and Q estimates (ρ̄ = c̄ = 1) and NeuRD for the policy (an update on the
-  logits rather than the probabilities, logit threshold β = 2, clip 10,000).
+  v-trace for the value and Q estimates (c̄ = 1; OpenSpiel's reference passes ρ̄ = ∞) and NeuRD
+  for the policy (an update on the logits rather than the probabilities, logit threshold β = 2,
+  clip 10,000).
 - **Update.** At the end of the iteration, the averaged target network becomes the next
   `π_reg`. Δm in DeepNash was 10k steps for iterations 1–100, 100k up to 165, then 35k.
 - **Fine-tuning.** Late in training, the policy is projected through thresholding (drop actions
