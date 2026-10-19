@@ -416,6 +416,54 @@ the engine, the gate or `python/` imports it.
   - NeuRD with logit thresholding;
   - target-network averaging;
   - the Δm schedule and the fine-tuning projection.
+
+  Done: `learn/rmlearn/rnad.py` (the math, a port of OpenSpiel's `rnad.py` at
+  [`8156646`](https://github.com/google-deepmind/open_spiel/blob/8156646cdef0c753162fc6b68a11d57cce642f95/open_spiel/python/algorithms/rnad/rnad.py):
+  `v_trace`, `_has_played`, `_policy_ratio`, `_player_others`, `get_loss_v`, `get_loss_nerd`,
+  `legal_policy` / `legal_log_policy`, `EntropySchedule`, `FineTuning`) and
+  `learn/rmlearn/rnad_learner.py` (`RNaDConfig`, `RNaDLearner`, `ServerLink`, `trainable_episodes`)
+  over L1's `replay.TrajectoryBatch`. The learner holds the network, the target network (averaged
+  at 0.001) and the two regularisation networks (π_m,reg, π_m−1,reg, frozen, each with a version and
+  a smoothing ε), Adam (b1 0, b2 0.999, ε 1e-8, lr 5e-5, each update clipped to ±10,000 as the
+  reference's optax chain), the learner step and the iteration index. `step(batch)` scans the
+  batch's chunks last to first: the network's forward with gradient on the chunk's valid steps
+  (rows grouped by token count, each group padded only to its own largest decision), the target
+  network's value, the reward transform `log π − (α·log π_m,reg + (1 − α)·log π_m−1,reg)`, per
+  player v-trace with its carry passed back to the earlier chunk, the critic loss and NeuRD
+  (β 2, clip 10,000) normalised over the whole batch, backward; then the update, the target
+  average and, at a boundary of the Δm schedule (default 10k steps, a list of sizes and repeats),
+  π_m−1,reg ← π_m,reg ← the target network. The regularisation log π comes from the trajectory's
+  evaluations when the recorded version is the learner's (matched by version, so a step recorded
+  before a boundary still serves as π_m−1,reg), else it is recomputed from the frozen network
+  (`stale_reg="recompute"`) or the game dropped (`"drop"`); both are counted. Seeding (B3,
+  `from_bc_checkpoint`): network = target = π_0,reg = the BC policy; π_0,reg's smoothing
+  (ε 0.1, 0.25 at sideboarding steps) is applied **learner-side** to its raw log π (the server
+  serves raw networks; the step's `sideboarding` flag picks ε). `ServerLink` pushes the network
+  (id 0, version = learner step) on attach and every K steps, the regularisation networks (ids 1,
+  2) on attach and at each boundary. `state_dict()` / `from_state_dict()` hold everything (networks,
+  Adam, counters, loss scale, the torch generators) for an exact resume; `configure()` changes
+  settings mid-run. The omniscient critic is `ModelConfig.omniscient_critic` (its value replaces
+  the seat value head's in v-trace; the head is still regressed to the same targets). Steps without
+  μ are refused (`trainable_episodes` raises, or drops the game); capped and quit games are dropped.
+  B5's projection is the engine's (`src/agents/policy_projection.cpp`, bit for bit). Differences
+  from the reference (each listed in the modules' docstrings): menus padded with a legal mask and
+  a dummy row at padded steps; the chunked scan; regularisation log π from the trajectory; the
+  projection's 1e-9 rounding slack; the model's tanh value head (`value_activation="linear"` reads
+  it before the tanh); Adam ε 1e-8 (the reference writes 10e-8); discretisation 16 by default (the
+  reference's 32). Checks (`learn/check_rnad.py`, CPU): every function against a numpy
+  transcription of the reference on random batches with irregular seats, padding and arbitrary
+  legal subsets (≤ 1e-14), NeuRD's gradient against finite differences, the learner's whole loss
+  through a real `RMNet` against the reference loss, chunk-length invariance, the projection against
+  the C++ (3,010 distributions), biased rock-paper-scissors from a skewed start to its equilibrium
+  (1, 10, 5)/16 within 0.02 (η 0 keeps oscillating) and a dominant action learnt, the boundary and
+  push bookkeeping, a resumed run bit-identical to an uninterrupted one, real episodes and a BC
+  checkpoint seeding. Measured (`learn/bench_rnad.py`, RX 6700 XT, d 192, 4 layers, random-agent
+  league bo3 episodes, 227 decisions per game and 166 tokens per decision on average, the
+  regularisation log π recorded): fp32 G 32 × chunk 16 ~600 decisions/s (8.4 GB peak); fp16 G 32 ×
+  chunk 32 ~930 (9.7 GB), G 64 × chunk 16 ~960 (10.0 GB); G 64 × chunk 32 does not fit. The step
+  is GPU-bound in the model's forward and backward (about 1.33 of BC's step per decision: one more
+  forward for the target), so the learner, not the actors, binds at ~1k decisions/s (about 15k
+  games/hour) until the model is made cheaper.
 - **The omniscient critic is an experiment, not DeepNash's design.** DeepNash's critic saw only
   the player's observation. A critic that sees the omniscient featurization reduces value variance
   in a hidden-information game, but in R-NaD the critic also produces the Q estimates the policy
