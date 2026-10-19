@@ -618,8 +618,9 @@ weights as frozen buffers, but the exported file stays the interface and the sou
 
 ### 5a. Design (`docs/featurizer.md`)
 
-- **`FEATURE_SPEC` frame.** Announces every tensor's shape and field index, like `SCHEMA` does
-  for tables.
+- **`FEATURE_SPEC`.** Announces every tensor's shape and field index, like `SCHEMA` does for
+  tables: a JSON document (`rmfeat --spec`), so consumers outside C++ read it with any JSON
+  parser; its hash is in every exported table and model. The design is `docs/featurizer.md`.
 - **Tensors per decision:**
   - entity tokens: objects, players, globals and knowledge groups / unseen cards; numeric
     features scaled by their schema tag, plus categorical embedding ids;
@@ -704,8 +705,10 @@ weights as frozen buffers, but the exported file stays the interface and the sou
   Pooling follows how the chosen model was trained (all-MiniLM-L6-v2: the mean over real
   tokens; bge-small-en-v1.5: the `[CLS]` vector).
   - It runs only to generate missing or stale rows (below), never in the actor, which reads the
-    committed table. It runs through libtorch as a TorchScript export, so no new runtime
-    dependency; prefer a pre-converted artifact.
+    committed table. The generator `rmembed` implements the BERT encoder in the libtorch C++
+    API over the model's safetensors weights (no TorchScript export, no Python), so libtorch
+    stays the only ML dependency; golden token ids and vectors from the reference
+    implementation check it (`docs/featurizer.md` §5).
   - The weights (~25–130 MB) are fetched on demand at a pinned revision (a pin file beside
     `tools/forge_fetch/FORGE_PIN`'s, naming the model repository and its commit), never committed.
 - **Tokenizer:** C++ WordPiece reading the model's vocabulary, checked against a golden file of
@@ -718,8 +721,8 @@ weights as frozen buffers, but the exported file stays the interface and the sou
   stale row is recomputed. A frozen encoder is deterministic in principle, but the last float
   bits can vary with CPU instruction set, BLAS, thread count or libtorch version, so consumers
   read the file and never recompute it; that makes runs bit-exact across machines.
-- **The text table is committed** (under `bin/resources/`, ~0.5 MB), and **`make` keeps it
-  complete**:
+- **The text table is committed** (`bin/resources/embeddings/oracle_text.rmtb`, ~1.5 MB dense
+  over the vocab ids; layout in `docs/featurizer.md` §4.4), and **`make` keeps it complete**:
   - Every `make` runs a check (std only, no ML library, no network; in the engine binary beside
     `--check-decks`) that the table has a row for every vocab entry with oracle text, each row's
     text hash matching that entry's current normalised text, and that the header's model id
