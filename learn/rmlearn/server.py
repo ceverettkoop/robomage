@@ -13,15 +13,17 @@
 **Threads.** An I/O thread accepts clients, answers handshakes (refusals as the protocol's
 ``ERROR`` codes), reads ``EVAL`` requests from each client's shared region (validated: layout,
 dims, policies, every index within its decision and every id within the model's tables, so a bad
-request can never reach the device) and queues them. A compute thread forms batches by the
+request can never reach the device) and queues them. A launch thread forms batches by the
 ``rmserve`` rules: queued requests in arrival order while their decisions fit ``max_batch`` (a larger
 request is a batch of its own), evaluated when the queued decisions reach ``max_batch``, when
 every connected client has a request queued (nobody else can add to the batch), or
 ``deadline_us`` after the oldest queued request arrived. It pads the batch as
-``src/featurize/batch.cpp`` does, runs each requested policy once per batch (under
-``torch.inference_mode()``, fp32 or, with ``precision="fp16"|"bf16"``, autocast), and writes each
-response (per policy its version, values, logits and ``log π`` over the real menu rows) into the
-client's region before sending ``DONE``.
+``src/featurize/batch.cpp`` does (sorted by token count, in chunks of at most ``chunk``
+decisions) and queues each requested policy's forward on the device (under
+``torch.inference_mode()``, fp32 or, with ``precision="fp16"|"bf16"``, autocast); a finisher thread
+reads the results back and writes each response (per policy its version, values, logits and
+``log π`` over the real menu rows) into the client's region before sending ``DONE``, so the next
+batch is prepared while one computes.
 
 **Policies** are held by id with a version each. ``set_policy`` builds the new module on the
 device outside any lock and swaps it in under a short lock; a batch already running keeps the
@@ -33,6 +35,7 @@ import copy
 import json
 import mmap
 import os
+import queue
 import select
 import socket
 import struct
@@ -149,6 +152,8 @@ class InferenceServer:
         self._policies = {}
         self._plock = threading.Lock()
         self._queue = collections.deque()
+        self._launched = 0                        # requests taken into batches
+        self._inflight = queue.Queue(maxsize=2)   # launched batches awaiting read-back (finisher thread)
         self._cv = threading.Condition()
         self._clients = {}
         self._next_cid = 0
@@ -219,7 +224,8 @@ class InferenceServer:
         self._wake_r, self._wake_w = os.pipe()
         self._stats["started"] = time.time()
         self._threads = [threading.Thread(target=self._io_loop, name="rmip-io", daemon=True),
-                         threading.Thread(target=self._compute_loop, name="rmip-compute", daemon=True)]
+                         threading.Thread(target=self._compute_loop, name="rmip-compute", daemon=True),
+                         threading.Thread(target=self._finish_loop, name="rmip-finish", daemon=True)]
         for t in self._threads:
             t.start()
         self._log("listening on %s (%s, max_batch %d, deadline %d us, %s)"
@@ -508,7 +514,7 @@ class InferenceServer:
                         batch = [self._queue.popleft()]
                         total = batch[0].d
                         while self._queue and total + self._queue[0].d <= self.max_batch and \
-                                (self.pause_after is None or len(batch) + self._stats["requests"] < self.pause_after):
+                                (self.pause_after is None or len(batch) + self._launched < self.pause_after):
                             r = self._queue.popleft()
                             batch.append(r)
                             total += r.d
@@ -519,24 +525,44 @@ class InferenceServer:
         return None
 
     def _compute_loop(self):
+        """Takes batches and queues their forwards on the device; the finisher thread reads the
+        results back and answers, so the next batch is padded and launched while one computes."""
         while True:
-            if self.pause_after is not None and self._stats["requests"] >= self.pause_after:
-                self._log("paused after %d requests" % self._stats["requests"])
+            if self.pause_after is not None and self._launched >= self.pause_after:
+                self._inflight.put(None)
+                self._inflight.join()
+                self._log("paused after %d requests" % self._launched)
                 self._stop.wait()
                 return
             batch = self._take_batch()
             if batch is None:
+                self._inflight.put(None)
                 return
+            self._launched += len(batch)
             start = time.perf_counter()
             pos = 0
             for r in batch:
                 r.first = pos
                 pos += r.d
             try:
-                results = self._evaluate(batch)
-                err = None
+                work, err = self._launch(batch), None
             except Exception as e:  # noqa: BLE001 — every request of the batch gets `eval`
-                results, err = None, "%s: %s" % (type(e).__name__, e)
+                work, err = None, "%s: %s" % (type(e).__name__, e)
+            self._inflight.put((batch, work, err, start))
+
+    def _finish_loop(self):
+        while True:
+            item = self._inflight.get()
+            if item is None:
+                self._inflight.task_done()
+                return
+            batch, work, err, start = item
+            results = None
+            if err is None:
+                try:
+                    results = self._collect(work)
+                except Exception as e:  # noqa: BLE001
+                    err = "%s: %s" % (type(e).__name__, e)
             compute = time.perf_counter() - start
             us = min(int(compute * 1e6), 0xFFFFFFFF)
             d_total = sum(r.d for r in batch)
@@ -565,14 +591,14 @@ class InferenceServer:
                 self._stats["requests"] += len(batch)
                 self._stats["max_batch_seen"] = max(self._stats["max_batch_seen"], d_total)
                 self._recent.append((end, d_total, start - batch[0].arrived, compute))
+            self._inflight.task_done()
             with self._cv:
                 self._cv.notify_all()
 
-    def _evaluate(self, batch):
-        """Per policy id: (version, values [D], per batch decision its logits and log π over its
-        real menu rows), for the batch's decisions that asked for it. The decisions run sorted by
-        token count in chunks of at most `chunk` (less padding per forward, bounded memory); every
-        chunk is queued on the device before the first result is read back."""
+    def _launch(self, batch):
+        """Queues the batch's forwards on the device: (decisions, the policies' versions, per forward
+        (policy, batch positions, logits, log π, value) still on the device). The decisions run sorted
+        by token count in chunks of at most `chunk` (less padding per forward, bounded memory)."""
         with self._plock:
             pols = dict(self._policies)
         decs = _concat([r.decs for r in batch])
@@ -605,20 +631,27 @@ class InferenceServer:
                         rows = torch.from_numpy(np.nonzero(sel)[0]).to(dev)
                         sub, where = [t.index_select(0, rows) for t in inputs], ch[sel]
                     logits, value = self._forward(pols[pid].module, sub)
-                    act_mask = sub[9]
-                    lp = torch.log_softmax(logits.masked_fill(~act_mask, -float("inf")), -1)
+                    lp = torch.log_softmax(logits.masked_fill(~sub[9], -float("inf")), -1)
                     pending.append((pid, where, logits, lp, value))
-            menu = decs.sizes["a"]
-            out = {pid: (pols[pid].version, np.zeros(total, np.float32), [None] * total, [None] * total)
-                   for pid in wants}
-            for pid, where, logits, lp, value in pending:
-                lg, lpn, vl = logits.cpu().numpy(), lp.cpu().numpy(), value.float().cpu().numpy()
-                _, vals, lgs, lps = out[pid]
-                for j, b in enumerate(where):
-                    a = int(menu[b])
-                    vals[b] = vl[j]
-                    lgs[b] = lg[j, :a]
-                    lps[b] = lpn[j, :a]
+        versions = {pid: pols[pid].version for pid in wants}
+        return decs, versions, pending
+
+    def _collect(self, work):
+        """Per policy id: (version, values [D], per batch decision its logits and log π over its
+        real menu rows), read back from a _launch."""
+        decs, versions, pending = work
+        total = len(decs)
+        menu = decs.sizes["a"]
+        out = {pid: (ver, np.zeros(total, np.float32), [None] * total, [None] * total)
+               for pid, ver in versions.items()}
+        for pid, where, logits, lp, value in pending:
+            lg, lpn, vl = logits.cpu().numpy(), lp.cpu().numpy(), value.cpu().numpy()
+            _, vals, lgs, lps = out[pid]
+            for j, b in enumerate(where):
+                a = int(menu[b])
+                vals[b] = vl[j]
+                lgs[b] = lg[j, :a]
+                lps[b] = lpn[j, :a]
         return out
 
     def _forward(self, module, inputs):
