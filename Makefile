@@ -92,7 +92,8 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 
 .DEFAULT_GOAL := all
 
-all: program rmknow robomage_check
+# text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
+all: program rmknow robomage_check text-table
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -140,7 +141,7 @@ refetch:
 # Auto-detect libtorch from the torch package $(PYTHON) imports (an active venv's included), only
 # when asked to build the actor; override with `make actor LIBTORCH_DIR=/path`. Fail early (with a
 # clear message) when there is none.
-ifneq (,$(filter actor,$(MAKECMDGOALS)))
+ifneq (,$(filter actor rmembed,$(MAKECMDGOALS)))
 LIBTORCH_DIR ?= $(shell $(PYTHON) -c 'import os, torch; print(os.path.dirname(torch.__file__))' 2>/dev/null)
 ifeq ($(strip $(LIBTORCH_DIR)),)
 $(error LIBTORCH_DIR is empty: $(PYTHON) cannot import torch. \
@@ -175,6 +176,58 @@ ACTOR_LDFLAGS := $(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
 
 actor: $(ACTOR_OBJ)
 
+# ── bin/<config>/rmembed — the oracle-text table's generator (plan step 5c, docs/featurizer.md §5) ──
+# tools/rmembed/ (the BERT encoder in the libtorch C++ API and its safetensors reader), compiled like
+# the actor TUs (exceptions on, torch includes), linked with src/featurize/ (std only: RMTB, the
+# WordPiece tokenizer, the text-table inputs) and the std-only schema (FNV-1a), no engine TU. NOT
+# part of the default build: `make rmembed` (LIBTORCH_DIR as for `make actor`), or `make text-table`
+# when the table is stale.
+RMEMBED_SRCS := $(wildcard tools/rmembed/*.cpp)
+RMEMBED_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMEMBED_SRCS))
+RMEMBED_LIB_OBJ := $(ODIR)/state_format/schema.o \
+                   $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
+# libtorch 2.10+ headers require C++20; only these TUs are built with it.
+RMEMBED_CXXFLAGS := $(patsubst -std=c++17,-std=c++20,$(ACTOR_CXXFLAGS))
+
+# Defined before the generic $(ODIR)/tools/%.o rule (Apple's make 3.81 picks pattern rules by
+# definition order; see the actor rule above).
+$(ODIR)/tools/rmembed/%.o: tools/rmembed/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(RMEMBED_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+rmembed: $(RMEMBED_OBJ) $(RMEMBED_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmembed $(RMEMBED_OBJ) $(RMEMBED_LIB_OBJ) $(ACTOR_LDFLAGS)
+
+# ── make text-table — keep the committed oracle-text table complete (docs/featurizer.md §5) ──
+# Builds the engine and runs its std-only check of TEXT_TABLE against tools/embed/MODEL_PIN; when
+# rows are missing or stale it writes their inputs, fetches the pinned model
+# (tools/embed/fetch_model.py, network), builds rmembed (libtorch) and regenerates only those rows,
+# then checks again. Fails naming the stale rows and the command when the fetch or libtorch is
+# unavailable.
+TEXT_TABLE := bin/resources/embeddings/oracle_text.rmtb
+MODEL_PIN := tools/embed/MODEL_PIN
+TEXT_TABLE_INPUTS := .cache/embed/text_table_inputs.jsonl
+TEXT_TABLE_CHECK = cd bin && ./$(CONFIG)/$(BINNAME) --text-table-check ../$(TEXT_TABLE) --model-pin ../$(MODEL_PIN)
+TEXT_TABLE_FAIL = echo "text-table: $(TEXT_TABLE) is stale (rows above) and could not be regenerated: $$step failed." \
+	"Run \`make text-table\` with network access to huggingface.co and libtorch (LIBTORCH_DIR=/path/to/torch)."; exit 1
+
+text-table: program
+	@if ($(TEXT_TABLE_CHECK)); then exit 0; fi; \
+	mkdir -p .cache/embed $(dir $(TEXT_TABLE)); \
+	step="robomage --text-table-inputs"; \
+	(cd bin && ./$(CONFIG)/$(BINNAME) --text-table-inputs ../$(TEXT_TABLE_INPUTS) --text-table ../$(TEXT_TABLE) \
+		--model-pin ../$(MODEL_PIN)) || { $(TEXT_TABLE_FAIL); }; \
+	step="tools/embed/fetch_model.py (the model download)"; \
+	model=$$($(PYTHON) tools/embed/fetch_model.py --pin $(MODEL_PIN)) || { $(TEXT_TABLE_FAIL); }; \
+	step="make rmembed (libtorch)"; \
+	$(MAKE) --no-print-directory rmembed || { $(TEXT_TABLE_FAIL); }; \
+	step="rmembed"; \
+	$(BINDIR)/rmembed --model "$$model" --pin $(MODEL_PIN) --inputs $(TEXT_TABLE_INPUTS) --table $(TEXT_TABLE) \
+		|| { $(TEXT_TABLE_FAIL); }; \
+	step="the check after regeneration"; \
+	($(TEXT_TABLE_CHECK)) || { $(TEXT_TABLE_FAIL); }
+
 # ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
 # tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only
 # objects it may see: the RMSTATE decoder and schema and src/knowledge/ (step-1 handoff §3). Part
@@ -194,18 +247,20 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 
 # ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
 # tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
-# the std-only RMSTATE decoder and schema and the agents' std-only frame reader and Python-compatible
-# generator. Built with the engine's flags (-fno-exceptions); `make check` runs every tier.
+# the std-only RMSTATE decoder and schema, the agents' std-only frame reader and Python-compatible
+# generator, and src/featurize/ (std only: the JSON reader, RMTB, the WordPiece tokenizer). Built
+# with the engine's flags (-fno-exceptions); `make check` runs every tier.
 RMCHECK_SRCS := $(wildcard tools/robomage_check/*.cpp)
 RMCHECK_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMCHECK_SRCS))
 RMCHECK_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
-                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o
+                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o \
+                   $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
 
 robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmknow robomage_check
+.PHONY: all check regen refetch clean actor rmembed text-table rmknow robomage_check
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -216,7 +271,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # resources/ and decks.
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/robomage_check
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/robomage_check bin/*/rmembed
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -225,3 +280,4 @@ clean:
 -include $(ACTOR_OBJ:.o=.d)
 -include $(RMKNOW_OBJ:.o=.d)
 -include $(RMCHECK_OBJ:.o=.d)
+-include $(RMEMBED_OBJ:.o=.d)

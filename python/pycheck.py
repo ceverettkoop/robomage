@@ -19,6 +19,11 @@ playing does not:
             when it would kill the opponent too, while the opponent's board has it dead next
             turn), nor a Dismember whose Phyrexian pip only life can pay; at 3 life it casts the
             same Price of Progress (the position does tempt it).
+  rmtb      ``python/rmtb.py`` reads the RMTB files the C++ writer wrote (``src/featurize/rmtb.cpp``;
+            ``robomage_check``'s smoke tier writes two samples, an array of every dtype and a text
+            table, and their meta and values, ``--rmtb-samples FILE``) to exactly those values,
+            floats bit for bit, the f16 halves equal to ``struct``'s rounding of their sources; and
+            the committed text table, when there is one, has zero rows outside its rows_meta.
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -28,10 +33,13 @@ Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: �
 exit 1 on any finding::
 
     python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,selfkill,driver]
+                              [--rmtb-samples FILE]
 """
 from __future__ import annotations
 
 import argparse
+import json
+import math
 import os
 import shutil
 import struct
@@ -45,8 +53,11 @@ if _HERE not in sys.path:
 
 import rm_driver  # noqa: E402
 import rmstate  # noqa: E402
+import rmtb  # noqa: E402
 
-PARTS = ("decode", "refusals", "selfkill", "driver")
+PARTS = ("decode", "refusals", "selfkill", "driver", "rmtb")
+# The committed oracle-text table (docs/featurizer.md §5).
+TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
 # The in-process agents' dumps: (deck_a, deck_b, bo3, game seed).
 ENGINE_DUMPS = (("league/ur_delver", "league/gw_maverick", False, 41),
@@ -311,7 +322,72 @@ def check_driver(binary, work):
     return fails
 
 
-def run(binary, out_dir=None, parts=PARTS):
+# ── RMTB ──────────────────────────────────────────────────────────────────────────────────────
+
+def _bits(dtype, x):
+    """A float's bytes at its stored width, so -0.0 and the rounding are compared exactly; a value
+    past the half range is its infinity (IEEE rounding; ``struct`` raises instead)."""
+    try:
+        return struct.pack("<e" if dtype == "f16" else "<f", float(x))
+    except OverflowError:
+        return struct.pack("<e" if dtype == "f16" else "<f", math.copysign(math.inf, float(x)))
+
+
+def _sample_fails(t):
+    """One sample file of robomage_check's against what python/rmtb.py reads from it."""
+    name = os.path.basename(t["path"])
+    try:
+        meta, arrays = rmtb.read(t["path"])
+    except (OSError, ValueError) as e:
+        return [f"rmtb: {name}: {e}"]
+    fails = []
+    if meta != t["meta"]:
+        fails.append(f"rmtb: {name}: meta {meta!r}, written {t['meta']!r}")
+    for aname, want in t["arrays"].items():
+        a = arrays.get(aname)
+        if a is None:
+            fails.append(f"rmtb: {name}: no array {aname}")
+            continue
+        fl = a.dtype in ("f32", "f16")
+        same = len(a.values) == len(want["values"]) and all(
+            (_bits(a.dtype, x) == _bits(a.dtype, y)) if fl else x == y for x, y in zip(a.values, want["values"]))
+        if not same:
+            fails.append(f"rmtb: {name}: {aname} reads {a.values!r}, written {want['values']!r}")
+        # struct's 'e' rounds to nearest even like the C++ writer: the stored halves are its packing
+        # of the floats they were written from.
+        source = [struct.unpack("<f", _bits("f32", x))[0] for x in want.get("source", ())]  # the exact floats
+        if "source" in want and [_bits("f16", x) for x in source] != [_bits("f16", x) for x in a.values]:
+            fails.append(f"rmtb: {name}: {aname}'s halves differ from struct's rounding of {want['source']!r}")
+    return fails
+
+
+def check_rmtb(samples):
+    """The rmtb part; returns failures."""
+    fails = []
+    checked = []
+    if samples:
+        with open(samples, encoding="utf-8") as f:
+            expected = json.load(f)["files"]
+        for t in expected:
+            fails += _sample_fails(t)
+            checked.append(os.path.basename(t["path"]))
+    if os.path.isfile(TEXT_TABLE):
+        try:
+            meta, arrays = rmtb.read(TEXT_TABLE)
+            present = {r["id"] for r in meta["rows_meta"]}
+            rows = arrays["vectors"].rows()
+            if meta["kind"] != "text" or any(any(rows[i]) for i in range(len(rows)) if i not in present):
+                fails.append("rmtb: the text table is not a text table with zero rows outside rows_meta")
+            checked.append(os.path.basename(TEXT_TABLE))
+        except (OSError, ValueError, KeyError) as e:
+            fails.append(f"rmtb: {TEXT_TABLE}: {e}")
+    if not fails:
+        print(f"  OK   rmtb: {', '.join(checked) or 'nothing to read (no --rmtb-samples, no text table)'}",
+              flush=True)
+    return fails
+
+
+def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None):
     """The requested parts; returns the failure messages (empty = pass)."""
     binary = os.path.abspath(binary)
     if out_dir:
@@ -334,6 +410,8 @@ def run(binary, out_dir=None, parts=PARTS):
             fails += check_selfkill(binary, work)
         if "driver" in parts:
             fails += check_driver(binary, work)
+        if "rmtb" in parts:
+            fails += check_rmtb(rmtb_samples)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return fails
@@ -345,12 +423,14 @@ def main(argv=None) -> int:
     ap.add_argument("--binary", default=rm_driver.DEFAULT_BINARY, help="the engine (default %(default)s)")
     ap.add_argument("--out-dir", default=None, help="the scratch directory's parent (default the system's)")
     ap.add_argument("--part", default=",".join(PARTS), help=f"comma list of {', '.join(PARTS)} (default all)")
+    ap.add_argument("--rmtb-samples", default=None, help="the rmtb part's samples (robomage_check's smoke tier "
+                    "writes them)")
     args = ap.parse_args(argv)
     parts = [p for p in args.part.split(",") if p]
     unknown = [p for p in parts if p not in PARTS]
     if unknown:
         ap.error(f"unknown part(s) {', '.join(unknown)}")
-    fails = run(args.binary, args.out_dir, parts)
+    fails = run(args.binary, args.out_dir, parts, args.rmtb_samples)
     for f in fails:
         print(f"FAIL: {f}", flush=True)
     return 1 if fails else 0

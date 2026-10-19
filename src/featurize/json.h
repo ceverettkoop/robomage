@@ -1,16 +1,18 @@
-#ifndef ROBOMAGE_CHECK_JSON_H
-#define ROBOMAGE_CHECK_JSON_H
+#ifndef FEATURIZE_JSON_H
+#define FEATURIZE_JSON_H
 
 #include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
 
-// ── robomage_check: a small JSON reader (the scenario files and the divergence registries) ─────
+// ── A small JSON reader, standard library only ─────────────────────────────────────────────────
 //
-// RFC 8259 values; objects keep their key order. Errors are returned, never thrown.
+// RFC 8259 values; objects keep their key order. Errors are returned, never thrown. Shared by the
+// gate (the scenario files and the divergence registries), the RMTB tables' meta (rmtb.h), the
+// model pin and the text-table inputs (oracle_text.h) and rmembed.
 
-namespace rmcheck {
+namespace featurize {
 
 class Json {
     public:
@@ -67,6 +69,10 @@ class Json {
         std::vector<std::pair<std::string, Json>> members_;
 };
 
-}  // namespace rmcheck
+// `s` as a JSON string literal: quotes, backslashes and control characters escaped, every other
+// byte (UTF-8 included) as it is.
+std::string json_quote(const std::string &s);
 
-#endif /* ROBOMAGE_CHECK_JSON_H */
+}  // namespace featurize
+
+#endif /* FEATURIZE_JSON_H */

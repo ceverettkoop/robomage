@@ -8,6 +8,7 @@
 #include "components/zone.h"
 #include "error.h"
 #include "game_driver.h"
+#include "text_table.h"
 
 // One command-line option. The option table below is the single definition of which flags
 // exist, which take a value, which shape the game's setup, and which the log header records.
@@ -211,6 +212,12 @@ static const CliOption OPTIONS[] = {
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
     {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
+    // Check the oracle-text table against the vocab and the model pin, or write the inputs of its
+    // stale rows, instead of playing (text_table.h).
+    {"--text-table-check", nullptr, true, false, [](const char *v) { text_table_check_path = v; }, nullptr},
+    {"--text-table-inputs", nullptr, true, false, [](const char *v) { text_table_inputs_path = v; }, nullptr},
+    {"--text-table", nullptr, true, false, [](const char *v) { text_table_path = v; }, nullptr},
+    {"--model-pin", nullptr, true, false, [](const char *v) { model_pin_path = v; }, nullptr},
     {"--narrative", nullptr, false, false, [](const char *) { narrative_mode = true; }, nullptr},
     {"--log-decisions", nullptr, false, false, [](const char *) { log_decisions_flag = true; }, nullptr},
     {"--decision-log", nullptr, true, false,

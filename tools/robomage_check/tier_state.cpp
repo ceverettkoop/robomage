@@ -637,11 +637,12 @@ static void check_card_params(const rmcheck::Options &opt, rmcheck::Report &rep)
                  " parts");
 }
 
-// The knowledge-side sources include only the standard library and the std-only headers.
+// The knowledge-side and featurizer-side sources (src/knowledge/, src/featurize/) include only the standard
+// library and the std-only headers.
 static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     static const std::set<std::string> std_headers = {"algorithm", "any", "array", "atomic", "bitset", "cassert",
         "cctype", "cerrno", "cfloat", "charconv", "chrono", "cinttypes", "climits", "cmath", "complex", "cstdarg",
-        "cstddef", "cstdint", "cstdio", "cstdlib", "cstring", "ctime", "deque", "functional", "initializer_list",
+        "cstddef", "cstdint", "cstdio", "cstdlib", "cstring", "ctime", "deque", "fstream", "functional", "initializer_list",
         "iomanip", "ios", "iosfwd", "iostream", "istream", "iterator", "limits", "list", "map", "memory", "mutex",
         "new", "numeric", "optional", "ostream", "queue", "random", "ratio", "set", "sstream", "stack", "stdexcept",
         "string", "string_view", "system_error", "tuple", "type_traits", "typeinfo", "unordered_map", "unordered_set",
@@ -654,16 +655,18 @@ static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
             const std::string rel = std::string("src/state_format/") + stem + ext;
             if (rmcheck::file_exists(opt.repo + "/" + rel)) files.push_back(rel);
         }
-    for (const char *ext : {".h", ".cpp"})
-        for (const std::string &f : rmcheck::list_dir(opt.repo + "/src/knowledge", ext))
-            files.push_back("src/knowledge/" + f);
+    for (const char *dir : {"src/knowledge", "src/featurize"})
+        for (const char *ext : {".h", ".cpp"})
+            for (const std::string &f : rmcheck::list_dir(opt.repo + "/" + dir, ext))
+                files.push_back(std::string(dir) + "/" + f);
     std::sort(files.begin(), files.end());
     size_t bad = 0;
     for (const std::string &rel : files) {
         std::string text;
         rmcheck::read_file(opt.repo + "/" + rel, &text);
         const std::string own = rmcheck::strip_ext(rel) + ".h";
-        const bool in_knowledge = rmcheck::starts_with(rel, "src/knowledge/");
+        const std::string own_dir = rmcheck::dirname_of(rel) + "/";
+        const bool in_own_dir = own_dir == "src/knowledge/" || own_dir == "src/featurize/";
         const std::vector<std::string> lines = rmcheck::split_lines(text);
         for (size_t n = 0; n < lines.size(); ++n) {
             // ^\s*#\s*include\s*([<"])([^>"]+)[>"]
@@ -688,7 +691,7 @@ static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
             const std::string target = normpath(rmcheck::dirname_of(rel) + "/" + name);
             const bool ok =
                 allowed.count(target) || target == own ||
-                (in_knowledge && rmcheck::starts_with(target, "src/knowledge/") && rmcheck::ends_with(target, ".h"));
+                (in_own_dir && rmcheck::starts_with(target, own_dir.c_str()) && rmcheck::ends_with(target, ".h"));
             if (!ok) {
                 ++bad;
                 rep.error("state",

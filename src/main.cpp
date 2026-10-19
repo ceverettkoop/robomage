@@ -16,6 +16,7 @@
 #include "input_logger.h"
 #include "state_format/recode.h"
 #include "state_format/stream.h"
+#include "text_table.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.2"
@@ -93,6 +94,9 @@ int main(int argc, char const *argv[]) {
 
     // --check-decks: the decks' cards against the vocabulary; no game is played.
     if (check_decks_flag) return check_decks(check_decks_dirs);
+
+    // --text-table-check / --text-table-inputs: the oracle-text table; no game is played.
+    if (text_table_requested()) return run_text_table();
 
     // --rmstate-read: an offline stream check; no game is played.
     if (!rmstate_read_path.empty()) return rmstate_read_stream(rmstate_read_path, state_dump_json);

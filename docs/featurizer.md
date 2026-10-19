@@ -146,48 +146,107 @@ elsewhere and at the none row. Committed (§5).
 
 ### 4.4 Files: RMTB
 
-Every exported array is one RMTB file, readable with any language's standard library:
+Every exported table is an RMTB file of one or more **named arrays**, readable with any language's
+standard library (the trajectory files of `docs/rnad_training_plan.md` reuse it):
 
 | Part | Layout |
 |---|---|
 | magic | 4 bytes `RMTB` |
 | version | u32 little-endian (1) |
-| meta length | u32 little-endian, bytes of the JSON that follows |
+| meta length | u32 little-endian, bytes of the JSON that follows (padding included) |
 | meta | UTF-8 JSON, keys in a fixed order, padded with spaces to a multiple of 8 bytes |
-| data | `rows × cols` little-endian values of `dtype`, row-major |
+| data | the arrays' values, little-endian, row-major, each array at an 8-byte-aligned offset from the start of the data (zero padding between; the file ends with the last array) |
 
-Meta keys: `kind` (`card`, `text`, `ability`, `part`, `tensors`), `dtype` (`f32`, `i64`),
-`rows`, `cols`, `columns` (one name per column), `vocab_hash` (FNV-1a 64 over the vocab's
-`(id, name)` pairs, hex), `spec_hash` (§6), and for the text table `model` (the encoder's
-repository and pinned commit), `pooling`, `norm_version` (the text normalisation, §5) and `rows_meta`
-(per present row: vocab id and the FNV-1a 64 of its normalised text). numpy reads the data with
-`np.frombuffer(buf, dtype, offset=12 + meta_length)`; Python's `struct`/`array` with no install.
+Meta keys, in this order, each left out when it does not apply: `kind` (`card`, `text`,
+`ability`, `part`, `tensors`, …), `vocab_hash` (FNV-1a 64 over the vocab's `(id, name)` pairs in
+ascending id, each pair as the id's u32 little-endian bytes, the name's UTF-8 bytes and a 0 byte;
+16 hex digits), `spec_hash` (§6), and for the text table `model` (the encoder's repository and
+pinned commit, `<repo>@<commit>`), `pooling` (`cls`, `mean`), `norm_version` (the text
+normalisation, §5) and `rows_meta` (per present row, ascending: `{"id": <vocab id>, "hash": <FNV-1a
+64 of its normalised text, 16 hex digits>}`); then `arrays`: one
+`{"name", "dtype", "shape": [...], "offset"[, "columns": [...]]}` per array in file order (`shape`
+of any rank, `[]` a scalar; `offset` from the start of the data, the previous array's end rounded
+up to a multiple of 8; `columns`, optional, names the last dimension's entries). The same content
+always encodes to the same bytes.
+
+Dtypes: `f32`, `f16` (IEEE binary16, written with round-to-nearest-even), `i64`, `i32`, `u16`,
+`u8`. Ragged data is two arrays, the values and an `i64` offsets array (`n + 1` entries; row `r`
+is `values[offsets[r]:offsets[r+1]]`), with no padding on disk. The text table is one array,
+`vectors` `[N_CARD_TYPES + 1, hidden]` f32, with `rows_meta` in the meta.
+
+Readers: `src/featurize/rmtb.{h,cpp}` (C++, std only; also the writer and the f16 conversions),
+`python/rmtb.py` (Python's `struct`, f16 as format `e`); numpy reads an array with
+`np.frombuffer(buf, dtype, count, offset=12 + meta_length + array_offset)`.
 
 ## 5. The text table and `make`
 
-- **Text.** Per face vocab id: `"<type line>. <oracle>"` with the face's name (and, for a
-  double-faced card, the other face's name) replaced by `CARDNAME`, `\n` by a space, whitespace
-  collapsed, plus the model's required prefix (none for the bge and MiniLM families). This is
-  normalisation version 1; any change bumps it, which makes every row stale.
-- **Committed** at `bin/resources/embeddings/oracle_text.rmtb` (~1.5 MB dense).
-- **`make` keeps it complete.** After building `robomage`, `make` runs
-  `robomage --check-text-table` (std only, no network): every vocab face with oracle text has a
-  row whose hash matches its current normalised text, and the header's `model` and
-  `norm_version` match `tools/embed/MODEL_PIN`. On success nothing else runs. Otherwise `make`
-  runs the generator:
-  1. `robomage --text-table-inputs FILE` writes the stale entries (vocab id, normalised text,
-     hash);
+- **Entries.** One per vocab id (`src/card_vocab.h`, card entries and the registered token band)
+  whose face has oracle text: a front face under its own id, a double-faced card's back face under
+  the back face's entry, a split card (both halves under one id) as both halves, a token from its
+  token script; read from the parse cache, no entity created. Engine side: `src/text_table.{h,cpp}`;
+  the std-only rules: `src/featurize/oracle_text.{h,cpp}`.
+- **Text.** `"<type line>. <oracle>"`, a split card's halves joined with `" // "`. The type line is
+  the face's `Types:` line in script order, placed as printed: supertypes, `Token` for a token,
+  card types, then ` — ` (an em dash) and the subtypes. In the oracle, every whole-word occurrence
+  of the face's name, the other face's name and each one's part before its first `, ` (the short
+  name oracle text uses for a legendary card: "exile Ajani") becomes `CARDNAME`, longest first;
+  the type line keeps its words (a planeswalker's subtype is its short name). Then newlines and
+  tabs become spaces, runs of spaces collapse, the text is trimmed and the pin's `prefix` put
+  before it (none for the bge and MiniLM families). This is normalisation version 1
+  (`featurize::NORM_VERSION`); any change bumps it, which makes every row stale. The row's hash is
+  FNV-1a 64 of the text's UTF-8 bytes (`featurize::text_hash`).
+- **The pin**, `tools/embed/MODEL_PIN`: `key value` lines `repo`, `commit` (full SHA), `pooling`
+  (`cls` or `mean`, as the model was trained) and `prefix` (a JSON string). The table's `model`
+  (`<repo>@<commit>`), `pooling`, `norm_version` and `vocab_hash` must equal the pin's and the
+  vocab's, else every row is stale: a pin change regenerates the whole table.
+- **Committed** at `bin/resources/embeddings/oracle_text.rmtb` (§4.4: kind `text`, array
+  `vectors` `[1025, 384]` f32, ~1.5 MB dense).
+- **Check**: `robomage --text-table-check FILE --model-pin PIN` (std only, no network) exits 0 when
+  every entry has a `rows_meta` row with its current hash, no other row is listed and the header
+  matches; otherwise it prints `TEXT-TABLE: stale <id> <name>` per missing or stale entry
+  (`extra <id>` per listed row that is no entry) and exits 1. A missing table is all stale.
+- **`make text-table`** builds `robomage` and runs the check. On success nothing else runs.
+  Otherwise:
+  1. `robomage --text-table-inputs .cache/embed/text_table_inputs.jsonl --text-table TABLE`
+     writes the stale entries as JSON lines, after a header with the row count, vocab hash, model,
+     pooling, normalisation and every present entry (`featurize::text_inputs_jsonl`);
   2. `python3 tools/embed/fetch_model.py` (stdlib) downloads the pinned model's `config.json`,
-     `vocab.txt`, `tokenizer_config.json` and `model.safetensors` into `.cache/embed/<commit>/`;
-  3. `bin/<config>/rmembed` (libtorch, built on demand like `make actor`) tokenises, encodes,
-     pools and normalises those entries and rewrites the table, keeping every other row's bytes.
-  Without libtorch or network the generator fails, naming the stale entries and the command; the
-  build never continues with an incomplete table.
-- **Encoder.** `rmembed` implements the BERT encoder in the libtorch C++ API, reading the
-  safetensors weights directly (no TorchScript export and no Python), and a WordPiece tokenizer
-  over `vocab.txt`. It is checked against golden token ids and golden vectors produced once by the
-  reference implementation (`tools/embed/make_goldens.py`, needs torch + transformers; the goldens
-  are committed, the script is not run by `make`).
+     `vocab.txt`, `tokenizer_config.json` and `model.safetensors` into
+     `.cache/embed/<repo, / as __>/<commit>/` (the weights checked against the repository's
+     SHA-256);
+  3. `make rmembed` (libtorch, found as `make actor` finds it; C++20, which libtorch's headers
+     require) and `bin/<config>/rmembed --model DIR --pin PIN --inputs FILE --table TABLE`
+     tokenises, encodes, pools and normalises those entries and rewrites the table, keeping every
+     other present row's bytes, zeroing rows no longer present; it then prints each encoded row's
+     three nearest rows for review;
+  4. the check again.
+  Without libtorch or network it fails, naming the stale entries, the step and the command; it
+  never leaves the table half written (the file is replaced by a rename). `all` depends on it,
+  so every `make` runs the check; a clean checkout with a current table never downloads the model
+  or needs libtorch, and a stale table fails CI.
+- **Tokenizer** (`src/featurize/wordpiece.{h,cpp}`, std only): BERT basic tokenization as the
+  reference fast tokenizer does it (special tokens matched in the raw text; cleaning; CJK split;
+  lowercasing and accent stripping for an uncased model; whitespace and punctuation split), then
+  greedy longest-match WordPiece with `##` continuations and `[UNK]`; `[CLS] … [SEP]`, never
+  truncated (`rmembed` fails on a text past the model's positions; the longest card text is 153
+  tokens). Its Unicode tables cover ASCII, Latin-1, Latin Extended-A, the combining marks, General
+  Punctuation, Mathematical Operators and the unified CJK blocks; a text with any other character
+  is refused, never tokenised on a guess.
+- **Encoder** (`tools/rmembed/`): the BERT encoder in the libtorch C++ API over the safetensors
+  weights read directly (F32, F16, BF16; names with or without `bert.`; no TorchScript, no
+  Python): embeddings, LayerNorm, per layer masked self-attention, dense + residual + LayerNorm,
+  exact-GELU intermediate, dense + residual + LayerNorm; `cls` or `mean` pooling; L2
+  normalisation. Each text is encoded alone on one thread, so a row depends on its text only.
+- **Goldens** (`tools/embed/make_goldens.py`, needs torch + transformers, never run by `make`):
+  `tokens` records `tests/embed/tokens_golden.jsonl` (committed): every entry's ids from the
+  pinned `tokenizer.json`, cross-checked against `vocab.txt` + `tokenizer_config.json`, plus hard
+  and coverage strings (every character of the tokenizer's tables); the gate's `vocab` tier checks
+  the C++ tokenizer against it id for id when the model's vocab is cached (else it prints a skip).
+  `encoder` builds a seeded random BERT from the pinned config at a small size (2 layers, hidden
+  64), saved as F32 or as F16 with `bert.` names, or takes the real model (`--model DIR`), and
+  compares `rmembed --embed-test` (batch 1 and padded batches) with `BertModel` in eval, both
+  poolings; `table` compares a generated table with the reference vectors of its texts. Each
+  requires cosine ≥ 0.99999.
 
 ## 6. The spec and the network contract
 

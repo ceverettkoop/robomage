@@ -91,6 +91,12 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   corpus after an intentional behavior change
 - `make refetch` — delete the local card/token scripts, re-provision them at the pinned Forge
   commit and run `make check` without re-recording (detects upstream script drift)
+- `make rmembed` — `bin/<config>/rmembed`, the oracle-text table's generator (libtorch, C++20; found
+  like `make actor`, `LIBTORCH_DIR=…`); not part of plain `make`
+- `make text-table` — check `bin/resources/embeddings/oracle_text.rmtb` against the vocab and
+  `tools/embed/MODEL_PIN` (`robomage --text-table-check`); when rows are stale, fetch the pinned
+  model (`tools/embed/fetch_model.py`, network) and regenerate only those rows with `rmembed`
+  (`docs/featurizer.md` §5). Part of `all`: a current committed table needs no network or libtorch
 - `make actor` — compiles the libtorch TUs of `src/actor/` (the TorchScript evaluator kept as the
   base of plan step 5; no binary until step 5 adds a main). Needs a torch importable by `python3`,
   or `LIBTORCH_DIR=…`; not part of plain `make`
@@ -122,7 +128,7 @@ background** and make the live output inspectable by the user:
 
   | Tier | Checks |
   |---|---|
-  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab |
+  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached) |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
@@ -131,7 +137,7 @@ background** and make the live output inspectable by the user:
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | decisions per second of a fixed explore workload (no threshold) |
-  | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` |
+  | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples) |
 
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
@@ -561,6 +567,12 @@ sections above are not repeated here.
 - `src/card_vocab.h` — card name → vocab index (the implemented-card registry; the card id of the
   state format's `card` columns), `N_CARD_TYPES`, the token band
 - `src/name_card_choices.{h,cpp}` — the name-a-card candidate set
+- `src/text_table.{h,cpp}` — `--text-table-check` / `--text-table-inputs`: the oracle-text table's
+  entries (per face vocab id, from the parse cache) and its staleness
+- `src/featurize/` — std only (include-isolated like `src/knowledge/`): `json` (the shared JSON
+  reader), `rmtb` (RMTB named-array files, `docs/featurizer.md` §4.4), `oracle_text` (text
+  normalisation, text / vocab hashes, the model pin, staleness, the inputs file), `wordpiece`
+  (the BERT WordPiece tokenizer)
 - `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
   card loads and is in the vocab; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
@@ -596,6 +608,11 @@ step 5 adds a main.
   engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
   `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
   `generative.h`, the belief model played out directly)
+- `tools/rmembed/` — `bin/<config>/rmembed` (`make rmembed`, libtorch): the BERT encoder in the
+  libtorch C++ API and its safetensors reader; writes the oracle-text table
+- `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`
+  (stdlib download into `.cache/embed/`), `make_goldens.py` (needs torch + transformers, never run
+  by `make`: the tokenizer golden, the encoder and table checks against transformers)
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
   `.dk` scraper (stdlib only, its own README)
 
@@ -609,6 +626,7 @@ step 5 adds a main.
 - `rm_driver.py` — the agent-game driver on `--machine`: engine subprocess, frame read, reply
   write; scripted tiers, explore, `first`, `actions:`; `run_games` / `play_game`; its own CLI
   (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
+- `rmtb.py` — RMTB reader (`docs/featurizer.md` §4.4), stdlib `struct`
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the
   `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
 - `record_corpus.py` — re-records the replay corpus with the live scripted agent, plus explore
@@ -620,6 +638,7 @@ step 5 adds a main.
 - `tests/scenarios/*.json` — the rules-regression and state-format / knowledge sharpness scenarios
 - `tests/cli/<name>.json` + `<name>.out` — the `cli` tier's sessions (engine flags and stdin lines)
   and their golden stdout (`robomage_check --tier cli --record` rewrites them)
+- `tests/embed/tokens_golden.jsonl` — the text tokenizer's golden ids (`make_goldens.py tokens`)
 - `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
   baseline; `docs/ci.md`)
 

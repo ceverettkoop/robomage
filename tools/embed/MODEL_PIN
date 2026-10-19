@@ -1,0 +1,19 @@
+# The text-embedding model the oracle-text table is generated with (plan step 5c,
+# docs/featurizer.md §5): its Hugging Face repository, the full commit SHA every fetch is
+# pinned to, the pooling it was trained with (`cls`: the [CLS] vector, bge family; `mean`: the
+# mean over real tokens, all-MiniLM family) and the prefix put before every text, as a JSON
+# string ("" for none; bge and MiniLM embed passages with none). `key value` lines, `#` comments.
+# The committed table's header names this model, pooling and normalisation, so a fresh clone
+# regenerates nothing while they match, and a change here makes every row stale.
+#
+# To bump: change repo / commit / pooling / prefix below, run `make text-table` (it fetches the
+# new weights into .cache/embed/ and regenerates every row), review the nearest-neighbour report
+# (Bolt next to Chain Lightning, Brainstorm next to Ponder), then commit this file together with
+# the regenerated bin/resources/embeddings/oracle_text.rmtb and the re-recorded tokenizer golden
+# (tools/embed/make_goldens.py tokens).
+#
+# Provisional pin 2026-10-19 (BAAI/bge-small-en-v1.5, MIT licence; the final pick is plan step 5a).
+repo BAAI/bge-small-en-v1.5
+commit 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+pooling cls
+prefix ""

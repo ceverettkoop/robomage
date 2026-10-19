@@ -23,6 +23,7 @@ struct Token {
     std::string script_name = "";
     std::string oracle_text = "";  // the token script's Oracle: line (display and the state format)
     std::set<Type> types;
+    std::string types_text = "";  // the Types: line as the script writes it (the printed order of `types`)
     std::vector<const AbilityDef *> abilities;    // triggered abilities (e.g. Prowess)
     // Continuous static abilities from the token script's S: lines (e.g. the Urza's Saga
     // Construct token's "This creature gets +1/+1 for each artifact you control."). Copied onto

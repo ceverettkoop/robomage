@@ -9,7 +9,7 @@
 #include <tuple>
 
 #include "frames.h"
-#include "json.h"
+#include "../../src/featurize/json.h"
 #include "proc.h"
 #include "scan.h"
 #include "sessions.h"
@@ -80,14 +80,14 @@ static Tags load_tags(const rmcheck::Options &opt) {
     Tags t;
     const std::string path = opt.decks_dir() + "/archetypes.json";
     std::string text, err;
-    rmcheck::Json doc;
-    if (!rmcheck::read_file(path, &text) || !rmcheck::Json::parse(text, &doc, &err) || !doc.is_object()) {
+    featurize::Json doc;
+    if (!rmcheck::read_file(path, &text) || !featurize::Json::parse(text, &doc, &err) || !doc.is_object()) {
         t.error = path + ": cannot read (" + err + ")";
         return t;
     }
-    const rmcheck::Json *labels = doc.get("_archetypes");
+    const featurize::Json *labels = doc.get("_archetypes");
     if (labels && labels->is_array())
-        for (const rmcheck::Json &l : labels->items()) t.labels.push_back(l.as_string());
+        for (const featurize::Json &l : labels->items()) t.labels.push_back(l.as_string());
     if (t.labels.empty()) t.error = path + ": '_archetypes' must be a non-empty list";
     for (const auto &m : doc.members()) {
         if (rmcheck::starts_with(m.first, "_")) continue;

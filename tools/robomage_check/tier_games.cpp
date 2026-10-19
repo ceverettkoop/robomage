@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "embed.h"
 #include "gate.h"
 #include "proc.h"
 #include "scan.h"
@@ -272,7 +273,8 @@ void tier_bench(const Options &opt, Report &rep) {
 
 // The smoke tier: scripted hard vs hard (the Python agent: python/rm_driver.py, one process per
 // matchup) over the league mirrors and the ring (--smoke-games per matchup, game i of matchup k
-// with seed seed + 1000k + i), and beside them the kept Python's own checks (python/pycheck.py).
+// with seed seed + 1000k + i), and beside them the kept Python's own checks (python/pycheck.py; its rmtb
+// part reads the RMTB samples written here, embed.h).
 // Skipped with a notice when no Python interpreter is found.
 void tier_smoke(const Options &opt, Report &rep) {
     if (opt.python.empty()) {
@@ -284,12 +286,14 @@ void tier_smoke(const Options &opt, Report &rep) {
     const std::string out_dir = opt.out("");
     std::vector<ProcResult> results(pairs.size());
     std::vector<std::string> work(pairs.size());
+    const std::string rmtb_samples = write_rmtb_samples(opt, rep);
     ProcResult pycheck;
     // Job 0 is the Python checks (the longest job), job k + 1 matchup k.
     parallel_for(pairs.size() + 1, opt.jobs, [&](size_t job) {
         ProcSpec spec;
         if (job == 0) {
             spec.argv = {opt.python, opt.repo + "/python/pycheck.py", "--binary", opt.binary, "--out-dir", out_dir};
+            if (!rmtb_samples.empty()) spec.argv.insert(spec.argv.end(), {"--rmtb-samples", rmtb_samples});
             spec.cwd = opt.repo;
             spec.timeout_s = 3600;
             spec.merge_stderr = true;

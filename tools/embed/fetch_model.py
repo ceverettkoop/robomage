@@ -7,13 +7,15 @@ fetches the files the generator bin/<config>/rmembed reads, at the pinned commit
 
     config.json  tokenizer_config.json  vocab.txt  model.safetensors
 
-A file already present with the right size is kept. Prints the model directory on stdout and
-exits 0; on any failure prints why on stderr and exits 1.
+A file already present with the right size is kept; a Git LFS file (the weights) must also match
+the SHA-256 the repository records for it. Prints the model directory on stdout and exits 0; on
+any failure prints why on stderr and exits 1.
 
     python3 tools/embed/fetch_model.py [--cache DIR] [--pin FILE]
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -43,16 +45,24 @@ def read_pin(path):
 
 
 def remote_sizes(repo, commit):
-    """Each file's size at `commit`, from the Hugging Face tree API (LFS files report their
-    object size)."""
+    """Each file's (size, SHA-256 or None) at `commit`, from the Hugging Face tree API (LFS files
+    report their object's size and SHA-256)."""
     url = "%s/api/models/%s/tree/%s?recursive=true" % (HF, repo, commit)
     with urllib.request.urlopen(url, timeout=60) as r:
         entries = json.load(r)
     sizes = {}
     for e in entries:
         lfs = e.get("lfs")
-        sizes[e["path"]] = lfs["size"] if lfs else e.get("size")
+        sizes[e["path"]] = (lfs["size"], lfs.get("oid")) if lfs else (e.get("size"), None)
     return sizes
+
+
+def sha256_of(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def fetch(repo, commit, name, dest):
@@ -82,12 +92,14 @@ def main():
             if name not in sizes:
                 raise ValueError("%s@%s has no %s" % (repo, commit, name))
             dest = os.path.join(model_dir, name)
-            if os.path.isfile(dest) and os.path.getsize(dest) == sizes[name]:
-                continue
-            print("fetch_model: downloading %s/%s" % (repo, name), file=sys.stderr)
-            fetch(repo, commit, name, dest)
-            if os.path.getsize(dest) != sizes[name]:
-                raise ValueError("%s: got %d bytes, expected %d" % (name, os.path.getsize(dest), sizes[name]))
+            size, sha = sizes[name]
+            if not (os.path.isfile(dest) and os.path.getsize(dest) == size and (not sha or sha256_of(dest) == sha)):
+                print("fetch_model: downloading %s/%s" % (repo, name), file=sys.stderr)
+                fetch(repo, commit, name, dest)
+            if os.path.getsize(dest) != size:
+                raise ValueError("%s: got %d bytes, expected %d" % (name, os.path.getsize(dest), size))
+            if sha and sha256_of(dest) != sha:
+                raise ValueError("%s: SHA-256 %s, the repository records %s" % (name, sha256_of(dest), sha))
     except (OSError, ValueError, urllib.error.URLError) as e:
         print("fetch_model: %s" % e, file=sys.stderr)
         print("fetch_model: the generator needs network access to huggingface.co and its CDN", file=sys.stderr)

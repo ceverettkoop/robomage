@@ -206,7 +206,15 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      per missing card, exit status 1 when any is missing\n");
     printf("  --check-decks-dir <dir>  With --check-decks: check this directory (relative to\n");
     printf("                      resources/decks/) instead; repeatable\n");
-    printf("  --log-decisions     Write the decision log in machine mode (off by default\n");
+    printf("  --text-table-check <file> --model-pin <pin>\n");
+    printf("                      Play no game: check that the oracle-text table <file> has a\n");
+    printf("                      current row for every vocab face with oracle text, for the\n");
+    printf("                      model <pin> names (tools/embed/MODEL_PIN); one line per\n");
+    printf("                      stale row, exit status 1 when any is stale\n");
+    printf("  --text-table-inputs <file> --model-pin <pin> [--text-table <table>]\n");
+    printf("                      Play no game: write the rows <table> lacks (every row\n");
+    printf("                      without --text-table) as rmembed's inputs, JSON lines\n");
+    printf("  --log-decisions    Write the decision log in machine mode (off by default\n");
     printf("                      there; CLI/interactive games always log) to\n");
     printf("                      resources/logs/game_<seed>.log\n");
     printf("  --decision-log <file>  Write the decision log to <file> (implies --log-decisions;\n");

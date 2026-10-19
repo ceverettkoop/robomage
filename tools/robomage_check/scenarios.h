@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "gate.h"
-#include "json.h"
+#include "../../src/featurize/json.h"
 
 // ── robomage_check: the rules-regression scenarios (tests/scenarios/*.json) ───────────────────
 //
@@ -63,7 +63,7 @@ namespace rmcheck {
 
 struct Scenario {
         std::string name, path;
-        Json doc;
+        featurize::Json doc;
 };
 
 // The scenario files of `opt` (its scenario_patterns as name globs, else all), sorted.
@@ -75,7 +75,7 @@ void prevalidate_scenarios(const std::vector<std::string> &paths);
 // Reads and validates one scenario file; false with `err`.
 bool load_scenario(const std::string &path, Scenario *out, std::string *err);
 // Whether the scenario has an expect_dump* key.
-bool wants_dump(const Json &scn);
+bool wants_dump(const featurize::Json &scn);
 
 struct ScenarioRun {
         std::string name;
