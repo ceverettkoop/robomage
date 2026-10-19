@@ -18,14 +18,22 @@ every evaluation the orchestrator records its per-game results in the run's ladd
 (``record_ladder``: ``rmlearn/ladder.py``, ``<run>/ladder/ladder.json``) and refreshes the
 Bradley–Terry ratings (``status``, ``evals.jsonl``).
 
-The evaluated policy is the inference server's policy 3 (the orchestrator's ``snapshot`` of the
-current network at the evaluation's start), played as ``nn:remote:<socket>:policies=3`` with the
-phase's options (``argmax`` in B1–B2, sampling in B4, the B5 projection); opponents are agents, the
-scripted teacher (``scripted`` = side ``first`` + ``teacher.py`` at mix 1) or other server policies
-the group loads (ids 10 and up: the ladder of past R-NaD fixed points and the BC policy). Every game
-is scored on its own (game 1 apart from games 2–3; ``evaluate.summarize``).
+The evaluated policy is the inference server's policy 3: an R-NaD iteration's evaluation loads
+that iteration's fixed point (``ckpt/fixed/m<k>.pt``), any other evaluation the orchestrator's
+``snapshot`` of the current network when it starts. It plays as ``nn:remote:<socket>:policies=3``
+with the phase's options — ``argmax`` by default in every phase but B5 (the fine-tuning
+projection, ``thresh=…:disc=…``) — and, with ``eval.also_sampled``, the ``fixed`` evaluator also
+plays it with the actors' sampling options (groups ``<opponent>@sampled``); every group carries its
+``options``. Opponents are agents, the scripted teacher (``scripted`` = side ``first`` +
+``teacher.py`` at mix 1) or other server policies the group loads (ids 10 and up: the ladder of past
+R-NaD fixed points, the evaluated one excluded, and the BC policy). Every game is scored on its own
+(game 1 apart from games 2–3; ``evaluate.summarize``). An evaluation whose groups would collide (a
+repeated group or entry id) is refused; one that plays no game is an error (the orchestrator logs
+it), never an empty result.
 """
 
+import glob
+import json
 import os
 import time
 
@@ -42,6 +50,15 @@ LADDER_PID0 = 10
 EXPLOITER_PIDS = (20, 21)       # the exploiter in training, its victim (the current policy, frozen)
 EVALUATORS = {}
 SEPARATE = {"sprt", "exploiter"}
+SAMPLED = "@sampled"            # the suffix of the sampled (secondary) groups
+
+
+def options_label(options):
+    """How an evaluated policy's nn: options read in the status: ``argmax``, ``sampled`` (the empty
+    options: temperature 1), or the options themselves."""
+    if options is None:
+        return "-"
+    return options if options else "sampled"
 
 
 def evaluator(name):
@@ -56,9 +73,10 @@ class Group:
     all, `loads` [{pid, path, version}] (server policies to load first), `sprt` (a sequential test:
     {p0, p1, alpha, beta, max_games, min_games}; the group stops when it decides)."""
 
-    def __init__(self, name, entries, matches, loads=None, sprt=None):
+    def __init__(self, name, entries, matches, loads=None, sprt=None, options=None):
         self.name, self.entries, self.matches, self.loads = name, entries, int(matches), list(loads or [])
         self.sprt = sprt
+        self.options = options      # the evaluated policy's nn: options in this group
 
 
 class ExploitSpec:
@@ -70,11 +88,20 @@ class ExploitSpec:
 
 
 class Context:
-    def __init__(self, run, cfg, subject_options, ladder):
+    """`subject_label`: the evaluated fixed point's ladder label (its rung is not an opponent);
+    `sampled_options`: the options of the secondary sampled groups (None: none)."""
+
+    def __init__(self, run, cfg, subject_options, ladder, subject_label=None, sampled_options=None):
         self.run = run
         self.cfg = cfg
-        self.subject = nn_remote(run.rmip_sock, str(SUBJECT_PID), subject_options)
+        self.options = subject_options
+        self.subject = self.subject_with(subject_options)
         self.ladder = ladder        # [{"label", "path", "version"}], oldest first
+        self.subject_label = subject_label
+        self.sampled_options = sampled_options
+
+    def subject_with(self, options):
+        return nn_remote(self.run.rmip_sock, str(SUBJECT_PID), options)
 
 
 def _pairs_entries(name, subject, agent, teacher, pairs):
@@ -93,8 +120,10 @@ def _pairs_entries(name, subject, agent, teacher, pairs):
 def fixed_opponents(ctx):
     """The policy against each of eval.opponents (scripted = scripted:hard, explore, random, any agent)."""
     e = ctx.cfg["eval"]
-    return [Group(opp, _pairs_entries(opp, ctx.subject, *EV.opponent_side(opp), e["pairs"]), e["matches"])
-            for opp in e["opponents"] if e["matches"] > 0]
+    variants = [("", ctx.options)] + ([(SAMPLED, ctx.sampled_options)] if ctx.sampled_options is not None else [])
+    return [Group(opp + sfx, _pairs_entries(opp + sfx, ctx.subject_with(opts), *EV.opponent_side(opp), e["pairs"]),
+                  e["matches"], options=opts)
+            for sfx, opts in variants for opp in e["opponents"] if e["matches"] > 0]
 
 
 @evaluator("ladder")
@@ -103,8 +132,13 @@ def ladder(ctx):
     e = ctx.cfg["eval"]
     if e["ladder_matches"] <= 0 or not ctx.ladder:
         return []
-    rungs = [r for r in ctx.ladder if r["label"] == "bc"][:1]
-    fixed = [r for r in ctx.ladder if r["label"] != "bc"]
+    by_label = {}
+    for r in ctx.ladder:            # one rung per label (the latest), the evaluated fixed point left out
+        if r["label"] != ctx.subject_label:
+            by_label.pop(r["label"], None)
+            by_label[r["label"]] = r
+    rungs = [r for r in by_label.values() if r["label"] == "bc"][:1]
+    fixed = [r for r in by_label.values() if r["label"] != "bc"]
     rungs += fixed[-e["ladder"]:] if e["ladder"] > 0 else []
     groups = []
     for j, r in enumerate(rungs):
@@ -112,7 +146,7 @@ def ladder(ctx):
         agent = nn_remote(ctx.run.rmip_sock, str(pid), e["opponent_nn_options"])
         name = "ladder-" + r["label"]
         groups.append(Group(name, _pairs_entries(name, ctx.subject, agent, None, e["pairs"]), e["ladder_matches"],
-                            [{"pid": pid, "path": r["path"], "version": r.get("version", 0)}]))
+                            [{"pid": pid, "path": r["path"], "version": r.get("version", 0)}], options=ctx.options))
     return groups
 
 
@@ -130,7 +164,8 @@ def sprt(ctx):
             "max_games": e["sprt_max_games"], "min_games": min(30, e["sprt_max_games"])}
     pairs = _league_or(ctx.cfg, e["sprt_pairs"])
     return [Group("sprt-" + opp, _pairs_entries("sprt-" + opp, ctx.subject, *EV.opponent_side(opp), pairs),
-                  e["sprt_max_games"], sprt=test) for opp in e["sprt_opponents"] if e["sprt_max_games"] > 0]
+                  e["sprt_max_games"], sprt=test, options=ctx.options)
+            for opp in e["sprt_opponents"] if e["sprt_max_games"] > 0]
 
 
 @evaluator("exploiter")
@@ -156,6 +191,27 @@ def split_request(names):
     others together (in order of first appearance)."""
     rest = [n for n in names if n not in SEPARATE]
     return ([rest] if rest else []) + [[n] for n in names if n in SEPARATE]
+
+
+def check_groups(groups):
+    """ValueError when an evaluation's groups would collide: a repeated group name, entry id or
+    server policy id (the engine refuses a schedule with a repeated id; one group's results would
+    be scored as another's)."""
+    names, ids, pids = set(), set(), set()
+    for g in groups:
+        if isinstance(g, ExploitSpec):
+            continue
+        if g.name in names:
+            raise ValueError("group %s appears twice" % g.name)
+        names.add(g.name)
+        for e in g.entries:
+            if e["id"] in ids:
+                raise ValueError("schedule entry id %s appears twice" % e["id"])
+            ids.add(e["id"])
+        for ld in g.loads:
+            if ld["pid"] in pids or ld["pid"] == SUBJECT_PID:
+                raise ValueError("server policy %d is loaded twice" % ld["pid"])
+            pids.add(ld["pid"])
 
 
 def build(ctx, names):
@@ -240,8 +296,13 @@ class EvalJob:
         stop = bool(self.tests) and self._sprt_tick()
         if not stop and not self.pool.finished():
             return False
+        errors = sorted({(h.get("last_exit") or {}).get("reason") or "exit %s" % (h.get("last_exit") or {}).get("code")
+                         for h in self.pool.health() if (h.get("last_exit") or {}).get("code") not in (0, None)})
         self.pool.stop_all(timeout=5)
         groups = EV.summarize(self.dir, subject=lambda agent: ":policies=%d" % SUBJECT_PID in str(agent))
+        for g in self.groups:
+            if g.name in groups:
+                groups[g.name]["options"] = g.options
         if self.tests:
             self._sprt_tick()
         for name, t in self.tests.items():
@@ -251,12 +312,28 @@ class EvalJob:
                              reason=self.reasons.get(name, "the actors finished"))
             g["report"] = MT.report(self.records[name])
         self.result = dict(self.meta, seq=self.seq, label=self.label, dir=self.dir, groups=groups,
-                           seconds=round(time.time() - self.started, 1), failed_actors=len(self.crashes))
+                           seconds=round(time.time() - self.started, 1), failed_actors=len(self.crashes),
+                           actor_errors=errors[:4], draw_lines=draw_lines(self.dir))
         return True
 
     def cancel(self):
         if self.pool is not None:
             self.pool.stop_all(timeout=5)
+
+
+def draw_lines(out_dir):
+    """The results lines of an actors' directory whose game was drawn."""
+    out = []
+    for path in sorted(glob.glob(os.path.join(out_dir, "a*.results.jsonl"))):
+        with open(path) as fp:
+            for ln in fp:
+                try:
+                    r = json.loads(ln)
+                except ValueError:
+                    continue
+                if r.get("end_reason") == "draw":
+                    out.append(dict(r, results_file=path))
+    return out
 
 
 class ExploitJob:
@@ -358,13 +435,14 @@ def record_ladder(run, result, rungs, anchor="scripted"):
     by its label, a fixed opponent by name; an exploiter's groups are not pairings); returns the
     ratings (anchored at `anchor` when it has played, else at the first player)."""
     lad = Ladder(os.path.join(run.path, "ladder"))
-    subject = "v%s" % result.get("version")
-    if lad.get(subject) is None:
-        lad.add_fixed_point(subject, "nn:remote:policy-%d" % SUBJECT_PID, result.get("version"),
-                            result.get("options") or "", {"label": result.get("label"), "phase": result.get("phase")})
+    subject = result.get("subject") or "v%s" % result.get("version")
     by_label = {r["label"]: r for r in rungs}
+    if lad.get(subject) is None:
+        r = by_label.get(subject)
+        lad.add_fixed_point(subject, r["path"] if r else "nn:remote:policy-%d" % SUBJECT_PID, result.get("version"),
+                            result.get("options") or "", {"label": result.get("label"), "phase": result.get("phase")})
     for name, g in result.get("groups", {}).items():
-        if name.startswith("exploiter"):
+        if name.startswith("exploiter") or name.endswith(SAMPLED):
             continue
         opp = name[len("ladder-"):] if name.startswith("ladder-") else name[len("sprt-"):] if name.startswith(
             "sprt-") else name
@@ -377,9 +455,31 @@ def record_ladder(run, result, rungs, anchor="scripted"):
     return lad.ratings(anchor=anchor)
 
 
+def roll_back_ladder(run, iterations, steps):
+    """Removes from the run's ladder record the players of learner steps a restore lost: fixed points
+    ``m<k>`` past `iterations` and R-NaD snapshots ``v<version>`` (evaluated in B4–B5) past `steps`
+    (their names are issued again for other weights), with their pairings. (removed ids, the
+    ratings or None without a record)."""
+    path = os.path.join(run.path, "ladder", "ladder.json")
+    if not os.path.exists(path):
+        return [], None
+    lad = Ladder(os.path.dirname(path))
+    phase = {f["id"]: (f.get("meta") or {}).get("phase") for f in lad.fixed_points()}
+    gone = []
+    for fid in set(phase) | {x for p in lad.pairings() for x in (p["a"], p["b"])}:
+        if (fid[:1] == "m" and fid[1:].isdigit() and int(fid[1:]) > iterations) or \
+                (fid[:1] == "v" and fid[1:].isdigit() and int(fid[1:]) > steps and phase.get(fid) in ("B4", "B5")):
+            gone.append(fid)
+    if gone:
+        lad.remove(gone)
+    return sorted(gone), lad.ratings(anchor="scripted")
+
+
 def brief(result):
-    """{group: "wr 0.43 (n games)"} of an evaluation result."""
+    """{group: "wr 0.43 over n games (…) [options]"} of an evaluation result."""
     out = {}
+    if (result or {}).get("error"):
+        out["error"] = result["error"]
     for name, g in (result or {}).get("groups", {}).items():
         wr = g.get("win_rate")
         out[name] = "%s over %d games (g1 %s, g2-3 %s)" % (
@@ -387,6 +487,8 @@ def brief(result):
             _fmt(g["games23"].get("win_rate")))
         if g.get("sprt"):
             out[name] += ", SPRT %s" % g["sprt"]["verdict"]
+        if "options" in g:
+            out[name] += " [%s]" % options_label(g["options"])
     return out
 
 

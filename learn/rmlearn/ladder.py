@@ -104,6 +104,13 @@ class Ladder:
         self.save()
         return p
 
+    def remove(self, fids):
+        """Removes fixed points (or players known only from pairings) and every pairing they played."""
+        gone = set(fids)
+        self.doc["fixed_points"] = [f for f in self.doc["fixed_points"] if f["id"] not in gone]
+        self.doc["pairings"] = [p for p in self.doc["pairings"] if p["a"] not in gone and p["b"] not in gone]
+        self.save()
+
     def pairings(self, fid=None):
         return [p for p in self.doc["pairings"] if fid is None or fid in (p["a"], p["b"])]
 

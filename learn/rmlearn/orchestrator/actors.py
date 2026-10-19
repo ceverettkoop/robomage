@@ -271,6 +271,31 @@ class ResultsTail:
         return out
 
 
+def draw_finding(line, source, results_file=None, base=None):
+    """A drawn game's finding (None for any other game): what played it (`source`: ``train`` or the
+    evaluation), the decks and game, the results file and the match's decision log (paths shown
+    relative to `base`). A draw is a finding to review, not an error (CR 104.4a: both players lost at
+    once is a legitimate end)."""
+    if line.get("end_reason") != "draw":
+        return None
+    results_file = results_file or line.get("results_file")
+
+    def rel(p):
+        return os.path.relpath(p, base) if p and base and os.path.isabs(p) and p.startswith(base) else p
+
+    def short(d):
+        return str(d or "?").rsplit("/", 1)[-1]
+
+    f = {"at": time.time(), "source": source, "schedule": line.get("schedule"), "entry": line.get("entry"),
+         "actor": line.get("actor"), "match": line.get("match"), "game": line.get("game"),
+         "decks": "%s vs %s" % (short(line.get("deck_a")), short(line.get("deck_b"))),
+         "end_reason": "draw", "results": results_file, "rmlog": line.get("rmlog")}
+    f["text"] = "%s a%s m%s g%s %s: %s (results %s, log %s)" % (
+        source, f["actor"], f["match"], f["game"], f["decks"], f["end_reason"], rel(results_file) or "?",
+        rel(f["rmlog"]) or "?")
+    return f
+
+
 class Counters:
     """Games and decisions per schedule version, plus rates over a sliding window."""
 

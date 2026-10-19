@@ -404,15 +404,38 @@ def check_window_restore(tmp):
     real = EP.read_episode
     EP.read_episode = lambda p: _Ep(p)
     try:
+        # The checkpoint: e2, e3 taken by the learner, e4 not yet; e0, e1 evicted earlier (still on
+        # disk); e5 written after the checkpoint, before the crash (taken by the lost steps).
         w = _FakeWindow()
-        state = {"files": paths[2:5], "fresh": [paths[4]], "min_mtime": 2002}
-        n = G.restore_window(w, state, [d])
+        state = {"files": paths[2:5], "fresh": [paths[4]], "complete": True}
+        n, left = G.restore_window(w, state, [d])
         check(n == 3 and w.added == [(paths[2], False), (paths[3], False), (paths[4], True)],
               "restore_window: the checkpoint's episodes, only its fresh ones fresh (%s)" % w.added)
-        check(paths[0] in w.skipped and paths[1] in w.skipped and paths[5] not in w.skipped,
-              "restore_window: older files left out, newer ones polled as fresh")
+        check(paths[0] in w.skipped and paths[1] in w.skipped and left == 3,
+              "restore_window: episodes the learner took before the checkpoint are not fresh again")
+        check(paths[5] in w.skipped,
+              "restore_window: episodes written after the checkpoint (the lost steps' games) are not fresh")
+        later = os.path.join(d, "e9.rmtraj")
+        with open(later, "wb") as fp:
+            fp.write(b"x")
+        os.utime(later, (time.time() + 60, time.time() + 60))
+        check(later not in w.skipped, "restore_window: episodes written after the restore are polled as fresh")
     finally:
         EP.read_episode = real
+
+    class _PollWindow:
+        def __init__(self):
+            self.listed = ["a"]
+
+        def poll(self):
+            self.listed.append("b")         # an episode on disk the polling thread had not seen yet
+
+        def files(self):
+            return list(self.listed), ["b"]
+
+    st = G.window_state(_PollWindow(), [_Ep("c")])
+    check(st["files"] == ["a", "b"] and st["fresh"] == ["b", "c"] and st["complete"],
+          "window_state polls first: every episode on disk is in the checkpoint (%s)" % st)
 
 
 def check_schedules(tmp):
@@ -467,6 +490,7 @@ def check_t8(tmp):
           "the request split: sprt and exploiter on their own")
     o = Orchestrator.__new__(Orchestrator)
     o.state = {"eval": {"queue": []}, "phase": "B4"}
+    o.cfg = C.resolve(None, [])
     o.eval_job = None
     o.log = lambda m: None
     o.queue_eval("it3", "", ["sprt", "fixed", "ladder"])
@@ -501,6 +525,9 @@ def check_t8(tmp):
         def finished(self):
             return False
 
+        def health(self):
+            return []
+
         def stop_all(self, timeout=None):
             _Pool.stopped = True
 
@@ -527,6 +554,271 @@ def check_t8(tmp):
           "ladder: the evaluation recorded, rated against scripted (%s)" % ratings)
     check(os.path.exists(os.path.join(run.path, "ladder", "ladder.json")), "ladder: ladder.json in the run")
     check("SPRT H0" in EVAL.brief(job.result)["sprt-scripted"], "the brief names the verdict")
+
+
+# ── a resume in B4 and its evaluations (the first validation run's findings) ─────────────────
+
+class _FakeGpu:
+    """The GPU process's link: canned replies per command (a dict or a function of the arguments),
+    every call recorded."""
+
+    def __init__(self, replies):
+        self.replies = replies
+        self.calls = []
+        self.proc = None
+        self.fatal = ""
+
+    def call(self, cmd, timeout=None, **kw):
+        self.calls.append((cmd, kw))
+        r = self.replies.get(cmd, {})
+        return dict(r(kw) if callable(r) else r)
+
+    def alive(self):
+        return True
+
+    def events(self):
+        return []
+
+
+def _b4_orchestrator(tmp, name, sets=()):
+    """An orchestrator in B4 over a fake run (no engine: evaluation actors are /bin/false), its GPU
+    process a _FakeGpu; returns (orchestrator, run, logs)."""
+    from rmlearn.orchestrator.orchestrator import Orchestrator
+    run = RD.RunDir(os.path.join(tmp, name))
+    run.make()
+    cfg = C.resolve(None, ["actors.count=0", "run.bin_dir=" + tmp, "eval.actors=2", "eval.matches=2",
+                           "eval.ladder_matches=2", "eval.sprt_max_games=2", "league.decks=[\"a\", \"b\"]",
+                           "eval.pairs=[[\"a\", \"b\"]]"] + list(sets))
+    RD.write_json(run.config, cfg)
+    o = Orchestrator(run)
+    logs = []
+    o.log = lambda m: logs.append(m)
+    o.state = o.new_state()
+    o.state.update(phase="B4", stage="selfplay", selfplay_version="b4")
+    o.metrics = RD.JsonLines(run.metrics)
+    o.evals_file = RD.JsonLines(run.evals)
+    o.tail = A.ResultsTail(run.actors)
+    o.counters = A.Counters()
+    o.pool = A.ActorPool("/bin/false", tmp, run.schedule, run.actors, run.actor_logs, 1, cfg["actors"], o.log)
+    o.engine = "/bin/false"
+    o.bin_dir = tmp
+    return o, run, logs
+
+
+def _touch(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as fp:
+        fp.write("x")
+    return path
+
+
+def _run_eval(o, timeout=20):
+    """eval_tick until the started evaluation is finished (or cancelled)."""
+    o.eval_tick()
+    end = time.time() + timeout
+    while o.eval_job is not None and time.time() < end:
+        o.eval_tick()
+        time.sleep(0.05)
+
+
+def check_resume_and_evaluations(tmp):
+    """The val1 run: a GPU-process kill in B4 mid-evaluation (it1), the restore at an earlier step,
+    the iteration crossed again, a pause around the re-queued evaluation."""
+    from rmlearn.rmtrain import format_status
+    o, run, logs = _b4_orchestrator(tmp, "b4resume")
+    st = o.state
+    m1 = _touch(os.path.join(run.fixed, "m1.pt"))
+    ck = _touch(os.path.join(run.ckpt, "rnad-p79.pt"))
+    bc = _touch(os.path.join(run.ckpt, "bc-final.pt"))
+    # Before the crash: step 110, iteration 1, its fixed point a rung, its evaluation running.
+    st["rnad"].update(learner_steps=110, iterations=1)
+    st["checkpoint"] = {"kind": "rnad", "path": ck, "learner_steps": 79, "version": 79}
+    st["ladder"] = [{"label": "bc", "path": bc, "version": 12000}, {"label": "m1", "path": m1, "version": 100}]
+    st["eval"]["queue"] = [{"label": "it1", "options": "", "evaluators": ["fixed", "ladder"], "phase": "B4",
+                            "policy": {"label": "m1", "path": m1, "version": 100, "iteration": 1}},
+                           {"label": "t95", "options": "", "evaluators": ["fixed"], "phase": "B4"}]
+    o.last_metrics["rnad_step"] = {"event": "rnad_step", "step": 110, "time": time.time()}
+    lad = EVAL.Ladder(os.path.join(run.path, "ladder"))
+    for fid, phase in (("v105", "B4"), ("v60", "B4"), ("v11050", "B2")):     # v11050: a BC step
+        lad.add_fixed_point(fid, "nn:remote:policy-3", int(fid[1:]), "argmax", {"phase": phase})
+        lad.record_counts(fid, "scripted", 3, 1)
+    lad.record_counts("m1", "scripted", 2, 2)
+    stats = {"learner_steps": 79}
+    o.gpu = _FakeGpu({"rnad_init": {"learner_steps": 79, "reg_updates": 0},
+                      "stats": lambda kw: {"learner_steps": stats["learner_steps"], "mode": "rnad"},
+                      "snapshot": lambda kw: {"pid": kw["pid"], "version": stats["learner_steps"]},
+                      "checkpoint": lambda kw: {"kind": "rnad", "learner_steps": 81, "reg_updates": 0, "version": 81,
+                                                "path": kw["path"].replace("{step}", "81"), "bytes": 1}})
+    o.ensure_rnad_model()
+    # 3: progress and metrics follow the restored learner.
+    o.write_status()
+    p = o.status_cache["progress"]
+    check(p["learner_steps"] == 79 and p["iterations"] == 0,
+          "resume: the progress is the restored learner's (%s), not the run's last (110, 1)" % p)
+    check("rnad_step" not in o.status_cache["metrics"] and o.status_cache["metrics"].get("restore", {}).get(
+        "learner_steps") == 79, "resume: the pre-crash rnad_step line is gone; a restore line names step 79")
+    stats["learner_steps"] = 95
+    o.gpu_stats_at = 0
+    o.write_status()
+    check(o.status_cache["progress"]["learner_steps"] == 95, "the progress follows the GPU process's learner step")
+    r = o.checkpoint()
+    check(o.gpu.calls[-1][1]["path"].endswith("rnad-p{step}.pt") and r["path"].endswith("rnad-p81.pt") and
+          st["rnad"]["learner_steps"] >= 81, "a periodic checkpoint is named by the GPU process's step")
+    # 1: the lost iteration's rung, evaluation and ladder players are dropped; crossing it again
+    # adds the rung once, however often the event comes.
+    check([r["label"] for r in st["ladder"]] == ["bc"] and [x["label"] for x in st["eval"]["queue"]] == ["t95"],
+          "resume: the lost iteration's rung and evaluation dropped (%s, %s)" % (
+              st["ladder"], [x["label"] for x in st["eval"]["queue"]]))
+    players = {f["id"] for f in EVAL.Ladder(os.path.join(run.path, "ladder")).fixed_points()} | {
+        x for pr in EVAL.Ladder(os.path.join(run.path, "ladder")).pairings() for x in (pr["a"], pr["b"])}
+    check("m1" not in players and "v105" not in players and "v60" in players and "v11050" in players,
+          "resume: the ladder record's players of lost steps removed (%s)" % sorted(players))
+    st["eval"]["queue"] = []
+    ev = {"reg_updates": 1, "learner_steps": 100, "version": 100, "fixed_point": m1}
+    o.on_iteration(dict(ev))
+    o.on_iteration(dict(ev))
+    check([r["label"] for r in st["ladder"]] == ["bc", "m1"], "an iteration crossed again: one rung m1 (%s)" %
+          [r["label"] for r in st["ladder"]])
+    stale = [{"label": "bc", "path": bc, "version": 1}, {"label": "m1", "path": m1, "version": 100},
+             {"label": "m1", "path": m1, "version": 100}]
+    names = [g.name for g in EVAL.build(EVAL.Context(run, o.cfg, "argmax", stale), ["ladder"])]
+    check(names == ["ladder-bc", "ladder-m1"], "the ladder evaluator: one group per rung (%s)" % names)
+    dup = [EVAL.Group("x", [{"id": "x|a-b"}], 1), EVAL.Group("x", [{"id": "x|a-b"}], 1)]
+    check(raises(lambda: EVAL.check_groups(dup), "twice"), "colliding groups are refused")
+    q = st["eval"]["queue"]
+    check([x["label"] for x in q] == ["it1", "it1-sprt"] and all(x["policy"]["path"] == m1 for x in q),
+          "the iteration's evaluations name its fixed point (%s)" % [(x["label"], x.get("policy")) for x in q])
+    # 4: the iteration's evaluation loads m1.pt as the subject (not the current network); the
+    # fixed point is not its own ladder opponent. The evaluation actors fail (/bin/false): 1's
+    # silent {} is now an error.
+    st["eval"]["queue"] = q[:1]
+    o.gpu.calls = []
+    o.gpu_model = "rnad"
+    o.eval_tick()
+    job = o.eval_job
+    calls = [(c, kw.get("pid"), kw.get("path")) for c, kw in o.gpu.calls]
+    check(("load_policy", EVAL.SUBJECT_PID, m1) in calls and not any(c == "snapshot" for c, _, _ in calls),
+          "an iteration's evaluation evaluates its fixed point (%s)" % calls)
+    check(job is not None and [g.name for g in job.groups] == ["scripted", "explore", "random", "ladder-bc"] and
+          job.meta["subject"] == "m1" and job.meta["version"] == 100,
+          "its groups: the fixed opponents and the other rungs (%s)" % ([g.name for g in job.groups] if job else None))
+    # A pause stops it and queues it again, still for m1.
+    st["paused"] = True
+    o.eval_tick()
+    check(o.eval_job is None and st["eval"]["queue"][0]["policy"]["path"] == m1,
+          "a paused evaluation is queued again for the same fixed point")
+    st["paused"] = False
+    _run_eval(o)
+    last = st["eval"]["last"]
+    check(last.get("error", "").startswith("no games played") and "exit 1" in last["error"],
+          "an evaluation that played no game is an error (%s)" % last)
+    check(any(m.startswith("ERROR: evaluation it1") for m in logs), "the error is in the log")
+    mets = RD.read_jsonl(run.metrics)
+    check(any(m["event"] == "eval_failed" and m["label"] == "it1" for m in mets) and
+          not any(m["event"] == "eval" for m in mets), "metrics.jsonl: eval_failed, no eval line")
+    check("ERROR no games played" in format_status(dict(o.status_cache, eval={"last": last})),
+          "the status shows the failed evaluation")
+    # A cadence evaluation evaluates the current network when it runs.
+    o.gpu.calls = []
+    stats["learner_steps"] = 120
+    o.queue_eval("t120", o.eval_options(), ["fixed"])
+    o.eval_tick()
+    check(o.eval_job is not None and o.eval_job.meta["version"] == 120 and o.eval_job.meta["subject"] == "v120" and
+          any(c == "snapshot" for c, _ in o.gpu.calls), "a cadence evaluation snapshots the current network")
+    o.cancel_eval()
+    o.metrics.close()
+    o.evals_file.close()
+
+
+def check_eval_options_and_findings(tmp):
+    """5: evaluations at argmax by default (B5: the projection), the sampled policy as an optional
+    secondary group, every result labelled; 6: draws as findings in the status."""
+    from rmlearn.rmtrain import format_status
+    d = C.defaults()["eval"]
+    check(d["nn_options_rnad"] == "argmax" and d["nn_options_bc"] == "argmax" and d["also_sampled"] is False,
+          "evaluations play argmax by default; no sampled entry by default")
+    o, run, logs = _b4_orchestrator(tmp, "evopts", ["eval.also_sampled=true", "b4.nn_options=temp=1.5"])
+    check(o.eval_options() == "argmax", "B4: the evaluation options are argmax")
+    o.state["phase"] = "B5"
+    check(o.eval_options() == C.defaults()["eval"]["nn_options_finetune"], "B5: the fine-tuning projection")
+    o.state["phase"] = "B4"
+    old_cfg, _ = C.fill_defaults({k: {kk: vv for kk, vv in v.items() if kk != "also_sampled"}
+                                  for k, v in C.defaults().items()})
+    check(old_cfg == C.defaults(), "a run created before a key existed resumes with its default")
+    o.queue_eval("t5", o.eval_options(), ["fixed"])
+    req = o.state["eval"]["queue"][0]
+    check(req["options"] == "argmax" and req["sampled_options"] == "temp=1.5", "the request carries both options")
+    ctx = EVAL.Context(run, o.cfg, req["options"], [], sampled_options=req["sampled_options"])
+    groups = EVAL.build(ctx, ["fixed"])
+    by = {g.name: g for g in groups}
+    check(sorted(by) == ["explore", "explore@sampled", "random", "random@sampled", "scripted", "scripted@sampled"] and
+          by["scripted"].entries[0]["agent_a"].endswith(":policies=3:argmax") and
+          by["scripted@sampled"].entries[0]["agent_a"].endswith(":policies=3:temp=1.5") and
+          by["scripted@sampled"].options == "temp=1.5", "also_sampled: a sampled group per fixed opponent")
+    # A finished evaluation: options per group, the brief labelled, sampled groups out of the ratings,
+    # its draws noted as findings.
+    job = EVAL.EvalJob(run, o.cfg, 9, "t5", [by["scripted"], by["scripted@sampled"]],
+                       {"version": 7, "subject": "v7", "options": "argmax", "phase": "B4"}, "/bin/false", tmp, o.log)
+    os.makedirs(job.dir, exist_ok=True)
+
+    class _Done:
+        def tick(self):
+            return []
+
+        def finished(self):
+            return True
+
+        def health(self):
+            return []
+
+        def stop_all(self, timeout=None):
+            pass
+
+    job.pool = _Done()
+    job.started = time.time()
+    rmlog = os.path.join(job.dir, "rmlog", "a0-m1.rmlog")
+    with open(os.path.join(job.dir, "a0.results.jsonl"), "w") as fp:
+        for i, (entry, res, end) in enumerate([("scripted|a-b", 1, "win"), ("scripted|a-b", 0, "draw"),
+                                               ("scripted@sampled|a-b", -1, "win")]):
+            fp.write(json.dumps({"actor": 0, "match": 1, "game": i + 1, "entry": entry, "side_a_seat": "A",
+                                 "deck_a": "league/a", "deck_b": "league/b", "agent_a": "nn:remote:s:policies=3",
+                                 "agent_b": "first", "result_a": res, "result_b": -res, "end_reason": end,
+                                 "decisions": 50, "rmlog": rmlog}) + "\n")
+    job.request = {"label": "t5", "evaluators": ["fixed"]}
+    o.eval_job = None
+    check(job.poll(), "the finished evaluation")
+    o.gpu = _FakeGpu({})
+    o.finish_eval(job)
+    res = RD.read_jsonl(run.evals)[-1]
+    check(res["groups"]["scripted"]["options"] == "argmax" and res["groups"]["scripted@sampled"]["options"] ==
+          "temp=1.5" and res["options"] == "argmax", "evals.jsonl: the options of the result and of each group")
+    b = o.state["eval"]["last"]["brief"]
+    check(b["scripted"].endswith("[argmax]") and b["scripted@sampled"].endswith("[temp=1.5]"),
+          "the brief labels each group's options (%s)" % b)
+    check(o.state["eval"]["last"]["options"] == "argmax" and o.state["eval"]["last"]["subject"] == "v7",
+          "the last evaluation names its subject and options")
+    ratings = o.state["eval"]["ratings"]
+    check(ratings["v7"]["games"] == 2, "the ratings count the primary games only (%s)" % ratings)
+    # Training actors' draws.
+    with open(os.path.join(run.actors, "a3.results.jsonl"), "w") as fp:
+        fp.write(json.dumps({"actor": 3, "match": 126, "game": 2, "entry": "sp-a-b", "schedule": "b4",
+                             "deck_a": "league/ur_delver", "deck_b": "league/burn", "result_a": 0, "result_b": 0,
+                             "end_reason": "draw", "decisions": 64,
+                             "rmlog": os.path.join(run.path, "rmlog", "selfplay", "a3-m126.rmlog")}) + "\n")
+        fp.write(json.dumps({"actor": 3, "match": 127, "game": 1, "schedule": "b4", "result_a": 1, "result_b": -1,
+                             "end_reason": "win", "decisions": 80}) + "\n")
+    o.ingest_results()
+    fd = o.state["findings"]
+    check(fd["draws"] == 2 and fd["recent"][-1]["rmlog"].endswith("a3-m126.rmlog") and
+          fd["recent"][0]["source"] == "eval t5", "draws as findings: the evaluation's and the actors' (%s)" % fd)
+    o.write_status()
+    text = format_status(o.status_cache)
+    check("findings: 2 draws" in text and "rmlog/selfplay/a3-m126.rmlog" in text and
+          "actors/a3.results.jsonl" in text and "ur_delver vs burn" in text,
+          "the status's findings line names each draw's results file and decision log")
+    check("FAIL" not in text and not any("ERROR" in m for m in logs), "a draw is not an error")
+    o.metrics.close()
+    o.evals_file.close()
 
 
 # ── the smoke ───────────────────────────────────────────────────────────────────────────────
@@ -585,6 +877,7 @@ actors = 2
 opponents = ["scripted", "random"]
 every_minutes = 0
 evaluators = ["sprt", "fixed", "ladder"]
+also_sampled = true
 sprt_max_games = 4
 exploiter_minutes = 0.3
 exploiter_actors = 2
@@ -733,6 +1026,22 @@ def smoke(args):
           "per-iteration SPRT evaluations ran")
     check(any("exploiter-baseline" in e["results"] for e in evs), "an exploiter ran (rmtrain eval --evaluators)")
     check(bool((RD.read_json(run.state) or {}).get("eval", {}).get("ratings")), "ladder ratings in state.json")
+    fails = [(m["label"], m.get("error")) for m in mets if m["event"] == "eval_failed"]
+    check(not fails, "no evaluation failed (%s)" % fails)
+    its = [e for e in evs if e["label"].startswith("it")]
+    check(its and all(e.get("subject") == "m" + e["label"][2:].split("-")[0] for e in its),
+          "each iteration's evaluation evaluated its fixed point (%s)" % [(e["label"], e.get("subject")) for e in its])
+    check(all(e.get("options") is not None for e in evs if "exploiter-baseline" not in e["results"]),
+          "every evaluation names its options")
+    opts = [(k, g.get("options")) for e in its for k, g in e["results"].items() if not k.startswith("sprt-")]
+    check(any(k.endswith("@sampled") for k, _ in opts) and
+          all(o == ("" if k.endswith("@sampled") else "argmax") for k, o in opts),
+          "eval.also_sampled: sampled groups beside the argmax ones, each labelled (%s)" % opts)
+    labels = [r["label"] for r in st["ladder"]]
+    check(len(labels) == len(set(labels)), "the ladder's rungs are unique after the kill (%s)" % labels)
+    rest = [m for m in mets if m["event"] == "restore" and m.get("model") == "rnad"]
+    check(rest and all(m["learner_steps"] <= m["previous_learner_steps"] for m in rest),
+          "the resumes' restore lines (%s)" % [(m["learner_steps"], m["previous_learner_steps"]) for m in rest])
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
@@ -790,6 +1099,8 @@ def main():
             check_resume(tmp)
             check_schedules(tmp)
             check_t8(tmp)
+            check_resume_and_evaluations(tmp)
+            check_eval_options_and_findings(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
         tag = "RMTRAIN-CHECK"

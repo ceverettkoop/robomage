@@ -164,9 +164,11 @@ SPEC = {
         ("actors", 4, "evaluation actors (live)"),
         ("every_minutes", 60.0, "B4/B5 evaluation cadence in minutes (0: off) (live)"),
         ("per_iteration", True, "evaluate at every R-NaD iteration boundary (live)"),
-        ("nn_options_bc", "argmax", "the evaluated policy's options in B1–B2"),
-        ("nn_options_rnad", "", "in B4 (empty: temp 1 sampling)"),
-        ("nn_options_finetune", "thresh=0.03:disc=16", "in B5"),
+        ("nn_options_bc", "argmax", "the evaluated policy's options in B1–B2 (the primary result)"),
+        ("nn_options_rnad", "argmax", "in B4 (empty: temp 1 sampling)"),
+        ("nn_options_finetune", "thresh=0.03:disc=16", "in B5 (the fine-tuning projection)"),
+        ("also_sampled", False, "the fixed evaluator also plays the policy with the actors' sampling options "
+         "(b2.nn_options in B1–B2, b4.nn_options in B4–B5): groups <opponent>@sampled, a secondary result (live)"),
         ("opponent_nn_options", "argmax", "ladder opponents' options"),
         ("sprt_opponents", ["scripted"], "the sprt evaluator's opponents (scripted = scripted:hard)"),
         ("sprt_pairs", [], "its deck pairs ([[a, b], ...]; empty: every league pair, both decks and seats each)"),
@@ -213,8 +215,8 @@ LIVE = {
     "rnad.reg_eps", "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
     "rnad.value_after_every", "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
     "actors.count", "eval.matches", "eval.ladder", "eval.ladder_matches", "eval.actors", "eval.every_minutes",
-    "eval.per_iteration", "eval.sprt_max_games", "eval.exploiter_every_minutes", "eval.exploiter_minutes",
-    "checkpoint.every_minutes",
+    "eval.per_iteration", "eval.also_sampled", "eval.sprt_max_games", "eval.exploiter_every_minutes",
+    "eval.exploiter_minutes", "checkpoint.every_minutes",
 }
 
 # Live keys the GPU process applies (the others are the orchestrator's).
@@ -317,6 +319,19 @@ def resolve(file_cfg=None, sets=None):
     cfg = apply_sets(cfg, sets)
     validate(cfg)
     return cfg
+
+
+def fill_defaults(cfg):
+    """A resumed run's config with the keys added since it was created set to their defaults:
+    (config, the added keys)."""
+    out = copy.deepcopy(cfg)
+    added = []
+    for sec, keys in SPEC.items():
+        for k, default, _ in keys:
+            if k not in out.setdefault(sec, {}):
+                out[sec][k] = copy.deepcopy(default)
+                added.append("%s.%s" % (sec, k))
+    return out, added
 
 
 def validate(cfg):

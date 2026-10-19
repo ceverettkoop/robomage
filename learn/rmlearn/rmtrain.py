@@ -49,13 +49,15 @@ def prepare(run, args):
         if args.config:
             die("run %s exists: its config is %s (change keys with --set, or `set` while it runs)"
                 % (run.path, run.config))
-        cfg = read_json(run.config)
+        cfg, added = C.fill_defaults(read_json(run.config))
         try:
             cfg = C.apply_sets(cfg, args.set)
             C.validate(cfg)
         except ValueError as err:
             die(str(err))
-        if args.set:
+        if added:
+            print("rmtrain: keys new since the run was created, at their defaults: %s" % ", ".join(added))
+        if args.set or added:
             write_json(run.config, cfg)
         return cfg, False
     try:
@@ -381,9 +383,13 @@ def format_status(d):
         L.append("eval: running %s, queued %s" % (ev.get("running"), ev.get("queue")))
     if ev.get("last"):
         last = ev["last"]
-        L.append("last eval %s (%s, version %s):" % (last.get("label"), last.get("phase"), last.get("version")))
+        from .orchestrator.evaluation import options_label
+        L.append("last eval %s (%s, %s, version %s, options %s)%s" % (
+            last.get("label"), last.get("phase"), last.get("subject") or "-", last.get("version"),
+            options_label(last.get("options")), ": ERROR %s" % last["error"] if last.get("error") else ":"))
         for k, v in (last.get("brief") or {}).items():
-            L.append("  %-16s %s" % (k, v))
+            if k != "error":
+                L.append("  %-16s %s" % (k, v))
     if ev.get("exploiter"):
         x = ev["exploiter"]
         L.append("exploiter: %s, version %s, %s games, rolling win rate %s" % (
@@ -392,6 +398,10 @@ def format_status(d):
         top = sorted(ev["ratings"].items(), key=lambda kv: -kv[1]["elo"])[:8]
         L.append("ratings (Bradley-Terry, Elo scale): " + ", ".join("%s %+.0f (%d g)" % (k, r["elo"], r["games"])
                                                                    for k, r in top))
+    fd = d.get("findings") or {}
+    if fd.get("draws"):
+        L.append("findings: %d draw%s (CR 104.4a, to review, not errors); latest: %s" % (
+            fd["draws"], "s" if fd["draws"] != 1 else "", "; ".join(f["text"] for f in fd.get("recent", [])[-3:])))
     ck = d.get("checkpoint")
     if ck:
         L.append("checkpoint %s, %s ago" % (ck.get("path"), _dur(now - ck.get("at", now))))

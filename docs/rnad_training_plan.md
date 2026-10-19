@@ -592,12 +592,13 @@ the engine, the gate or `python/` imports it.
   rounds: the BC policy through `nn:remote` with the teacher labelling both seats at a decaying
   mix, BC continuing on the growing window; exit when the win rate against scripted:hard stops
   improving or at the round cap), B3 (`from_bc_checkpoint`), B4 (self-play on policies 0, 1, 2,
-  fixed points saved and exported at each boundary, an evaluation per iteration against the fixed
-  opponents and a ladder of past fixed points), B5 (the learner's projection, evaluation with
+  fixed points saved and exported at each boundary, an evaluation of each iteration's fixed point
+  (argmax) against the fixed opponents and a ladder of past fixed points), B5 (the learner's projection, evaluation with
   `thresh=0.03:disc=16`); `phase hold|release|next`. Evaluation is a registry of evaluators (the
   extension point for T8). Checkpoints on a cadence and at phase ends, `state.json` written
   atomically, `metrics.jsonl` / `evals.jsonl`; a resume re-reads the replay window's checkpointed
-  episodes and restarts actors after their last match. `learn/check_rmtrain.py`: CPU checks and a
+  episodes (only the untaken ones fresh; games of the lost steps left out) and restarts actors after
+  their last match. `learn/check_rmtrain.py`: CPU checks and a
   `--smoke` tiny end-to-end run (B0 → done in ~6.5 min including a `kill -9` in B4 and a stop/start).
 - **Environment.** `learn/` lives in this repository with `learn/requirements.txt` (torch
   2.10.0+rocm7.0, the build that runs on this GPU) and its own `learn/.venv`.

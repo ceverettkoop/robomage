@@ -104,6 +104,7 @@ class ReplayWindow:
         self._fresh = collections.deque()
         self._seen = set()
         self._lock = threading.Lock()
+        self._poll_lock = threading.Lock()      # one poll at a time (the thread's and a caller's)
         self._version = 0
         self._index = {}
         self._thread = None
@@ -116,7 +117,12 @@ class ReplayWindow:
     # ── ingestion and eviction ──
 
     def poll(self):
-        """Ingests every new episode of the directories; the number ingested."""
+        """Ingests every new episode of the directories; the number ingested. Safe to call beside
+        the polling thread (``start``): one poll runs at a time."""
+        with self._poll_lock:
+            return self._poll()
+
+    def _poll(self):
         new = []
         for d in self.cfg.dirs:
             try:

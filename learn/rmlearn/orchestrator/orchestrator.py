@@ -34,12 +34,13 @@ import traceback
 from . import config as C
 from . import evaluation as EVAL
 from . import schedules as SCH
-from .actors import ActorPool, Counters, ResultsTail, cpu_env
+from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
 from .control import ControlServer
 from .gpulink import GpuError, GpuLink
 from .rundir import REPO_ROOT, JsonLines, Log, read_json, read_jsonl, write_json
 
 PHASES = ["B0", "B1", "B2", "B3", "B4", "B5", "done"]
+FINDINGS_KEPT = 10
 LEARN_DIR = os.path.join(REPO_ROOT, "learn")
 
 
@@ -53,7 +54,10 @@ class Orchestrator:
         self.cfg = read_json(run.config)
         if self.cfg is None:
             raise SystemExit("rmtrain: %s has no config.json" % run.path)
+        self.cfg, added = C.fill_defaults(self.cfg)
         C.validate(self.cfg)
+        if added:
+            write_json(run.config, self.cfg)
         self.log = Log(run.log("orchestrator"), echo=(lambda line: print(line, flush=True)) if echo else None)
         self.started = time.time()
         self.state = None
@@ -97,7 +101,7 @@ class Orchestrator:
                 "b2": {"round": 0, "round_start_step": 0, "best": None, "history": []},
                 "rnad": {"iterations": 0, "learner_steps": 0}, "ladder": [], "selfplay_version": "b4",
                 "eval": {"seq": 0, "last": None, "last_at": None, "queue": [], "history": []}, "exports": [],
-                "starts": 0, "held_reason": ""}
+                "starts": 0, "held_reason": "", "findings": {"draws": 0, "recent": []}}
 
     def save_state(self):
         self.state["results"] = {"offsets": self.tail.offsets, "counters": self.counters.state()}
@@ -133,6 +137,7 @@ class Orchestrator:
         self.run.make()
         self.state = read_json(self.run.state) or self.new_state()
         self.state["starts"] = self.state.get("starts", 0) + 1
+        self.state.setdefault("findings", {"draws": 0, "recent": []})
         lost = self.state.get("eval", {}).pop("running", None)
         if lost:            # an evaluation the last orchestrator died in: played again from its start
             self.state["eval"]["queue"].insert(0, lost)
@@ -181,13 +186,29 @@ class Orchestrator:
         self.log("exit %d" % self.exit_code)
         return self.exit_code
 
+    def ingest_results(self):
+        """The training actors' new results lines: the counters, and the draws as findings."""
+        for line in self.tail.poll():
+            self.counters.add(line)
+            self.note_finding(line, "train", os.path.join(self.run.actors, "a%s.results.jsonl" % line.get("actor")))
+
+    def note_finding(self, line, source, results_file=None):
+        """A drawn game (CR 104.4a: both players lost at once) noted for review, not as an error:
+        state ``findings`` (the count and the latest few, each with its results file and decision log)."""
+        f = draw_finding(line, source, results_file, self.run.path)
+        if f is None:
+            return
+        fd = self.state.setdefault("findings", {"draws": 0, "recent": []})
+        fd["draws"] += 1
+        fd["recent"] = (fd["recent"] + [f])[-FINDINGS_KEPT:]
+        self.log("finding: a draw, %s" % f["text"])
+
     def request_stop(self, reason):
         if not self.stopping:
             self.stopping = reason
 
     def tick(self):
-        for line in self.tail.poll():
-            self.counters.add(line)
+        self.ingest_results()
         self.counters.sample()
         if self.gpu is not None:
             if not self.gpu.alive():
@@ -287,9 +308,14 @@ class Orchestrator:
         resume = ck["path"] if ck and ck.get("kind") == "bc" and os.path.exists(ck["path"]) else None
         r = self.gpu.call("bc_init", dirs=self.bc_dirs(), resume=resume)
         self.gpu_model = "bc"
+        before = self.state.get("bc_step", 0)
         self.state["bc_step"] = r["step"]
         self.log("BC model %s at step %d (%d parameters)" % ("restored" if resume else "initialised", r["step"],
                                                            r["params"]))
+        if resume:
+            for k in ("bc_train", "bc_eval"):
+                self.last_metrics.pop(k, None)
+            self.emit("restore", model="bc", checkpoint=resume, bc_step=r["step"], previous_bc_step=before)
 
     def ensure_rnad_model(self):
         self.ensure_gpu()
@@ -300,9 +326,40 @@ class Orchestrator:
             raise Fatal("phase %s without an R-NaD checkpoint" % self.state["phase"])
         r = self.gpu.call("rnad_init", resume=ck["path"])
         self.gpu_model = "rnad"
-        self.state["rnad"]["learner_steps"] = r["learner_steps"]
-        self.state["rnad"]["iterations"] = r["reg_updates"]
-        self.log("R-NaD learner restored at step %d, iteration %d" % (r["learner_steps"], r["reg_updates"]))
+        rn = self.state["rnad"]
+        before = (rn["learner_steps"], rn["iterations"])
+        rn["learner_steps"] = r["learner_steps"]
+        rn["iterations"] = r["reg_updates"]
+        self.log("R-NaD learner restored at step %d, iteration %d (the run had reached step %d, iteration %d)"
+                 % (r["learner_steps"], r["reg_updates"], before[0], before[1]))
+        self.last_metrics.pop("rnad_step", None)
+        self.emit("restore", model="rnad", checkpoint=ck["path"], learner_steps=r["learner_steps"],
+                  iterations=r["reg_updates"], previous_learner_steps=before[0], previous_iterations=before[1])
+        self.roll_back(r["learner_steps"], r["reg_updates"])
+
+    def roll_back(self, steps, iterations):
+        """After a restore: what the lost learner steps made is dropped — the fixed points of later
+        iterations from the ladder, their queued evaluations (each comes again when the restored
+        learner crosses its boundary, for the fixed point it then writes), and the ladder record's
+        players of the lost steps (``m<k>`` past `iterations`, ``v<version>`` past `steps`: those
+        names are issued again for other weights)."""
+        st = self.state
+        lost = [r["label"] for r in st["ladder"] if _iteration_of(r["label"]) > iterations]
+        if lost:
+            st["ladder"] = [r for r in st["ladder"] if r["label"] not in lost]
+        q = st["eval"]["queue"]
+        dropped = [x["label"] for x in q if (x.get("policy") or {}).get("iteration", 0) > iterations]
+        st["eval"]["queue"] = [x for x in q if x["label"] not in dropped]
+        try:
+            removed, ratings = EVAL.roll_back_ladder(self.run, iterations, steps)
+        except (OSError, ValueError, KeyError) as err:      # the ratings are a report, never fatal
+            removed, ratings = [], None
+            self.log("roll back: ladder: %s" % err)
+        if ratings is not None:
+            st["eval"]["ratings"] = ratings
+        if lost or dropped or removed:
+            self.log("rolled back to step %d, iteration %d: ladder rungs %s, queued evaluations %s, ladder players %s "
+                     "dropped" % (steps, iterations, lost or "-", dropped or "-", removed or "-"))
 
     def on_gpu_event(self, ev):
         kind = ev.pop("event", "")
@@ -330,18 +387,20 @@ class Orchestrator:
         if not self.gpu_model:
             return None
         kind = self.gpu_model
-        step = self.current_step()
         if name is None:
-            path = os.path.join(self.run.ckpt, "%s-p%d.pt" % (kind, step))
+            path = os.path.join(self.run.ckpt, "%s-p{step}.pt" % kind)     # the GPU process's step
             keep = {"prefix": "%s-p" % kind, "count": self.cfg["checkpoint"]["keep"]} if keep_periodic else {}
         else:
             path = os.path.join(self.run.ckpt, name)
             keep = {}
         r = self.gpu.call("checkpoint", path=path, keep=keep)
+        path = r.get("path", path)
         r.pop("re", None)
         r.pop("ok", None)
         r["at"] = time.time()
         r["phase"] = self.state["phase"]
+        if kind == "rnad":
+            self.state["rnad"]["learner_steps"] = int(r["learner_steps"])
         self.state["checkpoint"] = r
         self.last_checkpoint = time.time()
         self.save_state()
@@ -616,16 +675,19 @@ class Orchestrator:
         m = int(ev["reg_updates"])
         st["rnad"]["iterations"] = m
         st["rnad"]["learner_steps"] = int(ev["learner_steps"])
-        st["ladder"].append({"label": "m%d" % m, "path": ev["fixed_point"], "version": int(ev["version"])})
+        rung = {"label": "m%d" % m, "path": ev["fixed_point"], "version": int(ev["version"])}
+        st["ladder"] = [r for r in st["ladder"] if r["label"] != rung["label"]] + [rung]
         self.emit("rnad_iteration", **ev)
         self.log("R-NaD iteration %d at learner step %d (fixed point %s)" % (m, ev["learner_steps"],
                                                                             ev["fixed_point"]))
         self.queue_export(ev["fixed_point"], "m%d" % m, int(ev["version"]))
         if self.cfg["eval"]["per_iteration"]:
-            self.queue_eval("it%d" % m, self.eval_options(), self.cfg["eval"]["evaluators"])
+            self.queue_eval("it%d" % m, self.eval_options(), self.cfg["eval"]["evaluators"],
+                            policy=dict(rung, iteration=m))
         self.save_state()
 
     def eval_options(self):
+        """The evaluated policy's options in the current phase (the primary result)."""
         p = self.state["phase"]
         e = self.cfg["eval"]
         if p in ("B1", "B2"):
@@ -634,19 +696,31 @@ class Orchestrator:
             return e["nn_options_finetune"]
         return e["nn_options_rnad"]
 
+    def sampled_options(self):
+        """The options the phase's actors play with (the secondary, sampled result: eval.also_sampled)."""
+        return self.cfg["b2" if self.state["phase"] in ("B1", "B2") else "b4"]["nn_options"]
+
     # ── evaluation ──────────────────────────────────────────────────────────────────────────
 
-    def queue_eval(self, label, options, evaluators):
+    def queue_eval(self, label, options, evaluators, policy=None):
         """Queues an evaluation; the SEPARATE evaluators (sprt, exploiter) of `evaluators` become their
-        own evaluations, labelled ``<label>-<name>`` (``<label>`` alone when only one is named)."""
+        own evaluations, labelled ``<label>-<name>`` (``<label>`` alone when only one is named).
+        `policy` ({label, path, version, iteration}): the evaluated policy is that saved network (an
+        iteration's fixed point), loaded when the evaluation starts; without it, the current network
+        when the evaluation starts. `options` are the primary result's; with eval.also_sampled the
+        ``fixed`` evaluator also plays the policy with the actors' sampling options."""
         q = self.state["eval"]["queue"]
         parts = EVAL.split_request(list(evaluators))
+        sampled = self.sampled_options() if self.cfg["eval"]["also_sampled"] else None
         for names in parts:
             lab = label if len(parts) == 1 or names[0] not in EVAL.SEPARATE else "%s-%s" % (label, names[0])
             if any(x["label"] == lab for x in q) or (self.eval_job and self.eval_job.label == lab):
                 continue
-            q.append({"label": lab, "options": options, "evaluators": names, "phase": self.state["phase"]})
-            self.log("evaluation %s queued (%s)" % (lab, ", ".join(names)))
+            q.append({"label": lab, "options": options, "sampled_options": sampled, "evaluators": names,
+                      "phase": self.state["phase"], "policy": policy})
+            self.log("evaluation %s queued (%s; %s%s)" % (lab, ", ".join(names), policy["label"] if policy else
+                                                          "the current policy", ", options " +
+                                                          EVAL.options_label(options)))
 
     def eval_queued_kind(self, name):
         """An evaluation naming evaluator `name` is running or queued."""
@@ -687,14 +761,22 @@ class Orchestrator:
         req = st["eval"]["queue"].pop(0)
         st["eval"]["seq"] += 1
         seq = st["eval"]["seq"]
-        ctx = EVAL.Context(self.run, self.cfg, req["options"], st["ladder"])
-        groups = EVAL.build(ctx, req["evaluators"])
+        pol = req.get("policy")
+        ctx = EVAL.Context(self.run, self.cfg, req["options"], st["ladder"],
+                           subject_label=pol["label"] if pol else None, sampled_options=req.get("sampled_options"))
+        try:
+            groups = EVAL.build(ctx, req["evaluators"])
+            EVAL.check_groups(groups)
+        except ValueError as err:
+            return self.fail_eval(req, seq, "not played: %s" % err)
+        if pol and not os.path.exists(pol["path"]):
+            return self.fail_eval(req, seq, "not played: the fixed point %s is gone" % pol["path"])
         if not groups:
             self.log("evaluation %s: nothing to play" % req["label"])
             return
         spec = next((g for g in groups if isinstance(g, EVAL.ExploitSpec)), None)
         if spec is not None:
-            meta = {"phase": st["phase"], "version": None, "options": "", "evaluators": req["evaluators"],
+            meta = {"phase": st["phase"], "version": None, "options": None, "evaluators": req["evaluators"],
                     "started_at": time.time()}
             job = EVAL.ExploitJob(self.run, self.cfg, seq, req["label"], spec, self.gpu, meta, self.engine,
                                   self.bin_dir, self.log)
@@ -703,10 +785,16 @@ class Orchestrator:
             job.start()
             self.eval_job = job
             return
-        snap = self.gpu.call("snapshot", pid=EVAL.SUBJECT_PID)
+        if pol:
+            self.gpu.call("load_policy", pid=EVAL.SUBJECT_PID, path=pol["path"], version=pol["version"])
+            version, subject = pol["version"], pol["label"]
+        else:
+            version = self.gpu.call("snapshot", pid=EVAL.SUBJECT_PID)["version"]
+            subject = "v%d" % version
         for ld in [x for g in groups for x in g.loads]:
             self.gpu.call("load_policy", pid=ld["pid"], path=ld["path"], version=ld["version"])
-        meta = {"phase": st["phase"], "version": snap["version"], "options": req["options"],
+        meta = {"phase": st["phase"], "version": version, "subject": subject, "policy": pol["path"] if pol else None,
+                "options": req["options"], "sampled_options": req.get("sampled_options"),
                 "evaluators": req["evaluators"], "started_at": time.time()}
         job = EVAL.EvalJob(self.run, self.cfg, seq, req["label"], groups, meta, self.engine, self.bin_dir, self.log)
         job.request = req
@@ -714,32 +802,65 @@ class Orchestrator:
         job.start()
         self.eval_job = job
 
+    def fail_eval(self, req, seq, reason):
+        """An evaluation that could not be played: an error in the log, metrics.jsonl
+        (``eval_failed``), evals.jsonl and the status; the run goes on."""
+        st = self.state
+        st["eval"].pop("running", None)
+        self.log("ERROR: evaluation %s %s" % (req["label"], reason))
+        self.emit("eval_failed", label=req["label"], error=reason)
+        last = {"label": req["label"], "seq": seq, "phase": st["phase"], "version": None, "error": reason,
+                "options": req.get("options"), "brief": {}, "seconds": 0}
+        st["eval"]["last"] = last
+        st["eval"]["last_at"] = time.time()
+        st["eval"]["history"] = (st["eval"]["history"] + [last])[-50:]
+        self.evals_file.write(dict(last, evaluators=req["evaluators"], time=time.time()))
+        self.save_state()
+
     def finish_eval(self, job):
         st = self.state
         st["eval"].pop("running", None)
         res = job.result
+        games = sum(int(g.get("games") or 0) for g in res.get("groups", {}).values())
+        failed = res.get("failed_actors", 0)
+        if not games:
+            res["error"] = "no games played (%d evaluation actors failed%s)" % (
+                failed, ": " + "; ".join(res.get("actor_errors") or []) if res.get("actor_errors") else "")
+            self.log("ERROR: evaluation %s: %s; see %s" % (res["label"], res["error"], res["dir"]))
+        elif failed:
+            self.log("WARNING: evaluation %s: %d evaluation actors failed (%s); its results are partial" % (
+                res["label"], failed, "; ".join(res.get("actor_errors") or []) or "?"))
+        for line in res.pop("draw_lines", []):
+            self.note_finding(line, "eval " + res["label"])
         pids = [ld["pid"] for ld in job.loads()]
         if pids and self.gpu is not None:
             self.gpu.call("unload", pids=pids)
-        if not isinstance(job, EVAL.ExploitJob):
+        if isinstance(job, EVAL.ExploitJob):
+            st["eval"]["exploiter_last_at"] = time.time()
+            st["eval"]["exploiter_last"] = EVAL.brief(res)
+        elif not res.get("error"):
             try:
                 res["ratings"] = st["eval"]["ratings"] = EVAL.record_ladder(self.run, res, st["ladder"])
             except (OSError, ValueError, KeyError) as err:      # the ratings are a report, never fatal
                 self.log("evaluation %s: ladder: %s" % (res["label"], err))
-        else:
-            st["eval"]["exploiter_last_at"] = time.time()
-            st["eval"]["exploiter_last"] = EVAL.brief(res)
         st["eval"]["last"] = {"label": res["label"], "seq": res["seq"], "phase": res["phase"],
-                              "version": res["version"], "brief": EVAL.brief(res), "seconds": res["seconds"]}
+                              "version": res["version"], "subject": res.get("subject"),
+                              "options": res.get("options"), "brief": EVAL.brief(res), "seconds": res["seconds"]}
+        if res.get("error"):
+            st["eval"]["last"]["error"] = res["error"]
         st["eval"]["last_at"] = time.time()
         st["eval"]["history"] = (st["eval"]["history"] + [st["eval"]["last"]])[-50:]
         self.evals_file.write(dict(res, time=time.time()))
-        self.emit("eval", label=res["label"], version=res["version"], options=res["options"],
-                  results={k: {"win_rate": g.get("win_rate"), "games": g.get("games"),
+        self.emit("eval_failed" if res.get("error") else "eval", label=res["label"], version=res["version"],
+                  subject=res.get("subject"), options=res["options"],
+                  results={k: {"win_rate": g.get("win_rate"), "games": g.get("games"), "options": g.get("options"),
                                "game1": g["game1"].get("win_rate"), "games23": g["games23"].get("win_rate")}
                            for k, g in res["groups"].items()}, seconds=res["seconds"],
-                  failed_actors=res["failed_actors"])
-        self.log("evaluation %s done in %.0f s: %s" % (res["label"], res["seconds"], json.dumps(EVAL.brief(res))))
+                  failed_actors=res["failed_actors"], **({"error": res["error"]} if res.get("error") else {}))
+        if not res.get("error"):
+            self.log("evaluation %s (%s, %s) done in %.0f s: %s" % (
+                res["label"], res.get("subject"), EVAL.options_label(res["options"]), res["seconds"],
+                json.dumps(EVAL.brief(res))))
         if st["phase"] == "B1" and st["stage"] == "eval" and res["label"] == "b1":
             wr = (res["groups"].get("scripted") or {}).get("win_rate")
             st["b2"]["best"] = wr
@@ -938,6 +1059,9 @@ class Orchestrator:
             except GpuError as err:
                 self.gpu_stats = {"error": str(err)}
             self.gpu_stats_at = now
+            if self.gpu_model == "rnad" and self.gpu_stats.get("learner_steps") is not None:
+                rn = self.state["rnad"]
+                rn["learner_steps"] = max(rn["learner_steps"], int(self.gpu_stats["learner_steps"]))
         st = self.state
         health = self.pool.health() if self.pool else []
         doc = {"run": self.run.name, "path": self.run.path, "running": running, "pid": os.getpid(),
@@ -955,7 +1079,7 @@ class Orchestrator:
                             self.eval_job, EVAL.ExploitJob) else None},
                "exports": {"running": self.export_job[1] if self.export_proc else None,
                            "queue": [x[1] for x in self.export_queue], "done": len(st["exports"])},
-               "checkpoint": st["checkpoint"], "transitions": st["transitions"][-6:],
+               "checkpoint": st["checkpoint"], "transitions": st["transitions"][-6:], "findings": st.get("findings"),
                "config": {k: C.get_key(self.cfg, k) for k in sorted(C.LIVE)}, "sockets": {
                    "control": self.run.control_sock, "rmip": self.run.rmip_sock}}
         with self.status_lock:
@@ -994,14 +1118,18 @@ class Orchestrator:
             elif self.gpu is not None:
                 self.gpu.kill()
         finally:
-            for line in self.tail.poll():
-                self.counters.add(line)
+            self.ingest_results()
             self.save_state()
             self.emit("stop", reason=reason)
 
 
 def _f(x):
     return "%.3f" % x if isinstance(x, (int, float)) else "-"
+
+
+def _iteration_of(label):
+    """k of a fixed point's label ``m<k>`` (0 for another label)."""
+    return int(label[1:]) if label[:1] == "m" and label[1:].isdigit() else 0
 
 
 def status_from_files(run):
@@ -1018,6 +1146,7 @@ def status_from_files(run):
         doc["transitions"] = st.get("transitions", [])[-6:]
         doc.setdefault("eval", {})["last"] = (st.get("eval") or {}).get("last")
         doc["eval"]["ratings"] = (st.get("eval") or {}).get("ratings")
+        doc["findings"] = st.get("findings")
     doc["running"] = False
     doc.pop("stopping", None)
     if st.get("phase") == "done":

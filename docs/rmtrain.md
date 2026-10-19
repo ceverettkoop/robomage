@@ -47,13 +47,13 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 
 | Command | What |
 |---|---|
-| `status <run> [--json]` | phase and stage, hold / pause, the phase's progress, games and decisions (and per second, over the last minute), actor health (running, restarts, why one is down), the GPU process (mode, inference server stats from `InferenceServer.stats()`: rows/s, batch mean, queue p99, clients, served policies and versions; GPU memory; the replay window), the latest metrics of each kind, the evaluation running / queued / last results, the last checkpoint, recent transitions. When the run is not running: the same from `status.json` and `state.json` (marked NOT RUNNING) |
+| `status <run> [--json]` | phase and stage, hold / pause, the phase's progress, games and decisions (and per second, over the last minute), actor health (running, restarts, why one is down), the GPU process (mode, inference server stats from `InferenceServer.stats()`: rows/s, batch mean, queue p99, clients, served policies and versions; GPU memory; the replay window), the latest metrics of each kind, the evaluation running / queued / last results (its subject, version and options; an error when it failed), the findings (drawn games, §7), the last checkpoint, recent transitions. When the run is not running: the same from `status.json` and `state.json` (marked NOT RUNNING) |
 | `tail <run> [component] [-n N] [--no-follow]` | `orchestrator` (default), `gpu`, `export`, `metrics`, `evals`, `a<k>` (an actor), `actors` (all), `all` |
 | `pause <run>` | the actors are stopped (SIGTERM: a match in progress is written off) and the learner stops stepping; evaluations stop (queued again). Kept across restarts |
 | `resume <run>` | undoes `pause` |
 | `stop <run>` | clean shutdown: evaluations cancelled, actors SIGTERM, queued exports finished, a checkpoint, the GPU process stopped; waits until the run is gone |
 | `set <run> <section.key> <value>` | a live parameter (below), validated, applied at once and written to `config.json` (a resume keeps it); a `set` metrics line |
-| `eval <run> [--evaluators a,b]` | queue an evaluation of the current policy now |
+| `eval <run> [--evaluators a,b]` | queue an evaluation of the current policy (the network when the evaluation starts) |
 | `phase <run> hold\|release\|next\|status` | `hold` blocks the next transition (the exit test still runs; the run stays in the phase and says why in `status`); `release` lifts it; `next` forces the current phase's (or stage's) exit, also when held |
 | `config <run>` | the resolved config as TOML |
 | `defaults` | the default config as TOML, documented |
@@ -66,7 +66,7 @@ smoothed π_0,reg while it is still a regularisation policy), `rnad.push_every`,
 `b1.*` but `play_eval`, `b2.rounds_*`, `b2.decisions_per_round`, `b2.min_steps_per_round`,
 `b2.min_improvement`, `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options`,
 `b5.max_learner_steps`); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
-`eval.every_minutes`, `eval.per_iteration`, `eval.sprt_max_games`, `eval.exploiter_every_minutes`,
+`eval.every_minutes`, `eval.per_iteration`, `eval.also_sampled`, `eval.sprt_max_games`, `eval.exploiter_every_minutes`,
 `eval.exploiter_minutes`; `checkpoint.every_minutes`. The schedule's Δm is the
 reference's function of the learner step, so a changed Δm can move α and the next boundary.
 
@@ -111,7 +111,8 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `eval.opponents`, `eval.pairs`, `eval.matches` | scripted, explore, random; 4 pairs; 48 | |
 | `eval.ladder`, `eval.ladder_matches` | 3, 24 | |
 | `eval.actors`, `eval.every_minutes`, `eval.per_iteration` | 4, 60, true | |
-| `eval.nn_options_bc` / `_rnad` / `_finetune` | `argmax` / `""` / `thresh=0.03:disc=16` | the evaluated policy's options per phase |
+| `eval.nn_options_bc` / `_rnad` / `_finetune` | `argmax` / `argmax` / `thresh=0.03:disc=16` | the evaluated policy's options per phase (the primary result; §7) |
+| `eval.also_sampled` | false | the `fixed` evaluator also plays the policy with the actors' sampling options (groups `<opponent>@sampled`) |
 | `eval.sprt_opponents`, `sprt_pairs` | `["scripted"]`, every league pair | the `sprt` evaluator's opponents and deck pairs |
 | `eval.sprt_p0`, `sprt_p1`, `sprt_alpha`, `sprt_beta`, `sprt_max_games` | 0.45, 0.55, 0.05, 0.05, 400 | its test on the per-game win rate; the game cap (undecided there) |
 | `eval.exploiter_every_minutes`, `exploiter_minutes` | 0 (off), 20 | the exploiter's B4/B5 cadence and training time |
@@ -126,11 +127,12 @@ reference's function of the learner step, so a changed Δm can move α and the n
 runs/<name>/
   config.json  config.toml       the resolved config (live) / as created
   state.json                     phase, stage, hold, pause, counters + results offsets, last checkpoint,
-                                 ladder, evaluation queue and history, transitions (atomic, every ~10 s)
+                                 ladder, evaluation queue and history, transitions, findings (atomic, every ~10 s)
   status.json                    the last status (every run.status_every_s)
   sockets.json  daemon.json      the socket paths; how it was detached (unit name or pid)
-  metrics.jsonl                  one line per learner report, held-out evaluation, evaluation, checkpoint,
-                                 export, transition, set / pause / hold, start / stop: time, phase, stage, step
+  metrics.jsonl                  one line per learner report, held-out evaluation, evaluation (eval, or
+                                 eval_failed with its error), checkpoint, export, transition, set / pause /
+                                 hold, start / restore / stop: time, phase, stage, step
   evals.jsonl                    every evaluation's full result (per opponent, per pair, game 1 vs 2–3)
   schedule.json                  the actors' schedule (docs/actor.md §2)
   cards.rmstate  tables/         the cards frame and the exported card tables
@@ -138,7 +140,8 @@ runs/<name>/
   actors/                        a<k>.status.json, a<k>.results.jsonl (the actors' --actor-out)
   episodes/b0 dagger selfplay    trajectory episodes (.rmtraj)
   rmlog/b0 dagger selfplay       every match's decision log (always kept)
-  ckpt/                          bc-p<step>.pt (+ .opt), rnad-p<step>.pt: periodic, the last checkpoint.keep;
+  ckpt/                          bc-p<step>.pt (+ .opt), rnad-p<step>.pt: periodic (named by the GPU
+                                 process's step when it writes them), the last checkpoint.keep;
                                  bc-b1.pt, bc-r<k>.pt, bc-final.pt, rnad-seed.pt, rnad-final.pt: phase ends
   ckpt/fixed/m<k>.pt             the R-NaD fixed points (π_m,reg at each boundary)
   exports/<name>.ts.pt .pt2      exports of the phase-end checkpoints and fixed points (nn:<model>)
@@ -187,7 +190,7 @@ evaluation's result waits as *pending* and happens on `release`).
 | B2 | collect | round r: the BC policy (server policy 0, frozen for the round) on both seats via `nn:remote`, sampling, the teacher on both seats at mix `teacher_mix_start → end`; BC goes on training on the growing window | `b2.decisions_per_round` decisions of version `b2-r<r>` and `b2.min_steps_per_round` BC steps → actors stopped, `bc-r<r>.pt`, export |
 | B2 | eval | evaluation `b2-r<r>` (fixed opponents) | after `b2.rounds_min` rounds, a win rate vs scripted:hard not `b2.min_improvement` above the best so far; or `b2.rounds_max` → B3; else round r + 1 |
 | B3 | | `bc-final.pt`; `RNaDLearner.from_bc_checkpoint` (π_0,reg smoothed by `rnad.reg_eps`, `reg_eps_sideboarding`); `rnad-seed.pt` | at once |
-| B4 | selfplay | both seats `nn:remote:…:policies=0,1,2` (+ `b4.nn_options`), train, the league; the learner takes each fresh game once (`take_fresh`, `trainable_episodes`: capped / quit games dropped); at each boundary the fixed point `ckpt/fixed/m<k>.pt`, its export, an evaluation `it<k>` (`eval.per_iteration`); evaluations every `eval.every_minutes` | `b4.iterations` iterations or `b4.max_learner_steps` steps (0: never) |
+| B4 | selfplay | both seats `nn:remote:…:policies=0,1,2` (+ `b4.nn_options`), train, the league; the learner takes each fresh game once (`take_fresh`, `trainable_episodes`: capped / quit games dropped); at each boundary the fixed point `ckpt/fixed/m<k>.pt`, its export, an evaluation `it<k>` of that fixed point (`eval.per_iteration`); evaluations of the current policy every `eval.every_minutes` | `b4.iterations` iterations or `b4.max_learner_steps` steps (0: never) |
 | B5 | selfplay | the learner's fine-tuning projection from the current step; evaluations with `eval.nn_options_finetune` | `b5.max_learner_steps` (0: never) → `done`: `rnad-final.pt`, exports, exit 0 |
 
 **Why DAgger plays through the server** (`nn:remote`, not `nn:<export>` in process): the actors
@@ -203,10 +206,33 @@ match per actor per pause.
 
 `orchestrator/evaluation.py`: a registry of **evaluators** (`@evaluator("name")`, a function of the
 context returning groups: named schedule entries, a match count, server policies to load). An
-evaluation snapshots the current network as server policy 3, loads its groups' policies, plays
-the matches with `eval.actors` evaluation actors (`--actor-matches`), scores every game
-(`evaluate.summarize`: per opponent and pair, game 1 apart from games 2–3), unloads, and appends to
-`evals.jsonl`, `metrics.jsonl` (`eval`) and the status.
+evaluation loads its subject as server policy 3, loads its groups' policies, plays the matches with
+`eval.actors` evaluation actors (`--actor-matches`), scores every game (`evaluate.summarize`: per
+opponent and pair, game 1 apart from games 2–3), unloads, and appends to `evals.jsonl`,
+`metrics.jsonl` (`eval`) and the status.
+
+**The subject.** An R-NaD iteration's evaluation (`it<k>`, `it<k>-sprt`) evaluates that
+iteration's fixed point, `ckpt/fixed/m<k>.pt` (π_m,reg at the boundary), loaded from the file when
+the evaluation starts — also when it was queued behind others, stopped by a pause or re-queued after
+a restart; it is named `m<k>` in the results and the ladder, and its own rung is not one of its
+ladder opponents. Every other evaluation (B1, DAgger rounds, the `eval.every_minutes` cadence,
+`rmtrain eval`) evaluates the current network as it is when the evaluation starts (a snapshot,
+named `v<version>`), not when it was queued. An exploiter always trains against the current network.
+
+**Options.** The evaluated policy plays at `argmax` by default in every phase but B5
+(`eval.nn_options_bc`, `eval.nn_options_rnad`), so results are comparable from B1 to B4; B5 plays the
+fine-tuning projection (`eval.nn_options_finetune`, `thresh=0.03:disc=16`). That is the **primary**
+result. With `eval.also_sampled` the `fixed` evaluator also plays the policy with the options the
+phase's actors sample with (`b2.nn_options` in B1–B2, `b4.nn_options` after; `""` = temperature 1)
+as groups `<opponent>@sampled`: a secondary result, left out of the ladder's ratings. Every result
+carries its `options` (the evaluation's and each group's) in `evals.jsonl` and `metrics.jsonl`; the
+status labels them (`argmax`, `sampled`, or the options).
+
+**Failures.** An evaluation whose groups would collide (a repeated group, schedule entry id or server
+policy) or whose fixed point is gone is not played; one whose evaluation actors all fail plays no
+game. Either is an error, never an empty result: an `ERROR:` line in the orchestrator log, an
+`eval_failed` metrics line, the error in `evals.jsonl` and in the status's last evaluation, and no
+ladder record; the run goes on. Some actors failing is a warning (partial results).
 
 - `fixed`: against `eval.opponents` (`scripted` = scripted:hard: `first` + the teacher at mix 1;
   `explore`, `random`, any agent spec) over `eval.pairs`, both decks and seats (`swap: sides`).
@@ -240,8 +266,8 @@ the matches with `eval.actors` evaluation actors (`--actor-matches`), scores eve
   the BC policy a 20-minute exploiter stayed below 50% (plan T8, measured), so read its figure as a
   lower bound on exploitability until it is.
 - `ladder` also feeds the **ladder record** (`rmlearn/ladder.py`, `<run>/ladder/ladder.json`): after
-  every evaluation (exploiters aside) each group's games are recorded as a pairing of the evaluated
-  policy (`v<version>`) against the group's opponent (a rung by its label, `bc`, `m<k>`; a fixed
+  every evaluation (exploiters and failed evaluations aside) each primary group's games are recorded
+  as a pairing of the evaluated policy (`m<k>` or `v<version>`) against the group's opponent (a rung by its label, `bc`, `m<k>`; a fixed
   opponent by name, `scripted`, `explore`, `random`), and a Bradley–Terry fit over every pairing so
   far (per game, a weak prior, the Elo scale, `scripted` at 0) is written into `state.json`,
   `status` (`ratings`) and the evaluation's line in `evals.jsonl`.
@@ -254,6 +280,13 @@ cadence in B4–B5 (the exploiter on `eval.exploiter_every_minutes`), and on `rm
 Evaluation schedules give the evaluated policy both decks of each pair: `swap: sides` moves a
 side's deck with its agent (docs/actor.md §2), so every pair is two entries, one per order.
 
+**Findings: draws.** A drawn game (CR 104.4a: both players lost at once — e.g. a burn player's
+Price of Progress or Eidolon damage killing both) is legitimate, but rare enough to review. Every
+draw in the training actors' or an evaluation's results is noted in `state.json`'s `findings` (the
+count and the latest ten: source, actor, match, game, decks, the results file and the match's
+decision log) and the orchestrator log, and `status` shows a `findings:` line with the latest three;
+they are not errors. Replay one with `cd bin && ./release/robomage_nn --replay <rmlog> --narrative`.
+
 ## 8. Durability
 
 - **Checkpoints** every `checkpoint.every_minutes` (once the GPU process holds a model) and at
@@ -264,11 +297,28 @@ side's deck with its agent (docs/actor.md §2), so every pair is two entries, on
   checkpoint after it is written.
 - **Resume** (after `stop`, a crash or `kill -9` of everything): the phase and stage from
   `state.json`; BC reloads its checkpoint and re-reads the newest episodes up to the window's
-  limit; R-NaD reloads the learner and re-reads the checkpoint's window (its untaken games fresh
-  again, files older than its oldest left out, newer ones polled as fresh); the results files are
-  read on from the recorded offsets; actors start after their last match. An evaluation that was running
+  limit; R-NaD reloads the learner and re-reads the checkpoint's window; the results files are read
+  on from the recorded offsets; actors start after their last match. An evaluation that was running
   (`state.json`'s `eval.running`) is queued again and played from its start. At most one checkpoint
-  interval of learning is lost (and the games played in it are trained on again or skipped).
+  interval of learning is lost.
+- **Which self-play games are fresh after a resume.** A checkpoint polls the window first, so it
+  lists every episode file on disk at that moment: those in the window and those the learner had
+  not taken yet (fresh). The restore offers only the latter as fresh. Every other episode already
+  on disk is left out (kept on disk, never trained on): those the learner took before the checkpoint,
+  and those written *after* the checkpoint but before the crash. The latter were taken by the lost
+  steps; they are not trained on again because they were played by policies the restored learner
+  never had, under versions it issues again for other weights (the policy and regularisation
+  versions are learner steps), so their recorded evaluations would be taken for its own. The cost
+  is at most one checkpoint interval of games; games written after the restore are fresh.
+- **Progress after a resume** is the restored learner's: its step and iteration from the
+  checkpoint (a `restore` metrics line names them and the run's previous ones; the pre-crash
+  learner metrics leave the status), then the GPU process's live step. What the lost steps made is
+  rolled back: the ladder rungs of later iterations, their queued evaluations, and the ladder
+  record's players of the lost steps (`m<k>` past the restored iteration, R-NaD `v<version>` past its
+  step — names the restored learner issues again for other weights). Crossing a boundary again
+  writes the fixed point anew, adds its rung once and queues its evaluation.
+- **Config keys added since a run was created** take their defaults when it resumes (`start` names
+  them; `config.json` is rewritten).
 - A transient failure of a command to the GPU process is fatal for the run (exit 2) by design:
   the restart resumes from the checkpoint.
 
@@ -283,12 +333,22 @@ The CPU checks: config parsing and validation, the control protocol, an orchestr
 run driven through its socket and its status from the files, and the resume bookkeeping (actor
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
 the window restore, checkpoint pruning, the schedules and evaluators, an SPRT evaluation stopping
-when its test decides, the request split, the ladder's ratings). The smoke runs a tiny run
+when its test decides, the request split, the ladder's ratings), and the first validation run's
+findings: a B4 resume at an earlier step (progress, metrics and checkpoint names follow the restored
+learner; the lost iteration's rung, evaluation and ladder players dropped; a re-crossed boundary
+adds one rung), episodes the learner took before the checkpoint or that were written after it not
+fresh again, an iteration's evaluation loading its fixed point (also after a pause) while a cadence
+one snapshots the current network, an evaluation whose actors all fail reported as an error,
+colliding groups refused, argmax by default with the sampled groups optional and every result
+labelled with its options, and draws as findings in the status. The smoke runs a tiny run
 (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`, one DAgger round of
 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises every command, kills
 the whole unit with SIGKILL in B4 (systemd restarts it; it resumes at the checkpoint), stops and
 starts it again, and runs it to `done`; per-iteration SPRT evaluations and one exploiter
-(`rmtrain eval --evaluators exploiter`) run on the way.
+(`rmtrain eval --evaluators exploiter`) run on the way. It checks that no evaluation failed, that
+each iteration's evaluations evaluated its fixed point, that every result names its options (an
+argmax and a sampled group with `eval.also_sampled`), that the ladder's rungs stay unique across the
+kill, and the resumes' `restore` lines.
 
 Measured (the training box, after T7; other agents' jobs on the GPU and CPU): B0 ~2 s (5,300
 decisions on 3 actors), B1 ~20 s (the commands exercised, then `phase next`), B2 ~14 s (one round:

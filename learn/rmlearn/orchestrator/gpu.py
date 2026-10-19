@@ -241,7 +241,7 @@ class Worker:
         from ..rnad_learner import RNaDLearner, ServerLink
         self.bc_close()
         c = self.cfg
-        window_state = None
+        saved_window = None
         if resume:
             data = torch.load(resume, map_location="cpu", weights_only=False)
             learner = RNaDLearner.from_state_dict(data["learner"], self.tables, device=self.device)
@@ -250,7 +250,7 @@ class Worker:
                                           "reg_eps", "reg_eps_sideboarding", "finetune_threshold",
                                           "finetune_discretization", "stale_reg", "forward_tokens",
                                           "value_after_every")})
-            window_state = data.get("window")
+            saved_window = data.get("window")
         else:
             learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device)
         self.link = ServerLink(self.server, push_every=int(c["rnad"]["push_every"]))
@@ -260,10 +260,11 @@ class Worker:
         sp = self.rd.episode_dir("selfplay")
         os.makedirs(sp, exist_ok=True)
         self.window = RP.ReplayWindow(self._window_cfg([sp], True))
-        restored = restore_window(self.window, window_state, [sp]) if window_state else 0
+        restored, left_out = restore_window(self.window, saved_window, [sp]) if saved_window else (0, 0)
         self.window.start()
-        log("rnad: %s learner at step %d (iteration %d), window restored with %d episodes"
-            % ("resumed" if resume else "seeded", learner.learner_steps, learner.reg_updates, restored))
+        log("rnad: %s learner at step %d (iteration %d), window restored with %d episodes, %d episode files "
+            "not in the checkpoint left out" % ("resumed" if resume else "seeded", learner.learner_steps,
+                                                learner.reg_updates, restored, left_out))
         return {"learner_steps": learner.learner_steps, "reg_updates": learner.reg_updates}
 
     def _on_learner_event(self, learner, event):
@@ -446,14 +447,13 @@ class Worker:
         return {"schedule": self.exploit.schedule(), "victim_version": version}
 
     def checkpoint(self, path, keep):
+        """Saves the model (``{step}`` in `path`: the learner's step now); the reply names the file."""
         import torch
+        _, step = self.current_model()
+        path = path.replace("{step}", str(step))
         os.makedirs(os.path.dirname(path), exist_ok=True)
         if self.learner is not None:
-            files, fresh = self.window.files()
-            fresh = fresh + [e.path for e in self.pending]
-            mt = [os.path.getmtime(f) for f in files if os.path.exists(f)]
-            data = {"learner": self.learner.state_dict(),
-                    "window": {"files": files, "fresh": fresh, "min_mtime": min(mt) if mt else 0.0}}
+            data = {"learner": self.learner.state_dict(), "window": window_state(self.window, self.pending)}
             tmp = path + ".tmp"
             torch.save(data, tmp)
             os.replace(tmp, path)
@@ -622,10 +622,26 @@ def restore_recent(win, dirs, budget):
     return len(skip)
 
 
+def window_state(win, pending=()):
+    """The R-NaD window's part of a checkpoint: the episodes in the window (``files``, ingestion
+    order) and those the learner has not taken yet (``fresh``: the window's untaken ones and
+    `pending`, taken but not yet trained on). The window is polled first, so every episode file on
+    disk at this moment is in ``files`` or ``fresh``: whatever a resume finds on disk beside them
+    was written after the checkpoint."""
+    win.poll()
+    files, fresh = win.files()
+    return {"files": files, "fresh": fresh + [e.path for e in pending], "complete": True}
+
+
 def restore_window(win, state, dirs):
-    """A checkpoint's window back: its episodes still on disk re-read (those it had not given out as
-    fresh); files older than its oldest episode left out; newer ones are polled as fresh."""
+    """A checkpoint's window back (``window_state``): its episodes still on disk re-read, only its
+    fresh ones (not yet taken by the learner at the checkpoint) offered as fresh; every other
+    episode file already on disk is left out (``win.skip``): taken before the checkpoint, or written
+    after it by policies of the lost steps — whose versions the restored learner issues again for
+    other weights, so their recorded evaluations would be mistaken for its own. Episodes written
+    from now on are polled as fresh. (n restored, n left out)."""
     from .. import episodes as EP
+    now = time.time()
     fresh = set(state.get("fresh", []))
     listed = list(state.get("files", []))
     for p in fresh:
@@ -640,9 +656,10 @@ def restore_window(win, state, dirs):
             continue
         if win.add(ep, fresh=p in fresh):
             n += 1
-    cutoff = float(state.get("min_mtime", 0.0))
-    win.skip([p for mtime, _, p in episode_files(dirs) if mtime < cutoff])
-    return n
+    known = set(listed)
+    left = [p for mtime, _, p in episode_files(dirs) if p not in known and mtime <= now]
+    win.skip(left)
+    return n, len(left)
 
 
 def main():
