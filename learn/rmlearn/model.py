@@ -363,7 +363,7 @@ class RMNet(nn.Module):
 
     def aux(self, g):
         rows = self.cards.card_rows()                               # [n_cards, d]
-        none = torch.zeros(rows.shape[0], dtype=g.dtype, device=g.device)
+        none = torch.zeros(rows.shape[0], dtype=torch.float32, device=g.device)   # f32: -1e9 is -inf in f16
         none[-1] = NEG
         b, d = g.shape
         depth = self.spec.library_depth

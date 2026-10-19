@@ -12,6 +12,11 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/batch.py` | `Decisions` (a tensors file or an RMIP request: unpadded, concatenated), `pad` (= `featurize::pad_batch`), `to_torch`, `Targets` (an `rmfeat --targets` file) |
 | `rmlearn/model.py` | `ModelConfig`, `RMNet` (policy, value, auxiliary heads, optional omniscient critic), `InferencePolicy` (the exported contract), `aux_losses`, `masked_log_softmax`, `smoothed_log_policy`, `save_checkpoint` / `load_checkpoint` |
 | `rmlearn/export.py` | `export_policy` (TorchScript `.ts.pt`, AOTInductor `.pt2`, optional ONNX, with the four metadata strings), `read_metadata`, `load` |
+| `rmlearn/episodes.py` | trajectory episodes (`docs/trajectory_format.md`) in numpy: `read_episode` (the file's bytes kept, arrays as views), `expand` (steps of many episodes → the contract's padded inputs, = `batch.pad`), `targets`, `evaluations`, `episode_attrs` |
+| `rmlearn/replay.py` | `ReplayWindow` (RAM window over trajectory directories: polling ingestion, eviction by decisions / bytes, optional deletion of evicted `.rmtraj`, never `.rmlog`; labels; held-out split by game), `DecisionBatch` (BC), `TrajectoryBatch` (R-NaD: full games time-major, chunked), `Prefetcher` (background batch threads) |
+| `rmlearn/bc.py` | behaviour cloning: `BCConfig`, `BCTrainer` (`train(n)`, `evaluate()`, `save`, `restore`, `export` → metric dicts), `python -m rmlearn.bc` |
+| `rmlearn/corpus.py` | the teacher corpus (plan B0): scripted:hard games through engine actors (or `rm_driver.py` + `--replay`) into episodes; `make_schedule`, `run_actor_corpus` |
+| `rmlearn/evaluate.py` | an export as `nn:<model>` against `scripted` / `explore` / `random` through engine actors, scored per game (game 1 apart from games 2–3): `run_eval`, `summarize` |
 | `rmlearn/server.py` | `InferenceServer`: RMIP v1 (`docs/inference_protocol.md`) inside the host process; `python -m rmlearn.server` runs it standalone |
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |
 | `check.py` | the CPU-only correctness checks |
@@ -29,6 +34,21 @@ srv = server.InferenceServer(sock, device="cuda", max_batch=512, deadline_us=200
 srv.set_policy(0, net, 12); srv.start()                # actors: nn:remote:<sock>[:policies=0,1,2]
 srv.set_policy(1, reg_net, 11)                         # swapped between batches
 srv.stats(); srv.stop()
+
+from rmlearn import replay, bc
+win = replay.ReplayWindow(replay.WindowConfig(dirs=["runs/r1/episodes"], heldout_fraction=0.05))
+win.poll()                                             # or win.start(): a polling thread
+trainer = bc.BCTrainer(net, win, bc.BCConfig(batch_size=64), device="cuda")
+metrics = trainer.train(250); metrics.update(trainer.evaluate())
+tb = replay.TrajectoryBatch(win.take_fresh(64), chunk_len=64, policies=(1, 2))   # R-NaD's batches
+```
+
+```sh
+cd learn
+.venv/bin/python -m rmlearn.corpus --out ../runs/bc1/corpus --actors 16 --matches 2200     # B0
+HSA_OVERRIDE_GFX_VERSION=10.3.0 flock /tmp/rm-gpu.lock .venv/bin/python -m rmlearn.bc --tables T \
+    --episodes ../runs/bc1/corpus/episodes --out ../runs/bc1/bc --minutes 25                   # B1
+.venv/bin/python -m rmlearn.evaluate --model ../runs/bc1/bc/ckpt/p1.pt2 --out ../runs/bc1/eval
 ```
 
 ## Checks
@@ -38,6 +58,9 @@ learn/.venv/bin/python learn/check.py --tables DIR --tensors A.rmtb [--omniscien
 learn/.venv/bin/python learn/check.py --engine-dir bin/debug --bin-dir bin    # makes the inputs first
 ```
 
+With `--engine-dir` the check also plays two short bo3 matches (explore vs random, the scripted
+teacher on seat A, omniscient episodes) for the episode reader (against `python/rmtraj.py`), the
+replay window, both batch kinds and a few BC steps (`--episodes DIR` gives them a directory instead).
 `check.py` hides the GPU from itself and needs no engine when given its inputs; it ends with
 `RMLEARN-CHECK: ok` (exit 0). `integration.py` needs a `robomage_nn` (`make actor`); its `server`
 and `bench` commands use the GPU (`HSA_OVERRIDE_GFX_VERSION=10.3.0` on the RX 6700 XT) and must be

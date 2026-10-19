@@ -373,6 +373,23 @@ the engine, the gate or `python/` imports it.
 - **L1. Episode reader.** Reads T1 episodes into a RAM replay window. Batches are full games,
   padded to the longest game in the batch and split into fixed-length chunks, as DeepNash does,
   so returns are exact rather than bootstrapped.
+
+  Done: `learn/rmlearn/episodes.py` (`read_episode`: the file's bytes kept, every array a view, plus
+  per-step offsets; `expand`: steps of many episodes → the contract's padded inputs in one scatter
+  per tensor, equal to `batch.pad`; ~32k decisions/s on one core at batch 256) and
+  `learn/rmlearn/replay.py`: `ReplayWindow` (polls trajectory directories, ingests renamed-in
+  `*.rmtraj` oldest first, evicts oldest past `max_decisions` / `max_bytes`, deletes evicted
+  `.rmtraj` only with `delete_evicted`, never an `.rmlog`; skips other specs; labels per step: the
+  teacher's, else the reply at steps without μ unless the seat is `explore` / `random`; held-out
+  split by a hash of the game), `DecisionBatch` (uniform over labelled decisions; inputs, label,
+  outcome, aux targets, optional omniscient inputs), `TrajectoryBatch` (G games time-major
+  `[T, G]`, T rounded up to `chunk_len`; `valid`, `seat`, `chosen`, `has_mu`, `mu`, `legal`,
+  `teacher`, `policy_version`, each requested policy's recorded value / `log π`, `reward` with each
+  seat's result on its game's last step; network inputs per chunk), `Prefetcher` (background
+  threads). Loader: ~14k decisions/s expanded and copied to pinned memory per thread, ~18–20k with
+  three (the GIL); trajectory chunks ~23–26k decisions/s; the window holds ~15.4 KB per decision
+  with the omniscient part (5.3 KB without). `learn/check.py` checks it (against `rmtraj.py`, the
+  window, both batch kinds).
 - **L2. Model.** The step-5 contract: an entity transformer with relation biases, a pointer
   action head over menu rows, a value head, the card / text / ability tables as frozen buffers,
   and an id embedding with id-dropout. Auxiliary heads predict hidden information (the
