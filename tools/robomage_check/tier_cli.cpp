@@ -3,7 +3,7 @@
 
 #include "corpus.h"
 #include "gate.h"
-#include "json.h"
+#include "../../src/featurize/json.h"
 #include "proc.h"
 #include "scan.h"
 #include "util.h"
@@ -32,7 +32,7 @@ struct CliSession {
 }  // namespace
 
 static bool load_session(const std::string &path, CliSession *out, std::string *err);
-static bool string_list(const rmcheck::Json &doc, const char *key, std::vector<std::string> *out, std::string *err);
+static bool string_list(const featurize::Json &doc, const char *key, std::vector<std::string> *out, std::string *err);
 static std::string golden_text(const std::string &out, const std::string &log_path, const std::string &name);
 static std::string replay_problem(const rmcheck::Options &opt, const std::string &log);
 
@@ -43,8 +43,8 @@ static bool load_session(const std::string &path, CliSession *out, std::string *
         *err = "cannot read " + path;
         return false;
     }
-    rmcheck::Json doc;
-    if (!rmcheck::Json::parse(text, &doc, err)) return false;
+    featurize::Json doc;
+    if (!featurize::Json::parse(text, &doc, err)) return false;
     if (!doc.is_object()) {
         *err = "not a JSON object";
         return false;
@@ -54,7 +54,7 @@ static bool load_session(const std::string &path, CliSession *out, std::string *
             *err = "unknown key '" + m.first + "'";
             return false;
         }
-    const rmcheck::Json *name = doc.get("name"), *why = doc.get("why");
+    const featurize::Json *name = doc.get("name"), *why = doc.get("why");
     out->name = rmcheck::strip_ext(rmcheck::basename_of(path));
     if (!name || !name->is_string() || name->as_string() != out->name) {
         *err = "\"name\" must be the file's stem, \"" + out->name + "\"";
@@ -69,13 +69,13 @@ static bool load_session(const std::string &path, CliSession *out, std::string *
 }
 
 // The member `key` of `doc` as a list of strings.
-static bool string_list(const rmcheck::Json &doc, const char *key, std::vector<std::string> *out, std::string *err) {
-    const rmcheck::Json *list = doc.get(key);
+static bool string_list(const featurize::Json &doc, const char *key, std::vector<std::string> *out, std::string *err) {
+    const featurize::Json *list = doc.get(key);
     if (!list || !list->is_array()) {
         *err = std::string("\"") + key + "\" must be a list of strings";
         return false;
     }
-    for (const rmcheck::Json &item : list->items()) {
+    for (const featurize::Json &item : list->items()) {
         if (!item.is_string()) {
             *err = std::string("\"") + key + "\" must be a list of strings";
             return false;

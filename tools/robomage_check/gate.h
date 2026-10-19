@@ -15,6 +15,7 @@ struct Options {
         std::string bin_dir;  // <repo>/bin: the engine's working directory (resources/)
         std::string binary;   // the engine
         std::string rmknow;   // the knowledge tool beside it
+        std::string rmfeat;   // the featurizer tool beside it
         std::string out_dir;  // transcripts, engine stderr, draw logs
         std::string python;   // the interpreter for the smoke tier ("" = none found)
         int jobs = 4;
@@ -67,6 +68,8 @@ void tier_scenarios(const Options &opt, Report &rep);
 void tier_cli(const Options &opt, Report &rep);
 void tier_replay(const Options &opt, Report &rep);
 void tier_state(const Options &opt, Report &rep);
+void tier_featurize(const Options &opt, Report &rep);
+void tier_actor(const Options &opt, Report &rep);
 void tier_knowledge(const Options &opt, Report &rep);
 void tier_fuzz(const Options &opt, Report &rep);
 void tier_bench(const Options &opt, Report &rep);

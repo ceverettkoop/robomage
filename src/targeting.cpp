@@ -1,5 +1,6 @@
 #include "targeting.h"
 
+#include <cctype>
 #include <set>
 #include <string>
 #include <vector>
@@ -36,6 +37,10 @@ static bool target_type_matches_stack_object(const std::string &target_type, Ent
 static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster);
 static bool player_has_protection_from_everything(Entity cand, Zone::Ownership caster);
 static Zone::Ownership ability_perspective_player(const Ability &ability);
+static bool targets_stack_objects(const AbilityDef &def);
+static bool targets_graveyard_card(const AbilityDef &def);
+static bool alternative_negates_type(const std::string &alt, const std::string &type);
+static void add_permanent_alternative(const std::string &alt, TargetClasses &out);
 
 // Does one "Spell[.quals]" TargetType alternative match a spell on the stack? Checks the
 // stack-spell preconditions plus the alternative's own qualifiers: type negations
@@ -141,6 +146,79 @@ static bool player_has_protection_from_everything(Entity cand, Zone::Ownership c
     return false;
 }
 
+// TargetType$ names one or more kinds of stack object — "Spell[.quals]", "Activated",
+// "Triggered" — as an OR list (counterspells, Stifle, Consign to Memory).
+static bool targets_stack_objects(const AbilityDef &def) {
+    return !def.target_type.empty() && (def.target_type.find("Spell") != std::string::npos ||
+                                           def.target_type.find("Activated") != std::string::npos ||
+                                           def.target_type.find("Triggered") != std::string::npos);
+}
+
+// The target is a card in a graveyard: TgtZone$ Graveyard on any effect (Surgical Extraction's
+// SP$ Pump vehicle), or a ChangeZone out of a graveyard (Life from the Loam, Lorehold Charm).
+static bool targets_graveyard_card(const AbilityDef &def) {
+    return def.target_in_graveyard || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD);
+}
+
+// Whether one filter alternative carries a non<type> qualifier (Permanent.nonLand), in either of
+// the casings Forge scripts use (nonLand, nonland).
+static bool alternative_negates_type(const std::string &alt, const std::string &type) {
+    std::string lower = type;
+    for (char &c : lower) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    return filter_names_token(alt, "non" + type) || filter_names_token(alt, "non" + lower);
+}
+
+// Classes one permanent alternative of a ValidTgts spec by its head (see target_classes).
+static void add_permanent_alternative(const std::string &alt, TargetClasses &out) {
+    const std::string head = alt.substr(0, alt.find_first_of(".+"));
+    struct TypeClass {
+            const char *type;
+            bool TargetClasses::*bit;
+    };
+    static const TypeClass kTypes[] = {{"Creature", &TargetClasses::creature},
+        {"Planeswalker", &TargetClasses::planeswalker}, {"Artifact", &TargetClasses::artifact},
+        {"Enchantment", &TargetClasses::enchantment}, {"Land", &TargetClasses::land},
+        {"Battle", &TargetClasses::battle}};
+    const bool wildcard = head.empty() || head == "Card" || head == "Permanent" || head == "Self" || head == "Other";
+    bool typed = false;
+    for (const TypeClass &t : kTypes) {
+        if (head == t.type) {
+            out.*t.bit = true;
+            typed = true;
+        } else if (wildcard && !alternative_negates_type(alt, t.type)) {
+            out.*t.bit = true;
+        }
+    }
+    if (!typed && !wildcard) out.permanent_other = true;
+}
+
+TargetClasses target_classes(const AbilityDef &def) {
+    TargetClasses out;
+    const std::string &vt = def.valid_tgts;
+    if (vt == "N_A" || vt.empty()) return out;
+    if (targets_stack_objects(def)) {
+        for (const std::string &alt : split(def.target_type, ',', /*skip_empty=*/true)) {
+            if (alt.find("Activated") != std::string::npos || alt.find("Triggered") != std::string::npos)
+                out.ability = true;
+            if (alt.find("Spell") != std::string::npos) out.spell = true;
+        }
+        return out;
+    }
+    if (targets_graveyard_card(def)) {
+        out.card_graveyard = true;
+        return out;
+    }
+    for (const std::string &comma_alt : split(vt, ',', /*skip_empty=*/true))
+        for (const std::string &alt : split(comma_alt, ';', /*skip_empty=*/true)) {
+            if (alt == "Any") out.creature = out.planeswalker = out.battle = true;
+            if (target_alternative_names_player(alt))
+                out.player = true;
+            else
+                add_permanent_alternative(alt, out);
+        }
+    return out;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; targets_still_legal re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -184,12 +262,8 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
 
     const std::string &vt = ab.def->valid_tgts;
 
-    // Stack-object targets (counterspells, Stifle, Consign to Memory): TargetType$ names one or
-    // more kinds of stack object — "Spell[.quals]", "Activated", "Triggered" — as an OR list.
-    if (!ab.def->target_type.empty() &&
-        (ab.def->target_type.find("Spell") != std::string::npos ||
-         ab.def->target_type.find("Activated") != std::string::npos ||
-         ab.def->target_type.find("Triggered") != std::string::npos)) {
+    // Stack-object targets (counterspells, Stifle, Consign to Memory).
+    if (targets_stack_objects(*ab.def)) {
         if (!target_type_matches_stack_object(ab.def->target_type, cand)) return false;
         // A bare "TargetType$ Spell" carries its restriction in ValidTgts$, written against the
         // CARD on the stack — Red Elemental Blast "Card.Blue", Force of Negation
@@ -253,8 +327,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // from your graveyard to the battlefield"). In every case the target is the card sitting
     // in the graveyard, matched there by its card characteristics regardless of destination; a
     // card's controller there is its owner (CR 108.4a), so YouCtrl/OppCtrl mean YouOwn/OppOwn.
-    if (ab.def->target_in_graveyard ||
-        (ab.def->kind == EffectKind::ChangeZone && ab.def->origin == Zone::GRAVEYARD)) {
+    if (targets_graveyard_card(*ab.def)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         if (global_coordinator.GetComponent<Zone>(cand).location != Zone::GRAVEYARD) return false;
         return card_matches_filter(cand, owner_relative_filter(spec), ctx);
@@ -352,8 +425,7 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
     // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
     // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
-    if (ability.def->target_in_graveyard ||
-        (ability.def->kind == EffectKind::ChangeZone && ability.def->origin == Zone::GRAVEYARD)) {
+    if (targets_graveyard_card(*ability.def)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {

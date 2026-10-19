@@ -62,6 +62,12 @@ class Session {
         ProcResult finish();
         // Everything read from stderr so far.
         const std::string &stderr_text() const { return err_; }
+        // Reads until stderr holds `needle` (true) or both pipes end (false).
+        bool wait_stderr(const std::string &needle);
+        // Sends `sig` to the process.
+        void send_signal(int sig);
+        // Moves the deadline (the process is killed past it) to `seconds` from now.
+        void set_timeout(double seconds);
 
     private:
         // One poll round over the open pipes; false when both are closed or the deadline passed.

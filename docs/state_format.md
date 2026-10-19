@@ -620,6 +620,7 @@ that also answers simulated ones (a search agent's).
 | 38 | A belief level `expert+belief` (per seat, `--knowledge-a/-b`; default stays `expert`) adds the `b_*` tables after `k_*`: `b_list` (per player and reference list: posterior probability in units of 10^-9, log-likelihood in milli-nats, exact) and `b_archetype` (per player and label: probability). A posterior under a uniform prior over the reference lists, with likelihood the weighted count of each list's hypothesis-network worlds (`knowledge_store.md` §10.6); probabilities, kept out of `k_*`, which stays sound facts. Zero exactly for the lists `k_template` excludes, at least one unit for the others, summing to 10^9 per player (or 0 when no list is consistent); a function of the seat's events like `k_*`. Absent below that level (fixed schema) | decided |
 | 39 | The raw card script travels in `CARDS` on request (`--rmstate-card-scripts`: the `script` column of a card's front row and of a token's row). The step-2 pass-1 parity adapter (`train/rmstate_adapter.py`, deleted in step 3b) read the scripted agent's card knowledge from it through the generators' own parsing, so it equals the generated tables (`card_props`, `card_costs`) card for card; pass 2 reads the structured columns instead | decided |
 | 40 | A stack object's target that has left the stack has an `lki` row too, not only a departed permanent: the target's card, token flag, controller, printed P/T, types and colours as it left the stack, as each viewer saw them (recorded at the zone-move choke point while another stack object is there to refer to it, dropped once the stack empties). Found by the step-2 port (`state_format_agent_map.md` §7); regression scenario `format_stack_target_lki` | decided |
+| 41 | Structured ability parameters in `CARDS`: `card_ability` gains the effect's amount and its kind (fixed, variable, none), Pump power/toughness modifiers, a target-class mask and target bounds, `n_parts` and `charm_num`; a child table `card_ability_part` (9) has a row per sub-ability and mode, recursively, with its parent, depth, category and the same parameters. Read from the parsed `AbilityDef` and its typed `params`, generic per category and params type, never per card. Plan step 5: a featurizer reads effect parameters as columns; the `line` text stays | decided |
 
 ## Appendix A: column definitions
 
@@ -664,7 +665,7 @@ No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `
 | Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine` writes the deciding seat's records on stdout (section 9) |
 | Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
 | Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
-| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `METAGAME` (17–19), `STATE` (snapshot 20–48, events 80–82, knowledge 90–97, belief 98–99) |
+| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (9–14), `DECKLISTS` (15–16), `METAGAME` (17–19), `STATE` (snapshot 20–48, events 80–82, knowledge 90–97, belief 98–99) |
 
 **Events channel.** One `event` table, one row per event in queue order, with a kind enum and
 the scalar fields of every kind (unused ones are none/0). Per-card parts go in `event_card`,
@@ -713,7 +714,7 @@ per-player parts in `event_player`; both point at their `event` row.
 | `card_keyword` (12) | `card`, `face` | u16, u8 | `card`, `enum:face` | |
 | | `kw` | u8 | `enum:keyword` | the longest `keyword` value the text starts with, followed by its end, `:` or a space (`Ward:2` → Ward, `Protection from blue` → Protection); 0xFF = none |
 | | `text` | text | `text` | the keyword as held, e.g. `Ward:2` |
-| `card_ability` (13) | `card`, `index` | u16, u16 | `card`, `index` | index: per card over both faces, front then back; per face its spell, activated and triggered abilities (`CardData::abilities` order: A: lines, T: lines, then keyword-built), gift, chapter and opening-hand abilities, then statics (S:), then replacements (R:) (`abref.ab_index`). A token's list: its abilities, statics, replacements |
+| `card_ability` (13); statics and replacements have none / 0 in `amount` … `charm_num` | `card`, `index` | u16, u16 | `card`, `index` | index: per card over both faces, front then back; per face its spell, activated and triggered abilities (`CardData::abilities` order: A: lines, T: lines, then keyword-built), gift, chapter and opening-hand abilities, then statics (S:), then replacements (R:) (`abref.ab_index`). A token's list: its abilities, statics, replacements |
 | | `face` | u8 | `enum:face` | |
 | | `ability_kind` | u8 | `enum:ability_kind` | spell, activated, triggered, static, replacement, chapter, opening hand |
 | | `category` | u8 | `enum:effect_kind` | `effect_kinds.def`; 0xFF for statics and replacements |
@@ -723,6 +724,22 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `timing` | u8 | `enum:timing` | spell: instant when an instant or with Flash, else sorcery; activated: sorcery for a loyalty, `SorcerySpeed$`, Equip/Reconfigure/Unattach ability, else instant; anything else any |
 | | `limit` | u8 | `count` | activations per turn; 0 = none |
 | | `line` | text | `text` | the script line with its key (`A:`, `T:`, `S:`, `R:`, `K:`) |
+| | `amount` | u16 | `count` | the effect's number (register 41): `AbilityDef::amount` (`NumDmg$`, `NumCards$`, `LifeAmount$`, `Amount$`, `ChangeNum$` …), else the effect's own count (`CounterNum$`, `PeekAmount$`, `DigNum$`); 0 when variable or none |
+| | `amount_kind` | u8 | `enum:amount_kind` | variable: the parser kept an expression (an X or count-SVar, `dynamic_amount_expr`; a conditional, delirium-scaled or damage-dealt amount; a `CounterNum$` / `DigNum$` expression); fixed: a nonzero number; else none (a `Draw` with no `NumCards$` is none, as parsed) |
+| | `power_mod`, `toughness_mod` | i16 | `signed` | a Pump / PumpAll's `NumAtt$` / `NumDef$`; a side given as an expression holds its sign (+1 for `+X`, -1 for `-X`) |
+| | `pt_kind` | u8 | `enum:amount_kind` | variable when either side is an expression, fixed when either is nonzero, else none |
+| | `targets` | u16 | `mask:target_class` | what may be targeted (`target_classes`, `src/targeting.h`, on `is_legal_target`'s branches): `TargetType$` → spell / ability; `TgtZone$ Graveyard` or a graveyard-origin ChangeZone → card in a graveyard; else per `ValidTgts$` alternative a player, a permanent card type, every permanent type a `Permanent` / `Card` head's `non<Type>` qualifiers leave, or permanent other (a subtype head); `Any` = creature, planeswalker, battle, player (CR 115.4). `card_other` (hand, library, exile) is never set: no ability targets there. 0 for no targeting (`ValidTgts$` absent) |
+| | `target_min`, `target_max` | u8 | `count` | `TargetMin$` / `TargetMax$` (default 1/1); 0xFF when the bound is X or a count expression; 0/0 for no targeting |
+| | `n_parts` | u8 | `count` | the ability's `card_ability_part` rows |
+| | `charm_num` | u8 | `count` | modes to choose (`CharmNum$`, default 1) for a `Charm`; 0 otherwise |
+| `card_ability_part` (9): a `card_ability` row's sub-abilities and modes | `card` | u16 | `card` | |
+| | `ability` | u16 | `index` | the `card_ability` row's `index` |
+| | `part` | u16 | `index` | 0-based per ability: depth-first in definition order, a definition's modes (`charm_choices`) before its sub-abilities (`subabilities`: `SubAbility$`, `RepeatSubAbility$`, `VoteSubAbility$`, `Execute$`), each part followed by its own parts |
+| | `parent` | u16 | `index` | the enclosing part's `part`; none when it hangs off the ability |
+| | `kind` | u8 | `enum:part_kind` | sub, mode |
+| | `depth` | u8 | `count` | 1 for the ability's own parts |
+| | `category` | u8 | `enum:effect_kind` | |
+| | `amount` … `target_max` | | | as in `card_ability` |
 | `card_pip` (14) | `card`, `face` | u16, u8 | `card`, `enum:face` | hybrid and Phyrexian pips of the printed cost |
 | | `kind` | u8 | `enum:pip_kind` | hybrid, twobrid, Phyrexian |
 | | `colors` | u8 | `mask:color` | |
@@ -745,7 +762,8 @@ per-player parts in `event_player`; both point at their `event` row.
 ascending card id, then every registered token those cards can make, in ascending card id. Under `--closed-decklist` it holds every vocab
 card instead (by front face; a back face's own vocab entry is that card's back row), for every
 viewer: the opponent's cards need rows, and listing only the seat's own would show which are the
-opponent's. A card no deck holds is read from the parse cache (`card_data_by_name`,
+opponent's (the engine's `--cards-frame FILE` writes this whole-vocab frame, beside the `SCHEMA` and
+`METAGAME` frames, for the featurizer's card tables, `docs/featurizer.md` §4). A card no deck holds is read from the parse cache (`card_data_by_name`,
 `src/card_db.h`), which creates no entity. A card's tokens are found from its parsed definitions: each `TokenScript$` of its abilities (sub-abilities, modes,
 floating and granted abilities included), the engine-synthesized ones (Investigate → Clue,
 Amass → the subtype's Army, Mobilize → Warrior, `src/effects/effects.h`), then the tokens those
@@ -1047,6 +1065,9 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL |
 | `knowledge_level` | OFF, EXPERT, EXPERT_BELIEF |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
+| `amount_kind` | NONE, FIXED, VARIABLE |
+| `target_class` | CREATURE, PLANESWALKER, ARTIFACT, ENCHANTMENT, LAND, BATTLE, PERMANENT_OTHER, PLAYER, SPELL, ABILITY, CARD_GRAVEYARD, CARD_OTHER |
+| `part_kind` | SUB, MODE |
 
 These are X-macro lists in `schema.h`, so each C++ enum and its string table come from one list.
 

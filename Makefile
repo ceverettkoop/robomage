@@ -64,6 +64,10 @@ CXX_SRCS += $(wildcard $(SRCDIR)/*/*.cpp)
 # Keep them out of the engine build entirely so plain `make`,
 # `make check`, and bin/robomage never see torch or an exceptions-enabled TU.
 CXX_SRCS := $(filter-out $(SRCDIR)/actor/%,$(CXX_SRCS))
+# The inference protocol's wire code (src/inference/, std + POSIX) is not the engine's: the actor,
+# rmserve and the gate link it.
+CXX_SRCS := $(filter-out $(SRCDIR)/inference/%,$(CXX_SRCS))
+INFERENCE_OBJ := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/inference/*.cpp))
 _C_OBJ := $(patsubst $(SRCDIR)/%.c,%.o,$(C_SRCS))
 _CXX_OBJ += $(patsubst $(SRCDIR)/%.cpp,%.o,$(CXX_SRCS))
 C_OBJ = $(patsubst %,$(ODIR)/%,$(_C_OBJ))
@@ -92,7 +96,8 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 
 .DEFAULT_GOAL := all
 
-all: program rmknow robomage_check
+# text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
+all: program rmknow rmfeat robomage_check text-table
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -133,14 +138,16 @@ refetch:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) check
 
-# ── make actor — the libtorch TUs of src/actor/, NOT in the default build ──
-# src/actor/ holds the TorchScript evaluator (az_evaluator.cpp), compiled with exceptions ON
-# against libtorch. There is no actor binary until plan step 5 adds a main: `make actor` compiles
-# the actor objects, and that binary will link $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS).
-# Auto-detect libtorch from the torch package $(PYTHON) imports (an active venv's included), only
-# when asked to build the actor; override with `make actor LIBTORCH_DIR=/path`. Fail early (with a
-# clear message) when there is none.
-ifneq (,$(filter actor,$(MAKECMDGOALS)))
+# ── make actor — bin/<config>/robomage_nn, the engine with the nn: agent, and bin/<config>/rmserve,
+# the reference inference server (plan step 5d), NOT in the default build ──
+# src/actor/ (the evaluators and the nn: agent, docs/featurizer.md §6) is compiled with exceptions ON
+# and C++20 (libtorch 2.10+ headers require it) against libtorch, and linked with every engine
+# object but main.o and with src/inference/ (the protocol, docs/inference_protocol.md):
+# robomage_nn's own main (src/actor/robomage_nn.cpp) registers the nn: agent kind, then runs the
+# engine's entry (src/engine_main.h). Auto-detect libtorch from the torch package $(PYTHON) imports
+# (an active venv's included), only when asked to build the actor; override with
+# `make actor LIBTORCH_DIR=/path`. Fail early (with a clear message) when there is none.
+ifneq (,$(filter actor rmembed rmserve,$(MAKECMDGOALS)))
 LIBTORCH_DIR ?= $(shell $(PYTHON) -c 'import os, torch; print(os.path.dirname(torch.__file__))' 2>/dev/null)
 ifeq ($(strip $(LIBTORCH_DIR)),)
 $(error LIBTORCH_DIR is empty: $(PYTHON) cannot import torch. \
@@ -155,9 +162,10 @@ ENGINE_OBJ_NO_MAIN := $(filter-out $(ODIR)/main.o,$(C_OBJ) $(CXX_OBJ))
 # torch headers are noisy under -Wconversion etc.; -isystem silences them. ABI is
 # 1 in the pip torch builds (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
 TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/include/torch/csrc/api/include
-# Same base flags as the engine MINUS -fno-exceptions (torch throws), PLUS torch
-# includes and -I$(SRCDIR) (actor TUs use non-relative engine includes).
-ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
+# Same base flags as the engine MINUS -fno-exceptions (torch throws) and with C++20 (libtorch 2.10+
+# headers require it), PLUS torch includes and -I$(SRCDIR) (actor TUs use non-relative engine
+# includes).
+ACTOR_CXXFLAGS := $(patsubst -std=c++17,-std=c++20,$(filter-out -fno-exceptions,$(CXXFLAGS))) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
 # When the torch is a ROCm build (libtorch_hip.so present), link the HIP
@@ -173,7 +181,78 @@ endif
 ACTOR_LDFLAGS := $(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
                  -L$(LIBTORCH_DIR)/lib $(ACTOR_TORCH_LIBS) -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
-actor: $(ACTOR_OBJ)
+actor: $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(INFERENCE_OBJ) rmserve
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/robomage_nn $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(INFERENCE_OBJ) $(ACTOR_LDFLAGS)
+
+# ── bin/<config>/rmserve — the reference inference server (docs/inference_protocol.md), with `make actor` ──
+# tools/rmserve/ compiled like the actor TUs (C++20, exceptions on, torch includes), linked with the
+# actor's in-process evaluator, the protocol and the std-only featurize/decoder objects; no engine TU.
+RMSERVE_SRCS := $(wildcard tools/rmserve/*.cpp)
+RMSERVE_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMSERVE_SRCS))
+RMSERVE_LIB_OBJ := $(ODIR)/actor/evaluator.o $(INFERENCE_OBJ) $(ODIR)/state_format/decode.o \
+                   $(ODIR)/state_format/schema.o $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
+
+# Defined before the generic $(ODIR)/tools/%.o rule (Apple's make 3.81; see the actor rule above).
+$(ODIR)/tools/rmserve/%.o: tools/rmserve/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(ACTOR_IFLAGS) $(ACTOR_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+rmserve: $(RMSERVE_OBJ) $(RMSERVE_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmserve $(RMSERVE_OBJ) $(RMSERVE_LIB_OBJ) $(ACTOR_LDFLAGS)
+
+# ── bin/<config>/rmembed — the oracle-text table's generator (plan step 5c, docs/featurizer.md §5) ──
+# tools/rmembed/ (the BERT encoder in the libtorch C++ API and its safetensors reader), compiled like
+# the actor TUs (exceptions on, torch includes), linked with src/featurize/ (std only: RMTB, the
+# WordPiece tokenizer, the text-table inputs; the featurizer beside them needs the decoder) and the
+# std-only decoder and schema (FNV-1a), no engine TU. NOT part of the default build: `make rmembed`
+# (LIBTORCH_DIR as for `make actor`), or `make text-table` when the table is stale.
+RMEMBED_SRCS := $(wildcard tools/rmembed/*.cpp)
+RMEMBED_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMEMBED_SRCS))
+RMEMBED_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                   $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
+# The actor TUs' flags (C++20, exceptions on, torch includes).
+RMEMBED_CXXFLAGS := $(ACTOR_CXXFLAGS)
+
+# Defined before the generic $(ODIR)/tools/%.o rule (Apple's make 3.81 picks pattern rules by
+# definition order; see the actor rule above).
+$(ODIR)/tools/rmembed/%.o: tools/rmembed/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(RMEMBED_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+rmembed: $(RMEMBED_OBJ) $(RMEMBED_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmembed $(RMEMBED_OBJ) $(RMEMBED_LIB_OBJ) $(ACTOR_LDFLAGS)
+
+# ── make text-table — keep the committed oracle-text table complete (docs/featurizer.md §5) ──
+# Builds the engine and runs its std-only check of TEXT_TABLE against tools/embed/MODEL_PIN; when
+# rows are missing or stale it writes their inputs, fetches the pinned model
+# (tools/embed/fetch_model.py, network), builds rmembed (libtorch) and regenerates only those rows,
+# then checks again. Fails naming the stale rows and the command when the fetch or libtorch is
+# unavailable.
+TEXT_TABLE := bin/resources/embeddings/oracle_text.rmtb
+MODEL_PIN := tools/embed/MODEL_PIN
+TEXT_TABLE_INPUTS := .cache/embed/text_table_inputs.jsonl
+TEXT_TABLE_CHECK = cd bin && ./$(CONFIG)/$(BINNAME) --text-table-check ../$(TEXT_TABLE) --model-pin ../$(MODEL_PIN)
+TEXT_TABLE_FAIL = echo "text-table: $(TEXT_TABLE) is stale (rows above) and could not be regenerated: $$step failed." \
+	"Run \`make text-table\` with network access to huggingface.co and libtorch (LIBTORCH_DIR=/path/to/torch)."; exit 1
+
+text-table: program
+	@if ($(TEXT_TABLE_CHECK)); then exit 0; fi; \
+	mkdir -p .cache/embed $(dir $(TEXT_TABLE)); \
+	step="robomage --text-table-inputs"; \
+	(cd bin && ./$(CONFIG)/$(BINNAME) --text-table-inputs ../$(TEXT_TABLE_INPUTS) --text-table ../$(TEXT_TABLE) \
+		--model-pin ../$(MODEL_PIN)) || { $(TEXT_TABLE_FAIL); }; \
+	step="tools/embed/fetch_model.py (the model download)"; \
+	model=$$($(PYTHON) tools/embed/fetch_model.py --pin $(MODEL_PIN)) || { $(TEXT_TABLE_FAIL); }; \
+	step="make rmembed (libtorch)"; \
+	$(MAKE) --no-print-directory rmembed || { $(TEXT_TABLE_FAIL); }; \
+	step="rmembed"; \
+	$(BINDIR)/rmembed --model "$$model" --pin $(MODEL_PIN) --inputs $(TEXT_TABLE_INPUTS) --table $(TEXT_TABLE) \
+		|| { $(TEXT_TABLE_FAIL); }; \
+	step="the check after regeneration"; \
+	($(TEXT_TABLE_CHECK)) || { $(TEXT_TABLE_FAIL); }
 
 # ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
 # tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only
@@ -192,20 +271,36 @@ rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmknow $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
+# ── bin/<config>/rmfeat — the featurizer over recorded RMSTATE frames (docs/featurizer.md) ──
+# tools/rmfeat/ linked with ONLY the std-only RMSTATE decoder and schema and src/featurize/ (no engine
+# TU, like rmknow): FEATURE_SPEC, the card tables' export, per-decision tensors and learner targets
+# from an --rmstate-dump. Part of the default build; `make rmfeat` builds it alone.
+RMFEAT_SRCS := $(wildcard tools/rmfeat/*.cpp)
+RMFEAT_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMFEAT_SRCS))
+RMFEAT_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                  $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
+
+rmfeat: $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmfeat $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
+
 # ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
 # tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
-# the std-only RMSTATE decoder and schema and the agents' std-only frame reader and Python-compatible
-# generator. Built with the engine's flags (-fno-exceptions); `make check` runs every tier.
+# the std-only RMSTATE decoder and schema, the agents' std-only frame reader and Python-compatible
+# generator, src/featurize/ (std only: the JSON reader, RMTB, the WordPiece tokenizer) and
+# src/inference/ (the protocol's wire code, for the actor tier's handshake checks). Built with the
+# engine's flags (-fno-exceptions); `make check` runs every tier.
 RMCHECK_SRCS := $(wildcard tools/robomage_check/*.cpp)
 RMCHECK_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMCHECK_SRCS))
 RMCHECK_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
-                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o
+                   $(ODIR)/agents/seat_frames.o $(ODIR)/agents/py_random.o $(INFERENCE_OBJ) \
+                   $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
 
 robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmknow robomage_check
+.PHONY: all check regen refetch clean actor rmserve rmembed text-table rmknow rmfeat robomage_check
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -216,7 +311,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # resources/ and decks.
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/robomage_check
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn bin/*/rmserve
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -224,4 +319,8 @@ clean:
 # header they share with the engine leaves stale actor objects behind.
 -include $(ACTOR_OBJ:.o=.d)
 -include $(RMKNOW_OBJ:.o=.d)
+-include $(RMFEAT_OBJ:.o=.d)
 -include $(RMCHECK_OBJ:.o=.d)
+-include $(RMEMBED_OBJ:.o=.d)
+-include $(RMSERVE_OBJ:.o=.d)
+-include $(INFERENCE_OBJ:.o=.d)

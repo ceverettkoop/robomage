@@ -75,6 +75,13 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
     X(ESCAPE) X(OFFSPRING) X(IMPENDING) X(WARP) X(BACK_FACE) X(ALT_COST) X(IMPULSE) X(COMPANION) X(SUSPEND) X(CANCEL)
 #define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT) X(EXPERT_BELIEF)
 #define RMSTATE_POOL_KIND(X) X(HAND) X(LIBRARY_RANGE) X(SIDEBOARD) X(FACE_DOWN) X(SET_ASIDE)
+#define RMSTATE_AMOUNT_KIND(X) X(NONE) X(FIXED) X(VARIABLE)
+#define RMSTATE_TARGET_CLASS(X) \
+    X(CREATURE)                 \
+    X(PLANESWALKER)             \
+    X(ARTIFACT)                 \
+    X(ENCHANTMENT) X(LAND) X(BATTLE) X(PERMANENT_OTHER) X(PLAYER) X(SPELL) X(ABILITY) X(CARD_GRAVEYARD) X(CARD_OTHER)
+#define RMSTATE_PART_KIND(X) X(SUB) X(MODE)
 
 #define RMSTATE_ENUM_VALUE(name) name,
 enum class FrameKind : uint8_t {
@@ -155,9 +162,18 @@ enum class KnowledgeLevel : uint8_t {
 enum class PoolKind : uint8_t {
     RMSTATE_POOL_KIND(RMSTATE_ENUM_VALUE)
 };
+enum class AmountKind : uint8_t {
+    RMSTATE_AMOUNT_KIND(RMSTATE_ENUM_VALUE)
+};
+enum class TargetClass : uint8_t {
+    RMSTATE_TARGET_CLASS(RMSTATE_ENUM_VALUE)
+};
+enum class PartKind : uint8_t {
+    RMSTATE_PART_KIND(RMSTATE_ENUM_VALUE)
+};
 
 // ── Tables ────────────────────────────────────────────────────────────────────────────────────
-// Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 10-14, DECKLISTS 15-16, METAGAME
+// Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 9-14, DECKLISTS 15-16, METAGAME
 // 17-19, STATE snapshot 20-48, events 80-82, knowledge 90-97, belief 98-99. The strings pool (1)
 // belongs to every frame.
 enum class TableId : uint16_t {
@@ -165,6 +181,7 @@ enum class TableId : uint16_t {
     SCHEMA_TABLE = 2,
     SCHEMA_COLUMN = 3,
     SCHEMA_ENUM = 4,
+    CARD_ABILITY_PART = 9,
     CARD = 10,
     CARD_SUBTYPE = 11,
     CARD_KEYWORD = 12,

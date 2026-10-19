@@ -8,10 +8,10 @@ the Python front ends. It is archived in place, not forked: branch `archive/rl-s
 `rl-stack-final`, if created) ends at `cf7f97f`, the last commit with both stacks, and
 development continues on `main` in this repository.
 
-**Status: steps 1–4 are done** (each step's status paragraphs below are its history); step 5
-is the plan forward. Paths under `train/` in those paragraphs name files deleted in step
-3b (they are on `archive/rl-stack`), except the seven kept Python files, which moved to `python/`
-and are written here with their current paths.
+**Status: steps 1–5 are done** (each step's status paragraphs below are its history); what
+follows is `docs/rnad_training_plan.md`. Paths under `train/` in those paragraphs name files
+deleted in step 3b (they are on `archive/rl-stack`), except the seven kept Python files, which
+moved to `python/` and are written here with their current paths.
 
 **The Python scripted agent is kept.** It is the only realistic opponent and a deterministic
 consumer of the state. It is adapted to read the new format, and its games become the test that
@@ -23,8 +23,9 @@ viewer's frame stream into perfect recall and sound logical inference. It is att
 same frames for every kind of agent, with levels `off` / `expert`.
 
 **A C++ path to learned models.** Step 5 adds a schema-driven C++ featurizer and an in-process
-C++ actor that runs a TorchScript policy on it. Card text reaches the model as oracle-text
-embeddings computed in C++. This replaces the discarded RL stack's actor with one built on the
+C++ actor that runs an exported policy (TorchScript or AOTInductor) on it. Card text reaches the model as oracle-text
+embeddings computed in C++, exported with the structured card and ability tables as
+framework-neutral whole-vocab files that any ML framework can load. This replaces the discarded RL stack's actor with one built on the
 new format; a learner (training loop) is not in scope.
 
 Scope: steps 1–5. The TUI and GUI (later steps) are deferred entirely; steps 1–5 only keep the
@@ -604,23 +605,83 @@ kept Python below.
 ## Step 5 — C++ featurizer and in-process actor
 
 Target consumer: a **C++ in-process actor**. In one process it runs engine → frame →
-knowledge → featurizer → TorchScript policy → action, with no Python per step.
+knowledge → featurizer → exported policy → action, with no Python per step.
+
+**What comes after.** `docs/rnad_training_plan.md` (a scripted-agent bootstrap into R-NaD
+self-play) starts where this step ends; its section 2 lists what step 5 must leave open, and
+the items below marked for the training plan (the export-friendly contract, batched and remote
+evaluation, the omniscient featurization and learner targets, exact re-featurization, the
+behaviour distribution, the per-stage `bench`) are those.
+
+**The card tables are for any ML framework, not only this actor.** The oracle-text vectors (5c)
+and the card and ability feature tables (5a) are plain data files, not part of a model:
+whole-vocab matrices indexed by vocab id, readable with no ML library. Plausible consumers are
+the step-5 TorchScript policy, a learner in PyTorch, JAX or TensorFlow, non-neural models
+(gradient-boosted trees, linear probes), analysis tools (nearest neighbours, clustering cards
+into roles) and the stdlib-only Python. libtorch is how 5c computes the vectors and how 5d runs a
+policy; neither the files nor their consumers depend on it. A model may copy the tables into its
+weights as frozen buffers, but the exported file stays the interface and the source of truth.
 
 ### 5a. Design (`docs/featurizer.md`)
 
-- **`FEATURE_SPEC` frame.** Announces every tensor's shape and field index, like `SCHEMA` does
-  for tables.
+- **`FEATURE_SPEC`.** Announces every tensor's shape and field index, like `SCHEMA` does for
+  tables: a JSON document (`rmfeat --spec`), so consumers outside C++ read it with any JSON
+  parser; its hash is in every exported table and model. The design is `docs/featurizer.md`.
 - **Tensors per decision:**
   - entity tokens: objects, players, globals and knowledge groups / unseen cards; numeric
     features scaled by their schema tag, plus categorical embedding ids;
   - entity mask;
   - relations `(src, dst, type)` from handle columns;
   - action tokens with gather indices to their source/target entities, for a pointer head;
-  - action mask.
-- **Per-match card table** `[cards × (printed features + text embedding)]`, held by the model
-  as a frozen buffer.
-- **Network contract:** the TorchScript `forward` signature (policy logits over menu rows,
-  value).
+  - action mask;
+  - card references as vocab ids: an object's `card`, `copy_of` and `chosen_name`, a menu row's
+    `source_card` and the like are row indices into the card tables, and an `object_ability`
+    row's `abref` is a row index into the ability table. No card vector travels per decision.
+- **Card tables: the whole vocab, indexed by vocab id** (not per match). Every card and
+  registered token of `src/card_vocab.h` has a row whatever the match's decklists, so a `card`
+  column is the row index with no per-match remap. Face down (`0xFFFF`) and the token sentinel
+  get rows of their own.
+  - **Card table** `[N_CARD_TYPES × printed features]`, from `CARDS`' `card` rows: cost pips,
+    mana value, colours, types, supertypes, subtypes, P/T, loyalty, keywords, layout, token. A
+    double-faced card's back face has its own vocab id (`face_card`), so each face has its own row.
+  - **Text table** `[N_CARD_TYPES × 384]`: the oracle-text vectors (5c).
+  - **Ability table** `[abilities × ability features]`: one row per `card_ability` row of every
+    vocab card (kind, category, timing, tap, limit, and the structured parameters below), with
+    an index `(card, ab_index) → row` matching `abref`, so a permanent's current abilities point
+    at their rows. A card has a variable number of abilities, so they are a table of their own,
+    not card-table columns; the model gathers a card's or permanent's ability rows and pools or
+    attends over them. Abilities with no card row (`ab_card` none: granted or engine-built) get
+    rows keyed by `ab_key`, from a fixed key list in the spec.
+  - **Exported** by a tool as versioned files: a small header (table kind, vocab hash,
+    feature-spec version, encoder model id and text-normalisation version for the text table,
+    row count, width), then little-endian rows in vocab-id order (float32 for vectors and scaled
+    features, integer columns for categorical ids), readable with the standard library alone.
+    Recomputed only when an input changes (a `FORGE_PIN` bump, a vocab change, a feature-spec or
+    encoder change).
+- **State-format change: structured ability parameters in `CARDS`** (a new register in
+  `docs/state_format.md` §11). Today an ability's effect parameters exist only in
+  `card_ability.line` (raw script text) and in the oracle text: for Lightning Bolt the row says
+  spell, instant, `DealDamage`, but the 3 and "any target" are not columns. `card_ability`
+  gains them, read from the parsed `AbilityDef` and its typed params (`ability_params.h`),
+  generic per effect category and never per card:
+  - **amount:** the effect's number (`NumDmg$`, `NumCards$`, `CounterNum$`, `NumAtt$`/`NumDef$`,
+    `PeekAmount$` …) with a kind: fixed, variable (an X or count-SVar) or none;
+  - **targeting:** what may be targeted (a mask over creature, other permanent kinds, player,
+    spell, ability, from `ValidTgts$`) and the target min/max;
+  - **structure:** `SubAbility$` chain links and `Charm` modes (with `CharmNum$`) as rows of a
+    child table of `card_ability` (each part with its parent, order, category and the same
+    parameters), so a chained or modal ability's parts are each described and `abref.ab_index`
+    keeps its meaning.
+
+  The exact columns are fixed in 5a and Appendix A of `docs/state_format.md`; the encoder, both
+  decoders, the JSON renderer and the self-checks move with them.
+- **Network contract:** the `forward` signature (policy logits over menu rows, value), with the
+  card tables loaded from the exported files as frozen buffers. **Export-friendly:** inputs are
+  padded tensors and masks only, and a conforming model has no control flow that depends on the
+  data (masks, gathers and scatters instead of loops over real rows), so the same model exports
+  through TorchScript, `torch.export` / AOTInductor (`.pt2`) and ONNX. TorchScript is in
+  maintenance mode upstream, so it is one supported export, not the contract; the reference
+  policy is exported all three ways and the end-to-end test (5d) compares their outputs.
 - **Padding:** runtime options, not format caps.
 - **Recommended model family**, for whoever builds a learner: entity transformer with relation
   biases, pointer action head, `expert` knowledge as tokens.
@@ -630,59 +691,237 @@ knowledge → featurizer → TorchScript policy → action, with no Python per s
 - A pure function of one viewer's decoded frame, knowledge tables and card table, driven by
   the schema's semantic tags. It includes only the state-format decoder and the standard
   library (gate-checked).
+- **Reads decoded structs directly.** Its input is the decoded tables (`rmstate::DecodedFrame`,
+  what the in-process agents already receive), never frame bytes, and it re-encodes nothing.
+  So a later fast path that hands the featurizer tables built straight from the engine, skipping
+  the byte encode and decode, needs no featurizer change (see the throughput accounting, 5d).
+- **Omniscient featurization, learner-side only.** The same `FEATURE_SPEC` featurizes the
+  omniscient viewer's frame (as `--rmstate-dump` writes it; no `k_*` tables, whose slots stay
+  empty), so a learner can train a critic that sees the whole game and auxiliary heads that
+  predict hidden information (the opponent's hand, the library order). It is reachable only from
+  learner-facing outputs: `rmfeat` over a dump, and later the training plan's trajectory writer
+  (`docs/rnad_training_plan.md` T1, on request). The actor and `nn:` never see it: the in-process
+  feed carries seat frames only, the featurizer's actor entry point refuses a frame whose header
+  viewer is not the deciding seat, and the leak and isolation checks are extended to cover it
+  (below).
+- **Learner targets.** `rmfeat --targets` derives the auxiliary heads' targets per decision from
+  the omniscient frame beside the seat's: the opponent's hand as a multiset of vocab ids, the
+  opponent's registered list and archetype (`METAGAME` rows), and the seat's own library order
+  near the top. They are learner-side data like the omniscient featurization, with the same
+  isolation.
+- **Re-featurization is exact.** The tensors depend only on the frames, and the frames only on
+  the RMLOG, so featurizing a `--replay` of a game's decision log reproduces, byte for byte, what
+  the seat's `nn:` agent featurized live. The training plan keeps every game's RMLOG and
+  re-featurizes old games after a spec change on this guarantee.
 - **Tests:**
   - deterministic;
   - shapes and indices agree with `FEATURE_SPEC`;
   - invariant to row order where the format says order is meaningless;
-  - every relation and gather index resolves.
+  - every relation and gather index resolves;
+  - isolation: an `nn:` seat's featurized input equals `rmfeat`'s featurization of that seat's
+    own stream, and the scramble self-check (hidden identities rotated) leaves a seat's tensors
+    unchanged, so no hidden information reaches them; the actor entry point refuses an
+    omniscient or other-seat frame; the omniscient featurization is exercised only by `rmfeat`.
 
 ### 5c. Oracle-text embeddings computed in C++ (option 2)
 
-- **Text per card:** type line + oracle text (`CARDS`); both faces for double-faced cards;
-  tokens use their own oracle text; the card's own name is replaced by a placeholder.
+- **What it is:** a sentence embedding, one fixed-length vector per text, placed so that texts
+  with related meaning lie close together (after normalisation, cosine similarity is the dot
+  product). It carries what a card broadly does (removal, card draw, a counterspell, a dies
+  trigger); exact numbers and fine rules distinctions are weak in it ("deals 3" ≈ "deals 2"),
+  which is why the card and ability tables' structured columns (5a) sit beside it.
+- **Text: oracle text only**, per vocab entry: the type line + `oracle` (`CARDS`). Each face of
+  a double-faced card is its own text and row (the back face under its `face_card` id); tokens
+  use their own oracle text; the card's own name is replaced by a placeholder. Script text
+  (`--rmstate-card-scripts`) is not embedded: the Forge DSL tokenises poorly with an English
+  vocabulary, scripts run past the encoders' windows, and what they add over the oracle text is
+  carried by the structured ability parameters. Oracle texts fit (the longest is ~470
+  characters, ~120 tokens); the tokenizer test asserts that none is truncated.
 - **Model:** a small pretrained sentence-embedding encoder (BERT-family, ~22–33M parameters,
   384-d), e.g. bge-small-en-v1.5 or all-MiniLM-L6-v2. Final pick and licence check in 5a.
-  - It runs through libtorch as a TorchScript export, so no new runtime dependency; prefer a
-    pre-converted artifact.
-  - The weights (~25–130 MB) are provisioned like card scripts: fetched and pinned, not
-    committed.
+  Pooling follows how the chosen model was trained (all-MiniLM-L6-v2: the mean over real
+  tokens; bge-small-en-v1.5: the `[CLS]` vector).
+  - It runs only to generate missing or stale rows (below), never in the actor, which reads the
+    committed table. The generator `rmembed` implements the BERT encoder in the libtorch C++
+    API over the model's safetensors weights (no TorchScript export, no Python), so libtorch
+    stays the only ML dependency; golden token ids and vectors from the reference
+    implementation check it (`docs/featurizer.md` §5).
+  - The weights (~25–130 MB) are fetched on demand at a pinned revision (a pin file beside
+    `tools/forge_fetch/FORGE_PIN`'s, naming the model repository and its commit), never committed.
 - **Tokenizer:** C++ WordPiece reading the model's vocabulary, checked against a golden file of
   reference token ids.
-- **Pipeline:** tokenize → encode → mean-pool → L2-normalise, giving one 384-float vector per
-  card. Cached as a `[cards × 384]` table keyed by model id plus a per-card text hash; a stale
-  row is recomputed; the cache makes runs bit-exact.
+- **Pipeline:** tokenize → encode → pool → L2-normalise, giving one 384-float vector per vocab
+  entry, for the **whole vocab every time** (~330 entries, ~0.5 MB), written as the text table's
+  exported file (5a).
+- **Cache and determinism:** the exported table is the source of truth. Each row is keyed by
+  the model id plus a hash of its normalised text (the normalisation version included); only a
+  stale row is recomputed. A frozen encoder is deterministic in principle, but the last float
+  bits can vary with CPU instruction set, BLAS, thread count or libtorch version, so consumers
+  read the file and never recompute it; that makes runs bit-exact across machines.
+- **The text table is committed** (`bin/resources/embeddings/oracle_text.rmtb`, ~1.5 MB dense
+  over the vocab ids; layout in `docs/featurizer.md` §4.4), and **`make` keeps it complete**:
+  - Every `make` runs a check (std only, no ML library, no network; in the engine binary beside
+    `--check-decks`) that the table has a row for every vocab entry with oracle text, each row's
+    text hash matching that entry's current normalised text, and that the header's model id
+    matches the model pin.
+  - When rows are missing or stale (a card added to the vocab, a `FORGE_PIN` bump that changed
+    an oracle text), `make` downloads the pinned model and generates **only those rows**,
+    rewriting the table in place; the rows already in it are kept bit for bit. The rewritten
+    file shows in `git status` and is committed with the change that caused it. A model-pin
+    change makes every row stale, so it regenerates the whole table.
+  - Generation needs libtorch (found as `make actor` finds it) and network access. When either
+    is missing, `make` fails naming the stale rows and the command to run; it never builds on
+    with an incomplete table. A clean checkout with a current committed table never downloads
+    the model or needs libtorch, so CI and plain `make` stay as they are; a stale table in CI
+    fails there, which is what catches a change committed without its regenerated rows.
 - **Sanity report:** nearest neighbours per card (Bolt ↔ Chain Lightning, Brainstorm ↔
   Ponder) to eyeball quality.
 
 ### 5d. In-process actor (`src/actor/`, exceptions-enabled TUs)
 
-- **Evaluator:** loads a TorchScript policy (from the kept `az_evaluator.{h,cpp}` base, whose
-  comments and frozen input width `az_layout.h` still describe the archived observation; both are
-  rewritten here) and checks that its card-set hash matches the match's `CARDS`. The binary links
+**Status: part 1 done** (the in-process actor). `src/actor/`: the `Evaluator` interface and its
+in-process implementation (`evaluator.h`: a batch of featurized decisions padded by the std-only
+batcher `src/featurize/batch.h`, TorchScript or an AOTInductor `.pt2` told apart by the archive,
+the model's `spec_hash`, `vocab_hash` and `text_model` metadata checked on load, per decision
+`log π` per policy so a multi-policy server needs no API change), the `nn:` agent (`nn_agent.h`:
+`temp=`, `argmax`, `dump=`, `stats`; the behaviour distribution and policy version of its last
+decision through `Agent::last_behaviour`), and `bin/<config>/robomage_nn` (`make actor`): every
+engine object but `main.o` plus the actor's TUs, whose `main` registers the `nn:` kind and runs the
+engine's entry (`src/engine_main.h`); the plain engine refuses `nn:`, naming `make actor`. The
+featurizer's inputs come from the engine in process (the whole-vocab `--cards-frame` records and
+the committed text table). The reference policy is `tools/nn/make_reference_policy.py` (TorchScript,
+`.pt2` and ONNX exports; `check` compares them). The gate's `actor` tier (opt-in: the actor binary
+and `$ROBOMAGE_TORCH_PYTHON`, `docs/ci.md`) plays `nn:` bo3 matches, the `.pt2` export the same
+argmax match as the TorchScript one, checks exact re-featurization and the exports' agreement;
+`bench` reports the per-stage breakdown below (`--featurize-seats` is its featurizer stage).
+`az_evaluator.*` and `az_layout.h` are gone. Part 2 is the remote evaluator:
+`docs/inference_protocol.md`, `nn:remote:<endpoint>` and `rmserve`.
+
+**Status: part 2 done; 5d and step 5 are done.** The wire format is `docs/inference_protocol.md`
+(RMIP v1): a Unix stream socket per client for a JSON handshake (protocol, `spec_hash`,
+`vocab_hash`, `text_model`, the spec's widths, the shared region's name and areas, the policy ids)
+and small `EVAL` / `DONE` / `ERROR` messages; a POSIX shared-memory region per connection, created
+by the client and unlinked once the server has mapped it, holding the request (the decisions'
+unpadded tensors as an RMTB `tensors` file's arrays, per-decision sizes for the offsets, the spec
+hash in every header) and the response (per requested policy its version, values, logits and
+`log π` over each decision's menu rows); every refusal an `ERROR` with a code, after which the
+server closes. Its wire code is `src/inference/protocol.{h,cpp}` (std + POSIX, linked by the actor,
+`rmserve` and the gate, not by the engine). `nn:remote:<socket>` (`src/actor/remote_evaluator.h`)
+takes the `nn:` keys plus `policies=`, `timeout=` and `shm=`, and an `evals=` key (both kinds)
+writes every evaluation received; a refusal, an error, the server closing or no answer within the
+timeout is a fatal error naming the endpoint. `bin/<config>/rmserve` (`tools/rmserve/`, built by
+`make actor`): several policies through the part-1 evaluator, one poll loop over any number of
+clients, batches up to `--max-batch` or `--deadline-us`, or as soon as every connected client has a
+request queued, `--version`, a clean stop on SIGTERM with an `RMSERVE-STATS:` line.
+`tools/nn/serve_check.py` is a Python server of the same protocol (stdlib `socket`, `struct`,
+`json`, `multiprocessing.shared_memory`, plus numpy and torch; about 200 lines). The `actor` tier
+checks: the same four argmax games in process and through one `rmserve` by four concurrent actors
+(identical decision logs, 1,198 decisions; logits, `log π` and values within 1e-5, measured
+about 1.6e-7, 2.4e-7 and 3e-8; policy 1, the `.pt2` export, served as version 7 alongside policy
+0), batches across clients (mean 1.8 decisions, largest 3 to 4; about 41 decisions/s for the four
+actors in the debug build on four cores, the single-threaded server busy 87% of the time), the
+handshake refusals, a killed server failing the actor after exactly the answered decisions, and
+the Python server playing the same game with bit-equal logits. `bench` adds the remote stage: the
+same games as in process, the client's evaluate time per decision split into the server's compute
+(12.9 ms, debug build) and the round trip (about 1 ms: the copies into and out of the region and
+the socket messages).
+
+The exit criteria of step 5:
+
+- **`--agent-a nn:<model>` plays full bo3 matches without errors:** met; the `actor` tier plays
+  three (`nn:` sampled on the TorchScript export, `argmax` on it and on the `.pt2`), no error or
+  warning line.
+- **The featurizer, tokenizer and embedding tests pass:** met; the `featurize` tier (every
+  plain `make check`), the tokenizer against its golden ids in the `vocab` tier (when the pinned
+  model's `vocab.txt` is cached), the encoder against `transformers` by
+  `tools/embed/make_goldens.py` (by hand, needs torch and transformers: min cosine 1.0 at 5c).
+- **The committed text table passes `make`'s completeness check on a clean checkout, and
+  regenerating a deleted row leaves the rest untouched:** met; every `make` runs the check, and
+  two rows deleted from a copy of the table and regenerated by `rmembed` give a file byte for byte
+  the committed one (checked by hand at 5d part 2, not a gate check).
+- **The `CARDS` ability parameters pass the state tier's self-checks, and the exported card tables
+  load with a standard-library reader to the actor's values:** met; the `state` tier, and
+  `python/pycheck.py --part featurize` (in the `featurize` tier) against the in-process tables.
+- **The reference policy's three exports agree, and `nn:remote:` through `rmserve` plays the same
+  games as in-process `nn:` (argmax):** met; the `actor` tier (exports within 2e-7; the remote
+  games above).
+- **The isolation and leak checks of 5b pass:** met; `--selfcheck-featurize` in the `featurize`
+  tier, the actor entry point's refusal of the omniscient frame, exact re-featurization of an `nn:`
+  game in the `actor` tier.
+- **Throughput is measured in `bench`, broken down:** met; engine, frames, knowledge sidecar,
+  featurizer and evaluation (in process and remote) per decision.
+
+The `actor` tier and the evaluation stages stay opt-in (libtorch and a torch Python), so plain
+`make check` and CI do not run them.
+
+- **Evaluator:** loads a policy exported as TorchScript or as an AOTInductor `.pt2` package (5a's
+  export-friendly contract; ONNX exports are for other runtimes). It starts from the kept
+  `az_evaluator.{h,cpp}` base, whose comments and frozen input width `az_layout.h` still describe
+  the archived observation (both are rewritten here), and checks that its card tables' vocab hash and feature-spec version match
+  the engine's (one check per build, since the tables cover the whole vocab). The binary links
   the Makefile's kept plumbing: `$(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS)`, with the
   exceptions-enabled `ACTOR_CXXFLAGS` for `src/actor/` only.
-- **Agent:** `nn:<model.pt>` on the step-3 Agent interface: featurize, evaluate, choose
-  (argmax or sample) over menu rows.
-- **Batched-evaluation hook** for a later search agent.
-- **End-to-end test** with a randomly initialised model of the contract's shape.
+- **Agent:** `nn:<model>[:<key>=<value>…]` on the step-3 Agent interface: featurize, evaluate,
+  choose over menu rows. Options: `temp=<t>` (sampling temperature), `argmax`; the option syntax
+  is open so the training plan's play-time projection (`thresh=`, `disc=`, its T6) adds keys, not
+  a new spec. The agent keeps the **exact distribution it sampled from** over every menu row
+  (after temperature and any projection) and the policy version for its last decision, readable
+  by the engine, so the training plan's trajectory writer (T1) records the behaviour policy μ
+  without recomputing it.
+- **Batched evaluation built for the next step** (a high-throughput model-free learner). The
+  engine's globals limit a process to one game, so throughput comes from many actor processes;
+  the evaluation hook therefore takes featurized decisions from many games at once, not one:
+  - an `Evaluator` interface over a batch of featurized decisions, returning per row the
+    logits over its menu rows, a value and the policy version, with an in-process
+    implementation (the actor's own model, CPU) and a remote one;
+  - the wire format, `docs/inference_protocol.md`: featurized decisions in shared memory with a
+    Unix socket for signalling (the archive's server pattern), the spec hash on every request.
+    A request may name several policies (the training plan evaluates the current policy and both
+    frozen regularisation policies in one batch and returns `log π` per menu row for each), and
+    every response carries each policy's version number, so weights can be swapped between
+    decisions;
+  - `nn:remote:<endpoint>` points an actor at a server, and a server that goes away makes the
+    actor fail loudly, never fall back to a default action;
+  - a reference server, `rmserve` (C++, libtorch, CPU), batches up to a size or a deadline. It
+    serves the tests and small runs; the training plan's GPU server (L5, PyTorch) implements the
+    same protocol;
+  - a later search agent uses the same hook.
+- **End-to-end test** with a randomly initialised model of the contract's shape, exported as
+  TorchScript, `.pt2` and ONNX, the three giving the same logits and values (within float
+  tolerance) on the same featurized decisions, in-process and through `rmserve`.
+- **Throughput accounting in `bench`.** Per decision, reported separately: the engine, the
+  frame encode/decode round-trip, the knowledge sidecar, the featurizer and evaluation. Today
+  the engine alone is about a third of the per-decision cost and the knowledge sidecar about
+  32%, which is why the featurizer reads decoded structs directly (5b) and the round-trip is
+  measured on its own: it shows what a direct engine → tables path would save.
 - **Exit:**
   - `--agent-a nn:<model.pt>` plays full bo3 matches without errors;
   - the featurizer, tokenizer and embedding tests pass;
-  - throughput is measured in the `bench` tier.
+  - the committed text table passes `make`'s completeness check on a clean checkout, and
+    generating a deleted row reproduces the same rows elsewhere in the file untouched;
+  - the `CARDS` ability parameters pass the state tier's self-checks, and the exported card
+    tables load with a standard-library reader (no ML library) to the same values the actor uses;
+  - the reference policy's three exports agree, and `nn:remote:` through `rmserve` plays the
+    same games as in-process `nn:` (same model, argmax);
+  - the isolation and leak checks of 5b pass;
+  - throughput is measured in the `bench` tier, broken down as above.
 
 ### Possible later addition: learned text encoder (option 3)
 
 A learner could make the text encoder part of the policy network, initialised from the same
 pretrained encoder and fine-tuned by the RL loss. Gradients from the policy and value losses
-flow into its weights. The mitigations for having only ~400 distinct texts are:
+flow into its weights. The mitigations for having only ~330 distinct texts are:
 
 - a low learning rate and staged unfreezing;
 - text plus id embedding with id dropout;
 - auxiliary losses predicting `CARDS` features;
 - held-out-card checks.
 
-The actor side is unchanged: the learner exports the recomputed `[cards × D]` table with the
-weights, and actors still only look it up. This needs a learner, which is outside this plan.
+The actor side is unchanged: the learner exports the recomputed whole-vocab
+`[N_CARD_TYPES × D]` text table per checkpoint, in the same file format (its model id names the
+checkpoint), and actors and every other consumer still only look it up. The encoder runs inside
+the learner's framework while it trains; the exported table does not depend on that framework.
+This needs a learner, which is outside this plan.
 
 ---
 
@@ -742,8 +981,14 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 5. ~~**`robomage_check` with exceptions on**~~ **Decided:** built with `-fno-exceptions` (3a).
 6. ~~**Human vs Python agent in the CLI** (4b)~~ **Decided:** no second channel; a human plays
    the in-process agents or hotseat.
-7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small
-   384-d encoder), and how its weights are provisioned and pinned.
+7. **Embedding model** (5a/5c): the pick and its licence check. Candidates: all-MiniLM-L6-v2 /
+   L12-v2, bge-small-en-v1.5, e5-small-v2, gte-small, snowflake-arctic-embed-xs / -s (384-d,
+   22–33M parameters), and, since the committed table makes encoder size cost nothing in the
+   actor, larger ones such as bge-base-en-v1.5, all-mpnet-base-v2 or nomic-embed-text-v1.5
+   (768-d; Matryoshka-truncatable). Pooling and any required text prefix follow the pick.
+   **Decided:** oracle text only (no script text), the whole vocab every time, exported as a
+   framework-neutral file, committed, kept complete by `make` (5c), weights fetched at a pinned
+   revision only to generate rows.
 8. **Learner** (after step 5): language (PyTorch vs libtorch) and algorithm. A learner is
    what would enable option 3.
 
@@ -757,4 +1002,4 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 | 2 | adapter 600–1,000; agent pass 2 touches 1,000–2,000 | medium: strict parity is slow but mechanical |
 | 3 | agents + resolver 1,000–1,500; `robomage_check` 1,500–2,000; then mostly deletion | low–medium |
 | 4 | 4a ~300 changed; CLI 1,000–1,500 | low–medium |
-| 5 | featurizer 1,500–2,500; tokenizer + embedding 600–900; actor 800–1,200; tests 800–1,200 | medium: tokenizer parity and the network contract |
+| 5 | `CARDS` ability parameters 500–800; featurizer + table export 1,700–2,800; tokenizer + embedding 600–900; actor 800–1,200; batched evaluation + `rmserve` 600–1,000; tests 800–1,200 | medium: tokenizer parity and the network contract |

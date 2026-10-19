@@ -1,5 +1,6 @@
 #include "driver.h"
 
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -8,9 +9,11 @@
 
 #include "../cli/human.h"
 #include "../error.h"
+#include "../featurize/featurizer.h"
 #include "../game_driver.h"
 #include "../input_logger.h"
 #include "../state_format/agent_feed.h"
+#include "../state_format/cards_file.h"
 #include "../state_format/stream.h"
 #include "agent.h"
 #include "play_spec.h"
@@ -34,6 +37,11 @@ struct AgentRun {
         rmstate::DecodedFrame frame;
         std::optional<agents::DecisionView> view;
         bool traced = false;
+        // --featurize-seats: the inputs, the last tensors and the totals.
+        std::unique_ptr<featurize::Featurization> featurization;
+        featurize::Tensors tensors;
+        size_t featurized = 0;
+        double featurize_s = 0;
 };
 
 }  // namespace
@@ -44,6 +52,8 @@ static int seat_index(Zone::Ownership seat);
 static std::unique_ptr<agents::Agent> agent_for(const std::string &spec, const char *flag);
 static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions);
 static void report_script();
+static void report_featurized();
+static void featurize_decision();
 static void print_line(const std::string &line);
 
 static int seat_index(Zone::Ownership seat) {
@@ -98,6 +108,15 @@ void agents_install(unsigned int engine_seed) {
         }
         std::atexit(report_script);
     }
+    if (featurize_seats) {
+        if (!run->decides[0] && !run->decides[1])
+            fatal_error(
+                "--featurize-seats: no seat is decided by an in-process agent (--agent-a/-b, --play, --actions)");
+        std::string err;
+        run->featurization.reset(new featurize::Featurization());
+        if (!load_engine_featurization(run->featurization.get(), &err)) fatal_error("--featurize-seats: " + err);
+        std::atexit(report_featurized);
+    }
     for (int s = 0; s < 2; ++s)
         if (run->decides[s] || trace_decisions) agent_feed_serve(s == 0 ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run->decides[0] || run->decides[1])
@@ -126,6 +145,7 @@ bool agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     run->seat = s;
     run->number = number;
     run->view.emplace(stream, run->frame, s);
+    if (run->featurization && run->decides[s]) featurize_decision();
     if (!trace_decisions) return false;
     std::fflush(stdout);
     for (const std::string &line : agents::trace_decision_lines(*run->view, number)) print_line(line);
@@ -153,6 +173,26 @@ static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions)
     if (choice == agents::AGENT_FAILED) fatal_error(agent->failure());
     if (choice == agents::AGENT_QUIT) InputLogger::instance().end_run_by_quit();
     return choice;
+}
+
+// --featurize-seats: the decision's frame through the actor entry point, timed.
+static void featurize_decision() {
+    const auto t0 = std::chrono::steady_clock::now();
+    std::string err;
+    if (!featurize::featurize_seat(
+            run->featurization->spec, run->featurization->tables, run->frame, &run->tensors, &err))
+        fatal_error("--featurize-seats: " + err);
+    run->featurize_s += std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
+    ++run->featurized;
+}
+
+static void report_featurized() {
+    if (!run || !run->featurization) return;
+    std::fflush(stdout);
+    char buf[96];
+    std::snprintf(buf, sizeof buf, "FEATURIZE-SEATS: %zu decisions in %.3f s", run->featurized, run->featurize_s);
+    print_line(buf);
+    std::fflush(stdout);
 }
 
 static void report_script() {

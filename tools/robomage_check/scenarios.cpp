@@ -12,7 +12,7 @@
 #include "scan.h"
 #include "util.h"
 
-using rmcheck::Json;
+using featurize::Json;
 
 static const int DEFAULT_MAX_DECISIONS = 60;
 

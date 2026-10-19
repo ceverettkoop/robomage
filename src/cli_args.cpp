@@ -8,6 +8,9 @@
 #include "components/zone.h"
 #include "error.h"
 #include "game_driver.h"
+#include "state_format/cards_file.h"
+#include "state_format/selfcheck_featurize.h"
+#include "text_table.h"
 
 // One command-line option. The option table below is the single definition of which flags
 // exist, which take a value, which shape the game's setup, and which the log header records.
@@ -207,10 +210,19 @@ static const CliOption OPTIONS[] = {
         nullptr},
     // The board and menu of every decision on the game log (agents/trace.h).
     {"--trace-decisions", nullptr, false, false, [](const char *) { trace_decisions = true; }, nullptr},
+    // Featurize every decision an in-process agent seat makes and drop the tensors (the bench tier's
+    // featurizer stage; agents/driver.h).
+    {"--featurize-seats", nullptr, false, false, [](const char *) { featurize_seats = true; }, nullptr},
     // Check the decks' cards against the card vocabulary and their scripts instead of playing
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
     {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
+    // Check the oracle-text table against the vocab and the model pin, or write the inputs of its
+    // stale rows, instead of playing (text_table.h).
+    {"--text-table-check", nullptr, true, false, [](const char *v) { text_table_check_path = v; }, nullptr},
+    {"--text-table-inputs", nullptr, true, false, [](const char *v) { text_table_inputs_path = v; }, nullptr},
+    {"--text-table", nullptr, true, false, [](const char *v) { text_table_path = v; }, nullptr},
+    {"--model-pin", nullptr, true, false, [](const char *v) { model_pin_path = v; }, nullptr},
     {"--narrative", nullptr, false, false, [](const char *) { narrative_mode = true; }, nullptr},
     {"--log-decisions", nullptr, false, false, [](const char *) { log_decisions_flag = true; }, nullptr},
     {"--decision-log", nullptr, true, false,
@@ -249,6 +261,9 @@ static const CliOption OPTIONS[] = {
             state_dump_json = true;
         },
         nullptr},
+    // Write the whole-vocab CARDS frame (with the SCHEMA and METAGAME frames) instead of playing
+    // (state_format/cards_file.h).
+    {"--cards-frame", nullptr, true, false, [](const char *v) { cards_frame_path = v; }, nullptr},
     // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
     {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
     // Each seat's knowledge sidecar level in its RMSTATE frames (state_format/knowledge_feed.h).
@@ -264,6 +279,14 @@ static const CliOption OPTIONS[] = {
     {"--selfcheck-knowledge", nullptr, false, false,
         [](const char *) {
             selfcheck_knowledge = true;
+            selfcheck_state = true;
+        },
+        nullptr},
+    // Check the featurizer under the state self-check (state_format/selfcheck_featurize.h); implies
+    // --selfcheck-state, whose scramble and permutation frames it featurizes.
+    {"--selfcheck-featurize", nullptr, false, false,
+        [](const char *) {
+            selfcheck_featurize = true;
             selfcheck_state = true;
         },
         nullptr},

@@ -12,7 +12,8 @@
 // "WARNING:" other than the routine "Unrecognized ability param" parse notice.
 //
 // The self-check summaries: every
-// "SELFCHECK-STATE: decisions=… errors=N" / "SELFCHECK-KNOWLEDGE: …" line must say errors=0.
+// "SELFCHECK-STATE: decisions=… errors=N" / "SELFCHECK-KNOWLEDGE: …" / "SELFCHECK-FEATURIZE: …" line must say
+// errors=0.
 
 namespace rmcheck {
 
@@ -28,7 +29,7 @@ void scan_transcript(const std::string &text, std::vector<ScanLine> *errors, std
 
 // Failure messages for one engine's stderr `text` (named `where` in them, labelled `label`): every
 // error line (scan_transcript), every self-check summary without errors=0, and, when `summaries`
-// is not negative, a count of summary lines of each of `kinds` ("STATE", "KNOWLEDGE") other than
+// is not negative, a count of summary lines of each of `kinds` ("STATE", "KNOWLEDGE", "FEATURIZE") other than
 // `summaries`. At most 20 messages.
 std::vector<std::string> selfcheck_failures(const std::string &text, const std::string &where, const std::string &label,
     int summaries, const std::vector<std::string> &kinds);

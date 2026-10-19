@@ -721,7 +721,8 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana, &card.hybrid_mana);
     card.x_pip_count = static_cast<int>(std::count(mana_cost_str.begin(), mana_cost_str.end(), 'X'));
     card.has_x_cost = (card.x_pip_count > 0);
-    card.types = parse_types(value_from_script(front_script, "Types"));
+    card.types_text = value_from_script(front_script, "Types");
+    card.types = parse_types(card.types_text);
     // AlternateMode:Modal marks a MODAL double-faced card (MDFC, CR 712.x) — both faces are
     // playable from hand (front spell OR back face). Only the front face carries this line; the
     // back face (parsed from the ALTERNATE block) leaves it false. Distinct from a transform DFC.
@@ -1436,7 +1437,8 @@ static bool parse_token_file(const std::string &script_name, Token &tok) {
         tok.name.compare(tok.name.size() - kTokenSuffix.size(), kTokenSuffix.size(),
                          kTokenSuffix) == 0)
         tok.name.erase(tok.name.size() - kTokenSuffix.size());
-    tok.types = parse_types(value_from_script(script_data, "Types"));
+    tok.types_text = value_from_script(script_data, "Types");
+    tok.types = parse_types(tok.types_text);
     tok.oracle_text = expand_newline_escapes(value_from_script(script_data, "Oracle"));
     tok.explicit_colors = parse_colors_field(value_from_script(script_data, "Colors"));
 

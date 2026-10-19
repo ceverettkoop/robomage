@@ -15,6 +15,11 @@
 //                      runs out each seat's --agent-* decides (first when none is given)
 //   --actions <ints>   one global list of replies for both seats, then the seats' agents
 //   --trace-decisions  the board and menu of every decision (agents/trace.h) on the game log
+//   --featurize-seats  every decision of a seat an in-process agent decides is also featurized
+//                      (featurize_seat on the seat's decoded frame, the inputs built in process:
+//                      state_format/cards_file.h) and the tensors dropped; at exit
+//                      "FEATURIZE-SEATS: <n> decisions in <s> s". Play is unchanged: the bench
+//                      tier's featurizer stage
 // Any of the first three implies --machine; a seat with no agent and no script keeps its own
 // input path: the RMSTATE stream on stdin/stdout, or, for a human seat (cli_args.cpp: the
 // --player seat, or every seat of a run without --machine), the CLI (cli/human.h), installed

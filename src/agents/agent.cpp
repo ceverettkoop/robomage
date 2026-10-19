@@ -48,9 +48,26 @@ class SeatPlayAgent : public Agent {
         PlayScript script_;
 };
 
+// A kind register_agent_kind added.
+struct AgentKind {
+        std::string prefix;  // lowercase
+        AgentFactory make;
+};
+
+// The prefix of the actor's policy agent, which only bin/<config>/robomage_nn registers.
+const char *const NN_PREFIX = "nn:";
+
 }  // namespace
 
 static bool starts_with_ci(const std::string &s, const char *prefix, std::string *rest);
+static std::vector<AgentKind> &agent_kinds();
+
+// The registered kinds (a function-local static: registration may run before any other static is
+// initialised).
+static std::vector<AgentKind> &agent_kinds() {
+    static std::vector<AgentKind> kinds;
+    return kinds;
+}
 
 static bool starts_with_ci(const std::string &s, const char *prefix, std::string *rest) {
     const std::string p(prefix);
@@ -86,6 +103,10 @@ int ActionsAgent::decide(const Decision &d) {
     return r;
 }
 
+void register_agent_kind(const std::string &prefix, AgentFactory make) {
+    agent_kinds().push_back(AgentKind{ascii_lower(prefix), make});
+}
+
 std::unique_ptr<Agent> make_agent(const std::string &spec, PyRandom *rng, std::string *err) {
     std::string s = spec;
     while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back()))) s.pop_back();
@@ -105,8 +126,16 @@ std::unique_ptr<Agent> make_agent(const std::string &spec, PyRandom *rng, std::s
         return std::unique_ptr<Agent>(new ActionsAgent(std::move(actions)));
     }
     if (starts_with_ci(s, "play:", &rest)) return std::unique_ptr<Agent>(new SeatPlayAgent(parse_spec_list(rest)));
-    *err =
-        "unknown agent spec '" + spec + "': first, random, actions:<i,...>, play:<specs>, explore or explore:patient";
+    for (const AgentKind &kind : agent_kinds())
+        if (starts_with_ci(s, kind.prefix.c_str(), &rest)) return kind.make(rest, rng, err);
+    if (starts_with_ci(s, NN_PREFIX, &rest)) {
+        *err = "'" + spec +
+               "': the nn: agent runs in the actor binary, bin/<config>/robomage_nn (libtorch), which `make actor` "
+               "builds; this binary has no evaluator";
+        return nullptr;
+    }
+    *err = "unknown agent spec '" + spec +
+           "': first, random, actions:<i,...>, play:<specs>, explore, explore:patient or nn:<model>[:<key>=<value>...]";
     return nullptr;
 }
 

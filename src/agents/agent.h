@@ -2,6 +2,7 @@
 #define AGENTS_AGENT_H
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,6 +30,13 @@
 //                       then row 0
 //   explore             the coverage fuzzer, python/explore_agent.py ported (agents/explore.h)
 //   explore:patient     its big-mana profile
+//   nn:<model>[:...]    a learned policy (docs/featurizer.md §6), or nn:remote:<socket>[:...]
+//                       evaluated by an inference server: a kind the actor binary
+//                       bin/<config>/robomage_nn registers (src/actor/nn_agent.h); this binary
+//                       refuses it, naming `make actor`
+//
+// A binary that links the engine adds an agent kind with register_agent_kind before the engine
+// starts (engine_main.h): its specs are `<prefix>` followed by what the kind parses.
 //
 // The shared generator: every agent of the process draws from one PyRandom, seeded once before
 // the match with the game seed (--game-seed), else the engine seed (--seed), as the Python
@@ -51,6 +59,14 @@ constexpr int AGENT_FAILED = -1000;
 // run exits with status 0.
 constexpr int AGENT_QUIT = -1001;
 
+// What a policy agent sampled its last decision from: the exact distribution over every menu row
+// (after temperature and any projection; one-hot at the row an argmax took) and the version of the
+// policy that gave it, for a trajectory writer recording the behaviour policy.
+struct Behaviour {
+        std::vector<double> mu;
+        uint64_t policy_version = 0;
+};
+
 class Agent {
     public:
         virtual ~Agent() = default;
@@ -59,6 +75,8 @@ class Agent {
         virtual int decide(const Decision &d) = 0;
         // A short label for traces ("first", "explore", ...).
         virtual std::string label() const = 0;
+        // The last decision's behaviour distribution (a policy agent), or nullptr.
+        virtual const Behaviour *last_behaviour() const { return nullptr; }
         // Why decide() returned AGENT_FAILED.
         const std::string &failure() const { return failure_; }
 
@@ -68,6 +86,12 @@ class Agent {
 
 // The agent `spec` names, drawing from `rng`; nullptr (with `err`) for an unknown spec.
 std::unique_ptr<Agent> make_agent(const std::string &spec, PyRandom *rng, std::string *err);
+
+// Makes an agent of a registered kind from `args` (the spec after the kind's prefix); nullptr with
+// `err` on bad arguments.
+using AgentFactory = std::unique_ptr<Agent> (*)(const std::string &args, PyRandom *rng, std::string *err);
+// Adds the agent kind of specs starting with `prefix` (matched case-insensitively, e.g. "nn:").
+void register_agent_kind(const std::string &prefix, AgentFactory make);
 
 // Plays fixed replies in order, then row 0 (the actions: spec, and the global --actions script
 // when given players: the seats' agents decide once the replies run out).

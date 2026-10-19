@@ -28,6 +28,7 @@
 #include "handles.h"
 #include "knowledge_feed.h"
 #include "schema.h"
+#include "selfcheck_featurize.h"
 #include "selfcheck_knowledge.h"
 #include "stream.h"
 
@@ -116,11 +117,13 @@ static std::string with_knowledge(Zone::Ownership viewer, const std::string &pay
 static void check_match_frames();
 static std::vector<Entity> public_choice_cards(const std::vector<LegalAction> &actions);
 static void check_scramble(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
-    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame, bool terminal);
+    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame,
+    const std::string &known, bool terminal);
 static void permute_hidden(Zone::Ownership viewer, const std::vector<Entity> &keep, std::mt19937 &gen, Permutation &p);
 static void undo_permutation(Permutation &p);
 static void check_permutation(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
-    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame);
+    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame,
+    const std::string &known);
 static void start_snapshot_check(
     const std::vector<LegalAction> &actions, Zone::Ownership decider, const std::string frames[3]);
 static void finish_snapshot_check();
@@ -619,11 +622,13 @@ static void check_match_frames() {
     if (match_frames_checked) return;
     match_frames_checked = true;
     for (Zone::Ownership viewer : VIEWERS) {
-        for (const std::string &payload : encode_match_frames(viewer)) {
+        const std::vector<std::string> payloads = encode_match_frames(viewer);
+        for (const std::string &payload : payloads) {
             DecodedFrame f;
             roundtrip(viewer, payload, &f);
             knowledge_feed_match_frame(ObsConsumer::SELFCHECK, viewer, payload);
         }
+        selfcheck_featurize_match_frames(viewer, payloads);
     }
 }
 
@@ -641,15 +646,18 @@ static std::vector<Entity> public_choice_cards(const std::vector<LegalAction> &a
     return out;
 }
 
-// The scramble check of one seat's frame.
+// The scramble check of one seat's frame (`known`: the frame with its k_* tables, for
+// --selfcheck-featurize).
 static void check_scramble(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
-    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame, bool terminal) {
+    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame,
+    const std::string &known, bool terminal) {
     std::string scrambled;
     {
         ScrambledIdentities scramble(viewer, keep);
         scrambled = encode_state_frame(viewer, actions, decider, events, terminal);
     }
     compare_frames("scramble", viewer, frame, scrambled);
+    selfcheck_featurize_compare("scramble", viewer, known, scrambled);
 }
 
 void selfcheck_state_event(Zone::Ownership viewer, const ObsEvent &built, const ObsEvent &scrambled) {
@@ -723,11 +731,12 @@ static void undo_permutation(Permutation &p) {
     p = Permutation{};
 }
 
-// The permutation check of one seat's frame. The seat's handle table is put back as well: a
-// permutation that changed what the seat can identify would retire handles (and show as a
-// difference).
+// The permutation check of one seat's frame (`known`: with its k_* tables, for
+// --selfcheck-featurize). The seat's handle table is put back as well: a permutation that changed
+// what the seat can identify would retire handles (and show as a difference).
 static void check_permutation(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
-    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame) {
+    const std::vector<ObsEvent> &events, const std::vector<Entity> &keep, const std::string &frame,
+    const std::string &known) {
     ++stats.permutations;
     std::mt19937 gen(static_cast<uint32_t>(0x5e1fc4ecu ^ (stats.decisions * 2654435761u) ^ viewer));
     const Game::HandleTable table = cur_game.handle_tables[HandleMove::slot(viewer)];
@@ -737,6 +746,7 @@ static void check_permutation(Zone::Ownership viewer, const std::vector<LegalAct
     undo_permutation(p);
     cur_game.handle_tables[HandleMove::slot(viewer)] = table;
     compare_frames("permutation", viewer, frame, permuted);
+    selfcheck_featurize_compare("permutation", viewer, known, permuted);
 }
 
 // ── Snapshot check ────────────────────────────────────────────────────────────────────────────
@@ -818,9 +828,10 @@ void selfcheck_state_decision(const std::vector<LegalAction> &actions) {
         const bool gets_menu = !is_seat(viewer) || viewer == decider;
         check_frame(viewer, frames[i], gets_menu ? actions.size() : 0);
         if (!is_seat(viewer)) continue;
-        check_scramble(viewer, actions, decider, events, keep, plain, false);
-        if (sampled) check_permutation(viewer, actions, decider, events, keep, plain);
+        check_scramble(viewer, actions, decider, events, keep, plain, frames[i], false);
+        if (sampled) check_permutation(viewer, actions, decider, events, keep, plain, frames[i]);
     }
+    selfcheck_featurize_omniscient(frames[viewer_index(Zone::UNKNOWN)]);
     selfcheck_knowledge_decision(frames[viewer_index(Zone::PLAYER_A)], frames[viewer_index(Zone::PLAYER_B)]);
     if (start)
         start_snapshot_check(actions, decider, frames);
@@ -835,8 +846,9 @@ void selfcheck_state_match_over() {
     for (Zone::Ownership viewer : VIEWERS) {
         const std::vector<ObsEvent> events = take_obs_events(viewer, ObsConsumer::SELFCHECK);
         const std::string frame = encode_state_frame(viewer, {}, Zone::UNKNOWN, events, true);
-        check_frame(viewer, with_knowledge(viewer, frame), 0);
-        if (is_seat(viewer)) check_scramble(viewer, {}, Zone::UNKNOWN, events, {}, frame, true);
+        const std::string known = with_knowledge(viewer, frame);
+        check_frame(viewer, known, 0);
+        if (is_seat(viewer)) check_scramble(viewer, {}, Zone::UNKNOWN, events, {}, frame, known, true);
     }
     std::fflush(stdout);
     std::fprintf(stderr,
@@ -844,4 +856,5 @@ void selfcheck_state_match_over() {
         stats.decisions, stats.frames, stats.events, stats.permutations, stats.snapshots, stats.errors);
     std::fflush(stderr);
     selfcheck_knowledge_match_over();
+    selfcheck_featurize_match_over();
 }

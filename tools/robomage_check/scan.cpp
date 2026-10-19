@@ -29,7 +29,7 @@ static bool summary_line(const std::string &line, std::string *kind, bool *clean
     const size_t colon = line.find(": decisions=");
     if (colon == std::string::npos) return false;
     *kind = line.substr(10, colon - 10);
-    if (*kind != "STATE" && *kind != "KNOWLEDGE") return false;
+    if (*kind != "STATE" && *kind != "KNOWLEDGE" && *kind != "FEATURIZE") return false;
     const std::string t = rmcheck::trim(line);
     const size_t e = t.rfind(" errors=");
     if (e == std::string::npos) return false;

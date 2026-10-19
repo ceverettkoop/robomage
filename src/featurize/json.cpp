@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-namespace rmcheck {
+namespace featurize {
 
 // A recursive-descent reader over one text.
 class Json::Parser {
@@ -332,4 +332,28 @@ std::string Json::text() const {
     return "";
 }
 
-}  // namespace rmcheck
+std::string json_quote(const std::string &s) {
+    std::string out = "\"";
+    for (const char c : s) {
+        const unsigned char u = static_cast<unsigned char>(c);
+        if (c == '"' || c == '\\') {
+            out += '\\';
+            out += c;
+        } else if (c == '\n') {
+            out += "\\n";
+        } else if (c == '\t') {
+            out += "\\t";
+        } else if (c == '\r') {
+            out += "\\r";
+        } else if (u < 0x20) {
+            char buf[8];
+            std::snprintf(buf, sizeof buf, "\\u%04x", u);
+            out += buf;
+        } else {
+            out += c;
+        }
+    }
+    return out + "\"";
+}
+
+}  // namespace featurize

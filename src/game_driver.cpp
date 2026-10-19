@@ -186,6 +186,8 @@ bool actions_script_given = false;
 std::string actions_script;
 // --trace-decisions: the board and menu of every decision on the game log (agents/trace.h).
 bool trace_decisions = false;
+// --featurize-seats: featurize every in-process agent seat's decision (agents/driver.h).
+bool featurize_seats = false;
 // --game-seed N: the engine seed is the drivers' engine seed of game seed N
 // (agents/game_seed.h), and the agents' shared generator is seeded with N.
 bool game_seed_given = false;
