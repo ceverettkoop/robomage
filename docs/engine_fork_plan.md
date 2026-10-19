@@ -607,6 +607,12 @@ kept Python below.
 Target consumer: a **C++ in-process actor**. In one process it runs engine → frame →
 knowledge → featurizer → exported policy → action, with no Python per step.
 
+**What comes after.** `docs/rnad_training_plan.md` (a scripted-agent bootstrap into R-NaD
+self-play) starts where this step ends; its section 2 lists what step 5 must leave open, and
+the items below marked for the training plan (the export-friendly contract, batched and remote
+evaluation, the omniscient featurization and learner targets, exact re-featurization, the
+behaviour distribution, the per-stage `bench`) are those.
+
 **The card tables are for any ML framework, not only this actor.** The oracle-text vectors (5c)
 and the card and ability feature tables (5a) are plain data files, not part of a model:
 whole-vocab matrices indexed by vocab id, readable with no ML library. Plausible consumers are
@@ -693,9 +699,20 @@ weights as frozen buffers, but the exported file stays the interface and the sou
   omniscient viewer's frame (as `--rmstate-dump` writes it; no `k_*` tables, whose slots stay
   empty), so a learner can train a critic that sees the whole game and auxiliary heads that
   predict hidden information (the opponent's hand, the library order). It is reachable only from
-  `rmfeat` over a dump. The actor and `nn:` never see it: the in-process feed carries seat
-  frames only, the featurizer's actor entry point refuses a frame whose header viewer is not the
-  deciding seat, and the leak and isolation checks are extended to cover it (below).
+  learner-facing outputs: `rmfeat` over a dump, and later the training plan's trajectory writer
+  (`docs/rnad_training_plan.md` T1, on request). The actor and `nn:` never see it: the in-process
+  feed carries seat frames only, the featurizer's actor entry point refuses a frame whose header
+  viewer is not the deciding seat, and the leak and isolation checks are extended to cover it
+  (below).
+- **Learner targets.** `rmfeat --targets` derives the auxiliary heads' targets per decision from
+  the omniscient frame beside the seat's: the opponent's hand as a multiset of vocab ids, the
+  opponent's registered list and archetype (`METAGAME` rows), and the seat's own library order
+  near the top. They are learner-side data like the omniscient featurization, with the same
+  isolation.
+- **Re-featurization is exact.** The tensors depend only on the frames, and the frames only on
+  the RMLOG, so featurizing a `--replay` of a game's decision log reproduces, byte for byte, what
+  the seat's `nn:` agent featurized live. The training plan keeps every game's RMLOG and
+  re-featurizes old games after a spec change on this guarantee.
 - **Tests:**
   - deterministic;
   - shapes and indices agree with `FEATURE_SPEC`;
@@ -769,17 +786,30 @@ weights as frozen buffers, but the exported file stays the interface and the sou
   the engine's (one check per build, since the tables cover the whole vocab). The binary links
   the Makefile's kept plumbing: `$(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) $(ACTOR_LDFLAGS)`, with the
   exceptions-enabled `ACTOR_CXXFLAGS` for `src/actor/` only.
-- **Agent:** `nn:<model.pt>` on the step-3 Agent interface: featurize, evaluate, choose
-  (argmax or sample) over menu rows.
+- **Agent:** `nn:<model>[:<key>=<value>…]` on the step-3 Agent interface: featurize, evaluate,
+  choose over menu rows. Options: `temp=<t>` (sampling temperature), `argmax`; the option syntax
+  is open so the training plan's play-time projection (`thresh=`, `disc=`, its T6) adds keys, not
+  a new spec. The agent keeps the **exact distribution it sampled from** over every menu row
+  (after temperature and any projection) and the policy version for its last decision, readable
+  by the engine, so the training plan's trajectory writer (T1) records the behaviour policy μ
+  without recomputing it.
 - **Batched evaluation built for the next step** (a high-throughput model-free learner). The
   engine's globals limit a process to one game, so throughput comes from many actor processes;
   the evaluation hook therefore takes featurized decisions from many games at once, not one:
-  - an `Evaluator` interface over a batch of featurized decisions, with an in-process
-    implementation (the actor's own model) and a remote one;
-  - a request/response wire format for featurized decisions and their logits and values (RMTB
-    tensors, with the spec hash), so a separate inference server process, on a GPU, can batch
-    across many actor processes; a reference server (`rmserve`) batches up to a size or a
-    deadline, and `nn:remote:<address>` points an actor at it;
+  - an `Evaluator` interface over a batch of featurized decisions, returning per row the
+    logits over its menu rows, a value and the policy version, with an in-process
+    implementation (the actor's own model, CPU) and a remote one;
+  - the wire format, `docs/inference_protocol.md`: featurized decisions in shared memory with a
+    Unix socket for signalling (the archive's server pattern), the spec hash on every request.
+    A request may name several policies (the training plan evaluates the current policy and both
+    frozen regularisation policies in one batch and returns `log π` per menu row for each), and
+    every response carries each policy's version number, so weights can be swapped between
+    decisions;
+  - `nn:remote:<endpoint>` points an actor at a server, and a server that goes away makes the
+    actor fail loudly, never fall back to a default action;
+  - a reference server, `rmserve` (C++, libtorch, CPU), batches up to a size or a deadline. It
+    serves the tests and small runs; the training plan's GPU server (L5, PyTorch) implements the
+    same protocol;
   - a later search agent uses the same hook.
 - **End-to-end test** with a randomly initialised model of the contract's shape, exported as
   TorchScript, `.pt2` and ONNX, the three giving the same logits and values (within float

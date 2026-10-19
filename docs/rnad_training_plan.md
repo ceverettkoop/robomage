@@ -5,7 +5,7 @@ Goal: train one network that plays from RMSTATE, starting from imitation of the 
 algorithm), with the whole loop running at high throughput on one workstation-class box.
 
 This plan starts where `docs/engine_fork_plan.md` ends. It assumes step 5 is done: the
-`FEATURE_SPEC` frame, the C++ featurizer (`src/featurize/`), the whole-vocab card / text /
+`FEATURE_SPEC` document, the C++ featurizer (`src/featurize/`), the whole-vocab card / text /
 ability tables, and an `nn:<model>` agent in `src/actor/`. Where step 5 has to leave a door open
 for this plan, section 2 says so.
 
