@@ -15,7 +15,7 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/episodes.py` | trajectory episodes (`docs/trajectory_format.md`) in numpy: `read_episode` (the file's bytes kept, arrays as views), `expand` (steps of many episodes → the contract's padded inputs, = `batch.pad`), `targets`, `evaluations`, `episode_attrs` |
 | `rmlearn/replay.py` | `ReplayWindow` (RAM window over trajectory directories: polling ingestion, eviction by decisions / bytes, optional deletion of evicted `.rmtraj`, never `.rmlog`; labels; held-out split by game), `DecisionBatch` (BC), `TrajectoryBatch` (R-NaD: full games time-major, chunked), `Prefetcher` (background batch threads) |
 | `rmlearn/bc.py` | behaviour cloning: `BCConfig`, `BCTrainer` (`train(n)`, `evaluate()`, `save`, `restore`, `export` → metric dicts), `python -m rmlearn.bc` |
-| `rmlearn/corpus.py` | the teacher corpus (plan B0): scripted:hard games through engine actors (or `rm_driver.py` + `--replay`) into episodes; `make_schedule`, `run_actor_corpus` |
+| `rmlearn/corpus.py` | the teacher corpus (plan B0): scripted:hard games through engine actors (or `rm_driver.py` + `--replay`) into episodes; `make_schedule`, `run_actor_corpus`; `refeaturize` (`--refeaturize RMLOG_DIR`: the kept logs replayed into episodes after a spec change) |
 | `rmlearn/evaluate.py` | an export as `nn:<model>` against `scripted` / `explore` / `random` through engine actors, scored per game (game 1 apart from games 2–3): `run_eval`, `summarize` |
 | `rmlearn/server.py` | `InferenceServer`: RMIP v1 (`docs/inference_protocol.md`) inside the host process; `python -m rmlearn.server` runs it standalone |
 | `rmlearn/client.py` | a Python RMIP client (checks, benches) |

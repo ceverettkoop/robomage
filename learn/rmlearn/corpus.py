@@ -11,6 +11,9 @@ Two routes, both writing ``<out>/episodes/*.rmtraj`` and keeping every decision 
   are written as the games end. Scripted-vs-explore entries (``--explore-frac``) put ``explore`` on
   one side, untaught and unrecorded (``trajectory_seats`` the scripted side), for coverage of bad
   positions. Each actor's teacher gets its own ``--seed`` (the hard tier's tie-breaks).
+- ``--refeaturize RMLOG_DIR``: the kept logs replayed into new episodes (after a feature-spec
+  change), each log's recorded seats taken from the old episodes (``--seats-from``); the replayed
+  steps have no μ and no teacher label, so their label is the reply (the teacher's, at mix 1).
 - ``driver``: ``python/rm_driver.py --player-a scripted --player-b scripted --rmlog-dir`` per
   matchup (bo3), then ``robomage --replay LOG --trajectory-out`` per log; μ and the teacher label
   are absent and the label is the reply (``LabelConfig.chosen_without_mu``).
@@ -151,6 +154,43 @@ def run_driver_corpus(out_dir, jobs=16, matches_per_pair=4, omniscient=True, see
     return s
 
 
+def refeaturize(logs, out_dir, seats=None, omniscient=True, jobs=16, engine=None, bin_dir=BIN_DIR, log=print):
+    """Re-featurizes decision logs into episodes (``--replay LOG --trajectory-out``, e.g. after a
+    feature-spec change): `seats` maps a log's path to its recorded seats ("A", "B", "AB"; default
+    "AB"). Replayed steps carry no μ and no teacher label (their label is the reply). The summary."""
+    out_dir = os.path.abspath(out_dir)
+    engine = os.path.abspath(engine or os.path.join(bin_dir, "release", "robomage"))
+    os.makedirs(out_dir, exist_ok=True)
+    seats = seats or {}
+    t0 = time.time()
+    cmds = []
+    for f in logs:
+        argv = [engine, "--replay", os.path.abspath(f), "--trajectory-out", out_dir,
+                "--trajectory-seats", seats.get(f, "AB")]
+        cmds.append(argv + (["--trajectory-omniscient"] if omniscient else []))
+    _run_pool(cmds, jobs, bin_dir)
+    files = glob.glob(os.path.join(out_dir, "*.rmtraj"))
+    from .episodes import episode_attrs
+    decisions = sum(int(episode_attrs(f)["decisions"]) for f in files)
+    size = sum(os.path.getsize(f) for f in files)
+    secs = time.time() - t0
+    s = {"route": "replay", "logs": len(logs), "episodes": len(files), "decisions": decisions,
+         "seconds": round(secs, 1), "decisions_per_s": round(decisions / max(secs, 1e-9), 1),
+         "bytes_per_decision": round(size / max(decisions, 1), 1), "bytes": size}
+    log("refeaturize: %s" % json.dumps(s))
+    return s
+
+
+def seats_of_episodes(episode_dir):
+    """{decision log: recorded seats} from the episodes of a directory (their `rmlog` / `seats`)."""
+    from .episodes import episode_attrs
+    out = {}
+    for f in glob.glob(os.path.join(episode_dir, "*.rmtraj")):
+        a = episode_attrs(f)
+        out[os.path.abspath(a["rmlog"])] = a["seats"]
+    return out
+
+
 def _run_pool(cmds, jobs, cwd):
     running = []
     failed = 0
@@ -181,8 +221,15 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--engine", help="the engine binary (default bin/release/robomage)")
     ap.add_argument("--tier", default="hard")
+    ap.add_argument("--refeaturize", metavar="RMLOG_DIR",
+                    help="instead: replay every log of RMLOG_DIR into --out (after a spec change)")
+    ap.add_argument("--seats-from", metavar="EPISODE_DIR", help="--refeaturize: each log's recorded seats as there")
     a = ap.parse_args()
-    if a.route == "actor":
+    if a.refeaturize:
+        seats = seats_of_episodes(a.seats_from) if a.seats_from else None
+        refeaturize(sorted(glob.glob(os.path.join(os.path.abspath(a.refeaturize), "*.rmlog"))), a.out, seats,
+                    not a.no_omniscient, a.actors, a.engine)
+    elif a.route == "actor":
         run_actor_corpus(a.out, a.actors, a.matches, a.explore_frac, not a.no_omniscient, a.seed, a.engine, tier=a.tier)
     else:
         run_driver_corpus(a.out, a.actors, a.matches_per_pair, not a.no_omniscient, a.seed, a.engine)
