@@ -374,6 +374,23 @@ the engine, the gate or `python/` imports it.
 - **L1. Episode reader.** Reads T1 episodes into a RAM replay window. Batches are full games,
   padded to the longest game in the batch and split into fixed-length chunks, as DeepNash does,
   so returns are exact rather than bootstrapped.
+
+  Done: `learn/rmlearn/episodes.py` (`read_episode`: the file's bytes kept, every array a view, plus
+  per-step offsets; `expand`: steps of many episodes → the contract's padded inputs in one scatter
+  per tensor, equal to `batch.pad`; nothing names a token type, the widths come from each file) and
+  `learn/rmlearn/replay.py`: `ReplayWindow` (polls trajectory directories, ingests renamed-in
+  `*.rmtraj` oldest first, evicts oldest past `max_decisions` / `max_bytes`, deletes evicted
+  `.rmtraj` only with `delete_evicted`, never an `.rmlog`; skips other specs; labels per step: the
+  teacher's, else the reply at steps without μ unless the seat is `explore` / `random`; held-out
+  split by a hash of the game), `DecisionBatch` (uniform over labelled decisions; inputs, label,
+  outcome, aux targets, optional omniscient inputs), `TrajectoryBatch` (G games time-major
+  `[T, G]`, T rounded up to `chunk_len`; `valid`, `seat`, `chosen`, `has_mu`, `mu`, `legal`,
+  `teacher`, `policy_version`, each requested policy's recorded value / `log π`, `reward` with each
+  seat's result on its game's last step; network inputs per chunk), `Prefetcher` (background
+  threads). Measured on the B0 corpus (spec version 2, one core): `expand` ~42–48k decisions/s,
+  decision batches with aux targets ~33–36k/s, trajectory chunks ~36k/s; the window holds ~13 KB
+  per decision (seat 4.5 KB, omniscient part and targets 8.5 KB). The loader is far ahead of the
+  learner (below). `learn/check.py` checks it (against `rmtraj.py`, the window, both batch kinds).
 - **L2. Model.** The step-5 contract: an entity transformer with relation biases, a pointer
   action head over menu rows, a value head, the card / text / ability tables as frozen buffers,
   and an id embedding with id-dropout. Auxiliary heads predict hidden information (the
@@ -382,6 +399,17 @@ the engine, the gate or `python/` imports it.
 - **L3. Behaviour cloning.**
   - Cross-entropy to the teacher's label, with label smoothing.
   - Value regression to the game outcome, optionally through an omniscient critic (below).
+
+  Done: `learn/rmlearn/bc.py`: `BCTrainer(model, window, BCConfig)` with `train(n)`, `evaluate()`,
+  `save` / `restore`, `export` (metric dicts for `metrics.jsonl`), and `python -m rmlearn.bc`.
+  Label-smoothed (0.05) cross-entropy over the menu rows; the value head (tanh) regressed by MSE to
+  the deciding seat's game result (kept scalar so the exported value is what the actor and R-NaD
+  read); the aux heads weighted 0.05 on omniscient steps; Adam, warm-up then cosine decay, clipping
+  at 1, fp16 autocast with a gradient scaler; batches drawn four at a time and cut by token count.
+  Evaluation on held-out games: agreement overall, per group (in-game, mulligan, sideboarding) and
+  per action category of the label (the menu token's `category` slot, from the spec), value MSE and
+  sign, aux accuracies. `learn/rmlearn/evaluate.py` plays an export (`nn:<model>`, CPU, in the
+  actors) against `scripted` / `explore` / `random`, scored per game, game 1 apart from games 2–3.
 - **L4. R-NaD.** A PyTorch port of OpenSpiel's `rnad.py` (JAX reference implementation):
   - the reward transform with the server-supplied `log π_reg` (T2);
   - two-player v-trace over the irregular seat sequence;
@@ -460,11 +488,31 @@ RMLOGs kept. Add `scripted:hard` vs `explore` games for coverage of bad position
 At ~400 decisions/s per Python process × 20, about 1M decisions takes around 2–3 minutes; aim for
 5–10M. The tensors are produced by re-featurizing the RMLOGs (T1's replay path) in parallel.
 
+Done (tooling): `learn/rmlearn/corpus.py`. The actor route (`--actor`, both seats `first` with the
+scripted teacher at mix 1, writing labelled episodes directly) beat `rm_driver.py` + `--replay`
+(~6.7k against ~3.7k decisions/s on 8 processes) and is the default; `--refeaturize RMLOG_DIR`
+replays the kept logs into new episodes after a spec change. A first corpus: 2,200 bo3 matches,
+5,216 games (80% scripted vs scripted over the 45 league pairs, 20% scripted vs explore with only
+the scripted seat recorded), 792,904 decisions in 72 s on 16 actors (~11k decisions/s), no caps or
+draws; re-featurized at spec version 2 from its logs in 39 s on 24 processes (~20k decisions/s),
+~13 KB per decision with the omniscient part.
+
 ### B1. Behaviour cloning
 
 Train L3 on B0.
 - **Exit:** top-1 agreement with the teacher on held-out games, and an SPRT result for the BC
   policy against `scripted:hard` (expected to be below 50%; it is a starting point, not a goal).
+
+A first run (tooling done, the run itself a sanity check): the B0 corpus above at spec version 2,
+5% of games held out, the default model (d 192, 4 layers, ~4M parameters), batch 128, fp16, 26 min
+on the RX 6700 XT at ~1,200 decisions/s (14,500 steps, ~2.3 passes; the loader never waited).
+Held-out agreement with the teacher 97.6% (in-game 97.7%, mulligan 95.0%, sideboarding 100%; the
+weakest categories `NAME_CARD` 52%, `DIG_CHOICE` 72%, `KEEP_LEGEND` 72%, `SELECT_BLOCKER` 76%);
+the value memorises (MSE 0.14 train against 0.72 held out, sign 78.5%), so BC's value is a weak
+start. Played argmax as `nn:` in the actors over four league pairs (both decks and seats), per
+game: 24% against `scripted:hard` (game 1 26%, games 2–3 23%), 69% against `explore`, 76% against
+`random`. The losses to `random` show the compounding error DAgger (B2) is for: e.g. bug dredging
+Life from the Loam at every draw instead of drawing, a state the teacher's games rarely reach.
 
 ### B2. DAgger, 3–5 rounds
 

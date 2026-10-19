@@ -247,6 +247,10 @@ rule of `docs/featurizer.md` §3.5).
 - Python (stdlib): `python/rmtraj.py`, `rmtraj.read(path)` → `Episode` (`attrs`, `steps`: seat,
   key, `chosen`, `mu` or None, `policies`, `tensors` dicts of flat lists, `omniscient`, `targets`).
   `python/pycheck.py --part traj` checks it against the C++ reader.
+- The learner (numpy): `learn/rmlearn/episodes.py`, `read_episode(path)` keeps the file's bytes
+  with every array a view of them and `expand(steps)` builds a batch's padded inputs from steps of
+  many episodes at once (§3.3 vectorised; equal to `batch.pad`); `learn/rmlearn/replay.py` is the
+  replay window over trajectory directories. `learn/check.py` checks it against `rmtraj.py`.
 
 ## 5. Size and cost
 
