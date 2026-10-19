@@ -703,10 +703,11 @@ weights as frozen buffers, but the exported file stays the interface and the sou
   384-d), e.g. bge-small-en-v1.5 or all-MiniLM-L6-v2. Final pick and licence check in 5a.
   Pooling follows how the chosen model was trained (all-MiniLM-L6-v2: the mean over real
   tokens; bge-small-en-v1.5: the `[CLS]` vector).
-  - It runs through libtorch as a TorchScript export, so no new runtime dependency; prefer a
-    pre-converted artifact.
-  - The weights (~25–130 MB) are provisioned like card scripts: fetched and pinned, not
-    committed.
+  - It runs only to generate missing or stale rows (below), never in the actor, which reads the
+    committed table. It runs through libtorch as a TorchScript export, so no new runtime
+    dependency; prefer a pre-converted artifact.
+  - The weights (~25–130 MB) are fetched on demand at a pinned revision (a pin file beside
+    `tools/forge_fetch/FORGE_PIN`'s, naming the model repository and its commit), never committed.
 - **Tokenizer:** C++ WordPiece reading the model's vocabulary, checked against a golden file of
   reference token ids.
 - **Pipeline:** tokenize → encode → pool → L2-normalise, giving one 384-float vector per vocab
@@ -716,8 +717,23 @@ weights as frozen buffers, but the exported file stays the interface and the sou
   the model id plus a hash of its normalised text (the normalisation version included); only a
   stale row is recomputed. A frozen encoder is deterministic in principle, but the last float
   bits can vary with CPU instruction set, BLAS, thread count or libtorch version, so consumers
-  read the file and never recompute it; that makes runs bit-exact across machines. The file is
-  small enough to pin (committed, or provisioned like the weights; decided in 5a).
+  read the file and never recompute it; that makes runs bit-exact across machines.
+- **The text table is committed** (under `bin/resources/`, ~0.5 MB), and **`make` keeps it
+  complete**:
+  - Every `make` runs a check (std only, no ML library, no network; in the engine binary beside
+    `--check-decks`) that the table has a row for every vocab entry with oracle text, each row's
+    text hash matching that entry's current normalised text, and that the header's model id
+    matches the model pin.
+  - When rows are missing or stale (a card added to the vocab, a `FORGE_PIN` bump that changed
+    an oracle text), `make` downloads the pinned model and generates **only those rows**,
+    rewriting the table in place; the rows already in it are kept bit for bit. The rewritten
+    file shows in `git status` and is committed with the change that caused it. A model-pin
+    change makes every row stale, so it regenerates the whole table.
+  - Generation needs libtorch (found as `make actor` finds it) and network access. When either
+    is missing, `make` fails naming the stale rows and the command to run; it never builds on
+    with an incomplete table. A clean checkout with a current committed table never downloads
+    the model or needs libtorch, so CI and plain `make` stay as they are; a stale table in CI
+    fails there, which is what catches a change committed without its regenerated rows.
 - **Sanity report:** nearest neighbours per card (Bolt ↔ Chain Lightning, Brainstorm ↔
   Ponder) to eyeball quality.
 
@@ -736,6 +752,8 @@ weights as frozen buffers, but the exported file stays the interface and the sou
 - **Exit:**
   - `--agent-a nn:<model.pt>` plays full bo3 matches without errors;
   - the featurizer, tokenizer and embedding tests pass;
+  - the committed text table passes `make`'s completeness check on a clean checkout, and
+    generating a deleted row reproduces the same rows elsewhere in the file untouched;
   - the `CARDS` ability parameters pass the state tier's self-checks, and the exported card
     tables load with a standard-library reader (no ML library) to the same values the actor uses;
   - throughput is measured in the `bench` tier.
@@ -815,10 +833,14 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 5. ~~**`robomage_check` with exceptions on**~~ **Decided:** built with `-fno-exceptions` (3a).
 6. ~~**Human vs Python agent in the CLI** (4b)~~ **Decided:** no second channel; a human plays
    the in-process agents or hotseat.
-7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small
-   384-d encoder; pooling follows the pick), how its weights are provisioned and pinned, and
-   whether the exported text table is committed or provisioned. **Decided:** oracle text only
-   (no script text), the whole vocab every time, exported as a framework-neutral file.
+7. **Embedding model** (5a/5c): the pick and its licence check. Candidates: all-MiniLM-L6-v2 /
+   L12-v2, bge-small-en-v1.5, e5-small-v2, gte-small, snowflake-arctic-embed-xs / -s (384-d,
+   22–33M parameters), and, since the committed table makes encoder size cost nothing in the
+   actor, larger ones such as bge-base-en-v1.5, all-mpnet-base-v2 or nomic-embed-text-v1.5
+   (768-d; Matryoshka-truncatable). Pooling and any required text prefix follow the pick.
+   **Decided:** oracle text only (no script text), the whole vocab every time, exported as a
+   framework-neutral file, committed, kept complete by `make` (5c), weights fetched at a pinned
+   revision only to generate rows.
 8. **Learner** (after step 5): language (PyTorch vs libtorch) and algorithm. A learner is
    what would enable option 3.
 
