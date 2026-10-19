@@ -15,8 +15,7 @@ bool equipment_can_equip(Entity equipment, Entity host) {
     return true;
 }
 
-std::vector<Entity> equip_candidates(Entity equipment, Zone::Ownership player,
-                                     const std::set<Entity> &entities) {
+std::vector<Entity> equip_candidates(Entity equipment, Zone::Ownership player, const EntitySet &entities) {
     std::vector<Entity> out;
     for (auto e : entities)
         if (is_equip_candidate(equipment, e, player)) out.push_back(e);

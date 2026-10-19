@@ -87,6 +87,9 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   card tables, tensors, learner targets) and `bin/debug/robomage_check` (the test gate)
 - `make BUILD=RELEASE` — the same into `bin/release/` (`-O2 -flto -march=native`; separate obj/bin
   trees per config, so switching `BUILD` never needs `make clean`)
+- `make pgo` — `bin/pgo/robomage` alone: the release flags with a profile (`-fprofile-use`), from an
+  instrumented build playing explore bo3 games with the featurizer on (~10–15% faster; `docs/ci.md`
+  throughput reference)
 - `make check` — build, then `bin/debug/robomage_check` (every tier; below and `docs/ci.md`)
 - `make regen` — provision, build, then `python3 python/record_corpus.py`: re-record the replay
   corpus after an intentional behavior change
@@ -289,7 +292,8 @@ replays it deterministically (the header alone fixes the setup; output flags suc
 
 Based on [Austin Morlan's ECS tutorial](https://austinmorlan.com/posts/entity_component_system/):
 entities are `uint32_t` IDs capped at `MAX_ENTITIES` (`src/ecs/entity.h`), components are data
-structs (`src/components/`), systems iterate their signature's `mEntities` (`src/systems/`), all
+structs (`src/components/`), systems iterate their signature's `mEntities` (an `EntitySet`, a bitset
+iterated in id order like the `std::set` it replaced: `src/ecs/entity_set.h`; `src/systems/`), all
 reached through the `global_coordinator` singleton (`src/ecs/coordinator.h`). The registered
 components and systems are listed in `init_ecs()` (`src/game_driver.cpp`).
 Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared in

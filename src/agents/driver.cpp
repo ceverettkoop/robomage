@@ -196,13 +196,14 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     }
     std::vector<std::string> match_frames;
     std::string state;
-    agent_feed_decision(seat, actions, &match_frames, &state);
+    const bool decoded = agent_feed_decision(seat, actions, &match_frames, &state, &run->frame);
     teacher_send(s, match_frames, state, actions.size(), number);
     agents::SeatStream &stream = *run->streams[s];
     std::string err;
     for (const std::string &payload : match_frames)
         if (!stream.feed_match_frame(payload, &err)) fatal_error("in-process agent frames: " + err);
-    if (!stream.decode_state(state, &run->frame, &err)) fatal_error("in-process agent frames: " + err);
+    if (!(decoded ? stream.adopt_state(&run->frame, &err) : stream.decode_state(state, &run->frame, &err)))
+        fatal_error("in-process agent frames: " + err);
     run->number = number;
     run->view.emplace(stream, run->frame, s);
     if (run->featurization && run->decides[s]) featurize_decision();

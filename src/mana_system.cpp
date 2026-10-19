@@ -270,8 +270,7 @@ bool ability_is_mana(const Ability &ab) {
 // ability's Valid$ filter (ReflectProperty$ Is — reflect the colors those permanents are).
 // Colorless contributes no color (CR 105.2c), so a colorless-only board yields an empty set
 // and the source produces nothing. Returned in WUBRG order for a stable choice menu.
-static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownership player,
-                                               const std::set<Entity> &entities) {
+static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownership player, const EntitySet &entities) {
     std::set<Colors> colors;
     MatchCtx ctx;
     ctx.controller = player;
@@ -293,9 +292,8 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
 // tap state, activation limit, summoning sickness without haste. Shared by
 // collect_available_mana_sources and mana_potential so the observation's "what could I
 // produce" summary can never disagree with the menu about which sources are available.
-static bool mana_ability_available_now(Entity e, const Ability &ab,
-                                       Zone::Ownership player, const std::set<Entity> &entities,
-                                       bool include_instant_speed, int life_reserve) {
+static bool mana_ability_available_now(Entity e, const Ability &ab, Zone::Ownership player, const EntitySet &entities,
+    bool include_instant_speed, int life_reserve) {
     // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
     // mid-cost-payment. Callers listing actions for a player who holds priority pass
     // include_instant_speed; the affordability/payment callers leave it false.
@@ -359,7 +357,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
 // color" rule), whether it is a mana source at all, and whether it is a land. Deliberately
 // mana-COST-free (no payer), so it is safe to call on the ML serialization path where no
 // Orderer is in scope.
-ManaPotential mana_potential(Zone::Ownership player, const std::set<Entity> &entities) {
+ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities) {
     ManaPotential out;
     for (auto entity : battlefield_permanents(entities, player)) {
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);

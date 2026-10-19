@@ -41,11 +41,11 @@ static void match_frames_once(Zone::Ownership seat, std::vector<std::string> *ma
     match_frames_built[seat] = true;
 }
 
-void agent_feed_decision(Zone::Ownership seat, const std::vector<LegalAction> &actions,
-    std::vector<std::string> *match_frames, std::string *state) {
+bool agent_feed_decision(Zone::Ownership seat, const std::vector<LegalAction> &actions,
+    std::vector<std::string> *match_frames, std::string *state, rmstate::DecodedFrame *decoded) {
     match_frames_once(seat, match_frames);
     *state = encode_state_frame(seat, actions, seat, take_obs_events(seat, ObsConsumer::AGENT), false);
-    knowledge_append_tables(ObsConsumer::AGENT, seat, state);
+    return knowledge_append_tables(ObsConsumer::AGENT, seat, state, nullptr, decoded);
 }
 
 void agent_feed_terminal(Zone::Ownership seat, std::vector<std::string> *match_frames, std::string *state) {

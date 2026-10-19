@@ -84,6 +84,10 @@ class SeatStream {
         bool feed_match_frame(const std::string &payload, std::string *err);
         // Decodes one of the seat's STATE frames into `out`.
         bool decode_state(const std::string &payload, rmstate::DecodedFrame *out, std::string *err) const;
+        // Takes one of the seat's STATE frames decoded elsewhere against an equal schema (the
+        // knowledge sidecar's, state_format/agent_feed.h): its tables are pointed at this stream's
+        // schema. False (with `err`) when the schema does not know one of them.
+        bool adopt_state(rmstate::DecodedFrame *frame, std::string *err) const;
         bool ready() const { return have_schema_; }
         const rmstate::Schema &schema() const { return schema_; }
         const CardNames &cards() const { return cards_; }

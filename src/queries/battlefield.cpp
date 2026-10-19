@@ -33,8 +33,7 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
 }
 
 std::vector<Entity> controlled_permanents_matching(
-Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities,
-Entity exclude_entity) {
+    Zone::Ownership player, const std::string &spec, const EntitySet &entities, Entity exclude_entity) {
     std::vector<Entity> out;
     MatchCtx ctx;
     ctx.controller = player;
@@ -51,7 +50,7 @@ Entity exclude_entity) {
 // stays on the battlefield and is logged as unattached, 704.5n; an unattached Aura goes to the
 // graveyard, 704.5m, which logs its own line). Contract documented at the declaration in
 // battlefield.h.
-void strip_permanent_components(Entity entity, const std::set<Entity> &entities) {
+void strip_permanent_components(Entity entity, const EntitySet &entities) {
     if (global_coordinator.entity_has_component<Permanent>(entity)) {
         // Every attachment link, whatever the attached permanent's zone or phasing: this clears
         // the relationship itself rather than querying the battlefield.
@@ -79,7 +78,7 @@ void strip_permanent_components(Entity entity, const std::set<Entity> &entities)
 // that have Ascend. Shared by the SBA preamble (every pass) and by mid-resolution
 // readers of the flag (the Condition$ Blessing gate), since "any time" means the
 // grant may not lag to the next state-based pass — see the header comment.
-void refresh_city_blessing(const std::set<Entity> &entities) {
+void refresh_city_blessing(const EntitySet &entities) {
     bool ascend_a = false, ascend_b = false;
     int perms_a = 0, perms_b = 0;
     for (auto entity : entities) {

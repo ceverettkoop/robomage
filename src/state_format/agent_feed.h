@@ -6,6 +6,7 @@
 
 #include "../classes/action.h"
 #include "../components/zone.h"
+#include "decode.h"
 
 // ── The in-process frame feed: RMSTATE frames for the agents in the engine process ───────────
 //
@@ -31,9 +32,11 @@ bool agent_feed_serves(Zone::Ownership viewer);
 
 // The frames of served seat `seat` for this decision (`actions` as offered): its once-per-match
 // frames, the first time it decides in the match, are appended to `match_frames`, and `state`
-// receives its STATE frame.
-void agent_feed_decision(Zone::Ownership seat, const std::vector<LegalAction> &actions,
-    std::vector<std::string> *match_frames, std::string *state);
+// receives its STATE frame. True when `decoded` received that frame decoded, as the knowledge
+// sidecar decoded it (knowledge_append_tables); false (the seat's knowledge off) leaves the decoding
+// to the caller.
+bool agent_feed_decision(Zone::Ownership seat, const std::vector<LegalAction> &actions,
+    std::vector<std::string> *match_frames, std::string *state, rmstate::DecodedFrame *decoded);
 // The match is over: served seat `seat`'s terminal STATE frame (no menu, its last events; the
 // stream's for the seat, state_format/stream.h) in `state`, after its once-per-match frames in
 // `match_frames` when it never decided in the match.

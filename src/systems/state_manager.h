@@ -1,16 +1,18 @@
 #ifndef STATE_MANAGER_H
 #define STATE_MANAGER_H
 
-#include "../ecs/system.h"
-#include "../ecs/entity.h"
-#include "../components/zone.h"
-#include "../components/static_ability.h"
-#include "../classes/action.h"
-#include "../classes/colors.h"
-#include <vector>
-#include <string>
 #include <memory>
 #include <set>
+#include <string>
+#include <vector>
+
+#include "../classes/action.h"
+#include "../classes/colors.h"
+#include "../components/static_ability.h"
+#include "../components/zone.h"
+#include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
+#include "../ecs/system.h"
 
 struct CardData;
 
@@ -56,8 +58,7 @@ extern std::vector<ActiveStatic> g_active_statics;
 // applier) or for an empty filter. This is the single, reusable "which permanents does this
 // static affect" step — the additive-P/T anthem path (It That Heralds the End) uses it, and
 // future Affected$-filter statics (AddAbility$, AddKeyword$ anthems) reuse it too.
-std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
-                                                   const std::set<Entity> &entities);
+std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities);
 
 // CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
 // effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?

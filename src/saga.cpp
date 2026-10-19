@@ -55,7 +55,7 @@ void decrement_saga_in_flight(const Ability &ab) {
     if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
 }
 
-void saga_put_precombat_lore_counters(Zone::Ownership active, const std::set<Entity> &entities) {
+void saga_put_precombat_lore_counters(Zone::Ownership active, const EntitySet &entities) {
     for (auto e : battlefield_permanents(entities, active)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         if (!card_is_saga(global_coordinator.GetComponent<CardData>(e))) continue;

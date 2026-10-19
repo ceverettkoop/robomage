@@ -12,7 +12,7 @@ int ability_resolutions_this_turn(Entity source) {
     return n ? *n : 0;
 }
 
-bool controller_has_metalcraft(Zone::Ownership controller, const std::set<Entity> &entities) {
+bool controller_has_metalcraft(Zone::Ownership controller, const EntitySet &entities) {
     int artifacts = 0;
     for (auto e : battlefield_permanents(entities, controller))
         if (type_set_has(global_coordinator.GetComponent<Permanent>(e).types, "Artifact"))
@@ -20,8 +20,7 @@ bool controller_has_metalcraft(Zone::Ownership controller, const std::set<Entity
     return false;
 }
 
-bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
-                              const std::set<Entity> &entities, Entity source) {
+bool activation_condition_met(const Ability &ab, Zone::Ownership controller, const EntitySet &entities, Entity source) {
     if (ab.def->activation_condition.empty()) return true;
     if (ab.def->activation_condition == "Metalcraft")
         return controller_has_metalcraft(controller, entities);
@@ -44,8 +43,7 @@ bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
     return false;
 }
 
-bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller,
-                             const std::set<Entity> &entities) {
+bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities) {
     if (!activation_condition_met(ab, controller, entities, source)) return false;
     if (ab.def->tap_cost) {
         if (!global_coordinator.entity_has_component<Permanent>(source)) return false;

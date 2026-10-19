@@ -521,10 +521,14 @@ int card_identity(Entity entity, Zone::Ownership /*viewer*/) {
 
 int physical_card_of(int card_id) {
     if (card_id < 0 || card_id >= TOKEN_VOCAB_BASE) return card_id;
+    // Per id once: the card scripts do not change while the process runs (card_data_by_name).
+    static std::vector<int> known(TOKEN_VOCAB_BASE, -2);
+    int &front = known[static_cast<size_t>(card_id)];
+    if (front != -2) return front;
     const CardData *cd = card_data_by_name(card_index_to_name(card_id));
-    if (cd == nullptr) return card_id;
-    const int front = card_name_to_index(cd->name);
-    return front >= 0 ? front : card_id;
+    const int idx = cd == nullptr ? -1 : card_name_to_index(cd->name);
+    front = idx >= 0 ? idx : card_id;
+    return front;
 }
 
 int visible_card_id(Entity entity, Zone::Ownership viewer) {

@@ -27,6 +27,8 @@ diag_draw_*.txt
 obj/*/*.d
 obj/*/*/*.d
 obj/*/*/*/*.d
+# make pgo's profile (the instrumented engine's .gcda files)
+obj/pgo-profile/
 obj/*.d
 corpus/
 # ...but the replay-regression corpus IS tracked (the CI replay tier diffs

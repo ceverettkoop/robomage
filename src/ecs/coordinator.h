@@ -18,7 +18,7 @@
 struct EcsSnapshot {
     std::vector<std::shared_ptr<IComponentArray>> component_arrays;
     EntityManager::EntityManagerState entity_state;
-    std::unordered_map<const char *, std::set<Entity>> system_entities;
+    std::unordered_map<const char *, EntitySet> system_entities;
     std::vector<Event> pending_events;
 };
 

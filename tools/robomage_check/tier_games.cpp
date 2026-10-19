@@ -27,6 +27,9 @@ struct GameJob {
 // Runs of each bench game and stage; each figure is the fastest (process timings on a shared machine
 // vary by 10-20% from run to run).
 const int BENCH_REPS = 2;
+// The training plan's target for the actor loop (engine, knowledge, featurizer; T7), in decisions/s
+// per core: an optimised build (bin/release/, bin/pgo/) below it gets a warning, never an error.
+const double BENCH_TARGET = 1500;
 
 // One stage of the bench tier: its workload's totals.
 struct BenchStage {
@@ -507,10 +510,22 @@ void tier_bench(const Options &opt, Report &rep) {
     // wall clock without its start understates it.
     const double feat =
         stages[3].featurize_s * 1e6 / static_cast<double>(stages[3].decisions ? stages[3].decisions : 1);
-    rep.info("  " + bench_pad(stages[3].label) + fmt1(stages[2].net_per_decision() + feat) + " us (+" + fmt1(feat) +
-             " us in process over " + std::to_string(stages[3].featurized) + " featurized decisions), start " +
-             fmt1(stages[3].start_ms()) + " ms (its inputs built); the stage's wall clock " +
-             fmt1(stages[3].net_per_decision()) + " us");
+    const double loop_us = stages[2].net_per_decision() + feat;
+    rep.info("  " + bench_pad(stages[3].label) + fmt1(loop_us) + " us (+" + fmt1(feat) + " us in process over " +
+             std::to_string(stages[3].featurized) + " featurized decisions), start " + fmt1(stages[3].start_ms()) +
+             " ms (its inputs built); the stage's wall clock " + fmt1(stages[3].net_per_decision()) + " us");
+    const double loop_rate = loop_us > 0 ? 1e6 / loop_us : 0;
+    const bool optimised =
+        opt.binary.find("/release/") != std::string::npos || opt.binary.find("/pgo/") != std::string::npos;
+    const double game_ms =
+        games ? loop_us * static_cast<double>(stages[2].decisions) / static_cast<double>(games) / 1e3 : 0;
+    rep.info("bench: the actor loop (engine, knowledge, featurizer) " + std::to_string(static_cast<long>(loop_rate)) +
+             " decisions/s, " + fmt1(game_ms) + " ms a game; target " +
+             std::to_string(static_cast<long>(BENCH_TARGET)) + " decisions/s (an optimised build)");
+    if (optimised && loop_rate < BENCH_TARGET)
+        rep.warn("bench", "the actor loop runs " + std::to_string(static_cast<long>(loop_rate)) +
+                              " decisions/s, below the target " + std::to_string(static_cast<long>(BENCH_TARGET)) +
+                              " (a loaded machine, or a regression: docs/ci.md bench)");
     bench_evaluation(opt, rep, pairs, dir);
     remove_tree(dir);
 }

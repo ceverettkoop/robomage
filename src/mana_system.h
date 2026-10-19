@@ -12,6 +12,7 @@
 #include "classes/colors.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
+#include "ecs/entity_set.h"
 #include "object_ref.h"
 
 class Orderer;
@@ -96,7 +97,7 @@ struct ManaPotential {
 // battlefield set the ML serializer already collected); every candidate is re-guarded
 // with is_battlefield_permanent(e, player), so phased-out permanents and the other
 // player's permanents are excluded here rather than at the call site.
-ManaPotential mana_potential(Zone::Ownership player, const std::set<Entity>& entities);
+ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities);
 
 // Check if a given mana pool can afford a cost (does not read player state)
 bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);

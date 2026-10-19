@@ -3,8 +3,10 @@
 
 #include <set>
 #include <vector>
+
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 #include "battlefield.h"
 
 // ── Equipment (CR 301.5) ──────────────────────────────────────────────────────
@@ -25,7 +27,6 @@ inline bool is_equip_candidate(Entity equipment, Entity host, Zone::Ownership pl
 // The creatures `player` controls that the Equipment `equipment` can be attached to by its equip
 // ability. Shared by the equip legal-action gate and the creature menu offered when it is
 // activated.
-std::vector<Entity> equip_candidates(Entity equipment, Zone::Ownership player,
-                                     const std::set<Entity> &entities);
+std::vector<Entity> equip_candidates(Entity equipment, Zone::Ownership player, const EntitySet &entities);
 
 #endif /* QUERIES_ATTACHMENTS_H */

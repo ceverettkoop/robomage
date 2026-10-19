@@ -5,6 +5,7 @@
 
 #include "components/zone.h"
 #include "ecs/entity.h"
+#include "ecs/entity_set.h"
 
 struct CardData;
 struct Ability;
@@ -29,7 +30,7 @@ void saga_add_lore_counters(Entity saga, int n);
 
 // CR 714.3c turn-based action: as `active`'s precombat main phase begins, put one lore counter on
 // each Saga they control. Called from the draw→first-main step transition.
-void saga_put_precombat_lore_counters(Zone::Ownership active, const std::set<Entity> &entities);
+void saga_put_precombat_lore_counters(Zone::Ownership active, const EntitySet &entities);
 
 // CR 714.4 sacrifice-gate release: when a Saga chapter ability leaves the stack — whether it
 // finished resolving OR was removed without resolving (countered by Stifle, fizzled on an illegal

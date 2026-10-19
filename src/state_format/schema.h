@@ -289,6 +289,8 @@ struct TableBuf {
 class FrameWriter {
     public:
         FrameWriter(FrameKind kind, Viewer viewer, uint64_t schema_hash);
+        FrameWriter(const FrameWriter &) = delete;
+        FrameWriter &operator=(const FrameWriter &) = delete;
 
         // One row being written; values go in column order. The row is complete when the Row
         // object is destroyed.
@@ -313,6 +315,7 @@ class FrameWriter {
                 void put(Storage s, uint64_t bits);
                 TableBuf *buf_;
                 const TableDef *def_;
+                size_t at_ = 0;  // the row's first byte in buf_->bytes (sized for the whole row)
                 size_t col_ = 0;
         };
 
@@ -329,6 +332,9 @@ class FrameWriter {
         Viewer viewer_;
         uint64_t schema_hash_;
         std::map<uint16_t, TableBuf> tables_;
+        // tables_'s entries by id (a map's nodes stay put), filled as rows are first written.
+        static constexpr uint16_t BUF_CACHE = 128;
+        TableBuf *buf_cache_[BUF_CACHE] = {};
 };
 
 // 64-bit FNV-1a.

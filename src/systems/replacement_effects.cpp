@@ -626,7 +626,7 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
                                                    std::vector<DrawReplacementOption> *opts) {
     opts->clear();
     std::vector<LegalAction> actions;
-    const std::set<Entity> &entities = zoned_entities();
+    const EntitySet &entities = zoned_entities();
     size_t lib = zone_objects(entities, Zone::LIBRARY, player).size();
     for (Entity e : zone_objects(entities, Zone::GRAVEYARD, player)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;

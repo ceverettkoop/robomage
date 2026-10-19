@@ -124,6 +124,12 @@ DecodeResult split_frame_blocks(
 // appended block's id is not above every id the frame holds.
 DecodeResult append_frame_blocks(std::string *payload, const std::string &blocks, uint32_t n);
 
+// Decodes `n` table blocks (laid out as split_frame_blocks gives them) against `schema` and adds
+// them to `frame`, decoded from the frame they were appended to (append_frame_blocks): `frame` is
+// then what decoding the whole frame gives. Refused when a block does not decode, holds text, or
+// is not above every table `frame` holds.
+DecodeResult decode_appended_blocks(const std::string &blocks, uint32_t n, const Schema &schema, DecodedFrame *frame);
+
 // Reads stream records ("RMSTATE <nbytes>\n" + payload, §9) from a file or pipe.
 class RecordReader {
     public:

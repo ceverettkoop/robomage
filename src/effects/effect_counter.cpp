@@ -38,7 +38,7 @@ static Zone::ZoneValue present_zone_value(const std::string &zone) {
 // replacement fires now), reading the caster's zone at this moment. Returns true iff some
 // CANT_BE_COUNTERED replacement on the spell's own card carries an IsPresent$/PresentZone$/
 // PresentCompare$ gate that currently holds. `entities` is the iterating system's mEntities.
-static bool spell_uncounterable_by_own_condition(Entity spell, const std::set<Entity> &entities) {
+static bool spell_uncounterable_by_own_condition(Entity spell, const EntitySet &entities) {
     if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
     if (!global_coordinator.entity_has_component<Spell>(spell)) return false;
     Zone::Ownership caster = global_coordinator.GetComponent<Spell>(spell).caster;

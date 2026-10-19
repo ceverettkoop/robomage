@@ -3,10 +3,12 @@
 
 #include <set>
 #include <string>
+
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 
 struct Ability;
 struct CardData;
@@ -46,7 +48,7 @@ bool spell_has_variable_life_cost(const CardData &cd);
 // Permanent controller for the generic filter matcher to read (its YouCtrl token is a no-op off
 // the battlefield). Consulted at counter-resolution time; reusable by any future can't-be-countered
 // permanent. `entities` is the iterating system's mEntities (e.g. orderer->mEntities).
-bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entities);
+bool spell_uncounterable_by_static(Entity spell, const EntitySet &entities);
 
 // True if EVERY spell `player` controls is protected from being countered by an effect covering
 // the player as a whole (CR 614.13/CantHappen, "spells you control can't be countered"): a
@@ -58,7 +60,7 @@ bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entitie
 // spell). Single source for the counter-resolution check on a spell and the observation's
 // spells_cant_be_countered flag. `entities` must hold the battlefield permanents (e.g. the
 // iterating system's mEntities). Defined in spells.cpp.
-bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities);
+bool player_spells_cant_be_countered(Zone::Ownership player, const EntitySet &entities);
 
 // ── X, Converge and Gift of the spell or ability in hand ──────────────────────
 // The value Count$xPaid / cmcLEX read (CR 107.3): the X announced for the spell being cast

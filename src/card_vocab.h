@@ -338,7 +338,14 @@ inline int card_name_to_index(const std::string &name) {
             m[ascii_fold_card_name(card_vocab_entries[i].name)] = card_vocab_entries[i].index;
         return m;
     }();
-    auto it = vocab.find(ascii_fold_card_name(name));
+    // Folding leaves an ASCII name as it is.
+    bool ascii = true;
+    for (char c : name)
+        if (static_cast<unsigned char>(c) >= 0x80) {
+            ascii = false;
+            break;
+        }
+    auto it = ascii ? vocab.find(name) : vocab.find(ascii_fold_card_name(name));
     return it != vocab.end() ? it->second : -1;
 }
 

@@ -11,7 +11,7 @@ bool is_unblocked_attacker(Entity e) {
     return is_attacking_creature(e) && !global_coordinator.GetComponent<Creature>(e).is_blocked;
 }
 
-std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &entities) {
+std::vector<Entity> blockers_of(Entity attacker, const EntitySet &entities) {
     std::vector<Entity> out;
     for (auto b : entities)
         if (is_blocking_creature(b) &&
