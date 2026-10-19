@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "agents/driver.h"
+#include "agents/trajectory.h"
 #include "card_vocab.h"
 #include "classes/game.h"
 #include "choice_labels.h"
@@ -292,6 +293,7 @@ static bool parse_logged_choice(const std::string &token, int *choice) {
 }
 
 void InputLogger::end_run_by_quit() {
+    trajectory_end_run(featurize::EndReason::QUIT);
     if (log_file.is_open()) {
         log_file << QUIT_MARKER << std::endl;
         log_file.flush();
@@ -310,6 +312,7 @@ void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int cho
 int InputLogger::accept_machine_choice(const std::vector<LegalAction> &actions, int choice) {
     if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
         commit_choice(actions, choice);
+        last_reply = choice;
         return apply_concede_input(choice);
     }
     if (choice == -1 && !actions.empty()) {
@@ -317,6 +320,7 @@ int InputLogger::accept_machine_choice(const std::vector<LegalAction> &actions, 
     }
     check_machine_choice(actions, choice);
     commit_choice(actions, choice);
+    last_reply = choice;
     return choice;
 }
 
@@ -392,10 +396,11 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
         end_run_at_decision_cap(decisions_read);
     ++decisions_read;
 
-    // The in-process agents' frames for this decision, and its --trace-decisions block.
-    const bool traced = agents_begin_decision(actions, decisions_read);
+    // The in-process agents' frames for this decision, its --trace-decisions block and the
+    // trajectory writer's record (agents/driver.h).
+    agents_begin_decision(actions, decisions_read);
     const int choice = read_choice(actions, seat);
-    if (traced) agents_trace_choice(choice);
+    agents_end_decision(choice, last_reply);
     return choice;
 }
 
@@ -419,6 +424,7 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
         if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
             game_log("(REPLAY) [T%zu | %s] Input: %d (concede)\n", cur_game.turn_state.turn,
                      step_to_string(cur_game.turn_state.step), choice);
+            last_reply = choice;
             return apply_concede_input(choice);
         }
         // Remap -1 (old confirm sentinel) to last slot for old replay file compatibility
@@ -436,6 +442,7 @@ int InputLogger::read_choice(const std::vector<LegalAction> &actions, Zone::Owne
         Zone::Ownership priority = priority_seat();
         game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn_state.turn,
             step_to_string(cur_game.turn_state.step), player_name(priority).c_str(), choice);
+        last_reply = choice;
         return choice;
     }
 

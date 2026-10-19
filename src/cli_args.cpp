@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "agents/game_seed.h"
+#include "agents/trajectory.h"
 #include "cli_output.h"
 #include "components/zone.h"
 #include "error.h"
@@ -213,6 +214,11 @@ static const CliOption OPTIONS[] = {
     // Featurize every decision an in-process agent seat makes and drop the tensors (the bench tier's
     // featurizer stage; agents/driver.h).
     {"--featurize-seats", nullptr, false, false, [](const char *) { featurize_seats = true; }, nullptr},
+    // Write every game's trajectory episode (agents/trajectory.h): the directory, the recorded
+    // seats and the learner-side omniscient featurization.
+    {"--trajectory-out", nullptr, true, false, [](const char *v) { trajectory_out_dir = v; }, nullptr},
+    {"--trajectory-seats", nullptr, true, false, [](const char *v) { trajectory_seats_option = v; }, nullptr},
+    {"--trajectory-omniscient", nullptr, false, false, [](const char *) { trajectory_omniscient = true; }, nullptr},
     // Check the decks' cards against the card vocabulary and their scripts instead of playing
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},

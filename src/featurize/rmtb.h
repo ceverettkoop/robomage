@@ -12,14 +12,16 @@
 // The meta is compact UTF-8 JSON, padded with spaces to a multiple of 8 bytes (the meta length
 // counts the padding), with its keys in this fixed order, each optional key left out when unset:
 //
-//   kind, vocab_hash, spec_hash, model, pooling, norm_version, rows_meta, arrays
+//   kind, vocab_hash, spec_hash, model, pooling, norm_version, rows_meta, attrs, arrays
 //
 // so the same file always encodes to the same bytes. `arrays` lists every array in file order as
 // {"name","dtype","shape":[…],"offset"[,"columns":[…]]}: its values are row-major little-endian
-// values of dtype (f32, f16 = IEEE binary16, i64, i32, u16, u8) at `offset` bytes from the start
+// values of dtype (f32, f16 = IEEE binary16, i64, i32, i16, u16, u8) at `offset` bytes from the start
 // of the data section (12 + meta length), each offset the previous array's end rounded up to a
 // multiple of 8 (zero padding between), the file ending with the last array. `columns` (optional)
 // names the last dimension's entries. Ragged data is a values array plus an i64 offsets array.
+// `attrs` (optional) is a JSON object of named scalars, each a string or an integer, in the order
+// the writer gives them (a file kind's own header fields: the trajectory episode's, episode.h).
 // python/rmtb.py reads the same layout with the standard library.
 
 namespace featurize {
@@ -29,8 +31,17 @@ enum class Dtype {
     F16,
     I64,
     I32,
+    I16,
     U16,
     U8
+};
+
+// One `attrs` member: a string or an integer.
+struct RmtbAttr {
+        std::string key;
+        bool is_int = false;
+        int64_t i = 0;
+        std::string s;
 };
 
 // A rows_meta entry of the text table: a present row's vocab id and the FNV-1a 64 of its
@@ -63,9 +74,16 @@ struct RmtbFile {
         int64_t norm_version = -1;  // the text table's normalisation version; -1 = absent
         bool has_rows_meta = false;
         std::vector<RmtbRowMeta> rows_meta;  // ascending id
-        std::vector<RmtbArray> arrays;       // file order
+        bool has_attrs = false;
+        std::vector<RmtbAttr> attrs;    // file order
+        std::vector<RmtbArray> arrays;  // file order
         // The array `name`, or nullptr.
         const RmtbArray *find(const std::string &name) const;
+        // The attribute `key`, or nullptr.
+        const RmtbAttr *attr(const std::string &key) const;
+        // Appends an attribute (has_attrs set).
+        void set_attr(const std::string &key, int64_t v);
+        void set_attr(const std::string &key, const std::string &v);
 };
 
 // A value's width in bytes, and the dtype's name in the meta.
@@ -77,7 +95,7 @@ const char *dtype_name(Dtype d);
 uint16_t f32_to_f16(float v);
 float f16_to_f32(uint16_t h);
 
-// An array of `values` stored as f32 or f16 (`dtype`), or as i64, i32, u16 or u8 (`dtype`, each
+// An array of `values` stored as f32 or f16 (`dtype`), or as i64, i32, i16, u16 or u8 (`dtype`, each
 // value cast to that width). Empty data (and so a refused encode) when the values are not shape's
 // count many.
 RmtbArray rmtb_floats(

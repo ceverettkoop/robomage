@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include "agents/driver.h"
+#include "agents/trajectory.h"
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "cli_args.h"
@@ -60,6 +61,7 @@ static void game_loop() {
         // the log replays without re-supplying decks or flags.
         DecisionLogHeader hdr;
         record_header_flags(hdr);
+        trajectory_configure_decision_log(seed);
         if (!decision_log_path.empty()) InputLogger::instance().set_log_path(decision_log_path);
         hdr.deck_a_name = deck_a_name;
         hdr.deck_a_text = DEFAULT_DECK_ONE.raw_text;
@@ -82,7 +84,9 @@ static void game_loop() {
         play_bo3_match(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, seed);
     } else {
         auto sys = init_ecs();
-        print_game_result(1, play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed));
+        const int winner = play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed);
+        print_game_result(1, winner);
+        trajectory_game_end(winner);
     }
 }
 

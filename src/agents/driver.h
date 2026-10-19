@@ -20,6 +20,8 @@
 //                      state_format/cards_file.h) and the tensors dropped; at exit
 //                      "FEATURIZE-SEATS: <n> decisions in <s> s". Play is unchanged: the bench
 //                      tier's featurizer stage
+// The trajectory writer (--trajectory-out, agents/trajectory.h) is installed here too: the seats it
+// records are served by the in-process feed whatever decides them.
 // Any of the first three implies --machine; a seat with no agent and no script keeps its own
 // input path: the RMSTATE stream on stdin/stdout, or, for a human seat (cli_args.cpp: the
 // --player seat, or every seat of a run without --machine), the CLI (cli/human.h), installed
@@ -30,16 +32,19 @@
 // "resolved --actions: <i,i,...>" (every reply it gave) and, when some of its specs were never
 // applied, "SCRIPT INCOMPLETE: <n> --play spec(s) never applied: <specs>".
 
-// Validates the options and installs the agents and the decision hook, before the match: the
-// shared generator is seeded with the game seed (--game-seed) when given, else `engine_seed`.
-// Fatal on an unknown spec or a conflicting option.
+// Validates the options and installs the agents, the decision hook and the trajectory writer,
+// before the match: the shared generator is seeded with the game seed (--game-seed) when given,
+// else `engine_seed`. Fatal on an unknown spec or a conflicting option.
 void agents_install(unsigned int engine_seed);
 
 // Called as each decision is read (InputLogger::choose), after the frame writers and before the
-// input is read: for a seat an agent decides, or under --trace-decisions, builds and decodes the
-// deciding seat's frames and prints the trace block. Returns whether the decision is traced.
-bool agents_begin_decision(const std::vector<LegalAction> &actions, size_t number);
-// After a traced decision: the choice line.
-void agents_trace_choice(int choice);
+// input is read: for a seat an agent decides, a seat the trajectory writer records
+// (agents/trajectory.h) or under --trace-decisions, builds and decodes the deciding seat's frames
+// and prints the trace block; then hands the decision to the trajectory writer.
+void agents_begin_decision(const std::vector<LegalAction> &actions, size_t number);
+// After the decision: `choice` the action index taken (the choice line of a traced decision),
+// `reply` what the decision log holds for it (a menu row or a concession sentinel), for the
+// trajectory writer's record.
+void agents_end_decision(int choice, int reply);
 
 #endif /* AGENTS_DRIVER_H */

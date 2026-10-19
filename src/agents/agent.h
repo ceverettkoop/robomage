@@ -23,7 +23,8 @@
 // Specs (--agent-a / --agent-b; make_agent):
 //
 //   first (auto)        always row 0 (pass priority, the first choice)
-//   random              a uniform row: random.randrange(n) on the shared generator
+//   random              a uniform row: random.randrange(n) on the shared generator (its behaviour
+//                       distribution: uniform)
 //   actions:<i,i,...>   the listed replies for this seat's decisions in order (a concession
 //                       sentinel -2 / -3 is sent as is), then row 0
 //   play:<specs>        the --play resolver (agents/play_spec.h) on this seat's decisions only,
@@ -43,6 +44,10 @@
 // drivers seed their global `random` before each match. A seat's agent and the other seat's draw
 // from the same stream in decision order, as the Python explore tiers of both seats do.
 
+namespace featurize {
+struct Tensors;
+}
+
 namespace agents {
 
 // One decision of the seat an agent decides.
@@ -59,12 +64,27 @@ constexpr int AGENT_FAILED = -1000;
 // run exits with status 0.
 constexpr int AGENT_QUIT = -1001;
 
-// What a policy agent sampled its last decision from: the exact distribution over every menu row
-// (after temperature and any projection; one-hot at the row an argmax took) and the version of the
-// policy that gave it, for a trajectory writer recording the behaviour policy.
+// One policy's evaluation of a decision, as a policy agent received it (the nn: agent's, per
+// requested policy: the first is the one sampled from).
+struct PolicyEvaluation {
+        int64_t id = 0;  // the server's policy id (0 in process)
+        uint64_t version = 0;
+        float value = 0;
+        std::vector<float> log_pi;  // over the menu rows
+};
+
+// What a behaviour agent sampled its last decision from: the exact distribution over every menu
+// row (a policy's after temperature and any projection, one-hot at the row an argmax took; the
+// random agent's uniform one) and the version of the policy that gave it, for the trajectory writer
+// (agents/trajectory.h) recording the behaviour policy. A policy agent also gives its evaluations
+// and the tensors it featurized the decision's frame into (with the spec's hash), which the writer
+// reuses instead of featurizing the frame again.
 struct Behaviour {
         std::vector<double> mu;
         uint64_t policy_version = 0;
+        std::vector<PolicyEvaluation> policies;
+        const featurize::Tensors *tensors = nullptr;
+        uint64_t spec_hash = 0;
 };
 
 class Agent {
@@ -100,11 +120,14 @@ class ActionsAgent : public Agent {
         explicit ActionsAgent(std::vector<int> actions, Agent *player_a = nullptr, Agent *player_b = nullptr);
         int decide(const Decision &d) override;
         std::string label() const override { return "actions"; }
+        // The behaviour of the seat's agent when it decided the last decision, else nullptr.
+        const Behaviour *last_behaviour() const override { return delegate_ ? delegate_->last_behaviour() : nullptr; }
 
     private:
         std::vector<int> actions_;
         size_t next_ = 0;
         Agent *players_[2];
+        const Agent *delegate_ = nullptr;  // the seat's agent that decided the last decision
 };
 
 // Parses a comma-separated integer list ("0,1,-2"); false on a bad entry.

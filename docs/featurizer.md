@@ -214,7 +214,7 @@ elsewhere and at the none row. Committed (§5).
 ### 4.4 Files: RMTB
 
 Every exported table is an RMTB file of one or more **named arrays**, readable with any language's
-standard library (the trajectory files of `docs/rnad_training_plan.md` reuse it):
+standard library (the trajectory episodes, `docs/trajectory_format.md`, reuse it):
 
 | Part | Layout |
 |---|---|
@@ -228,21 +228,23 @@ Meta keys, in this order, each left out when it does not apply: `kind` (`card`, 
 `ability`, `part`, `tensors`, …), `vocab_hash` (FNV-1a 64 over the vocab's `(id, name)` pairs in
 ascending id, each pair as the id's u32 little-endian bytes, the name's UTF-8 bytes and a 0 byte;
 16 hex digits), `spec_hash` (§6), and for the text table `model` (the encoder's repository and
-pinned commit, `<repo>@<commit>`), `pooling` (`cls`, `mean`), `norm_version` (the text
-normalisation, §5) and `rows_meta` (per present row, ascending: `{"id": <vocab id>, "hash": <FNV-1a
-64 of its normalised text, 16 hex digits>}`); then `arrays`: one
+pinned commit, `<repo>@<commit>`; an episode carries it too), `pooling` (`cls`, `mean`),
+`norm_version` (the text normalisation, §5) and `rows_meta` (per present row, ascending: `{"id":
+<vocab id>, "hash": <FNV-1a 64 of its normalised text, 16 hex digits>}`); `attrs`, an object of
+named strings and integers in the writer's order (a file kind's own header fields: an episode's,
+`docs/trajectory_format.md` §3.1); then `arrays`: one
 `{"name", "dtype", "shape": [...], "offset"[, "columns": [...]]}` per array in file order (`shape`
 of any rank, `[]` a scalar; `offset` from the start of the data, the previous array's end rounded
 up to a multiple of 8; `columns`, optional, names the last dimension's entries). The same content
 always encodes to the same bytes.
 
-Dtypes: `f32`, `f16` (IEEE binary16, written with round-to-nearest-even), `i64`, `i32`, `u16`,
-`u8`. Ragged data is two arrays, the values and an `i64` offsets array (`n + 1` entries; row `r`
+Dtypes: `f32`, `f16` (IEEE binary16, written with round-to-nearest-even), `i64`, `i32`, `i16`,
+`u16`, `u8`. Ragged data is two arrays, the values and an `i64` offsets array (`n + 1` entries; row `r`
 is `values[offsets[r]:offsets[r+1]]`), with no padding on disk. The text table is one array,
 `vectors` `[N_CARD_TYPES + 1, hidden]` f32, with `rows_meta` in the meta.
 
 Readers: `src/featurize/rmtb.{h,cpp}` (C++, std only; also the writer and the f16 conversions),
-`python/rmtb.py` (Python's `struct`, f16 as format `e`); numpy reads an array with
+`python/rmtb.py` (Python's `struct`, f16 as format `e`, i16 as `h`); numpy reads an array with
 `np.frombuffer(buf, dtype, count, offset=12 + meta_length + array_offset)`.
 
 ## 5. The text table and `make`
@@ -415,8 +417,10 @@ loudly. `nn:remote:<endpoint>` takes the same keys plus `policies=<id>,…` (def
 `timeout=<s>` (default 60) and `shm=<MiB>` (the request area, default 32), and needs no model file;
 the featurizer's inputs are built as for `nn:<model>`. A sideboarding decision goes through the
 same path as any other. It keeps the exact distribution it sampled from over every menu row
-(after temperature and any projection; one-hot under `argmax`) and the policy version for its last decision (`Agent::last_behaviour`, `agents/agent.h`), for the
-training plan's trajectory writer. The featurizer's inputs are built once, before the match, in
+(after temperature and any projection; one-hot under `argmax`), the policy version, every
+requested policy's evaluation and the tensors it featurized, for its last decision
+(`Agent::last_behaviour`, `agents/agent.h`), for the trajectory writer (`--trajectory-out`,
+`docs/trajectory_format.md`), which reuses those tensors rather than featurizing the frame again. The featurizer's inputs are built once, before the match, in
 process from the engine (`load_engine_featurization`, `src/state_format/cards_file.h`: the
 whole-vocab records `--cards-frame` writes and the committed text table), so they are what
 `rmfeat` builds from that file; at each decision the agent reads only the seat's decoded `STATE`

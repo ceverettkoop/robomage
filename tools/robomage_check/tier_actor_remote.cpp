@@ -11,6 +11,7 @@
 #include "actor.h"
 #include "proc.h"
 #include "scan.h"
+#include "traj.h"
 #include "util.h"
 
 namespace {
@@ -57,6 +58,29 @@ static void check_kill(const rmcheck::Options &opt, rmcheck::Report &rep, const 
     const std::string &rmserve, const std::string &dir, const RemoteGame &g);
 static bool python_game(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
     const std::string &dir, const RemoteGame &g);
+static void check_remote_trajectories(
+    rmcheck::Report &rep, const std::string &dir, const std::string &evals_a, const std::string &evals_b);
+
+// Remote game 0's trajectory episodes (--trajectory-out) against its seats' evals= files: seat A
+// (policies=0,1) records both policies' values and log π, seat B its one, each step's μ and reply.
+static void check_remote_trajectories(
+    rmcheck::Report &rep, const std::string &dir, const std::string &evals_a, const std::string &evals_b) {
+    std::vector<rmcheck::EpisodeFile> eps;
+    std::string err;
+    if (!rmcheck::read_episodes(dir, &eps, &err) || eps.empty()) {
+        rep.error("actor", "remote game 0's trajectory episodes: " + (err.empty() ? "none in " + dir : err));
+        return;
+    }
+    size_t a = 0, b = 0;
+    std::vector<std::string> fails = rmcheck::check_against_evals(eps, 0, evals_a, &a);
+    const std::vector<std::string> fb = rmcheck::check_against_evals(eps, 1, evals_b, &b);
+    fails.insert(fails.end(), fb.begin(), fb.end());
+    for (const std::string &f : fails) rep.error("actor", "remote trajectories: " + f);
+    if (fails.empty())
+        rep.info("remote trajectories: " + std::to_string(a + b) +
+                 " steps carry the evals= files' mu, replies and every requested policy's log pi and value (seat A "
+                 "policies 0,1)");
+}
 
 static rmcheck::ProcSpec game_spec(const rmcheck::Options &opt, const rmcheck::ActorSetup &a, const RemoteGame &g,
     const std::string &spec_a, const std::string &spec_b, const std::string &rmlog) {
@@ -360,11 +384,14 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a) {
         }
     });
     const double t0 = now_seconds();
+    const std::string traj_dir = path_join(dir, "remote_0_traj");
+    remove_tree(traj_dir);
     parallel_for(n, static_cast<int>(n), [&](size_t i) {
         const std::string base = "nn:remote:" + sock + ":argmax:stats:timeout=300";
-        remote[i] =
-            run_process(game_spec(opt, a, games[i], base + ":policies=0,1:evals=" + file("remote", i, "_A.rmtb"),
-                base + ":evals=" + file("remote", i, "_B.rmtb"), file("remote", i, ".rmlog")));
+        ProcSpec spec = game_spec(opt, a, games[i], base + ":policies=0,1:evals=" + file("remote", i, "_A.rmtb"),
+            base + ":evals=" + file("remote", i, "_B.rmtb"), file("remote", i, ".rmlog"));
+        if (i == 0) spec.argv.insert(spec.argv.end(), {"--trajectory-out", traj_dir});
+        remote[i] = run_process(spec);
     });
     const double wall = now_seconds() - t0;
     const ProcResult s = rmcheck::stop_server(&server, SIGTERM);
@@ -414,6 +441,7 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a) {
                  " evaluations the largest differences: logits " + fmt_g(logits) + ", log pi " + fmt_g(log_pi) +
                  ", value " + fmt_g(value) + "; policy 1 (.pt2, version " + POLICY1_VERSION +
                  ") vs in-process TorchScript " + fmt_g(pt2));
+    check_remote_trajectories(rep, traj_dir, file("remote", 0, "_A.rmtb"), file("remote", 0, "_B.rmtb"));
     const std::string batches = stat_field(s.err, "RMSERVE-STATS:", "batches"),
                       largest = stat_field(s.err, "RMSERVE-STATS:", "max_batch");
     if (std::atol(largest.c_str()) < 2)

@@ -18,6 +18,7 @@
 #include "agent.h"
 #include "play_spec.h"
 #include "trace.h"
+#include "trajectory.h"
 
 namespace {
 
@@ -37,6 +38,7 @@ struct AgentRun {
         rmstate::DecodedFrame frame;
         std::optional<agents::DecisionView> view;
         bool traced = false;
+        const agents::Agent *decider = nullptr;  // the agent that decided the decision (decide())
         // --featurize-seats: the inputs, the last tensors and the totals.
         std::unique_ptr<featurize::Featurization> featurization;
         featurize::Tensors tensors;
@@ -55,6 +57,7 @@ static void report_script();
 static void report_featurized();
 static void featurize_decision();
 static void print_line(const std::string &line);
+static void seat_specs(std::string out[2]);
 
 static int seat_index(Zone::Ownership seat) {
     return seat == Zone::PLAYER_A ? 0 : seat == Zone::PLAYER_B ? 1 : -1;
@@ -76,7 +79,10 @@ void agents_install(unsigned int engine_seed) {
     const bool scripted = play_script_given || actions_script_given;
     const bool any_agent = !agent_a_spec.empty() || !agent_b_spec.empty() || scripted;
     const bool any_human = human_seat[0] || human_seat[1];
-    if (!any_agent && !any_human && !trace_decisions) return;
+    if (!any_agent && !any_human && !trace_decisions && !trajectory_enabled()) {
+        trajectory_install(engine_seed, nullptr);
+        return;
+    }
     if (any_agent && replay_mode)
         fatal_error("--agent-a/--agent-b, --play and --actions cannot be combined with --replay (the log decides)");
     if (play_script_given && actions_script_given) fatal_error("--play and --actions are exclusive");
@@ -117,8 +123,12 @@ void agents_install(unsigned int engine_seed) {
         if (!load_engine_featurization(run->featurization.get(), &err)) fatal_error("--featurize-seats: " + err);
         std::atexit(report_featurized);
     }
+    std::string specs_for_trajectory[2];
+    seat_specs(specs_for_trajectory);
+    trajectory_install(engine_seed, specs_for_trajectory);
     for (int s = 0; s < 2; ++s)
-        if (run->decides[s] || trace_decisions) agent_feed_serve(s == 0 ? Zone::PLAYER_A : Zone::PLAYER_B);
+        if (run->decides[s] || trace_decisions || trajectory_records_seat(s))
+            agent_feed_serve(s == 0 ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run->decides[0] || run->decides[1])
         InputLogger::instance().set_input_provider(decide, run->decides[0], run->decides[1], true);
     if (any_human && !InputLogger::instance().log_file_name().empty()) {
@@ -127,13 +137,17 @@ void agents_install(unsigned int engine_seed) {
     }
 }
 
-bool agents_begin_decision(const std::vector<LegalAction> &actions, size_t number) {
-    if (!run) return false;
+void agents_begin_decision(const std::vector<LegalAction> &actions, size_t number) {
+    if (!run) return;
     run->view.reset();
     run->traced = false;
+    run->decider = nullptr;
     const Zone::Ownership seat = rmstate_deciding_seat();
     const int s = seat_index(seat);
-    if (s < 0 || !agent_feed_serves(seat)) return false;
+    if (s < 0 || !agent_feed_serves(seat)) {
+        trajectory_begin_decision(s, nullptr, actions);
+        return;
+    }
     std::vector<std::string> match_frames;
     std::string state;
     agent_feed_decision(seat, actions, &match_frames, &state);
@@ -146,17 +160,20 @@ bool agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     run->number = number;
     run->view.emplace(stream, run->frame, s);
     if (run->featurization && run->decides[s]) featurize_decision();
-    if (!trace_decisions) return false;
+    trajectory_begin_decision(s, &run->frame, actions);
+    if (!trace_decisions) return;
     std::fflush(stdout);
     for (const std::string &line : agents::trace_decision_lines(*run->view, number)) print_line(line);
     run->traced = true;
-    return true;
 }
 
-void agents_trace_choice(int choice) {
-    if (!run || !run->traced || !run->view) return;
-    print_line(agents::trace_choice_line(*run->view, choice));
-    run->traced = false;
+void agents_end_decision(int choice, int reply) {
+    if (!run) return;
+    if (run->traced && run->view) {
+        print_line(agents::trace_choice_line(*run->view, choice));
+        run->traced = false;
+    }
+    trajectory_end_decision(reply, run->decider);
 }
 
 // The decision hook: the deciding seat's agent (or the script) on the view agents_begin_decision
@@ -169,10 +186,27 @@ static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions)
                            : run->seat_agent[s] ? run->seat_agent[s].get()
                                                 : run->human[s].get();
     const agents::Decision d{*run->view, run->number > 0 ? run->number - 1 : 0};
+    run->decider = agent;
     const int choice = agent->decide(d);
     if (choice == agents::AGENT_FAILED) fatal_error(agent->failure());
     if (choice == agents::AGENT_QUIT) InputLogger::instance().end_run_by_quit();
     return choice;
+}
+
+// Each seat's decider as the trajectory writer's header names it: the --replay log, the --play /
+// --actions script (then the seat's agent), the seat's agent spec, a human seat, or the RMSTATE
+// stream.
+static void seat_specs(std::string out[2]) {
+    const std::string *specs[2] = {&agent_a_spec, &agent_b_spec};
+    for (int s = 0; s < 2; ++s) {
+        const std::string own = !specs[s]->empty() ? *specs[s] : human_seat[s] ? "human" : "stream";
+        if (replay_mode)
+            out[s] = "replay";
+        else if (play_script_given || actions_script_given)
+            out[s] = std::string(play_script_given ? "play" : "actions") + "+" + (specs[s]->empty() ? "first" : own);
+        else
+            out[s] = own;
+    }
 }
 
 // --featurize-seats: the decision's frame through the actor entry point, timed.

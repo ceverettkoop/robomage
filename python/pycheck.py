@@ -31,6 +31,11 @@ playing does not:
             hash (FNV-1a 64 of ``spec.json``'s bytes) and vocab hash, and the shapes and indices
             agree with the spec (the tables' rows, widths and column names, the key list, F, C, K
             and Q, every relation, action, card and ability index in range).
+  traj      ``python/rmtraj.py`` reads the trajectory episodes ``robomage_check``'s traj tier lists
+            (``--traj-expected FILE``: per episode its path, each step's seat, decision key, reply,
+            μ, policy version, teacher label and evaluations as the C++ reader read them, and
+            tensors files holding the C++ reader's expansion of every step's tensors, and of the
+            omniscient tensors and the targets of an omniscient episode) to exactly those values.
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -40,7 +45,7 @@ Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: �
 exit 1 on any finding::
 
     python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,selfkill,driver]
-                              [--rmtb-samples FILE] [--featurize-expected FILE]
+                              [--rmtb-samples FILE] [--featurize-expected FILE] [--traj-expected FILE]
 """
 from __future__ import annotations
 
@@ -61,8 +66,9 @@ if _HERE not in sys.path:
 import rm_driver  # noqa: E402
 import rmstate  # noqa: E402
 import rmtb  # noqa: E402
+import rmtraj  # noqa: E402
 
-PARTS = ("decode", "refusals", "selfkill", "driver", "rmtb", "featurize")
+PARTS = ("decode", "refusals", "selfkill", "driver", "rmtb", "featurize", "traj")
 # The committed oracle-text table (docs/featurizer.md §5).
 TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
@@ -396,7 +402,7 @@ def check_rmtb(samples):
 
 # ── The featurizer's files ────────────────────────────────────────────────────────────────────
 
-_PACK = {"f32": "f", "f16": "e", "i64": "q", "i32": "i", "u16": "H", "u8": "B"}
+_PACK = {"f32": "f", "f16": "e", "i64": "q", "i32": "i", "i16": "h", "u16": "H", "u8": "B"}
 
 
 def _fnv1a64(data):
@@ -515,7 +521,78 @@ def check_featurize(expected_path):
     return fails
 
 
-def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected=None):
+# ── Trajectory episodes ───────────────────────────────────────────────────────────────────────
+
+def _f32(x):
+    """``x`` rounded to the nearest float32 (the stored μ, values and log π)."""
+    return struct.unpack("<f", struct.pack("<f", float(x)))[0]
+
+
+def _decision_slices(arrays, names, d):
+    """Decision ``d``'s values of each ragged array of a tensors or targets file."""
+    out = {}
+    for name in names:
+        a, off = arrays[name], arrays[name + "_offsets"].values
+        width = a.shape[1] if len(a.shape) == 2 else 1
+        out[name] = a.values[off[d] * width:off[d + 1] * width]
+    return out
+
+
+def _episode_fails(want):
+    name = os.path.basename(want["path"])
+    try:
+        ep = rmtraj.read(want["path"])
+    except (OSError, ValueError, KeyError) as e:
+        return [f"traj: {name}: {e}"]
+    fails = []
+    if len(ep.steps) != len(want["steps"]):
+        return [f"traj: {name}: {len(ep.steps)} steps, the C++ reader {len(want['steps'])}"]
+    _, tensors = rmtb.read(want["tensors"])
+    omni = rmtb.read(want["omniscient"])[1] if want.get("omniscient") else None
+    targets = rmtb.read(want["targets"])[1] if want.get("targets") else None
+    if (omni is None) != (ep.steps and ep.steps[0].omniscient is None):
+        fails.append(f"traj: {name}: the omniscient part is {'present' if omni is None else 'absent'}")
+    for d, (s, w) in enumerate(zip(ep.steps, want["steps"])):
+        mu = None if w["mu"] is None else [_f32(x) for x in w["mu"]]
+        policies = [(p[0], p[1], _f32(p[2]), [_f32(x) for x in p[3]]) for p in w["policies"]]
+        got = (s.seat, s.game, s.decision, s.sideboarding, s.chosen, s.policy_version, s.teacher, s.mu,
+               [(p[0], p[1], p[2], list(p[3])) for p in s.policies])
+        exp = (w["seat"], w["game"], w["decision"], w["sideboarding"], w["chosen"], w["policy_version"],
+               w["teacher"], mu, policies)
+        if got != exp:
+            fails.append(f"traj: {name}: step {d}: {got[:7]} differs from the C++ reader's {exp[:7]} (or its mu, "
+                         "evaluations)")
+        if _decision_slices(tensors, rmtraj.TENSORS, d) != {k: s.tensors[k] for k in rmtraj.TENSORS}:
+            fails.append(f"traj: {name}: step {d}: the tensors differ from the C++ reader's")
+        if omni is not None:
+            if _decision_slices(omni, rmtraj.TENSORS, d) != {k: s.omniscient[k] for k in rmtraj.TENSORS}:
+                fails.append(f"traj: {name}: step {d}: the omniscient tensors differ from the C++ reader's")
+            tg = _decision_slices(targets, ("opp_hand", "own_library", "opp_library"), d)
+            tg["opp_list"], tg["opp_archetype"] = targets["opp_list"].values[d], targets["opp_archetype"].values[d]
+            if tg != s.targets:
+                fails.append(f"traj: {name}: step {d}: the targets differ from the C++ reader's")
+        if len(fails) > 10:
+            break
+    return fails
+
+
+def check_traj(expected_path):
+    """The traj part; returns failures."""
+    if not expected_path:
+        print("  OK   traj: nothing to read (no --traj-expected)", flush=True)
+        return []
+    with open(expected_path, encoding="utf-8") as f:
+        expected = json.load(f)["episodes"]
+    fails = []
+    for want in expected:
+        fails += _episode_fails(want)
+    if not fails:
+        steps = sum(len(w["steps"]) for w in expected)
+        print(f"  OK   traj: {len(expected)} episodes, {steps} steps read as the C++ reader reads them", flush=True)
+    return fails
+
+
+def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected=None, traj_expected=None):
     """The requested parts; returns the failure messages (empty = pass)."""
     binary = os.path.abspath(binary)
     if out_dir:
@@ -542,6 +619,8 @@ def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected
             fails += check_rmtb(rmtb_samples)
         if "featurize" in parts:
             fails += check_featurize(featurize_expected)
+        if "traj" in parts:
+            fails += check_traj(traj_expected)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return fails
@@ -557,12 +636,14 @@ def main(argv=None) -> int:
                     "writes them)")
     ap.add_argument("--featurize-expected", default=None, help="the featurize part's file list (robomage_check's "
                     "featurize tier writes it)")
+    ap.add_argument("--traj-expected", default=None, help="the traj part's episode list (robomage_check's "
+                    "traj tier writes it)")
     args = ap.parse_args(argv)
     parts = [p for p in args.part.split(",") if p]
     unknown = [p for p in parts if p not in PARTS]
     if unknown:
         ap.error(f"unknown part(s) {', '.join(unknown)}")
-    fails = run(args.binary, args.out_dir, parts, args.rmtb_samples, args.featurize_expected)
+    fails = run(args.binary, args.out_dir, parts, args.rmtb_samples, args.featurize_expected, args.traj_expected)
     for f in fails:
         print(f"FAIL: {f}", flush=True)
     return 1 if fails else 0

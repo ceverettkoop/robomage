@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "action_processor.h"
+#include "agents/trajectory.h"
 #include "card_db.h"
 #include "companion.h"
 #include "classes/deck.h"
@@ -403,6 +404,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
     obs_game_start(player_a_goes_first);
+    trajectory_game_start(player_a_goes_first, seed);
 
     // Pre-game section header: mulligans, test-harness fiat setup, and the CR 103.6b
     // opening-hand actions all print under PREGAME, before the first turn header.
@@ -950,11 +952,13 @@ Deck load_launch_deck(Zone::Ownership seat) {
 }
 
 [[noreturn]] void end_run_at_decision_cap(size_t decisions) {
+    trajectory_end_run(featurize::EndReason::CAP);
     end_run_without_result(
         "MAX_DECISIONS: stopped after " + std::to_string(decisions) + " decisions (--max-decisions; no result)");
 }
 
 [[noreturn]] void end_run_at_recorded_quit(size_t decision) {
+    trajectory_end_run(featurize::EndReason::QUIT);
     end_run_without_result("QUIT: the recorded session quit at decision " + std::to_string(decision) + " (no result)");
 }
 
@@ -1487,6 +1491,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                 match_wins_b = ctx.wins_b;
             }
             print_game_result(ctx.game_num + 1, winner);
+            trajectory_game_end(winner);
 
             if (after_game) after_game(ctx.game_num, winner);
 
@@ -1546,6 +1551,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                                                  : Zone::PLAYER_B;
     obs_match_end(result, ctx.wins_a, ctx.wins_b);
     rmstate_match_over();
+    trajectory_match_over();
     match_game_number = -1;
     ctx.active = false;
     return result;

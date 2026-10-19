@@ -128,6 +128,9 @@ CLI_FLAGS = (
      "help": "Engine --selfcheck-knowledge: the knowledge sidecar against the truth"},
     {"name": "--rmstate-dump", "metavar": "FILE",
      "help": "Engine --rmstate-dump FILE (with --games > 1, FILE.<i> per match)"},
+    {"name": "--rmlog-dir", "metavar": "DIR",
+     "help": "Keep every game's (bo3: match's) decision log in DIR, as <deck a>-<deck b>.<format>.seed<seed>.rmlog "
+             "(engine --decision-log); robomage --replay LOG --trajectory-out re-featurizes it"},
     {"name": "--knowledge-a", "kind": "choice", "choices": ("off", "expert", "expert+belief"),
      "help": "Engine --knowledge-a: seat A's knowledge level (default: the engine's, expert)"},
     {"name": "--knowledge-b", "kind": "choice", "choices": ("off", "expert", "expert+belief"),
@@ -665,6 +668,12 @@ def play_game(agent_a, agent_b, *, binary=DEFAULT_BINARY, deck_a=None, deck_b=No
     return rec
 
 
+def rmlog_name(deck_a, deck_b, bo3, seed) -> str:
+    """A kept decision log's file name: ``<deck a>-<deck b>.<bo1|bo3>.seed<seed>.rmlog`` (deck stems)."""
+    stem = lambda d: os.path.basename(d or "delver")  # noqa: E731
+    return f"{stem(deck_a)}-{stem(deck_b or deck_a)}.{'bo3' if bo3 else 'bo1'}.seed{seed}.rmlog"
+
+
 # ── Transcripts and results ─────────────────────────────────────────────────────────────────
 
 def _pct(w, n):
@@ -714,12 +723,13 @@ def format_timing(records, wall, bo3=False) -> str:
 def run_games(agent_a="scripted", agent_b="scripted", *, label_a="A", label_b="B",
               binary=DEFAULT_BINARY, deck_a=None, deck_b=None, n_games=1, bo3=False, seed=None,
               transcript="compact", out=None, max_decisions=None, narrative=True, engine_flags=(),
-              on_game_end=None, dump=None):
+              on_game_end=None, dump=None, rmlog_dir=None):
     """Plays ``n_games`` games (bo1) or matches (bo3) and writes their transcript (module
     docstring) to ``out`` (default stdout). Game i uses seed ``seed + i``. ``agent_a`` /
     ``agent_b`` are specs or agents (one instance per seat each match unless the same object is
     passed twice). ``dump`` names an ``--rmstate-dump`` file (``FILE.<i>`` per match when
-    ``n_games > 1``). ``on_game_end(record)`` gets each ``GameRecord``.
+    ``n_games > 1``). ``rmlog_dir`` keeps each game's (match's) decision log there (``rmlog_name``).
+    ``on_game_end(record)`` gets each ``GameRecord``.
 
     Returns (wins, losses, draws), Player A's: a record with no winner counts as a draw (a
     drawn game, CR 104.4a, or a game with no result), and every draw, and every drawn game inside
@@ -738,6 +748,10 @@ def run_games(agent_a="scripted", agent_b="scripted", *, label_a="A", label_b="B
         flags = list(engine_flags)
         if dump:
             flags += ["--rmstate-dump", dump if n_games == 1 else f"{dump}.{i}"]
+        if rmlog_dir:
+            os.makedirs(rmlog_dir, exist_ok=True)
+            flags += ["--decision-log", os.path.abspath(os.path.join(
+                rmlog_dir, rmlog_name(deck_a, deck_b, bo3, game_seed if game_seed is not None else i)))]
         log = []
         state = {"turn": 0, "pregame": False, "hand": {"A": [], "B": []}}
 
@@ -882,7 +896,7 @@ def main(argv=None) -> int:
                          seed=args.seed, transcript=transcript, out=stream,
                          max_decisions=args.max_decisions, narrative=not (args.timing and quiet),
                          engine_flags=_engine_flags(args), on_game_end=records.append,
-                         dump=args.rmstate_dump)
+                         dump=args.rmstate_dump, rmlog_dir=args.rmlog_dir)
 
     t0 = time.perf_counter()
     if args.out:

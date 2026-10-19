@@ -101,6 +101,8 @@ class PlayScript : public Agent {
         PlayScript(std::vector<std::string> specs, Agent *player_a, Agent *player_b);
         int decide(const Decision &d) override;
         std::string label() const override { return "play"; }
+        // The behaviour of the seat's agent when it decided the last decision, else nullptr.
+        const Behaviour *last_behaviour() const override { return delegate_ ? delegate_->last_behaviour() : nullptr; }
         const std::vector<int> &resolved() const { return resolved_; }
         // The specs not yet applied.
         std::vector<std::string> unused_specs() const;
@@ -111,6 +113,7 @@ class PlayScript : public Agent {
         size_t next_ = 0;
         int wait_ = 0;
         Agent *players_[2];
+        const Agent *delegate_ = nullptr;  // the seat's agent that decided the last decision
         std::vector<int> resolved_;
 };
 

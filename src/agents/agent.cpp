@@ -24,12 +24,16 @@ class RandomAgent : public Agent {
         explicit RandomAgent(PyRandom *rng) : rng_(rng) {}
         int decide(const Decision &d) override {
             const size_t n = d.view.n();
+            if (n > 0) behaviour_.mu.assign(n, 1.0 / static_cast<double>(n));
             return n <= 1 ? 0 : static_cast<int>(rng_->randrange(n));
         }
         std::string label() const override { return "random"; }
+        // The uniform distribution over the last decision's menu rows.
+        const Behaviour *last_behaviour() const override { return behaviour_.mu.empty() ? nullptr : &behaviour_; }
 
     private:
         PyRandom *rng_;
+        Behaviour behaviour_;
 };
 
 // A play: spec on one seat: the --play resolver with row 0 once its specs run out.
@@ -95,9 +99,11 @@ ActionsAgent::ActionsAgent(std::vector<int> actions, Agent *player_a, Agent *pla
     : actions_(std::move(actions)), players_{player_a, player_b} {}
 
 int ActionsAgent::decide(const Decision &d) {
+    delegate_ = nullptr;
     if (next_ < actions_.size()) return actions_[next_++];
     Agent *player = players_[d.view.seat()];
     if (!player) return 0;
+    delegate_ = player;
     const int r = player->decide(d);
     if (r == AGENT_FAILED) failure_ = player->failure();
     return r;

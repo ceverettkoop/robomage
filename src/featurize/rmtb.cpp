@@ -15,7 +15,7 @@ const char MAGIC[4] = {'R', 'M', 'T', 'B'};
 const uint32_t VERSION = 1;
 const size_t HEADER_SIZE = 12;
 const featurize::Dtype ALL_DTYPES[] = {featurize::Dtype::F32, featurize::Dtype::F16, featurize::Dtype::I64,
-    featurize::Dtype::I32, featurize::Dtype::U16, featurize::Dtype::U8};
+    featurize::Dtype::I32, featurize::Dtype::I16, featurize::Dtype::U16, featurize::Dtype::U8};
 
 }  // namespace
 
@@ -27,6 +27,7 @@ static bool dtype_of(const std::string &name, featurize::Dtype *out);
 static bool hash_member(const featurize::Json &meta, const char *key, bool *has, uint64_t *out, std::string *err);
 static bool count_member(const featurize::Json &meta, const char *key, uint64_t *out, std::string *err);
 static bool decode_rows_meta(const featurize::Json &rm, featurize::RmtbFile *out, std::string *err);
+static bool decode_attrs(const featurize::Json &attrs, featurize::RmtbFile *out, std::string *err);
 static bool decode_array_entry(const featurize::Json &a, featurize::RmtbArray *out, uint64_t *offset, std::string *err);
 static bool decode_meta(
     const std::string &json, featurize::RmtbFile *out, std::vector<uint64_t> *offsets, std::string *err);
@@ -104,6 +105,29 @@ static bool decode_rows_meta(const featurize::Json &rm, featurize::RmtbFile *out
     return true;
 }
 
+static bool decode_attrs(const featurize::Json &attrs, featurize::RmtbFile *out, std::string *err) {
+    out->has_attrs = true;
+    if (!attrs.is_object()) {
+        *err = "meta attrs is not an object";
+        return false;
+    }
+    for (const std::pair<std::string, featurize::Json> &m : attrs.members()) {
+        featurize::RmtbAttr a;
+        a.key = m.first;
+        if (m.second.is_string()) {
+            a.s = m.second.as_string();
+        } else if (m.second.is_number() && m.second.is_integer()) {
+            a.is_int = true;
+            a.i = m.second.as_int();
+        } else {
+            *err = "meta attrs." + m.first + " is not a string or an integer";
+            return false;
+        }
+        out->attrs.push_back(a);
+    }
+    return true;
+}
+
 static bool decode_array_entry(
     const featurize::Json &a, featurize::RmtbArray *out, uint64_t *offset, std::string *err) {
     const featurize::Json *name = a.get("name"), *dtype = a.get("dtype"), *shape = a.get("shape"),
@@ -111,7 +135,7 @@ static bool decode_array_entry(
     if (!a.is_object() || !name || !name->is_string() || name->as_string().empty() || !dtype || !dtype->is_string() ||
         !dtype_of(dtype->as_string(), &out->dtype) || !shape || !shape->is_array() ||
         !count_member(a, "offset", offset, err)) {
-        *err = "meta arrays holds an entry that is not {name, dtype (f32 f16 i64 i32 u16 u8), shape, offset}";
+        *err = "meta arrays holds an entry that is not {name, dtype (f32 f16 i64 i32 i16 u16 u8), shape, offset}";
         return false;
     }
     out->name = name->as_string();
@@ -176,6 +200,8 @@ static bool decode_meta(
     }
     if (const featurize::Json *rm = doc.get("rows_meta"))
         if (!decode_rows_meta(*rm, out, err)) return false;
+    if (const featurize::Json *at = doc.get("attrs"))
+        if (!decode_attrs(*at, out, err)) return false;
     if (!arrays || !arrays->is_array()) {
         *err = "meta arrays is not a list";
         return false;
@@ -214,12 +240,36 @@ const RmtbArray *RmtbFile::find(const std::string &name) const {
     return nullptr;
 }
 
+const RmtbAttr *RmtbFile::attr(const std::string &key) const {
+    for (const RmtbAttr &a : attrs)
+        if (a.key == key) return &a;
+    return nullptr;
+}
+
+void RmtbFile::set_attr(const std::string &key, int64_t v) {
+    has_attrs = true;
+    RmtbAttr a;
+    a.key = key;
+    a.is_int = true;
+    a.i = v;
+    attrs.push_back(a);
+}
+
+void RmtbFile::set_attr(const std::string &key, const std::string &v) {
+    has_attrs = true;
+    RmtbAttr a;
+    a.key = key;
+    a.s = v;
+    attrs.push_back(a);
+}
+
 size_t dtype_width(Dtype d) {
     switch (d) {
         case Dtype::F32:
         case Dtype::I32:
             return 4;
         case Dtype::F16:
+        case Dtype::I16:
         case Dtype::U16:
             return 2;
         case Dtype::I64:
@@ -240,6 +290,8 @@ const char *dtype_name(Dtype d) {
             return "i64";
         case Dtype::I32:
             return "i32";
+        case Dtype::I16:
+            return "i16";
         case Dtype::U16:
             return "u16";
         case Dtype::U8:
@@ -349,6 +401,8 @@ bool rmtb_values(const RmtbArray &a, std::vector<int64_t> *out) {
         const uint64_t u = get_le(a.data, at, w);
         if (a.dtype == Dtype::I32)
             out->push_back(static_cast<int32_t>(static_cast<uint32_t>(u)));
+        else if (a.dtype == Dtype::I16)
+            out->push_back(static_cast<int16_t>(static_cast<uint16_t>(u)));
         else
             out->push_back(static_cast<int64_t>(u));
     }
@@ -392,6 +446,15 @@ std::string rmtb_meta_json(const RmtbFile &file) {
             j += std::string(i ? "," : "") + "{\"id\":" + std::to_string(file.rows_meta[i].id) + ",\"hash\":\"" +
                  hex16(file.rows_meta[i].hash) + "\"}";
         j += "]";
+    }
+    if (file.has_attrs) {
+        j += ",\"attrs\":{";
+        for (size_t i = 0; i < file.attrs.size(); ++i) {
+            const RmtbAttr &a = file.attrs[i];
+            j += std::string(i ? "," : "") + json_quote(a.key) + ":" +
+                 (a.is_int ? std::to_string(a.i) : json_quote(a.s));
+        }
+        j += "}";
     }
     j += ",\"arrays\":[";
     uint64_t offset = 0;

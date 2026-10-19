@@ -371,6 +371,7 @@ std::vector<std::string> PlayScript::unused_specs() const {
 
 int PlayScript::player_choice(const Decision &d) {
     Agent *player = players_[d.view.seat()];
+    delegate_ = player;
     const int idx = player->decide(d);
     if (idx == AGENT_FAILED) {
         failure_ = player->failure();
@@ -381,6 +382,7 @@ int PlayScript::player_choice(const Decision &d) {
 }
 
 int PlayScript::decide(const Decision &d) {
+    delegate_ = nullptr;
     if (next_ >= specs_.size()) return player_choice(d);
     const std::string &spec = specs_[next_];
     const char seat = spec_seat(spec);

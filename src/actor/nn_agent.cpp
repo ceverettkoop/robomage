@@ -249,6 +249,17 @@ int NnAgent::decide(const agents::Decision &d) {
     const PolicyEval &policy = evals_.at(0).policies.at(0);
     distribution(policy.logits);
     behaviour_.policy_version = policy.version;
+    behaviour_.policies.resize(evals_.at(0).policies.size());
+    for (size_t i = 0; i < behaviour_.policies.size(); ++i) {
+        const PolicyEval &pe = evals_.at(0).policies[i];
+        agents::PolicyEvaluation &out = behaviour_.policies[i];
+        out.id = opt_.remote.empty() ? 0 : static_cast<int64_t>(opt_.policies.at(i));
+        out.version = pe.version;
+        out.value = pe.value;
+        out.log_pi = pe.log_pi;
+    }
+    behaviour_.tensors = &tensors_;
+    behaviour_.spec_hash = featurization_->spec.hash;
     have_behaviour_ = true;
     if (!opt_.dump.empty()) dumped_.push_back(tensors_);
     const int row = choose();

@@ -211,6 +211,16 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      featurizer's actor entry point on the seat's frame) and drop\n");
     printf("                      the tensors; at exit a FEATURIZE-SEATS: line with the count\n");
     printf("                      and time. Play is unchanged (the bench tier's featurizer stage)\n");
+    printf("  --trajectory-out <dir>  Write every game's trajectory episode into <dir>\n");
+    printf("                      (<stem>.g<n>.rmtraj, docs/trajectory_format.md): each recorded\n");
+    printf("                      seat's decisions featurized, the behaviour distribution, the\n");
+    printf("                      reply and the result. Outside --replay a decision log is\n");
+    printf("                      always written (--decision-log, else <dir>/<stem>.rmlog);\n");
+    printf("                      under --replay the log's games are re-featurized. Play is\n");
+    printf("                      unchanged\n");
+    printf("  --trajectory-seats A|B|AB  The seats whose decisions are recorded (default AB)\n");
+    printf("  --trajectory-omniscient  Each decision also carries the omniscient frame's\n");
+    printf("                      featurization and the learner targets\n");
     printf("  --trace-decisions   Print every decision's board, pending decision and menu, as\n");
     printf("                      the CLI renders the deciding seat's RMSTATE frame, and the\n");
     printf("                      choice made (lines starting \"| \" in the game log)\n");

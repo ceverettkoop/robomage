@@ -64,7 +64,8 @@
 // agent reads nothing but the seat's decoded STATE frame: featurize_seat on it, one evaluation (a
 // batch of one), the distribution over the menu rows (softmax(logits / temp), then thresh=, then
 // disc=; or argmax's one-hot), a row drawn from it. It keeps that exact distribution over every
-// menu row and the sampled policy's version (last_behaviour). A menu of one row is taken with no
+// menu row, the sampled policy's version, every policy's evaluation and the tensors it featurized
+// (last_behaviour, for the trajectory writer). A menu of one row is taken with no
 // draw. Any featurizer or evaluator failure (for nn:remote:, the server refusing, erring, going
 // away or not answering) ends the run as a fatal error naming the model or endpoint, never a
 // default action.

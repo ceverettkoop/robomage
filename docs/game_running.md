@@ -180,7 +180,9 @@ Flags (`rm_driver.CLI_FLAGS`; `--help`): `--player-a/-b` (default `scripted`), `
 since engine seat A starts game 1), `--verbose` / `--quiet` / `--out FILE`, `--max-decisions N`,
 `--timing` (throughput; with `--quiet` the engine runs without narrative), the engine's
 `--closed-decklist`, `--selfcheck-state`, `--selfcheck-knowledge`, `--rmstate-dump FILE`
-(`FILE.<i>` per match when `--games > 1`), `--knowledge-a/-b`, `--engine-flags "…"` for any other
+(`FILE.<i>` per match when `--games > 1`), `--rmlog-dir DIR` (each game's, under bo3 each match's,
+decision log kept as `DIR/<deck a>-<deck b>.<bo1|bo3>.seed<seed>.rmlog`), `--knowledge-a/-b`,
+`--engine-flags "…"` for any other
 engine flag (`$ROBOMAGE_ENGINE_FLAGS` is added too), and `--binary` (default
 `bin/$ROBOMAGE_BUILD/robomage`, debug when unset).
 
@@ -277,6 +279,13 @@ cd bin
 
 The replay corpus (`tests/corpus/`) is such logs from the scripted agent's games (and two explore
 games under `--no-auto-mana`), with their replay output as byte-for-byte baselines (`docs/ci.md`).
+
+## Trajectories
+
+`--trajectory-out DIR` writes one episode per game (each recorded seat's decisions featurized, the
+behaviour distribution, the reply, the result) and keeps the decision log; `--replay LOG
+--trajectory-out DIR` re-featurizes a logged game, such as a `rm_driver.py --rmlog-dir` corpus.
+Format and flags: [`trajectory_format.md`](trajectory_format.md).
 
 ## State dumps
 

@@ -26,6 +26,7 @@ static const TierEntry TIERS[] = {
     {"replay", rmcheck::tier_replay},
     {"state", rmcheck::tier_state},
     {"featurize", rmcheck::tier_featurize},
+    {"traj", rmcheck::tier_traj},
     {"actor", rmcheck::tier_actor},
     {"knowledge", rmcheck::tier_knowledge},
     {"fuzz", rmcheck::tier_fuzz},

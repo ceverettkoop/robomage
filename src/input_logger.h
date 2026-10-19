@@ -134,6 +134,9 @@ class InputLogger {
     int read_choice(const std::vector<LegalAction> &actions, Zone::Ownership seat);
     // Decisions read so far in the run (for --max-decisions and the decision trace).
     size_t decisions_read = 0;
+    // The reply of the decision just read, as the decision log holds it: a menu row of the menu as
+    // offered, or a concession sentinel (read_choice returns the unwind's first choice for one).
+    int last_reply = 0;
 };
 
 // Ask `chooser` an optional yes/no question with a single decline (index 0) and accept

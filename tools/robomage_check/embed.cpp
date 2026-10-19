@@ -39,12 +39,17 @@ static std::vector<std::pair<float, uint16_t>> f16_cases() {
 }
 
 // Every dtype, a rank-0, rank-1 and rank-3 shape, a ragged values + offsets pair, column names and
-// sizes that need padding between arrays; f32 values a decimal rendering must keep exactly.
+// sizes that need padding between arrays; f32 values a decimal rendering must keep exactly; string
+// and integer attrs.
 static featurize::RmtbFile sample_arrays() {
     featurize::RmtbFile f;
     f.kind = "tensors";
     f.has_spec_hash = true;
     f.spec_hash = 0x8000000000000001ULL;
+    f.set_attr("format", "bo3");
+    f.set_attr("seed", 4294967295LL);
+    f.set_attr("delta", -12);
+    f.set_attr("note", "caf\xc3\xa9 \"quoted\"");
     featurize::RmtbArray m = featurize::rmtb_floats("matrix", featurize::Dtype::F32, {3, 4},
         {1.0f / 3.0f, -2.5f, -0.0f, 1e-38f, 0, 0, 0, 0, 3.4e38f, -1.17549435e-38f, 0.1f, 7.0f});
     m.columns = {"a", "b \"quoted\"", "caf\xc3\xa9", "d"};
@@ -58,6 +63,7 @@ static featurize::RmtbFile sample_arrays() {
         featurize::rmtb_ints("ragged_values", featurize::Dtype::I32, {5}, {-7, 2147483647, -2147483647 - 1, 0, 5}));
     f.arrays.push_back(featurize::rmtb_ints("ragged_offsets", featurize::Dtype::I64, {4}, {0, 2, 2, 5}));
     f.arrays.push_back(featurize::rmtb_ints("ids", featurize::Dtype::U16, {1, 3, 1}, {0, 65535, 1024}));
+    f.arrays.push_back(featurize::rmtb_ints("shorts", featurize::Dtype::I16, {4}, {-1, 32767, -32768, 1023}));
     f.arrays.push_back(featurize::rmtb_ints("bytes", featurize::Dtype::U8, {3}, {0, 255, 17}));
     f.arrays.push_back(featurize::rmtb_ints("big", featurize::Dtype::I64, {2, 2},
         {std::numeric_limits<int64_t>::max(), std::numeric_limits<int64_t>::min(), 1099511627776LL, -1}));

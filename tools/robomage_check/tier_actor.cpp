@@ -8,6 +8,7 @@
 #include "actor.h"
 #include "proc.h"
 #include "scan.h"
+#include "traj.h"
 #include "util.h"
 
 namespace {
@@ -39,6 +40,8 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
 static void check_refeaturization(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
     const std::string &rmlog, const std::string &live);
 static void check_exports(rmcheck::Report &rep, const rmcheck::ActorSetup &a, const std::string &live);
+static void check_trajectories(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::string &live, const std::string &projected);
 
 // The FNV-1a 64 of a file's bytes (16 hex digits), "" when it cannot be read.
 static std::string file_stamp(const std::string &path) {
@@ -157,6 +160,38 @@ static void check_refeaturization(const rmcheck::Options &opt, rmcheck::Report &
         std::to_string(n) + " decisions, " + std::to_string(want.size()) + " bytes)");
 }
 
+// The nn: matches' trajectory episodes (--trajectory-out): seat A's tensors those nn: featurized
+// (dump=, the writer reusing them), its μ, replies, versions and evaluations the projected match's
+// evals= file, and a --replay of the match's decision log writing the same episodes.
+static void check_trajectories(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::string &live, const std::string &projected) {
+    std::vector<rmcheck::EpisodeFile> match, replayed, proj;
+    std::string err;
+    rmcheck::ProcSpec replay;
+    replay.argv = {opt.binary, "--replay", rmcheck::path_join(a.dir, "match.rmlog"), "--trajectory-out",
+        rmcheck::path_join(a.dir, "traj_match_replay")};
+    replay.cwd = opt.bin_dir;
+    if (!run_step(rep, "actor", "robomage --replay --trajectory-out of the nn: match", replay,
+            rmcheck::path_join(a.dir, "traj_match_replay.txt")))
+        return;
+    if (!rmcheck::read_episodes(rmcheck::path_join(a.dir, "traj_match"), &match, &err) ||
+        !rmcheck::read_episodes(rmcheck::path_join(a.dir, "traj_match_replay"), &replayed, &err) ||
+        !rmcheck::read_episodes(rmcheck::path_join(a.dir, "traj_projected"), &proj, &err)) {
+        rep.error("actor", "trajectories: " + err);
+        return;
+    }
+    size_t dumped = 0, evaluated = 0;
+    std::vector<std::string> fails = rmcheck::check_against_dump(match, 0, live, &dumped);
+    for (const std::vector<std::string> &more :
+        {rmcheck::compare_replayed(match, replayed), rmcheck::check_against_evals(proj, 0, projected, &evaluated)})
+        fails.insert(fails.end(), more.begin(), more.end());
+    for (const std::string &f : fails) rep.error("actor", "trajectories: " + f);
+    if (fails.empty())
+        rep.info("trajectories: the nn: match's " + std::to_string(match.size()) + " episodes hold its " +
+                 std::to_string(dumped) + " live tensors and replay identically; the projected match's " +
+                 std::to_string(evaluated) + " steps carry its evals= mu, replies and evaluations");
+}
+
 // The reference policy's three exports agree on the match's decisions (make_reference_policy.py check).
 static void check_exports(rmcheck::Report &rep, const rmcheck::ActorSetup &a, const std::string &live) {
     rmcheck::ProcSpec spec;
@@ -256,14 +291,16 @@ void tier_actor(const Options &opt, Report &rep) {
     const std::string live = path_join(a.dir, "match_live.rmtb");
     const std::string projected = path_join(a.dir, "projected_evals.rmtb");
     const std::string seed = std::to_string(opt.seed + 7);
+    for (const char *t : {"traj_match", "traj_match_replay", "traj_projected"}) remove_tree(path_join(a.dir, t));
     std::vector<ActorMatch> matches = {
         {"match",
             {"--agent-a", "nn:" + a.ts() + ":dump=" + live, "--agent-b", "explore", "--deck-a", "league/reanimator",
-                "--deck-b", "league/wrb_energy"},
+                "--deck-b", "league/wrb_energy", "--trajectory-out", path_join(a.dir, "traj_match")},
             {}},
         {"projected",
             {"--agent-a", "nn:" + a.ts() + ":" + PROJECT_OPTIONS + ":evals=" + projected, "--agent-b", "explore",
-                "--deck-a", "league/burn", "--deck-b", "league/uw_control"},
+                "--deck-a", "league/burn", "--deck-b", "league/uw_control", "--trajectory-out",
+                path_join(a.dir, "traj_projected")},
             {}},
         {"argmax_ts",
             {"--agent-a", "nn:" + a.ts() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_delver",
@@ -304,6 +341,7 @@ void tier_actor(const Options &opt, Report &rep) {
         check_refeaturization(opt, rep, a, path_join(a.dir, "match.rmlog"), live);
         check_exports(rep, a, live);
     }
+    if (matches[0].result.ok() && matches[1].result.ok()) check_trajectories(opt, rep, a, live, projected);
     actor_remote_checks(opt, rep, a);
 }
 

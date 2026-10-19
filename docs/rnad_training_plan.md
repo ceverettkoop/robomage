@@ -164,6 +164,19 @@ and old tensor files are deleted.
 - the seat ids match the RMLOG decisions;
 - the omniscient tensors are absent unless they were requested.
 
+Done: `--trajectory-out DIR` (`--trajectory-seats`, `--trajectory-omniscient`; `src/agents/trajectory.h`,
+the format `src/featurize/episode.h`, the stdlib reader `python/rmtraj.py`), documented in
+[`docs/trajectory_format.md`](trajectory_format.md). One `<log stem>.g<n>.rmtraj` per game, written
+atomically; the decision log is always kept (default `DIR/s<seed>.rmlog`) and `--replay LOG
+--trajectory-out` re-featurizes it byte for byte (μ absent: the RMLOG carries none), which is also
+B0's path (`rm_driver.py --rmlog-dir` keeps the scripted games' logs). Per decision: seat, decision
+key, compact tensors (f16 sparse numerics, per-type-width categorical / card / ability slots, about
+5 KB per decision against the featurizer's ~100 KB), μ (f32; the random agent's uniform one too),
+the reply, the policy version, every `policies=` policy's value and `log π`, a reserved teacher
+label; footers with the result per seat and the end reason (win, concession, draw, cap, quit).
+The `traj` gate tier checks the list above (and bo3 sideboarding, concessions, the cap, the Python
+reader against the C++ one); the `actor` tier checks `nn:` episodes against `dump=` / `evals=`.
+
 ### T2. Remote batched evaluator (`nn:remote:<endpoint>`)
 
 The actor-side client of an inference server process:

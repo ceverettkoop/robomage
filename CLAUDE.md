@@ -138,7 +138,8 @@ background** and make the live output inspectable by the user:
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
   | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
-  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
+  | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized |
+  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor |
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
@@ -150,7 +151,8 @@ background** and make the live output inspectable by the user:
 - **Agent games** (the quick check of a new build): `python3 python/rm_driver.py --player-a
   scripted --player-b explore --deck-a league/bug --deck-b league/burn --format bo1 --games N`
   (bo3 by default; game i uses seed `--seed`+i; `--verbose` per-decision narrative + menu, `--out
-  FILE`, `--quiet`, `--max-decisions N`, `--timing`; `--help` lists all). Agents: `scripted` (= the
+  FILE`, `--quiet`, `--max-decisions N`, `--timing`, `--rmlog-dir DIR` (keep every game's decision
+  log); `--help` lists all). Agents: `scripted` (= the
   **hard** tier: smart mulligan, combat simulation, combo lines), `scripted:easy` / `greedy` /
   `random`, `explore` / `explore:patient` (coverage fuzzer; big-mana mode), `first` (= `auto`),
   `actions:<ints>`. Choose `--deck-a/-b` that exercise what you changed (decks relative to
@@ -590,7 +592,8 @@ sections above are not repeated here.
   entry point, refusing a non-seat frame; `featurize_viewer`, learner-side; the tensors file),
   `targets` (learner targets from the omniscient frame), `frame_stream` (a recorded stream frame by
   frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported),
-  `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays)
+  `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays), `episode`
+  (the trajectory episode format: `EpisodeWriter`, `read_episode`; `docs/trajectory_format.md`)
 - `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA, whole-vocab CARDS and
   METAGAME frames for the card tables; plays no game. `load_engine_featurization`: the same
   records and the text table as the featurizer's inputs in process (`nn:`, `--featurize-seats`)
@@ -615,7 +618,10 @@ sections above are not repeated here.
   play-time thresholding and discretisation, the `nn:` agent's `thresh=` / `disc=`; `play_spec.h`: the `--play` resolver
   and its global script; `trace.h`: `--trace-decisions`; `register_agent_kind`: a kind a binary
   adds, `nn:` in `robomage_nn`). `driver.h` is the engine side:
-  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace
+  `--agent-a/-b`, `--play`, `--actions` (imply `--machine`), the human seats, the provider, the trace;
+  `trajectory.h` too: the trajectory writer (`--trajectory-out DIR`, `--trajectory-seats`,
+  `--trajectory-omniscient`), one episode file per game from the recorded seats' decoded frames, the
+  deciding agent's `last_behaviour` (μ, versions, evaluations) and the game boundaries
 
 **The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
 `Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`,
@@ -632,6 +638,7 @@ handshake JSON, the shared region, request / response layouts.
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
   the gate, engine subprocesses only (links the std-only decoder and frame reader, no engine TU);
   one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
+  `traj.*` (episode reading and comparisons, the `traj` and `actor` tiers),
   `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
   `--out-dir` (default `ci_out/`), `--fuzz-games`, `--smoke-games`, `--matchups`, `--mode`,
   `--scenario GLOB --show output|narrative|dump`, `--record`
@@ -671,12 +678,15 @@ handshake JSON, the shared region, request / response layouts.
   write; scripted tiers, explore, `first`, `actions:`; `run_games` / `play_game`; its own CLI
   (`CLI_FLAGS`); runs the `smoke` tier's games and the corpus recording
 - `rmtb.py` — RMTB reader (`docs/featurizer.md` §4.4), stdlib `struct`
+- `rmtraj.py` — trajectory episode reader (`docs/trajectory_format.md`): each step's tensors
+  expanded to the featurizer's layout
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts, the
   `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
 - `record_corpus.py` — re-records the replay corpus with the live scripted agent, plus explore
   `--no-auto-mana` games (`make regen`)
 - `pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
-  self-lethal guard, the driver's seeds and imports), run by the `smoke` tier
+  self-lethal guard, the driver's seeds and imports), run by the `smoke` tier (its `featurize` /
+  `traj` parts by those tiers)
 
 **Tests (`tests/`)**
 - `tests/scenarios/*.json` — the rules-regression and state-format / knowledge sharpness scenarios
@@ -688,5 +698,5 @@ handshake JSON, the shared region, request / response layouts.
 
 **Docs (`docs/`)** — `ci.md` (the gate), `game_running.md` (running games), `state_format.md`
 (RMSTATE), `knowledge_store.md` (the sidecar), `featurizer.md` (the featurizer and the network
-contract), `inference_protocol.md` (remote evaluation), `rules_deviations.md`, `engine_fork_plan.md`
-(the plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.
+contract), `trajectory_format.md` (trajectory episodes), `inference_protocol.md` (remote evaluation),
+`rules_deviations.md`, `engine_fork_plan.md` (the plan), `rnad_training_plan.md` (the training plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.

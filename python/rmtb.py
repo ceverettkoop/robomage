@@ -4,7 +4,9 @@ An RMTB file holds one or more named arrays: the magic ``RMTB``, a little-endian
 a little-endian u32 meta length, the meta (UTF-8 JSON padded with spaces to a multiple of 8 bytes;
 file-level keys plus ``arrays``: ``{"name","dtype","shape","offset"[,"columns"]}`` in file order)
 and the data section (from byte 12 + meta length), each array's row-major little-endian values at
-its 8-aligned ``offset``. Dtypes: f32, f16 (IEEE binary16), i64, i32, u16, u8::
+its 8-aligned ``offset``. Dtypes: f32, f16 (IEEE binary16), i64, i32, i16, u16, u8. The optional
+``attrs`` meta key is an object of named strings and integers (a file kind's header fields: the
+trajectory episode's, ``python/rmtraj.py``)::
 
     meta, arrays = rmtb.read("bin/resources/embeddings/oracle_text.rmtb")
     vec = arrays["vectors"]          # Array: .name .dtype .shape .values (flat list)
@@ -22,7 +24,7 @@ MAGIC = b"RMTB"
 VERSION = 1
 _HEADER = struct.Struct("<4sII")
 # dtype → (struct format character, width)
-DTYPES = {"f32": ("f", 4), "f16": ("e", 2), "i64": ("q", 8), "i32": ("i", 4), "u16": ("H", 2), "u8": ("B", 1)}
+DTYPES = {"f32": ("f", 4), "f16": ("e", 2), "i64": ("q", 8), "i32": ("i", 4), "i16": ("h", 2), "u16": ("H", 2), "u8": ("B", 1)}
 
 
 class Array:
