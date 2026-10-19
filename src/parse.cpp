@@ -2257,6 +2257,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // target to pick / how big an X to pay). Our engine picks targets and X itself,
             // so these are advisory only and irrelevant to the modeled rules.
             "AITgts", "AIXMax",
+            // AISearchGoal$ <filter> (Natural Order): tells Forge's AI which card to look for.
+            // It repeats the load-bearing ChangeType$ filter, which drives the search here.
+            "AISearchGoal",
             // GiftDescription$ <text> (Into the Flood Maw) and ChangeValidDesc$ <text>
             // (Once Upon a Time): prose describing the gift offered / the ChangeZone filter.
             // Purely cosmetic — the load-bearing filters are parsed from the other params.
@@ -2264,6 +2267,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // ForceRevealToController$ True (Once Upon a Time): reveals the looked-at card to
             // its own controller. Informational in a perfect-information engine.
             "ForceRevealToController",
+            // NoRegen$ True (Snuff Out's SP$ Destroy): "it can't be regenerated". The engine has
+            // no regeneration (no vocab card creates a regeneration shield), so a destroy is
+            // never replaced by one and the tag has nothing to prevent.
+            "NoRegen",
             // ── Params for mechanics NOT YET MODELED — currently no-ops, tracked in todo.md ─
             // Suppressed here to keep the log clean; each still needs a real handler (see the
             // "Audit: ability-param keys the parser silently ignores" section of todo.md):
