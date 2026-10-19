@@ -671,7 +671,7 @@ def check_composition(tables):
     rng = np.random.RandomState(11)
     net = tiny_model(tables, seed=1)
     cfg = RL.RNaDConfig(entropy_schedule_sizes=(10,), chunk_len=3, finetune_from_learner_steps=0,
-                        finetune_threshold=0.05, finetune_discretization=8)
+                        finetune_threshold=0.05, finetune_discretization=8, forward_tokens=40)
     learner = RL.RNaDLearner(net, cfg)
     # Make the target and the regularisation policies differ from the network.
     with torch.no_grad():
@@ -710,7 +710,8 @@ def check_composition(tables):
     # Chunk-length invariance of a whole step (no id-dropout, so the forwards are deterministic).
     grads = []
     for L in (2, 5, 32):
-        lr = RL.RNaDLearner(tiny_model(tables, seed=2), RL.RNaDConfig(chunk_len=L))
+        lr = RL.RNaDLearner(tiny_model(tables, seed=2),
+                            RL.RNaDConfig(chunk_len=L, forward_tokens=[24, 64, 4096][L % 3]))
         lr.accumulate_gradients(RD.RNaDBatch(eps, chunk_len=L, policies=(1, 2)), 0.3)
         grads.append(torch.cat([p.grad.flatten() for p in lr.params if p.grad is not None]))
     d = max(float((g - grads[0]).abs().max()) for g in grads) / float(grads[0].abs().max())

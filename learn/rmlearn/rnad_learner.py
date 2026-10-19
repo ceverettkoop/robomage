@@ -85,7 +85,7 @@ import torch
 import torch.nn.functional as Fn
 
 from . import rnad as R
-from .batch import INPUTS
+from .batch import INPUTS, padded
 from .model import ModelConfig, RMNet, load_checkpoint, smoothed_log_policy
 
 
@@ -113,8 +113,10 @@ class RNaDConfig:
     finetune_from_learner_steps: int = -1
     finetune_threshold: float = 0.03
     finetune_discretization: int = 16
-    # Time steps per chunk (forward + backward unit; memory ~ chunk_len × games).
+    # Time steps per chunk (the backward unit; memory ~ chunk_len × games); the forwards inside a
+    # chunk take rows of similar token counts, at most `forward_tokens` padded tokens each.
     chunk_len: int = 32
+    forward_tokens: int = 65536
     # π_0,reg's smoothing (B3) and the served ids of the regularisation policies.
     reg_eps: float = 0.1
     reg_eps_sideboarding: float = 0.25
@@ -575,37 +577,35 @@ class RNaDLearner:
             v_head = None
             lps = [reg_lp[k][sl].clone() for k in range(2)]
             if x is not None:
-                inputs = self._inputs(x)
-                seat_rows = seat[sl].reshape(-1)[idx]
-                omni = None
-                if critic:
-                    xo, _ = batch.chunk_inputs(c, viewer="omni")
-                    omni = self._inputs(xo)[:8]
-                with self._autocast():
-                    out = self._forward(self.model, inputs, omni, seat_rows)
-                    with torch.no_grad():
-                        tout = self._forward(self.target, inputs, omni, seat_rows)
-                logits = logits.index_copy(0, idx, out["logits"].float())
-                v = v.index_copy(0, idx, self._value(self.model, out, critic).float())
-                vt = vt.index_copy(0, idx, self._value(self.target, tout, critic).float().detach())
-                if critic and cfg.critic_trains_value_head:
-                    v_head = torch.zeros(L * G, device=dev).index_copy(
-                        0, idx, self._value(self.model, out, False).float())
-                if cfg.stale_reg == "recompute":
-                    for k in range(2):
-                        need = (valid[sl] & ~reg_known[k][sl]).reshape(-1)[idx]
-                        if k == 1 and self.regs[1] is self.regs[0]:
-                            # π_0,reg in both slots: the rows slot 0 recomputed are slot 1's too.
-                            lps[1] = torch.where((valid[sl] & ~reg_known[1][sl]).unsqueeze(-1), lps[0], lps[1])
-                            break
-                        if bool(need.any()):
-                            rows = torch.nonzero(need).squeeze(-1)
-                            sub = [t.index_select(0, rows) for t in inputs]
-                            with torch.no_grad(), self._autocast():
-                                rl = self.regs[k].model(*sub)["logits"].float()
-                            rl = torch.log_softmax(rl.masked_fill(~sub[9], -float("inf")), -1)
-                            flat_lp = lps[k].reshape(L * G, A)
-                            flat_lp[idx[rows]] = torch.where(sub[9], rl, torch.zeros_like(rl))
+                xo = batch.chunk_inputs(c, viewer="omni")[0] if critic else None
+                seat_chunk = seat[sl].reshape(-1)
+                parts = {"logits": [], "v": [], "vt": [], "v_head": [], "rows": []}
+                for rows, xg, xog in _row_groups(x, xo, cfg.forward_tokens):
+                    inputs = self._inputs(xg)
+                    rows_t = idx[torch.from_numpy(rows).to(dev)]
+                    seat_rows = seat_chunk[rows_t]
+                    omni = self._inputs(xog)[:8] if critic else None
+                    with self._autocast():
+                        out = self._forward(self.model, inputs, omni, seat_rows)
+                        with torch.no_grad():
+                            tout = self._forward(self.target, inputs, omni, seat_rows)
+                    parts["rows"].append(rows_t)
+                    parts["logits"].append(out["logits"].float())
+                    parts["v"].append(self._value(self.model, out, critic).float())
+                    parts["vt"].append(self._value(self.target, tout, critic).float().detach())
+                    if critic and cfg.critic_trains_value_head:
+                        parts["v_head"].append(self._value(self.model, out, False).float())
+                    if cfg.stale_reg == "recompute":
+                        self._recompute_reg(lps, inputs, rows_t, valid[sl], reg_known, sl, L * G, A)
+                rows_all = torch.cat(parts["rows"])
+                logits = logits.index_copy(0, rows_all, torch.cat(parts["logits"]))
+                v = v.index_copy(0, rows_all, torch.cat(parts["v"]))
+                vt = vt.index_copy(0, rows_all, torch.cat(parts["vt"]))
+                if parts["v_head"]:
+                    v_head = torch.zeros(L * G, device=dev).index_copy(0, rows_all, torch.cat(parts["v_head"]))
+                if cfg.stale_reg == "recompute" and self.regs[1] is self.regs[0]:
+                    # π_0,reg in both slots: the rows slot 0 recomputed are slot 1's too.
+                    lps[1] = torch.where((valid[sl] & ~reg_known[1][sl]).unsqueeze(-1), lps[0], lps[1])
             logits = logits.view(L, G, A)
             v = v.view(L, G, 1)
             vt = vt.view(L, G, 1)
@@ -652,11 +652,69 @@ class RNaDLearner:
         return {"sums": sums, "decisions": n_valid, "reg_recorded": recorded, "reg_recomputed": recomputed,
                 "games_dropped_stale": dropped_games}
 
+    def _recompute_reg(self, lps, inputs, rows_t, valid_c, reg_known, sl, n_flat, A):
+        """Fills the regularisation policies' raw log π at the forwarded rows `rows_t` (flat chunk
+        positions) where it was not recorded (slot 1 skipped while it shares slot 0's network)."""
+        for k in range(2):
+            if k == 1 and self.regs[1] is self.regs[0]:
+                break
+            need = (valid_c & ~reg_known[k][sl]).reshape(-1)[rows_t]
+            if not bool(need.any()):
+                continue
+            sel = torch.nonzero(need).squeeze(-1)
+            sub = [t.index_select(0, sel) for t in inputs]
+            with torch.no_grad(), self._autocast():
+                rl = self.regs[k].model(*sub)["logits"].float()
+            rl = torch.log_softmax(rl.masked_fill(~sub[9], -float("inf")), -1)
+            flat_lp = lps[k].reshape(n_flat, A)
+            flat_lp[rows_t[sel]] = torch.where(sub[9], rl, torch.zeros_like(rl))
+
     def _iteration_boundary(self):
         """π_m−1,reg ← π_m,reg; π_m,reg ← the target network (unsmoothed), version = the learner step."""
         new = RegPolicy(_frozen(self.target), self.learner_steps, 0.0, 0.0)
         self.regs = [new, self.regs[0]]
         self.reg_updates += 1
+
+
+TOKEN_KEYS = ("tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask")
+
+
+def _trim(x, rows, n, r):
+    """Rows `rows` of a padded input dict, its token dimension cut to n and its relations to r."""
+    out = {}
+    for k, a in x.items():
+        if k in TOKEN_KEYS:
+            out[k] = a[rows, :n]
+        elif k in ("rel", "rel_mask"):
+            out[k] = a[rows, :r]
+        elif k in ("act_tok", "act_mask"):
+            out[k] = a[rows]
+    return out
+
+
+def _row_groups(x, xo, max_tokens):
+    """A chunk's padded inputs (and the omniscient ones, or None) split into forwards of rows of
+    similar token counts: rows sorted by token count, grouped while rows × padded tokens stays within
+    `max_tokens`, each group padded only to its own largest decision (attention is quadratic in the
+    padded length, and a chunk's decisions vary several-fold). Yields (rows, inputs, omni inputs)."""
+    n = x["tok_mask"].sum(1)
+    r = x["rel_mask"].sum(1)
+    no = xo["tok_mask"].sum(1) if xo is not None else n
+    ro = xo["rel_mask"].sum(1) if xo is not None else r
+    key = np.maximum(n, no)
+    order = np.argsort(key, kind="stable")
+    groups, cur = [], []
+    for i in order:
+        if cur and (len(cur) + 1) * padded(int(key[i])) > max_tokens:
+            groups.append(np.array(cur, np.int64))
+            cur = []
+        cur.append(i)
+    if cur:
+        groups.append(np.array(cur, np.int64))
+    for rows in groups:
+        xg = _trim(x, rows, padded(int(n[rows].max())), padded(int(r[rows].max())))
+        xog = _trim(xo, rows, padded(int(no[rows].max())), padded(int(ro[rows].max()))) if xo is not None else None
+        yield rows, xg, xog
 
 
 def _load_with_config(path, tables, model_cfg):

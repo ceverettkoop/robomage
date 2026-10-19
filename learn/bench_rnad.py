@@ -56,6 +56,7 @@ def main():
     ap.add_argument("--warmup", type=int, default=2)
     ap.add_argument("--recorded-regs", action="store_true")
     ap.add_argument("--omniscient", action="store_true", help="the omniscient critic (needs omniscient episodes)")
+    ap.add_argument("--forward-tokens", type=int, default=65536)
     ap.add_argument("--d", type=int, default=192)
     ap.add_argument("--layers", type=int, default=4)
     args = ap.parse_args()
@@ -72,7 +73,8 @@ def main():
             for chunk in (int(x) for x in args.chunk.split(",")):
                 torch.manual_seed(0)
                 net = M.RMNet(M.ModelConfig(d=args.d, layers=args.layers, omniscient_critic=args.omniscient), tables)
-                learner = RL.RNaDLearner(net, RL.RNaDConfig(chunk_len=chunk, precision=prec), device=dev)
+                cfg = RL.RNaDConfig(chunk_len=chunk, precision=prec, forward_tokens=args.forward_tokens)
+                learner = RL.RNaDLearner(net, cfg, device=dev)
                 t = time.time()
                 batch = make_batch(eps, games, chunk, args.recorded_regs, args.omniscient, learner).prepare()
                 prep = time.time() - t
