@@ -299,23 +299,19 @@ No creatures eligible to attack.
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Decline: promise a tapped Fish to your opponent)
 Choose target for Into the Flood Maw:
-| decision 25: Player B (game 0, turn 5, UPKEEP, Player B active)
-| menu:
-|   0: Tamiyo, Inquisitive Student
-(REPLAY) [T5 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Tamiyo, Inquisitive Student)
+| auto: Player B: Tamiyo, Inquisitive Student
 Targeting choice 0
 Player B activated Thundering Falls for 1(U)
 Player B casts Into the Flood Maw targeting Tamiyo, Inquisitive Student
 Dragon's Rage Channeler triggered
-| decision 26: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 25: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 27: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 26: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (18 life)
@@ -330,7 +326,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Dragon's Rage Channeler
-| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 27: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Put Dragon's Rage Channeler on top of library
 |   1: Put Dragon's Rage Channeler into graveyard
@@ -342,7 +338,7 @@ Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Dragon's Rage Channeler
-| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Put Dragon's Rage Channeler on top of library
 |   1: Put Dragon's Rage Channeler into graveyard
@@ -352,7 +348,7 @@ Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to hand
 Resolving ability (category: ChangeZone)
 Player B draws Dragon's Rage Channeler
-| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -361,7 +357,7 @@ Player B draws Dragon's Rage Channeler
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scalding Tarn)
 Player B played Scalding Tarn
-| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -372,7 +368,7 @@ Player B sacrifices Scalding Tarn
 Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -382,7 +378,7 @@ Searching Player B's library:
 | >> Player B: 3 (Volcanic Island)
 Player B shuffles their library
 Player B puts Volcanic Island to the battlefield
-| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -390,24 +386,16 @@ Player B puts Volcanic Island to the battlefield
 | >> Player B: 1 (Cast Dragon's Rage Channeler)
 Player B activated Volcanic Island for 1(R)
 Player B casts Dragon's Rage Channeler
-| decision 34: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 33: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T5 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 35: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Dragon's Rage Channeler
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Dragon's Rage Channeler)
+| auto: Player A: Dragon's Rage Channeler
 Targeting choice 0
-| decision 36: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Exile Tamiyo, Inquisitive Student
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Exile Tamiyo, Inquisitive Student)
+| auto: Player A: Exile Tamiyo, Inquisitive Student
 Player A pays 1 life
 Player A exiles Tamiyo, Inquisitive Student
 Player A casts Force of Will targeting Dragon's Rage Channeler
@@ -417,11 +405,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 37: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -434,7 +418,7 @@ No creatures eligible to block.
 
 -------- TURN 7 (Player A) --------
 Player A draws Tropical Island
-| decision 38: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 34: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Tropical Island
@@ -445,7 +429,7 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Force of Will
-| decision 39: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 35: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -460,7 +444,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Island
-| decision 40: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Island on top of library
 |   1: Put Island into graveyard
@@ -468,7 +452,7 @@ Surveil: looking at Island
 | >> Player B: 1 (Put Island into graveyard)
 Player B puts Island into their graveyard.
 Cori-Steel Cutter enters the battlefield
-| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -476,18 +460,14 @@ Cori-Steel Cutter enters the battlefield
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Volcanic Island)
 Player B played Volcanic Island
-| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Equip Cori-Steel Cutter)
 Choose target for Cori-Steel Cutter:
-| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Dragon's Rage Channeler
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Dragon's Rage Channeler)
+| auto: Player B: Dragon's Rage Channeler
 Targeting choice 0
 Player B activated Volcanic Island for 1(R)
 Player B activated Volcanic Island for 1(U)
@@ -499,11 +479,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [4/4] -> Player A
-| decision 44: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -520,7 +496,7 @@ No creatures eligible to attack.
 
 -------- TURN 10 (Player B) --------
 Player B draws Mystic Sanctuary
-| decision 45: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -530,7 +506,7 @@ Player B draws Mystic Sanctuary
 | >> Player B: 1 (Play Mystic Sanctuary)
 Player B played Mystic Sanctuary
 Choose target for Mystic Sanctuary:
-| decision 46: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Into the Flood Maw
 |   1: Lightning Bolt
@@ -539,7 +515,7 @@ Choose target for Mystic Sanctuary:
 | >> Player B: 0 (Into the Flood Maw)
 Targeting choice 0
 Mystic Sanctuary triggered
-| decision 47: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Decline: use Mystic Sanctuary's triggered ability
 |   1: Accept: use Mystic Sanctuary's triggered ability
@@ -547,7 +523,7 @@ Mystic Sanctuary triggered
 | >> Player B: 1 (Accept: use Mystic Sanctuary's triggered ability)
 Resolving ability (category: ChangeZone)
 Into the Flood Maw is moved to top of library
-| decision 48: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
@@ -557,11 +533,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [4/4] -> Player A
-| decision 49: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -571,7 +543,7 @@ No creatures eligible to block.
   Dragon's Rage Channeler deals 4 damage to Player A (now at 5 life)
 --- End Combat Damage ---
 
-| decision 50: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
@@ -580,14 +552,14 @@ No creatures eligible to block.
 
 -------- TURN 11 (Player A) --------
 Player A draws Swamp
-| decision 51: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 44: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Swamp
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Swamp)
 Player A played Swamp
-| decision 52: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 45: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Baleful Strix
@@ -601,18 +573,14 @@ Player A played Swamp
 Player A activated Swamp for 1(B)
 Player A activated Tropical Island for 1(U)
 Player A casts Baleful Strix
-| decision 53: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 46: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will
 (REPLAY) [T10 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will)
 Choose target for Force of Will:
-| decision 54: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Baleful Strix
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Baleful Strix)
+| auto: Player B: Baleful Strix
 Targeting choice 0
 Player B activated Mystic Sanctuary for 1(U)
 Player B activated Thundering Falls for 1(U)
@@ -624,7 +592,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Into the Flood Maw
-| decision 55: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 47: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Into the Flood Maw on top of library
 |   1: Put Into the Flood Maw into graveyard
@@ -636,7 +604,7 @@ No creatures eligible to attack.
 
 -------- TURN 12 (Player B) --------
 Player B draws Into the Flood Maw
-| decision 56: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -644,7 +612,7 @@ Player B draws Into the Flood Maw
 (REPLAY) [T11 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Wasteland)
 Player B played Wasteland
-| decision 57: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
@@ -652,7 +620,7 @@ Player B played Wasteland
 (REPLAY) [T11 | First Main | Player B] Input: 2
 | >> Player B: 2 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 58: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Tropical Island
 |   1: Tropical Island
@@ -669,7 +637,7 @@ Player B sacrifices Wasteland
 Player B's Wasteland ability targeting Tropical Island is on the stack
 Resolving ability (category: Destroy)
 Tropical Island is destroyed
-| decision 59: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
@@ -679,11 +647,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [4/4] -> Player A
-| decision 60: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -693,7 +657,7 @@ No creatures eligible to block.
   Dragon's Rage Channeler deals 4 damage to Player A (now at 1 life)
 --- End Combat Damage ---
 
-| decision 61: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
@@ -701,7 +665,7 @@ No creatures eligible to block.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 13 (Player A) --------
-| decision 62: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 53: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Fatal Push
@@ -711,11 +675,7 @@ No creatures eligible to block.
 (REPLAY) [T12 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Fatal Push)
 Choose target for Fatal Push:
-| decision 63: Player A (game 0, turn 12, UPKEEP, Player A active)
-| menu:
-|   0: Dragon's Rage Channeler
-(REPLAY) [T12 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Dragon's Rage Channeler)
+| auto: Player A: Dragon's Rage Channeler
 Targeting choice 0
 Player A activated Swamp for 1(B)
 Player A casts Fatal Push targeting Dragon's Rage Channeler
@@ -723,45 +683,45 @@ Resolving ability (category: Destroy)
 Dragon's Rage Channeler is destroyed
 Cori-Steel Cutter becomes unattached
 Player A draws Misty Rainforest
-| decision 64: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Misty Rainforest)
 Player A played Misty Rainforest
-| decision 65: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 55: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T12 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 66: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| decision 56: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T12 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 67: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 57: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T12 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 68: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
+| decision 58: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T12 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 69: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 59: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T12 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 70: Player A (game 0, turn 12, END_STEP, Player A active)
+| decision 60: Player A (game 0, turn 12, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -769,27 +729,27 @@ No creatures eligible to attack.
 | >> Player A: 0 (Pass priority)
 
 -------- TURN 14 (Player B) --------
-| decision 71: Player A (game 0, turn 13, UPKEEP, Player B active)
+| decision 61: Player A (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T13 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player B draws Murktide Regent
-| decision 72: Player A (game 0, turn 13, DRAW, Player B active)
+| decision 62: Player A (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T13 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 73: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Murktide Regent
 (REPLAY) [T13 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Murktide Regent)
 Choose how many cards to exile via Delve (2-5):
-| decision 74: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile 2 cards from graveyard (Delve)
 |   1: Exile 3 cards from graveyard (Delve)
@@ -798,7 +758,7 @@ Choose how many cards to exile via Delve (2-5):
 (REPLAY) [T13 | First Main | Player B] Input: 3
 | >> Player B: 3 (Exile 5 cards from graveyard (Delve))
 Choose a card to exile via Delve (1 of 5):
-| decision 75: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Dragon's Rage Channeler (Delve)
 |   1: Exile Force of Will (Delve)
@@ -812,7 +772,7 @@ Choose a card to exile via Delve (1 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Dragon's Rage Channeler (Delve))
 Choose a card to exile via Delve (2 of 5):
-| decision 76: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Dragon's Rage Channeler (Delve)
 |   1: Exile Force of Will (Delve)
@@ -826,7 +786,7 @@ Choose a card to exile via Delve (2 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Dragon's Rage Channeler (Delve))
 Choose a card to exile via Delve (3 of 5):
-| decision 77: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Force of Will (Delve)
 |   1: Exile Island (Delve)
@@ -839,7 +799,7 @@ Choose a card to exile via Delve (3 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Force of Will (Delve))
 Choose a card to exile via Delve (4 of 5):
-| decision 78: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Island (Delve)
 |   1: Exile Lightning Bolt (Delve)
@@ -851,7 +811,7 @@ Choose a card to exile via Delve (4 of 5):
 (REPLAY) [T13 | First Main | Player B] Input: 0
 | >> Player B: 0 (Exile Island (Delve))
 Choose a card to exile via Delve (5 of 5):
-| decision 79: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 69: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Exile Lightning Bolt (Delve)
 |   1: Exile Mishra's Bauble (Delve)
@@ -869,7 +829,7 @@ Player B exiles Force of Will via Delve.
 Player B exiles Island via Delve.
 Player B exiles Lightning Bolt via Delve.
 Player B casts Murktide Regent
-| decision 80: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 70: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -877,23 +837,19 @@ Player B casts Murktide Regent
 | >> Player A: 0 (Pass priority)
 Murktide Regent enters the battlefield
 Murktide Regent enters with 2 +1/+1 counter(s) (5/5).
-| decision 81: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 71: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Equip Cori-Steel Cutter
 (REPLAY) [T13 | First Main | Player B] Input: 1
 | >> Player B: 1 (Equip Cori-Steel Cutter)
 Choose target for Cori-Steel Cutter:
-| decision 82: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Murktide Regent
-(REPLAY) [T13 | First Main | Player B] Input: 0
-| >> Player B: 0 (Murktide Regent)
+| auto: Player B: Murktide Regent
 Targeting choice 0
 Player B activated Volcanic Island for 1(R)
 Player B activated Volcanic Island for 1(U)
 Player B's Cori-Steel Cutter ability targeting Murktide Regent is on the stack
-| decision 83: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 72: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -902,13 +858,13 @@ Player B's Cori-Steel Cutter ability targeting Murktide Regent is on the stack
 Resolving ability (category: Attach)
 Equipment attached.
 Murktide Regent gains 1/1 Trample & Haste (always)
-| decision 84: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 73: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T13 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 85: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| decision 74: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -916,7 +872,7 @@ Murktide Regent gains 1/1 Trample & Haste (always)
 | >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 86: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 75: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Murktide Regent [6/6]
 |   1: Confirm attackers
@@ -926,22 +882,18 @@ Murktide Regent attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Murktide Regent [6/6] -> Player A
-| decision 87: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Murktide Regent -> Player A
-| decision 88: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 76: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
 (REPLAY) [T13 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 89: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| decision 77: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)

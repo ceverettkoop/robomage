@@ -108,12 +108,13 @@ void knowledge_feed_match_frame(ObsConsumer consumer, Zone::Ownership viewer, co
     pass_errors(consumer, seat, nullptr);
 }
 
-void knowledge_append_tables(
-    ObsConsumer consumer, Zone::Ownership viewer, std::string *payload, std::vector<std::string> *errors) {
+bool knowledge_append_tables(ObsConsumer consumer, Zone::Ownership viewer, std::string *payload,
+    std::vector<std::string> *errors, rmstate::DecodedFrame *decoded) {
     const int seat = seat_index(viewer);
-    if (seat < 0) return;
+    if (seat < 0) return false;
     knowledge::Knowledge &know = *channel(consumer, seat).know;
-    know.feed(*payload);
+    rmstate::DecodedFrame frame;
+    const bool have_frame = know.feed(*payload, decoded ? &frame : nullptr);
     pass_errors(consumer, seat, errors);
     std::string blocks;
     uint32_t n = 0;
@@ -121,6 +122,11 @@ void knowledge_append_tables(
         fatal_error("knowledge: no k_* tables for a STATE frame (no SCHEMA frame fed)");
     const rmstate::DecodeResult res = rmstate::append_frame_blocks(payload, blocks, n);
     if (!res.ok()) fatal_error("knowledge: the k_* tables do not append to the STATE frame: " + res.message);
+    if (!have_frame) return false;
+    const rmstate::DecodeResult tail = rmstate::decode_appended_blocks(blocks, n, know.schema(), &frame);
+    if (!tail.ok()) fatal_error("knowledge: the k_* tables do not decode: " + tail.message);
+    *decoded = std::move(frame);
+    return true;
 }
 
 const knowledge::Knowledge *knowledge_instance(ObsConsumer consumer, Zone::Ownership viewer) {

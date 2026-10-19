@@ -138,6 +138,21 @@ bool SeatStream::decode_state(const std::string &payload, rmstate::DecodedFrame 
     return true;
 }
 
+bool SeatStream::adopt_state(rmstate::DecodedFrame *frame, std::string *err) const {
+    if (frame->header.schema_hash != schema_.hash) {
+        *err = "a STATE frame decoded against another schema";
+        return false;
+    }
+    for (rmstate::DecodedTable &t : frame->tables) {
+        t.def = schema_.find_table(t.id);
+        if (!t.def) {
+            *err = "a STATE frame's table " + std::to_string(t.id) + " is not in the schema";
+            return false;
+        }
+    }
+    return true;
+}
+
 int SeatStream::enum_value(const char *enum_name, const char *name) const {
     const std::vector<std::string> &values = enum_values(enum_name);
     for (size_t v = 0; v < values.size(); ++v)

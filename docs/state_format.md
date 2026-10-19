@@ -43,9 +43,10 @@ only for a moment:
 
 The events channel is required for three reasons:
 
-- **No frame while a reveal is live.** The engine never asks a seat whose only legal action is
-  a pass, so a viewer may get no frame while a card is revealed. Examples: Gitaxian Probe cast
-  on them, an upkeep reveal, a reveal that starts and ends inside one resolution.
+- **No frame while a reveal is live.** The engine never asks a seat a decision with one choice
+  (a lone pass, or any menu left with one row; section 9), so a viewer may get no frame while a
+  card is revealed. Examples: Gitaxian Probe cast on them, an upkeep reveal, a reveal that starts
+  and ends inside one resolution.
 - **Moves into hidden zones are explicit only at the moment they happen.** "The card you saw
   goes on top of their library" is visible then and nowhere afterwards.
 - **A shuffle invalidates positional knowledge,** and the actor has to be told it happened.
@@ -429,6 +430,14 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   - Menu row *i* is the action reply *i* selects: the menu as offered, after the
     interchangeable-choice collapse (register 17). `-1` is the last row. End of input or an
     unparseable line reads as `-1`.
+  - **One-row menus are not asked.** A decision whose menu has one row after the collapse (a lone
+    pass at priority, a confirm with no attacker or blocker left to declare, a single legal
+    target, a search that can only fail to find, a sideboarding phase with no sideboard, …) is
+    taken by the engine itself, for every consumer alike (the stream, the in-process agents and
+    their teachers, the CLI's human seats, `--play` / `--actions`, `--replay`): no frame is built
+    for it, it has no decision number (`header.decision` counts asked decisions), it is not in the
+    decision log, and the decision caps do not count it. Its events reach the seat's next frame.
+    A seat can concede only at an asked decision.
   - **Terminal frame.** Once the match is over (after its `match_end` event) each seat, A then B,
     gets one more `STATE` frame with `header.terminal = 1`, no menu and no reply: it carries the
     seat's last events (`game_end`, `match_end`). The engine then exits. `--rmstate-dump` ends

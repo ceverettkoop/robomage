@@ -568,6 +568,12 @@ void split_engine_output(
     std::vector<std::string> all;
     for (const std::string &line : split_lines(text)) {
         if (starts_with(line, "| ")) {
+            // ^\| auto: Player [AB]: (.*)$ — a one-row menu the engine took without asking
+            if (starts_with(line, "| auto: ")) {
+                const size_t colon = line.find(": ", 8);
+                if (colon != std::string::npos) actions->push_back(line.substr(colon + 2));
+                continue;
+            }
             // ^\|   \d+: (.*)$
             if (starts_with(line, "|   ")) {
                 size_t i = 4;

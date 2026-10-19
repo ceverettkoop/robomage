@@ -77,17 +77,13 @@ Aether Vial enters the battlefield
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T0 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 No creatures eligible to attack.
 
 -------- TURN 2 (Player B) --------
 Player B draws Flooded Strand
-| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -97,7 +93,7 @@ Player B draws Flooded Strand
 (REPLAY) [T1 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Flooded Strand (ChangeZone)
@@ -108,7 +104,7 @@ Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -119,7 +115,7 @@ Searching Player B's library:
 | >> Player B: 4 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -133,7 +129,7 @@ Player B draws Wrath of the Skies
 Player B draws Brainstorm
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Flooded Strand
@@ -148,7 +144,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 1 (Flooded Strand)
 Player B puts Flooded Strand to top of library
 Player B chooses a card from Player B hand:
-| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Force of Will
@@ -165,13 +161,13 @@ No creatures eligible to attack.
 
 -------- TURN 3 (Player A) --------
 Aether Vial triggered
-| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 14: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -179,20 +175,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 1).
-| decision 15: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 14: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Wasteland
-| decision 16: Player A (game 0, turn 2, DRAW, Player A active)
+| decision 15: Player A (game 0, turn 2, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -203,27 +199,23 @@ Player A draws Wasteland
 | >> Player A: 3 (Cast Aether Vial)
 Player A activated Scrubland for 1(W)
 Player A casts Aether Vial
-| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Aether Vial (ChangeZone))
 Player A's Aether Vial ability is on the stack
-| decision 19: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 18: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T2 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 20: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Aether Vial
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Aether Vial)
+| auto: Player B: Aether Vial
 Targeting choice 0
-| decision 21: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 19: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Brainstorm
 |   1: Exile Geist of Saint Traft
@@ -236,13 +228,9 @@ Resolving ability (category: Counter)
 Aether Vial is countered
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
-| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -250,14 +238,14 @@ Player A fails to find
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 25: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Tundra
 |   1: Scrubland
@@ -273,7 +261,7 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Meticulous Archive
-| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Meticulous Archive
@@ -286,7 +274,7 @@ Meticulous Archive triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Flooded Strand
-| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Flooded Strand on top of library
 |   1: Put Flooded Strand into graveyard
@@ -296,13 +284,13 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Aether Vial triggered
-| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -310,20 +298,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 2).
-| decision 30: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Witch Enchanter
-| decision 31: Player A (game 0, turn 4, DRAW, Player A active)
+| decision 28: Player A (game 0, turn 4, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -332,7 +320,7 @@ Player A draws Witch Enchanter
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -344,7 +332,7 @@ Player A played Wasteland
 Player A activated Scrubland for 1(B)
 Player A activated Wasteland for 1(C)
 Player A casts Orcish Bowmasters
-| decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -353,7 +341,7 @@ Player A casts Orcish Bowmasters
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 35: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Phelia, Exuberant Shepherd
@@ -362,7 +350,7 @@ Player A chooses a card from Player A hand:
 Player A puts Phelia, Exuberant Shepherd to the battlefield
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (18 life)
 |   1: Player A (20 life)
@@ -379,14 +367,14 @@ Amass Orc 1: Player A Army is now 1/1.
 No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
-| decision 37: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 34: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 38: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 35: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Orcish Bowmasters
 |   1: Phelia, Exuberant Shepherd
@@ -401,7 +389,7 @@ Phelia, Exuberant Shepherd is moved to exile
 Resolving ability (category: GainLife, amount: 2)
 Player A gains 2 life (now at 22)
 Player B draws Flooded Strand
-| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -409,7 +397,7 @@ Player B draws Flooded Strand
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Flooded Strand (ChangeZone)
@@ -420,7 +408,7 @@ Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -435,14 +423,14 @@ No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
 Aether Vial triggered
-| decision 42: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 39: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 43: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 40: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -450,7 +438,7 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 3).
-| decision 44: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 41: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -458,14 +446,14 @@ Put 1 CHARGE counter(s) on Aether Vial (now 3).
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws White Orchid Phantom
-| decision 45: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 42: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Witch-Blessed Meadow
@@ -474,14 +462,14 @@ Player A draws White Orchid Phantom
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Witch-Blessed Meadow)
 Player A played Witch-Blessed Meadow
-| decision 47: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 44: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Decline: pay 3 life so it enters untapped
 |   1: Accept: pay 3 life so it enters untapped
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Accept: pay 3 life so it enters untapped)
 Player A pays 3 life.
-| decision 48: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -495,7 +483,7 @@ Player A activated Witch-Blessed Meadow for 1(W)
 Player A activated Wasteland for 1(C)
 Player A activated Scrubland for 1(W)
 Player A casts Pre-War Formalwear
-| decision 49: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -504,17 +492,13 @@ Player A casts Pre-War Formalwear
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 50: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T6 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 Pre-War Formalwear enters the battlefield
 Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
 
 --- Declare Attackers (Player A) ---
-| decision 51: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 47: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Orc Army token [1/1]
@@ -525,7 +509,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 52: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 48: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Confirm attackers
@@ -536,11 +520,7 @@ Orc Army token attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
-| decision 53: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
@@ -555,7 +535,7 @@ No creatures eligible to block.
 
 -------- TURN 8 (Player B) --------
 Player B draws Force of Negation
-| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
@@ -563,34 +543,26 @@ Player B draws Force of Negation
 (REPLAY) [T7 | First Main | Player B] Input: 2
 | >> Player B: 2 (Cast Wrath of the Skies)
 Choose X value (0-0):
-| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: X = 0
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (X = 0)
+| auto: Player B: X = 0
 Player B chooses X = 0
 Player B activated Meticulous Archive for 1(W)
 Player B activated Tundra for 1(W)
 Player B casts Wrath of the Skies
 Resolving ability (category: PutCounter, amount: 0)
 Resolving ability (category: ChooseNumber)
-| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: 0
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (0)
+| auto: Player B: 0
 Player B chooses 0.
 Resolving ability (category: DestroyAll)
 Orc Army token is destroyed
 Orc Army (token) is put into the graveyard and ceases to exist.
-| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Polluted Delta)
 Player B played Polluted Delta
-| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Polluted Delta (ChangeZone)
@@ -601,7 +573,7 @@ Player B sacrifices Polluted Delta
 Player B's Polluted Delta ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -615,14 +587,14 @@ No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
 Aether Vial triggered
-| decision 60: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 53: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 61: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 54: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -630,7 +602,7 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 4).
-| decision 62: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 55: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -638,14 +610,14 @@ Put 1 CHARGE counter(s) on Aether Vial (now 4).
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws White Orchid Phantom
-| decision 63: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 56: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -659,15 +631,22 @@ Player A draws White Orchid Phantom
 Player A activated Witch-Blessed Meadow for 1(W)
 Player A activated Scrubland for 1(W)
 Player A casts White Orchid Phantom
-| decision 65: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
-(REPLAY) [T8 | First Main | Player A] Input: 2
-| >> Player A: 2 (Activate Wasteland (Destroy))
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 66: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Meticulous Archive
 |   1: Tundra
@@ -680,23 +659,15 @@ Choose target for Wasteland:
 Targeting choice 0
 Player A sacrifices Wasteland
 Player A's Wasteland ability targeting Meticulous Archive is on the stack
-| decision 67: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Meticulous Archive is destroyed
-| decision 68: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
 White Orchid Phantom enters the battlefield
 Choose target for White Orchid Phantom:
-| decision 69: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Tundra
@@ -707,17 +678,11 @@ Choose target for White Orchid Phantom:
 | >> Player A: 1 (Tundra)
 Targeting choice 1
 White Orchid Phantom triggered
-| decision 70: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Tundra is destroyed
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 71: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 62: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -727,21 +692,9 @@ Searching Player B's library:
 Player B shuffles their library
 Player B puts Island to the battlefield
 Island enters tapped.
-| decision 72: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 73: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 74: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 63: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Confirm attackers
@@ -751,72 +704,20 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 75: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
-| decision 76: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 77: Player A (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
   Orcish Bowmasters deals 1 damage to Player B (now at 12 life)
 --- End Combat Damage ---
 
-| decision 78: Player A (game 0, turn 8, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 79: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 80: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 81: Player A (game 0, turn 8, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 -------- TURN 10 (Player B) --------
-| decision 82: Player A (game 0, turn 9, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Player B draws Tamiyo, Inquisitive Student
-| decision 83: Player A (game 0, turn 9, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 84: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tamiyo, Inquisitive Student
@@ -824,60 +725,18 @@ Player B draws Tamiyo, Inquisitive Student
 | >> Player B: 1 (Cast Tamiyo, Inquisitive Student)
 Player B activated Island for 1(U)
 Player B casts Tamiyo, Inquisitive Student
-| decision 85: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Tamiyo, Inquisitive Student enters the battlefield
-| decision 86: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 87: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 88: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 89: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 90: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 91: Player A (game 0, turn 9, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 -------- TURN 11 (Player A) --------
 Aether Vial triggered
-| decision 92: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 65: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 93: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 66: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -885,20 +744,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 5).
-| decision 94: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 67: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Prismatic Vista
-| decision 95: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 68: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 96: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 69: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Prismatic Vista
@@ -909,15 +768,20 @@ Player A draws Prismatic Vista
 Player A activated Witch-Blessed Meadow for 1(W)
 Player A activated Scrubland for 1(W)
 Player A casts White Orchid Phantom
-| decision 97: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 70: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
 White Orchid Phantom enters the battlefield
 Choose target for White Orchid Phantom:
-| decision 98: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 71: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Tundra
@@ -927,13 +791,7 @@ Choose target for White Orchid Phantom:
 | >> Player A: 1 (Tundra)
 Targeting choice 1
 White Orchid Phantom triggered
-| decision 99: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 100: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 72: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Tundra for (U)
@@ -944,7 +802,7 @@ Resolving ability (category: Destroy)
 Tundra is destroyed
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 101: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 73: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -954,33 +812,25 @@ Searching Player B's library:
 Player B shuffles their library
 Player B puts Plains to the battlefield
 Plains enters tapped.
-| decision 102: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 74: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Prismatic Vista
-|   2: Activate Aether Vial (ChangeZone)
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Prismatic Vista)
 Player A played Prismatic Vista
-| decision 103: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 75: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Prismatic Vista (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 2
-| >> Player A: 2 (Activate Prismatic Vista (ChangeZone))
+|   1: Activate Prismatic Vista (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Prismatic Vista (ChangeZone))
 Player A pays 1 life
 Player A sacrifices Prismatic Vista
 Player A's Prismatic Vista ability is on the stack
-| decision 104: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 105: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 76: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -989,21 +839,9 @@ Searching Player A's library:
 | >> Player A: 1 (Plains)
 Player A shuffles their library
 Player A puts Plains to the battlefield
-| decision 106: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 107: Player A (game 0, turn 10, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 108: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 77: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: White Orchid Phantom [2/2]
@@ -1014,7 +852,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 109: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 78: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Confirm attackers
@@ -1025,28 +863,18 @@ White Orchid Phantom attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 110: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
   White Orchid Phantom -> Player B
-| decision 111: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Blockers (Player B) ---
 Attackers:
   0: Orcish Bowmasters [1/1]
   1: White Orchid Phantom [2/2]
 Your creatures:
-| decision 112: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| decision 79: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm blockers
@@ -1055,68 +883,20 @@ Your creatures:
 
 Blockers declared:
   (none)
-| decision 113: Player A (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- First Strike Combat Damage ---
   White Orchid Phantom deals 2 damage to Player B (now at 10 life)
 --- End First Strike Combat Damage ---
 
-| decision 114: Player A (game 0, turn 10, FIRST_STRIKE_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Strike Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
   Orcish Bowmasters deals 1 damage to Player B (now at 9 life)
 --- End Combat Damage ---
 
-| decision 115: Player A (game 0, turn 10, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 116: Player A (game 0, turn 10, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 117: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 118: Player A (game 0, turn 10, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 -------- TURN 12 (Player B) --------
-| decision 119: Player A (game 0, turn 11, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Player B draws Mystic Sanctuary
-| decision 120: Player A (game 0, turn 11, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 121: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 80: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -1124,21 +904,9 @@ Player B draws Mystic Sanctuary
 | >> Player B: 1 (Play Mystic Sanctuary)
 Player B played Mystic Sanctuary
 Mystic Sanctuary enters tapped.
-| decision 122: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 123: Player A (game 0, turn 11, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 124: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 81: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -1148,41 +916,25 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 125: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
 Tamiyo, Inquisitive Student triggered
-| decision 126: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 127: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 82: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T11 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 128: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Blockers (Player A) ---
 Attackers:
   0: Tamiyo, Inquisitive Student [0/3]
 Your creatures:
-| decision 129: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 83: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Confirm blockers
@@ -1191,47 +943,29 @@ Your creatures:
 
 Blockers declared:
   (none)
-| decision 130: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 84: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T11 | Declare Blockers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 131: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 132: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
+| decision 85: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T11 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 133: Player A (game 0, turn 11, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 134: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| decision 86: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T11 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 135: Player A (game 0, turn 11, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 136: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| decision 87: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -1242,16 +976,10 @@ Player B activated Island for 1(U)
 Player B sacrifices Clue token
 Player B's Clue ability is on the stack
 Clue (token) is put into the graveyard and ceases to exist.
-| decision 137: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Murktide Regent
 Choose target for Orcish Bowmasters:
-| decision 138: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
+| decision 88: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
 | menu:
 |   0: Player B (9 life)
 |   1: Player A (18 life)
@@ -1263,38 +991,20 @@ Choose target for Orcish Bowmasters:
 | >> Player A: 0 (Player B (9 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 139: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player B (now at 8 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 1/1.
-| decision 140: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 141: Player A (game 0, turn 11, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 -------- TURN 13 (Player A) --------
 Aether Vial triggered
-| decision 142: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 89: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T12 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 143: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 90: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -1302,20 +1012,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 6).
-| decision 144: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 91: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T12 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Arid Mesa
-| decision 145: Player A (game 0, turn 12, DRAW, Player A active)
+| decision 92: Player A (game 0, turn 12, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T12 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 146: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 93: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Arid Mesa
@@ -1325,27 +1035,28 @@ Player A draws Arid Mesa
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Arid Mesa)
 Player A played Arid Mesa
-| decision 147: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 94: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Arid Mesa (ChangeZone)
 |   4: Equip Pre-War Formalwear
-(REPLAY) [T12 | First Main | Player A] Input: 3
-| >> Player A: 3 (Activate Arid Mesa (ChangeZone))
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 95: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Arid Mesa (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Arid Mesa (ChangeZone))
 Player A pays 1 life
 Player A sacrifices Arid Mesa
 Player A's Arid Mesa ability is on the stack
-| decision 148: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 149: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 96: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Plains
@@ -1355,16 +1066,19 @@ Searching Player A's library:
 | >> Player A: 2 (Scrubland)
 Player A shuffles their library
 Player A puts Scrubland to the battlefield
-| decision 150: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 97: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Equip Pre-War Formalwear
-(REPLAY) [T12 | First Main | Player A] Input: 3
-| >> Player A: 3 (Equip Pre-War Formalwear)
+|   2: Equip Pre-War Formalwear
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Equip Pre-War Formalwear)
 Choose target for Pre-War Formalwear:
-| decision 151: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 98: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Orcish Bowmasters
 |   1: White Orchid Phantom
@@ -1377,30 +1091,12 @@ Player A activated Plains for 1(W)
 Player A activated Scrubland for 1(W)
 Player A activated Scrubland for 1(W)
 Player A's Pre-War Formalwear ability targeting White Orchid Phantom is on the stack
-| decision 152: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Attach)
 Equipment attached.
 White Orchid Phantom gains 2/2 Vigilance (always)
-| decision 153: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 154: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 155: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 99: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: White Orchid Phantom [4/4]
@@ -1413,7 +1109,7 @@ Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 156: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 100: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [4/4]
 |   1: White Orchid Phantom [2/2]
@@ -1426,7 +1122,7 @@ White Orchid Phantom attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] White Orchid Phantom [4/4] -> Player B
-| decision 157: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 101: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Orc Army token [1/1]
@@ -1439,7 +1135,7 @@ White Orchid Phantom attacking Player B.
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] White Orchid Phantom [4/4] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 158: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 102: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Confirm attackers
@@ -1452,42 +1148,20 @@ Orc Army token attacking Player B.
   [attacking] White Orchid Phantom [4/4] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
-| decision 159: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
   White Orchid Phantom -> Player B
   White Orchid Phantom -> Player B
   Orc Army token -> Player B
-| decision 160: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 161: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- First Strike Combat Damage ---
   White Orchid Phantom deals 4 damage to Player B (now at 4 life)
   White Orchid Phantom deals 2 damage to Player B (now at 2 life)
 --- End First Strike Combat Damage ---
 
-| decision 162: Player A (game 0, turn 12, FIRST_STRIKE_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Strike Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
   Orcish Bowmasters deals 1 damage to Player B (now at 1 life)

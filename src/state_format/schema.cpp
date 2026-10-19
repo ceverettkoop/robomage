@@ -684,9 +684,17 @@ const TableDef &table_def(TableId id) {
 }
 
 const TableDef *find_table_def(uint16_t id) {
-    for (const TableDef &t : table_defs())
-        if (static_cast<uint16_t>(t.id) == id) return &t;
-    return nullptr;
+    // Indexed by id once: a row of every frame looks its table up.
+    static const std::vector<const TableDef *> by_id = [] {
+        std::vector<const TableDef *> v;
+        for (const TableDef &t : table_defs()) {
+            const size_t i = static_cast<uint16_t>(t.id);
+            if (v.size() <= i) v.resize(i + 1, nullptr);
+            v[i] = &t;
+        }
+        return v;
+    }();
+    return id < by_id.size() ? by_id[id] : nullptr;
 }
 
 uint32_t storage_width(Storage storage) {
@@ -748,7 +756,9 @@ std::vector<EnumTable> format_enums() {
 // ── FrameWriter ───────────────────────────────────────────────────────────────────────────────
 
 static void append_le(std::string &out, uint64_t v, uint32_t width) {
-    for (uint32_t i = 0; i < width; ++i) out.push_back(static_cast<char>((v >> (8 * i)) & 0xFFu));
+    char b[8];
+    for (uint32_t i = 0; i < width; ++i) b[i] = static_cast<char>((v >> (8 * i)) & 0xFFu);
+    out.append(b, width);
 }
 
 static void check_failed(const char *what, const TableDef *def, size_t col) {
@@ -762,7 +772,11 @@ FrameWriter::FrameWriter(FrameKind kind, Viewer viewer, uint64_t schema_hash)
     : kind_(kind), viewer_(viewer), schema_hash_(schema_hash) {}
 
 TableBuf &FrameWriter::buf(TableId id) {
-    return tables_[static_cast<uint16_t>(id)];
+    const uint16_t i = static_cast<uint16_t>(id);
+    if (i < BUF_CACHE && buf_cache_[i]) return *buf_cache_[i];
+    TableBuf &b = tables_[i];
+    if (i < BUF_CACHE) buf_cache_[i] = &b;
+    return b;
 }
 
 uint32_t FrameWriter::row_count(TableId id) const {
@@ -777,6 +791,8 @@ FrameWriter::Row::Row(FrameWriter &w, TableId id) : buf_(&w.buf(id)), def_(&tabl
     if (buf_->bytes.size() != static_cast<size_t>(buf_->rows) * def_->row_width)
         check_failed("row started before the previous one was complete", def_, 0);
 #endif
+    at_ = buf_->bytes.size();
+    buf_->bytes.resize(at_ + def_->row_width);
 }
 
 FrameWriter::Row::~Row() {
@@ -798,7 +814,8 @@ void FrameWriter::Row::put(Storage s, uint64_t bits) {
         if (width < 8 && (bits >> (8 * width)) != 0) check_failed("value out of the column's range", def_, col_);
     }
 #endif
-    append_le(buf_->bytes, bits, width);
+    char *cell = &buf_->bytes[at_ + def_->columns[col_].offset];
+    for (uint32_t i = 0; i < width; ++i) cell[i] = static_cast<char>((bits >> (8 * i)) & 0xFFu);
     ++col_;
 }
 
@@ -847,7 +864,7 @@ FrameWriter::Row &FrameWriter::Row::f32(float v) {
     return *this;
 }
 FrameWriter::Row &FrameWriter::Row::text(const std::string &s) {
-    buf_->texts.emplace_back(buf_->bytes.size(), s);
+    buf_->texts.emplace_back(at_ + def_->columns[col_].offset, s);
     put(Storage::TEXT, 0);
     return *this;
 }
@@ -885,6 +902,9 @@ std::string FrameWriter::finish() {
         if (kv.second.rows > 0) ++n_tables;
 
     std::string out;
+    size_t total = FRAME_HEADER_SIZE;
+    for (const auto &kv : tables_) total += TABLE_HEADER_SIZE + kv.second.bytes.size() + ROW_ALIGN;
+    out.reserve(total);
     append_le(out, FRAME_MAGIC, 4);
     append_le(out, FORMAT_VERSION, 2);
     append_le(out, static_cast<uint8_t>(kind_), 1);

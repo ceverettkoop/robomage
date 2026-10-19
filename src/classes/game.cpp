@@ -130,7 +130,7 @@ void Game::take_action() {
     priority.payment_fail_counts.clear();
 }
 
-void Game::end_cleanup_effects(const std::set<Entity> &entities) {
+void Game::end_cleanup_effects(const EntitySet &entities) {
     Zone::Ownership active_player = active_seat();
     // Clear damage from all creatures; reset prowess bonus
     for (Entity entity : entities) {

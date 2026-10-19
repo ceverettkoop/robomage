@@ -57,28 +57,26 @@ public:
 	// the map uses (stable per process); the per-system sets are independent, so
 	// iteration order is irrelevant. Only the sets are copied — the system objects
 	// themselves stay in place.
-	std::unordered_map<const char*, std::set<Entity>> snapshot_systems() const
-	{
-		std::unordered_map<const char*, std::set<Entity>> out;
-		for (auto const& pair : mSystems) out[pair.first] = pair.second->mEntities;
-		return out;
-	}
-	void restore_systems(const std::unordered_map<const char*, std::set<Entity>>& snap)
-	{
-		for (auto const& pair : mSystems)
-		{
-			auto it = snap.find(pair.first);
-			// Belt-and-braces: a live system missing from the snapshot map means the
-			// snapshot was taken against a different system registration than the one
-			// we are restoring into (e.g. a cross-game restore where init_ecs()
-			// re-registered a different set/order). fatal_error isn't reachable here,
-			// so assert loudly rather than silently leaving that system's entity set
-			// stale. Within one binary init_ecs() always re-registers the same 3
-			// systems, so this never trips in practice.
-			assert(it != snap.end() && "restore_systems: live system absent from snapshot map");
-			if (it != snap.end()) pair.second->mEntities = it->second;
-		}
-	}
+        std::unordered_map<const char *, EntitySet> snapshot_systems() const {
+            std::unordered_map<const char *, EntitySet> out;
+            for (auto const &pair : mSystems) out[pair.first] = pair.second->mEntities;
+            return out;
+        }
+        void restore_systems(const std::unordered_map<const char *, EntitySet> &snap) {
+            for (auto const &pair : mSystems) {
+                auto it = snap.find(pair.first);
+                // Belt-and-braces: a live system missing from the snapshot map means the
+                // snapshot was taken against a different system registration than the one
+                // we are restoring into (e.g. a cross-game restore where init_ecs()
+                // re-registered a different set/order). fatal_error isn't reachable here,
+                // so assert loudly rather than silently leaving that system's entity set
+                // stale. Within one binary init_ecs() always re-registers the same 3
+                // systems, so this never trips in practice.
+                assert(it != snap.end() && "restore_systems: live system absent from snapshot map");
+                if (it != snap.end()) pair.second->mEntities = it->second;
+            }
+        }
+
 private:
 	std::unordered_map<const char*, Signature> mSignatures{};
 	std::unordered_map<const char*, std::shared_ptr<System>> mSystems{};

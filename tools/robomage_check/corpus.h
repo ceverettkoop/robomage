@@ -9,7 +9,7 @@
 
 // ── robomage_check: the replay corpus (tests/corpus/) ─────────────────────────────────────────
 //
-// Each corpus game is a decision log, <name>.rmlog (RMLOG v2: the seed, the setup flags, both
+// Each corpus game is a decision log, <name>.rmlog (RMLOG v3: the seed, the setup flags, both
 // decklists and every decision), recorded from the scripted agent's games by
 // python/record_corpus.py, and a baseline, <name>.replay: the engine's
 //

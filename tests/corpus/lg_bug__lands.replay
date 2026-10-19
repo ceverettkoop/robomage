@@ -539,25 +539,21 @@ Tamiyo, Inquisitive Student attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
-| decision 48: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player B
 Tamiyo, Inquisitive Student triggered
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 49: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 48: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 50: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| decision 49: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -567,19 +563,19 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 51: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| decision 50: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T6 | Combat Damage | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 52: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| decision 51: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T6 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 53: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| decision 52: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -594,7 +590,7 @@ Resolving ability (category: Draw, amount: 1)
 Player A draws Baleful Strix
 
 -------- TURN 8 (Player B) --------
-| decision 54: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 53: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -603,7 +599,7 @@ Player A draws Baleful Strix
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Wasteland
-| decision 55: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 54: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -613,7 +609,7 @@ Player B draws Wasteland
 | >> Player B: 0 (Pass priority)
 Urza's Saga gets 1 lore counter (now 2).
 Urza's Saga chapter 2 triggers.
-| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -623,7 +619,7 @@ Urza's Saga chapter 2 triggers.
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Animate)
 Urza's Saga gains an activated ability.
-| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Dark Depths
@@ -640,7 +636,7 @@ Player B's Urza's Saga ability is on the stack
 Resolving ability (category: Token)
 Token created: 0/0 Construct
 Construct token gains (always)
-| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Dark Depths
@@ -649,21 +645,21 @@ Construct token gains (always)
 | >> Player B: 1 (Play Dark Depths)
 Player B played Dark Depths
 Dark Depths enters with 10 ICE counter(s).
-| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Wasteland)
 Player B played Wasteland
-| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Tropical Island
 |   1: Tropical Island
@@ -683,14 +679,14 @@ No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
 Player A draws Swamp
-| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Swamp
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Swamp)
 Player A played Swamp
-| decision 63: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Baleful Strix
@@ -710,7 +706,7 @@ Resolving ability (category: Draw, amount: 1)
 Player A draws Misty Rainforest
 
 --- Declare Attackers (Player A) ---
-| decision 64: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 63: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -721,7 +717,7 @@ Attackers declared:
   (none)
 
 -------- TURN 10 (Player B) --------
-| decision 65: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 64: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -742,7 +738,7 @@ Urza's Saga gets 1 lore counter (now 3).
 Urza's Saga chapter 3 triggers.
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Grafdigger's Cage
@@ -755,7 +751,7 @@ Player B puts Grafdigger's Cage to the battlefield
 Urza's Saga is sacrificed (final chapter completed).
 
 --- Declare Attackers (Player B) ---
-| decision 67: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 66: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Construct token [5/5]
 |   1: Confirm attackers
@@ -765,11 +761,7 @@ Construct token attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Construct token [5/5] -> Player A
-| decision 68: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Construct token -> Player A
@@ -778,7 +770,7 @@ Attackers declared:
 Attackers:
   0: Construct token [5/5]
 Your creatures:
-| decision 69: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| decision 67: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Baleful Strix [1/1]
 |   1: Tamiyo, Inquisitive Student [0/3]
@@ -795,7 +787,7 @@ Blockers declared:
 
 
 -------- TURN 11 (Player A) --------
-| decision 70: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 68: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Fatal Push
@@ -805,7 +797,7 @@ Blockers declared:
 (REPLAY) [T10 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Fatal Push)
 Choose target for Fatal Push:
-| decision 71: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 69: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Construct token
 |   1: Construct token
@@ -820,13 +812,13 @@ Resolving ability (category: Destroy)
 Construct token is destroyed
 Construct (token) is put into the graveyard and ceases to exist.
 Player A draws Lórien Revealed
-| decision 72: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 70: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Lórien Revealed from hand (ChangeZone)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 73: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 71: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -834,7 +826,7 @@ Player A draws Lórien Revealed
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Misty Rainforest)
 Player A played Misty Rainforest
-| decision 74: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 72: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -844,7 +836,7 @@ Player A played Misty Rainforest
 Player A pays 1 life
 Player A sacrifices Misty Rainforest
 Player A's Misty Rainforest ability is on the stack
-| decision 75: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 73: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Lórien Revealed from hand (ChangeZone)
@@ -854,7 +846,7 @@ Player A activated Tropical Island for 1(G)
 Player A activates Lórien Revealed from hand
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 76: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 74: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -867,7 +859,7 @@ Player A shuffles their library
 Player A reveals Tropical Island and puts it to hand
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 77: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 75: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Bayou
@@ -879,7 +871,7 @@ Searching Player A's library:
 | >> Player A: 1 (Bayou)
 Player A shuffles their library
 Player A puts Bayou to the battlefield
-| decision 78: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 76: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Fatal Push
@@ -887,7 +879,7 @@ Player A puts Bayou to the battlefield
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Fatal Push)
 Choose target for Fatal Push:
-| decision 79: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 77: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Construct token
 |   1: Baleful Strix
@@ -902,7 +894,7 @@ Construct token is destroyed
 Construct (token) is put into the graveyard and ceases to exist.
 
 --- Declare Attackers (Player A) ---
-| decision 80: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 78: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Baleful Strix [1/1]
 |   1: Tamiyo, Inquisitive Student [0/3]
@@ -913,7 +905,7 @@ Baleful Strix attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Baleful Strix [1/1] -> Player B
-| decision 81: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 79: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -924,11 +916,7 @@ Tamiyo, Inquisitive Student attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Baleful Strix [1/1] -> Player B
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
-| decision 82: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Baleful Strix -> Player B
@@ -944,7 +932,7 @@ No creatures eligible to block.
 
 
 -------- TURN 12 (Player B) --------
-| decision 83: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 80: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -953,7 +941,7 @@ No creatures eligible to block.
 (REPLAY) [T11 | Upkeep | Player B] Input: 3
 | >> Player B: 3 (Activate Thespian's Stage (Clone))
 Choose target for Thespian's Stage:
-| decision 84: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 81: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Bayou
 |   1: Swamp
@@ -970,7 +958,7 @@ Player B's Thespian's Stage ability targeting Dark Depths is on the stack
 Resolving ability (category: Clone)
 Thespian's Stage becomes a copy of Dark Depths.
 Legend rule: Player B controls 2 copies of Dark Depths; choose one to keep.
-| decision 85: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 82: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Keep Dark Depths
 |   1: Keep Dark Depths
@@ -982,7 +970,7 @@ Player B sacrifices Dark Depths.
 Resolving ability (category: Token)
 Token created: 20/20 Marit Lage
 Player B draws Mox Diamond
-| decision 86: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 83: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Mox Diamond
@@ -994,7 +982,7 @@ Mox Diamond enters the battlefield
 No creatures eligible to attack.
 
 -------- TURN 13 (Player A) --------
-| decision 87: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 84: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -1007,7 +995,7 @@ Player A activated Bayou for 1(G)
 Player A casts Orcish Bowmasters
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 88: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 85: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Player B (19 life)
 |   1: Player A (14 life)
@@ -1024,7 +1012,7 @@ Orcish Bowmasters deals 1 damage to Player B (now at 18 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 1/1.
 Player A draws Underground Sea
-| decision 89: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 86: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Tropical Island
@@ -1032,7 +1020,7 @@ Player A draws Underground Sea
 (REPLAY) [T12 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Tropical Island)
 Player A played Tropical Island
-| decision 90: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 87: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -1047,7 +1035,7 @@ Resolving ability (category: Draw, amount: 1)
 Player A draws Force of Will
 
 --- Declare Attackers (Player A) ---
-| decision 91: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 88: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Baleful Strix [1/1]
 |   1: Tamiyo, Inquisitive Student [0/3]
@@ -1059,20 +1047,20 @@ Attackers declared:
   (none)
 
 -------- TURN 14 (Player B) --------
-| decision 92: Player B (game 0, turn 13, UPKEEP, Player B active)
+| decision 89: Player B (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
 (REPLAY) [T13 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Yavimaya, Cradle of Growth
-| decision 93: Player B (game 0, turn 13, DRAW, Player B active)
+| decision 90: Player B (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
 (REPLAY) [T13 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 94: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 91: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Yavimaya, Cradle of Growth
@@ -1083,7 +1071,7 @@ Player B draws Yavimaya, Cradle of Growth
 Player B activated Mox Diamond for 1(W)
 Player B activated Blast Zone for 1(C)
 Player B casts Sphere of Resistance
-| decision 95: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 92: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -1091,23 +1079,15 @@ Player B casts Sphere of Resistance
 (REPLAY) [T13 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 96: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Sphere of Resistance
-(REPLAY) [T13 | First Main | Player A] Input: 0
-| >> Player A: 0 (Sphere of Resistance)
+| auto: Player A: Sphere of Resistance
 Targeting choice 0
-| decision 97: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Exile Force of Will
-(REPLAY) [T13 | First Main | Player A] Input: 0
-| >> Player A: 0 (Exile Force of Will)
+| auto: Player A: Exile Force of Will
 Player A pays 1 life
 Player A exiles Force of Will
 Player A casts Force of Will targeting Sphere of Resistance
 Resolving ability (category: Counter)
 Sphere of Resistance is countered
-| decision 98: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| decision 93: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Yavimaya, Cradle of Growth
@@ -1116,7 +1096,7 @@ Sphere of Resistance is countered
 Player B played Yavimaya, Cradle of Growth
 
 --- Declare Attackers (Player B) ---
-| decision 99: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| decision 94: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Marit Lage token [20/20]
 |   1: Confirm attackers
@@ -1126,11 +1106,7 @@ Marit Lage token attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Marit Lage token [20/20] -> Player A
-| decision 100: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Marit Lage token -> Player A
@@ -1139,7 +1115,7 @@ Attackers declared:
 Attackers:
   0: Marit Lage token [20/20]
 Your creatures:
-| decision 101: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| decision 95: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Baleful Strix [1/1]
 |   1: Tamiyo, Inquisitive Student [0/3]
@@ -1147,11 +1123,7 @@ Your creatures:
 (REPLAY) [T13 | Declare Blockers | Player A] Input: 1
 | >> Player A: 1 (Tamiyo, Inquisitive Student [0/3])
 Select attacker for Tamiyo, Inquisitive Student to block:
-| decision 102: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Marit Lage token [20/20]
-(REPLAY) [T13 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Marit Lage token [20/20])
+| auto: Player A: Marit Lage token [20/20]
 Tamiyo, Inquisitive Student blocking Marit Lage token.
 
 --- Declare Blockers (Player A) ---
@@ -1159,7 +1131,7 @@ Attackers:
   0: Marit Lage token [20/20]
 Your creatures:
   (assigned) Tamiyo, Inquisitive Student [0/3] blocking Marit Lage token
-| decision 103: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| decision 96: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Baleful Strix [1/1]
 |   1: Confirm blockers
@@ -1176,14 +1148,14 @@ Blockers declared:
 Tamiyo, Inquisitive Student is destroyed (lethal damage)
 
 -------- TURN 15 (Player A) --------
-| decision 104: Player A (game 0, turn 14, UPKEEP, Player A active)
+| decision 97: Player A (game 0, turn 14, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Sheoldred's Edict
 (REPLAY) [T14 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Sheoldred's Edict)
 Choose mode:
-| decision 105: Player A (game 0, turn 14, UPKEEP, Player A active)
+| decision 98: Player A (game 0, turn 14, UPKEEP, Player A active)
 | menu:
 |   0: Each opponent sacrifices a nontoken creature.
 |   1: Each opponent sacrifices a creature token.
@@ -1197,7 +1169,7 @@ Player A casts Sheoldred's Edict
 Resolving ability (category: Charm)
 Resolving ability (category: Sacrifice)
 Player A draws Uro, Titan of Nature's Wrath
-| decision 106: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 99: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -1205,7 +1177,7 @@ Player A draws Uro, Titan of Nature's Wrath
 (REPLAY) [T14 | First Main | Player A] Input: 2
 | >> Player A: 2 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 107: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 100: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (18 life)
 |   1: Player A (13 life)
@@ -1219,7 +1191,7 @@ Player B reveals their hand:
 No valid cards to discard.
 Resolving ability (category: LoseLife, amount: 2)
 Player A loses 2 life (now at 11)
-| decision 108: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 101: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -1228,7 +1200,7 @@ Player A loses 2 life (now at 11)
 Player A played Underground Sea
 
 --- Declare Attackers (Player A) ---
-| decision 109: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 102: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Baleful Strix [1/1]
 |   1: Orcish Bowmasters [1/1]
@@ -1240,7 +1212,7 @@ Baleful Strix attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Baleful Strix [1/1] -> Player B
-| decision 110: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Orc Army token [1/1]
@@ -1252,7 +1224,7 @@ Orcish Bowmasters attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Baleful Strix [1/1] -> Player B
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 111: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 104: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Confirm attackers
@@ -1264,11 +1236,7 @@ Orc Army token attacking Player B.
   [attacking] Baleful Strix [1/1] -> Player B
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
-| decision 112: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Baleful Strix -> Player B
@@ -1284,20 +1252,20 @@ No creatures eligible to block.
 
 
 -------- TURN 16 (Player B) --------
-| decision 113: Player B (game 0, turn 15, UPKEEP, Player B active)
+| decision 105: Player B (game 0, turn 15, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
 (REPLAY) [T15 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Thespian's Stage
-| decision 114: Player B (game 0, turn 15, DRAW, Player B active)
+| decision 106: Player B (game 0, turn 15, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
 (REPLAY) [T15 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 115: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 107: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Thespian's Stage
@@ -1305,7 +1273,7 @@ Player B draws Thespian's Stage
 (REPLAY) [T15 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Thespian's Stage)
 Player B played Thespian's Stage
-| decision 116: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 108: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Blast Zone (PutCounter)
@@ -1314,7 +1282,7 @@ Player B played Thespian's Stage
 (REPLAY) [T15 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Blast Zone (PutCounter))
 Choose X value (0-1):
-| decision 117: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 109: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: X = 0
 |   1: X = 1
@@ -1328,7 +1296,7 @@ Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Blast Zone (now 2).
 
 --- Declare Attackers (Player B) ---
-| decision 118: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| decision 110: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Marit Lage token [20/20]
 |   1: Confirm attackers
@@ -1338,11 +1306,7 @@ Marit Lage token attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Marit Lage token [20/20] -> Player A
-| decision 119: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Marit Lage token -> Player A

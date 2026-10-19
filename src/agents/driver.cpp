@@ -7,13 +7,20 @@
 #include <optional>
 #include <string>
 
+#include "../card_vocab.h"
 #include "../cli/human.h"
+#include "../components/player.h"
+#include "../ecs/coordinator.h"
 #include "../error.h"
 #include "../featurize/featurizer.h"
 #include "../game_driver.h"
 #include "../input_logger.h"
+#include "../queries/characteristics.h"
+#include "../queries/players.h"
 #include "../state_format/agent_feed.h"
 #include "../state_format/cards_file.h"
+#include "../state_format/encode.h"
+#include "../state_format/enum_names.h"
 #include "../state_format/knowledge_feed.h"
 #include "../state_format/stream.h"
 #include "actor.h"
@@ -67,6 +74,7 @@ static void report_featurized();
 static void featurize_decision();
 static void print_line(const std::string &line);
 static void seat_specs(std::string out[2]);
+static agents::MenuAction auto_menu_row(const LegalAction &la, Zone::Ownership seat, const std::string &description);
 
 static int seat_index(Zone::Ownership seat) {
     return seat == Zone::PLAYER_A ? 0 : seat == Zone::PLAYER_B ? 1 : -1;
@@ -188,13 +196,14 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     }
     std::vector<std::string> match_frames;
     std::string state;
-    agent_feed_decision(seat, actions, &match_frames, &state);
+    const bool decoded = agent_feed_decision(seat, actions, &match_frames, &state, &run->frame);
     teacher_send(s, match_frames, state, actions.size(), number);
     agents::SeatStream &stream = *run->streams[s];
     std::string err;
     for (const std::string &payload : match_frames)
         if (!stream.feed_match_frame(payload, &err)) fatal_error("in-process agent frames: " + err);
-    if (!stream.decode_state(state, &run->frame, &err)) fatal_error("in-process agent frames: " + err);
+    if (!(decoded ? stream.adopt_state(&run->frame, &err) : stream.decode_state(state, &run->frame, &err)))
+        fatal_error("in-process agent frames: " + err);
     run->number = number;
     run->view.emplace(stream, run->frame, s);
     if (run->featurization && run->decides[s]) featurize_decision();
@@ -203,6 +212,42 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
     std::fflush(stdout);
     for (const std::string &line : agents::trace_decision_lines(*run->view, number)) print_line(line);
     run->traced = true;
+}
+
+void agents_auto_decision(const LegalAction &taken) {
+    if (!run) return;
+    const Zone::Ownership seat = rmstate_deciding_seat();
+    const int s = seat_index(seat);
+    if (s < 0) return;
+    const std::string description = menu_row_description(taken, seat);
+    if (run->play) run->play->auto_taken(s == 0 ? 'A' : 'B', auto_menu_row(taken, seat, description));
+    if (!trace_decisions) return;
+    std::fflush(stdout);
+    print_line(std::string("| auto: Player ") + (s == 0 ? "A" : "B") + ": " + description);
+}
+
+// A row of a menu taken without a frame, as the --play resolver would read it in `seat`'s frame
+// (resolver_menu): its source's card name (the face shown on the battlefield) and controller.
+static agents::MenuAction auto_menu_row(const LegalAction &la, Zone::Ownership seat, const std::string &description) {
+    agents::MenuAction a;
+    a.category = action_category_enum_name(la.category);
+    a.description = description;
+    const Entity src = la.source_entity;
+    const int cid = menu_row_card(la, seat);
+    const bool zoned = src != 0 && global_coordinator.entity_has_component<Zone>(src);
+    const Zone *z = zoned ? &global_coordinator.GetComponent<Zone>(src) : nullptr;
+    if (cid >= 0)
+        a.card = ascii_fold_card_name(
+            z && z->location == Zone::BATTLEFIELD ? entity_name(src) : std::string(card_index_to_name(cid)));
+    if (src != 0 && global_coordinator.entity_has_component<Player>(src)) {
+        a.controller = seat_of_player(src) == seat ? 1 : 0;
+    } else if (z && (z->location == Zone::BATTLEFIELD || z->location == Zone::HAND || z->location == Zone::STACK ||
+                        z->location == Zone::GRAVEYARD || z->location == Zone::EXILE)) {
+        const Zone::Ownership controller =
+            z->location == Zone::BATTLEFIELD || z->location == Zone::STACK ? source_controller(src) : z->owner;
+        a.controller = controller == seat ? 1 : 0;
+    }
+    return a;
 }
 
 void agents_end_decision(int choice, int reply) {

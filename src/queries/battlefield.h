@@ -4,10 +4,12 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 
 struct Ability;
 
@@ -44,8 +46,7 @@ inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKN
 // All live battlefield permanents (phased-out excluded), optionally only those
 // controlled by `ctrl`. Pass the iterating system's mEntities (or orderer->mEntities).
 // Prefer this over re-scanning entities inline when you need the whole set.
-inline std::vector<Entity> battlefield_permanents(
-    const std::set<Entity> &entities, Zone::Ownership ctrl = Zone::UNKNOWN) {
+inline std::vector<Entity> battlefield_permanents(const EntitySet &entities, Zone::Ownership ctrl = Zone::UNKNOWN) {
     std::vector<Entity> out;
     for (auto e : entities)
         if (is_battlefield_permanent(e, ctrl)) out.push_back(e);
@@ -82,8 +83,7 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
 // Matching runs through the shared permanent_matches_filter so the full qualifier grammar
 // (colors, P/T, subtypes, …) is available here too.
 std::vector<Entity> controlled_permanents_matching(
-Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities,
-Entity exclude_entity = 0);
+    Zone::Ownership player, const std::string &spec, const EntitySet &entities, Entity exclude_entity = 0);
 
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — first unattaching every Equipment and Aura among `entities`
@@ -94,7 +94,7 @@ Entity exclude_entity = 0);
 // transform) re-enters before the state-based pass could strip it, and per CR 400.7 the
 // returning card is a NEW object that must not keep its stale tapped/summoning-sickness/
 // counter/attachment state. Defined in battlefield.cpp.
-void strip_permanent_components(Entity entity, const std::set<Entity> &entities);
+void strip_permanent_components(Entity entity, const EntitySet &entities);
 
 // CR 702.131b: Ascend on a permanent is a static ability — "ANY TIME you control ten or
 // more permanents and you don't have the city's blessing, you get the city's blessing for
@@ -107,6 +107,6 @@ void strip_permanent_components(Entity entity, const std::set<Entity> &entities)
 // flag after possibly changing the permanent count should call it first. Pass the
 // iterating system's mEntities (or orderer->mEntities). Defined in battlefield.cpp
 // (needs cur_game's player entities and game_log).
-void refresh_city_blessing(const std::set<Entity> &entities);
+void refresh_city_blessing(const EntitySet &entities);
 
 #endif /* QUERIES_BATTLEFIELD_H */

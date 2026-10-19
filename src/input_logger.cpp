@@ -80,7 +80,7 @@ void DecisionLogHeader::add_flag_list(const std::string &key, const std::vector<
     add_flag(key, joined);
 }
 
-// Split an RMLOG v2 FLAGS line back into flag tokens. Tokens are space-separated,
+// Split an RMLOG FLAGS line back into flag tokens. Tokens are space-separated,
 // but a key=value token's value may itself contain spaces (card names in the
 // preset-zone lists, e.g. battlefield-b=Grizzly Bears,Mountain). A fragment
 // without '=' that is not a known bare flag is therefore a continuation of the
@@ -152,7 +152,7 @@ void InputLogger::clear_input_provider() {
 }
 
 void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &header) {
-    log_file << "RMLOG v2\n";
+    log_file << "RMLOG v3\n";
     log_file << "SEED " << seed << "\n";
     log_file << "FLAGS " << (header.flags.empty() ? "-" : header.flags) << "\n";
     log_file << "DECK_A " << header.deck_a_name << "\n";
@@ -197,13 +197,17 @@ void InputLogger::init_replay(const std::string &replay_path) {
     if (!std::getline(replay_file, line)) {
         fatal_error("Replay file is empty: " + replay_path);
     }
-    if (line != "RMLOG v2") {
+    if (line != "RMLOG v3") {
         if (!line.empty() && line.find_first_not_of("0123456789") == std::string::npos) {
             fatal_error("Replay log predates the RMLOG v2 format (first line is a bare seed). "
                         "Old logs record only seed + choices and cannot be replayed self-contained; "
                         "re-record the game with the current engine.");
         }
-        fatal_error("Unrecognized replay log format: expected 'RMLOG v2', got '" + line + "'");
+        if (line == "RMLOG v2")
+            fatal_error("Replay log " + replay_path +
+                        " is RMLOG v2: it records the one-row menus the engine now takes without asking, so it "
+                        "cannot be replayed; re-record the game with the current engine.");
+        fatal_error("Unrecognized replay log format: expected 'RMLOG v3', got '" + line + "'");
     }
     std::string seed_str = read_header_field(replay_file, "SEED");
     if (seed_str.empty() || seed_str.find_first_not_of("0123456789") != std::string::npos) {
@@ -408,6 +412,14 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // once the game has ended). Checked before every input path so a replay
     // consumes exactly the decisions the recorded run committed.
     if (concede_unwind_pending()) return concede_unwind_choice();
+
+    // A menu with one row (after the interchangeable-choice collapse) is taken here and never asked,
+    // for every consumer: no frame, no decision number, no decision-log line (its events reach the
+    // seat's next frame), and the decision caps do not count it.
+    if (actions.size() == 1) {
+        agents_auto_decision(actions[0]);
+        return 0;
+    }
 
     // --max-game-decisions: a live game past the cap stops before this decision is asked
     // (cap_current_game), and the unwind answers it.

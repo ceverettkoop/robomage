@@ -321,11 +321,7 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 30: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
@@ -340,7 +336,7 @@ No creatures eligible to block.
 
 -------- TURN 5 (Player A) --------
 Player A draws Tamiyo, Inquisitive Student
-| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -350,28 +346,28 @@ Player A draws Tamiyo, Inquisitive Student
 | >> Player A: 2 (Cast Tamiyo, Inquisitive Student)
 Player A activated Tundra for 1(U)
 Player A casts Tamiyo, Inquisitive Student
-| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
 (REPLAY) [T4 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Tamiyo, Inquisitive Student enters the battlefield
-| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Underground Sea)
 Player A played Underground Sea
-| decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thassa's Oracle
 (REPLAY) [T4 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 35: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
+| decision 34: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thassa's Oracle
@@ -379,20 +375,20 @@ No creatures eligible to attack.
 | >> Player A: 0 (Pass priority)
 
 -------- TURN 6 (Player B) --------
-| decision 36: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 35: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Tamiyo, Inquisitive Student
-| decision 37: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 36: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 38: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
@@ -402,7 +398,7 @@ Player B draws Tamiyo, Inquisitive Student
 | >> Player B: 2 (Cast Tamiyo, Inquisitive Student)
 Player B activated Cavern of Souls for 1(U)
 Player B casts Tamiyo, Inquisitive Student
-| decision 39: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 38: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -411,21 +407,21 @@ Player B casts Tamiyo, Inquisitive Student
 | >> Player A: 0 (Pass priority)
 Tamiyo, Inquisitive Student enters the battlefield
 Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 39: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Keep Tamiyo, Inquisitive Student
 |   1: Keep Tamiyo, Inquisitive Student
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Keep Tamiyo, Inquisitive Student)
 Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scrubland
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scrubland)
 Player B played Scrubland
-| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -435,7 +431,7 @@ Player B played Scrubland
 | >> Player B: 1 (Cast Dark Ritual)
 Player B activated Scrubland for 1(B)
 Player B casts Dark Ritual
-| decision 43: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 42: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -444,7 +440,7 @@ Player B casts Dark Ritual
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: AddMana)
 Player B adds 3{B}
-| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -453,7 +449,7 @@ Player B adds 3{B}
 (REPLAY) [T5 | First Main | Player B] Input: 2
 | >> Player B: 2 (Cast Doomsday)
 Player B casts Doomsday
-| decision 45: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 44: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -461,25 +457,21 @@ Player B casts Doomsday
 (REPLAY) [T5 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Daze)
 Choose target for Daze:
-| decision 46: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Doomsday
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Doomsday)
+| auto: Player A: Doomsday
 Targeting choice 0
 Player A activated Underground Sea for 1(U)
 Player A activated Underground Sea for 1(U)
 Player A casts Daze targeting Doomsday
 Resolving ability (category: Counter)
 Doomsday's controller may pay {1} to save it:
-| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Tap Island for (U)
 |   1: Don't pay (Doomsday is countered)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Tap Island for (U))
 Player B tapped Island for {U}
-| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pay {1} (Doomsday is not countered)
 |   1: Don't pay (Doomsday is countered)
@@ -488,7 +480,7 @@ Player B tapped Island for {U}
 Player B pays {1} — Doomsday is not countered
 Resolving ability (category: ChangeZone)
 Searching Player B's graveyard and library:
-| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Tamiyo, Inquisitive Student (graveyard)
@@ -518,7 +510,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 18 (Thassa's Oracle (library))
 Player B puts Thassa's Oracle to top of library
 Searching Player B's graveyard and library:
-| decision 50: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Tamiyo, Inquisitive Student (graveyard)
@@ -547,7 +539,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 7 (Edge of Autumn (library))
 Player B puts Edge of Autumn to top of library
 Searching Player B's graveyard and library:
-| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Tamiyo, Inquisitive Student (graveyard)
@@ -575,7 +567,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 14 (Street Wraith (library))
 Player B puts Street Wraith to top of library
 Searching Player B's graveyard and library:
-| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Tamiyo, Inquisitive Student (graveyard)
@@ -602,7 +594,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 2 (Brainstorm (library))
 Player B puts Brainstorm to top of library
 Searching Player B's graveyard and library:
-| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Tamiyo, Inquisitive Student (graveyard)
@@ -682,7 +674,7 @@ Player B moves 49 card(s) to exile
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 5 card(s) of their library.
 Choose which card goes 5 from top:
-| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Street Wraith
@@ -691,7 +683,7 @@ Choose which card goes 5 from top:
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Brainstorm)
 Choose which card goes 4 from top:
-| decision 55: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Street Wraith
@@ -700,7 +692,7 @@ Choose which card goes 4 from top:
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Brainstorm)
 Choose which card goes 3 from top:
-| decision 56: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Street Wraith
 |   1: Edge of Autumn
@@ -708,7 +700,7 @@ Choose which card goes 3 from top:
 (REPLAY) [T5 | First Main | Player B] Input: 2
 | >> Player B: 2 (Thassa's Oracle)
 Choose which card goes 2 from top:
-| decision 57: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 55: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Street Wraith
 |   1: Edge of Autumn
@@ -719,7 +711,7 @@ Player B loses 10 life (now at 10)
 Resolving ability (category: Cleanup)
 
 --- Declare Attackers (Player B) ---
-| decision 58: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 56: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -729,11 +721,7 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 59: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
@@ -745,7 +733,7 @@ Token created: 0/0 Clue
 Attackers:
   0: Tamiyo, Inquisitive Student [0/3]
 Your creatures:
-| decision 60: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| decision 57: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm blockers
@@ -761,7 +749,7 @@ Blockers declared:
 
 -------- TURN 7 (Player A) --------
 Player A draws Daze
-| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thassa's Oracle
@@ -769,7 +757,7 @@ Player A draws Daze
 | >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 62: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 59: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -779,25 +767,21 @@ Tamiyo, Inquisitive Student attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
-| decision 63: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player B
 Tamiyo, Inquisitive Student triggered
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 64: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 60: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to block.
-| decision 65: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| decision 61: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -807,19 +791,19 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 66: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| decision 62: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T6 | Combat Damage | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 67: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| decision 63: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T6 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 68: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| decision 64: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thassa's Oracle
@@ -835,7 +819,7 @@ Resolving ability (category: Draw, amount: 1)
 Player A draws Force of Will
 
 -------- TURN 8 (Player B) --------
-| decision 69: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 65: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -844,7 +828,7 @@ Player A draws Force of Will
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Edge of Autumn
-| decision 70: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 66: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -853,7 +837,7 @@ Player B draws Edge of Autumn
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 71: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -862,7 +846,7 @@ Player B draws Edge of Autumn
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | First Main | Player B] Input: 4
 | >> Player B: 4 (Activate Edge of Autumn from hand (Draw))
-| decision 72: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Sacrifice Cavern of Souls
 |   1: Sacrifice Island
@@ -871,7 +855,7 @@ Player B draws Edge of Autumn
 | >> Player B: 2 (Sacrifice Scrubland)
 Player B sacrifices Scrubland
 Player B activates Edge of Autumn from hand
-| decision 73: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -880,7 +864,7 @@ Player B activates Edge of Autumn from hand
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Street Wraith
-| decision 74: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -890,7 +874,7 @@ Player B draws Street Wraith
 | >> Player B: 3 (Activate Street Wraith from hand (Draw))
 Player B pays 2 life
 Player B activates Street Wraith from hand
-| decision 75: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 71: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -900,7 +884,7 @@ Player B activates Street Wraith from hand
 Resolving ability (category: Draw, amount: 1)
 Player B draws Thassa's Oracle
 Tamiyo, Inquisitive Student triggered
-| decision 76: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 72: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -913,7 +897,7 @@ Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: Cleanup)
 Tamiyo, Seasoned Scholar enters transformed.
-| decision 77: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 73: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thassa's Oracle
@@ -925,7 +909,7 @@ Tamiyo, Seasoned Scholar enters transformed.
 Player B activated Cavern of Souls for 1(U)
 Player B activated Island for 1(U)
 Player B casts Thassa's Oracle
-| decision 78: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 74: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
@@ -933,13 +917,9 @@ Player B casts Thassa's Oracle
 (REPLAY) [T7 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| decision 79: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Thassa's Oracle
-(REPLAY) [T7 | First Main | Player A] Input: 0
-| >> Player A: 0 (Thassa's Oracle)
+| auto: Player A: Thassa's Oracle
 Targeting choice 0
-| decision 80: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 75: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Return Tundra
 |   1: Return Underground Sea
@@ -948,25 +928,21 @@ Targeting choice 0
 | >> Player A: 0 (Return Tundra)
 Player A returns Tundra to hand
 Player A casts Daze targeting Thassa's Oracle
-| decision 81: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 76: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T7 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 82: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 77: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Daze
 |   1: Thassa's Oracle
 (REPLAY) [T7 | First Main | Player A] Input: 1
 | >> Player A: 1 (Thassa's Oracle)
 Targeting choice 1
-| decision 83: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Exile Thassa's Oracle
-(REPLAY) [T7 | First Main | Player A] Input: 0
-| >> Player A: 0 (Exile Thassa's Oracle)
+| auto: Player A: Exile Thassa's Oracle
 Player A pays 1 life
 Player A exiles Thassa's Oracle
 Player A casts Force of Will targeting Thassa's Oracle
@@ -974,17 +950,13 @@ Resolving ability (category: Counter)
 Thassa's Oracle can't be countered
 Resolving ability (category: Counter)
 Thassa's Oracle's controller may pay {1} to save it:
-| decision 84: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Don't pay (Thassa's Oracle is countered)
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Thassa's Oracle is countered))
+| auto: Player B: Don't pay (Thassa's Oracle is countered)
 Thassa's Oracle can't be countered
 Thassa's Oracle enters the battlefield
 Thassa's Oracle triggered
 Resolving ability (category: Dig)
 Player B looks at the top 2 card(s) of their library.
-| decision 85: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 78: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put nothing on top of library (rest go to the bottom of library)
 |   1: Brainstorm

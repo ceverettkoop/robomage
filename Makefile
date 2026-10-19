@@ -27,6 +27,8 @@ endif
 # files are keyed on source path alone, so a config switch used to relink stale
 # objects compiled with the wrong flags. Separate trees give each config its own.
 ODIR=obj/$(CONFIG)
+# `make pgo`: the profile the instrumented engine writes and the optimised build reads.
+PGO_PROFILE := $(abspath obj/pgo-profile)
 SRCDIR=src
 DEPFLAGS = -MMD -MP
 BINDIR=bin/$(CONFIG)
@@ -49,6 +51,15 @@ ifeq ($(BUILD),RELEASE)
 	CONFIG := release
 	CFLAGS += -O2 -flto -march=native -DNDEBUG
 	CXXFLAGS += -O2 -flto -march=native -DNDEBUG
+# The release flags plus a profile (`make pgo`, below): PGO=gen instruments, otherwise the profile
+# the instrumented engine wrote is used.
+else ifeq ($(BUILD),PGO)
+	CONFIG := pgo
+	PGO_FLAGS := $(if $(filter gen,$(PGO)),-fprofile-generate=$(PGO_PROFILE),\
+		-fprofile-use=$(PGO_PROFILE) -fprofile-partial-training -Wno-missing-profile)
+	CFLAGS += -O2 -flto -march=native -DNDEBUG $(PGO_FLAGS)
+	CXXFLAGS += -O2 -flto -march=native -DNDEBUG $(PGO_FLAGS)
+	LDFLAGS += $(PGO_FLAGS)
 else
 	CONFIG := debug
 	CFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS) $(C_CHECKFLAGS)
@@ -301,7 +312,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmserve rmembed text-table rmknow rmfeat robomage_check
+.PHONY: all check regen refetch clean actor rmserve rmembed text-table rmknow rmfeat robomage_check pgo
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -310,6 +321,21 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # obj/release; `bin/*/robomage` removes both configs' linked binaries so a failed
 # build can't leave a stale one for the harness/CI. bin/ itself is kept — it holds
 # resources/ and decks.
+# ── make pgo — bin/pgo/robomage, the release build optimised with a profile (-fprofile-use) ──
+# Builds the engine instrumented (obj/pgo, PGO=gen), plays the training workload with it (explore
+# vs explore, bo3, three league pairings, knowledge expert, the featurizer on: the actor loop's
+# stages), then rebuilds obj/pgo from scratch with the profile (obj/pgo-profile). Only the engine
+# binary; `make check` does not run it (docs/ci.md, bench).
+PGO_GAMES := league/ur_delver:league/gw_maverick league/bug:league/burn league/reanimator:league/uw_control
+pgo:
+	rm -rf obj/pgo $(PGO_PROFILE)
+	$(MAKE) --no-print-directory BUILD=PGO PGO=gen program
+	cd bin && for pair in $(PGO_GAMES); do for seed in 1 2 3 4; do \
+		./pgo/$(BINNAME) --agent-a explore --agent-b explore --bo3 --game-seed $$seed \
+			--deck-a $${pair%%:*} --deck-b $${pair##*:} --featurize-seats > /dev/null || exit 1; done; done
+	rm -rf obj/pgo
+	$(MAKE) --no-print-directory BUILD=PGO program
+
 clean:
 	rm -rf obj/*
 	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn bin/*/rmserve

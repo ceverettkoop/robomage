@@ -4,10 +4,12 @@
 #include <cstdint>
 #include <set>
 #include <vector>
+
 #include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 #include "battlefield.h"
 #include "keywords.h"
 
@@ -33,7 +35,7 @@ bool is_unblocked_attacker(Entity e);
 
 // The live battlefield creatures blocking `attacker` (CR 509.1g), in entity order. Shared by the
 // combat-damage step and its damage-assignment prompt so both divide damage among the same set.
-std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &entities);
+std::vector<Entity> blockers_of(Entity attacker, const EntitySet &entities);
 
 // CR 302.6: a creature can't attack, and its abilities with {T} in the cost can't be activated,
 // unless it has been under its controller's control continuously since their most recent turn

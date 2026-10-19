@@ -24,7 +24,7 @@
 // no result (a human seat's quit, or the end of its input): --replay stops cleanly there.
 #define QUIT_MARKER "QUIT"
 
-// Everything the RMLOG v2 decision-log header records beyond the seed: the
+// Everything the RMLOG v3 decision-log header records beyond the seed: the
 // state-affecting launch flags and both decklists (verbatim file text), so a
 // log is a self-contained replay — `--replay <file>` needs no other arguments.
 struct DecisionLogHeader {
@@ -68,7 +68,7 @@ class InputLogger {
     unsigned int get_replay_seed() const;
     // The decision log being written (empty when none is).
     const std::string &log_file_name() const;
-    // Parsed from the RMLOG v2 header (valid after init_replay)
+    // Parsed from the RMLOG v3 header (valid after init_replay)
     const DecisionLogHeader& get_replay_header() const;
     const Deck& get_replay_deck_a() const;
     const Deck& get_replay_deck_b() const;
@@ -77,7 +77,9 @@ class InputLogger {
     // One decision: presents `actions` — with each choice interchangeable with an earlier one
     // left out (two identical cards in a graveyard or library, see interchangeable_cards) — to the
     // deciding player or agent, and returns the chosen action's index in `actions` (or a
-    // concession / unwind sentinel).
+    // concession / unwind sentinel). A menu left with one row is not presented: its row is taken
+    // (no frame, no decision-log line, no decision number), so a seat can concede only at a
+    // decision with a choice.
     int get_input(const std::vector<LegalAction>& actions);
 
     // In-process decision hook. When set, the decision read (outside --replay) of a seat the
@@ -109,7 +111,7 @@ class InputLogger {
 
    private:
     InputLogger() = default;
-    // Write the RMLOG v2 header (seed, flags, embedded decklists) to the open log file.
+    // Write the RMLOG v3 header (seed, flags, embedded decklists) to the open log file.
     void write_header(unsigned int seed, const DecisionLogHeader& header);
     // Persist a committed choice: echo it to the log file (if open). Shared by the
     // provider and stream input paths.

@@ -7,6 +7,7 @@
 
 #include "../choice_labels.h"
 #include "../components/ability.h"
+#include "../ecs/entity_set.h"
 #include "../resolution_frame.h"
 #include "effect_kind.h"
 
@@ -62,11 +63,11 @@ bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
 // CR 702.26b/g: phase permanent `e` out directly — it is removed from combat (CR 506.4) and every
 // Aura/Equipment attached to it phases out indirectly with it. `entities` is the iterating
 // system's mEntities. See effect_phases.cpp.
-void phase_out(Entity e, const std::set<Entity> &entities);
+void phase_out(Entity e, const EntitySet &entities);
 // CR 702.26c/g: phase permanent `e` in, together with everything that phased out indirectly
 // along with it. Called from the untap step for each permanent that phased out directly under
 // the active player's control. See effect_phases.cpp.
-void phase_in(Entity e, const std::set<Entity> &entities);
+void phase_in(Entity e, const EntitySet &entities);
 // Where the cards a look-and-split step doesn't keep on top go: the library bottom (scry) or the
 // graveyard (surveil).
 enum class LookSplitRest { LIBRARY_BOTTOM, GRAVEYARD };

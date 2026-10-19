@@ -70,8 +70,9 @@ class Knowledge {
         explicit Knowledge(rmstate::KnowledgeLevel level = rmstate::KnowledgeLevel::EXPERT);
 
         // One record payload of the viewer's stream: SCHEMA, CARDS, DECKLISTS, METAGAME or STATE. A frame
-        // for another viewer, or one that does not decode, is an error.
-        void feed(const std::string &payload);
+        // for another viewer, or one that does not decode, is an error. A STATE frame it decoded
+        // (every level but off) is moved into `decoded`, when given, once applied; true then.
+        bool feed(const std::string &payload, rmstate::DecodedFrame *decoded = nullptr);
 
         // The decoded entry points feed() uses; unit tests drive the model through them directly.
         void begin_match(int viewer, const Codes &codes, const Decklists &lists);
@@ -255,6 +256,9 @@ class Knowledge {
         // The solver's answers for pool_specs(p), and the steps they took.
         Solution solved_[2];
         uint64_t solve_steps_ = 0;
+        // An event was applied (or the state restored) since solved_ was computed: the model may
+        // have changed. While it is false, solved_ is what solve() would compute.
+        bool solve_stale_ = true;
         Solver solver_;
         bool compaction_ = true;
         // The template network and, per reference list, whether it was checked against it and the

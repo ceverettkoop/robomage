@@ -520,11 +520,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 45: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -536,7 +532,7 @@ No creatures eligible to block.
 
 
 -------- TURN 7 (Player A) --------
-| decision 46: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 45: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -544,7 +540,7 @@ No creatures eligible to block.
 | >> Player A: 1 (Cast Brainstorm)
 Player A activated Undercity Sewers for 1(U)
 Player A casts Brainstorm
-| decision 47: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 46: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -557,7 +553,7 @@ Player A draws Atraxa, Grand Unifier
 Player A draws Thoughtseize
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 48: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 47: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Brainstorm
@@ -567,7 +563,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 0 (Atraxa, Grand Unifier)
 Player A puts Atraxa, Grand Unifier to top of library
 Player A chooses a card from Player A hand:
-| decision 49: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 48: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Brainstorm
 |   1: Thoughtseize
@@ -575,7 +571,7 @@ Player A chooses a card from Player A hand:
 (REPLAY) [T6 | Upkeep | Player A] Input: 2
 | >> Player A: 2 (Undercity Sewers)
 Player A puts Undercity Sewers to top of library
-| decision 50: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 49: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -583,7 +579,7 @@ Player A puts Undercity Sewers to top of library
 | >> Player A: 1 (Cast Brainstorm)
 Player A activated Underground Sea for 1(U)
 Player A casts Brainstorm
-| decision 51: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 50: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -596,7 +592,7 @@ Player A draws Atraxa, Grand Unifier
 Player A draws Polluted Delta
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 52: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 51: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Polluted Delta
@@ -606,7 +602,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 1 (Polluted Delta)
 Player A puts Polluted Delta to top of library
 Player A chooses a card from Player A hand:
-| decision 53: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 52: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Thoughtseize
@@ -615,7 +611,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 0 (Atraxa, Grand Unifier)
 Player A puts Atraxa, Grand Unifier to top of library
 Player A draws Atraxa, Grand Unifier
-| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Undercity Sewers
@@ -623,7 +619,7 @@ Player A draws Atraxa, Grand Unifier
 (REPLAY) [T6 | First Main | Player A] Input: 2
 | >> Player A: 2 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (17 life)
 |   1: Player A (8 life)
@@ -632,7 +628,7 @@ Choose target for Thoughtseize:
 Targeting choice 0
 Player A activated Swamp for 1(B)
 Player A casts Thoughtseize targeting Player B
-| decision 56: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 55: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze
@@ -640,11 +636,7 @@ Player A casts Thoughtseize targeting Player B
 (REPLAY) [T6 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Daze)
 Choose target for Daze:
-| decision 57: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
-| menu:
-|   0: Thoughtseize
-(REPLAY) [T6 | First Main | Player B] Input: 0
-| >> Player B: 0 (Thoughtseize)
+| auto: Player B: Thoughtseize
 Targeting choice 0
 Player B activated Thundering Falls for 1(U)
 Player B activated Volcanic Island for 1(U)
@@ -653,7 +645,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Ponder
-| decision 58: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 56: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Ponder on top of library
 |   1: Put Ponder into graveyard
@@ -661,13 +653,9 @@ Surveil: looking at Ponder
 | >> Player B: 0 (Put Ponder on top of library)
 Resolving ability (category: Counter)
 Thoughtseize's controller may pay {1} to save it:
-| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Thoughtseize is countered)
-(REPLAY) [T6 | First Main | Player A] Input: 0
-| >> Player A: 0 (Don't pay (Thoughtseize is countered))
+| auto: Player A: Don't pay (Thoughtseize is countered)
 Thoughtseize is countered
-| decision 60: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Undercity Sewers
@@ -679,7 +667,7 @@ Undercity Sewers triggered
 Resolving ability (category: Surveil, amount: 1)
 Player A surveils 1.
 Surveil: looking at Polluted Delta
-| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Polluted Delta on top of library
 |   1: Put Polluted Delta into graveyard
@@ -690,7 +678,7 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Ponder
-| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -703,7 +691,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Force of Will
-| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Force of Will on top of library
 |   1: Put Force of Will into graveyard
@@ -712,19 +700,15 @@ Surveil: looking at Force of Will
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 61: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Force of Will
 |   1: Mystic Sanctuary
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Mystic Sanctuary)
 Choose which card goes 2 from top:
-| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Force of Will
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Force of Will)
-| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| auto: Player B: Force of Will
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -732,7 +716,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Force of Will
-| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -743,11 +727,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 68: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -760,7 +740,7 @@ No creatures eligible to block.
 
 -------- TURN 9 (Player A) --------
 Player A draws Flow State
-| decision 69: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Flow State
@@ -769,24 +749,16 @@ Player A draws Flow State
 Player A activated Undercity Sewers for 1(U)
 Player A activated Swamp for 1(B)
 Player A casts Flow State
-| decision 70: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 65: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
 (REPLAY) [T8 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 71: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Flow State
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Flow State)
+| auto: Player B: Flow State
 Targeting choice 0
-| decision 72: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Exile Into the Flood Maw
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Exile Into the Flood Maw)
+| auto: Player B: Exile Into the Flood Maw
 Player B pays 1 life
 Player B exiles Into the Flood Maw
 Player B casts Force of Will targeting Flow State
@@ -794,7 +766,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Force of Will
-| decision 73: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 66: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Put Force of Will on top of library
 |   1: Put Force of Will into graveyard
@@ -810,11 +782,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 74: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -831,7 +799,7 @@ No creatures eligible to attack.
 
 -------- TURN 12 (Player B) --------
 Player B draws Mystic Sanctuary
-| decision 75: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -839,7 +807,7 @@ Player B draws Mystic Sanctuary
 | >> Player B: 1 (Play Mystic Sanctuary)
 Player B played Mystic Sanctuary
 Choose target for Mystic Sanctuary:
-| decision 76: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Daze
 |   1: Force of Will
@@ -849,7 +817,7 @@ Choose target for Mystic Sanctuary:
 | >> Player B: 1 (Force of Will)
 Targeting choice 1
 Mystic Sanctuary triggered
-| decision 77: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 69: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Decline: use Mystic Sanctuary's triggered ability
 |   1: Accept: use Mystic Sanctuary's triggered ability
@@ -861,11 +829,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 78: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A

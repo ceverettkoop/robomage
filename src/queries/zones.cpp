@@ -15,17 +15,18 @@
 
 // The set zoned_entities() returns: a system's mEntities, owned by the ECS. A snapshot restore
 // assigns into that same set, so the binding holds until the next init_ecs rebinds it.
-static const std::set<Entity> *g_zoned_entities = nullptr;
+static const EntitySet *g_zoned_entities = nullptr;
 
-const std::set<Entity> &zoned_entities() {
+const EntitySet &zoned_entities() {
     if (!g_zoned_entities) fatal_error("zoned_entities: read before init_ecs bound the set");
     return *g_zoned_entities;
 }
 
-void bind_zoned_entities(const std::set<Entity> &entities) { g_zoned_entities = &entities; }
+void bind_zoned_entities(const EntitySet &entities) {
+    g_zoned_entities = &entities;
+}
 
-std::vector<Entity> zone_objects(const std::set<Entity> &entities, Zone::ZoneValue zone,
-                                 Zone::Ownership owner) {
+std::vector<Entity> zone_objects(const EntitySet &entities, Zone::ZoneValue zone, Zone::Ownership owner) {
     std::vector<Entity> out;
     for (Entity e : entities) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
@@ -35,8 +36,7 @@ std::vector<Entity> zone_objects(const std::set<Entity> &entities, Zone::ZoneVal
     return out;
 }
 
-int graveyard_card_types(Zone::Ownership owner, const std::set<Entity> &entities,
-                         Entity except) {
+int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entity except) {
     std::set<std::string> type_names;
     for (auto entity : entities) {
         if (entity == except) continue;
@@ -50,8 +50,7 @@ int graveyard_card_types(Zone::Ownership owner, const std::set<Entity> &entities
     return static_cast<int>(type_names.size());
 }
 
-int graveyard_card_count(Zone::Ownership owner, const std::set<Entity> &entities,
-                         Entity except) {
+int graveyard_card_count(Zone::Ownership owner, const EntitySet &entities, Entity except) {
     int n = 0;
     for (auto entity : entities) {
         if (entity == except) continue;

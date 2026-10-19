@@ -16,11 +16,8 @@ extern Coordinator global_coordinator;
 static std::vector<LegalAction> vocab_name_card_choices(
     const std::string &valid_filter, std::vector<std::string> &out_names);
 
-std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
-                                                 Zone::Ownership owner,
-                                                 const std::string &valid_filter,
-                                                 std::vector<std::string> &out_names,
-                                                 NameCardScope scope) {
+std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone::Ownership owner,
+    const std::string &valid_filter, std::vector<std::string> &out_names, NameCardScope scope) {
     // A closed decklist hides the opponent's list, so the candidates cannot come from the decks
     // (docs/state_format.md register 11a).
     if (closed_decklist) return vocab_name_card_choices(valid_filter, out_names);

@@ -256,9 +256,11 @@ deduce) is in the frame's `k_*` tables (`docs/knowledge_store.md`). In C++ the s
 
 ## Decision logs and replay
 
-Every decision is logged as an integer. `--decision-log FILE` writes the RMLOG v2 log (`SEED`,
+Every decision is logged as an integer. `--decision-log FILE` writes the RMLOG v3 log (`SEED`,
 `FLAGS` — the setup flags that change the game — both decklists, then every decision, concession
-sentinels included); `--log-decisions` writes it to `resources/logs/game_<seed>.log` (interactive
+sentinels included). A decision whose menu has one row is taken by the engine and never asked, so
+it is not logged (`docs/state_format.md` §9); an RMLOG v2 log, written before that rule, is refused
+by `--replay` (`Replay log … is RMLOG v2`: re-record it); `--log-decisions` writes it to `resources/logs/game_<seed>.log` (interactive
 games always log there). `--replay FILE` replays it deterministically: the header alone fixes the
 setup (decks, seed, `--bo3`, `--no-shuffle`, `--no-auto-mana`, the test-setup presets,
 `--max-decisions`), setup flags given alongside are ignored with a warning, and output flags

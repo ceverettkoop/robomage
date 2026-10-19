@@ -1701,34 +1701,22 @@ Choose which card goes 5 from top:
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Thassa's Oracle)
 Choose which card goes 4 from top:
-| decision 184: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Street Wraith
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Street Wraith)
+| auto: Player A: Street Wraith
 Choose which card goes 3 from top:
-| decision 185: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Street Wraith
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Street Wraith)
+| auto: Player A: Street Wraith
 Choose which card goes 2 from top:
-| decision 186: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Street Wraith
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Street Wraith)
+| auto: Player A: Street Wraith
 Resolving ability (category: LoseLife, amount: 9)
 Player A loses 9 life (now at 8)
 Resolving ability (category: Cleanup)
-| decision 187: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 184: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Edge of Autumn from hand (Draw))
-| decision 188: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 185: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Sacrifice Underground Sea
 |   1: Sacrifice Underground Sea
@@ -1737,6 +1725,32 @@ Resolving ability (category: Cleanup)
 | >> Player A: 2 (Sacrifice Island)
 Player A sacrifices Island
 Player A activates Edge of Autumn from hand
+| decision 186: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 187: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+|   2: Activate Street Wraith from hand (Draw)
+|   3: Activate Edge of Autumn from hand (Draw)
+|   4: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Street Wraith
+| decision 188: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Street Wraith from hand (Draw)
+|   2: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Street Wraith from hand (Draw))
+Player A pays 2 life
+Player A activates Street Wraith from hand
 | decision 189: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
@@ -1811,17 +1825,9 @@ Player A draws Street Wraith
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T8 | First Main | Player A] Input: 1
-| >> Player A: 1 (Activate Street Wraith from hand (Draw))
-Player A pays 2 life
-Player A activates Street Wraith from hand
-| decision 198: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 199: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 198: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1830,32 +1836,14 @@ Player A activates Street Wraith from hand
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-Resolving ability (category: Draw, amount: 1)
-Player A draws Street Wraith
-| decision 200: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Street Wraith from hand (Draw)
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 201: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Street Wraith from hand (Draw)
-|   3: Activate Edge of Autumn from hand (Draw)
-|   4: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 202: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| decision 199: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 203: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| decision 200: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1865,14 +1853,14 @@ Player A draws Street Wraith
 (REPLAY) [T8 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 204: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 201: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 205: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 202: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1881,14 +1869,14 @@ No creatures eligible to attack.
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 206: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
+| decision 203: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 207: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
+| decision 204: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1897,14 +1885,14 @@ No creatures eligible to attack.
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 208: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
+| decision 205: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 209: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
+| decision 206: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1913,14 +1901,14 @@ No creatures eligible to attack.
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 210: Player A (game 0, turn 8, END_STEP, Player A active)
+| decision 207: Player A (game 0, turn 8, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T8 | End Step | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 211: Player B (game 0, turn 8, END_STEP, Player A active)
+| decision 208: Player B (game 0, turn 8, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1931,7 +1919,7 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 10 (Player B) --------
-| decision 212: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 209: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1940,7 +1928,7 @@ No creatures eligible to attack.
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 213: Player A (game 0, turn 9, UPKEEP, Player B active)
+| decision 210: Player A (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -1948,7 +1936,7 @@ No creatures eligible to attack.
 (REPLAY) [T9 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player B draws Doomsday
-| decision 214: Player B (game 0, turn 9, DRAW, Player B active)
+| decision 211: Player B (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1957,14 +1945,14 @@ Player B draws Doomsday
 |   4: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 215: Player A (game 0, turn 9, DRAW, Player B active)
+| decision 212: Player A (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 216: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 213: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Doomsday
@@ -1978,7 +1966,7 @@ Player B activated Underground Sea for 1(B)
 Player B activated Underground Sea for 1(B)
 Player B activated Underground Sea for 1(B)
 Player B casts Doomsday
-| decision 217: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 214: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -1986,7 +1974,7 @@ Player B casts Doomsday
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 218: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 215: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -1996,27 +1984,19 @@ Player B casts Doomsday
 (REPLAY) [T9 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 219: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Doomsday
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Doomsday)
+| auto: Player A: Doomsday
 Targeting choice 0
-| decision 220: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Exile Daze
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Exile Daze)
+| auto: Player A: Exile Daze
 Player A pays 1 life
 Player A exiles Daze
 Player A casts Force of Will targeting Doomsday
-| decision 221: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 216: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 222: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 217: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2026,13 +2006,13 @@ Player A casts Force of Will targeting Doomsday
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Counter)
 Doomsday is countered
-| decision 223: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 218: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 224: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 219: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2040,7 +2020,7 @@ Doomsday is countered
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 225: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| decision 220: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2048,14 +2028,14 @@ Doomsday is countered
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 226: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| decision 221: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 227: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 222: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2063,13 +2043,13 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 228: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 223: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 229: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
+| decision 224: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2077,13 +2057,13 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 230: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
+| decision 225: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 231: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| decision 226: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2091,13 +2071,13 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 232: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
+| decision 227: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 233: Player B (game 0, turn 9, END_STEP, Player B active)
+| decision 228: Player B (game 0, turn 9, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2105,7 +2085,7 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T9 | End Step | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 234: Player A (game 0, turn 9, END_STEP, Player B active)
+| decision 229: Player A (game 0, turn 9, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -2113,13 +2093,13 @@ No creatures eligible to attack.
 | >> Player A: 0 (Pass priority)
 
 -------- TURN 11 (Player A) --------
-| decision 235: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 230: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 236: Player B (game 0, turn 10, UPKEEP, Player A active)
+| decision 231: Player B (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2128,13 +2108,13 @@ No creatures eligible to attack.
 (REPLAY) [T10 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Thassa's Oracle
-| decision 237: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 232: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 238: Player B (game 0, turn 10, DRAW, Player A active)
+| decision 233: Player B (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2142,7 +2122,7 @@ Player A draws Thassa's Oracle
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T10 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 239: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 234: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thassa's Oracle
@@ -2152,13 +2132,13 @@ Player A draws Thassa's Oracle
 Player A activated Underground Sea for 1(U)
 Player A activated Underground Sea for 1(U)
 Player A casts Thassa's Oracle
-| decision 240: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 235: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 241: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 236: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2168,13 +2148,13 @@ Player A casts Thassa's Oracle
 | >> Player B: 0 (Pass priority)
 Thassa's Oracle enters the battlefield
 Thassa's Oracle triggered
-| decision 242: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 237: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 243: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 238: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -2184,11 +2164,7 @@ Thassa's Oracle triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Dig)
 Player A looks at the top 0 card(s) of their library.
-| decision 244: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Put nothing on top of library (rest go to the bottom of library)
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Put nothing on top of library (rest go to the bottom of library))
+| auto: Player A: Put nothing on top of library (rest go to the bottom of library)
 Player A puts 0 card(s) on the bottom of their library.
 Resolving ability (category: WinsGame)
 

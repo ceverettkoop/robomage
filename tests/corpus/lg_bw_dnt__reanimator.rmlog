@@ -1,4 +1,4 @@
-RMLOG v2
+RMLOG v3
 SEED 1187322509
 FLAGS machine
 DECK_A league/bw_dnt
@@ -84,7 +84,6 @@ DECISIONS
 1
 1
 0
-0
 3
 3
 1
@@ -99,7 +98,6 @@ DECISIONS
 1
 1
 0
-0
 1
 1
 2
@@ -111,7 +109,6 @@ DECISIONS
 1
 1
 1
-0
 0
 1
 0
@@ -135,8 +132,6 @@ DECISIONS
 1
 0
 0
-0
-0
 1
 0
 0
@@ -146,7 +141,6 @@ DECISIONS
 1
 1
 1
-0
 0
 0
 1
@@ -158,9 +152,6 @@ DECISIONS
 0
 2
 1
-0
-0
-0
 0
 0
 0

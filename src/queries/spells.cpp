@@ -46,7 +46,7 @@ const Ability &stack_object_ability(Entity stack_object) {
     return global_coordinator.GetComponent<Ability>(stack_object);
 }
 
-bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entities) {
+bool spell_uncounterable_by_static(Entity spell, const EntitySet &entities) {
     if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
     Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(spell)
                                      ? global_coordinator.GetComponent<Spell>(spell).caster
@@ -84,7 +84,7 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
     return false;
 }
 
-bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities) {
+bool player_spells_cant_be_countered(Zone::Ownership player, const EntitySet &entities) {
     if (cur_game.resolved_effects.cant_counter_spells_of.count(player) > 0) return true;
     for (auto e : battlefield_permanents(entities)) {
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;

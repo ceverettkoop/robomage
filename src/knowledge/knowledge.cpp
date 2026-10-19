@@ -54,87 +54,91 @@ std::vector<std::string> Knowledge::take_errors() {
 
 // ── Stream input ──────────────────────────────────────────────────────────────────────────────
 
-void Knowledge::feed(const std::string &payload) {
+bool Knowledge::feed(const std::string &payload, rmstate::DecodedFrame *decoded) {
     rmstate::FrameKind kind;
     rmstate::Viewer viewer;
     frame_seq_ = 0;
     if (!peek_frame_header(payload, &kind, &viewer)) {
         error("a record is not an RMSTATE frame");
-        return;
+        return false;
     }
     if (viewer == rmstate::Viewer::OMNISCIENT) {
         error("the knowledge sidecar runs for a seat, not the omniscient viewer");
-        return;
+        return false;
     }
     const int seat = viewer == rmstate::Viewer::A ? 0 : 1;
     if (viewer_ != NO_SEAT && seat != viewer_) {
         error("a frame for the other seat in this viewer's stream");
-        return;
+        return false;
     }
     if (kind == rmstate::FrameKind::SCHEMA) {
         rmstate::Schema schema;
         const rmstate::DecodeResult r = rmstate::decode_schema_frame(payload, &schema);
         if (!r.ok()) {
             error("the SCHEMA frame does not decode: " + r.message);
-            return;
+            return false;
         }
         Codes codes;
         std::string err;
         if (!read_codes(schema, &codes, &err)) {
             error(err);
-            return;
+            return false;
         }
         schema_ = schema;
         schema_payload_ = payload;
         codes_ = codes;
         have_schema_ = true;
         viewer_ = seat;
-        return;
+        return false;
     }
     if (!have_schema_) {
         error("a frame before the SCHEMA frame");
-        return;
+        return false;
     }
     // Level off reads nothing from a STATE frame: its tables are k_meta alone.
-    if (kind == rmstate::FrameKind::STATE && level_ == rmstate::KnowledgeLevel::OFF) return;
+    if (kind == rmstate::FrameKind::STATE && level_ == rmstate::KnowledgeLevel::OFF) return false;
     rmstate::DecodedFrame frame;
     const rmstate::DecodeResult r = rmstate::decode_frame(payload, schema_, &frame);
     if (!r.ok()) {
         error("a frame does not decode: " + r.message);
-        return;
+        return false;
     }
     std::string err;
     if (kind == rmstate::FrameKind::CARDS) {
         if (!read_card_names(frame, &names_, &err)) error(err);
-        return;
+        return false;
     }
     if (kind == rmstate::FrameKind::DECKLISTS) {
         Decklists lists;
         if (!read_decklists(frame, codes_, &lists, &err)) {
             error(err);
-            return;
+            return false;
         }
         begin_match(seat, codes_, lists);
-        return;
+        return false;
     }
     if (kind == rmstate::FrameKind::METAGAME) {
         Metagame metagame;
         if (!read_metagame(frame, &metagame, &err)) {
             error(err);
-            return;
+            return false;
         }
         begin_metagame(metagame);
-        return;
+        return false;
     }
     Snapshot snap;
     if (!read_snapshot(frame, codes_, &snap, &err)) {
         error(err);
-        return;
+        return false;
     }
     apply_frame(snap);
+    if (!decoded) return false;
+    *decoded = std::move(frame);
+    return true;
 }
 
 void Knowledge::begin_match(int viewer, const Codes &codes, const Decklists &lists) {
+    solve_stale_ = true;
     viewer_ = viewer;
     codes_ = codes;
     lists_ = lists;
@@ -181,7 +185,13 @@ void Knowledge::apply_frame(const Snapshot &snap) {
     solve_steps_ = 0;
     if (!game_active_) return;
     check(snap);
-    solve();
+    // The solver's answers depend on the model alone, which only events change.
+    if (solve_stale_) {
+        solve();
+        solve_stale_ = false;
+    } else {
+        solve_steps_ = solved_[0].steps + solved_[1].steps;
+    }
     solve_templates();
 }
 
@@ -220,6 +230,7 @@ void Knowledge::settle() {
 
 void Knowledge::apply_event(const Event &ev) {
     using rmstate::EventKind;
+    solve_stale_ = true;
     frame_seq_ = ev.seq;
     turn_ = std::max(turn_, ev.turn);
     if (last_seq_ != 0 && ev.seq != last_seq_ + 1)
@@ -844,6 +855,7 @@ void Knowledge::serialize(std::string &out) const {
 }
 
 bool Knowledge::deserialize(const std::string &in) {
+    solve_stale_ = true;
     ByteReader r(in, 0);
     if (r.u32() != STATE_MAGIC || r.u16() != STATE_VERSION) return false;
     level_ = static_cast<rmstate::KnowledgeLevel>(r.u8());

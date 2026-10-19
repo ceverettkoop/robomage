@@ -11,8 +11,8 @@ static uint32_t enum_count_frame_kind();
 static uint32_t enum_count_viewer();
 static uint32_t enum_count_storage();
 static DecodeResult resolve_text(const std::string &pool, uint64_t offset, std::string *out);
-static DecodeResult decode_rows(
-    const std::string &bytes, uint32_t rows, const TableDef &def, const std::string &pool, DecodedTable *out);
+static DecodeResult decode_rows(const std::string &payload, size_t at, uint32_t rows, const TableDef &def,
+    const std::string &pool, DecodedTable *out);
 static int column_index(const TableDef &def, const char *name);
 static uint64_t cell(const DecodedTable &t, size_t row, int col);
 static const std::string &cell_text(const DecodedTable &t, size_t row, int col);
@@ -29,9 +29,9 @@ static void write_le(std::string *bytes, size_t at, uint32_t width, uint64_t v);
 // ── Small helpers ─────────────────────────────────────────────────────────────────────────────
 
 static uint64_t read_le(const std::string &bytes, size_t at, uint32_t width) {
+    const unsigned char *p = reinterpret_cast<const unsigned char *>(bytes.data()) + at;
     uint64_t v = 0;
-    for (uint32_t i = 0; i < width; ++i)
-        v |= static_cast<uint64_t>(static_cast<unsigned char>(bytes[at + i])) << (8 * i);
+    for (uint32_t i = 0; i < width; ++i) v |= static_cast<uint64_t>(p[i]) << (8 * i);
     return v;
 }
 
@@ -86,17 +86,22 @@ static DecodeResult resolve_text(const std::string &pool, uint64_t offset, std::
     return DecodeResult();
 }
 
-static DecodeResult decode_rows(
-    const std::string &bytes, uint32_t rows, const TableDef &def, const std::string &pool, DecodedTable *out) {
+// The `rows` rows of table `def` laid out from byte `at` of `payload`.
+static DecodeResult decode_rows(const std::string &payload, size_t at, uint32_t rows, const TableDef &def,
+    const std::string &pool, DecodedTable *out) {
     out->id = static_cast<uint16_t>(def.id);
     out->def = &def;
-    out->rows.assign(rows, std::vector<Value>(def.columns.size()));
+    std::vector<uint32_t> width(def.columns.size());
+    for (size_t c = 0; c < def.columns.size(); ++c) width[c] = storage_width(def.columns[c].storage);
+    out->rows.resize(rows);
     for (uint32_t r = 0; r < rows; ++r) {
-        const size_t base = static_cast<size_t>(r) * def.row_width;
+        const size_t base = at + static_cast<size_t>(r) * def.row_width;
+        std::vector<Value> &row = out->rows[r];
+        row.resize(def.columns.size());
         for (size_t c = 0; c < def.columns.size(); ++c) {
             const ColumnDef &col = def.columns[c];
-            Value &v = out->rows[r][c];
-            v.bits = read_le(bytes, base + col.offset, storage_width(col.storage));
+            Value &v = row[c];
+            v.bits = read_le(payload, base + col.offset, width[c]);
             if (col.storage != Storage::TEXT) continue;
             DecodeResult res = resolve_text(pool, v.bits, &v.text);
             if (!res.ok()) {
@@ -193,7 +198,7 @@ DecodeResult decode_frame(const std::string &payload, const Schema &schema, Deco
     struct Block {
             const TableDef *def;
             uint32_t rows;
-            std::string bytes;
+            size_t at;  // its first row's offset in the payload
     };
     std::vector<Block> blocks;
     size_t off = FRAME_HEADER_SIZE;
@@ -235,17 +240,20 @@ DecodeResult decode_frame(const std::string &payload, const Schema &schema, Deco
         }
         if (static_cast<uint8_t>(def->frame_kind) != h.kind)
             return fail(DecodeStatus::SCHEMA_MISMATCH, "table " + def->name + " in a frame of another kind");
-        blocks.push_back({def, rows, payload.substr(body, static_cast<size_t>(len))});
+        blocks.push_back({def, rows, body});
     }
     if (off != payload.size()) return fail(DecodeStatus::MALFORMED, "bytes after the last table block");
     if (!have_pool || out->strings.empty() || out->strings[0] != '\0' || out->strings.back() != '\0')
         return fail(DecodeStatus::MALFORMED, "missing or malformed string pool");
 
+    out->tables.reserve(blocks.size());
     for (const Block &b : blocks) {
-        DecodedTable t;
-        DecodeResult res = decode_rows(b.bytes, b.rows, *b.def, out->strings, &t);
-        if (!res.ok()) return res;
-        out->tables.push_back(std::move(t));
+        out->tables.emplace_back();
+        DecodeResult res = decode_rows(payload, b.at, b.rows, *b.def, out->strings, &out->tables.back());
+        if (!res.ok()) {
+            out->tables.pop_back();
+            return res;
+        }
     }
     return DecodeResult();
 }
@@ -519,6 +527,31 @@ DecodeResult append_frame_blocks(std::string *payload, const std::string &blocks
     const uint32_t total = static_cast<uint32_t>(read_le(*payload, 16, 4)) + n;
     payload->append(blocks);
     write_le(payload, 16, 4, total);
+    return DecodeResult();
+}
+
+DecodeResult decode_appended_blocks(const std::string &blocks, uint32_t n, const Schema &schema, DecodedFrame *frame) {
+    // The blocks as a frame of their own: the frame's header, a string pool holding only the empty
+    // string (the appended tables hold no text) and the blocks.
+    std::string extra(FRAME_HEADER_SIZE + TABLE_HEADER_SIZE + ROW_ALIGN, '\0');
+    write_le(&extra, 0, 4, FRAME_MAGIC);
+    write_le(&extra, 4, 2, frame->header.version);
+    write_le(&extra, 6, 1, frame->header.kind);
+    write_le(&extra, 7, 1, frame->header.viewer);
+    write_le(&extra, 8, 8, frame->header.schema_hash);
+    write_le(&extra, 16, 4, static_cast<uint64_t>(n) + 1);
+    write_le(&extra, FRAME_HEADER_SIZE, 2, static_cast<uint16_t>(TableId::STRINGS));
+    write_le(&extra, FRAME_HEADER_SIZE + 4, 4, 1);
+    write_le(&extra, FRAME_HEADER_SIZE + 8, 4, 1);
+    extra += blocks;
+    DecodedFrame tail;
+    DecodeResult res = decode_frame(extra, schema, &tail);
+    if (!res.ok()) return res;
+    if (!tail.tables.empty() && !frame->tables.empty() && tail.tables.front().id <= frame->tables.back().id)
+        return fail(DecodeStatus::MALFORMED, "an appended table block is not above the frame's");
+    for (DecodedTable &t : tail.tables) frame->tables.push_back(std::move(t));
+    frame->skipped.insert(frame->skipped.end(), tail.skipped.begin(), tail.skipped.end());
+    frame->header.n_tables += n;
     return DecodeResult();
 }
 

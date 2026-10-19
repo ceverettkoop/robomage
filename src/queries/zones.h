@@ -3,8 +3,10 @@
 
 #include <set>
 #include <vector>
+
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 
 // ── Zoned objects ─────────────────────────────────────────────────────────────
 
@@ -16,17 +18,17 @@
 // Code in a system, or handed an orderer, passes its own mEntities instead. Player entities and
 // the card_db template entities carry no Zone and are not in it (reach a player through
 // cur_game's player entities). Bound by init_ecs (bind_zoned_entities); defined in zones.cpp.
-const std::set<Entity> &zoned_entities();
+const EntitySet &zoned_entities();
 
 // Makes `entities` (a {Zone}-signature system's mEntities) the set zoned_entities() returns.
 // Called once per init_ecs, as each game's ECS registers its systems.
-void bind_zoned_entities(const std::set<Entity> &entities);
+void bind_zoned_entities(const EntitySet &entities);
 
 // The objects `owner` has in `zone` (any owner when UNKNOWN), among `entities`, in entity-id
 // order — not the zone's own order (Orderer::get_library_contents / get_graveyard give that).
 // For the battlefield use battlefield_permanents, which applies the phasing rule.
-std::vector<Entity> zone_objects(const std::set<Entity> &entities, Zone::ZoneValue zone,
-                                 Zone::Ownership owner = Zone::UNKNOWN);
+std::vector<Entity> zone_objects(
+    const EntitySet &entities, Zone::ZoneValue zone, Zone::Ownership owner = Zone::UNKNOWN);
 
 // ── Cards outside the battlefield ─────────────────────────────────────────────
 
@@ -39,19 +41,17 @@ inline bool is_public_zone(Zone::ZoneValue z) {
 // Distinct card types (CR 205.2) among cards in `owner`'s graveyard, excluding `except`
 // (pass 0 to count every card). Single source for delirium / Escape's ExileFromGrave
 // group-type constraint / any "card types in your graveyard" count over a live entity set.
-int graveyard_card_types(Zone::Ownership owner, const std::set<Entity> &entities,
-                         Entity except = 0);
+int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entity except = 0);
 
 // Returns true when the given player has 4+ card types among cards in their graveyard.
-inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
+inline bool check_delirium(Zone::Ownership owner, const EntitySet &entities) {
     return graveyard_card_types(owner, entities) >= 4;
 }
 
 // Number of cards in `owner`'s graveyard, excluding `except` (pass 0 to count every card).
 // Single source for the literal-count Escape ExileFromGrave cost (Uro: "exile five other
 // cards") legality check and payment loop.
-int graveyard_card_count(Zone::Ownership owner, const std::set<Entity> &entities,
-                         Entity except = 0);
+int graveyard_card_count(Zone::Ownership owner, const EntitySet &entities, Entity except = 0);
 
 // ── Play permissions from the graveyard and exile ────────────────────────────
 // Whether `player` has a permission to play (cast, or play as a land) the card `card`

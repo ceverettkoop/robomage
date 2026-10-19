@@ -77,12 +77,11 @@ static bool aura_attached_illegally(Entity aura, const CardData &cd,
 
 // One pass over the battlefield collecting every permanent state-based action that applies to
 // the current game state (CR 704.5f-i, m, n, p, q, s) into `out`.
-static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, SbaActions &out);
+static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaActions &out);
 
 // The legend rule (CR 704.5j): the first conflict's controller chooses the one to keep, and the
 // rest join `out`. Returns false when the choice parked as a loop-top pending decision.
-static bool choose_legend_rule_keep(Game &game, const std::set<Entity> &entities,
-                                    SbaActions &out);
+static bool choose_legend_rule_keep(Game &game, const EntitySet &entities, SbaActions &out);
 
 // Perform one check's actions together (CR 704.3).
 static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaActions &actions);
@@ -296,7 +295,7 @@ static bool aura_attached_illegally(Entity aura, const CardData &cd,
            !global_coordinator.entity_has_component<Creature>(enchanted);
 }
 
-static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, SbaActions &out) {
+static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaActions &out) {
     for (Entity entity : entities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
@@ -367,8 +366,7 @@ static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, Sb
     }
 }
 
-static bool choose_legend_rule_keep(Game &game, const std::set<Entity> &entities,
-                                    SbaActions &out) {
+static bool choose_legend_rule_keep(Game &game, const EntitySet &entities, SbaActions &out) {
     // 704.5j - legend rule: a player who controls two or more legendary permanents with
     // the same name chooses one to keep; the rest go to their owners' graveyards. Affected
     // players choose in APNAP order (active player first). One conflict is chosen per check and

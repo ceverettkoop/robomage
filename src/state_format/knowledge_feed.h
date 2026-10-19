@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../components/zone.h"
+#include "decode.h"
 #include "events.h"
 #include "schema.h"
 
@@ -53,9 +54,11 @@ void knowledge_feed_match_frame(ObsConsumer consumer, Zone::Ownership viewer, co
 // Feeds `viewer`'s STATE frame `payload`, as `consumer` built it, to that writer's instance for the
 // seat and appends the instance's k_* tables to it. No-op for the omniscient viewer. The
 // instance's error lines (its per-frame consistency check, an event it cannot apply) go to `errors`
-// when given, else they are printed as ERROR: lines.
-void knowledge_append_tables(
-    ObsConsumer consumer, Zone::Ownership viewer, std::string *payload, std::vector<std::string> *errors = nullptr);
+// when given, else they are printed as ERROR: lines. With `decoded`, the frame the instance decoded
+// is handed out, its k_* tables added: what decoding the returned payload gives (true then; false,
+// `decoded` untouched, when the instance decoded nothing: level off, a frame that does not decode).
+bool knowledge_append_tables(ObsConsumer consumer, Zone::Ownership viewer, std::string *payload,
+    std::vector<std::string> *errors = nullptr, rmstate::DecodedFrame *decoded = nullptr);
 
 // `consumer`'s instance for seat `viewer`, or nullptr before its first frame (for checks:
 // state_format/selfcheck_knowledge.h).

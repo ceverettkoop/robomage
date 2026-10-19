@@ -327,14 +327,10 @@ Player A puts 4 card(s) on the bottom of their library.
 | >> Player A: 1 (Play Talon Gates of Madara)
 Player A played Talon Gates of Madara
 Choose target for Talon Gates of Madara:
-| decision 29: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: No target
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (No target)
+| auto: Player A: No target
 Targeting choice 0
 Talon Gates of Madara triggered
-| decision 30: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 29: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -343,7 +339,7 @@ Talon Gates of Madara triggered
 (REPLAY) [T2 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Phases)
-| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 30: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Green Sun's Zenith
@@ -351,7 +347,7 @@ Resolving ability (category: Phases)
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Green Sun's Zenith)
 Choose X value (0-1):
-| decision 32: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: X = 0
 |   1: X = 1
@@ -361,7 +357,7 @@ Player A chooses X = 1
 Player A activated Forest for 1(G)
 Player A activated Talon Gates of Madara for 1(C)
 Player A casts Green Sun's Zenith
-| decision 33: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 32: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -371,7 +367,7 @@ Player A casts Green Sun's Zenith
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Birds of Paradise
@@ -383,7 +379,7 @@ Searching Player A's library:
 Player A shuffles their library
 Player A puts Birds of Paradise to the battlefield
 Green Sun's Zenith is shuffled into its owner's library
-| decision 35: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 34: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -391,7 +387,7 @@ Green Sun's Zenith is shuffled into its owner's library
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T2 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 36: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| decision 35: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -400,7 +396,7 @@ Green Sun's Zenith is shuffled into its owner's library
 (REPLAY) [T2 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 37: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| decision 36: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -408,7 +404,7 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T2 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 38: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| decision 37: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -416,7 +412,7 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T2 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 39: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| decision 38: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -424,7 +420,7 @@ No creatures eligible to attack.
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T2 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 40: Player B (game 0, turn 2, END_STEP, Player A active)
+| decision 39: Player B (game 0, turn 2, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -434,7 +430,7 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 4 (Player B) --------
-| decision 41: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 40: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -443,7 +439,7 @@ No creatures eligible to attack.
 (REPLAY) [T3 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Ponder
-| decision 42: Player B (game 0, turn 3, DRAW, Player B active)
+| decision 41: Player B (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -451,7 +447,7 @@ Player B draws Ponder
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T3 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 43: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -463,7 +459,7 @@ Player B draws Ponder
 | >> Player B: 4 (Cast Ponder)
 Player B activated Underground Sea for 1(U)
 Player B casts Ponder
-| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -472,7 +468,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Doomsday
@@ -480,13 +476,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Brainstorm)
 Choose which card goes 2 from top:
-| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Doomsday
 |   1: Undercity Sewers
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Doomsday)
-| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -494,7 +490,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Undercity Sewers
-| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Undercity Sewers
@@ -505,7 +501,7 @@ Player B draws Undercity Sewers
 Player B played Undercity Sewers
 Undercity Sewers enters tapped.
 Undercity Sewers triggered
-| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -514,44 +510,44 @@ Undercity Sewers triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Doomsday
-| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Doomsday on top of library
 |   1: Put Doomsday into graveyard
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Put Doomsday on top of library)
-| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 52: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| decision 51: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T3 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 53: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| decision 52: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T3 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 54: Player B (game 0, turn 3, END_OF_COMBAT, Player B active)
+| decision 53: Player B (game 0, turn 3, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T3 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 55: Player B (game 0, turn 3, SECOND_MAIN, Player B active)
+| decision 54: Player B (game 0, turn 3, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T3 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 56: Player B (game 0, turn 3, END_STEP, Player B active)
+| decision 55: Player B (game 0, turn 3, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -559,20 +555,20 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 5 (Player A) --------
-| decision 57: Player B (game 0, turn 4, UPKEEP, Player A active)
+| decision 56: Player B (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Keen-Eyed Curator
-| decision 58: Player B (game 0, turn 4, DRAW, Player A active)
+| decision 57: Player B (game 0, turn 4, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 59: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Keen-Eyed Curator
@@ -584,21 +580,21 @@ Player A draws Keen-Eyed Curator
 Player A activated Forest for 1(G)
 Player A activated Birds of Paradise for 1(G)
 Player A casts Keen-Eyed Curator
-| decision 60: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 59: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Keen-Eyed Curator enters the battlefield
-| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 60: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 Choose target for Keen-Eyed Curator:
-| decision 62: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Thoughtseize
 |   1: Lotus Petal
@@ -611,7 +607,7 @@ Choose target for Keen-Eyed Curator:
 Targeting choice 0
 Player A activated Talon Gates of Madara for 1(C)
 Player A's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
-| decision 63: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 62: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -619,38 +615,38 @@ Player A's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Thoughtseize is moved to exile
-| decision 64: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 63: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 65: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| decision 64: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 66: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 65: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 67: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
+| decision 66: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 68: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
+| decision 67: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T4 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 69: Player B (game 0, turn 4, END_STEP, Player A active)
+| decision 68: Player B (game 0, turn 4, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -658,7 +654,7 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 6 (Player B) --------
-| decision 70: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 69: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -667,7 +663,7 @@ No creatures eligible to attack.
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Doomsday
-| decision 71: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 70: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -675,7 +671,7 @@ Player B draws Doomsday
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 72: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 71: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -686,7 +682,7 @@ Player B draws Doomsday
 | >> Player B: 2 (Cast Dark Ritual)
 Player B activated Undercity Sewers for 1(B)
 Player B casts Dark Ritual
-| decision 73: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 72: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -695,6 +691,14 @@ Player B casts Dark Ritual
 | >> Player B: 1 (Cast Dark Ritual)
 Player B activated Underground Sea for 1(B)
 Player B casts Dark Ritual
+| decision 73: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Edge of Autumn from hand (Draw)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: AddMana)
+Player B adds 3{B}
 | decision 74: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
@@ -706,21 +710,13 @@ Player B adds 3{B}
 | decision 75: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T5 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: AddMana)
-Player B adds 3{B}
-| decision 76: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
 |   1: Play Island
 |   2: Cast Doomsday
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | First Main | Player B] Input: 2
 | >> Player B: 2 (Cast Doomsday)
 Player B casts Doomsday
-| decision 77: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 76: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -728,7 +724,7 @@ Player B casts Doomsday
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's graveyard and library:
-| decision 78: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 77: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Lotus Petal (graveyard)
@@ -761,6 +757,39 @@ Searching Player B's graveyard and library:
 (REPLAY) [T5 | First Main | Player B] Input: 11
 | >> Player B: 11 (Thassa's Oracle (library))
 Player B puts Thassa's Oracle to top of library
+Searching Player B's graveyard and library:
+| decision 78: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual (graveyard)
+|   1: Lotus Petal (graveyard)
+|   2: Ponder (graveyard)
+|   3: Polluted Delta (graveyard)
+|   4: Doomsday (library)
+|   5: Force of Will (library)
+|   6: Thoughtseize (library)
+|   7: Daze (library)
+|   8: Dark Ritual (library)
+|   9: Lotus Petal (library)
+|   10: Lion's Eye Diamond (library)
+|   11: Personal Tutor (library)
+|   12: Street Wraith (library)
+|   13: Edge of Autumn (library)
+|   14: Brainstorm (library)
+|   15: Ponder (library)
+|   16: Swamp (library)
+|   17: Polluted Delta (library)
+|   18: Underground Sea (library)
+|   19: Bloodstained Mire (library)
+|   20: Verdant Catacombs (library)
+|   21: Flooded Strand (library)
+|   22: Misty Rainforest (library)
+|   23: Cavern of Souls (library)
+|   24: Barrowgoyf (library)
+|   25: Dauthi Voidwalker (library)
+|   26: Deep Analysis (library)
+(REPLAY) [T5 | First Main | Player B] Input: 12
+| >> Player B: 12 (Street Wraith (library))
+Player B puts Street Wraith to top of library
 Searching Player B's graveyard and library:
 | decision 79: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
@@ -860,39 +889,6 @@ Searching Player B's graveyard and library:
 (REPLAY) [T5 | First Main | Player B] Input: 12
 | >> Player B: 12 (Street Wraith (library))
 Player B puts Street Wraith to top of library
-Searching Player B's graveyard and library:
-| decision 82: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Dark Ritual (graveyard)
-|   1: Lotus Petal (graveyard)
-|   2: Ponder (graveyard)
-|   3: Polluted Delta (graveyard)
-|   4: Doomsday (library)
-|   5: Force of Will (library)
-|   6: Thoughtseize (library)
-|   7: Daze (library)
-|   8: Dark Ritual (library)
-|   9: Lotus Petal (library)
-|   10: Lion's Eye Diamond (library)
-|   11: Personal Tutor (library)
-|   12: Street Wraith (library)
-|   13: Edge of Autumn (library)
-|   14: Brainstorm (library)
-|   15: Ponder (library)
-|   16: Swamp (library)
-|   17: Polluted Delta (library)
-|   18: Underground Sea (library)
-|   19: Bloodstained Mire (library)
-|   20: Verdant Catacombs (library)
-|   21: Flooded Strand (library)
-|   22: Misty Rainforest (library)
-|   23: Cavern of Souls (library)
-|   24: Barrowgoyf (library)
-|   25: Dauthi Voidwalker (library)
-|   26: Deep Analysis (library)
-(REPLAY) [T5 | First Main | Player B] Input: 12
-| >> Player B: 12 (Street Wraith (library))
-Player B puts Street Wraith to top of library
 Resolving ability (category: ChangeZoneAll)
 Player B moves Dark Ritual to exile
 Player B moves Dark Ritual to exile
@@ -947,34 +943,22 @@ Player B moves 49 card(s) to exile
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 5 card(s) of their library.
 Choose which card goes 5 from top:
-| decision 83: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 82: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Street Wraith
 |   1: Thassa's Oracle
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Thassa's Oracle)
 Choose which card goes 4 from top:
-| decision 84: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Street Wraith
-(REPLAY) [T5 | First Main | Player B] Input: 0
-| >> Player B: 0 (Street Wraith)
+| auto: Player B: Street Wraith
 Choose which card goes 3 from top:
-| decision 85: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Street Wraith
-(REPLAY) [T5 | First Main | Player B] Input: 0
-| >> Player B: 0 (Street Wraith)
+| auto: Player B: Street Wraith
 Choose which card goes 2 from top:
-| decision 86: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Street Wraith
-(REPLAY) [T5 | First Main | Player B] Input: 0
-| >> Player B: 0 (Street Wraith)
+| auto: Player B: Street Wraith
 Resolving ability (category: LoseLife, amount: 9)
 Player B loses 9 life (now at 8)
 Resolving ability (category: Cleanup)
-| decision 87: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 83: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -982,38 +966,38 @@ Resolving ability (category: Cleanup)
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Island)
 Player B played Island
-| decision 88: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 84: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 89: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| decision 85: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 90: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 86: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 91: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| decision 87: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 92: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 88: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 93: Player B (game 0, turn 5, END_STEP, Player B active)
+| decision 89: Player B (game 0, turn 5, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1021,32 +1005,32 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 7 (Player A) --------
-| decision 94: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 90: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 95: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 91: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Life from the Loam
-| decision 96: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 92: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 97: Player B (game 0, turn 6, DRAW, Player A active)
+| decision 93: Player B (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 98: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 94: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Life from the Loam
@@ -1059,27 +1043,27 @@ Player A draws Life from the Loam
 Player A activated Forest for 1(G)
 Player A activated Birds of Paradise for 1(W)
 Player A casts Life from the Loam
-| decision 99: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 95: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T6 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 100: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 96: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
-| decision 101: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 97: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 Choose target for Keen-Eyed Curator:
-| decision 102: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 98: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Doomsday
 |   1: Life from the Loam
@@ -1090,7 +1074,7 @@ Choose target for Keen-Eyed Curator:
 Targeting choice 0
 Player A activated Talon Gates of Madara for 1(C)
 Player A's Keen-Eyed Curator ability targeting Doomsday is on the stack
-| decision 103: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 99: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1098,13 +1082,13 @@ Player A's Keen-Eyed Curator ability targeting Doomsday is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Doomsday is moved to exile
-| decision 104: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 100: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 105: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| decision 101: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1112,7 +1096,7 @@ Doomsday is moved to exile
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 106: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 102: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Keen-Eyed Curator [3/3]
 |   1: Confirm attackers
@@ -1122,22 +1106,18 @@ Keen-Eyed Curator attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Keen-Eyed Curator [3/3] -> Player B
-| decision 107: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Keen-Eyed Curator -> Player B
-| decision 108: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 109: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| decision 104: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1148,25 +1128,25 @@ No creatures eligible to block.
   Keen-Eyed Curator deals 3 damage to Player B (now at 5 life)
 --- End Combat Damage ---
 
-| decision 110: Player B (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| decision 105: Player B (game 0, turn 6, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 111: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
+| decision 106: Player B (game 0, turn 6, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 112: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
+| decision 107: Player B (game 0, turn 6, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T6 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 113: Player B (game 0, turn 6, END_STEP, Player A active)
+| decision 108: Player B (game 0, turn 6, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1174,21 +1154,21 @@ No creatures eligible to block.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 8 (Player B) --------
-| decision 114: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 109: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Street Wraith
-| decision 115: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 110: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 116: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 111: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -1197,7 +1177,7 @@ Player B draws Street Wraith
 | >> Player B: 1 (Activate Street Wraith from hand (Draw))
 Player B pays 2 life
 Player B activates Street Wraith from hand
-| decision 117: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 112: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1205,7 +1185,7 @@ Player B activates Street Wraith from hand
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Street Wraith
-| decision 118: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 113: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Street Wraith from hand (Draw)
@@ -1214,7 +1194,7 @@ Player B draws Street Wraith
 | >> Player B: 1 (Activate Street Wraith from hand (Draw))
 Player B pays 2 life
 Player B activates Street Wraith from hand
-| decision 119: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 114: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
@@ -1222,13 +1202,13 @@ Player B activates Street Wraith from hand
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Street Wraith
-| decision 120: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 115: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Activate Edge of Autumn from hand (Draw))
-| decision 121: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 116: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Sacrifice Undercity Sewers
 |   1: Sacrifice Underground Sea
@@ -1242,13 +1222,13 @@ Player B draws Street Wraith
 No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
-| decision 122: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 117: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 123: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 118: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Draw a card
 |   1: Dredge Life from the Loam (mill 3)
@@ -1258,13 +1238,13 @@ Player A mills Wasteland.
 Player A mills Windswept Heath.
 Player A mills Green Sun's Zenith.
 Player A dredges Life from the Loam (milled 3)
-| decision 124: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 119: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 125: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 120: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Life from the Loam
@@ -1275,7 +1255,7 @@ Player A dredges Life from the Loam (milled 3)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Life from the Loam)
 Choose target for Life from the Loam:
-| decision 126: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 121: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Done selecting targets
 |   1: Wasteland
@@ -1284,7 +1264,7 @@ Choose target for Life from the Loam:
 | >> Player A: 1 (Wasteland)
 Targeting choice 1
 Choose target for Life from the Loam:
-| decision 127: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 122: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Done selecting targets
 |   1: Windswept Heath
@@ -1294,7 +1274,7 @@ Targeting choice 0
 Player A activated Forest for 1(G)
 Player A activated Birds of Paradise for 1(W)
 Player A casts Life from the Loam targeting Wasteland
-| decision 128: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 123: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
@@ -1302,7 +1282,7 @@ Player A casts Life from the Loam targeting Wasteland
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Wasteland is moved to hand
-| decision 129: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 124: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -1310,7 +1290,7 @@ Wasteland is moved to hand
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 130: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 125: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
@@ -1318,7 +1298,7 @@ Player A played Wasteland
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 Choose target for Keen-Eyed Curator:
-| decision 131: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 126: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Street Wraith
 |   1: Edge of Autumn
@@ -1333,7 +1313,7 @@ Choose target for Keen-Eyed Curator:
 Targeting choice 0
 Player A activated Wasteland for 1(C)
 Player A's Keen-Eyed Curator ability targeting Street Wraith is on the stack
-| decision 132: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 127: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
@@ -1341,14 +1321,14 @@ Player A's Keen-Eyed Curator ability targeting Street Wraith is on the stack
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Street Wraith is moved to exile
-| decision 133: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 128: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 Choose target for Keen-Eyed Curator:
-| decision 134: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 129: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Street Wraith
 |   1: Edge of Autumn
@@ -1367,7 +1347,7 @@ Resolving ability (category: ChangeZone)
 Street Wraith is moved to exile
 
 --- Declare Attackers (Player A) ---
-| decision 135: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 130: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Keen-Eyed Curator [3/3]
 |   1: Confirm attackers
@@ -1377,11 +1357,7 @@ Keen-Eyed Curator attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Keen-Eyed Curator [3/3] -> Player B
-| decision 136: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Keen-Eyed Curator -> Player B

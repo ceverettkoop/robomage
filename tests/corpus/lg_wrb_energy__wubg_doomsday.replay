@@ -246,15 +246,11 @@ Ocelot Pride attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Ocelot Pride [1/1] -> Player B
-| decision 27: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T2 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Ocelot Pride -> Player B
-| decision 28: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| decision 27: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -265,7 +261,7 @@ Attackers declared:
 Attackers:
   0: Ocelot Pride [1/1]
 Your creatures:
-| decision 29: Player B (game 0, turn 2, DECLARE_BLOCKERS, Player A active)
+| decision 28: Player B (game 0, turn 2, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm blockers
@@ -274,7 +270,7 @@ Your creatures:
 
 Blockers declared:
   (none)
-| decision 30: Player B (game 0, turn 2, DECLARE_BLOCKERS, Player A active)
+| decision 29: Player B (game 0, turn 2, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -286,7 +282,7 @@ Blockers declared:
   Player A gains 1 life (lifelink)
 --- End First Strike Combat Damage ---
 
-| decision 31: Player B (game 0, turn 2, FIRST_STRIKE_DAMAGE, Player A active)
+| decision 30: Player B (game 0, turn 2, FIRST_STRIKE_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -296,26 +292,26 @@ Blockers declared:
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 32: Player B (game 0, turn 2, COMBAT_DAMAGE, Player A active)
+| decision 31: Player B (game 0, turn 2, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T2 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 33: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| decision 32: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T2 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 34: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| decision 33: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T2 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 35: Player A (game 0, turn 2, END_STEP, Player A active)
+| decision 34: Player A (game 0, turn 2, END_STEP, Player A active)
 | menu:
 |   0: Ocelot Pride (Token)
 |   1: Ocelot Pride (Token)
@@ -323,6 +319,15 @@ Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 | >> Player A: 0 (Ocelot Pride (Token))
 Ocelot Pride triggered
 Ocelot Pride triggered
+| decision 35: Player B (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T2 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 1/1 Cat
+Resolving ability (category: CopyPermanent)
 | decision 36: Player B (game 0, turn 2, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
@@ -338,31 +343,22 @@ Resolving ability (category: CopyPermanent)
 |   1: Cast Dark Ritual
 (REPLAY) [T2 | End Step | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-Resolving ability (category: Token)
-Token created: 1/1 Cat
-Resolving ability (category: CopyPermanent)
-| decision 38: Player B (game 0, turn 2, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T2 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 -------- TURN 4 (Player B) --------
-| decision 39: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 38: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T3 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Flooded Strand
-| decision 40: Player B (game 0, turn 3, DRAW, Player B active)
+| decision 39: Player B (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T3 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 41: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -371,7 +367,7 @@ Player B draws Flooded Strand
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 42: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -382,7 +378,7 @@ Player B played Flooded Strand
 Player B sacrifices Lotus Petal
 Player B activated Lotus Petal for 1(B)
 Player B casts Dark Ritual
-| decision 43: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -392,7 +388,7 @@ Player B casts Dark Ritual
 Player B pays 1 life
 Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
-| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -400,7 +396,7 @@ Player B's Flooded Strand ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -413,7 +409,7 @@ Searching Player B's library:
 | >> Player B: 6 (Underground Sea)
 Player B shuffles their library
 Player B puts Underground Sea to the battlefield
-| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -421,7 +417,7 @@ Player B puts Underground Sea to the battlefield
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: AddMana)
 Player B adds 3{B}
-| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Doomsday
@@ -430,7 +426,7 @@ Player B adds 3{B}
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Doomsday)
 Player B casts Doomsday
-| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -438,7 +434,7 @@ Player B casts Doomsday
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Searching Player B's graveyard and library:
-| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Flooded Strand (graveyard)
@@ -471,7 +467,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 21 (Thassa's Oracle (library))
 Player B puts Thassa's Oracle to top of library
 Searching Player B's graveyard and library:
-| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Flooded Strand (graveyard)
@@ -503,7 +499,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 12 (Island (library))
 Player B puts Island to top of library
 Searching Player B's graveyard and library:
-| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Flooded Strand (graveyard)
@@ -534,7 +530,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 9 (Edge of Autumn (library))
 Player B puts Edge of Autumn to top of library
 Searching Player B's graveyard and library:
-| decision 52: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Flooded Strand (graveyard)
@@ -564,7 +560,7 @@ Searching Player B's graveyard and library:
 | >> Player B: 16 (Street Wraith (library))
 Player B puts Street Wraith to top of library
 Searching Player B's graveyard and library:
-| decision 53: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual (graveyard)
 |   1: Flooded Strand (graveyard)
@@ -645,7 +641,7 @@ Player B moves 48 card(s) to exile
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 5 card(s) of their library.
 Choose which card goes 5 from top:
-| decision 54: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 53: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Street Wraith
@@ -655,7 +651,7 @@ Choose which card goes 5 from top:
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Brainstorm)
 Choose which card goes 4 from top:
-| decision 55: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 54: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Street Wraith
 |   1: Edge of Autumn
@@ -664,7 +660,7 @@ Choose which card goes 4 from top:
 (REPLAY) [T3 | First Main | Player B] Input: 3
 | >> Player B: 3 (Thassa's Oracle)
 Choose which card goes 3 from top:
-| decision 56: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 55: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Street Wraith
 |   1: Edge of Autumn
@@ -672,7 +668,7 @@ Choose which card goes 3 from top:
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Street Wraith)
 Choose which card goes 2 from top:
-| decision 57: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 56: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Edge of Autumn
 |   1: Island
@@ -681,7 +677,7 @@ Choose which card goes 2 from top:
 Resolving ability (category: LoseLife, amount: 9)
 Player B loses 9 life (now at 9)
 Resolving ability (category: Cleanup)
-| decision 58: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 57: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Quantum Riddler (warp)
@@ -690,7 +686,7 @@ Resolving ability (category: Cleanup)
 Player B activated Tropical Island for 1(U)
 Player B activated Underground Sea for 1(U)
 Player B casts Quantum Riddler
-| decision 59: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 58: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -703,7 +699,7 @@ Resolving ability (category: Draw, amount: 1)
 Player B draws Island
 
 --- Declare Attackers (Player B) ---
-| decision 60: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| decision 59: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -713,11 +709,7 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 61: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
@@ -734,7 +726,7 @@ Resolving ability (category: WarpExile)
 Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
 
 -------- TURN 5 (Player A) --------
-| decision 62: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 60: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -743,7 +735,7 @@ Quantum Riddler is exiled with warp; Player B may cast it from exile for its nor
 Player A activated Scrubland for 1(B)
 Player A activated Plateau for 1(R)
 Player A casts Orcish Bowmasters
-| decision 63: Player B (game 0, turn 4, UPKEEP, Player A active)
+| decision 61: Player B (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Force of Will (alternate cost)
@@ -751,7 +743,7 @@ Player A casts Orcish Bowmasters
 | >> Player B: 0 (Pass priority)
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
-| decision 64: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 62: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (9 life)
 |   1: Player A (20 life)
@@ -772,7 +764,7 @@ Amass Orc 1: Player A Army is now 1/1.
 Player A draws Amped Raptor
 
 --- Declare Attackers (Player A) ---
-| decision 65: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 63: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Ocelot Pride [1/1]
 |   1: Ocelot Pride [1/1]
@@ -785,7 +777,7 @@ Ocelot Pride attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Ocelot Pride [1/1] -> Player B
-| decision 66: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 64: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Ocelot Pride [1/1]
 |   1: Cat token [1/1]
@@ -798,7 +790,7 @@ Ocelot Pride attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Ocelot Pride [1/1] -> Player B
-| decision 67: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 65: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Cat token [1/1]
@@ -811,7 +803,7 @@ Cat token attacking Player B.
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 68: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 66: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Cat token [1/1]
 |   1: Confirm attackers
@@ -824,11 +816,7 @@ Cat token attacking Player B.
   [attacking] Ocelot Pride [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
   [attacking] Cat token [1/1] -> Player B
-| decision 69: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Ocelot Pride -> Player B
@@ -851,7 +839,7 @@ No creatures eligible to block.
 --- End Combat Damage ---
 
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 70: Player A (game 0, turn 4, END_STEP, Player A active)
+| decision 67: Player A (game 0, turn 4, END_STEP, Player A active)
 | menu:
 |   0: Ocelot Pride (Token)
 |   1: Ocelot Pride (Token)
@@ -873,21 +861,21 @@ Orc Army token dies (zero toughness)
 Orc Army (token) is put into the graveyard and ceases to exist.
 
 -------- TURN 6 (Player B) --------
-| decision 71: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 68: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Edge of Autumn
-| decision 72: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 69: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
 |   2: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 73: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 70: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -897,7 +885,7 @@ Player B draws Edge of Autumn
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Island)
 Player B played Island
-| decision 74: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 71: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Edge of Autumn
@@ -905,7 +893,7 @@ Player B played Island
 |   3: Activate Edge of Autumn from hand (Draw)
 (REPLAY) [T5 | First Main | Player B] Input: 3
 | >> Player B: 3 (Activate Edge of Autumn from hand (Draw))
-| decision 75: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 72: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Sacrifice Island
 |   1: Sacrifice Tropical Island
@@ -914,7 +902,7 @@ Player B played Island
 | >> Player B: 0 (Sacrifice Island)
 Player B sacrifices Island
 Player B activates Edge of Autumn from hand
-| decision 76: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 73: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -923,7 +911,7 @@ Player B activates Edge of Autumn from hand
 Resolving ability (category: Draw, amount: 1)
 Player B draws Street Wraith
 Choose target for Orcish Bowmasters:
-| decision 77: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 74: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player B (4 life)
 |   1: Player A (22 life)
@@ -942,7 +930,7 @@ Choose target for Orcish Bowmasters:
 | >> Player A: 0 (Player B (4 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 78: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 75: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -953,7 +941,7 @@ Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player B (now at 3 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 2/2.
-| decision 79: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 76: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -962,7 +950,7 @@ Amass Orc 1: Player A Army is now 2/2.
 | >> Player B: 2 (Activate Street Wraith from hand (Draw))
 Player B pays 2 life
 Player B activates Street Wraith from hand
-| decision 80: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 77: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)
@@ -972,7 +960,7 @@ Resolving ability (category: Draw, amount: 1)
 Player B draws Thassa's Oracle
 Tamiyo, Inquisitive Student triggered
 Choose target for Orcish Bowmasters:
-| decision 81: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 78: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player B (1 life)
 |   1: Player A (22 life)
@@ -991,7 +979,7 @@ Choose target for Orcish Bowmasters:
 | >> Player A: 0 (Player B (1 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 82: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 79: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Clue token (Draw)

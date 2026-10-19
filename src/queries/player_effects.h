@@ -3,8 +3,10 @@
 
 #include <set>
 #include <vector>
+
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 
 // ── Player-scoped effects (the observation's PLAYER EFFECTS block) ───────────
 // The continuous effects currently applying to one player as a whole, each read from the
@@ -36,6 +38,6 @@ struct PlayerEffects {
     int floating_trigger_vocab_idx = -1;
 };
 // `entities` must hold the battlefield permanents (e.g. the iterating system's mEntities).
-PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities);
+PlayerEffects player_effects(Zone::Ownership player, const EntitySet &entities);
 
 #endif /* QUERIES_PLAYER_EFFECTS_H */

@@ -8,6 +8,7 @@
 #include "classes/action.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
+#include "ecs/entity_set.h"
 
 // Build the deterministic NAME_CARD candidate menu used by every "name a card"
 // decision (Cabal Therapy's SP$ NameCard, Disruptor Flute's ETB name-a-card,
@@ -46,10 +47,8 @@
 // card in LegalAction::named_card.
 enum class NameCardScope { CHOOSER_ONLY, BOTH_PLAYERS };
 
-std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
-                                                 Zone::Ownership owner,
-                                                 const std::string &valid_filter,
-                                                 std::vector<std::string> &out_names,
-                                                 NameCardScope scope = NameCardScope::CHOOSER_ONLY);
+std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone::Ownership owner,
+    const std::string &valid_filter, std::vector<std::string> &out_names,
+    NameCardScope scope = NameCardScope::CHOOSER_ONLY);
 
 #endif /* NAME_CARD_CHOICES_H */

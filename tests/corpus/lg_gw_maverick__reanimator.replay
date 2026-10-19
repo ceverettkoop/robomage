@@ -162,13 +162,9 @@ Player A casts Badgermole Cub
 (REPLAY) [T2 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 14: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Badgermole Cub
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Badgermole Cub)
+| auto: Player B: Badgermole Cub
 Targeting choice 0
-| decision 15: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 14: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Exile Atraxa, Grand Unifier
 |   1: Exile Careful Study
@@ -184,7 +180,7 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Lotus Petal
-| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -202,7 +198,7 @@ Player B draws Atraxa, Grand Unifier
 Player B draws Ponder
 Resolving ability (category: Discard)
 Player B chooses a card to discard:
-| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Lotus Petal
@@ -215,7 +211,7 @@ Player B chooses a card to discard:
 | >> Player B: 0 (Atraxa, Grand Unifier)
 Player B discards Atraxa, Grand Unifier
 Player B chooses a card to discard:
-| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Lotus Petal
 |   1: Ponder
@@ -226,7 +222,7 @@ Player B chooses a card to discard:
 (REPLAY) [T3 | First Main | Player B] Input: 5
 | >> Player B: 5 (Thoughtseize)
 Player B discards Thoughtseize
-| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -235,7 +231,7 @@ Player B discards Thoughtseize
 | >> Player B: 2 (Cast Lotus Petal)
 Player B casts Lotus Petal
 Lotus Petal enters the battlefield
-| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -250,7 +246,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Thoughtseize
 |   1: Animate Dead
@@ -258,13 +254,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T3 | First Main | Player B] Input: 0
 | >> Player B: 0 (Thoughtseize)
 Choose which card goes 2 from top:
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Animate Dead
 |   1: Otherworldly Gaze
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Otherworldly Gaze)
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -272,14 +268,14 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Animate Dead
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scalding Tarn)
 Player B played Scalding Tarn
-| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -290,7 +286,7 @@ Player B sacrifices Scalding Tarn
 Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -305,7 +301,7 @@ Undercity Sewers triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Otherworldly Gaze
-| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Otherworldly Gaze on top of library
 |   1: Put Otherworldly Gaze into graveyard
@@ -314,7 +310,7 @@ Surveil: looking at Otherworldly Gaze
 No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
-| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Once Upon a Time
@@ -325,7 +321,7 @@ Player A activated Savannah for 1(G)
 Player A casts Once Upon a Time
 Resolving ability (category: Dig)
 Player A looks at the top 5 card(s) of their library.
-| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Take nothing (rest go to the bottom of library)
 |   1: Thalia, Guardian of Thraben
@@ -337,7 +333,7 @@ Player A looks at the top 5 card(s) of their library.
 Player A reveals Thalia, Guardian of Thraben and puts it into hand.
 Player A puts 4 card(s) on the bottom of their library.
 Player A draws Green Sun's Zenith
-| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 29: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -345,14 +341,14 @@ Player A draws Green Sun's Zenith
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Undercity Sewers
 |   1: Undercity Sewers
@@ -369,7 +365,7 @@ No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
 Player B draws Otherworldly Gaze
-| decision 33: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 32: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Otherworldly Gaze
@@ -382,7 +378,7 @@ Player B surveils 3.
 Surveil: looking at Dark Ritual
 Surveil: looking at Lotus Petal
 Surveil: looking at Underground Sea
-| decision 34: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 33: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Put Dark Ritual on top of library
 |   1: Put Lotus Petal on top of library
@@ -392,7 +388,7 @@ Surveil: looking at Underground Sea
 |   5: Put Underground Sea into graveyard
 (REPLAY) [T5 | Draw | Player B] Input: 2
 | >> Player B: 2 (Put Underground Sea on top of library)
-| decision 35: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 34: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Put Dark Ritual on top of library
 |   1: Put Lotus Petal on top of library
@@ -400,7 +396,7 @@ Surveil: looking at Underground Sea
 |   3: Put Lotus Petal into graveyard
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Put Dark Ritual on top of library)
-| decision 36: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 35: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Put Lotus Petal on top of library
 |   1: Put Lotus Petal into graveyard
@@ -410,7 +406,7 @@ No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
 Player A draws Gaea's Cradle
-| decision 37: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 36: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Gaea's Cradle
@@ -421,7 +417,7 @@ Player A draws Gaea's Cradle
 (REPLAY) [T6 | First Main | Player A] Input: 3
 | >> Player A: 3 (Cast Green Sun's Zenith)
 Choose X value (0-1):
-| decision 38: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 37: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: X = 0
 |   1: X = 1
@@ -433,7 +429,7 @@ Player A activated Savannah for 1(G)
 Player A casts Green Sun's Zenith
 Resolving ability (category: ChangeZone)
 Searching Player A's library:
-| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 38: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Birds of Paradise
@@ -444,7 +440,7 @@ Searching Player A's library:
 Player A shuffles their library
 Player A puts Birds of Paradise to the battlefield
 Green Sun's Zenith is shuffled into its owner's library
-| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Gaea's Cradle
@@ -456,7 +452,7 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Underground Sea
-| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 40: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
@@ -469,7 +465,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 41: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual
 |   1: Lotus Petal
@@ -477,13 +473,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Lotus Petal)
 Choose which card goes 2 from top:
-| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dark Ritual
 |   1: Flow State
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Dark Ritual)
-| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -491,21 +487,21 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Flow State
-| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Underground Sea
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Underground Sea)
 Player B played Underground Sea
-| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Reanimate
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Reanimate)
 Choose target for Reanimate:
-| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Badgermole Cub
 |   1: Atraxa, Grand Unifier
@@ -534,7 +530,7 @@ Player B reveals Island from the top of their library
 Resolving ability (category: RepeatEach)
 Resolving ability (category: ChooseCard)
 Player B may put a Artifact card from among the revealed cards into their hand:
-| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Lotus Petal (Artifact) into hand
 |   1: Put no Artifact card into hand
@@ -543,7 +539,7 @@ Player B may put a Artifact card from among the revealed cards into their hand:
 Player B chooses Lotus Petal
 Resolving ability (category: ChooseCard)
 Player B may put a Instant card from among the revealed cards into their hand:
-| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Dark Ritual (Instant) into hand
 |   1: Put Brainstorm (Instant) into hand
@@ -554,7 +550,7 @@ Player B may put a Instant card from among the revealed cards into their hand:
 Player B chooses Dark Ritual
 Resolving ability (category: ChooseCard)
 Player B may put a Land card from among the revealed cards into their hand:
-| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Polluted Delta (Land) into hand
 |   1: Put Swamp (Land) into hand
@@ -565,7 +561,7 @@ Player B may put a Land card from among the revealed cards into their hand:
 Player B chooses Polluted Delta
 Resolving ability (category: ChooseCard)
 Player B may put a Sorcery card from among the revealed cards into their hand:
-| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Reanimate (Sorcery) into hand
 |   1: Put Ponder (Sorcery) into hand
@@ -587,7 +583,7 @@ Player B moves Force of Will to the bottom of their library
 Player B moves Swamp to the bottom of their library
 Player B moves 6 card(s) to the bottom of their library
 Resolving ability (category: Cleanup)
-| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lotus Petal
@@ -595,40 +591,40 @@ Resolving ability (category: Cleanup)
 | >> Player B: 1 (Cast Lotus Petal)
 Player B casts Lotus Petal
 Lotus Petal enters the battlefield
-| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 54: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| decision 53: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T7 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 55: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 54: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T7 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 56: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
+| decision 55: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T7 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 57: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
+| decision 56: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 (REPLAY) [T7 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 58: Player B (game 0, turn 7, END_STEP, Player B active)
+| decision 57: Player B (game 0, turn 7, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -636,14 +632,14 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 9 (Player A) --------
-| decision 59: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 58: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T8 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Cast Swords to Plowshares)
 Choose target for Swords to Plowshares:
-| decision 60: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 59: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Atraxa, Grand Unifier
 |   1: Birds of Paradise
@@ -652,7 +648,7 @@ Choose target for Swords to Plowshares:
 Targeting choice 0
 Player A activated Birds of Paradise for 1(W)
 Player A casts Swords to Plowshares targeting Atraxa, Grand Unifier
-| decision 61: Player B (game 0, turn 8, UPKEEP, Player A active)
+| decision 60: Player B (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -662,20 +658,20 @@ Resolving ability (category: ChangeZone)
 Atraxa, Grand Unifier is moved to exile
 Resolving ability (category: GainLife, amount: 7)
 Player B gains 7 life (now at 17)
-| decision 62: Player B (game 0, turn 8, UPKEEP, Player A active)
+| decision 61: Player B (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Gaddock Teeg
-| decision 63: Player B (game 0, turn 8, DRAW, Player A active)
+| decision 62: Player B (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 64: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 63: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -687,28 +683,28 @@ Player A draws Gaddock Teeg
 Player A activated Savannah for 1(W)
 Player A activated Forest for 1(G)
 Player A casts Gaddock Teeg
-| decision 65: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 64: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Gaddock Teeg enters the battlefield
-| decision 66: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 65: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 67: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 66: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 68: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 67: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Undercity Sewers
 |   1: Underground Sea
@@ -720,7 +716,7 @@ Choose target for Wasteland:
 Targeting choice 0
 Player A sacrifices Wasteland
 Player A's Wasteland ability targeting Undercity Sewers is on the stack
-| decision 69: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 68: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -728,38 +724,38 @@ Player A's Wasteland ability targeting Undercity Sewers is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Undercity Sewers is destroyed
-| decision 70: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 69: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 71: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| decision 70: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 72: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 71: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 73: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
+| decision 72: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 74: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
+| decision 73: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T8 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 75: Player B (game 0, turn 8, END_STEP, Player A active)
+| decision 74: Player B (game 0, turn 8, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -767,7 +763,7 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 10 (Player B) --------
-| decision 76: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 75: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -783,7 +779,7 @@ Player B surveils 3.
 Surveil: looking at Thoughtseize
 Surveil: looking at Brainstorm
 Surveil: looking at Otherworldly Gaze
-| decision 77: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 76: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Put Thoughtseize on top of library
 |   1: Put Brainstorm on top of library
@@ -793,7 +789,7 @@ Surveil: looking at Otherworldly Gaze
 |   5: Put Otherworldly Gaze into graveyard
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Put Thoughtseize on top of library)
-| decision 78: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 77: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Put Brainstorm on top of library
 |   1: Put Otherworldly Gaze on top of library
@@ -801,7 +797,7 @@ Surveil: looking at Otherworldly Gaze
 |   3: Put Otherworldly Gaze into graveyard
 (REPLAY) [T9 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Put Brainstorm on top of library)
-| decision 79: Player B (game 0, turn 9, UPKEEP, Player B active)
+| decision 78: Player B (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Put Otherworldly Gaze on top of library
 |   1: Put Otherworldly Gaze into graveyard
@@ -809,14 +805,14 @@ Surveil: looking at Otherworldly Gaze
 | >> Player B: 0 (Put Otherworldly Gaze on top of library)
 Otherworldly Gaze is exiled (flashback)
 Player B draws Thoughtseize
-| decision 80: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 79: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Polluted Delta
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Polluted Delta)
 Player B played Polluted Delta
-| decision 81: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 80: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Polluted Delta (ChangeZone)
@@ -827,7 +823,7 @@ Player B sacrifices Polluted Delta
 Player B's Polluted Delta ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 81: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -837,7 +833,7 @@ Searching Player B's library:
 | >> Player B: 3 (Underground Sea)
 Player B shuffles their library
 Player B puts Underground Sea to the battlefield
-| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -846,7 +842,7 @@ Player B puts Underground Sea to the battlefield
 (REPLAY) [T9 | First Main | Player B] Input: 3
 | >> Player B: 3 (Cast Thoughtseize)
 Choose target for Thoughtseize:
-| decision 84: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (16 life)
@@ -860,7 +856,7 @@ Player A reveals their hand:
   Thalia, Guardian of Thraben
   Thalia, Guardian of Thraben
 Player B chooses a card to discard:
-| decision 85: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 84: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Thalia, Guardian of Thraben
 |   1: Thalia, Guardian of Thraben
@@ -873,13 +869,13 @@ No creatures eligible to attack.
 
 -------- TURN 11 (Player A) --------
 Player A draws Talon Gates of Madara
-| decision 86: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 85: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Talon Gates of Madara from hand (ChangeZone)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 87: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 86: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Talon Gates of Madara
@@ -891,7 +887,7 @@ Player A activated Birds of Paradise for 1(W)
 Player A activated Forest for 1(G)
 Player A casts Thalia, Guardian of Thraben
 Thalia, Guardian of Thraben enters the battlefield
-| decision 88: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 87: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Talon Gates of Madara
@@ -900,7 +896,7 @@ Thalia, Guardian of Thraben enters the battlefield
 | >> Player A: 1 (Play Talon Gates of Madara)
 Player A played Talon Gates of Madara
 Choose target for Talon Gates of Madara:
-| decision 89: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 88: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Birds of Paradise
@@ -913,7 +909,7 @@ Talon Gates of Madara triggered
 Resolving ability (category: Phases)
 
 --- Declare Attackers (Player A) ---
-| decision 90: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 89: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Gaddock Teeg [2/2]
 |   1: Confirm attackers
@@ -923,11 +919,7 @@ Gaddock Teeg attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Gaddock Teeg [2/2] -> Player B
-| decision 91: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Gaddock Teeg -> Player B
@@ -939,53 +931,53 @@ No creatures eligible to block.
 
 
 -------- TURN 12 (Player B) --------
-| decision 92: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 90: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T11 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Force of Will
-| decision 93: Player B (game 0, turn 11, DRAW, Player B active)
+| decision 91: Player B (game 0, turn 11, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T11 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 94: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 92: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 (REPLAY) [T11 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 95: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| decision 93: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T11 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 96: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 94: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T11 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 97: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| decision 95: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T11 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 98: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| decision 96: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 (REPLAY) [T11 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 99: Player B (game 0, turn 11, END_STEP, Player B active)
+| decision 97: Player B (game 0, turn 11, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -993,26 +985,26 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 13 (Player A) --------
-| decision 100: Player B (game 0, turn 12, UPKEEP, Player A active)
+| decision 98: Player B (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Green Sun's Zenith
-| decision 101: Player B (game 0, turn 12, DRAW, Player A active)
+| decision 99: Player B (game 0, turn 12, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 102: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| decision 100: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 103: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| decision 101: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1020,7 +1012,7 @@ Player A draws Green Sun's Zenith
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 104: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 102: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Birds of Paradise [0/1]
 |   1: Gaddock Teeg [2/2]
@@ -1032,7 +1024,7 @@ Birds of Paradise attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Birds of Paradise [0/1] -> Player B
-| decision 105: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Gaddock Teeg [2/2]
 |   1: Thalia, Guardian of Thraben [2/1]
@@ -1044,7 +1036,7 @@ Gaddock Teeg attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Birds of Paradise [0/1] -> Player B
   [attacking] Gaddock Teeg [2/2] -> Player B
-| decision 106: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 104: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Thalia, Guardian of Thraben [2/1]
 |   1: Confirm attackers
@@ -1056,24 +1048,20 @@ Thalia, Guardian of Thraben attacking Player B.
   [attacking] Birds of Paradise [0/1] -> Player B
   [attacking] Gaddock Teeg [2/2] -> Player B
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
-| decision 107: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Birds of Paradise -> Player B
   Gaddock Teeg -> Player B
   Thalia, Guardian of Thraben -> Player B
-| decision 108: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 105: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 109: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| decision 106: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1084,7 +1072,7 @@ No creatures eligible to block.
   Thalia, Guardian of Thraben deals 2 damage to Player B (now at 10 life)
 --- End First Strike Combat Damage ---
 
-| decision 110: Player B (game 0, turn 12, FIRST_STRIKE_DAMAGE, Player A active)
+| decision 107: Player B (game 0, turn 12, FIRST_STRIKE_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1095,25 +1083,25 @@ No creatures eligible to block.
   Gaddock Teeg deals 2 damage to Player B (now at 8 life)
 --- End Combat Damage ---
 
-| decision 111: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| decision 108: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 112: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
+| decision 109: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 113: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| decision 110: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T12 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 114: Player B (game 0, turn 12, END_STEP, Player A active)
+| decision 111: Player B (game 0, turn 12, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1121,14 +1109,14 @@ No creatures eligible to block.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 14 (Player B) --------
-| decision 115: Player B (game 0, turn 13, UPKEEP, Player B active)
+| decision 112: Player B (game 0, turn 13, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T13 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Brainstorm
-| decision 116: Player B (game 0, turn 13, DRAW, Player B active)
+| decision 113: Player B (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -1144,7 +1132,7 @@ Player B draws Atraxa, Grand Unifier
 Player B draws Griselbrand
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 117: Player B (game 0, turn 13, DRAW, Player B active)
+| decision 114: Player B (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Animate Dead
 |   1: Atraxa, Grand Unifier
@@ -1158,7 +1146,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 1 (Atraxa, Grand Unifier)
 Player B puts Atraxa, Grand Unifier to top of library
 Player B chooses a card from Player B hand:
-| decision 118: Player B (game 0, turn 13, DRAW, Player B active)
+| decision 115: Player B (game 0, turn 13, DRAW, Player B active)
 | menu:
 |   0: Animate Dead
 |   1: Dark Ritual
@@ -1174,7 +1162,7 @@ No creatures eligible to attack.
 
 -------- TURN 15 (Player A) --------
 Player A draws Scythecat Cub
-| decision 119: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 116: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Scythecat Cub
@@ -1186,7 +1174,7 @@ Player A casts Scythecat Cub
 Scythecat Cub enters the battlefield
 
 --- Declare Attackers (Player A) ---
-| decision 120: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 117: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Gaddock Teeg [2/2]
 |   1: Thalia, Guardian of Thraben [2/1]
@@ -1197,7 +1185,7 @@ Gaddock Teeg attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Gaddock Teeg [2/2] -> Player B
-| decision 121: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 118: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Thalia, Guardian of Thraben [2/1]
 |   1: Confirm attackers
@@ -1208,11 +1196,7 @@ Thalia, Guardian of Thraben attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Gaddock Teeg [2/2] -> Player B
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
-| decision 122: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Gaddock Teeg -> Player B
@@ -1230,53 +1214,53 @@ No creatures eligible to block.
 
 
 -------- TURN 16 (Player B) --------
-| decision 123: Player B (game 0, turn 15, UPKEEP, Player B active)
+| decision 119: Player B (game 0, turn 15, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T15 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Griselbrand
-| decision 124: Player B (game 0, turn 15, DRAW, Player B active)
+| decision 120: Player B (game 0, turn 15, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T15 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 125: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| decision 121: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 (REPLAY) [T15 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 126: Player B (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| decision 122: Player B (game 0, turn 15, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T15 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 127: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| decision 123: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T15 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 128: Player B (game 0, turn 15, END_OF_COMBAT, Player B active)
+| decision 124: Player B (game 0, turn 15, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T15 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 129: Player B (game 0, turn 15, SECOND_MAIN, Player B active)
+| decision 125: Player B (game 0, turn 15, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 |   2: Cast Reanimate
 (REPLAY) [T15 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 130: Player B (game 0, turn 15, END_STEP, Player B active)
+| decision 126: Player B (game 0, turn 15, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1284,26 +1268,64 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 17 (Player A) --------
-| decision 131: Player B (game 0, turn 16, UPKEEP, Player A active)
+| decision 127: Player B (game 0, turn 16, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T16 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Windswept Heath
-| decision 132: Player B (game 0, turn 16, DRAW, Player A active)
+| decision 128: Player B (game 0, turn 16, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T16 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 133: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 129: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Windswept Heath
 (REPLAY) [T16 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Windswept Heath)
 Player A played Windswept Heath
+Choose target for Scythecat Cub:
+| decision 130: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Birds of Paradise
+|   1: Gaddock Teeg
+|   2: Scythecat Cub
+|   3: Thalia, Guardian of Thraben
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Gaddock Teeg)
+Targeting choice 1
+Scythecat Cub triggered
+| decision 131: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Windswept Heath (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Windswept Heath (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+| decision 132: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dark Ritual
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 133: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Dryad Arbor
+|   2: Plains
+|   3: Savannah
+(REPLAY) [T16 | First Main | Player A] Input: 3
+| >> Player A: 3 (Savannah)
+Player A shuffles their library
+Player A puts Savannah to the battlefield
 Choose target for Scythecat Cub:
 | decision 134: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
@@ -1315,45 +1337,7 @@ Choose target for Scythecat Cub:
 | >> Player A: 1 (Gaddock Teeg)
 Targeting choice 1
 Scythecat Cub triggered
-| decision 135: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Windswept Heath (ChangeZone)
-(REPLAY) [T16 | First Main | Player A] Input: 1
-| >> Player A: 1 (Activate Windswept Heath (ChangeZone))
-Player A pays 1 life
-Player A sacrifices Windswept Heath
-Player A's Windswept Heath ability is on the stack
-| decision 136: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T16 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: ChangeZone)
-Searching Player A's library:
-| decision 137: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-|   1: Dryad Arbor
-|   2: Plains
-|   3: Savannah
-(REPLAY) [T16 | First Main | Player A] Input: 3
-| >> Player A: 3 (Savannah)
-Player A shuffles their library
-Player A puts Savannah to the battlefield
-Choose target for Scythecat Cub:
-| decision 138: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
-| menu:
-|   0: Birds of Paradise
-|   1: Gaddock Teeg
-|   2: Scythecat Cub
-|   3: Thalia, Guardian of Thraben
-(REPLAY) [T16 | First Main | Player A] Input: 1
-| >> Player A: 1 (Gaddock Teeg)
-Targeting choice 1
-Scythecat Cub triggered
-| decision 139: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 135: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1363,7 +1347,7 @@ Resolving ability (category: Pump)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 +1/+1 counter(s) on creature (now 3/3).
 Resolving ability (category: MultiplyCounter)
-| decision 140: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 136: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1373,13 +1357,13 @@ Resolving ability (category: Pump)
 Resolving ability (category: PutCounter, amount: 1)
 Resolving ability (category: MultiplyCounter)
 MultiplyCounter: doubled +1/+1 counters on creature (now 4/4).
-| decision 141: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| decision 137: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T16 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 142: Player B (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| decision 138: Player B (game 0, turn 16, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1387,7 +1371,7 @@ MultiplyCounter: doubled +1/+1 counters on creature (now 4/4).
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 143: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| decision 139: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Birds of Paradise [0/1]
 |   1: Gaddock Teeg [4/4]
@@ -1400,7 +1384,7 @@ Birds of Paradise attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Birds of Paradise [0/1] -> Player B
-| decision 144: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| decision 140: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Gaddock Teeg [4/4]
 |   1: Scythecat Cub [2/2]
@@ -1413,7 +1397,7 @@ Gaddock Teeg attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Birds of Paradise [0/1] -> Player B
   [attacking] Gaddock Teeg [4/4] -> Player B
-| decision 145: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| decision 141: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Scythecat Cub [2/2]
 |   1: Thalia, Guardian of Thraben [2/1]
@@ -1426,7 +1410,7 @@ Scythecat Cub attacking Player B.
   [attacking] Birds of Paradise [0/1] -> Player B
   [attacking] Gaddock Teeg [4/4] -> Player B
   [attacking] Scythecat Cub [2/2] -> Player B
-| decision 146: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| decision 142: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Thalia, Guardian of Thraben [2/1]
 |   1: Confirm attackers
@@ -1439,25 +1423,21 @@ Thalia, Guardian of Thraben attacking Player B.
   [attacking] Gaddock Teeg [4/4] -> Player B
   [attacking] Scythecat Cub [2/2] -> Player B
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
-| decision 147: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Birds of Paradise -> Player B
   Gaddock Teeg -> Player B
   Scythecat Cub -> Player B
   Thalia, Guardian of Thraben -> Player B
-| decision 148: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| decision 143: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
 (REPLAY) [T16 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 149: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| decision 144: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual
@@ -1468,7 +1448,7 @@ No creatures eligible to block.
   Thalia, Guardian of Thraben deals 2 damage to Player B (now at 2 life)
 --- End First Strike Combat Damage ---
 
-| decision 150: Player B (game 0, turn 16, FIRST_STRIKE_DAMAGE, Player A active)
+| decision 145: Player B (game 0, turn 16, FIRST_STRIKE_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dark Ritual

@@ -23,7 +23,7 @@ Your hand (7):
 Player A's graveyard: (empty)
 Player B's graveyard: (empty)
 You know:
-  Player B's hand holds Forest x6
+  Player B's hand holds Forest x5
   Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
 Decision: keep this hand or take a mulligan
   0: Keep
@@ -32,11 +32,13 @@ Player A [0-1, help]>
 Since your last decision:
   T1: Player A's Mountain: created on the battlefield (x3)
   T1: Player B's Grizzly Bears: created on the battlefield
+  T1: Player B's Goblin Guide: created on the battlefield
 Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
   Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
   Player B        life 20   hand 7   library 8   graveyard 0   exile 0
 Player B's battlefield:
   Grizzly Bears  2/2  #11
+  Goblin Guide   2/2  #12
 Player A's battlefield:
   Mountain x3  #8 #9 #10
 Your hand (7):
@@ -74,10 +76,11 @@ Game 1, turn 1, Upkeep: Player A's turn
   Player B        life 20   hand 7   library 8   graveyard 0   exile 0
 Player B's battlefield:
   Grizzly Bears  2/2  #11
+  Goblin Guide   2/2  #12
 Player A's battlefield:
   Mountain x3  #8 #9 #10
 Stack (top first):
-  1. Gone #12 (Player A)
+  1. Gone #13 (Player A)
 Your hand (6):
   Dead // Gone  #2  {R} // {2}{R}  Instant // Instant
   Mountain      #3                 Basic Land - Mountain
@@ -93,7 +96,8 @@ You know:
   Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
 Decision: casting Gone: choose a target
   0: Grizzly Bears
-Player A [0-0, help]> 
+  1: Goblin Guide
+Player A [0-1, help]> 
 Since your last decision:
   T1: Player B's Grizzly Bears: battlefield -> hand (by Dead // Gone)
   T1: Player A's Dead // Gone: stack -> graveyard
@@ -101,7 +105,7 @@ Game 1, turn 1, First main: Player A's turn; Player A has priority
   Player A (you)  life 20   hand 6   library 8   graveyard 1   exile 0
   Player B        life 20   hand 8   library 8   graveyard 0   exile 0
 Player B's battlefield:
-  (no permanents)
+  Goblin Guide  2/2  #12
 Player A's battlefield:
   Mountain x3  #8 #9 #10  tapped
 Your hand (6):
@@ -134,7 +138,7 @@ Decision: act or pass priority
   4: Play Mountain
   5: Play Mountain
 Player A [0-5, help]> Player A's graveyard: 1 card
-  Dead // Gone #13
+  Dead // Gone #14
 Player A [0-5, help]> Knowledge (expert, exact):
 Player B:
   known in hand: Forest x7, Grizzly Bears
@@ -142,7 +146,7 @@ Player B:
   known library positions: top: Forest, 2nd from the top: Forest, 3rd from the top: Forest,
       4th from the top: Forest, 4th from the bottom: Forest, 3rd from the bottom: Forest,
       2nd from the bottom: Forest, bottom: Forest
-  copies seen this game (/match): Grizzly Bears 1
+  copies seen this game (/match): Grizzly Bears 1, Goblin Guide 1
   consistent reference lists: none
   archetype: matches no reference list
 Player A (you):

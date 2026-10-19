@@ -49,6 +49,10 @@ void agents_install(unsigned int engine_seed);
 // under --trace-decisions, builds and decodes the deciding seat's frames and prints the trace
 // block; then hands the decision to the trajectory writer.
 void agents_begin_decision(const std::vector<LegalAction> &actions, size_t number);
+// A one-row menu the engine took without asking (InputLogger::choose): under --trace-decisions a
+// "| auto: Player <X>: <description>" line on the game log; a --play script whose next spec names
+// that row consumes the spec (PlayScript::auto_taken).
+void agents_auto_decision(const LegalAction &taken);
 // After the decision: `choice` the action index taken (the choice line of a traced decision),
 // `reply` what the decision log holds for it (a menu row or a concession sentinel), for the
 // trajectory writer's record (with the teacher's label, read here when a taught seat's reply was

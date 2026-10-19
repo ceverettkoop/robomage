@@ -111,17 +111,13 @@ Aether Vial enters the battlefield
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T0 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 No creatures eligible to attack.
 
 -------- TURN 2 (Player B) --------
 Player B draws Teferi, Time Raveler
-| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -131,7 +127,7 @@ Player B draws Teferi, Time Raveler
 | >> Player B: 3 (Cast Lotus Petal)
 Player B casts Lotus Petal
 Lotus Petal enters the battlefield
-| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -144,7 +140,7 @@ Player B sacrifices Lotus Petal
 Player B activated Lotus Petal for 1(U)
 Player B casts Tamiyo, Inquisitive Student
 Tamiyo, Inquisitive Student enters the battlefield
-| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -156,13 +152,13 @@ No creatures eligible to attack.
 
 -------- TURN 3 (Player A) --------
 Aether Vial triggered
-| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 11: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -170,20 +166,20 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 1).
-| decision 14: Player A (game 0, turn 2, UPKEEP, Player A active)
+| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Wasteland
-| decision 15: Player A (game 0, turn 2, DRAW, Player A active)
+| decision 14: Player A (game 0, turn 2, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T2 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -194,7 +190,7 @@ Player A draws Wasteland
 | >> Player A: 3 (Cast Aether Vial)
 Player A activated Scrubland for 1(W)
 Player A casts Aether Vial
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
@@ -203,14 +199,10 @@ Player A casts Aether Vial
 Player A's Aether Vial ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
+| auto: Player A: Fail to find
 Player A fails to find
 Aether Vial enters the battlefield
-| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -219,47 +211,59 @@ Aether Vial enters the battlefield
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 | decision 21: Player A (game 0, turn 2, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
 | decision 22: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 | decision 23: Player A (game 0, turn 2, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 | decision 24: Player A (game 0, turn 2, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 | decision 25: Player A (game 0, turn 2, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T2 | End Step | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 
@@ -267,8 +271,7 @@ No creatures eligible to attack.
 | decision 26: Player A (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T3 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player B draws Brainstorm
@@ -283,8 +286,7 @@ Player B casts Brainstorm
 | decision 28: Player A (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T3 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 3)
@@ -321,8 +323,7 @@ Tamiyo, Inquisitive Student triggered
 | decision 31: Player A (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T3 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
@@ -334,8 +335,7 @@ Tamiyo, Seasoned Scholar enters transformed.
 | decision 32: Player A (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T3 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 | decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
@@ -359,19 +359,11 @@ Player B casts Veil of Summer
 | decision 35: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Wasteland (Destroy)
-(REPLAY) [T3 | First Main | Player A] Input: 1
-| >> Player A: 1 (Activate Aether Vial (ChangeZone))
-Player A's Aether Vial ability is on the stack
-| decision 36: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
 |   1: Activate Wasteland (Destroy)
 (REPLAY) [T3 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Wasteland (Destroy))
 Choose target for Wasteland:
-| decision 37: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 36: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Tropical Island
 |   1: Scrubland
@@ -383,20 +375,12 @@ Player A sacrifices Wasteland
 Player A's Wasteland ability targeting Tropical Island is on the stack
 Resolving ability (category: Destroy)
 Tropical Island is destroyed
-Resolving ability (category: ChangeZone)
-Player A chooses a card from Player A hand:
-| decision 38: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T3 | First Main | Player A] Input: 0
-| >> Player A: 0 (Fail to find)
-Player A fails to find
 Resolving ability (category: Draw, amount: 1)
 Resolving ability (category: Effect)
 Spells Player B controls can't be countered this turn.
 Resolving ability (category: Pump)
 Player B and the permanents they control gain hexproof from the chosen color(s) until end of turn.
-| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -410,7 +394,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 40: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 38: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Aether Vial (PutCounter)
 |   1: Aether Vial (PutCounter)
@@ -418,6 +402,21 @@ Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 | >> Player A: 0 (Aether Vial (PutCounter))
 Aether Vial triggered
 Aether Vial triggered
+| decision 39: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
 | decision 41: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
@@ -432,7 +431,7 @@ Aether Vial triggered
 (REPLAY) [T4 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 1).
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
 | decision 43: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
@@ -440,30 +439,15 @@ Put 1 CHARGE counter(s) on Aether Vial (now 1).
 |   2: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 44: Player A (game 0, turn 4, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T4 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 2).
-| decision 45: Player A (game 0, turn 4, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Player A draws Witch Enchanter
-| decision 46: Player A (game 0, turn 4, DRAW, Player A active)
+| decision 44: Player A (game 0, turn 4, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
 (REPLAY) [T4 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 45: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Wasteland
@@ -473,7 +457,7 @@ Player A draws Witch Enchanter
 (REPLAY) [T4 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Wasteland)
 Player A played Wasteland
-| decision 48: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 46: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Orcish Bowmasters
@@ -486,13 +470,34 @@ Player A played Wasteland
 Player A activated Scrubland for 1(B)
 Player A activated Wasteland for 1(C)
 Player A casts Orcish Bowmasters
-| decision 49: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 48: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 49: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Phelia, Exuberant Shepherd
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Phelia, Exuberant Shepherd)
+Player A puts Phelia, Exuberant Shepherd to the battlefield
 Orcish Bowmasters enters the battlefield
 Choose target for Orcish Bowmasters:
 | decision 50: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
@@ -501,82 +506,20 @@ Choose target for Orcish Bowmasters:
 |   1: Player A (20 life)
 |   2: Tamiyo, Seasoned Scholar
 |   3: Orcish Bowmasters
+|   4: Phelia, Exuberant Shepherd
 (REPLAY) [T4 | First Main | Player A] Input: 0
 | >> Player A: 0 (Player B (20 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 51: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player B (now at 19 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 1/1.
-| decision 52: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 53: Player A (game 0, turn 4, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 54: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 55: Player A (game 0, turn 4, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 56: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 57: Player A (game 0, turn 4, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T4 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 -------- TURN 6 (Player B) --------
-| decision 58: Player A (game 0, turn 5, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Player B draws Teferi, Time Raveler
-| decision 59: Player A (game 0, turn 5, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 60: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Undercity Sewers
@@ -587,24 +530,17 @@ Player B draws Teferi, Time Raveler
 Player B played Undercity Sewers
 Undercity Sewers enters tapped.
 Undercity Sewers triggered
-| decision 61: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Polluted Delta
-| decision 62: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Polluted Delta on top of library
 |   1: Put Polluted Delta into graveyard
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Put Polluted Delta into graveyard)
 Player B puts Polluted Delta into their graveyard.
-| decision 63: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
@@ -613,62 +549,13 @@ Player B puts Polluted Delta into their graveyard.
 | >> Player B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
 Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
 Player B's Tamiyo, Seasoned Scholar ability is on the stack
-| decision 64: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Effect)
 A floating triggered ability is created until your next turn.
-| decision 65: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 66: Player A (game 0, turn 5, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 67: Player A (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 68: Player A (game 0, turn 5, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 69: Player A (game 0, turn 5, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 70: Player A (game 0, turn 5, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T5 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 -------- TURN 7 (Player A) --------
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 71: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 54: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Aether Vial (PutCounter)
 |   1: Aether Vial (PutCounter)
@@ -676,34 +563,15 @@ Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 | >> Player A: 0 (Aether Vial (PutCounter))
 Aether Vial triggered
 Aether Vial triggered
-| decision 72: Player A (game 0, turn 6, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Phelia, Exuberant Shepherd
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Aether Vial (ChangeZone)
-|   4: Activate Wasteland (Destroy)
-(REPLAY) [T6 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Cast Phelia, Exuberant Shepherd)
-Player A activated Scrubland for 1(W)
-Player A activated Wasteland for 1(C)
-Player A casts Phelia, Exuberant Shepherd
-| decision 73: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 55: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-Phelia, Exuberant Shepherd enters the battlefield
-| decision 74: Player A (game 0, turn 6, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 75: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 56: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -711,14 +579,15 @@ Phelia, Exuberant Shepherd enters the battlefield
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 2).
-| decision 76: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 57: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 77: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 58: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -726,495 +595,156 @@ Put 1 CHARGE counter(s) on Aether Vial (now 2).
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 3).
-| decision 78: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 59: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws White Orchid Phantom
-| decision 79: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 60: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 80: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Witch-Blessed Meadow
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Wasteland (Destroy)
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Witch-Blessed Meadow)
 Player A played Witch-Blessed Meadow
-| decision 81: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 62: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Decline: pay 3 life so it enters untapped
 |   1: Accept: pay 3 life so it enters untapped
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Accept: pay 3 life so it enters untapped)
 Player A pays 3 life.
-| decision 82: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 83: Player A (game 0, turn 6, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
---- Declare Attackers (Player A) ---
-| decision 84: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Orcish Bowmasters [1/1]
-|   1: Orc Army token [1/1]
-|   2: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Orcish Bowmasters [1/1])
-Select target for Orcish Bowmasters:
-| decision 85: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Player B (19 life)
-|   1: Tamiyo, Seasoned Scholar (loyalty 6)
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Player B (19 life))
-Orcish Bowmasters attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 86: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Orc Army token [1/1]
-|   1: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Orc Army token [1/1])
-Select target for Orc Army token:
-| decision 87: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Player B (19 life)
-|   1: Tamiyo, Seasoned Scholar (loyalty 6)
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Player B (19 life))
-Orc Army token attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Orc Army token [1/1] -> Player B
-| decision 88: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
-
-Attackers declared:
-  Orcish Bowmasters -> Player B
-  Orc Army token -> Player B
-Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 89: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Floating trigger (Pump)
-|   1: Floating trigger (Pump)
-(REPLAY) [T6 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Floating trigger (Pump))
-A floating triggered ability triggers.
-A floating triggered ability triggers.
-| decision 90: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: Pump, -1/+0)
-Orc Army token gets -1/+0 (now 0/1)
-| decision 91: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: Pump, -1/+0)
-Orcish Bowmasters gets -1/+0 (now 0/1)
-| decision 92: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-No creatures eligible to block.
-| decision 93: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
---- Combat Damage ---
---- End Combat Damage ---
-
-| decision 94: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 95: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 96: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 97: Player A (game 0, turn 6, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T6 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
--------- TURN 8 (Player B) --------
-| decision 98: Player A (game 0, turn 7, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Player B draws Dark Ritual
-| decision 99: Player B (game 0, turn 7, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T7 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 100: Player A (game 0, turn 7, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 101: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Cast Thassa's Oracle
-|   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
-|   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
-(REPLAY) [T7 | First Main | Player B] Input: 3
-| >> Player B: 3 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
-Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 8)
-Player B's Tamiyo, Seasoned Scholar ability is on the stack
-| decision 102: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 103: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: Effect)
-A floating triggered ability is created until your next turn.
-| decision 104: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Cast Thassa's Oracle
-(REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 105: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 106: Player B (game 0, turn 7, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T7 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 107: Player A (game 0, turn 7, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-No creatures eligible to attack.
-| decision 108: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 109: Player A (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 110: Player B (game 0, turn 7, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T7 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 111: Player A (game 0, turn 7, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 112: Player B (game 0, turn 7, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Cast Thassa's Oracle
-(REPLAY) [T7 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 113: Player A (game 0, turn 7, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 114: Player B (game 0, turn 7, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T7 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 115: Player A (game 0, turn 7, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T7 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
--------- TURN 9 (Player A) --------
-Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 116: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Aether Vial (PutCounter)
-|   1: Aether Vial (PutCounter)
-(REPLAY) [T8 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Aether Vial (PutCounter))
-Aether Vial triggered
-Aether Vial triggered
-| decision 117: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Wasteland (Destroy)
-(REPLAY) [T8 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 118: Player B (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 119: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T8 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 3).
-| decision 120: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Wasteland (Destroy)
-(REPLAY) [T8 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 121: Player B (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 122: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T8 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 4).
-| decision 123: Player A (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Wasteland (Destroy)
-(REPLAY) [T8 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 124: Player B (game 0, turn 8, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Player A draws White Orchid Phantom
-| decision 125: Player A (game 0, turn 8, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Wasteland (Destroy)
-(REPLAY) [T8 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 126: Player B (game 0, turn 8, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 127: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 63: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
 |   2: Cast Pre-War Formalwear
 |   3: Cast White Orchid Phantom
-|   4: Cast White Orchid Phantom
+|   4: Activate Aether Vial (ChangeZone)
 |   5: Activate Aether Vial (ChangeZone)
-|   6: Activate Aether Vial (ChangeZone)
-|   7: Activate Wasteland (Destroy)
-(REPLAY) [T8 | First Main | Player A] Input: 2
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T6 | First Main | Player A] Input: 2
 | >> Player A: 2 (Cast Pre-War Formalwear)
 Player A activated Witch-Blessed Meadow for 1(W)
 Player A activated Wasteland for 1(C)
 Player A activated Scrubland for 1(W)
 Player A casts Pre-War Formalwear
-| decision 128: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 64: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 129: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 65: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 66: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: White Orchid Phantom
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (White Orchid Phantom)
+Player A puts White Orchid Phantom to the battlefield
+Choose target for White Orchid Phantom:
+| decision 67: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Undercity Sewers
+|   2: Scrubland
+|   3: Wasteland
+|   4: Witch-Blessed Meadow
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Undercity Sewers)
+Targeting choice 1
+White Orchid Phantom triggered
+Resolving ability (category: Destroy)
+Undercity Sewers is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| auto: Player B: Fail to find
+Player B shuffles their library
+Player B fails to find
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
 Pre-War Formalwear enters the battlefield
 Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
-| decision 130: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 131: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 132: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 133: Player B (game 0, turn 8, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 134: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 68: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Phelia, Exuberant Shepherd [2/2]
 |   2: Orc Army token [1/1]
 |   3: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Orcish Bowmasters [1/1])
 Select target for Orcish Bowmasters:
-| decision 135: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 69: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (19 life)
-|   1: Tamiyo, Seasoned Scholar (loyalty 8)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+|   1: Tamiyo, Seasoned Scholar (loyalty 6)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Player B (19 life))
 Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 136: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 70: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: Orc Army token [1/1]
 |   2: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
 Select target for Phelia, Exuberant Shepherd:
-| decision 137: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 71: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (19 life)
-|   1: Tamiyo, Seasoned Scholar (loyalty 8)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+|   1: Tamiyo, Seasoned Scholar (loyalty 6)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Player B (19 life))
 Phelia, Exuberant Shepherd attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-| decision 138: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 72: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [1/1]
 |   1: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Orc Army token [1/1])
 Select target for Orc Army token:
-| decision 139: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 73: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Player B (19 life)
-|   1: Tamiyo, Seasoned Scholar (loyalty 8)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+|   1: Tamiyo, Seasoned Scholar (loyalty 6)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Player B (19 life))
 Orc Army token attacking Player B.
 
@@ -1222,18 +752,14 @@ Orc Army token attacking Player B.
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
   [attacking] Orc Army token [1/1] -> Player B
-| decision 140: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
   Phelia, Exuberant Shepherd -> Player B
   Orc Army token -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 141: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 74: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Tamiyo, Seasoned Scholar
@@ -1241,758 +767,355 @@ Choose target for Phelia, Exuberant Shepherd:
 |   3: Aether Vial
 |   4: Orcish Bowmasters
 |   5: Pre-War Formalwear
-|   6: Orc Army token
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 1
+|   6: White Orchid Phantom
+|   7: Orc Army token
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 1
 | >> Player A: 1 (Tamiyo, Seasoned Scholar)
 Targeting choice 1
 Phelia, Exuberant Shepherd triggered
 Player B orders 3 simultaneous triggers (pick which goes on the stack next).
-| decision 142: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 75: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Floating trigger (Pump)
 |   1: Floating trigger (Pump)
 |   2: Floating trigger (Pump)
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
+(REPLAY) [T6 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Floating trigger (Pump))
 A floating triggered ability triggers.
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 143: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 76: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Floating trigger (Pump)
 |   1: Floating trigger (Pump)
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
+(REPLAY) [T6 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Floating trigger (Pump))
 A floating triggered ability triggers.
 A floating triggered ability triggers.
-| decision 144: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 145: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: Pump, -1/+0)
 Orc Army token gets -1/+0 (now 0/1)
-| decision 146: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 147: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: Pump, -1/+0)
 Phelia, Exuberant Shepherd gets -1/+0 (now 1/2)
-| decision 148: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 149: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: Pump, -1/+0)
 Orcish Bowmasters gets -1/+0 (now 0/1)
-| decision 150: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 151: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Tamiyo, Seasoned Scholar is moved to exile
 Resolving ability (category: DelayedTrigger)
 Delayed trigger registered: ChangeZone at next End of Turn.
-| decision 152: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 153: Player B (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 154: Player A (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 155: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- Combat Damage ---
   Phelia, Exuberant Shepherd deals 1 damage to Player B (now at 18 life)
 --- End Combat Damage ---
 
-| decision 156: Player A (game 0, turn 8, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 157: Player B (game 0, turn 8, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 158: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 159: Player B (game 0, turn 8, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 160: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 161: Player B (game 0, turn 8, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Delayed trigger fires.
-| decision 162: Player A (game 0, turn 8, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 163: Player B (game 0, turn 8, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: PutCounter, amount: 1)
 Resolving ability (category: Cleanup)
 Resolving ability (category: Cleanup)
-| decision 164: Player A (game 0, turn 8, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T8 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 165: Player B (game 0, turn 8, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T8 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
--------- TURN 10 (Player B) --------
-| decision 166: Player B (game 0, turn 9, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T9 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 167: Player A (game 0, turn 9, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
+-------- TURN 8 (Player B) --------
 Player B draws Ponder
-| decision 168: Player B (game 0, turn 9, DRAW, Player B active)
+| decision 77: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T9 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 169: Player A (game 0, turn 9, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 170: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Cast Ponder
-|   3: Cast Thassa's Oracle
-(REPLAY) [T9 | First Main | Player B] Input: 2
-| >> Player B: 2 (Cast Ponder)
+|   1: Cast Ponder
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
 Player B activated Island for 1(U)
 Player B casts Ponder
-| decision 171: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 172: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 173: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 78: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
-|   0: Ponder
-|   1: Polluted Delta
-|   2: Edge of Autumn
-(REPLAY) [T9 | First Main | Player B] Input: 1
-| >> Player B: 1 (Polluted Delta)
+|   0: Doomsday
+|   1: Daze
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Doomsday)
 Choose which card goes 2 from top:
-| decision 174: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 79: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
-|   0: Ponder
-|   1: Edge of Autumn
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Ponder)
-| decision 175: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+|   0: Daze
+|   1: Doomsday
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Daze)
+| decision 80: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
-(REPLAY) [T9 | First Main | Player B] Input: 0
+(REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
-Player B draws Edge of Autumn
+Player B draws Doomsday
 Choose target for Orcish Bowmasters:
-| decision 176: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 81: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Player B (18 life)
 |   1: Player A (17 life)
 |   2: Tamiyo, Inquisitive Student
 |   3: Orcish Bowmasters
 |   4: Phelia, Exuberant Shepherd
-|   5: Orc Army token
-(REPLAY) [T9 | First Main | Player A] Input: 0
+|   5: White Orchid Phantom
+|   6: Orc Army token
+(REPLAY) [T7 | First Main | Player A] Input: 0
 | >> Player A: 0 (Player B (18 life))
 Targeting choice 0
 Orcish Bowmasters triggered
-| decision 177: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 178: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 1)
 Orcish Bowmasters deals 1 damage to Player B (now at 17 life)
 Resolving ability (category: Amass)
 Amass Orc 1: Player A Army is now 2/2.
-| decision 179: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 180: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 181: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 182: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 183: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| decision 82: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
 Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 184: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
 Tamiyo, Inquisitive Student triggered
-| decision 185: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 186: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 187: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Tamiyo, Inquisitive Student [0/3]
+Your creatures:
+| decision 83: Player A (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
 | menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 188: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-No creatures eligible to block.
-| decision 189: Player B (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 190: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
+|   0: White Orchid Phantom [2/2]
+|   1: Confirm blockers
+(REPLAY) [T7 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
 
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 191: Player B (game 0, turn 9, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 192: Player A (game 0, turn 9, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 193: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 194: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 195: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 196: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 197: Player B (game 0, turn 9, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T9 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 198: Player A (game 0, turn 9, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T9 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
 
--------- TURN 11 (Player A) --------
+-------- TURN 9 (Player A) --------
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 199: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 84: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Aether Vial (PutCounter)
 |   1: Aether Vial (PutCounter)
-(REPLAY) [T10 | Upkeep | Player A] Input: 0
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Aether Vial (PutCounter))
 Aether Vial triggered
 Aether Vial triggered
-| decision 200: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 85: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Wasteland (Destroy)
-(REPLAY) [T10 | Upkeep | Player A] Input: 0
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 201: Player B (game 0, turn 10, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 202: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 86: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T10 | Upkeep | Player A] Input: 1
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 87: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 88: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 4).
-| decision 203: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 89: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Wasteland (Destroy)
-(REPLAY) [T10 | Upkeep | Player A] Input: 0
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 204: Player B (game 0, turn 10, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 205: Player A (game 0, turn 10, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T10 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 5).
-| decision 206: Player A (game 0, turn 10, UPKEEP, Player A active)
+Player A draws White Orchid Phantom
+| decision 90: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Wasteland (Destroy)
-(REPLAY) [T10 | Upkeep | Player A] Input: 0
+(REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 207: Player B (game 0, turn 10, UPKEEP, Player A active)
+| decision 91: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Player A draws Prismatic Vista
-| decision 208: Player A (game 0, turn 10, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Wasteland (Destroy)
-(REPLAY) [T10 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 209: Player B (game 0, turn 10, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 210: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Play Prismatic Vista
-|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-|   3: Cast White Orchid Phantom
-|   4: Cast White Orchid Phantom
-|   5: Activate Aether Vial (ChangeZone)
-|   6: Activate Aether Vial (ChangeZone)
-|   7: Equip Pre-War Formalwear
-|   8: Activate Wasteland (Destroy)
-(REPLAY) [T10 | First Main | Player A] Input: 3
-| >> Player A: 3 (Cast White Orchid Phantom)
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast White Orchid Phantom
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Aether Vial (ChangeZone)
+|   5: Equip Pre-War Formalwear
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast White Orchid Phantom)
 Player A activated Witch-Blessed Meadow for 1(W)
 Player A activated Scrubland for 1(W)
 Player A casts White Orchid Phantom
-| decision 211: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 92: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Wasteland (Destroy)
-(REPLAY) [T10 | First Main | Player A] Input: 3
-| >> Player A: 3 (Activate Wasteland (Destroy))
-Choose target for Wasteland:
-| decision 212: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Undercity Sewers
-|   1: Scrubland
-|   2: Wasteland
-|   3: Witch-Blessed Meadow
-(REPLAY) [T10 | First Main | Player A] Input: 0
-| >> Player A: 0 (Undercity Sewers)
-Targeting choice 0
-Player A sacrifices Wasteland
-Player A's Wasteland ability targeting Undercity Sewers is on the stack
-| decision 213: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 93: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 94: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 214: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 95: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-|   3: Tap Undercity Sewers for (U)
-|   4: Tap Undercity Sewers for (B)
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: Destroy)
-Undercity Sewers is destroyed
-| decision 215: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 216: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 96: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
 White Orchid Phantom enters the battlefield
 Choose target for White Orchid Phantom:
-| decision 217: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 97: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: No target
 |   1: Scrubland
-|   2: Witch-Blessed Meadow
-(REPLAY) [T10 | First Main | Player A] Input: 0
+|   2: Wasteland
+|   3: Witch-Blessed Meadow
+(REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (No target)
 Targeting choice 0
 White Orchid Phantom triggered
-| decision 218: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 98: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 219: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: Destroy)
 Destroy: no target chosen
 Resolving ability (category: ChangeZone)
-| decision 220: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 99: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Play Prismatic Vista
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 1
-| >> Player A: 1 (Play Prismatic Vista)
-Player A played Prismatic Vista
-| decision 221: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Prismatic Vista (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 3
-| >> Player A: 3 (Activate Prismatic Vista (ChangeZone))
-Player A pays 1 life
-Player A sacrifices Prismatic Vista
-Player A's Prismatic Vista ability is on the stack
-| decision 222: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 223: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 100: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: ChangeZone)
-Searching Player A's library:
-| decision 224: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-|   1: Plains
-|   2: Swamp
-(REPLAY) [T10 | First Main | Player A] Input: 1
-| >> Player A: 1 (Plains)
-Player A shuffles their library
-Player A puts Plains to the battlefield
-| decision 225: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 226: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 227: Player A (game 0, turn 10, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 228: Player B (game 0, turn 10, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 229: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 101: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
 |   1: Phelia, Exuberant Shepherd [2/2]
-|   2: Orc Army token [2/2]
-|   3: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+|   2: White Orchid Phantom [2/2]
+|   3: Orc Army token [2/2]
+|   4: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Orcish Bowmasters [1/1])
 Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 230: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 102: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
-|   1: Orc Army token [2/2]
-|   2: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+|   1: White Orchid Phantom [2/2]
+|   2: Orc Army token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
 Phelia, Exuberant Shepherd attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-| decision 231: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: White Orchid Phantom [2/2]
+|   1: Orc Army token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom [2/2])
+White Orchid Phantom attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] White Orchid Phantom [2/2] -> Player B
+| decision 104: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orc Army token [2/2]
 |   1: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Orc Army token [2/2])
 Orc Army token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] Orc Army token [2/2] -> Player B
-| decision 232: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
   Phelia, Exuberant Shepherd -> Player B
+  White Orchid Phantom -> Player B
   Orc Army token -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 233: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 105: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Tamiyo, Inquisitive Student
@@ -2002,1430 +1125,452 @@ Choose target for Phelia, Exuberant Shepherd:
 |   5: Orcish Bowmasters
 |   6: Pre-War Formalwear
 |   7: White Orchid Phantom
-|   8: Orc Army token
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 1
+|   8: White Orchid Phantom
+|   9: Orc Army token
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 1
 | >> Player A: 1 (Tamiyo, Inquisitive Student)
 Targeting choice 1
 Phelia, Exuberant Shepherd triggered
-| decision 234: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 106: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 235: Player B (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to exile
 Resolving ability (category: DelayedTrigger)
 Delayed trigger registered: ChangeZone at next End of Turn.
-| decision 236: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 107: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 237: Player B (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 238: Player A (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| decision 108: Player A (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Declare Blockers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Declare Blockers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 239: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Player B (now at 15 life)
+--- End First Strike Combat Damage ---
+
+| decision 109: Player A (game 0, turn 8, FIRST_STRIKE_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Strike Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
-  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
-  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 14 life)
-  Orc Army token deals 2 damage to Player B (now at 12 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 12 life)
+  Orc Army token deals 2 damage to Player B (now at 10 life)
 --- End Combat Damage ---
 
-| decision 240: Player A (game 0, turn 10, COMBAT_DAMAGE, Player A active)
+| decision 110: Player A (game 0, turn 8, COMBAT_DAMAGE, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Combat Damage | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Combat Damage | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 241: Player B (game 0, turn 10, COMBAT_DAMAGE, Player A active)
+| decision 111: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 242: Player A (game 0, turn 10, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | End of Combat | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 243: Player B (game 0, turn 10, END_OF_COMBAT, Player A active)
+| decision 112: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 244: Player A (game 0, turn 10, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Second Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 245: Player B (game 0, turn 10, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Delayed trigger fires.
-| decision 246: Player A (game 0, turn 10, END_STEP, Player A active)
+| decision 113: Player A (game 0, turn 8, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | End Step | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | End Step | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 247: Player B (game 0, turn 10, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to the battlefield
 Resolving ability (category: PutCounter, amount: 1)
 Resolving ability (category: Cleanup)
 Resolving ability (category: Cleanup)
-| decision 248: Player A (game 0, turn 10, END_STEP, Player A active)
+| decision 114: Player A (game 0, turn 8, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | End Step | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T8 | End Step | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 249: Player B (game 0, turn 10, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T10 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
--------- TURN 12 (Player B) --------
-| decision 250: Player B (game 0, turn 11, UPKEEP, Player B active)
+-------- TURN 10 (Player B) --------
+| decision 115: Player A (game 0, turn 9, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 251: Player A (game 0, turn 11, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Upkeep | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-Player B draws Ponder
-| decision 252: Player B (game 0, turn 11, DRAW, Player B active)
+Player B draws Daze
+| decision 116: Player A (game 0, turn 9, DRAW, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 253: Player A (game 0, turn 11, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Draw | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 254: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 117: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Ponder
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Cast Ponder)
-Player B activated Island for 1(U)
-Player B casts Ponder
-| decision 255: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 256: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-Resolving ability (category: RearrangeTopOfLibrary)
-Player B looks at the top 3 card(s) of their library.
-Choose which card goes 3 from top:
-| decision 257: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Polluted Delta
-|   1: Tundra
-|   2: Flooded Strand
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Polluted Delta)
-Choose which card goes 2 from top:
-| decision 258: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Tundra
-|   1: Flooded Strand
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Tundra)
-| decision 259: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Don't shuffle
-|   1: Shuffle
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't shuffle)
-Resolving ability (category: Draw, amount: 1)
-Player B draws Flooded Strand
-Choose target for Orcish Bowmasters:
-| decision 260: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Player B (12 life)
-|   1: Player A (16 life)
-|   2: Tamiyo, Inquisitive Student
-|   3: Orcish Bowmasters
-|   4: Phelia, Exuberant Shepherd
-|   5: White Orchid Phantom
-|   6: Orc Army token
-(REPLAY) [T11 | First Main | Player A] Input: 0
-| >> Player A: 0 (Player B (12 life))
-Targeting choice 0
-Orcish Bowmasters triggered
-| decision 261: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 118: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 262: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: DealDamage, amount: 1)
-Orcish Bowmasters deals 1 damage to Player B (now at 11 life)
-Resolving ability (category: Amass)
-Amass Orc 1: Player A Army is now 3/3.
-| decision 263: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Play Flooded Strand
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Play Flooded Strand)
-Player B played Flooded Strand
-| decision 264: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Flooded Strand (ChangeZone)
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
-Player B pays 1 life
-Player B sacrifices Flooded Strand
-Player B's Flooded Strand ability is on the stack
-| decision 265: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 266: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: ChangeZone)
-Searching Player B's library:
-| decision 267: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-|   1: Scrubland
-|   2: Tropical Island
-|   3: Tundra
-|   4: Underground Sea
-(REPLAY) [T11 | First Main | Player B] Input: 4
-| >> Player B: 4 (Underground Sea)
-Player B shuffles their library
-Player B puts Underground Sea to the battlefield
-| decision 268: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 269: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 270: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 271: Player A (game 0, turn 11, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Begin Combat | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 272: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 119: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
 Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 273: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
 Tamiyo, Inquisitive Student triggered
-| decision 274: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 120: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 275: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 276: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 121: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 277: Player A (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Declare Attackers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 
 --- Declare Blockers (Player A) ---
 Attackers:
   0: Tamiyo, Inquisitive Student [0/3]
 Your creatures:
-| decision 278: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 122: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Confirm blockers
-(REPLAY) [T11 | Declare Blockers | Player A] Input: 1
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 1
 | >> Player A: 1 (Confirm blockers)
 
 Blockers declared:
   (none)
-| decision 279: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 123: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 280: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Declare Blockers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 281: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
+| decision 124: Player A (game 0, turn 9, COMBAT_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 282: Player A (game 0, turn 11, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Combat Damage | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Combat Damage | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 283: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| decision 125: Player A (game 0, turn 9, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 284: Player A (game 0, turn 11, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | End of Combat | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | End of Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 285: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| decision 126: Player A (game 0, turn 9, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 286: Player A (game 0, turn 11, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | Second Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Second Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 287: Player B (game 0, turn 11, END_STEP, Player B active)
+| decision 127: Player A (game 0, turn 9, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T11 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 288: Player A (game 0, turn 11, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T11 | End Step | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | End Step | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 
--------- TURN 13 (Player A) --------
+-------- TURN 11 (Player A) --------
 Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 289: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 128: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Aether Vial (PutCounter)
 |   1: Aether Vial (PutCounter)
-(REPLAY) [T12 | Upkeep | Player A] Input: 0
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Aether Vial (PutCounter))
 Aether Vial triggered
 Aether Vial triggered
-| decision 290: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 129: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Upkeep | Player A] Input: 0
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 291: Player B (game 0, turn 12, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 292: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 130: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T12 | Upkeep | Player A] Input: 1
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 131: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 132: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 5).
-| decision 293: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 133: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Upkeep | Player A] Input: 0
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 294: Player B (game 0, turn 12, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 295: Player A (game 0, turn 12, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T12 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 6).
-| decision 296: Player A (game 0, turn 12, UPKEEP, Player A active)
+Player A draws Prismatic Vista
+| decision 134: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Upkeep | Player A] Input: 0
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 297: Player B (game 0, turn 12, UPKEEP, Player A active)
+| decision 135: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Player A draws Arid Mesa
-| decision 298: Player A (game 0, turn 12, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 299: Player B (game 0, turn 12, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 300: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Play Arid Mesa
+|   1: Play Prismatic Vista
 |   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-|   3: Cast White Orchid Phantom
-|   4: Activate Aether Vial (ChangeZone)
-|   5: Activate Aether Vial (ChangeZone)
-|   6: Equip Pre-War Formalwear
-(REPLAY) [T12 | First Main | Player A] Input: 3
-| >> Player A: 3 (Cast White Orchid Phantom)
-Player A activated Plains for 1(W)
-Player A activated Witch-Blessed Meadow for 1(W)
-Player A casts White Orchid Phantom
-| decision 301: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 302: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-White Orchid Phantom enters the battlefield
-Choose target for White Orchid Phantom:
-| decision 303: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: No target
-|   1: Underground Sea
-|   2: Scrubland
-|   3: Witch-Blessed Meadow
-(REPLAY) [T12 | First Main | Player A] Input: 1
-| >> Player A: 1 (Underground Sea)
-Targeting choice 1
-White Orchid Phantom triggered
-| decision 304: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 305: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Dark Ritual
-|   2: Activate Edge of Autumn from hand (Draw)
-|   3: Tap Underground Sea for (U)
-|   4: Tap Underground Sea for (B)
-(REPLAY) [T12 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: Destroy)
-Underground Sea is destroyed
-Resolving ability (category: ChangeZone)
-Searching Player B's library:
-| decision 306: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-(REPLAY) [T12 | First Main | Player B] Input: 0
-| >> Player B: 0 (Fail to find)
-Player B shuffles their library
-Player B fails to find
-| decision 307: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Play Arid Mesa
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 1
-| >> Player A: 1 (Play Arid Mesa)
-Player A played Arid Mesa
-| decision 308: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Arid Mesa (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 3
-| >> Player A: 3 (Activate Arid Mesa (ChangeZone))
-Player A pays 1 life
-Player A sacrifices Arid Mesa
-Player A's Arid Mesa ability is on the stack
-| decision 309: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 310: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: ChangeZone)
-Searching Player A's library:
-| decision 311: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Fail to find
-|   1: Plains
-|   2: Scrubland
-|   3: Shadowy Backstreet
-(REPLAY) [T12 | First Main | Player A] Input: 2
-| >> Player A: 2 (Scrubland)
-Player A shuffles their library
-Player A puts Scrubland to the battlefield
-| decision 312: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 313: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 314: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 315: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-
---- Declare Attackers (Player A) ---
-| decision 316: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Orcish Bowmasters [1/1]
-|   1: Phelia, Exuberant Shepherd [2/2]
-|   2: White Orchid Phantom [2/2]
-|   3: Orc Army token [3/3]
-|   4: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Orcish Bowmasters [1/1])
-Orcish Bowmasters attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 317: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Phelia, Exuberant Shepherd [2/2]
-|   1: White Orchid Phantom [2/2]
-|   2: Orc Army token [3/3]
-|   3: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
-Phelia, Exuberant Shepherd attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-| decision 318: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: White Orchid Phantom [2/2]
-|   1: Orc Army token [3/3]
-|   2: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (White Orchid Phantom [2/2])
-White Orchid Phantom attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 319: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Orc Army token [3/3]
-|   1: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Orc Army token [3/3])
-Orc Army token attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] Orc Army token [3/3] -> Player B
-| decision 320: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
-
-Attackers declared:
-  Orcish Bowmasters -> Player B
-  Phelia, Exuberant Shepherd -> Player B
-  White Orchid Phantom -> Player B
-  Orc Army token -> Player B
-Choose target for Phelia, Exuberant Shepherd:
-| decision 321: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: No target
-|   1: Tamiyo, Inquisitive Student
-|   2: Clue token
-|   3: Clue token
-|   4: Aether Vial
-|   5: Aether Vial
-|   6: Orcish Bowmasters
-|   7: Pre-War Formalwear
-|   8: White Orchid Phantom
-|   9: White Orchid Phantom
-|   10: Orc Army token
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 1
-| >> Player A: 1 (Tamiyo, Inquisitive Student)
-Targeting choice 1
-Phelia, Exuberant Shepherd triggered
-| decision 322: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 323: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: ChangeZone)
-Tamiyo, Inquisitive Student is moved to exile
-Resolving ability (category: DelayedTrigger)
-Delayed trigger registered: ChangeZone at next End of Turn.
-| decision 324: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 325: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-No creatures eligible to block.
-| decision 326: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 327: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-
---- First Strike Combat Damage ---
-  White Orchid Phantom deals 2 damage to Player B (now at 8 life)
---- End First Strike Combat Damage ---
-
-| decision 328: Player A (game 0, turn 12, FIRST_STRIKE_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Strike Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 329: Player B (game 0, turn 12, FIRST_STRIKE_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | First Strike Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-
---- Combat Damage ---
-  Orcish Bowmasters deals 1 damage to Player B (now at 7 life)
-  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 5 life)
-  Orc Army token deals 3 damage to Player B (now at 2 life)
---- End Combat Damage ---
-
-| decision 330: Player A (game 0, turn 12, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 331: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 332: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 333: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 334: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 335: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Delayed trigger fires.
-| decision 336: Player A (game 0, turn 12, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 337: Player B (game 0, turn 12, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: ChangeZone)
-Tamiyo, Inquisitive Student is moved to the battlefield
-Resolving ability (category: PutCounter, amount: 1)
-Resolving ability (category: Cleanup)
-Resolving ability (category: Cleanup)
-| decision 338: Player A (game 0, turn 12, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 339: Player B (game 0, turn 12, END_STEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T12 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-
--------- TURN 14 (Player B) --------
-| decision 340: Player B (game 0, turn 13, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 341: Player A (game 0, turn 13, UPKEEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Player B draws Tundra
-| decision 342: Player B (game 0, turn 13, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 343: Player A (game 0, turn 13, DRAW, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 344: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Play Tundra
-|   2: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | First Main | Player B] Input: 1
-| >> Player B: 1 (Play Tundra)
-Player B played Tundra
-| decision 345: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Cast Thassa's Oracle
-|   2: Activate Clue token (Draw)
-|   3: Activate Clue token (Draw)
-|   4: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | First Main | Player B] Input: 2
-| >> Player B: 2 (Activate Clue token (Draw))
-Player B activated Island for 1(U)
-Player B activated Tundra for 1(U)
-Player B sacrifices Clue token
-Player B's Clue ability is on the stack
-Clue (token) is put into the graveyard and ceases to exist.
-| decision 346: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 347: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: Draw, amount: 1)
-Player B draws Doomsday
-Choose target for Orcish Bowmasters:
-| decision 348: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Player B (2 life)
-|   1: Player A (15 life)
-|   2: Tamiyo, Inquisitive Student
-|   3: Orcish Bowmasters
-|   4: Phelia, Exuberant Shepherd
-|   5: White Orchid Phantom
-|   6: White Orchid Phantom
-|   7: Orc Army token
-(REPLAY) [T13 | First Main | Player A] Input: 0
-| >> Player A: 0 (Player B (2 life))
-Targeting choice 0
-Orcish Bowmasters triggered
-| decision 349: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 350: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: DealDamage, amount: 1)
-Orcish Bowmasters deals 1 damage to Player B (now at 1 life)
-Resolving ability (category: Amass)
-Amass Orc 1: Player A Army is now 4/4.
-| decision 351: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 352: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 353: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 354: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Begin Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
---- Declare Attackers (Player B) ---
-| decision 355: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Tamiyo, Inquisitive Student [0/3]
-|   1: Confirm attackers
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
-Tamiyo, Inquisitive Student attacking Player A.
-
---- Declare Attackers (Player B) ---
-  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 356: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
-
-Attackers declared:
-  Tamiyo, Inquisitive Student -> Player A
-Tamiyo, Inquisitive Student triggered
-| decision 357: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 358: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: Investigate)
-Token created: 0/0 Clue
-| decision 359: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 360: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
---- Declare Blockers (Player A) ---
-Attackers:
-  0: Tamiyo, Inquisitive Student [0/3]
-Your creatures:
-| decision 361: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: White Orchid Phantom [2/2]
-|   1: Confirm blockers
-(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
-| >> Player A: 1 (Confirm blockers)
-
-Blockers declared:
-  (none)
-| decision 362: Player B (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 363: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Declare Blockers | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
---- Combat Damage ---
---- End Combat Damage ---
-
-| decision 364: Player B (game 0, turn 13, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Combat Damage | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 365: Player A (game 0, turn 13, COMBAT_DAMAGE, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Combat Damage | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 366: Player B (game 0, turn 13, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | End of Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 367: Player A (game 0, turn 13, END_OF_COMBAT, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | End of Combat | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 368: Player B (game 0, turn 13, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | Second Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 369: Player A (game 0, turn 13, SECOND_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | Second Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 370: Player B (game 0, turn 13, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T13 | End Step | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 371: Player A (game 0, turn 13, END_STEP, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T13 | End Step | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-
--------- TURN 15 (Player A) --------
-Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 372: Player A (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Aether Vial (PutCounter)
-|   1: Aether Vial (PutCounter)
-(REPLAY) [T14 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Aether Vial (PutCounter))
-Aether Vial triggered
-Aether Vial triggered
-| decision 373: Player A (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 374: Player B (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 375: Player A (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T14 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 6).
-| decision 376: Player A (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 377: Player B (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 378: Player A (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Decline: use Aether Vial's triggered ability
-|   1: Accept: use Aether Vial's triggered ability
-(REPLAY) [T14 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
-Resolving ability (category: PutCounter, amount: 1)
-Put 1 CHARGE counter(s) on Aether Vial (now 7).
-| decision 379: Player A (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 380: Player B (game 0, turn 14, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Player A draws Thoughtseize
-| decision 381: Player A (game 0, turn 14, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 382: Player B (game 0, turn 14, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Draw | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 383: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-|   2: Cast Thoughtseize
 |   3: Activate Aether Vial (ChangeZone)
 |   4: Activate Aether Vial (ChangeZone)
 |   5: Equip Pre-War Formalwear
-(REPLAY) [T14 | First Main | Player A] Input: 2
-| >> Player A: 2 (Cast Thoughtseize)
-Choose target for Thoughtseize:
-| decision 384: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
-| menu:
-|   0: Player B (1 life)
-|   1: Player A (15 life)
-(REPLAY) [T14 | First Main | Player A] Input: 0
-| >> Player A: 0 (Player B (1 life))
-Targeting choice 0
-Player A activated Scrubland for 1(B)
-Player A casts Thoughtseize targeting Player B
-| decision 385: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 386: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-Resolving ability (category: Discard)
-Player B reveals their hand:
-  Dark Ritual
-  Doomsday
-  Edge of Autumn
-  Teferi, Time Raveler
-  Teferi, Time Raveler
-  Thassa's Oracle
-Player A chooses a card to discard:
-| decision 387: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
-| menu:
-|   0: Dark Ritual
-|   1: Doomsday
-|   2: Edge of Autumn
-|   3: Teferi, Time Raveler
-|   4: Teferi, Time Raveler
-|   5: Thassa's Oracle
-(REPLAY) [T14 | First Main | Player A] Input: 4
-| >> Player A: 4 (Teferi, Time Raveler)
-Player B discards Teferi, Time Raveler
-Resolving ability (category: LoseLife, amount: 2)
-Player A loses 2 life (now at 13)
-| decision 388: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Prismatic Vista)
+Player A played Prismatic Vista
+| decision 136: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
 |   2: Activate Aether Vial (ChangeZone)
 |   3: Activate Aether Vial (ChangeZone)
 |   4: Equip Pre-War Formalwear
-(REPLAY) [T14 | First Main | Player A] Input: 4
-| >> Player A: 4 (Equip Pre-War Formalwear)
+|   5: Activate Prismatic Vista (ChangeZone)
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 137: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Prismatic Vista (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 138: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Prismatic Vista (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Prismatic Vista (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Prismatic Vista
+Player A's Prismatic Vista ability is on the stack
+| decision 139: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 140: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+|   2: Swamp
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Plains)
+Player A shuffles their library
+Player A puts Plains to the battlefield
+| decision 141: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 142: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 143: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Equip Pre-War Formalwear
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Equip Pre-War Formalwear)
 Choose target for Pre-War Formalwear:
-| decision 389: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 144: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Orcish Bowmasters
 |   1: Phelia, Exuberant Shepherd
 |   2: White Orchid Phantom
 |   3: White Orchid Phantom
 |   4: Orc Army token
-(REPLAY) [T14 | First Main | Player A] Input: 4
-| >> Player A: 4 (Orc Army token)
-Targeting choice 4
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Phelia, Exuberant Shepherd)
+Targeting choice 1
 Player A activated Plains for 1(W)
 Player A activated Scrubland for 1(W)
 Player A activated Witch-Blessed Meadow for 1(W)
-Player A's Pre-War Formalwear ability targeting Orc Army token is on the stack
-| decision 390: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+Player A's Pre-War Formalwear ability targeting Phelia, Exuberant Shepherd is on the stack
+| decision 145: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 391: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: Attach)
 Equipment attached.
-Orc Army token gains 2/2 Vigilance (always)
-| decision 392: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+Phelia, Exuberant Shepherd gains 2/2 Vigilance (always)
+| decision 146: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | First Main | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 393: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| decision 147: Player A (game 0, turn 10, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | First Main | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
-| decision 394: Player A (game 0, turn 14, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Begin Combat | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Begin Combat | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 395: Player B (game 0, turn 14, BEGIN_COMBAT, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Begin Combat | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 396: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 148: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Orcish Bowmasters [1/1]
-|   1: Phelia, Exuberant Shepherd [2/2]
+|   1: Phelia, Exuberant Shepherd [4/4]
 |   2: White Orchid Phantom [2/2]
 |   3: White Orchid Phantom [2/2]
-|   4: Orc Army token [6/6]
+|   4: Orc Army token [2/2]
 |   5: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Orcish Bowmasters [1/1])
 Orcish Bowmasters attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-| decision 397: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 149: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
-|   0: Phelia, Exuberant Shepherd [2/2]
+|   0: Phelia, Exuberant Shepherd [4/4]
 |   1: White Orchid Phantom [2/2]
 |   2: White Orchid Phantom [2/2]
-|   3: Orc Army token [6/6]
+|   3: Orc Army token [2/2]
 |   4: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [4/4])
 Phelia, Exuberant Shepherd attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-| decision 398: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
+| decision 150: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: White Orchid Phantom [2/2]
-|   2: Orc Army token [6/6]
+|   2: Orc Army token [2/2]
 |   3: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (White Orchid Phantom [2/2])
 White Orchid Phantom attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 399: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 151: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
-|   1: Orc Army token [6/6]
+|   1: Orc Army token [2/2]
 |   2: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (White Orchid Phantom [2/2])
 White Orchid Phantom attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 400: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 152: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
-|   0: Orc Army token [6/6]
+|   0: Orc Army token [2/2]
 |   1: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Orc Army token [6/6])
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [2/2])
 Orc Army token attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Orcish Bowmasters [1/1] -> Player B
-  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] Orc Army token [6/6] -> Player B
-| decision 401: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+  [attacking] Orc Army token [2/2] -> Player B
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Orcish Bowmasters -> Player B
@@ -3434,7 +1579,7 @@ Attackers declared:
   White Orchid Phantom -> Player B
   Orc Army token -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 402: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 153: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Tamiyo, Inquisitive Student
@@ -3447,60 +1592,52 @@ Choose target for Phelia, Exuberant Shepherd:
 |   8: White Orchid Phantom
 |   9: White Orchid Phantom
 |   10: Orc Army token
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 1
 | >> Player A: 1 (Tamiyo, Inquisitive Student)
 Targeting choice 1
 Phelia, Exuberant Shepherd triggered
-| decision 403: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 154: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 404: Player B (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
 Tamiyo, Inquisitive Student is moved to exile
 Resolving ability (category: DelayedTrigger)
 Delayed trigger registered: ChangeZone at next End of Turn.
-| decision 405: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| decision 155: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 406: Player B (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 407: Player A (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| decision 156: Player A (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Aether Vial (ChangeZone)
-(REPLAY) [T14 | Declare Blockers | Player A] Input: 0
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Declare Blockers | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 408: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Edge of Autumn from hand (Draw)
-(REPLAY) [T14 | Declare Blockers | Player B] Input: 0
-| >> Player B: 0 (Pass priority)
 
 --- First Strike Combat Damage ---
-  White Orchid Phantom deals 2 damage to Player B (now at -1 life)
-  White Orchid Phantom deals 2 damage to Player B (now at -3 life)
+  White Orchid Phantom deals 2 damage to Player B (now at 8 life)
+  White Orchid Phantom deals 2 damage to Player B (now at 6 life)
 --- End First Strike Combat Damage ---
 
+| decision 157: Player A (game 0, turn 10, FIRST_STRIKE_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Strike Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
 
-Player B has -3 life - Player A wins!
+--- Combat Damage ---
+  Orcish Bowmasters deals 1 damage to Player B (now at 5 life)
+  Phelia, Exuberant Shepherd deals 4 damage to Player B (now at 1 life)
+  Orc Army token deals 2 damage to Player B (now at -1 life)
+--- End Combat Damage ---
+
+
+Player B has -1 life - Player A wins!
 GAME_RESULT: 1 Player A wins

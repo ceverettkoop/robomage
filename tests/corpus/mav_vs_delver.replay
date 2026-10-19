@@ -303,15 +303,11 @@ Player A puts 4 card(s) on the bottom of their library.
 | >> Player A: 1 (Play Talon Gates of Madara)
 Player A played Talon Gates of Madara
 Choose target for Talon Gates of Madara:
-| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: No target
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (No target)
+| auto: Player A: No target
 Targeting choice 0
 Talon Gates of Madara triggered
 Resolving ability (category: Phases)
-| decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Green Sun's Zenith
@@ -319,7 +315,7 @@ Resolving ability (category: Phases)
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Green Sun's Zenith)
 Choose X value (0-1):
-| decision 29: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: X = 0
 |   1: X = 1
@@ -329,39 +325,27 @@ Player A chooses X = 1
 Player A activated Forest for 1(G)
 Player A activated Talon Gates of Madara for 1(C)
 Player A casts Green Sun's Zenith
-| decision 30: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 29: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
 (REPLAY) [T2 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| decision 31: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Green Sun's Zenith
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Green Sun's Zenith)
+| auto: Player B: Green Sun's Zenith
 Targeting choice 0
-| decision 32: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Return Volcanic Island
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Return Volcanic Island)
+| auto: Player B: Return Volcanic Island
 Player B returns Volcanic Island to hand
 Player B casts Daze targeting Green Sun's Zenith
 Resolving ability (category: Counter)
 Green Sun's Zenith's controller may pay {1} to save it:
-| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Green Sun's Zenith is countered)
-(REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Don't pay (Green Sun's Zenith is countered))
+| auto: Player A: Don't pay (Green Sun's Zenith is countered)
 Green Sun's Zenith is countered
 No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Lightning Bolt
-| decision 34: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 30: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -372,7 +356,7 @@ Player B draws Lightning Bolt
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Volcanic Island)
 Player B played Volcanic Island
-| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -387,7 +371,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Player A draws Noble Hierarch
-| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Noble Hierarch
@@ -400,14 +384,14 @@ Noble Hierarch enters the battlefield
 No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
-| decision 37: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 33: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 38: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 34: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Player A (20 life)
 |   1: Player B (19 life)
@@ -422,7 +406,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Dragon's Rage Channeler
-| decision 39: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 35: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Put Dragon's Rage Channeler on top of library
 |   1: Put Dragon's Rage Channeler into graveyard
@@ -431,7 +415,7 @@ Surveil: looking at Dragon's Rage Channeler
 Resolving ability (category: DealDamage, amount: 3)
 Lightning Bolt deals 3 damage to Player A (now at 17 life)
 Player B draws Dragon's Rage Channeler
-| decision 40: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -441,7 +425,7 @@ Player B draws Dragon's Rage Channeler
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Volcanic Island)
 Player B played Volcanic Island
-| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -453,7 +437,7 @@ Player B casts Dragon's Rage Channeler
 Dragon's Rage Channeler enters the battlefield
 
 --- Declare Attackers (Player B) ---
-| decision 42: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 38: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler [1/1]
 |   1: Confirm attackers
@@ -463,11 +447,7 @@ Dragon's Rage Channeler attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
-| decision 43: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -476,7 +456,7 @@ Attackers declared:
 Attackers:
   0: Dragon's Rage Channeler [1/1]
 Your creatures:
-| decision 44: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| decision 39: Player A (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Noble Hierarch [0/1]
 |   1: Confirm blockers
@@ -493,7 +473,7 @@ Blockers declared:
 
 -------- TURN 7 (Player A) --------
 Player A draws Karakas
-| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Karakas
@@ -507,7 +487,7 @@ Player A activated Forest for 1(G)
 Player A activated Noble Hierarch for 1(G)
 Player A casts Keen-Eyed Curator
 Keen-Eyed Curator enters the battlefield
-| decision 46: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Karakas
@@ -515,7 +495,7 @@ Keen-Eyed Curator enters the battlefield
 (REPLAY) [T6 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Karakas)
 Player A played Karakas
-| decision 47: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Thalia, Guardian of Thraben
@@ -531,7 +511,7 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Cori-Steel Cutter
-| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -544,7 +524,7 @@ Player B activated Volcanic Island for 1(U)
 Player B activated Volcanic Island for 1(U)
 Player B casts Ponder
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler (Surveil)
 |   1: Dragon's Rage Channeler (Surveil)
@@ -555,7 +535,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Unholy Heat
-| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Unholy Heat on top of library
 |   1: Put Unholy Heat into graveyard
@@ -564,7 +544,7 @@ Surveil: looking at Unholy Heat
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Unholy Heat
-| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Unholy Heat on top of library
 |   1: Put Unholy Heat into graveyard
@@ -573,7 +553,7 @@ Surveil: looking at Unholy Heat
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Unholy Heat
 |   1: Cori-Steel Cutter
@@ -581,13 +561,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T7 | First Main | Player B] Input: 0
 | >> Player B: 0 (Unholy Heat)
 Choose which card goes 2 from top:
-| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Cori-Steel Cutter
 |   1: Delver of Secrets
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Delver of Secrets)
-| decision 54: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -597,7 +577,7 @@ Resolving ability (category: Draw, amount: 1)
 Player B draws Cori-Steel Cutter
 Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-| decision 55: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -612,11 +592,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 56: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -630,7 +606,7 @@ No creatures eligible to block.
 
 
 -------- TURN 9 (Player A) --------
-| decision 57: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 51: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Karakas (ChangeZone)
@@ -638,14 +614,14 @@ No creatures eligible to block.
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Life from the Loam
-| decision 58: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 52: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Karakas (ChangeZone)
 |   2: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 53: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Life from the Loam
@@ -659,21 +635,21 @@ Player A activated Forest for 1(G)
 Player A activated Noble Hierarch for 1(W)
 Player A activated Karakas for 1(W)
 Player A casts Life from the Loam
-| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T8 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
-| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 55: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 Choose target for Keen-Eyed Curator:
-| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 56: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Mishra's Bauble
 |   1: Brainstorm
@@ -693,7 +669,7 @@ Resolving ability (category: ChangeZone)
 Mishra's Bauble is moved to exile
 
 --- Declare Attackers (Player A) ---
-| decision 63: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 57: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Keen-Eyed Curator [3/3]
 |   1: Thalia, Guardian of Thraben [2/1]
@@ -704,7 +680,7 @@ Keen-Eyed Curator attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Keen-Eyed Curator [3/3] -> Player B
-| decision 64: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 58: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Thalia, Guardian of Thraben [2/1]
 |   1: Confirm attackers
@@ -715,11 +691,7 @@ Thalia, Guardian of Thraben attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Keen-Eyed Curator [3/3] -> Player B
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
-| decision 65: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Keen-Eyed Curator -> Player B
@@ -738,7 +710,7 @@ No creatures eligible to block.
 
 -------- TURN 10 (Player B) --------
 Player B draws Delver of Secrets
-| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 59: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -751,7 +723,7 @@ Player B draws Delver of Secrets
 Player B activated Volcanic Island for 1(U)
 Player B casts Delver of Secrets
 Delver of Secrets enters the battlefield
-| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 60: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -759,7 +731,7 @@ Delver of Secrets enters the battlefield
 (REPLAY) [T9 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scalding Tarn)
 Player B played Scalding Tarn
-| decision 68: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 61: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -770,7 +742,7 @@ Player B sacrifices Scalding Tarn
 Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 62: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -780,7 +752,7 @@ Searching Player B's library:
 | >> Player B: 3 (Volcanic Island)
 Player B shuffles their library
 Player B puts Volcanic Island to the battlefield
-| decision 70: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 63: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Cori-Steel Cutter
@@ -792,7 +764,7 @@ Player B activated Volcanic Island for 1(U)
 Player B activated Volcanic Island for 1(U)
 Player B casts Cori-Steel Cutter
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 71: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler (Surveil)
 |   1: Dragon's Rage Channeler (Surveil)
@@ -803,7 +775,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Mountain
-| decision 72: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 65: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Mountain on top of library
 |   1: Put Mountain into graveyard
@@ -813,7 +785,7 @@ Player B puts Mountain into their graveyard.
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Delver of Secrets
-| decision 73: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Delver of Secrets on top of library
 |   1: Put Delver of Secrets into graveyard
@@ -826,11 +798,7 @@ Dragon's Rage Channeler must attack and is declared as an attacker.
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
-| decision 74: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Dragon's Rage Channeler -> Player A
@@ -844,14 +812,14 @@ No creatures eligible to block.
 
 
 -------- TURN 11 (Player A) --------
-| decision 75: Player A (game 0, turn 10, UPKEEP, Player A active)
+| decision 67: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Karakas (ChangeZone)
 |   2: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 76: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 68: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Draw a card
 |   1: Dredge Life from the Loam (mill 3)
@@ -861,14 +829,14 @@ Player A mills Wooded Foothills.
 Player A mills Sylvan Library.
 Player A mills Knight of the Reliquary.
 Player A dredges Life from the Loam (milled 3)
-| decision 77: Player A (game 0, turn 10, DRAW, Player A active)
+| decision 69: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Karakas (ChangeZone)
 |   2: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T10 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 78: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 70: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Life from the Loam
@@ -879,7 +847,7 @@ Player A dredges Life from the Loam (milled 3)
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Life from the Loam)
 Choose target for Life from the Loam:
-| decision 79: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 71: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Done selecting targets
 |   1: Wooded Foothills
@@ -890,21 +858,21 @@ Player A activated Forest for 1(G)
 Player A activated Noble Hierarch for 1(W)
 Player A activated Karakas for 1(W)
 Player A casts Life from the Loam
-| decision 80: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 72: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T10 | First Main | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Resolving ability (category: ChangeZone)
-| decision 81: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 73: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Keen-Eyed Curator (ChangeZone)
 (REPLAY) [T10 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 Choose target for Keen-Eyed Curator:
-| decision 82: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| decision 74: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Mishra's Bauble
 |   1: Brainstorm
@@ -931,7 +899,7 @@ Dragon's Rage Channeler loses Delirium bonus
 Dragon's Rage Channeler loses Delirium bonus
 
 --- Declare Attackers (Player A) ---
-| decision 83: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 75: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Keen-Eyed Curator [3/3]
 |   1: Thalia, Guardian of Thraben [2/1]
@@ -942,7 +910,7 @@ Keen-Eyed Curator attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] Keen-Eyed Curator [3/3] -> Player B
-| decision 84: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 76: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Thalia, Guardian of Thraben [2/1]
 |   1: Confirm attackers
@@ -953,11 +921,7 @@ Thalia, Guardian of Thraben attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Keen-Eyed Curator [3/3] -> Player B
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
-| decision 85: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Confirm attackers)
+| auto: Player A: Confirm attackers
 
 Attackers declared:
   Keen-Eyed Curator -> Player B
@@ -968,7 +932,7 @@ Attackers:
   0: Keen-Eyed Curator [3/3]
   1: Thalia, Guardian of Thraben [2/1]
 Your creatures:
-| decision 86: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
+| decision 77: Player B (game 0, turn 10, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Delver of Secrets [1/1]
 |   1: Confirm blockers
@@ -992,14 +956,14 @@ Blockers declared:
 Delver of Secrets triggered
 Resolving ability (category: PeekAndReveal)
 Top card of library: Delver of Secrets
-| decision 87: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 78: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Don't reveal
 |   1: Reveal
 (REPLAY) [T11 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Don't reveal)
 Player B draws Delver of Secrets
-| decision 88: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 79: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -1011,7 +975,7 @@ Player B draws Delver of Secrets
 Player B activated Volcanic Island for 1(U)
 Player B casts Delver of Secrets
 Delver of Secrets enters the battlefield
-| decision 89: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 80: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -1024,7 +988,7 @@ Player B activated Volcanic Island for 1(U)
 Player B activated Volcanic Island for 1(U)
 Player B casts Cori-Steel Cutter
 Player B orders 3 simultaneous triggers (pick which goes on the stack next).
-| decision 90: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 81: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler (Surveil)
 |   1: Dragon's Rage Channeler (Surveil)
@@ -1033,7 +997,7 @@ Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 | >> Player B: 0 (Dragon's Rage Channeler (Surveil))
 Dragon's Rage Channeler triggered
 Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-| decision 91: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 82: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler (Surveil)
 |   1: Cori-Steel Cutter (Token)
@@ -1044,7 +1008,7 @@ Cori-Steel Cutter triggered
 Resolving ability (category: Token)
 Token created: 1/1 Monk
 Resolving ability (category: Attach)
-| decision 92: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 83: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Decline: attach Cori-Steel Cutter to Monk token
 |   1: Accept: attach Cori-Steel Cutter to Monk token
@@ -1056,7 +1020,7 @@ Monk token gains 1/1 Trample & Haste (always)
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Lightning Bolt
-| decision 93: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 84: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Lightning Bolt on top of library
 |   1: Put Lightning Bolt into graveyard
@@ -1065,14 +1029,14 @@ Surveil: looking at Lightning Bolt
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Lightning Bolt
-| decision 94: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 85: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Lightning Bolt on top of library
 |   1: Put Lightning Bolt into graveyard
 (REPLAY) [T11 | First Main | Player B] Input: 0
 | >> Player B: 0 (Put Lightning Bolt on top of library)
 Cori-Steel Cutter enters the battlefield
-| decision 95: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 86: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Thundering Falls
@@ -1084,7 +1048,7 @@ Thundering Falls triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Lightning Bolt
-| decision 96: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 87: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Put Lightning Bolt on top of library
 |   1: Put Lightning Bolt into graveyard
@@ -1092,7 +1056,7 @@ Surveil: looking at Lightning Bolt
 | >> Player B: 0 (Put Lightning Bolt on top of library)
 
 --- Declare Attackers (Player B) ---
-| decision 97: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 88: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Delver of Secrets [1/1]
 |   1: Dragon's Rage Channeler [1/1]
@@ -1105,7 +1069,7 @@ Delver of Secrets attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Delver of Secrets [1/1] -> Player A
-| decision 98: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 89: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler [1/1]
 |   1: Dragon's Rage Channeler [1/1]
@@ -1118,7 +1082,7 @@ Dragon's Rage Channeler attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Delver of Secrets [1/1] -> Player A
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
-| decision 99: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 90: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Dragon's Rage Channeler [1/1]
 |   1: Monk token [2/2]
@@ -1131,7 +1095,7 @@ Dragon's Rage Channeler attacking Player A.
   [attacking] Delver of Secrets [1/1] -> Player A
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
-| decision 100: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 91: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Monk token [2/2]
 |   1: Confirm attackers
@@ -1144,11 +1108,7 @@ Monk token attacking Player A.
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
   [attacking] Dragon's Rage Channeler [1/1] -> Player A
   [attacking] Monk token [2/2] -> Player A
-| decision 101: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Delver of Secrets -> Player A

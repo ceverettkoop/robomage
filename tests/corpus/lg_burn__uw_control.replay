@@ -147,13 +147,9 @@ Player A casts Rift Bolt targeting Player B
 (REPLAY) [T2 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Force of Will (alternate cost))
 Choose target for Force of Will:
-| decision 12: Player B (game 0, turn 2, UPKEEP, Player A active)
-| menu:
-|   0: Rift Bolt
-(REPLAY) [T2 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Rift Bolt)
+| auto: Player B: Rift Bolt
 Targeting choice 0
-| decision 13: Player B (game 0, turn 2, UPKEEP, Player A active)
+| decision 12: Player B (game 0, turn 2, UPKEEP, Player A active)
 | menu:
 |   0: Exile Ponder
 |   1: Exile Tamiyo, Inquisitive Student
@@ -166,7 +162,7 @@ Player B casts Force of Will targeting Rift Bolt
 Resolving ability (category: Counter)
 Rift Bolt is countered
 Player A draws Chain Lightning
-| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -177,7 +173,7 @@ Player A draws Chain Lightning
 (REPLAY) [T2 | First Main | Player A] Input: 4
 | >> Player A: 4 (Cast Chain Lightning)
 Choose target for Chain Lightning:
-| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (18 life)
 |   1: Player A (19 life)
@@ -191,12 +187,8 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at 15 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 16: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -205,7 +197,7 @@ Player B may pay to copy Chain Lightning:
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Suspend Rift Bolt
@@ -216,7 +208,7 @@ Player A suspends Rift Bolt (exiled with 1 time counter(s)).
 No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
-| decision 19: Player B (game 0, turn 3, UPKEEP, Player B active)
+| decision 17: Player B (game 0, turn 3, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tune the Narrative
@@ -229,7 +221,7 @@ Player B draws Tundra
 Resolving ability (category: PutCounter, amount: 2)
 Player B gets 2 ENERGY counter(s) (now 2).
 Player B draws Mystic Sanctuary
-| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Misty Rainforest
@@ -238,7 +230,7 @@ Player B draws Mystic Sanctuary
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Misty Rainforest)
 Player B played Misty Rainforest
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Misty Rainforest (ChangeZone)
@@ -249,7 +241,7 @@ Player B sacrifices Misty Rainforest
 Player B's Misty Rainforest ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -258,7 +250,7 @@ Searching Player B's library:
 | >> Player B: 2 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Tamiyo, Inquisitive Student
@@ -271,7 +263,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Rift Bolt triggers: remove a time counter (suspend).
-| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 22: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Price of Progress
@@ -291,7 +283,7 @@ Resolving ability (category: SuspendTick)
 Removed a time counter from Rift Bolt (0 remaining).
 Rift Bolt triggers: the last time counter was removed (suspend).
 Resolving ability (category: SuspendCast)
-| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 23: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Do not cast Rift Bolt
 |   1: Cast Rift Bolt without paying its mana cost
@@ -299,7 +291,7 @@ Resolving ability (category: SuspendCast)
 | >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
 Player A casts Rift Bolt without paying its mana cost
 Choose target for Rift Bolt:
-| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (10 life)
 |   1: Player A (15 life)
@@ -311,7 +303,7 @@ Player A casts Rift Bolt targeting Player B
 Resolving ability (category: DealDamage, amount: 3)
 Rift Bolt deals 3 damage to Player B (now at 7 life)
 Player A draws Exquisite Firecraft
-| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 25: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -322,20 +314,20 @@ Player A played Mountain
 No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
-| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 26: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Murktide Regent
-| decision 29: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 27: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 28: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Mystic Sanctuary
@@ -345,13 +337,13 @@ Player B draws Murktide Regent
 | >> Player B: 1 (Play Mystic Sanctuary)
 Player B played Mystic Sanctuary
 Mystic Sanctuary enters tapped.
-| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 32: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| decision 30: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -359,7 +351,7 @@ Mystic Sanctuary enters tapped.
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player B) ---
-| decision 33: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 31: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -369,16 +361,12 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 34: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
 Tamiyo, Inquisitive Student triggered
-| decision 35: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 32: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -386,7 +374,7 @@ Tamiyo, Inquisitive Student triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Investigate)
 Token created: 0/0 Clue
-| decision 36: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 33: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -394,7 +382,7 @@ Token created: 0/0 Clue
 (REPLAY) [T5 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 37: Player B (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
+| decision 34: Player B (game 0, turn 5, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -405,21 +393,21 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 
-| decision 38: Player B (game 0, turn 5, COMBAT_DAMAGE, Player B active)
+| decision 35: Player B (game 0, turn 5, COMBAT_DAMAGE, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 |   2: Activate Clue token (Draw)
 (REPLAY) [T5 | Combat Damage | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 39: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| decision 36: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 |   2: Activate Clue token (Draw)
 (REPLAY) [T5 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 40: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 37: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -435,20 +423,20 @@ Resolving ability (category: Draw, amount: 1)
 Player B draws Lórien Revealed
 
 -------- TURN 7 (Player A) --------
-| decision 41: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 38: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Mountain
-| decision 42: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 39: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 43: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -458,7 +446,7 @@ Player A draws Mountain
 (REPLAY) [T6 | First Main | Player A] Input: 3
 | >> Player A: 3 (Cast Exquisite Firecraft)
 Choose target for Exquisite Firecraft:
-| decision 44: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (7 life)
 |   1: Player A (15 life)
@@ -473,7 +461,7 @@ Player A activated Fiery Islet for 1(U)
 Player A casts Exquisite Firecraft targeting Player B
 Resolving ability (category: DealDamage, amount: 4)
 Exquisite Firecraft deals 4 damage to Player B (now at 3 life)
-| decision 45: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 42: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -484,7 +472,7 @@ Player A played Mountain
 No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
-| decision 46: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 43: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -492,14 +480,14 @@ No creatures eligible to attack.
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Flooded Strand
-| decision 47: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 44: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
 |   2: Activate Lórien Revealed from hand (ChangeZone)
 (REPLAY) [T7 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -519,7 +507,7 @@ Player B exiles Tune the Narrative via Delve.
 Player B casts Murktide Regent
 Murktide Regent enters the battlefield
 Murktide Regent enters with 2 +1/+1 counter(s) (5/5).
-| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 46: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Flooded Strand
@@ -527,7 +515,7 @@ Murktide Regent enters with 2 +1/+1 counter(s) (5/5).
 (REPLAY) [T7 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Flooded Strand)
 Player B played Flooded Strand
-| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 47: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Flooded Strand (ChangeZone)
@@ -538,7 +526,7 @@ Player B sacrifices Flooded Strand
 Player B's Flooded Strand ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 51: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 48: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -548,7 +536,7 @@ Searching Player B's library:
 | >> Player B: 3 (Tundra)
 Player B shuffles their library
 Player B puts Tundra to the battlefield
-| decision 52: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 49: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Swords to Plowshares
@@ -559,7 +547,7 @@ Player B activated Tundra for 1(U)
 Player B activates Lórien Revealed from hand
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 53: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 50: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -569,7 +557,7 @@ Player B shuffles their library
 Player B reveals Island and puts it to hand
 
 --- Declare Attackers (Player B) ---
-| decision 54: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| decision 51: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Tamiyo, Inquisitive Student [0/3]
 |   1: Confirm attackers
@@ -579,11 +567,7 @@ Tamiyo, Inquisitive Student attacking Player A.
 
 --- Declare Attackers (Player B) ---
   [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
-| decision 55: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
-| menu:
-|   0: Confirm attackers
-(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Confirm attackers)
+| auto: Player B: Confirm attackers
 
 Attackers declared:
   Tamiyo, Inquisitive Student -> Player A
@@ -597,20 +581,20 @@ No creatures eligible to block.
 
 
 -------- TURN 9 (Player A) --------
-| decision 56: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 52: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Eidolon of the Great Revel
-| decision 57: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 53: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 54: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -621,7 +605,7 @@ Player A draws Eidolon of the Great Revel
 Player A activated Mountain for 1(R)
 Player A activated Mountain for 1(R)
 Player A casts Eidolon of the Great Revel
-| decision 59: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 55: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
@@ -633,21 +617,21 @@ Player A's Fiery Islet ability is on the stack
 Resolving ability (category: Draw, amount: 1)
 Player A draws Chain Lightning
 Eidolon of the Great Revel enters the battlefield
-| decision 60: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 56: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 61: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 57: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Chain Lightning
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Chain Lightning)
 Choose target for Chain Lightning:
-| decision 62: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 58: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (2 life)
 |   1: Player A (14 life)
@@ -666,11 +650,7 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at -1 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 63: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
+| auto: Player B: Don't pay (Chain Lightning is not copied)
 
 Player B has -1 life - Player A wins!
 GAME_RESULT: 1 Player A wins

@@ -8,7 +8,7 @@
 #include "players.h"
 #include "spells.h"
 
-PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities) {
+PlayerEffects player_effects(Zone::Ownership player, const EntitySet &entities) {
     PlayerEffects fx;
     for (const auto &p : cur_game.resolved_effects.player_protection_from_everything)
         if (p.player == player) fx.protection_from_everything = true;

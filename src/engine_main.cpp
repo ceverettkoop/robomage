@@ -36,7 +36,7 @@ static void game_loop() {
     // Setup decks, seed and input logging
     unsigned int seed;
     if (replay_mode) {
-        // An RMLOG v2 log is self-contained: the seed, the state-affecting launch
+        // An RMLOG v3 log is self-contained: the seed, the state-affecting launch
         // flags, and both decklists come from its header. parse_command_line leaves
         // every setup option at its default in replay mode, so the header alone
         // determines the setup.

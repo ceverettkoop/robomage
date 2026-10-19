@@ -344,6 +344,12 @@ bool spec_is_pass(const std::string &token) {
     return parse_spec(token, &intent, &err) && intent.verb == "pass";
 }
 
+bool spec_names_row(const std::string &token) {
+    Intent intent;
+    std::string err;
+    return parse_spec(token, &intent, &err) && intent.verb != "pass" && intent.literal < 0 && !intent.has_sentinel;
+}
+
 std::vector<std::string> parse_spec_list(const std::string &csv) {
     std::vector<std::string> out;
     for (const std::string &piece : split(csv, ',')) {
@@ -367,6 +373,16 @@ PlayScript::PlayScript(std::vector<std::string> specs, Agent *player_a, Agent *p
 
 std::vector<std::string> PlayScript::unused_specs() const {
     return std::vector<std::string>(specs_.begin() + static_cast<long>(next_), specs_.end());
+}
+
+void PlayScript::auto_taken(char seat, const MenuAction &row) {
+    if (next_ >= specs_.size()) return;
+    const std::string &spec = specs_[next_];
+    const char key = spec_seat(spec);
+    if ((key && key != seat) || !spec_names_row(spec)) return;
+    if (!resolve_spec(spec, {row}).ok()) return;
+    ++next_;
+    wait_ = 0;
 }
 
 int PlayScript::player_choice(const Decision &d) {

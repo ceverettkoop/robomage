@@ -16,8 +16,8 @@ extern Game cur_game;
 
 static bool keyword_present(const std::vector<std::string> &kws, const char *target);
 static bool card_is_nightbound_dfc(const CardData &front);
-static void apply_day_night_transforms(const std::set<Entity> &entities);
-static void set_day_night(Game::DayNight value, const std::set<Entity> &entities);
+static void apply_day_night_transforms(const EntitySet &entities);
+static void set_day_night(Game::DayNight value, const EntitySet &entities);
 
 // True if `target` appears in the keyword list (exact match).
 static bool keyword_present(const std::vector<std::string> &kws, const char *target) {
@@ -38,7 +38,7 @@ static bool card_is_nightbound_dfc(const CardData &front) {
 
 // Perform the transforms the current day/night designation requires (CR 702.145c/f). Run
 // immediately whenever the designation changes (these are not state-based actions, CR 702.145c).
-static void apply_day_night_transforms(const std::set<Entity> &entities) {
+static void apply_day_night_transforms(const EntitySet &entities) {
     for (auto e : battlefield_permanents(entities)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         const CardData &cd = global_coordinator.GetComponent<CardData>(e);
@@ -53,17 +53,21 @@ static void apply_day_night_transforms(const std::set<Entity> &entities) {
     }
 }
 
-static void set_day_night(Game::DayNight value, const std::set<Entity> &entities) {
+static void set_day_night(Game::DayNight value, const EntitySet &entities) {
     if (cur_game.day_night == value) return;  // already that designation (CR 731.1)
     cur_game.day_night = value;
     game_log(value == Game::DN_DAY ? "It becomes day.\n" : "It becomes night.\n");
     apply_day_night_transforms(entities);
 }
 
-void become_day(const std::set<Entity> &entities) { set_day_night(Game::DN_DAY, entities); }
-void become_night(const std::set<Entity> &entities) { set_day_night(Game::DN_NIGHT, entities); }
+void become_day(const EntitySet &entities) {
+    set_day_night(Game::DN_DAY, entities);
+}
+void become_night(const EntitySet &entities) {
+    set_day_night(Game::DN_NIGHT, entities);
+}
 
-void day_night_untap_transition(const std::set<Entity> &entities) {
+void day_night_untap_transition(const EntitySet &entities) {
     // CR 502.2 / 731.2: checked as the second part of the untap step, on the turn that just ended.
     // prev_turn_active_spell_count is the previous turn's active player's spell count during that
     // turn (captured at that turn's cleanup, before the per-turn reset); on the first turn there

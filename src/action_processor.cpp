@@ -85,11 +85,9 @@ static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
                                      Entity chosen_creature);
 static void resume_attack_target(Game &game);
 static void resume_block_target(Game &game);
-static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype,
-                                         const std::set<Entity> &entities);
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype, const EntitySet &entities);
 static std::string landwalk_subtype(const std::string &kw);
-static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player,
-                                 const std::set<Entity> &entities);
+static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player, const EntitySet &entities);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
                                             const std::vector<Entity> &attackers);
@@ -699,8 +697,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending.choice = NONE;
 }
 
-static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype,
-                                         const std::set<Entity> &entities) {
+static bool player_controls_land_subtype(
+    Zone::Ownership player, const std::string &subtype, const EntitySet &entities) {
     for (auto e : battlefield_permanents(entities, player))
         for (auto &t : global_coordinator.GetComponent<Permanent>(e).types)
             if (t.kind == SUBTYPE && t.name == subtype) return true;
@@ -720,8 +718,7 @@ static std::string landwalk_subtype(const std::string &kw) {
 // True if no creature `defending_player` controls can block `atk` (CR 509.1b): it can't be
 // blocked this turn (Kappa Cannoneer), or it has landwalk and the defending player controls a
 // land of that type (CR 702.14c).
-static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player,
-                                 const std::set<Entity> &entities) {
+static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player, const EntitySet &entities) {
     auto &acr = global_coordinator.GetComponent<Creature>(atk);
     if (acr.cant_be_blocked_this_turn) return true;
     for (auto &kw : acr.keywords) {

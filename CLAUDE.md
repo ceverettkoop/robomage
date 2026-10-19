@@ -87,6 +87,9 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   card tables, tensors, learner targets) and `bin/debug/robomage_check` (the test gate)
 - `make BUILD=RELEASE` — the same into `bin/release/` (`-O2 -flto -march=native`; separate obj/bin
   trees per config, so switching `BUILD` never needs `make clean`)
+- `make pgo` — `bin/pgo/robomage` alone: the release flags with a profile (`-fprofile-use`), from an
+  instrumented build playing explore bo3 games with the featurizer on (~10–15% faster; `docs/ci.md`
+  throughput reference)
 - `make check` — build, then `bin/debug/robomage_check` (every tier; below and `docs/ci.md`)
 - `make regen` — provision, build, then `python3 python/record_corpus.py`: re-record the replay
   corpus after an intentional behavior change
@@ -230,8 +233,12 @@ to its `--agent-a/-b` agent) until the keyed seat is on the clock. A keyed spec 
 own seat forward through priority windows until the action is legal (e.g. `A:attack:X` written in
 main phase waits for declare-attackers); a typo'd/ambiguous spec, or one that hits a mandatory
 choice it doesn't match, still fails loudly. Unkeyed specs apply to whoever has priority, with no
-auto-advance. **The engine never asks a seat whose only legal action is a pass**, so write `pass`
-only where that seat could do something else.
+auto-advance. **The engine never asks a decision with one choice** (a lone pass, or any menu left
+with one row: a single legal target, a confirm with nothing left to declare, a fail-only search; no
+frame, not logged), so write `pass` only where that seat could do something else. A spec that names
+such a one-row decision (not `pass`, `#n` or a concession) is consumed when the engine takes it, so
+a script may name it or leave it out; `--trace-decisions` prints it as `| auto: Player X: <row>`,
+and scenario `expect_menu` assertions see it.
 
 ```bash
 cd bin
@@ -275,7 +282,7 @@ process with `--narrative --trace-decisions`; once its script runs out a seat ta
 ```
 
 **Decision logs and replay.** `--decision-log FILE` (or `--log-decisions`: `resources/logs/game_<seed>.log`)
-writes the RMLOG v2 log (seed, setup flags, both decklists, every decision); `--replay FILE`
+writes the RMLOG v3 log (seed, setup flags, both decklists, every asked decision); `--replay FILE`
 replays it deterministically (the header alone fixes the setup; output flags such as
 `--narrative`, `--trace-decisions`, `--rmstate-dump`, `--selfcheck-*` still apply).
 
@@ -285,7 +292,8 @@ replays it deterministically (the header alone fixes the setup; output flags suc
 
 Based on [Austin Morlan's ECS tutorial](https://austinmorlan.com/posts/entity_component_system/):
 entities are `uint32_t` IDs capped at `MAX_ENTITIES` (`src/ecs/entity.h`), components are data
-structs (`src/components/`), systems iterate their signature's `mEntities` (`src/systems/`), all
+structs (`src/components/`), systems iterate their signature's `mEntities` (an `EntitySet`, a bitset
+iterated in id order like the `std::set` it replaced: `src/ecs/entity_set.h`; `src/systems/`), all
 reached through the `global_coordinator` singleton (`src/ecs/coordinator.h`). The registered
 components and systems are listed in `init_ecs()` (`src/game_driver.cpp`).
 Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared in
@@ -327,7 +335,7 @@ turn" counts. `engine_main.cpp` parses flags and runs the no-game modes or the m
 iteration: emit a parked `pending.query` → pregame stage
 → turn-based actions → mandatory choice (`proc_mandatory_choice`) → SBEs → `advance_step` (resolve
 top of stack / next step once both players pass) → SBEs → `determine_legal_actions` (a lone pass is
-auto-taken) → `InputLogger::get_input` → `process_action`.
+auto-taken) → `InputLogger::get_input` (takes any other one-row menu itself, unasked) → `process_action`.
 
 **Decisions must be suspendable.** With `-fno-exceptions` a mid-resolution prompt can't unwind, so
 effect handlers ask through `FrameCtx` (`src/resolution_frame.h`): the query parks as a

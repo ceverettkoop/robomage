@@ -124,27 +124,6 @@ Decision: declare attackers (pick each attacker, then confirm)
   0: Goblin Guide [2/2]
   1: Confirm attackers   (or -1)
 Player A [0-1, help]> 
-Game 1, turn 1, Declare attackers: Player A's turn
-  Player A (you)  life 20   hand 5   library 53  graveyard 0   exile 0
-  Player B        life 20   hand 7   library 53  graveyard 0   exile 0
-Player B's battlefield:
-  (no permanents)
-Player A's battlefield:
-  Goblin Guide  2/2  #25  attacking
-  Mountain           #23  tapped
-Your hand (5):
-  Chain Lightning       #1  {R}        Sorcery
-  Monastery Swiftspear  #2  {R}        Creature - Human Monk
-  Fireblast             #4  {4}{R}{R}  Instant
-  Skewer the Critics    #5  {2}{R}     Sorcery
-  Lightning Bolt        #6  {R}        Instant
-Player A's graveyard: (empty)
-Player B's graveyard: (empty)
-You know:
-  Player B's archetype: slow_midrange
-Decision: declare attackers (pick each attacker, then confirm)
-  0: Confirm attackers   (or -1)
-Player A [0-0, help]> 
 Since your last decision:
   T1: Player A looks at 1 card of Player B's library (top): Tropical Island (by Goblin Guide)
   T1: Revealed from Player B's library (top): Tropical Island (by Goblin Guide)
@@ -207,9 +186,24 @@ Decision: act or pass priority
   2: Cast Chain Lightning
   3: Cast Lightning Bolt
   4: Cast Monastery Swiftspear
-Player A [0-4, help]> Player B's graveyard: 1 card
+Player A [0-4, help]> 
+Game 1, turn 3, Begin combat: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> 
+Game 1, turn 3, Declare attackers: Player A's turn
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Goblin Guide [2/2]
+  1: Confirm attackers   (or -1)
+Player A [0-1, help]> 
+Game 1, turn 3, Declare attackers: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player A [0-1, help]> Player B's graveyard: 1 card
   Flow State #28
-Player A [0-4, help]> Knowledge (expert, exact):
+Player A [0-1, help]> Knowledge (expert, exact):
 Player B:
   known in hand: nothing
   hand (7 cards): Baleful Strix 0-2, Bayou 0-1, Brainstorm 0-4, Fatal Push 0-3, Flow State 0-2,
@@ -241,11 +235,11 @@ Player A (you):
       Fireblast 1, Skewer the Critics 1, Monastery Swiftspear 1
   consistent reference lists: league/burn (registered)
   archetype: burn
-Player A [0-4, help]> (8 earlier lines: log all)
+Player A [0-1, help]> (8 earlier lines: log all)
   T1: Player B's Tropical Island: library (top) -> hand (by Goblin Guide)
   T2: Player B draws a card
   T2: Player B plays Tropical Island
   T2: Player B's Flow State: hand -> graveyard
   life: Player B 20 -> 18
   T3: Player A draws a card: Mountain
-Player A [0-4, help]> Quitting.
+Player A [0-1, help]> Quitting.

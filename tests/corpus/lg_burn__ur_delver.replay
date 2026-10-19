@@ -204,12 +204,8 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at 13 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 16: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
-| menu:
-|   0: Don't pay (Chain Lightning is not copied)
-(REPLAY) [T2 | First Main | Player B] Input: 0
-| >> Player B: 0 (Don't pay (Chain Lightning is not copied))
-| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -218,7 +214,7 @@ Player B may pay to copy Chain Lightning:
 (REPLAY) [T2 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Suspend Rift Bolt
@@ -230,14 +226,14 @@ No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
 Player B draws Lightning Bolt
-| decision 19: Player B (game 0, turn 3, DRAW, Player B active)
+| decision 18: Player B (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T3 | Draw | Player B] Input: 1
 | >> Player B: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 20: Player B (game 0, turn 3, DRAW, Player B active)
+| decision 19: Player B (game 0, turn 3, DRAW, Player B active)
 | menu:
 |   0: Player A (18 life)
 |   1: Player B (13 life)
@@ -248,7 +244,7 @@ Player B activated Thundering Falls for 1(R)
 Player B casts Lightning Bolt targeting Player A
 Resolving ability (category: DealDamage, amount: 3)
 Lightning Bolt deals 3 damage to Player A (now at 15 life)
-| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Scalding Tarn
@@ -256,7 +252,7 @@ Lightning Bolt deals 3 damage to Player A (now at 15 life)
 (REPLAY) [T3 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Scalding Tarn)
 Player B played Scalding Tarn
-| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Scalding Tarn (ChangeZone)
@@ -267,7 +263,7 @@ Player B sacrifices Scalding Tarn
 Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -277,7 +273,7 @@ Searching Player B's library:
 | >> Player B: 3 (Volcanic Island)
 Player B shuffles their library
 Player B puts Volcanic Island to the battlefield
-| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Dragon's Rage Channeler
@@ -291,7 +287,7 @@ No creatures eligible to attack.
 
 -------- TURN 5 (Player A) --------
 Rift Bolt triggers: remove a time counter (suspend).
-| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Price of Progress
@@ -311,7 +307,7 @@ Resolving ability (category: SuspendTick)
 Removed a time counter from Rift Bolt (0 remaining).
 Rift Bolt triggers: the last time counter was removed (suspend).
 Resolving ability (category: SuspendCast)
-| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Do not cast Rift Bolt
 |   1: Cast Rift Bolt without paying its mana cost
@@ -319,7 +315,7 @@ Resolving ability (category: SuspendCast)
 | >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
 Player A casts Rift Bolt without paying its mana cost
 Choose target for Rift Bolt:
-| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Player B (8 life)
 |   1: Player A (12 life)
@@ -331,7 +327,7 @@ Player A casts Rift Bolt targeting Player B
 Resolving ability (category: DealDamage, amount: 3)
 Rift Bolt deals 3 damage to Player B (now at 5 life)
 Player A draws Exquisite Firecraft
-| decision 28: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -342,18 +338,14 @@ Player A played Mountain
 No creatures eligible to attack.
 
 -------- TURN 6 (Player B) --------
-| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Unholy Heat
 (REPLAY) [T5 | Upkeep | Player B] Input: 1
 | >> Player B: 1 (Cast Unholy Heat)
 Choose target for Unholy Heat:
-| decision 30: Player B (game 0, turn 5, UPKEEP, Player B active)
-| menu:
-|   0: Dragon's Rage Channeler
-(REPLAY) [T5 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Dragon's Rage Channeler)
+| auto: Player B: Dragon's Rage Channeler
 Targeting choice 0
 Player B activated Thundering Falls for 1(R)
 Player B casts Unholy Heat targeting Dragon's Rage Channeler
@@ -361,7 +353,7 @@ Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Player B surveils 1.
 Surveil: looking at Island
-| decision 31: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Put Island on top of library
 |   1: Put Island into graveyard
@@ -371,7 +363,7 @@ Resolving ability (category: DealDamage, amount: 2)
 Unholy Heat deals 2 damage to Dragon's Rage Channeler
 Dragon's Rage Channeler is destroyed (lethal damage)
 Player B draws Island
-| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -384,7 +376,7 @@ Player B casts Ponder
 Resolving ability (category: RearrangeTopOfLibrary)
 Player B looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Force of Will
 |   1: Cori-Steel Cutter
@@ -392,13 +384,13 @@ Choose which card goes 3 from top:
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Force of Will)
 Choose which card goes 2 from top:
-| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Cori-Steel Cutter
 |   1: Lightning Bolt
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Lightning Bolt)
-| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Don't shuffle
 |   1: Shuffle
@@ -406,7 +398,7 @@ Choose which card goes 2 from top:
 | >> Player B: 0 (Don't shuffle)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Cori-Steel Cutter
-| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 34: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Island
@@ -417,20 +409,20 @@ Player B played Island
 No creatures eligible to attack.
 
 -------- TURN 7 (Player A) --------
-| decision 37: Player A (game 0, turn 6, UPKEEP, Player A active)
+| decision 35: Player A (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Mountain
-| decision 38: Player A (game 0, turn 6, DRAW, Player A active)
+| decision 36: Player A (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T6 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 37: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -440,7 +432,7 @@ Player A draws Mountain
 (REPLAY) [T6 | First Main | Player A] Input: 3
 | >> Player A: 3 (Cast Exquisite Firecraft)
 Choose target for Exquisite Firecraft:
-| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 38: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (5 life)
 |   1: Player A (12 life)
@@ -454,7 +446,7 @@ Player A activated Fiery Islet for 1(U)
 Player A casts Exquisite Firecraft targeting Player B
 Resolving ability (category: DealDamage, amount: 4)
 Exquisite Firecraft deals 4 damage to Player B (now at 1 life)
-| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 39: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -466,14 +458,14 @@ No creatures eligible to attack.
 
 -------- TURN 8 (Player B) --------
 Player B draws Lightning Bolt
-| decision 42: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 40: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Lightning Bolt
 (REPLAY) [T7 | Draw | Player B] Input: 1
 | >> Player B: 1 (Cast Lightning Bolt)
 Choose target for Lightning Bolt:
-| decision 43: Player B (game 0, turn 7, DRAW, Player B active)
+| decision 41: Player B (game 0, turn 7, DRAW, Player B active)
 | menu:
 |   0: Player A (11 life)
 |   1: Player B (1 life)
@@ -484,7 +476,7 @@ Player B activated Thundering Falls for 1(R)
 Player B casts Lightning Bolt targeting Player A
 Resolving ability (category: DealDamage, amount: 3)
 Lightning Bolt deals 3 damage to Player A (now at 8 life)
-| decision 44: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -496,7 +488,7 @@ Player B activated Volcanic Island for 1(R)
 Player B activated Island for 1(U)
 Player B casts Cori-Steel Cutter
 Cori-Steel Cutter enters the battlefield
-| decision 45: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Volcanic Island
@@ -506,20 +498,20 @@ Player B played Volcanic Island
 No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
-| decision 46: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 44: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
 Player A draws Eidolon of the Great Revel
-| decision 47: Player A (game 0, turn 8, DRAW, Player A active)
+| decision 45: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 48: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 46: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
@@ -530,7 +522,7 @@ Player A draws Eidolon of the Great Revel
 Player A activated Mountain for 1(R)
 Player A activated Mountain for 1(R)
 Player A casts Eidolon of the Great Revel
-| decision 49: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 47: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Fiery Islet (Draw)
@@ -542,21 +534,21 @@ Player A's Fiery Islet ability is on the stack
 Resolving ability (category: Draw, amount: 1)
 Player A draws Chain Lightning
 Eidolon of the Great Revel enters the battlefield
-| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 48: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Mountain
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Play Mountain)
 Player A played Mountain
-| decision 51: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 49: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Chain Lightning
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Cast Chain Lightning)
 Choose target for Chain Lightning:
-| decision 52: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 50: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Player B (1 life)
 |   1: Player A (8 life)
@@ -567,7 +559,7 @@ Targeting choice 0
 Player A activated Mountain for 1(R)
 Player A casts Chain Lightning targeting Player B
 Eidolon of the Great Revel triggered
-| decision 53: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 51: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Into the Flood Maw
@@ -575,7 +567,7 @@ Eidolon of the Great Revel triggered
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: DealDamage, amount: 2)
 Eidolon of the Great Revel deals 2 damage to Player A (now at 6 life)
-| decision 54: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 52: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Into the Flood Maw
@@ -585,7 +577,7 @@ Resolving ability (category: DealDamage, amount: 3)
 Chain Lightning deals 3 damage to Player B (now at -2 life)
 Resolving ability (category: CopySpellAbility)
 Player B may pay to copy Chain Lightning:
-| decision 55: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 53: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Tap Volcanic Island for (U)
 |   1: Tap Volcanic Island for (R)

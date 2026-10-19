@@ -33,12 +33,12 @@ typedef enum Step {
 #include <memory>
 #include <random>
 #include <set>
+#include <string>
 #include <vector>
 
-#include <string>
-
-#include "../ecs/entity.h"
 #include "../components/ability.h"
+#include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 #include "../mana_system.h"
 #include "../pending_query.h"
 #include "../resolution_frame.h"
@@ -927,7 +927,7 @@ struct Game {
         // CR 514.2: all damage marked on permanents is removed and all "until end of turn" and
         // "this turn" effects end, simultaneously. Run once per cleanup step, after the 514.1
         // discard (process_turn_based_actions). `entities` is the calling system's mEntities.
-        void end_cleanup_effects(const std::set<Entity> &entities);
+        void end_cleanup_effects(const EntitySet &entities);
         // Begin the end of combat step (CR 511) for the active player `active_player_entity`.
         void begin_end_of_combat_step(Entity active_player_entity);
         // Begin a cleanup step (CR 514) for the active player `active_player_entity`.

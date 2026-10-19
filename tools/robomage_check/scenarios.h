@@ -31,7 +31,8 @@
 //   expect_not     regexes that must match no narrative line
 //   expect_order   regexes that must match narrative lines in this order
 //   expect_count   {regex: n}: each regex must match exactly n narrative lines
-//   expect_menu    regexes that must each match some offered action (any decision)
+//   expect_menu    regexes that must each match some offered action (any decision; a one-row
+//                  menu the engine took without asking, its "| auto: " trace line, included)
 //   expect_menu_not  regexes that must match no offered action
 //   expect_result  "A" | "B" | "draw": the GAME_RESULT the game must end with
 //   expect_unique  regexes with capture groups: over all matching narrative lines, the matched

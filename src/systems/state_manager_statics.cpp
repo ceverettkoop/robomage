@@ -56,10 +56,9 @@
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
-static std::vector<Entity> static_targets(const ActiveStatic &a, const std::set<Entity> &entities);
-static std::vector<Entity> permanents_matching_static_filter(const ActiveStatic &as,
-                                                             const std::string &aff,
-                                                             const std::set<Entity> &entities);
+static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities);
+static std::vector<Entity> permanents_matching_static_filter(
+    const ActiveStatic &as, const std::string &aff, const EntitySet &entities);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
 static void enter_as_recorded(Entity entity, const CardData &card_data, Permanent &perm);
@@ -82,7 +81,7 @@ static std::set<Type> copiable_type_line(Entity e, const Permanent &perm);
 static size_t static_timestamp(const ActiveStatic &a);
 static bool land_type_setter_affects(const ActiveStatic &a, Entity e);
 static void set_land_subtypes(Permanent &perm, const std::vector<Type> &subtypes);
-static void apply_type_effect(const TypeEffect &te, const std::set<Entity> &entities);
+static void apply_type_effect(const TypeEffect &te, const EntitySet &entities);
 static void collect_animate_type_effects(Entity entity, const Permanent &perm,
                                          std::vector<TypeEffect> &out);
 static void sync_self_animate_creature(const ActiveStatic &a);
@@ -161,8 +160,7 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
 // evaluate_present_condition's owner handling. `controller` is the static source's controller
 // (the "You" reference per CR 109.5). An empty filter means "no gate" → always met.
 static bool static_present_condition_met(const std::string &filter, const std::string &zone_str,
-                                         const std::string &compare_in, Zone::Ownership controller,
-                                         Entity source, const std::set<Entity> &entities) {
+    const std::string &compare_in, Zone::Ownership controller, Entity source, const EntitySet &entities) {
     if (filter.empty()) return true;
     std::string compare = compare_in.empty() ? "GE1" : compare_in;
 
@@ -327,8 +325,7 @@ StaticAbility *ActiveStatic::sa() const {
 // static's controller as the YouCtrl reference and the source permanent as the .Other
 // self-exclusion seam. A static numeric mana-value qualifier (cmcGE7) in the filter is seeded
 // into the MatchCtx so the comparator is honoured rather than silently passing.
-std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
-                                                   const std::set<Entity> &entities) {
+std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities) {
     return permanents_matching_static_filter(as, as.sa()->affected, entities);
 }
 
@@ -336,9 +333,8 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
 // evaluated with the static's controller and source (the shared body of
 // affected_permanents_for_static, also used with a qualifier-stripped filter by
 // ability_grant_targets).
-static std::vector<Entity> permanents_matching_static_filter(const ActiveStatic &as,
-                                                             const std::string &aff,
-                                                             const std::set<Entity> &entities) {
+static std::vector<Entity> permanents_matching_static_filter(
+    const ActiveStatic &as, const std::string &aff, const EntitySet &entities) {
     std::vector<Entity> out;
     // EquippedBy / Self / no-filter forms are single-target (the layer appliers resolve them
     // directly); only a general permanent filter fans out here. Shared predicate so this and
@@ -557,8 +553,8 @@ static bool removal_affects(const ActiveStatic &r, Entity entity);
 static bool static_begins_before_layer6(const ActiveStatic &a);
 static void strip_rules_text_abilities(Entity entity, Permanent &perm);
 static bool granted_after(const Ability &ab, Permanent &perm, size_t removal_ts);
-static void regrant_later_keywords(Entity entity, const Permanent &perm, Creature &cr,
-                                   size_t removal_ts, const std::set<Entity> &entities);
+static void regrant_later_keywords(
+    Entity entity, const Permanent &perm, Creature &cr, size_t removal_ts, const EntitySet &entities);
 
 // Is this Affected$ filter a *general* permanent filter (an anthem-style class like
 // "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target EquippedBy / Self /
@@ -585,7 +581,7 @@ static bool affected_is_general_filter(const std::string &aff) {
 // a general Affected$ filter's matching permanents (affected_permanents_for_static), the
 // permanent an EquippedBy/EnchantedBy static's source is attached to, or else (Self / no
 // Affected$) the source itself.
-static std::vector<Entity> static_targets(const ActiveStatic &a, const std::set<Entity> &entities) {
+static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities) {
     const std::string &aff = a.sa()->affected;
     if (affected_is_general_filter(aff)) return affected_permanents_for_static(a, entities);
     Entity target = a.entity;
@@ -1377,7 +1373,7 @@ static void set_land_subtypes(Permanent &perm, const std::vector<Type> &subtypes
 }
 
 // Apply one layer-4 effect to the objects it affects right now.
-static void apply_type_effect(const TypeEffect &te, const std::set<Entity> &entities) {
+static void apply_type_effect(const TypeEffect &te, const EntitySet &entities) {
     if (te.as == nullptr) {  // a resolved Animate's grant on the permanent it animated
         auto &perm = global_coordinator.GetComponent<Permanent>(te.animated);
         for (const auto &t : *te.animate_types) perm.types.insert(t);
@@ -1834,7 +1830,7 @@ static std::string strip_named_card_qualifier(const std::string &filter) {
 // — keeps only permanents whose name equals the source permanent's chosen_name (the same
 // per-source named-card state that match_named_card statics read). A source with no chosen
 // name yet (ETB name choice not made) grants nothing.
-static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const std::set<Entity> &entities) {
+static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const EntitySet &entities) {
     bool named = as.sa()->affected.find("NamedCard") != std::string::npos;
     std::string base_filter = named ? strip_named_card_qualifier(as.sa()->affected) : as.sa()->affected;
     std::string chosen;
@@ -2138,8 +2134,8 @@ static bool granted_after(const Ability &ab, Permanent &perm, size_t removal_ts)
 // timestamp than that removal (CR 613.7): a resolved Animate's (an earthbend's haste), an
 // until-end-of-turn grant's, and every static keyword grant still applying to it (a static
 // whose source kept its abilities, or one that began applying in layer 4, 613.6).
-static void regrant_later_keywords(Entity entity, const Permanent &perm, Creature &cr,
-                                   size_t removal_ts, const std::set<Entity> &entities) {
+static void regrant_later_keywords(
+    Entity entity, const Permanent &perm, Creature &cr, size_t removal_ts, const EntitySet &entities) {
     auto add = [&](const std::string &kw) {
         if (perm.removed_keywords_eot.count(kw)) return;
         add_keyword_instance(cr.keywords, kw);

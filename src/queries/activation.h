@@ -2,10 +2,12 @@
 #define QUERIES_ACTIVATION_H
 
 #include <set>
+
 #include "../components/ability.h"
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+#include "../ecs/entity_set.h"
 
 // Activations counted against a permanent's once-per-turn gates: every ability's
 // ActivationLimit$ counter (Ability::activations_this_turn, only advanced for a limited
@@ -39,21 +41,20 @@ int ability_resolutions_this_turn(Entity source);
 
 // Metalcraft (CR 702.46): the player controls three or more artifacts. The activating
 // permanent (e.g. Mox Opal itself, an artifact) is counted. Reusable by any Metalcraft card.
-bool controller_has_metalcraft(Zone::Ownership controller, const std::set<Entity> &entities);
+bool controller_has_metalcraft(Zone::Ownership controller, const EntitySet &entities);
 
 // True if `ab`'s Activation$ gate (if any) is satisfied for `controller`. An ability with
 // no activation_condition is always allowed (returns true). `source` is the gated ability's
 // source permanent (needed by per-permanent gates like NotMonstrous; pass 0 if unknown).
 // Unknown condition names fail closed (return false) so a misparsed gate never silently
 // permits activation.
-bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
-                              const std::set<Entity> &entities, Entity source = 0);
+bool activation_condition_met(
+    const Ability &ab, Zone::Ownership controller, const EntitySet &entities, Entity source = 0);
 
 // The state `source` must be in for `controller` to activate its ability `ab` (CR 602.5): the
 // Activation$ condition holds, a {T} in the cost finds an untapped permanent free of summoning
 // sickness (CR 302.6), and the per-turn activation limit isn't reached. Shared by the mana-source
 // enumeration and the non-mana activated-ability offers, whichever zone the source is in.
-bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller,
-                             const std::set<Entity> &entities);
+bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities);
 
 #endif /* QUERIES_ACTIVATION_H */
