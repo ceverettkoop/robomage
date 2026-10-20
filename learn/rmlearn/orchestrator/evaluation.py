@@ -351,7 +351,7 @@ class EvalJob:
         errors = sorted({(h.get("last_exit") or {}).get("reason") or "exit %s" % (h.get("last_exit") or {}).get("code")
                          for h in self.pool.health() if (h.get("last_exit") or {}).get("code") not in (0, None)})
         self.pool.stop_all(timeout=5)
-        groups = EV.summarize(self.dir, subject=lambda agent: ":policies=%d" % SUBJECT_PID in str(agent))
+        groups = EV.summarize(self.dir)
         for g in self.groups:
             if g.name in groups:
                 groups[g.name]["options"] = g.options

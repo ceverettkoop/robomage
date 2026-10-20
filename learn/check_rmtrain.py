@@ -333,19 +333,31 @@ def check_resume(tmp):
     pool = A.ActorPool(eng, tmp, os.path.join(tmp, "sched.json"), pdir, os.path.join(pdir, "logs"), 1, settings,
                        logs.append)
     pool.set_count(1)
+    def started():
+        try:
+            return [int(ln.split()[1]) for ln in open(os.path.join(pdir, "starts.txt"))]
+        except FileNotFoundError:
+            return []
+
+    # The fifth start is written by the fourth restart's process, after the pool counted it.
     end = time.time() + 15
-    while time.time() < end and pool.actors[0].restarts < 4:
+    while time.time() < end and (pool.actors[0].restarts < 4 or len(started()) < 5):
         pool.tick()
         time.sleep(0.02)
-    starts = [int(ln.split()[1]) for ln in open(os.path.join(pdir, "starts.txt"))]
+    starts = started()
     check(starts[:5] == [0, 1, 2, 3, 4], "a crashed actor restarts at the next match (%s)" % starts[:5])
     delays = [float(m.split("restart in ")[1].split(" s")[0]) for m in logs if "restart in" in m]
     check(len(delays) >= 4 and delays[0] < 1 and delays[3] >= delays[1] and delays[3] > 0.05,
           "a crash loop backs off (%s)" % delays)
     with open(os.path.join(pdir, "mode"), "w") as fp:
         fp.write("run")
+    def fake_running():
+        st = RD.read_json(os.path.join(pdir, "a0.status.json")) or {}
+        return st.get("state") == "running" and pool.actors[0].proc and pool.actors[0].proc.poll() is None
+
+    # A start still in flight from the crash loop may read the old mode: wait for one that runs.
     end = time.time() + 15
-    while time.time() < end and not (pool.actors[0].proc and pool.actors[0].proc.poll() is None):
+    while time.time() < end and not fake_running():
         pool.tick()
         time.sleep(0.05)
     time.sleep(0.3)
@@ -1323,6 +1335,32 @@ def kill9(run, daemon):
     return n
 
 
+def check_eval_scoring(tmp):
+    """An evaluation's groups score the schedule's side a (the evaluated policy) from its
+    ``side_a_seat``, whatever the agent specs: local exports, server policies, a ladder's two networks."""
+    from rmlearn import evaluate as EV
+    out = os.path.join(tmp, "scoring")
+    os.makedirs(out, exist_ok=True)
+    pol = "nn:/r/exports/eval/v7-v7.ts.pt:argmax"
+    rung = "nn:/r/exports/eval/m1-v5.ts.pt:argmax"
+    # (entry, side a's seat, side a's result): side a wins 3 of 4 against each opponent.
+    games = [(opp, seat, res) for opp in ("random", "ladder-m1", "remote") for seat, res in
+             (("A", 1), ("B", 1), ("A", -1), ("B", 1))]
+    with open(os.path.join(out, "a0.results.jsonl"), "w") as fp:
+        for i, (opp, seat, res) in enumerate(games):
+            side_a = {"random": pol, "ladder-m1": pol, "remote": "nn:remote:/r/rmip.sock:argmax:policies=3"}[opp]
+            side_b = {"random": "random", "ladder-m1": rung, "remote": "first"}[opp]
+            agents = (side_a, side_b) if seat == "A" else (side_b, side_a)
+            results = (res, -res) if seat == "A" else (-res, res)
+            fp.write(json.dumps({"actor": 0, "match": i, "game": 1, "entry": opp + "|a-b", "side_a_seat": seat,
+                                 "swapped": seat == "B", "agent_a": agents[0], "agent_b": agents[1],
+                                 "result_a": results[0], "result_b": results[1], "end_reason": "win"}) + "\n")
+    s = EV.summarize(out)
+    for opp in ("random", "ladder-m1", "remote"):
+        check(s[opp]["all"]["win"] == 3 and s[opp]["all"]["loss"] == 1,
+              "summarize scores side a from side_a_seat (%s: %s)" % (opp, s[opp]["all"]))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--smoke", action="store_true", help="the end-to-end tiny run (GPU, engine)")
@@ -1347,6 +1385,7 @@ def main():
             check_t8(tmp)
             check_resume_and_evaluations(tmp)
             check_eval_options_and_findings(tmp)
+            check_eval_scoring(tmp)
             check_local(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
