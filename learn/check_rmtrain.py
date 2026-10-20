@@ -1361,6 +1361,43 @@ def check_eval_scoring(tmp):
               "summarize scores side a from side_a_seat (%s: %s)" % (opp, s[opp]["all"]))
 
 
+def check_benchmark(tmp):
+    """The end-of-run benchmark's policy set and summary: the default policies from a run's exports,
+    per-deck win rates playing and facing a deck, the difference from the baseline, the tables."""
+    from rmlearn import benchmark as BM
+    from rmlearn import matches as MT
+    from rmlearn.orchestrator.rundir import RunDir
+    run = RunDir(os.path.join(tmp, "bench-run"))
+    os.makedirs(run.exports)
+    for n in ("bc-final", "m2", "m10", "m1", "final", "bc-r1"):
+        open(os.path.join(run.exports, n + ".ts.pt"), "w").close()
+    with open(run.config, "w") as fp:
+        json.dump({"eval": {"nn_options_finetune": "thresh=0.03:disc=16"}}, fp)
+    pol = BM.default_policies(run)
+    check(pol == ["bc-final", "m1", "m2", "m10", "final", "final@thresh=0.03:disc=16"], "default policies: %s" % pol)
+    lab, path, opts = BM.resolve_policy(run, pol[-1])
+    check(lab == "final@thresh=0.03:disc=16" and path == os.path.join(run.exports, "final.ts.pt")
+          and opts == "thresh=0.03:disc=16", "resolve_policy: %s" % [lab, path, opts])
+
+    def line(k, deck, opp, res):
+        return {"actor": 0, "match": k, "game": 1, "entry": "%s-%s" % (deck, opp), "side_a_seat": "A",
+                "deck_a": "league/" + deck, "deck_b": "league/" + opp, "result_a": res, "result_b": -res,
+                "end_reason": "win" if res else "draw", "first": "A"}
+    # The baseline wins 1 of 4 with burn against uw_control; the other policy 3 of 4 (and draws one).
+    base = [line(k, "burn", "uw_control", 1 if k == 0 else -1) for k in range(4)]
+    other = [line(k, "burn", "uw_control", -1 if k == 0 else 1) for k in range(4)] + [line(4, "burn", "uw_control", 0)]
+    reps = {"bc-final": MT.report([MT.game_record(x) for x in base]),
+            "final": MT.report([MT.game_record(x) for x in other])}
+    s = BM.summarize(reps)
+    f = s["policies"]["final"]
+    check(s["baseline"] == "bc-final" and f["plays"]["burn"]["win_rate"] == 0.75
+          and f["faces"]["uw_control"]["win_rate"] == 0.75 and abs(f["delta_plays"]["burn"]["delta"] - 0.5) < 1e-9
+          and f["all"]["draws"] == 1 and len(f["findings"]) == 1, "benchmark summary: %s" % json.dumps(f)[:600])
+    md = BM.format_summary(s, "t")
+    check("| final | 4 | 0.750 |" in md and "+0.500 ±" in md and "## Matchups: final" in md
+          and "| burn | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--smoke", action="store_true", help="the end-to-end tiny run (GPU, engine)")
@@ -1386,6 +1423,7 @@ def main():
             check_resume_and_evaluations(tmp)
             check_eval_options_and_findings(tmp)
             check_eval_scoring(tmp)
+            check_benchmark(tmp)
             check_local(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)

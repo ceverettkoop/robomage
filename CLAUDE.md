@@ -689,7 +689,7 @@ handshake JSON, the shared region, request / response layouts.
 
 **Learner (`learn/`, torch, its own venv; `learn/README.md`)**
 - `learn/rmtrain` — the training program (`rmlearn/rmtrain.py`, `rmlearn/orchestrator/`): `start` /
-  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` over a run directory
+  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` over a run directory
   (`runs/<name>`), the phases B0–B5, one GPU process (learner + inference server) and the actors
   ([`docs/rmtrain.md`](docs/rmtrain.md)); checks `learn/check_rmtrain.py` (`--smoke`: a tiny run)
 

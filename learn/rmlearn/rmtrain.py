@@ -6,6 +6,7 @@
     learn/rmtrain pause|resume|stop <run>
     learn/rmtrain set <run> <section.key> <value>
     learn/rmtrain eval <run>
+    learn/rmtrain bench <run> [--wait] [--policies ...]   # the end-of-run benchmark (rmlearn/benchmark.py)
     learn/rmtrain phase <run> hold|release|next|status
     learn/rmtrain config <run>          # the resolved config (TOML)
     learn/rmtrain defaults              # every key with its default and documentation (TOML)
@@ -243,6 +244,11 @@ def cmd_eval(args):
     return 0
 
 
+def cmd_bench(args):
+    from . import benchmark as BM
+    return BM.run_from_args(existing(args.run), args)
+
+
 def cmd_phase(args):
     run = existing(args.run)
     if args.what == "status" and not alive(run.control_sock):
@@ -454,6 +460,10 @@ def main(argv=None):
     p = sub.add_parser("eval", help="queue an evaluation now")
     p.add_argument("run")
     p.add_argument("--evaluators", help="comma-separated (default eval.evaluators)")
+    p = sub.add_parser("bench", help="the end-of-run benchmark: the run's policies vs scripted:hard, per deck")
+    p.add_argument("run")
+    from .benchmark import add_args as bench_args
+    bench_args(p)
     p = sub.add_parser("phase", help="hold, release or force the phase transition")
     p.add_argument("run")
     p.add_argument("what", choices=("hold", "release", "next", "status"))
@@ -471,6 +481,8 @@ def main(argv=None):
         return cmd_set(args)
     if args.cmd == "eval":
         return cmd_eval(args)
+    if args.cmd == "bench":
+        return cmd_bench(args)
     if args.cmd == "phase":
         return cmd_phase(args)
     if args.cmd == "tail":

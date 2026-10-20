@@ -13,6 +13,7 @@ learn/rmtrain status r1                                  # also when it is not r
 learn/rmtrain tail r1 gpu                                # follow a log (tail -F)
 learn/rmtrain set r1 rnad.eta 0.15                       # a live parameter
 learn/rmtrain stop r1                                    # checkpoint, stop; `start r1` resumes
+learn/rmtrain bench r1 --wait                            # after the run: its policies vs scripted:hard (§7.1)
 ```
 
 ## 1. Starting and resuming
@@ -55,6 +56,7 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 | `set <run> <section.key> <value>` | a live parameter (below), validated, applied at once and written to `config.json` (a resume keeps it); a `set` metrics line |
 | `eval <run> [--evaluators a,b]` | queue an evaluation of the current policy (the network when the evaluation starts) |
 | `phase <run> hold\|release\|next\|status` | `hold` blocks the next transition (the exit test still runs; the run stays in the phase and says why in `status`); `release` lifts it; `next` forces the current phase's (or stage's) exit, also when held |
+| `bench <run> [--wait] [--policies …]` | the end-of-run benchmark (§7.1): the run's policies against scripted:hard over every league pair, per deck; runs in the terminal, not through the socket |
 | `config <run>` | the resolved config as TOML |
 | `defaults` | the default config as TOML, documented |
 
@@ -361,6 +363,48 @@ count and the latest ten: source, actor, match, game, decks, the results file an
 decision log) and the orchestrator log, and `status` shows a `findings:` line with the latest three;
 they are not errors. Replay one with `cd bin && ./release/robomage_nn --replay <rmlog> --narrative`.
 
+### 7.1 The end-of-run benchmark
+
+The run's own evaluations are small and spread over its life: the `fixed` evaluator plays four deck
+pairs, an `sprt` evaluation stops as soon as its test decides (often after a few dozen games, so its
+per-deck counts are tiny), and nothing evaluates the final network: the run ends at
+`b5.max_learner_steps` with `rnad-final.pt` and its export. **Run the benchmark after every run**
+(`rmlearn/benchmark.py`):
+
+```sh
+learn/rmtrain bench r1 --wait            # waits for r1 to stop, then plays (CPU only, ~3 min per policy)
+learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 960
+```
+
+- **Policies.** Export names of the run (`exports/<name>.ts.pt`) or export paths, each optionally
+  `name@<nn options>` (default `argmax`). The default set: `bc-final` (the DAgger policy: the
+  **baseline**), every R-NaD fixed point `m<k>`, `final` at argmax, and `final@<eval.nn_options_finetune>`
+  (the fine-tuning projection B5 trained for, sampled). A missing export is skipped with a note.
+- **Matches.** Each policy plays `--matches` (default 480) bo3 matches against scripted:hard on
+  `--actors` (default 12) engine actors, as side a of `matches.eval_schedule` over all 45 league
+  pairs, both orders (so both decks), seats by `swap: sides`. Every policy uses the same run seed,
+  actor ids and per-actor match count, so each meets the same deck pairs, seats and game seeds
+  (common random numbers): the policies' differences are not the draw of the matches. At 480
+  matches each deck is the policy's in ~48 matches (~110 games) and the opponent's in as many:
+  about ±0.09 (two match-clustered SEs) per deck, ±0.03 overall.
+- **When.** After the run (`--wait` polls its control socket until it is gone; its shutdown finishes
+  the queued exports, `final` included). On a running run it warns and plays anyway, competing with
+  the training actors for the CPU.
+- **Output** `<run>/bench/<label>/` (default label `end`): per policy a directory (the actors'
+  results, status and logs, the decision logs, `report.json` — `matches.report`: per game, game 1
+  apart from games 2–3, by deck, matchup, seat, play / draw, Wilson interval, match-clustered SE —
+  and `report.txt`), then `summary.json` and **`summary.md`**: the overall table (win rate per
+  decisive game, Wilson 95%, ± two SEs, game 1, games 2–3, the difference from the baseline, draws,
+  caps); per deck the policy's win rate **playing** it and **facing** it; each policy's per-deck
+  difference from the baseline ± two SEs; each policy's 10 × 10 deck-vs-deck matrix; the findings
+  (draws and caps, with their decision logs). A policy whose `report.json` exists is not played
+  again: an interrupted benchmark resumes, and `--policies` with the same `--label` adds policies to
+  an existing summary.
+
+Read the per-deck tables before the overall rate: in league self-play the decks are far from even
+(the fast decks win most games with any pilot), so an overall rate near 0.5 can hide a policy that
+pilots the simple decks well and the complex ones (doomsday, control, reanimator) badly.
+
 ## 8. Durability
 
 - **Checkpoints** every `checkpoint.every_minutes` (once the GPU process holds a model) and at
@@ -419,7 +463,8 @@ adds one rung), episodes the learner took before the checkpoint or that were wri
 fresh again, an iteration's evaluation loading its fixed point (also after a pause) while a cadence
 one snapshots the current network, an evaluation whose actors all fail reported as an error,
 colliding groups refused, argmax by default with the sampled groups optional and every result
-labelled with its options, and draws as findings in the status. The smoke runs a tiny run
+labelled with its options, and draws as findings in the status; the benchmark's default policy set
+and its summary (per-deck playing and facing rates, the difference from the baseline, the tables). The smoke runs a tiny run
 (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`, one DAgger round of
 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises every command, kills
 the whole unit with SIGKILL in B4 (systemd restarts it; it resumes at the checkpoint), stops and
