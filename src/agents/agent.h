@@ -97,6 +97,10 @@ class Agent {
         virtual std::string label() const = 0;
         // The last decision's behaviour distribution (a policy agent), or nullptr.
         virtual const Behaviour *last_behaviour() const { return nullptr; }
+        // Every decision of the agent's seat that has a frame, before it is decided (whoever
+        // decides it: the agent, or a script ahead of it), so an agent that keeps memory across
+        // the seat's frames sees each of them once (nn: under --feature-history). Default: nothing.
+        virtual void observe(const Decision &d) { (void)d; }
         // Before each match the agent plays (agents_install; an actor's agents play many): drops
         // whatever it kept from an earlier match (an in-process nn: model reloads its file when the
         // file changed). False with `err` ends the run with a fatal error.

@@ -61,8 +61,9 @@
 // writes and rmfeat reads), once, before the match; an in-process model is refused unless its
 // spec_hash, vocab_hash and text_model are theirs (check_model), a server refuses the handshake
 // unless every requested policy's are. At each decision (a sideboarding one like any other) the
-// agent reads nothing but the seat's decoded STATE frame: featurize_seat on it, one evaluation (a
-// batch of one), the distribution over the menu rows (softmax(logits / temp), then thresh=, then
+// agent reads nothing but the seat's decoded STATE frames (under --feature-history every frame of
+// its seat feeds its event history, observe()): featurize_seat on the decision's frame, one
+// evaluation (a batch of one), the distribution over the menu rows (softmax(logits / temp), then thresh=, then
 // disc=; or argmax's one-hot), a row drawn from it. It keeps that exact distribution over every
 // menu row, the sampled policy's version, every policy's evaluation and the tensors it featurized
 // (last_behaviour, for the trajectory writer). A menu of one row is taken with no
@@ -111,6 +112,8 @@ class NnAgent : public agents::Agent {
         NnAgent(NnOptions opt, agents::PyRandom *rng, std::unique_ptr<featurize::Featurization> f,
             std::unique_ptr<Evaluator> evaluator, ModelStamp stamp = ModelStamp());
         int decide(const agents::Decision &d) override;
+        // Under --feature-history: the seat's frame into its event history (cleared each match).
+        void observe(const agents::Decision &d) override;
         // The hot reload (above).
         bool begin_match(std::string *err) override;
         std::string label() const override { return "nn"; }
@@ -136,6 +139,7 @@ class NnAgent : public agents::Agent {
         std::unique_ptr<featurize::Featurization> featurization_;
         std::unique_ptr<Evaluator> evaluator_;
         featurize::Tensors tensors_;
+        featurize::EventHistory history_;
         std::vector<Evaluation> evals_;
         agents::Behaviour behaviour_;
         bool have_behaviour_ = false;

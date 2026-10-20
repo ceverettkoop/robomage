@@ -49,6 +49,15 @@ class Spec:
         self.n_lists = d["metagame"]["meta_list"]
         self.n_archetypes = d["metagame"]["meta_archetype"]
         self.card_rows = d["card_tables"]["card"]["rows"]
+        # The recent-event history (docs/featurizer.md §3.7; absent unless the spec was built with it):
+        # the event tokens' type and the relation tying a card token to its event's token.
+        self.history = d.get("history")
+        self.hist_event_type = self.hist_card_rel = None
+        if self.history:
+            self.hist_event_type = self.type_ids[self.history["event_type"]]
+            for i, r in enumerate(d["relation_types"]):
+                if r["table"] == self.history["card_type"] and r["column"] == "event":
+                    self.hist_card_rel = i
 
     def dims(self):
         """The handshake's `dims` (docs/inference_protocol.md §3)."""

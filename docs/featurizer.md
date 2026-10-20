@@ -34,7 +34,7 @@ text-table generator `bin/<config>/rmembed` (libtorch) and the actor in `src/act
 | `SCHEMA` | every table, column, tag and enum string table; the spec is built from it |
 | `CARDS` | not read per decision: card features, and the map from a physical card to its back face's vocab id (the card table's `back_face`, §4.1), come from the whole-vocab tables, so a decision needs only its `STATE` frame |
 | `METAGAME` | the number of reference lists and archetype labels (categorical sizes in the spec) |
-| `STATE` | the snapshot tables (ids 20-48) and knowledge tables (90-99); event tables (80-82) are not featurized (memory is the sidecar's job, `knowledge_store.md`) |
+| `STATE` | the snapshot tables (ids 20-48) and knowledge tables (90-99); event tables (80-82) are not featurized (memory is the sidecar's job, `knowledge_store.md`), unless the recent-event history option is on (§3.7) |
 
 The **actor entry point** (`featurize::featurize_seat`, what `nn:` calls) takes the deciding seat's
 frames only and refuses a frame whose header viewer is not a seat (and any frame that is not a
@@ -249,6 +249,48 @@ removed rows dropped; a sideboard maximum off by one) fail it.
 (209 decisions): 263.5 → 126.0 tokens per decision (max 432 → 257); five league matchups
 (813 decisions): 306.8 → 157.4 (max 611 → 353); their omniscient frames 400.5 → 247.6.
 
+### 3.7 Recent-event history (an option, off by default)
+
+The network has no recurrence, and a `STATE` frame's event tables hold only the events since the
+viewer's previous frame, so by default the featurizer leaves them out: what a seat remembers is the
+knowledge sidecar's facts. The history option (`FeatureOptions::history_events` N > 0; `rmfeat
+--history N`, the engine's `--feature-history N` for the trajectory writer, `nn:` and
+`--featurize-seats`, `python -m rmlearn.corpus --refeaturize … --feature-history N`) adds the seat's
+recent observation events as tokens. Off, every output is what it is without the option: the spec
+document, its hash, the tensors and the episodes, byte for byte. On, the spec gains two token types
+and a `history` key, so its hash differs and a model trained one way is refused by the other.
+
+- **The event history** (`featurize::EventHistory`, `src/featurize/history.h`): kept per seat and
+  match by whoever featurizes (the trajectory writer per recorded seat, the `nn:` agent through the
+  agent hook `observe`, which sees every frame of its seat before any script or agent decides it,
+  `rmfeat` per seat over a dump), fed every frame of the seat in order, those without a menu too. It
+  holds the events since the last `game_start` whose turn is at least the latest frame's turn less
+  one, each with its `event_card` rows (`event_player` rows are not kept). Its contents depend on the
+  events received, not on how they were batched into frames, so a dump (every viewer's frame at
+  every decision), the `--machine` stream and the in-process feed give the same tokens.
+- **Selection**, per decision: the events of the frame's turn (`turn.turn`) and the previous one,
+  newest first, at most N; each with its first `cards_per_event` (8) cards in frame order. A search
+  is also a `look` at the whole library (some 50 cards), hence the per-event cap.
+- **Token types**, after the folds' synthetic ones: `hist_event` (kind `history`), the `event`
+  table's columns by their tags (§3.2), plus three numeric slots: `turn_offset` (0 this turn, 1 the
+  previous one), `age` (`log1p` of the newest-first rank) and `more_cards` (`log1p` of the cards past
+  the cap); `hist_card`, the `event_card` table's columns, its `event` column a relation to its
+  event's token.
+- **Left out** (the spec's `history.dropped`): the columns that identify the game rather than
+  describe the event: `event.seq`, the absolute `event.turn`, `event.game`, `event.batch`,
+  `event_card.draw_seq` and `event_card.draw_idx`. Handles are never values (§3.3).
+- **Relations.** `hist_event.source`, `hist_card.handle_before` and `handle_after` relate the token
+  to the object holding the handle now: each handle is followed through the old → new links of the
+  kept events' moves (a handle is never issued again, so the links form chains); a handle that was
+  retired (the card became hidden) or whose object left the frame relates to nothing.
+- **Learner side.** `featurize_seat` refuses a history spec without the seat's event history;
+  `featurize_viewer` without one emits no history tokens (the omniscient featurization of an
+  episode has none). BC's `event_dropout` p (`learn/rmlearn/bc.py`) masks each event token out in
+  training with probability p, its card tokens with it.
+- **Cost** (val1's B0 games, scripted:hard on ur_delver / burn / uw_control / wrb_energy, N 32):
+  about 30 more tokens per decision (some 15 events and 15 cards; 121 → 152 tokens in one bo3
+  match), relations 21 → 53; an episode with the omniscient part grows ~9%.
+
 ## 4. The card tables
 
 Three whole-vocab tables, the same for every match, indexed by vocab id (`src/card_vocab.h`; ids
@@ -423,8 +465,9 @@ hashed-text bucket count; the targets' library depth; the `METAGAME` row counts 
 type its numeric slots (name, source column, transform), categorical slots (name, source, id
 offset, size), card slots, ability slots and relation types; the relation types `(table, column,
 target)`; the §3.4 overrides; the §3.6 folds (per type its `kind`: `table`, `filtered`, `delta`
-with the `printed` table it compares with, `ledger`, `pivot` with its `sources`; a synthetic type's
-`table` is null); the card, text, ability and part tables' rows, widths and column
+with the `printed` table it compares with, `ledger`, `pivot` with its `sources`, `history`; a
+synthetic type's `table` is null); with the history option (§3.7), a final `history` key (the
+caps, the two types and the dropped columns); the card, text, ability and part tables' rows, widths and column
 names; the fixed key list. One line, its keys in a fixed order. Its `spec_hash` (FNV-1a 64 of the
 document bytes) is in every exported file and in a model. A JSON document rather than an RMSTATE
 frame, so consumers outside C++ read it with any JSON parser.
@@ -561,6 +604,11 @@ export and `rmserve` ones come with 5d):
   row's bytes unchanged; the tokenizer matches the golden ids and the encoder the golden vectors
   (cosine ≥ 0.9999);
 - exact re-featurization: `rmfeat` over a `--replay` of an `nn:` game equals what `nn:` featurized;
+- the history option (§3.7): off, no `history` key or type; on, the off types first and another
+  hash, `rmfeat --spec --history` the same document; a corpus game's seat decisions featurized
+  twice with history give the same tensors, which less their history tokens are the off tensors, the
+  history tokens within the caps with each card token related to one event; the game's episodes
+  written with `--feature-history` and `rmfeat --featurize --history` over its dump the same;
 - isolation (§3.5): an `nn:` seat's tensors equal `rmfeat`'s for that seat's stream, unchanged by
   the scramble self-check; the actor entry point refuses an omniscient or other-seat frame;
 - the reference policy's TorchScript, `.pt2` and ONNX exports give the same logits and values;

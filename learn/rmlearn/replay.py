@@ -27,8 +27,12 @@ replayed or stream-decided seat: the scripted corpus through ``--replay``) and t
 not one of ``exclude_agents`` (``explore``, ``random``: their replies are not labels); -1 none.
 
 **Held-out split by game**: a game is held out when the hash of (``split_seed``, its match's
-engine seed, its game index, its log's name) falls below ``heldout_fraction``. ``split="train"``
-samples only the other games; ``iter_decisions("heldout")`` walks the held-out ones in order.
+engine seed, its game index, its log's name) falls below ``heldout_fraction``; with ``heldout_by``
+"match" the game index is left out, so a match's games fall on the same side. ``split="train"``
+samples only the other games; ``iter_decisions("heldout")`` walks the held-out ones in order. With
+``probe_fraction`` a training game whose second hash (the same key, ``probe|`` before it) falls
+below it is also a probe game: ``iter_decisions("probe")`` walks those, a sample of the training
+games for comparing train and held-out metrics.
 
 **Decision batches** (BC): ``sample_decisions`` draws steps uniformly over the split's labelled
 steps; ``decision_batch`` expands them (``DecisionBatch``).
@@ -72,6 +76,8 @@ class WindowConfig:
     spec_hash: str = None                # skip episodes of another spec (None: take the first's)
     heldout_fraction: float = 0.0
     split_seed: int = 0
+    heldout_by: str = "game"             # "game", or "match": a match's games are held out together
+    probe_fraction: float = 0.0          # training games also walked by iter_decisions("probe")
     labels: LabelConfig = field(default_factory=LabelConfig)
 
 
@@ -87,10 +93,11 @@ def step_labels(ep, cfg):
     return np.where((lab >= 0) & (lab < size), lab, -1)
 
 
-def heldout(ep, fraction, seed):
+def heldout(ep, fraction, seed, by="game", salt=""):
     if fraction <= 0:
         return False
-    h = hashlib.blake2b(("%d|%s" % (seed, ep.game_key())).encode(), digest_size=8).digest()
+    key = ep.match_key() if by == "match" else ep.game_key()
+    h = hashlib.blake2b(("%s%d|%s" % (salt, seed, key)).encode(), digest_size=8).digest()
     return int.from_bytes(h, "little") / 2.0 ** 64 < fraction
 
 
@@ -162,7 +169,10 @@ class ReplayWindow:
             self.counts["skipped_spec"] += 1
             return False
         ep.labels = step_labels(ep, self.cfg.labels)
-        ep.split = "heldout" if heldout(ep, self.cfg.heldout_fraction, self.cfg.split_seed) else "train"
+        ep.split = "heldout" if heldout(ep, self.cfg.heldout_fraction, self.cfg.split_seed,
+                                        self.cfg.heldout_by) else "train"
+        ep.probe = ep.split == "train" and heldout(ep, self.cfg.probe_fraction, self.cfg.split_seed,
+                                                   self.cfg.heldout_by, "probe|")
         ep.added_at = time.time()
         with self._lock:
             self._eps.append(ep)
@@ -246,7 +256,7 @@ class ReplayWindow:
         key = (split, labelled)
         idx = self._index.get(key)
         if idx is None or idx[0] != self._version:
-            eps = [e for e in self._eps if split is None or e.split == split]
+            eps = [e for e in self._eps if split is None or e.split == split or (split == "probe" and e.probe)]
             steps = [np.nonzero(e.labels >= 0)[0] if labelled else np.arange(e.steps) for e in eps]
             cum = np.zeros(len(eps) + 1, np.int64)
             np.cumsum([len(s) for s in steps], out=cum[1:])

@@ -223,6 +223,11 @@ static const CliOption OPTIONS[] = {
     // Featurize every decision an in-process agent seat makes and drop the tensors (the bench tier's
     // featurizer stage; agents/driver.h).
     {"--featurize-seats", nullptr, false, false, [](const char *) { featurize_seats = true; }, nullptr},
+    // The recent-event history tokens of the engine's featurizers: at most N events
+    // (state_format/cards_file.h; docs/featurizer.md §3.7).
+    {"--feature-history", nullptr, true, false,
+        [](const char *v) { feature_history_events = static_cast<uint32_t>(std::strtoul(v, nullptr, 10)); },
+        nullptr},
     // Write every game's trajectory episode (agents/trajectory.h): the directory, the recorded
     // seats and the learner-side omniscient featurization.
     {"--trajectory-out", nullptr, true, false, [](const char *v) { trajectory_out_dir = v; }, nullptr},

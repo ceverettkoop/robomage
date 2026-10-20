@@ -15,7 +15,8 @@
 // tables and the spec: the tables built from the cards file's CARDS frame, or read from their
 // exported files (which must carry the spec's hash; the printed rows the object deltas compare
 // with still come from the CARDS frame), and the spec from its SCHEMA and METAGAME frames and the
-// tables. export_tables writes card.rmtb, ability.rmtb, part.rmtb and spec.json.
+// tables, under `options` (the recent-event history, feature_spec.h). export_tables writes card.rmtb,
+// ability.rmtb, part.rmtb and spec.json.
 
 namespace featurize {
 
@@ -25,6 +26,7 @@ class Featurization {
         CardTables tables;
         FeatureSpec spec;
         std::string text_model;  // the text table's encoder (its `model`, "<repository>@<commit>")
+        FeatureOptions options;  // what the spec is built with (set before loading)
 
         // Loads the cards file and the text table; `tables_dir` "" builds the tables, else reads
         // its card.rmtb, ability.rmtb and part.rmtb. False with `err`.

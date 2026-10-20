@@ -60,7 +60,7 @@ bool Featurization::build(const std::string &text_table_path, const std::string 
     tables.text_rows = vectors->shape[0];
     tables.text_width = vectors->shape[1];
     text_model = text.model;
-    if (!build_spec(source.schema, source.metagame, tables, &spec, err)) return false;
+    if (!build_spec(source.schema, source.metagame, tables, options, &spec, err)) return false;
     if (!tables_dir.empty() && want_spec != spec.hash) {
         *err =
             tables_dir + ": the card tables carry spec hash " + hex16(want_spec) + ", the spec is " + hex16(spec.hash);

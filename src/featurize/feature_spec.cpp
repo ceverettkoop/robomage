@@ -69,6 +69,17 @@ const LedgerSlotDef LEDGER_SLOTS[] = {
     {"sideboard_max", "k_pool_card.max", featurize::Transform::LOG1P},
 };
 
+// The event tables' columns a history token leaves out: they identify the game rather than describe
+// the event (docs/featurizer.md §3.7).
+const char *const HISTORY_DROPPED[] = {
+    "event.seq",
+    "event.turn",
+    "event.game",
+    "event.batch",
+    "event_card.draw_seq",
+    "event_card.draw_idx",
+};
+
 }  // namespace
 
 static const FoldRule *find_fold(const std::string &table);
@@ -101,6 +112,12 @@ static void plan_ledger(const rmstate::Schema &schema, featurize::FeatureSpec *s
 static void plan_synthetic(
     const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, featurize::FeatureSpec *spec);
 static void plan_object(const rmstate::Schema &schema, featurize::FeatureSpec *spec);
+static bool history_dropped(const std::string &table, const std::string &column);
+static size_t plan_history_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
+    const rmstate::TableDef &def, const char *name, featurize::FeatureSpec *spec);
+static bool plan_history(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
+    const featurize::FeatureOptions &options, featurize::FeatureSpec *spec, std::string *err);
+static std::string json_history(const featurize::FeatureSpec &spec);
 static std::string json_strings(const std::vector<std::string> &items);
 static std::string json_type(const featurize::TokenType &t, size_t id);
 static std::string json_table(uint64_t rows, size_t width, const std::vector<std::string> *columns);
@@ -488,6 +505,98 @@ static void plan_object(const rmstate::Schema &schema, featurize::FeatureSpec *s
         spec->object_card_storage = def->columns[static_cast<size_t>(spec->object_card)].storage;
 }
 
+static bool history_dropped(const std::string &table, const std::string &column) {
+    const std::string name = table + "." + column;
+    for (const char *d : HISTORY_DROPPED)
+        if (name == d) return true;
+    return false;
+}
+
+// A HISTORY type over `def`'s columns but the dropped ones and event_card's `event` (its relation
+// to the event's token is planned by plan_history); its index.
+static size_t plan_history_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
+    const rmstate::TableDef &def, const char *name, featurize::FeatureSpec *spec) {
+    const size_t at = spec->types.size();
+    spec->types.emplace_back();
+    featurize::TokenType &t = spec->types.back();
+    t.kind = featurize::TypeKind::HISTORY;
+    t.table = static_cast<uint16_t>(def.id);
+    t.columns = static_cast<uint16_t>(def.columns.size());
+    t.name = name;
+    for (size_t c = 0; c < def.columns.size(); ++c) {
+        const rmstate::ColumnDef &col = def.columns[c];
+        if (history_dropped(def.name, col.name)) continue;
+        if (col.tag.compare(0, 4, "row:") == 0) {
+            if (featurize::parse_tag(col.tag).arg != "event") continue;
+            featurize::ColumnOp op;
+            op.kind = featurize::OpKind::ROW;
+            op.col = static_cast<uint16_t>(c);
+            op.storage = col.storage;
+            op.target = spec->history.event_type;
+            op.relation = add_relation(spec, &t, col.name, "hist_event");
+            t.ops.push_back(op);
+            continue;
+        }
+        plan_column(schema, metagame, def, c, spec, &t);
+    }
+    return at;
+}
+
+// The history types (FeatureOptions::history_events > 0) and the columns the event history reads.
+static bool plan_history(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
+    const featurize::FeatureOptions &options, featurize::FeatureSpec *spec, std::string *err) {
+    featurize::HistoryPlan &h = spec->history;
+    const rmstate::TableDef *ev = featurize::table_named(schema, "event");
+    const rmstate::TableDef *card = featurize::table_named(schema, "event_card");
+    const rmstate::TableDef *turn = featurize::table_named(schema, "turn");
+    if (!ev || !card || !turn) {
+        *err = "history tokens: the schema has no event, event_card or turn table";
+        return false;
+    }
+    h.event_table = static_cast<uint16_t>(ev->id);
+    h.card_table = static_cast<uint16_t>(card->id);
+    h.turn_table = static_cast<uint16_t>(turn->id);
+    h.event_kind = featurize::column_index(*ev, "kind");
+    h.event_turn = featurize::column_index(*ev, "turn");
+    h.event_source = featurize::column_index(*ev, "source");
+    h.card_event = featurize::column_index(*card, "event");
+    h.card_before = featurize::column_index(*card, "handle_before");
+    h.card_after = featurize::column_index(*card, "handle_after");
+    h.turn_turn = featurize::column_index(*turn, "turn");
+    const std::vector<std::string> &kinds = featurize::enum_values(schema, "event_kind");
+    for (size_t k = 0; k < kinds.size(); ++k)
+        if (kinds[k] == "GAME_START") h.game_start_kind = k;
+    if (h.event_kind < 0 || h.event_turn < 0 || h.event_source < 0 || h.card_event < 0 || h.card_before < 0 ||
+        h.card_after < 0 || h.turn_turn < 0 || h.game_start_kind == UINT64_MAX) {
+        *err =
+            "history tokens: the event tables lack kind, turn, source, event or the handles, or event_kind "
+            "GAME_START";
+        return false;
+    }
+    h.events = options.history_events;
+    h.cards_per_event = options.history_cards_per_event;
+    for (const char *d : HISTORY_DROPPED) h.dropped.push_back(d);
+    h.event_type = static_cast<int32_t>(spec->types.size());
+    const size_t e = plan_history_type(schema, metagame, *ev, "hist_event", spec);
+    h.offset_slot = static_cast<uint32_t>(spec->types[e].numeric.size());
+    add_numeric(&spec->types[e], "turn_offset", "event.turn", featurize::Transform::BOOL, 0);
+    h.age_slot = static_cast<uint32_t>(spec->types[e].numeric.size());
+    add_numeric(&spec->types[e], "age", "", featurize::Transform::LOG1P, 0);
+    h.more_slot = static_cast<uint32_t>(spec->types[e].numeric.size());
+    add_numeric(&spec->types[e], "more_cards", "event_card", featurize::Transform::LOG1P, 0);
+    h.card_type = static_cast<int32_t>(plan_history_type(schema, metagame, *card, "hist_card", spec));
+    return true;
+}
+
+static std::string json_history(const featurize::FeatureSpec &spec) {
+    const featurize::HistoryPlan &h = spec.history;
+    return ",\"history\":{\"events\":" + std::to_string(h.events) +
+           ",\"cards_per_event\":" + std::to_string(h.cards_per_event) +
+           ",\"turns\":2,\"event_type\":" + featurize::json_quote(spec.types[static_cast<size_t>(h.event_type)].name) +
+           ",\"card_type\":" + featurize::json_quote(spec.types[static_cast<size_t>(h.card_type)].name) +
+           ",\"dropped\":" + json_strings(h.dropped) + "}";
+}
+
 static std::string json_strings(const std::vector<std::string> &items) {
     std::string out = "[";
     for (size_t i = 0; i < items.size(); ++i) out += (i ? "," : "") + featurize::json_quote(items[i]);
@@ -547,7 +656,7 @@ static std::string json_table(uint64_t rows, size_t width, const std::vector<std
 namespace featurize {
 
 bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const CardTables &tables,
-    FeatureSpec *out, std::string *err) {
+    const FeatureOptions &options, FeatureSpec *out, std::string *err) {
     *out = FeatureSpec();
     out->schema_hash = schema.hash;
     out->vocab_hash = tables.vocab_hash;
@@ -571,6 +680,7 @@ bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &meta
     }
     plan_object(schema, out);
     plan_synthetic(schema, metagame, out);
+    if (options.history_events > 0 && !plan_history(schema, metagame, options, out, err)) return false;
     for (TokenType &t : out->types) {
         out->F = std::max(out->F, t.numeric.size());
         out->C = std::max(out->C, t.categorical.size());
@@ -618,6 +728,8 @@ const char *type_kind_name(TypeKind k) {
             return "ledger";
         case TypeKind::PIVOT:
             return "pivot";
+        case TypeKind::HISTORY:
+            return "history";
     }
     return "?";
 }
@@ -654,8 +766,9 @@ std::string spec_json(const FeatureSpec &spec) {
            ",\"text\":" + json_table(spec.text_rows, spec.text_width, nullptr) +
            ",\"ability\":" + json_table(spec.ability_rows, spec.ability_columns.size(), &spec.ability_columns) +
            ",\"part\":" + json_table(spec.part_rows, spec.part_columns.size(), &spec.part_columns) +
-           "},\"ab_keys\":" + json_strings(spec.ab_keys) + "}";
-    return out;
+           "},\"ab_keys\":" + json_strings(spec.ab_keys);
+    if (spec.history.on()) out += json_history(spec);
+    return out + "}";
 }
 
 }  // namespace featurize

@@ -57,6 +57,7 @@ struct AgentRun {
         // --featurize-seats: the inputs, the last tensors and the totals.
         std::unique_ptr<featurize::Featurization> featurization;
         featurize::Tensors tensors;
+        featurize::EventHistory history[2];  // per seat, this match's frames
         size_t featurized = 0;
         double featurize_s = 0;
 };
@@ -159,9 +160,11 @@ void agents_install(unsigned int engine_seed) {
                 "--featurize-seats: no seat is decided by an in-process agent (--agent-a/-b, --play, --actions)");
         std::string err;
         run->featurization.reset(new featurize::Featurization());
+        run->featurization->options = engine_feature_options();
         if (!load_engine_featurization(run->featurization.get(), &err)) fatal_error("--featurize-seats: " + err);
         std::atexit(report_featurized);
     }
+    for (featurize::EventHistory &h : run->history) h.clear();
     std::string specs_for_trajectory[2];
     seat_specs(specs_for_trajectory);
     trajectory_install(engine_seed, specs_for_trajectory);
@@ -206,6 +209,7 @@ void agents_begin_decision(const std::vector<LegalAction> &actions, size_t numbe
         fatal_error("in-process agent frames: " + err);
     run->number = number;
     run->view.emplace(stream, run->frame, s);
+    if (run->seat_agent[s]) run->seat_agent[s]->observe(agents::Decision{*run->view, number > 0 ? number - 1 : 0});
     if (run->featurization && run->decides[s]) featurize_decision();
     trajectory_begin_decision(s, &run->frame, actions);
     if (!trace_decisions) return;
@@ -296,8 +300,10 @@ static void seat_specs(std::string out[2]) {
 static void featurize_decision() {
     const auto t0 = std::chrono::steady_clock::now();
     std::string err;
+    featurize::EventHistory &history = run->history[run->seat];
+    history.observe(run->featurization->spec, run->frame);
     if (!featurize::featurize_seat(
-            run->featurization->spec, run->featurization->tables, run->frame, &run->tensors, &err))
+            run->featurization->spec, run->featurization->tables, run->frame, &history, &run->tensors, &err))
         fatal_error("--featurize-seats: " + err);
     run->featurize_s += std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
     ++run->featurized;

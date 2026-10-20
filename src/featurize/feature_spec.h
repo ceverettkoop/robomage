@@ -60,6 +60,18 @@
 // own. Token order is canonical: the ledger by (player_rel, card), a pivot by player_rel, a delta
 // type by object row, then removed, then value (folds.h).
 //
+// Recent-event history (FeatureOptions::history_events > 0; off by default, and then the spec and
+// every tensor are those of a spec built without it): two HISTORY types after the synthetic ones,
+// `hist_event` (the `event` table's columns) and `hist_card` (`event_card`'s), whose tokens come
+// from the seat's EventHistory (history.h) rather than the frame: the events of the frame's turn
+// and the previous one, newest first, at most history_events, each with at most
+// history_cards_per_event of its cards. The columns that identify the game rather than describe
+// the event are dropped (HistoryPlan::dropped: seq, the absolute turn, the game, the batch id, the
+// draw link's seq and index); a token's turn offset (0 this turn, 1 the previous), its age (its
+// newest-first rank) and the cards past the cap take three numeric slots. Handle columns relate a
+// token to the object that holds the handle now (followed through the later events' moves), and
+// hist_card.event to its event's token. The spec document gains a `history` key.
+//
 // spec_json() writes the document with its keys in a fixed order; spec_hash is FNV-1a 64 of its
 // bytes.
 
@@ -95,7 +107,8 @@ enum class TypeKind : uint8_t {
     FILTERED,
     DELTA,
     LEDGER,
-    PIVOT
+    PIVOT,
+    HISTORY
 };
 
 const char *type_kind_name(TypeKind k);
@@ -215,6 +228,27 @@ struct Override {
         std::string table, column, treatment;
 };
 
+// What a spec is built with. Every option's default leaves the spec as it is without options.
+struct FeatureOptions {
+        uint32_t history_events = 0;           // the recent-event tokens' cap (0: no history types)
+        uint32_t history_cards_per_event = 8;  // each event's card tokens' cap
+};
+
+// The history types' plan (header comment); `events` 0 when the spec has none.
+struct HistoryPlan {
+        uint32_t events = 0, cards_per_event = 0;
+        int32_t event_type = -1, card_type = -1;  // the token types
+        uint16_t event_table = 0, card_table = 0, turn_table = 0;
+        int event_kind = -1, event_turn = -1, event_source = -1;  // the event table's columns
+        int card_event = -1, card_before = -1, card_after = -1;   // event_card's `event` and handles
+        int turn_turn = -1;                                       // the turn table's `turn`
+        uint64_t game_start_kind = UINT64_MAX;
+        // Numeric slots of hist_event: the turn offset, the age, the cards past the cap.
+        uint32_t offset_slot = 0, age_slot = 0, more_slot = 0;
+        std::vector<std::string> dropped;  // "<table>.<column>"
+        bool on() const { return events > 0; }
+};
+
 struct FeatureSpec {
         uint64_t schema_hash = 0;
         uint64_t vocab_hash = 0;
@@ -229,6 +263,7 @@ struct FeatureSpec {
         std::vector<Override> overrides;
         std::vector<Fold> folds;
         LedgerPlan ledger;
+        HistoryPlan history;
         // The object table's token type and the columns a delta reads (-1: none).
         int32_t object_type = -1;
         int object_handle = -1, object_card = -1, object_transformed = -1;
@@ -245,9 +280,10 @@ struct FeatureSpec {
         uint64_t hash = 0;
 };
 
-// Builds the spec. False with `err` when the schema lacks the menu or header table.
+// Builds the spec. False with `err` when the schema lacks the menu or header table (or, with history,
+// the event tables).
 bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const CardTables &tables,
-    FeatureSpec *out, std::string *err);
+    const FeatureOptions &options, FeatureSpec *out, std::string *err);
 
 // The spec document (FeatureSpec::json), keys in a fixed order.
 std::string spec_json(const FeatureSpec &spec);

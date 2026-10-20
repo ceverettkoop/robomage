@@ -87,6 +87,7 @@ static std::unique_ptr<agents::Agent> make_nn_agent(const std::string &args, age
                 return nullptr;
             }
     std::unique_ptr<featurize::Featurization> f(new featurize::Featurization());
+    f->options = engine_feature_options();
     if (!load_engine_featurization(f.get(), err)) {
         *err = "nn: the featurizer's inputs: " + *err;
         return nullptr;
@@ -115,6 +116,7 @@ ModelStamp model_stamp(const std::string &path) {
 }
 
 bool NnAgent::begin_match(std::string *err) {
+    history_.clear();
     if (!opt_.remote.empty()) return true;
     const ModelStamp now = model_stamp(opt_.model);
     if (now == stamp_) return true;
@@ -255,11 +257,16 @@ int NnAgent::choose() {
     return static_cast<int>(rng_->weighted_index(mu.data(), mu.size()));
 }
 
+void NnAgent::observe(const agents::Decision &d) {
+    history_.observe(featurization_->spec, d.view.frame());
+}
+
 int NnAgent::decide(const agents::Decision &d) {
     seat_ = d.view.seat();
     std::string err;
     const auto t0 = std::chrono::steady_clock::now();
-    if (!featurize::featurize_seat(featurization_->spec, featurization_->tables, d.view.frame(), &tensors_, &err)) {
+    if (!featurize::featurize_seat(
+            featurization_->spec, featurization_->tables, d.view.frame(), &history_, &tensors_, &err)) {
         failure_ = "nn: featurize: " + err;
         return agents::AGENT_FAILED;
     }

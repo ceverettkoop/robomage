@@ -180,6 +180,10 @@ class Episode:
         return "%s:%s:%s" % (self.attrs.get("engine_seed"), self.attrs.get("game"),
                              os.path.basename(str(self.attrs.get("rmlog", ""))))
 
+    def match_key(self):
+        """The match's identity across runs: (its engine seed, the log's name)."""
+        return "%s:%s" % (self.attrs.get("engine_seed"), os.path.basename(str(self.attrs.get("rmlog", ""))))
+
 
 def episode_attrs(path):
     """An episode file's attrs (header and footer) from its meta alone, without its arrays."""

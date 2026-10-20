@@ -9,8 +9,10 @@
 // Every mode also takes --text-table FILE (default bin/resources/embeddings/oracle_text.rmtb, else
 // resources/embeddings/oracle_text.rmtb: its row count is N_CARD_TYPES + 1 and its vocab_hash the
 // vocab's) and the featurizing modes --tables DIR (read the exported card tables instead of building
-// them; they must carry the spec's hash). CARDS is robomage --cards-frame's file (SCHEMA, the
-// whole-vocab CARDS frame, METAGAME), DUMP an --rmstate-dump file.
+// them; they must carry the spec's hash) and --history N (the spec's recent-event history tokens, at
+// most N events: docs/featurizer.md §3.7; a seat's frames are fed to its event history in order).
+// CARDS is robomage --cards-frame's file (SCHEMA, the whole-vocab CARDS frame, METAGAME), DUMP an
+// --rmstate-dump file.
 //
 // --spec prints FEATURE_SPEC (one line of JSON). --export-tables writes OUTDIR/card.rmtb,
 // ability.rmtb, part.rmtb and spec.json and prints one RMFEAT line per file. --featurize writes one
@@ -24,6 +26,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -42,6 +45,7 @@ struct Options {
         bool stats = false;
         int viewer = -1;  // rmstate::Viewer
         std::string out, cards, text_table, tables;
+        uint32_t history = 0;
 };
 
 // Per token type rows, and the decisions' totals, for --stats.
@@ -76,7 +80,7 @@ static int usage() {
         "       rmfeat --featurize DUMP --viewer A|B|omniscient --out FILE --cards CARDS [--stats]\n"
         "       rmfeat --targets DUMP --seat A|B --out FILE --cards CARDS\n"
         "       rmfeat --stats DUMP --cards CARDS\n"
-        "  (each also --text-table FILE; the featurizing modes --tables DIR)\n");
+        "  (each also --text-table FILE and --history N; the featurizing modes --tables DIR)\n");
     return 2;
 }
 
@@ -114,6 +118,8 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             opt->text_table = argv[++i];
         } else if (a == "--tables" && has1) {
             opt->tables = argv[++i];
+        } else if (a == "--history" && has1) {
+            opt->history = static_cast<uint32_t>(std::strtoul(argv[++i], nullptr, 10));
         } else {
             return false;
         }
@@ -142,6 +148,7 @@ static std::string text_table_path(const Options &opt) {
 
 static bool load(const Options &opt, featurize::Featurization *f) {
     std::string err;
+    f->options.history_events = opt.history;
     if (f->load(opt.cards, text_table_path(opt), opt.tables, &err)) return true;
     std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
     return false;
@@ -191,15 +198,19 @@ static int run_featurize(const Options &opt, const featurize::Featurization &f, 
     stats.rows.assign(f.spec.types.size(), 0);
     stats.max_rows.assign(f.spec.types.size(), 0);
     featurize::Tensors t;
+    featurize::EventHistory history[2];  // per seat
     const auto t0 = std::chrono::steady_clock::now();
     std::string err;
     const bool ok = featurize::read_stream(
         dump,
         [&](const featurize::ViewerFrames &, const rmstate::DecodedFrame &state, std::string *e) {
+            const bool seat = state.header.viewer != static_cast<uint8_t>(rmstate::Viewer::OMNISCIENT);
+            if (seat) history[state.header.viewer == static_cast<uint8_t>(rmstate::Viewer::B)].observe(f.spec, state);
             if ((opt.viewer >= 0 && state.header.viewer != opt.viewer) || menu_rows(f.spec, state) == 0) return true;
             const auto t1 = std::chrono::steady_clock::now();
-            const bool seat = state.header.viewer != static_cast<uint8_t>(rmstate::Viewer::OMNISCIENT);
-            if (!(seat ? featurize::featurize_seat(f.spec, f.tables, state, &t, e)
+            const featurize::EventHistory *h =
+                seat ? &history[state.header.viewer == static_cast<uint8_t>(rmstate::Viewer::B)] : nullptr;
+            if (!(seat ? featurize::featurize_seat(f.spec, f.tables, state, h, &t, e)
                        : featurize::featurize_viewer(f.spec, f.tables, state, &t, e)))
                 return false;
             stats.featurize_s += seconds_since(t1);

@@ -24,8 +24,14 @@ extern std::string cards_frame_path;  // --cards-frame FILE
 std::string cards_frame_records();
 // Writes the file; the process exit status.
 int write_cards_frame_file(const std::string &path);
+// --feature-history N: the engine's featurizers (the trajectory writer, nn:, --featurize-seats) emit
+// the recent-event history tokens, at most N events (docs/featurizer.md §3.7); 0 (the default) off.
+extern uint32_t feature_history_events;
+
 // The featurizer's inputs from cards_frame_records() and the committed text table (the card tables
-// built, not read). False with `err`.
+// built, not read), under out->options. False with `err`.
 bool load_engine_featurization(featurize::Featurization *out, std::string *err);
+// The options --feature-history gives.
+featurize::FeatureOptions engine_feature_options();
 
 #endif /* STATE_FORMAT_CARDS_FILE_H */

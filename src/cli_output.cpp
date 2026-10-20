@@ -211,6 +211,11 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      featurizer's actor entry point on the seat's frame) and drop\n");
     printf("                      the tensors; at exit a FEATURIZE-SEATS: line with the count\n");
     printf("                      and time. Play is unchanged (the bench tier's featurizer stage)\n");
+    printf("  --feature-history <n>  The engine's featurizers (--trajectory-out, nn:,\n");
+    printf("                      --featurize-seats) add the recent-event history tokens: the\n");
+    printf("                      seat's events of this turn and the previous one, at most <n>\n");
+    printf("                      (docs/featurizer.md 3.7). A different spec: a model trained\n");
+    printf("                      without it is refused. Default 0 (off)\n");
     printf("  --trajectory-out <dir>  Write every game's trajectory episode into <dir>\n");
     printf("                      (<stem>.g<n>.rmtraj, docs/trajectory_format.md): each recorded\n");
     printf("                      seat's decisions featurized, the behaviour distribution, the\n");

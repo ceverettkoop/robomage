@@ -10,6 +10,7 @@
 #include "../../src/featurize/setup.h"
 #include "../../src/featurize/targets.h"
 #include "corpus.h"
+#include "featurize_history.h"
 #include "frames.h"
 #include "gate.h"
 #include "proc.h"
@@ -484,7 +485,8 @@ static std::string check_permuted(const Featurization &f, const rmstate::Schema 
     std::vector<featurize::TokenSource> src, psrc;
     Tensors again, p;
     std::string err;
-    if (!featurize::featurize_traced(spec, f.tables, state, &again, &src, &err)) return "the traced frame: " + err;
+    if (!featurize::featurize_traced(spec, f.tables, state, nullptr, &again, &src, &err))
+        return "the traced frame: " + err;
     if (!same_tensors(t, again) || src.size() != t.n()) return "the traced featurization differs";
     rmstate::DecodedFrame copy = state;
     std::map<uint16_t, std::vector<int64_t>> inv;  // table id -> old row -> new row
@@ -516,7 +518,8 @@ static std::string check_permuted(const Featurization &f, const rmstate::Schema 
                 if (row[c].bits < it->second.size()) row[c].bits = static_cast<uint64_t>(it->second[row[c].bits]);
         }
     }
-    if (!featurize::featurize_traced(spec, f.tables, copy, &p, &psrc, &err)) return "the permuted frame: " + err;
+    if (!featurize::featurize_traced(spec, f.tables, copy, nullptr, &p, &psrc, &err))
+        return "the permuted frame: " + err;
     if (p.n() != t.n() || p.r() != t.r() || p.a() != t.a()) return "the permuted frame has other tensor sizes";
     std::map<std::tuple<int32_t, int32_t, int64_t, int64_t>, int64_t> where;
     for (size_t m = 0; m < psrc.size(); ++m)
@@ -842,7 +845,8 @@ static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
 namespace rmcheck {
 
 // The featurize tier (docs/featurizer.md §7): the card tables and the spec from the whole-vocab
-// cards file, exported and read back (C++, rmfeat and Python alike); the corpus's and four explore
+// cards file, exported and read back (C++, rmfeat and Python alike); the recent-event history
+// option (featurize_history.h); the corpus's and four explore
 // games' dumps featurized with the checks of check_dump; the engine's --selfcheck-featurize on the
 // explore games; rmfeat's tensors and targets against the in-process ones.
 void tier_featurize(const Options &opt, Report &rep) {
@@ -852,6 +856,7 @@ void tier_featurize(const Options &opt, Report &rep) {
     if (!load_inputs(opt, rep, &f, &cards)) return;
     const std::string tables_dir = out_path(opt, "tables");
     tables_part(opt, rep, f, cards, tables_dir);
+    featurize_history_part(opt, rep, f, cards);
     const double t1 = now_seconds();
     DumpResult total, kept;
     corpus_part(opt, rep, f, &total);

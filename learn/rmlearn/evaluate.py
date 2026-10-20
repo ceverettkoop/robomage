@@ -5,6 +5,7 @@
     s["scripted"]["win_rate"], s["scripted"]["game1"]["win_rate"], s["scripted"]["games23"]
 
     python -m rmlearn.evaluate --model run/ckpt/p1.pt2 --out run/eval/p1 [--opponents scripted,explore,random]
+        [--pairs ur_delver-burn,uw_control-wrb_energy] [--feature-history N]
 
 The policy plays as ``nn:<model>`` in process (``robomage_nn``, CPU, the GPU hidden; ``--nn-options``
 e.g. ``argmax`` or ``temp=1``) against each opponent: ``scripted`` (side ``first`` with the scripted
@@ -13,7 +14,9 @@ opponent is two ``eval`` schedule entries per deck pair, one per order, each wit
 (which moves a side's deck with it, so the second order gives the policy the other deck: it plays
 both decks from both seats). ``summarize`` reads the actors' results files: per opponent the games won,
 lost, drawn or capped, the win rate (draws and caps count half), game 1 (pre-board) apart from games
-2–3 (post-board; game 3 is played only at 1–1, so a selected sample), and per deck pair.
+2–3 (post-board; game 3 is played only at 1–1, so a selected sample), and per deck pair. A policy
+trained on the recent-event history tokens (docs/featurizer.md §3.7) needs ``feature_history``, the
+engine's ``--feature-history``, at its training value.
 """
 
 import argparse
@@ -52,7 +55,7 @@ def make_eval_schedule(model_spec, out_dir, opponents, pairs=DEFAULT_PAIRS, fmt=
 
 
 def run_eval(model, out_dir, opponents=("scripted", "explore", "random"), matches=48, actors=12, nn_options="argmax",
-             pairs=DEFAULT_PAIRS, seed=11, engine=None, bin_dir=BIN_DIR, log=print):
+             pairs=DEFAULT_PAIRS, seed=11, engine=None, bin_dir=BIN_DIR, log=print, feature_history=0):
     """Plays `matches` matches per opponent (spread over the opponents' entries by weight) over
     `actors` processes; summarize()'s dict."""
     out_dir = os.path.abspath(out_dir)
@@ -72,6 +75,8 @@ def run_eval(model, out_dir, opponents=("scripted", "explore", "random"), matche
             continue
         argv = [engine, "--actor", "--actor-schedule", sched, "--actor-out", out_dir, "--actor-id", str(k),
                 "--actor-seed", str(seed), "--actor-matches", str(per[k])]
+        if feature_history > 0:
+            argv += ["--feature-history", str(feature_history)]
         err = open(os.path.join(out_dir, "a%d.stderr.txt" % k), "w")
         procs.append((subprocess.Popen(argv, cwd=bin_dir, stdout=subprocess.DEVNULL, stderr=err, env=CPU_ENV), err))
     failed = 0
@@ -134,9 +139,13 @@ def main():
     ap.add_argument("--nn-options", default="argmax")
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--engine", help="robomage_nn (default bin/release/robomage_nn)")
+    ap.add_argument("--pairs", help="deck pairs, e.g. ur_delver-burn,uw_control-wrb_energy (default: four league pairs)")
+    ap.add_argument("--feature-history", type=int, default=0, help="the policy's recent-event history cap")
     a = ap.parse_args()
-    run_eval(a.model, a.out, tuple(a.opponents.split(",")), a.matches, a.actors, a.nn_options, seed=a.seed,
-             engine=a.engine)
+    from .matches import parse_pairs
+    pairs = parse_pairs(a.pairs) if a.pairs else DEFAULT_PAIRS
+    run_eval(a.model, a.out, tuple(a.opponents.split(",")), a.matches, a.actors, a.nn_options, pairs=pairs,
+             seed=a.seed, engine=a.engine, feature_history=a.feature_history)
 
 
 if __name__ == "__main__":

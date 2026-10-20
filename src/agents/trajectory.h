@@ -25,11 +25,13 @@
 // seat's decisions are featurized from the decoded frame the in-process feed built for the
 // decision (agents/driver.h serves every recorded seat), through the actor's entry point
 // (featurize_seat), or taken from the deciding nn: agent, which featurized that same frame
-// (Behaviour::tensors). The behaviour distribution μ, the policy version and every policy's
-// evaluation come from the deciding agent's last_behaviour (absent for an agent with none: explore,
-// first, a script's own rows, a stream seat, every decision of --replay), or under --teacher-mix
-// from the teacher channel's mixture (agents/teacher.h); the reply is the decision log's (a menu
-// row or a concession sentinel); the teacher label the channel's for a taught seat, else -1.
+// (Behaviour::tensors). Under --feature-history each recorded seat's frames feed that seat's event
+// history (featurize/history.h), kept for the match. The behaviour distribution μ, the policy
+// version and every policy's evaluation come from the deciding agent's last_behaviour (absent for
+// an agent with none: explore, first, a script's own rows, a stream seat, every decision of
+// --replay), or under --teacher-mix from the teacher channel's mixture (agents/teacher.h); the
+// reply is the decision log's (a menu row or a concession sentinel); the teacher label the
+// channel's for a taught seat, else -1.
 //
 // Outside --replay a decision log is always written: --decision-log when given, else
 // DIR/s<engine seed>.rmlog. Files: DIR/<stem>.g<n>.rmtraj for game n (1-based) of the match, <stem>

@@ -9,6 +9,11 @@ each step of a replay window (the teacher's, or the reply of a replayed scripted
     trainer.close()
 
     python -m rmlearn.bc --tables DIR --episodes DIR [DIR ...] --out RUN [--minutes 25] [--device cuda]
+        [--heldout 0.05] [--heldout-by game|match] [--split-seed N] [--eval-train F]
+
+The command line evaluates the held-out games every ``--eval-every`` steps and, with
+``--eval-train F``, a sample of the training games too (the fraction F of them, by the split's hash;
+their keys ``evaltrain_*``: the train / held-out gap).
 
 **Losses.**
 - Policy: cross-entropy of the masked log-softmax over the menu rows to the label, with label
@@ -19,6 +24,9 @@ each step of a replay window (the teacher's, or the reply of a replayed scripted
 - Auxiliary: ``model.aux_losses`` (opponent's list and archetype, its hand, both libraries' tops)
   on steps of omniscient episodes, weighted ``aux_weight`` each (``aux_head_weights`` overrides
   per head). Id-dropout is the model's own (``ModelConfig.id_dropout``).
+- Event dropout (``event_dropout`` p, a spec with recent-event history only, docs/featurizer.md
+  §3.7): in training each history event token is masked out with probability p, its card tokens
+  with it (``event_dropout``), so the policy cannot lean on one remembered event.
 
 Adam (or AdamW with ``weight_decay``), linear warm-up then an optional cosine decay to ``lr_min``,
 gradient clipping by global norm, batches drawn ``sort_pool`` at a time and cut by token count
@@ -62,6 +70,7 @@ class BCConfig:
     decay_steps: int = 0          # cosine decay to lr_min over this many steps after warm-up (0: constant)
     lr_min: float = 3e-5
     label_smoothing: float = 0.05
+    event_dropout: float = 0.0    # history event tokens masked out in training (with their cards)
     value_weight: float = 0.5
     aux_weight: float = 0.05
     aux_head_weights: dict = field(default_factory=dict)
@@ -124,6 +133,25 @@ def category_names(cards_path):
     except (OSError, KeyError, ImportError, ValueError):
         return None
     return None
+
+
+def event_dropout(inputs, p, spec):
+    """The ten inputs with ``tok_mask`` cleared, independently with probability `p`, at each history
+    event token and at the card tokens related to it (``hist_card.event``); `inputs` unchanged
+    without history tokens or at p 0."""
+    if p <= 0 or spec.hist_event_type is None:
+        return inputs
+    tok_type, tok_mask, rel, rel_mask = inputs[0], inputs[5], inputs[6], inputs[7]
+    drop = (tok_type == spec.hist_event_type) & tok_mask & (torch.rand(tok_type.shape, device=tok_type.device) < p)
+    if spec.hist_card_rel is not None:
+        is_card = (rel[:, :, 2] == spec.hist_card_rel) & rel_mask
+        ev_dropped = drop.gather(1, rel[:, :, 1]) & is_card
+        hits = torch.zeros(tok_type.shape, dtype=torch.int32, device=tok_type.device)
+        hits.scatter_add_(1, rel[:, :, 0], ev_dropped.to(torch.int32))
+        drop = drop | (hits > 0)
+    out = list(inputs)
+    out[5] = tok_mask & ~drop
+    return out
 
 
 def policy_loss(logits, act_mask, label, smoothing):
@@ -238,8 +266,9 @@ class BCTrainer:
             lr = self.lr_at(self.step)
             for g in self.opt.param_groups:
                 g["lr"] = lr
+            inputs = event_dropout(b.inputs, self.cfg.event_dropout, self.model.spec)
             with self._autocast():
-                out = self.model(*b.inputs)
+                out = self.model(*inputs)
             loss = self.losses(b, out)
             self.opt.zero_grad(set_to_none=True)
             self.scaler.scale(loss["total"]).backward()
@@ -389,6 +418,11 @@ def main():
     ap.add_argument("--chunk", type=int, default=250, help="steps between metrics lines")
     ap.add_argument("--eval-every", type=int, default=2000)
     ap.add_argument("--heldout", type=float, default=0.05)
+    ap.add_argument("--heldout-by", choices=("game", "match"), default="game",
+                    help="hold out games, or whole matches")
+    ap.add_argument("--split-seed", type=int, default=None, help="the held-out split's seed (default: the BC seed)")
+    ap.add_argument("--eval-train", type=float, default=0.0,
+                    help="also evaluate this fraction of the training games (0: none)")
     ap.add_argument("--max-decisions", type=int, default=4_000_000)
     ap.add_argument("--version", type=int, default=1, help="the exported policy's version")
     ap.add_argument("--d", type=int, default=192)
@@ -409,7 +443,9 @@ def main():
 
     tables = S.load_tables(a.tables)
     win = RP.ReplayWindow(RP.WindowConfig(dirs=a.episodes, max_decisions=a.max_decisions, spec_hash=tables.spec.hash,
-                                          heldout_fraction=a.heldout, split_seed=cfg.seed))
+                                          heldout_fraction=a.heldout, heldout_by=a.heldout_by,
+                                          probe_fraction=a.eval_train,
+                                          split_seed=cfg.seed if a.split_seed is None else a.split_seed))
     t = time.time()
     win.poll()
     emit(dict(win.stats(), event="window", seconds=time.time() - t))
@@ -420,16 +456,23 @@ def main():
           "model_config": model.cfg.to_dict(), "device": a.device})
     end = time.time() + 60 * a.minutes
     evaluated = -1
+
+    def evaluate():
+        emit(trainer.evaluate())
+        if a.eval_train:
+            m = trainer.evaluate("probe")
+            emit({"evaltrain_" + k[len("eval_"):]: v for k, v in m.items()})
+
     try:
         while (not a.steps or trainer.step < a.steps) and time.time() < end:
             n = a.chunk if not a.steps else min(a.chunk, a.steps - trainer.step)
             emit(trainer.train(n))
             if trainer.step % a.eval_every < a.chunk:
-                emit(trainer.evaluate())
+                evaluate()
                 trainer.save(os.path.join(a.out, "ckpt", "bc.pt"), a.version)
                 evaluated = trainer.step
         if evaluated != trainer.step:
-            emit(trainer.evaluate())
+            evaluate()
             trainer.save(os.path.join(a.out, "ckpt", "bc.pt"), a.version)
         emit({"event": "export", "paths": trainer.export(os.path.join(a.out, "ckpt", "p%d" % a.version), a.version)})
     finally:

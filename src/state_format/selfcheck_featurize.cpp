@@ -87,7 +87,7 @@ void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<
         return;
     }
     if (!featurize::build_card_tables(in.schema, cards, static_cast<uint64_t>(N_CARD_TYPES) + 1, 0, &in.tables, &err) ||
-        !featurize::build_spec(in.schema, metagame, in.tables, &in.spec, &err)) {
+        !featurize::build_spec(in.schema, metagame, in.tables, featurize::FeatureOptions(), &in.spec, &err)) {
         fail("inputs", viewer, err);
         return;
     }

@@ -1,9 +1,11 @@
 #include "featurizer.h"
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
 
 #include "folds.h"
+#include "history.h"
 
 static bool check_frame(const featurize::FeatureSpec &spec, const rmstate::DecodedFrame &state, std::string *err);
 static int64_t row_token(
@@ -18,9 +20,13 @@ static int64_t owner_of(const std::vector<std::pair<uint64_t, int64_t>> &owners,
 static int64_t card_value(const featurize::CardTables &tables, const rmstate::Value &v, rmstate::Storage storage);
 static int64_t ability_value(
     const featurize::CardTables &tables, const featurize::ColumnOp &op, const std::vector<rmstate::Value> &row);
+static void take_history(const featurize::FeatureSpec &spec, const featurize::HistorySelection &hist, bool want_sources,
+    featurize::FoldedRows *folded);
+static void fill_history_slots(
+    const featurize::FeatureSpec &spec, const featurize::HistorySelection &hist, int64_t base, featurize::Tensors *out);
 static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
-    const rmstate::DecodedFrame &state, featurize::Tensors *out, std::vector<featurize::TokenSource> *sources,
-    std::string *err);
+    const rmstate::DecodedFrame &state, const featurize::EventHistory *history, featurize::Tensors *out,
+    std::vector<featurize::TokenSource> *sources, std::string *err);
 static void read_decision(
     const featurize::FeatureSpec &spec, const rmstate::DecodedTable *header, featurize::Tensors *out);
 template <typename T>
@@ -69,7 +75,9 @@ static int64_t ability_value(
 static int64_t row_token(
     const featurize::FeatureSpec &spec, const featurize::FoldedRows &folded, size_t type, uint64_t row) {
     const featurize::TypeKind kind = spec.types[type].kind;
-    if (kind != featurize::TypeKind::TABLE && kind != featurize::TypeKind::FILTERED) return -1;
+    if (kind != featurize::TypeKind::TABLE && kind != featurize::TypeKind::FILTERED &&
+        kind != featurize::TypeKind::HISTORY)
+        return -1;
     const std::vector<int64_t> &remap = folded.remap[type];
     if (!remap.empty()) return row < remap.size() ? remap[static_cast<size_t>(row)] : -1;
     return row < folded.count[type] ? static_cast<int64_t>(row) : -1;
@@ -163,9 +171,36 @@ static void read_decision(
     out->sideboarding = row[static_cast<size_t>(spec.header_sideboarding)].bits != 0;
 }
 
+// The history types' rows (the selection's copies) as the folds' rows of those types.
+static void take_history(const featurize::FeatureSpec &spec, const featurize::HistorySelection &hist, bool want_sources,
+    featurize::FoldedRows *folded) {
+    const size_t types[2] = {static_cast<size_t>(spec.history.event_type), static_cast<size_t>(spec.history.card_type)};
+    const std::vector<const std::vector<rmstate::Value> *> *rows[2] = {&hist.events, &hist.cards};
+    for (int i = 0; i < 2; ++i) {
+        const size_t t = types[i];
+        folded->rows[t] = *rows[i];
+        folded->count[t] = rows[i]->size();
+        if (want_sources)
+            for (size_t k = 0; k < rows[i]->size(); ++k)
+                folded->sources[t].push_back({static_cast<int32_t>(t), -1, static_cast<int64_t>(k), 0});
+    }
+}
+
+// The event tokens' turn offset, age (newest-first rank) and cards past the cap.
+static void fill_history_slots(const featurize::FeatureSpec &spec, const featurize::HistorySelection &hist,
+    int64_t base, featurize::Tensors *out) {
+    const featurize::HistoryPlan &h = spec.history;
+    for (size_t k = 0; k < hist.events.size(); ++k) {
+        float *num = &out->tok_num[(static_cast<size_t>(base) + k) * spec.F];
+        num[h.offset_slot] = hist.prev_turn[k] ? 1.0f : 0.0f;
+        num[h.age_slot] = static_cast<float>(std::log1p(static_cast<double>(k)));
+        num[h.more_slot] = static_cast<float>(std::log1p(static_cast<double>(hist.more_cards[k])));
+    }
+}
+
 static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
-    const rmstate::DecodedFrame &state, featurize::Tensors *out, std::vector<featurize::TokenSource> *sources,
-    std::string *err) {
+    const rmstate::DecodedFrame &state, const featurize::EventHistory *history, featurize::Tensors *out,
+    std::vector<featurize::TokenSource> *sources, std::string *err) {
     if (!check_frame(spec, state, err)) return false;
     const size_t n_types = spec.types.size();
     std::vector<const rmstate::DecodedTable *> tabs(n_types, nullptr);
@@ -175,6 +210,11 @@ static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize:
     }
     featurize::FoldedRows folded;
     featurize::fold_rows(spec, tables, state, tabs, sources != nullptr, &folded);
+    featurize::HistorySelection hist;
+    if (spec.history.on() && history) {
+        featurize::select_history(spec, *history, state, &hist);
+        take_history(spec, hist, sources != nullptr, &folded);
+    }
     std::vector<int64_t> base(n_types + 1, 0);
     for (size_t i = 0; i < n_types; ++i) base[i + 1] = base[i] + static_cast<int64_t>(folded.count[i]);
     const size_t n = static_cast<size_t>(base[n_types]);
@@ -216,6 +256,7 @@ static bool featurize_frame(const featurize::FeatureSpec &spec, const featurize:
                 out->tok_num[static_cast<size_t>(tok) * spec.F + static_cast<size_t>(type.removed_slot)] = 1.0f;
         }
     }
+    if (spec.history.on()) fill_history_slots(spec, hist, base[static_cast<size_t>(spec.history.event_type)], out);
     if (sources) {
         sources->clear();
         for (size_t i = 0; i < n_types; ++i)
@@ -259,22 +300,36 @@ namespace featurize {
 
 bool featurize_seat(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state, Tensors *out,
     std::string *err) {
+    return featurize_seat(spec, tables, state, nullptr, out, err);
+}
+
+bool featurize_seat(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
+    const EventHistory *history, Tensors *out, std::string *err) {
     if (state.header.viewer != static_cast<uint8_t>(rmstate::Viewer::A) &&
         state.header.viewer != static_cast<uint8_t>(rmstate::Viewer::B)) {
         *err = "the actor entry point takes a seat's frame, not viewer " + std::to_string(state.header.viewer);
         return false;
     }
-    return featurize_frame(spec, tables, state, out, nullptr, err);
+    if (spec.history.on() && !history) {
+        *err = "the spec has recent-event history tokens: featurize_seat needs the seat's event history";
+        return false;
+    }
+    return featurize_frame(spec, tables, state, history, out, nullptr, err);
 }
 
 bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
     Tensors *out, std::string *err) {
-    return featurize_frame(spec, tables, state, out, nullptr, err);
+    return featurize_frame(spec, tables, state, nullptr, out, nullptr, err);
+}
+
+bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
+    const EventHistory *history, Tensors *out, std::string *err) {
+    return featurize_frame(spec, tables, state, history, out, nullptr, err);
 }
 
 bool featurize_traced(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
-    Tensors *out, std::vector<TokenSource> *sources, std::string *err) {
-    return featurize_frame(spec, tables, state, out, sources, err);
+    const EventHistory *history, Tensors *out, std::vector<TokenSource> *sources, std::string *err) {
+    return featurize_frame(spec, tables, state, history, out, sources, err);
 }
 
 RmtbFile tensors_file(const FeatureSpec &spec, const std::vector<Tensors> &list) {

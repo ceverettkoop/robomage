@@ -9,6 +9,7 @@
 #include "schema.h"
 
 std::string cards_frame_path;
+uint32_t feature_history_events = 0;
 
 std::string cards_frame_records() {
     const bool was_closed = closed_decklist;
@@ -30,6 +31,12 @@ int write_cards_frame_file(const std::string &path) {
     }
     std::printf("CARDS-FRAME: wrote %s (SCHEMA, CARDS, METAGAME; %zu bytes)\n", path.c_str(), records.size());
     return 0;
+}
+
+featurize::FeatureOptions engine_feature_options() {
+    featurize::FeatureOptions o;
+    o.history_events = feature_history_events;
+    return o;
 }
 
 bool load_engine_featurization(featurize::Featurization *out, std::string *err) {

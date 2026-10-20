@@ -16,7 +16,8 @@ outputs do not depend on its batch or its padding), the training model against i
 inference module, auxiliary losses and a backward pass, the omniscient critic on paired decisions,
 the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; the inference
 server on the CPU through the Python client (results against the model, several policies and
-versions, a swap, batching across concurrent clients, handshake and request refusals, shutdown).
+versions, a swap, batching across concurrent clients, handshake and request refusals, shutdown);
+BC's event dropout; the replay window's splits by game and by match and its probe sample.
 Prints ``RMLEARN-CHECK: ok`` and exits 0, or the failures and exits 1.
 """
 
@@ -562,6 +563,19 @@ def check_decision_batches(files):
         ok(got == {"train"}, "train sampling drew held-out games")
     ev = [it for batch in wh.iter_decisions("heldout", True, 32) for it in batch]
     ok(all(ep.split == "heldout" and ep.labels[d] >= 0 for ep, d in ev), "held-out iteration")
+    # Held-out split by match, and the probe sample of the training games.
+    wm = RP.ReplayWindow(RP.WindowConfig(dirs=[os.path.dirname(files[0])], heldout_fraction=0.5, split_seed=3,
+                                         heldout_by="match", probe_fraction=0.5))
+    wm.poll()
+    sides = {}
+    for e in wm.episodes():
+        sides.setdefault(e.match_key(), set()).add(e.split)
+        ok((e.split == "heldout") == RP.heldout(e, 0.5, 3, "match"), "the split is the match hash")
+    ok(all(len(s) == 1 for s in sides.values()), "a match's games on both sides of the split")
+    ok(not any(e.probe and e.split != "train" for e in wm.episodes()), "a held-out game is a probe game")
+    pv = [ep for batch in wm.iter_decisions("probe", True, 32) for ep, _ in batch]
+    ok(all(ep.probe for ep in pv) and len({ep.name for ep in pv}) == sum(
+        1 for e in wm.episodes() if e.probe and (e.labels >= 0).any()), "probe iteration")
     info("labels (teacher on A; chosen only without μ; excluded agents), %d labelled of %d; a batch of 48 with "
          "outcomes, targets and the omniscient inputs; split %r" % (labelled, win.decisions,
                                                                    sorted(collections_counter(splits.values()))))
@@ -666,6 +680,40 @@ def check_trajectory_batches(win):
     pf.stop()
 
 
+def check_event_dropout():
+    """bc.event_dropout on synthetic inputs: event tokens 1, 2 (type 1), card tokens 3, 4 of event 1
+    and 5 of event 2 (relation 5), token 0 related to 3 otherwise, token 6 padding."""
+    print("event dropout", flush=True)
+
+    class Hist:
+        hist_event_type, hist_card_rel = 1, 5
+
+    class NoHist:
+        hist_event_type = hist_card_rel = None
+
+    tok_type = torch.tensor([[0, 1, 1, 2, 2, 2, 0]] * 3)
+    tok_mask = torch.tensor([[1, 1, 1, 1, 1, 1, 0]] * 3, dtype=torch.bool)
+    rel = torch.tensor([[[3, 1, 5], [4, 1, 5], [5, 2, 5], [0, 3, 7], [0, 0, 0]]] * 3)
+    rel_mask = torch.tensor([[1, 1, 1, 1, 0]] * 3, dtype=torch.bool)
+    inputs = [tok_type, None, None, None, None, tok_mask, rel, rel_mask, None, None]
+    ok(BC.event_dropout(inputs, 0.0, Hist) is inputs and BC.event_dropout(inputs, 0.5, NoHist) is inputs,
+       "event dropout at p 0 or without history changed the inputs")
+    ok(torch.equal(BC.event_dropout(inputs, 1.0, Hist)[5],
+                   torch.tensor([[1, 0, 0, 0, 0, 0, 0]] * 3, dtype=torch.bool)),
+       "event dropout at p 1 must leave only the non-history tokens")
+    torch.manual_seed(0)
+    kept = 0
+    for _ in range(40):
+        m = BC.event_dropout(inputs, 0.5, Hist)[5]
+        ok(bool(m[:, 0].all()) and not bool(m[:, 6].any()) and torch.equal(m[:, 3], m[:, 1]) and
+           torch.equal(m[:, 4], m[:, 1]) and torch.equal(m[:, 5], m[:, 2]),
+           "event dropout: a card token kept or dropped apart from its event, or another token touched")
+        kept += int(m[:, 1:3].sum())
+    ok(0.3 < kept / 240.0 < 0.7, "event dropout at p 0.5 kept %d of 240 event tokens" % kept)
+    info("p 0 and no history: unchanged; p 1: only the non-history tokens; p 0.5: cards follow their events, "
+         "%d of 240 events kept" % kept)
+
+
 def check_bc(args, tables, win):
     print("behaviour cloning", flush=True)
     torch.manual_seed(0)
@@ -722,6 +770,7 @@ def main():
     tables = S.load_tables(args.tables)
     decs = check_readers(args, tables)
     model, pol, x = check_model(args, tables, decs)
+    check_event_dropout()
     check_exports(args, model, pol, x)
     check_server(args, tables, model, decs)
     if args.engine_dir and not args.episodes:

@@ -5,6 +5,7 @@
 #include <set>
 
 #include "../error.h"
+#include "../featurize/history.h"
 #include "../featurize/setup.h"
 #include "../file_util.h"
 #include "../game_driver.h"
@@ -51,6 +52,7 @@ struct TrajectoryRun {
         std::string agent_spec[2];
         bool record[2] = {true, true};
         OmniscientInputs omni;
+        featurize::EventHistory history[2];  // per seat, its recorded frames' events this match
         std::unique_ptr<OpenEpisode> episode;
         // The decision being read (trajectory_begin_decision).
         int seat = -1;
@@ -124,12 +126,14 @@ void trajectory_install(unsigned int engine_seed, const std::string agent_specs[
     }
     if (!traj_store) {
         traj_store = new TrajectoryRun();
+        traj_store->featurization.options = engine_feature_options();
         std::string err;
         if (!load_engine_featurization(&traj_store->featurization, &err)) fatal_error("--trajectory-out: " + err);
     }
     traj = traj_store;
     traj->episode.reset();
     traj->omni = OmniscientInputs();
+    for (featurize::EventHistory &h : traj->history) h.clear();
     traj->seat = -1;
     traj->frame = nullptr;
     parse_seats();
@@ -185,6 +189,7 @@ void trajectory_begin_decision(int seat, const rmstate::DecodedFrame *frame, con
     ++open_episode().game_decisions;
     traj->seat = seat;
     traj->frame = trajectory_records_seat(seat) ? frame : nullptr;
+    if (traj->frame) traj->history[seat].observe(traj->featurization.spec, *traj->frame);
     if (traj->frame && trajectory_omniscient) omniscient_decision(*traj->frame, actions);
 }
 
@@ -202,7 +207,8 @@ void trajectory_end_decision(int reply, const agents::Behaviour *behaviour, int 
     std::string err;
     if (b && b->tensors && b->spec_hash == f.spec.hash) {
         step.tensors = *b->tensors;
-    } else if (!featurize::featurize_seat(f.spec, f.tables, *traj->frame, &step.tensors, &err)) {
+    } else if (!featurize::featurize_seat(
+                   f.spec, f.tables, *traj->frame, &traj->history[traj->seat], &step.tensors, &err)) {
         fatal_error("--trajectory-out: " + err);
     }
     step.seat = static_cast<uint8_t>(traj->seat);
