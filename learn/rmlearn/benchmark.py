@@ -208,10 +208,22 @@ def format_summary(s, title):
     return "\n".join(L) + "\n"
 
 
-def wait_for_run(run, poll=60, log=print):
+def wait_for_run(run, poll=60, settle=600, log=print):
+    """Returns once the run has finished (phase ``done``, not running), or has stayed down for
+    `settle` seconds: a run that failed is restarted by systemd after ``run.restart_delay_s``."""
     if alive(run.control_sock):
         log("waiting for run %s to stop" % run.name)
-    while alive(run.control_sock):
+    down = None
+    while True:
+        if alive(run.control_sock):
+            down = None
+        else:
+            if (read_json(run.state) or {}).get("phase") == "done":
+                return
+            down = down or time.time()
+            if time.time() - down >= settle:
+                log("run %s stopped without finishing (phase %s)" % (run.name, (read_json(run.state) or {}).get("phase")))
+                return
         time.sleep(poll)
 
 

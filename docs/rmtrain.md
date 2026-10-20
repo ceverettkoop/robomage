@@ -387,8 +387,9 @@ learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 9
   (common random numbers): the policies' differences are not the draw of the matches. At 480
   matches each deck is the policy's in ~48 matches (~110 games) and the opponent's in as many:
   about ±0.09 (two match-clustered SEs) per deck, ±0.03 overall.
-- **When.** After the run (`--wait` polls its control socket until it is gone; its shutdown finishes
-  the queued exports, `final` included). On a running run it warns and plays anyway, competing with
+- **When.** After the run: `--wait` returns once the run is finished (phase `done`, its shutdown
+  having finished the queued exports, `final` included), or has stayed down for 10 minutes (a failed
+  run is restarted by systemd after `run.restart_delay_s`, so a short outage is not an end). On a running run it warns and plays anyway, competing with
   the training actors for the CPU.
 - **Output** `<run>/bench/<label>/` (default label `end`): per policy a directory (the actors'
   results, status and logs, the decision logs, `report.json` — `matches.report`: per game, game 1
