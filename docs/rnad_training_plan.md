@@ -810,6 +810,37 @@ Open:
    during BC. Run it as an A/B judged by the R-NaD learner's first-sight vs after-update value MSE
    gap (`value_mse_gap`), held-out value MSE and per-game win rate vs `scripted:hard`. A recurrent
    core is the heavier alternative.
+
+   **Stage 1 (hist1, 2026-10-19): negative; stage 2 (a paired R-NaD run) not warranted.** Built
+   as an opt-in featurizer option (`--feature-history N`, `rmfeat --history N`;
+   `docs/featurizer.md` §3.7; off by default and then byte-identical): the seat's events of this
+   turn and the previous one, newest first, at most 32, each with up to 8 card tokens, game
+   fingerprints dropped, handles turned into relations to the objects holding them now; BC's
+   `event_dropout`. Offline test: val1's B0 scripted:hard games (ur_delver / burn / uw_control /
+   wrb_energy) replayed both ways from the same decision logs, 4,878 games, 562k decisions, 10%
+   of the matches held out (501 games, 57.7k decisions); BC at the defaults (d192 / L4, value
+   weight 0.5), 6,000 steps (~1.5 passes), three seeds per arm. Mean ± sd over seeds at step 6000
+   (paired differences against off):
+
+   | | off | history | history + dropout 0.25 |
+   |---|---|---|---|
+   | held-out agreement | 96.66 ± 0.16% | 95.92 ± 0.10% (−0.73 ± 0.23 pp, every seed) | 96.06 ± 0.26% (−0.59 ± 0.10 pp) |
+   | held-out value MSE (mean of steps 4500–6000) | 0.390 ± 0.008 | 0.393 ± 0.018 (+0.004 ± 0.024) | 0.388 ± 0.007 (−0.001 ± 0.006) |
+   | train − held-out value gap (same window) | 0.120 ± 0.022 | 0.115 ± 0.001 | 0.114 ± 0.008 |
+   | held-out opponent-hand aux accuracy | 0.491 ± 0.022 | 0.489 ± 0.005 | 0.484 ± 0.016 |
+   | win rate vs scripted:hard (argmax, ~425 games per arm) | 0.447 ± 0.024 | 0.447 ± 0.024 | 0.460 ± 0.024 |
+
+   History cost agreement on every seed (PLAY_LAND 99.0 → 96.0%, TOP_LIBRARY 89.4 → 86.4%,
+   KEEP_HAND 98.9 → 94.8%; dropout recovered little), learned the value faster early (held-out
+   MSE 0.395 vs 0.407 at step 2000) but not better by the end, and changed neither the value gap,
+   the aux heads nor play. Memorisation is real but not history's doing: one seed of each run on
+   to 18,000 steps (~4.5 passes) opened the train / held-out value gap to 0.33 without history and
+   0.34 with it (held-out MSE 0.466 vs 0.471, best 0.368 at 4,000 steps vs 0.366 at 2,000), and
+   history's agreement deficit closed (98.1% vs 97.9%). So BC's value memorisation comes from
+   multi-pass training on few games (keep BC's value weight low or stop by held-out value MSE),
+   and the recent-event tokens add cost (+~30 tokens, +25% time per step) without a gain the
+   knowledge sidecar's tables do not already give. Kept in the code, off. Outputs:
+   `runs/hist1-*` (data, BC runs, evaluations, `runs/hist1-logs/analysis.md`).
 5. **Engine-computed tactical features.** BC's weakest categories are the computation-heavy ones
    (SELECT_BLOCKER 76% agreement, DIG_CHOICE 72%, NAME_CARD 52%). Candidates: combat previews per
    block (damage, deaths), lethal on board, mana available next turn.
