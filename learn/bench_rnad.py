@@ -10,7 +10,8 @@ random agent's will do). Each configuration runs ``--warmup`` steps, then ``--st
 the same batch (``replay.TrajectoryBatch``; ``prep`` is building it, the chunks' inputs are
 expanded inside the step). ``--recorded-regs`` marks every step's regularisation log π as recorded at the
 learner's versions (the server-supplied path: no recompute forwards); without it the learner
-recomputes them (one extra forward while π_0,reg sits in both slots). On the GPU this must be the
+recomputes them (one extra forward while π_0,reg sits in both slots; two with ``--distinct-regs``,
+π_m,reg ≠ π_m−1,reg as after the first iteration boundary: the local actors' path in B4). On the GPU this must be the
 only process on it (``flock /tmp/rm-gpu.lock``).
 """
 
@@ -56,6 +57,7 @@ def main():
     ap.add_argument("--steps", type=int, default=5)
     ap.add_argument("--warmup", type=int, default=2)
     ap.add_argument("--recorded-regs", action="store_true")
+    ap.add_argument("--distinct-regs", action="store_true", help="two regularisation networks (after a boundary)")
     ap.add_argument("--omniscient", action="store_true", help="the omniscient critic (needs omniscient episodes)")
     ap.add_argument("--forward-tokens", type=int, default=65536)
     ap.add_argument("--d", type=int, default=192)
@@ -79,6 +81,8 @@ def main():
                                             omniscient_critic=args.omniscient), tables)
                 cfg = RL.RNaDConfig(chunk_len=chunk, precision=prec, forward_tokens=args.forward_tokens)
                 learner = RL.RNaDLearner(net, cfg, device=dev)
+                if args.distinct_regs:
+                    learner.regs = [RL.RegPolicy(RL._frozen(learner.model), 1), learner.regs[1]]
                 t = time.time()
                 batch = make_batch(eps, games, chunk, args.recorded_regs, args.omniscient, learner)
                 prep = time.time() - t

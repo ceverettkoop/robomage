@@ -19,6 +19,13 @@ episode directories, in units of ``bc.unit_steps`` steps, a ``bc_train`` event e
 ``rnad.report_every`` steps, an ``rnad_iteration`` event at each iteration boundary (the new
 π_m,reg saved as a fixed point under ``ckpt/fixed/``). ``pause`` stops stepping, ``resume`` goes on.
 
+**Local actors** (``actors.policy_eval = "local"``): in ``rnad`` mode the current network is saved
+(``model.save_checkpoint``, ``exports/live/src-v<step>.pt``) at once and then every
+``actors.export_every_s`` seconds or ``actors.export_every_steps`` learner steps when the learner
+stepped, each announced by a ``policy_saved`` event; the orchestrator's live exporter turns it into
+the actors' export. ``save_model`` saves the current network on request (DAgger's round start, an
+evaluation's snapshot).
+
 **Served policies** (``InferenceServer``): 0 the current policy (BC: pushed by ``serve``; R-NaD:
 ``ServerLink``, every ``rnad.push_every`` steps), 1 and 2 the regularisation policies (R-NaD), 3 the
 evaluation snapshot (``snapshot``), 10+ the evaluation ladder (``load_policy``), 20 and 21 an
@@ -85,6 +92,9 @@ class Worker:
         self.eof = False
         self.exploit = None             # an exploiter.ExploiterSession (exploit_start … exploit_finish)
         self.exploit_pause = False      # the learner idles while it trains
+        self.published = None           # (learner step, time) of the last policy saved for the live export
+        self.lags = []                  # the report window's per-decision policy lags
+        self.flushed_at = None          # the end of the last metrics window
 
     # ── protocol ──
 
@@ -278,23 +288,56 @@ class Worker:
         self.event("rnad_iteration", reg_updates=learner.reg_updates, learner_steps=learner.learner_steps,
                    version=reg.version, fixed_point=path)
 
+    def save_model(self, path):
+        """The current network saved to `path` (model.save_checkpoint, atomically); its version."""
+        from .. import model as M
+        model, version = self.current_model()
+        t = time.time()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        M.save_checkpoint(model, path, {"version": version})
+        return {"path": path, "version": version, "seconds": round(time.time() - t, 3)}
+
+    def maybe_publish(self):
+        """Local actors: the current network saved for the live export when due (see the module docstring)."""
+        a = self.cfg["actors"]
+        if a.get("policy_eval") != "local" or self.learner is None:
+            return
+        step = self.learner.learner_steps
+        if self.published is not None:
+            last_step, last_at = self.published
+            due = time.time() - last_at >= float(a["export_every_s"]) or \
+                (int(a["export_every_steps"]) > 0 and step - last_step >= int(a["export_every_steps"]))
+            if step == last_step or not due:
+                return
+        r = self.save_model(os.path.join(self.rd.exports, "live", "src-v%d.pt" % step))
+        self.published = (step, time.time())
+        self.event("policy_saved", **r)
+
     def rnad_unit(self):
         from .. import replay as RP
         from ..rnad_learner import trainable_episodes
         r = self.cfg["rnad"]
         G = int(r["games_per_step"])
+        self.maybe_publish()
         if len(self.pending) < G:
-            self.pending += self.window.take_fresh(G - len(self.pending), timeout=0.5)
+            self.pending += self.window.take_fresh(G - len(self.pending), timeout=0.5,
+                                                   newest=r.get("fresh_order") == "newest")
             if len(self.pending) < G:
                 return
         eps, self.pending = self.pending, []
         kept, dropped = trainable_episodes(eps, missing_mu="drop", spec_hash=self.tables.spec.hash)
+        kept, stale = drop_stale(kept, self.learner.learner_steps, int(r.get("max_policy_lag", 0)))
+        if stale:
+            dropped["policy_lag"] = stale
         for k, v in dropped.items():
             self.dropped[k] = self.dropped.get(k, 0) + v
         if not kept:
             return
         batch = RP.TrajectoryBatch(kept, chunk_len=int(r["chunk_len"]), policies=self.learner.cfg.reg_policy_ids,
                                    omniscient=self.learner.model.critic is not None)
+        pv = batch.policy_version[batch.valid]
+        if len(pv) and (pv >= 0).all():
+            self.lags.append(self.learner.learner_steps - pv)
         t0 = time.time()
         m = self.learner.step(batch)
         m["step_seconds"] = time.time() - t0
@@ -305,6 +348,9 @@ class Worker:
         if self.agg["n"] >= r["report_every"] or m["boundary"]:
             out = self._flush(m["learner_steps"])
             out["decisions_per_s"] = out["decisions"] / max(out["step_seconds"], 1e-9)
+            out["wait_fraction"] = max(0.0, 1.0 - out["step_seconds"] / max(out["wall_seconds"], 1e-9))
+            out.update(lag_percentiles(self.lags))
+            self.lags = []
             out["games_dropped"] = dict(self.dropped)
             out["window"] = self.window.stats()
             self.event("rnad_step", **out)
@@ -316,7 +362,8 @@ class Worker:
         number is averaged over the units that reported it (value_mse_after: the measured steps)."""
         a = self.agg
         if a is None:
-            a = self.agg = {"n": 0, "sums": {}, "counts": {}, "last": {}, "t0": time.time()}
+            # The window starts where the last one ended (its first unit's time included).
+            a = self.agg = {"n": 0, "sums": {}, "counts": {}, "last": {}, "t0": getattr(self, "flushed_at", None) or time.time()}
         a["n"] += 1
         for k, v in m.items():
             if isinstance(v, bool):
@@ -333,6 +380,7 @@ class Worker:
 
     def _flush(self, step):
         a, self.agg = self.agg, None
+        self.flushed_at = time.time()
         out = dict(a["last"])
         for k, v in a["sums"].items():
             out[k[5:] if k.startswith("mean:") else k] = v / a["counts"][k[5:]] if k.startswith("mean:") else v
@@ -364,13 +412,18 @@ class Worker:
                 raise ValueError("mode %s before its init" % msg["mode"])
             self.mode = msg["mode"]
             self.agg = None
+            self.flushed_at = None
             return {"mode": self.mode}
         if cmd == "pause":
             self.paused = True
             return {}
         if cmd == "resume":
             self.paused = False
+            self.agg = None
+            self.flushed_at = None
             return {}
+        if cmd == "save_model":
+            return self.save_model(msg["path"])
         if cmd in ("serve", "snapshot"):
             model, version = self.current_model()
             pid = int(msg.get("pid", 0 if cmd == "serve" else 3))
@@ -572,6 +625,36 @@ def _jsonable(x):
     except ImportError:
         pass
     return str(x)
+
+
+def drop_stale(eps, learner_steps, max_lag):
+    """(the episodes whose every step was played by a policy at most `max_lag` learner steps old, the
+    number dropped); `max_lag` 0 keeps every one. A step's policy version is the learner step it was
+    exported or served at (-1: none, e.g. a teacher's step, never stale)."""
+    import numpy as np
+    if max_lag <= 0:
+        return eps, 0
+    kept = []
+    for ep in eps:
+        pv = np.asarray(ep.policy_version)
+        pv = pv[pv >= 0]
+        if len(pv) and learner_steps - int(pv.min()) > max_lag:
+            continue
+        kept.append(ep)
+    return kept, len(eps) - len(kept)
+
+
+def lag_percentiles(lags):
+    """The policy lag (learner step − the step's policy version, per trained decision) of a report
+    window: its median, 95th percentile, max and mean."""
+    import numpy as np
+    if not lags:
+        return {}
+    a = np.concatenate(lags)
+    if not len(a):
+        return {}
+    return {"policy_lag_p50": float(np.percentile(a, 50)), "policy_lag_p95": float(np.percentile(a, 95)),
+            "policy_lag_max": float(a.max()), "policy_lag_mean": float(a.mean())}
 
 
 def prune(directory, keep):

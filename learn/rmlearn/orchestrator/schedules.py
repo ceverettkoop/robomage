@@ -27,6 +27,24 @@ def nn_remote(sock, policies, options=""):
     return spec + (":" + options.strip(":") if options else "")
 
 
+def nn_local(model, options=""):
+    """The in-process nn: agent on an export (reloaded between matches when the file is replaced)."""
+    if ":" in model:
+        raise ValueError("an nn: model path cannot contain ':' (%s)" % model)
+    return "nn:%s" % model + (":" + options.strip(":") if options else "")
+
+
+def live_export(run, cfg):
+    """The local actors' export of the current policy (exports/live/current.ts.pt or .pt2), replaced
+    atomically by the live exporter."""
+    return os.path.join(run.exports, "live", "current" + (".ts.pt" if cfg["actors"]["export_format"] == "ts"
+                                                           else ".pt2"))
+
+
+def local(cfg):
+    return cfg["actors"]["policy_eval"] == "local"
+
+
 def _defaults(cfg, omniscient):
     lg = cfg["league"]
     return {"format": lg["format"], "knowledge_a": lg["knowledge"], "knowledge_b": lg["knowledge"],
@@ -70,10 +88,12 @@ def b0(run, cfg):
 
 
 def dagger(run, cfg, round_no, mix):
-    """The current BC policy (server policy 0, sampled) on both seats with the teacher labelling every
-    decision of both, its choice played with probability `mix`."""
+    """The current BC policy (server policy 0, sampled; local: its export at the round's start) on
+    both seats with the teacher labelling every decision of both, its choice played with probability
+    `mix`."""
     t = teacher(cfg)
-    agent = nn_remote(run.rmip_sock, "0", cfg["b2"]["nn_options"])
+    agent = nn_local(live_export(run, cfg), cfg["b2"]["nn_options"]) if local(cfg) else \
+        nn_remote(run.rmip_sock, "0", cfg["b2"]["nn_options"])
     entries = []
     for a, b, w in league_pairs(cfg):
         if w <= 0:
@@ -89,8 +109,10 @@ def dagger(run, cfg, round_no, mix):
 
 def selfplay(run, cfg, version):
     """R-NaD self-play: policies 0, 1, 2 evaluated at every decision (the regularisation policies'
-    log π recorded), sampled from 0, on both seats."""
-    agent = nn_remote(run.rmip_sock, "0,1,2", cfg["b4"]["nn_options"])
+    log π recorded), sampled from 0, on both seats; with actors.policy_eval local, the current
+    policy's live export in process on both seats (the learner computes the regularisation log π)."""
+    agent = nn_local(live_export(run, cfg), cfg["b4"]["nn_options"]) if local(cfg) else \
+        nn_remote(run.rmip_sock, "0,1,2", cfg["b4"]["nn_options"])
     entries = []
     for a, b, w in league_pairs(cfg):
         if w <= 0:

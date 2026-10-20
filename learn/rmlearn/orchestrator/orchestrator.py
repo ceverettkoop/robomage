@@ -17,6 +17,14 @@ here), the ladder, the evaluation history and the transitions. A restarted orche
 phase from it: the GPU process reloads the recorded checkpoint, the actors start after their last
 match (the one in progress written off), counters continue from the recorded offsets.
 
+**Local actors** (``actors.policy_eval = "local"``): the actors play the current policy's export
+in process (``schedules.live_export``). The GPU process saves the network on its cadence
+(``policy_saved`` events; DAgger: ``save_model`` at each round's start), the live exporter
+(``live.py``) exports it over the actors' file, and the actors reload it between matches. After the
+GPU process loads a model (a start, a resume, R-NaD's seeding) or a DAgger round starts, the actors
+wait for that model's first export (``live_ok``), so they never play a policy the learner does not
+have (a resume's earlier export may be of lost steps).
+
 **Failures.** A crashed actor is restarted (actors.py); the GPU process dying (or failing a command)
 stops the run: actors stopped, state saved, exit status 2. ``start`` resumes it from its checkpoint.
 """
@@ -37,6 +45,7 @@ from . import schedules as SCH
 from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
 from .control import ControlServer
 from .gpulink import GpuError, GpuLink
+from .live import LiveExporter
 from .rundir import REPO_ROOT, JsonLines, Log, read_json, read_jsonl, write_json
 
 PHASES = ["B0", "B1", "B2", "B3", "B4", "B5", "done"]
@@ -91,6 +100,12 @@ class Orchestrator:
         self.bin_dir = bin_dir if os.path.isabs(bin_dir) else os.path.join(REPO_ROOT, bin_dir)
         self.engine = os.path.join(self.bin_dir, self.cfg["run"]["build"], "robomage_nn")
         self.status_lock = threading.Lock()
+        self.live = None                # the live exporter (local actors and local evaluations)
+        self.live_epoch = 0             # bumped when the actors' policy must be exported anew
+        self.live_ok = False            # an export of the current epoch is in place
+        self.live_last = None           # the last live export: version, seconds, at
+        self.live_versions = []         # recent (time, version) of live exports, for the status
+        self.actors_waiting = None      # what the actors wait for before they start (the status says)
 
     # ── state ────────────────────────────────────────────────────────────────────────────────
 
@@ -221,6 +236,7 @@ class Orchestrator:
         if not self.state["paused"] and not self.stopping:
             self.phase_tick()
         self.sync()
+        self.live_tick()
         self.eval_tick()
         self.export_tick()
         if (self.gpu_model and not self.state["paused"]
@@ -257,15 +273,19 @@ class Orchestrator:
         if sched is None or paused:
             if self.pool.count or self.pool.running():
                 self.pool.stop_all()
+        elif self.state["phase"] in ("B2", "B4", "B5") and SCH.local(self.cfg) and not self.live_ok:
+            self.actors_waiting = "the live export"     # the actors start once the policy's export is in place
         else:
+            self.actors_waiting = None
             text = json.dumps(sched, indent=1)
             if text != self.schedule_text:
                 write_json(self.run.schedule, sched)
                 self.schedule_text = text
                 self.log("schedule %s written (%d entries)" % (sched["version"], len(sched["entries"])))
-            if self.pool.count != self.cfg["actors"]["count"]:
-                self.log("actors: %d -> %d" % (self.pool.count, self.cfg["actors"]["count"]))
-                self.pool.set_count(self.cfg["actors"]["count"])
+            n = self.actor_count()
+            if self.pool.count != n:
+                self.log("actors: %d -> %d" % (self.pool.count, n))
+                self.pool.set_count(n)
         if self.gpu is not None and mode is not None:
             if mode != self.gpu_mode:
                 self.gpu.call("mode", mode=mode)
@@ -273,6 +293,14 @@ class Orchestrator:
             if paused != self.gpu_paused:
                 self.gpu.call("pause" if paused else "resume")
                 self.gpu_paused = paused
+
+    def actor_count(self):
+        """The training actors the phase wants: actors.local_count while they play the network in
+        process (local DAgger, self-play), else actors.count."""
+        a = self.cfg["actors"]
+        if SCH.local(self.cfg) and a["local_count"] > 0 and self.state["phase"] in ("B2", "B4", "B5"):
+            return a["local_count"]
+        return a["count"]
 
     # ── the GPU process ─────────────────────────────────────────────────────────────────────
 
@@ -326,6 +354,7 @@ class Orchestrator:
             raise Fatal("phase %s without an R-NaD checkpoint" % self.state["phase"])
         r = self.gpu.call("rnad_init", resume=ck["path"])
         self.gpu_model = "rnad"
+        self.live_reset()
         rn = self.state["rnad"]
         before = (rn["learner_steps"], rn["iterations"])
         rn["learner_steps"] = r["learner_steps"]
@@ -376,6 +405,8 @@ class Orchestrator:
             self.emit("rnad_step", **ev)
         elif kind == "rnad_iteration":
             self.on_iteration(ev)
+        elif kind == "policy_saved":
+            self.live_export(ev["path"], int(ev["version"]))
         elif kind == "fatal":
             raise Fatal("GPU process: %s" % ev.get("message"))
         else:
@@ -415,6 +446,9 @@ class Orchestrator:
         p = self.state["phase"]
         st = self.state
         if p == "B0":
+            if self.cfg["run"]["start_from"]:
+                return self.transition("B3", "run.start_from %s (B0-B2 skipped)" % self.cfg["run"]["start_from"],
+                                       force=True)
             if self.cfg["b0"]["corpus_dir"] or self.cfg["b0"]["decisions"] <= 0:
                 return self.transition("B1", "corpus reused (b0.corpus_dir)" if self.cfg["b0"]["corpus_dir"]
                                        else "b0.decisions is 0", force=True)
@@ -600,6 +634,10 @@ class Orchestrator:
         b2 = self.state["b2"]
         r = b2["round"]
         served = self.gpu.call("serve", pid=0)
+        if SCH.local(self.cfg):
+            self.live_reset()
+            saved = self.gpu.call("save_model", path=self.live_source(served["version"]))
+            self.live_export(saved["path"], saved["version"])
         if not resume or not b2.get("round_start_step"):
             b2["round_start_step"] = served["version"]
         self.log("DAgger round %d: teacher_mix %.3f, policy version %d" % (r, self.dagger_mix(r), served["version"]))
@@ -654,13 +692,21 @@ class Orchestrator:
             ck = st["checkpoint"]
             if ck and ck.get("kind") == "rnad":     # seeded before a restart
                 return self.transition("B4", "R-NaD seeded (before the restart)", force=True)
-            if not ck or ck.get("kind") != "bc":
+            start = self.cfg["run"]["start_from"]
+            if (not ck or ck.get("kind") != "bc") and start:
+                path = start if os.path.isabs(start) else os.path.join(REPO_ROOT, start)
+                if not os.path.exists(path):
+                    raise Fatal("run.start_from: no checkpoint %s" % path)
+                self.set_ladder_bc({"path": path, "version": 0})
+            elif not ck or ck.get("kind") != "bc":
                 raise Fatal("B3 needs a BC checkpoint")
-            path = ck["path"]
+            else:
+                path = ck["path"]
         st["bc"]["final"] = path
         r = self.gpu.call("rnad_init", bc_checkpoint=path)
         self.gpu_model = "rnad"
         self.gpu_mode = None
+        self.live_reset()
         st["rnad"]["learner_steps"] = r["learner_steps"]
         st["rnad"]["iterations"] = r["reg_updates"]
         self.log("R-NaD seeded from %s (reg ε %.3f, sideboarding ε %.3f)" % (path, self.cfg["rnad"]["reg_eps"],
@@ -751,6 +797,15 @@ class Orchestrator:
                 self.log("evaluation %s stopped by the pause (queued again)" % self.eval_job.label)
                 self.eval_job = None
                 return
+            if isinstance(self.eval_job, EVAL.ExportWait):
+                w = self.eval_job
+                if w.error:
+                    self.eval_job = None
+                    return self.fail_eval(w.request, w.seq, "not played: %s" % w.error)
+                if w.ready():
+                    self.eval_job = None
+                    self.launch_eval(w.request, w.seq, w.groups, w.meta)
+                return
             if not self.eval_job.poll():
                 return
             job, self.eval_job = self.eval_job, None
@@ -762,8 +817,17 @@ class Orchestrator:
         st["eval"]["seq"] += 1
         seq = st["eval"]["seq"]
         pol = req.get("policy")
+        local = None
+        if self.cfg["eval"]["policy_eval"] == "local" and "exploiter" not in req["evaluators"]:
+            if pol:
+                subject = (pol["path"], pol["version"], pol["label"])
+            else:       # the current network now: saved, exported, then played
+                r = self.gpu.call("save_model", path=os.path.join(self.run.exports, "eval", "snap-%d.pt" % seq))
+                subject = (r["path"], r["version"], "v%d" % r["version"])
+            local = EVAL.LocalExports(self.run, self.cfg["actors"]["export_format"], subject)
         ctx = EVAL.Context(self.run, self.cfg, req["options"], st["ladder"],
-                           subject_label=pol["label"] if pol else None, sampled_options=req.get("sampled_options"))
+                           subject_label=pol["label"] if pol else None, sampled_options=req.get("sampled_options"),
+                           local=local)
         try:
             groups = EVAL.build(ctx, req["evaluators"])
             EVAL.check_groups(groups)
@@ -785,6 +849,33 @@ class Orchestrator:
             job.start()
             self.eval_job = job
             return
+        if local is not None:
+            ck, version, subject = local_subject = (subject[0], int(subject[1]), subject[2])
+            meta = {"phase": st["phase"], "version": version, "subject": subject,
+                    "policy": pol["path"] if pol else None, "options": req["options"],
+                    "sampled_options": req.get("sampled_options"), "evaluators": req["evaluators"],
+                    "policy_eval": "local", "started_at": time.time()}
+            wait = EVAL.ExportWait(seq, req["label"], groups, meta, local.needs)
+            wait.request = req
+            for src, out, v in local.needs:
+                if _newer(out, src):
+                    continue        # exported since the checkpoint was written
+                try:
+                    os.unlink(out)  # older than its checkpoint (a fixed point written again after a resume)
+                except FileNotFoundError:
+                    pass
+                self.ensure_live().request("eval", src, out, self.cfg["actors"]["export_format"], v,
+                                           delete_source=not pol and src == local_subject[0])
+            if not pol and all(os.path.exists(o) for o in wait.outs):
+                try:
+                    os.unlink(ck)
+                except FileNotFoundError:
+                    pass
+            st["eval"]["running"] = req
+            self.eval_job = wait
+            self.log("evaluation %s waits for its exports (%s)" % (req["label"], ", ".join(
+                os.path.basename(o) for o in wait.outs)))
+            return
         if pol:
             self.gpu.call("load_policy", pid=EVAL.SUBJECT_PID, path=pol["path"], version=pol["version"])
             version, subject = pol["version"], pol["label"]
@@ -796,9 +887,15 @@ class Orchestrator:
         meta = {"phase": st["phase"], "version": version, "subject": subject, "policy": pol["path"] if pol else None,
                 "options": req["options"], "sampled_options": req.get("sampled_options"),
                 "evaluators": req["evaluators"], "started_at": time.time()}
+        self.launch_eval(req, seq, groups, meta)
+
+    def launch_eval(self, req, seq, groups, meta):
+        """Starts an evaluation's EvalJob (its server policies loaded, or its local exports in place)."""
         job = EVAL.EvalJob(self.run, self.cfg, seq, req["label"], groups, meta, self.engine, self.bin_dir, self.log)
         job.request = req
-        st["eval"]["running"] = req
+        self.state["eval"]["running"] = req
+        meta["started_at"] = time.time()
+        job.meta["started_at"] = meta["started_at"]
         job.start()
         self.eval_job = job
 
@@ -869,6 +966,65 @@ class Orchestrator:
         elif st["phase"] == "B2" and st["stage"] == "eval" and res["label"] == "b2-r%d" % st["b2"]["round"]:
             self.after_round_eval(res)
         self.save_state()
+
+    # ── the live export (local actors and local evaluations) ───────────────────────────────
+
+    def live_reset(self):
+        """The actors' policy must be exported anew (a model loaded, a DAgger round): they wait for it."""
+        self.live_epoch += 1
+        self.live_ok = False
+
+    def live_source(self, version):
+        return os.path.join(self.run.exports, "live", "src-v%d.pt" % version)
+
+    def ensure_live(self):
+        if self.live is None:
+            self.live = LiveExporter(self.run, self.cfg, self.log)
+        return self.live
+
+    def live_export(self, src, version):
+        """The GPU process saved the policy (`src`, at `version`): exported over the actors' file."""
+        if not SCH.local(self.cfg):
+            try:
+                os.unlink(src)
+            except FileNotFoundError:
+                pass
+            return
+        self.ensure_live().request("live", src, SCH.live_export(self.run, self.cfg), self.cfg["actors"]["export_format"],
+                                   version, epoch=self.live_epoch)
+
+    def live_tick(self):
+        if self.live is None:
+            return
+        for job in self.live.poll():
+            if job["kind"] == "live":
+                if not job["ok"]:
+                    raise Fatal("the live export of policy version %d failed: %s" % (job["version"], job["error"]))
+                if job["epoch"] == self.live_epoch and not self.live_ok:
+                    self.live_ok = True
+                    self.log("live export of policy version %d in place (%.2f s): the actors play it"
+                             % (job["version"], job["seconds"]))
+                now = time.time()
+                self.live_last = {"version": job["version"], "seconds": job["seconds"], "at": now,
+                                  "latency": round(now - job["queued_at"], 3), "path": job["out"]}
+                self.live_versions = [x for x in self.live_versions if now - x[0] < 600] + [(now, job["version"])]
+                self.emit("live_export", version=job["version"], seconds=job["seconds"],
+                          latency=self.live_last["latency"])
+            elif not job["ok"]:
+                self.log("ERROR: export %s of %s failed: %s" % (job["out"], job["checkpoint"], job["error"]))
+                w = self.eval_job
+                if isinstance(w, EVAL.ExportWait) and job["out"] in w.outs:
+                    w.error = "the export %s failed: %s" % (os.path.basename(job["out"]), job["error"])
+
+    def live_status(self):
+        if not (SCH.local(self.cfg) or self.cfg["eval"]["policy_eval"] == "local"):
+            return None
+        out = {"ok": self.live_ok, "path": SCH.live_export(self.run, self.cfg), "last": self.live_last,
+               "exports_10min": len(self.live_versions)}
+        if self.live is not None:
+            out.update(done=self.live.done, mean_seconds=self.live.seconds / max(self.live.done, 1),
+                       queued=[j["kind"] for j in self.live.pending()])
+        return out
 
     # ── exports ─────────────────────────────────────────────────────────────────────────────
 
@@ -1069,8 +1225,10 @@ class Orchestrator:
                "phase": st["phase"], "stage": st["stage"], "hold": st["hold"], "held_reason": st.get("held_reason"),
                "paused": st["paused"], "stopping": self.stopping, "phase_started": st["phase_started"],
                "progress": self.progress(), "totals": dict(self.counters.total, **self.counters.rates()),
-               "actors": {"wanted": self.pool.count if self.pool else 0, "running": self.pool.running() if self.pool else 0,
-                          "restarts": sum(a["restarts"] for a in health), "health": health},
+               "actors": {"wanted": self.actor_count() if self.actors_waiting else
+                          self.pool.count if self.pool else 0, "running": self.pool.running() if self.pool else 0,
+                          "waiting_for": self.actors_waiting, "restarts": sum(a["restarts"] for a in health),
+                          "health": health},
                "gpu": self.gpu_stats if running else {}, "metrics": self.last_metrics,
                "eval": {"running": self.eval_job.label if self.eval_job else None,
                         "queue": [x["label"] for x in st["eval"]["queue"]], "last": st["eval"]["last"],
@@ -1079,6 +1237,7 @@ class Orchestrator:
                             self.eval_job, EVAL.ExploitJob) else None},
                "exports": {"running": self.export_job[1] if self.export_proc else None,
                            "queue": [x[1] for x in self.export_queue], "done": len(st["exports"])},
+               "live": self.live_status(),
                "checkpoint": st["checkpoint"], "transitions": st["transitions"][-6:], "findings": st.get("findings"),
                "config": {k: C.get_key(self.cfg, k) for k in sorted(C.LIVE)}, "sockets": {
                    "control": self.run.control_sock, "rmip": self.run.rmip_sock}}
@@ -1108,6 +1267,8 @@ class Orchestrator:
                     self.export_proc.wait(timeout=300)
                 except subprocess.TimeoutExpired:
                     self.export_proc.kill()
+            if self.live is not None:
+                self.live.stop()
             if self.gpu is not None and self.gpu.alive():
                 if checkpoint and self.gpu_model and self.state["phase"] not in ("B3", "done"):
                     try:
@@ -1125,6 +1286,14 @@ class Orchestrator:
 
 def _f(x):
     return "%.3f" % x if isinstance(x, (int, float)) else "-"
+
+
+def _newer(out, src):
+    """`out` exists and is not older than `src` (an export of the checkpoint as it is now)."""
+    try:
+        return os.path.getmtime(out) >= os.path.getmtime(src)
+    except FileNotFoundError:
+        return False
 
 
 def _iteration_of(label):

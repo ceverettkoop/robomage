@@ -84,10 +84,14 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `run.hsa_override_gfx_version` | `10.3.0` | the GPU process's `HSA_OVERRIDE_GFX_VERSION` |
 | `run.gpu_lock`, `run.gpu_lock_wait` | `/tmp/rm-gpu.lock`, false | the flock the GPU process holds; fail at once or wait |
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
+| `run.start_from` | `""` | a BC checkpoint (another run's `ckpt/bc-final.pt`): the run starts at B3, R-NaD seeded from it (B0–B2 skipped; the model is the checkpoint's) |
 | `league.decks` / `league.pairs` | the 10 league decks / every pair | matchups and weights (`[[a, b, w], …]`) |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
 | `league.omniscient` | true | B0/B2 episodes carry the omniscient part (aux targets) |
 | `actors.count` | 26 | training actors |
+| `actors.policy_eval` | `local` | how the training actors (DAgger, self-play) evaluate the policy: `local` (in process, §5.1) or `remote` (the GPU process's server) |
+| `actors.local_count` | 16 | `local`: the training actors while they play the network (DAgger, self-play; 0: `actors.count`; live) — more play fewer decisions in all on this box (§5.1) |
+| `actors.export_format`, `export_every_s`, `export_every_steps` | `ts`, 30, 0 | `local`: the actors' export of the current policy and its cadence (seconds, and learner steps when > 0; both live) |
 | `actors.restart_delay_s`, `crash_loop_restarts`, `crash_loop_window_s`, `max_backoff_s` | 2, 5, 300, 600 | crash handling |
 | `model.d`, `heads`, `layers`, `id_dropout`, `omniscient_critic` | 192, 4, 4, 0.1, false | `ModelConfig` |
 | `replay.max_decisions`, `replay.max_gb` | 4M, 40 | the window (BC's and R-NaD's) |
@@ -104,6 +108,8 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `rnad.games_per_step`, `chunk_len`, `precision` | 32, 32, fp16 | G × chunk (fits a d 192 model in 12 GB) |
 | `rnad.reg_eps`, `reg_eps_sideboarding` | 0.1, 0.25 | π_0,reg's smoothing (B3) |
 | `rnad.push_every` | 50 | learner steps between pushes of policy 0 |
+| `rnad.max_policy_lag` | 0 | drop a self-play game whose oldest step was played by a policy more than this many learner steps old (0: off; live) |
+| `rnad.fresh_order` | `newest` | which fresh self-play games a learner step takes first: `newest` (the least policy lag when the actors play more than the learner takes) or `oldest` (live) |
 | `rnad.value_after_every` | 10 | learner steps between the value diagnostic's after-update forwards (0: never): `value_mse_first_sight` (every step), `value_mse_after`, `value_mse_gap` in `rnad_step` and `status` |
 | `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options` | 0, 0, `""` | B4's exit (0: until `phase next`); self-play sampling options |
 | `b5.max_learner_steps` | 0 | the run's end (0: never) |
@@ -111,6 +117,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `eval.opponents`, `eval.pairs`, `eval.matches` | scripted, explore, random; 4 pairs; 48 | |
 | `eval.ladder`, `eval.ladder_matches` | 3, 24 | |
 | `eval.actors`, `eval.every_minutes`, `eval.per_iteration` | 4, 60, true | |
+| `eval.policy_eval` | `local` | the evaluation actors: `local` (the evaluated policy and the ladder rungs exported, then played in process; the exploiter stays remote) or `remote` (server policies) |
 | `eval.nn_options_bc` / `_rnad` / `_finetune` | `argmax` / `argmax` / `thresh=0.03:disc=16` | the evaluated policy's options per phase (the primary result; §7) |
 | `eval.also_sampled` | false | the `fixed` evaluator also plays the policy with the actors' sampling options (groups `<opponent>@sampled`) |
 | `eval.sprt_opponents`, `sprt_pairs` | `["scripted"]`, every league pair | the `sprt` evaluator's opponents and deck pairs |
@@ -145,6 +152,8 @@ runs/<name>/
                                  bc-b1.pt, bc-r<k>.pt, bc-final.pt, rnad-seed.pt, rnad-final.pt: phase ends
   ckpt/fixed/m<k>.pt             the R-NaD fixed points (π_m,reg at each boundary)
   exports/<name>.ts.pt .pt2      exports of the phase-end checkpoints and fixed points (nn:<model>)
+  exports/live/current.ts.pt     local actors: the current policy's export (replaced atomically on the cadence)
+  exports/eval/<name>-v<n>.ts.pt local evaluations: the evaluated policy's and the ladder rungs' exports
   eval/<seq>-<label>/            an evaluation: schedule, actors' status / results, rmlog, logs
 ```
 
@@ -154,9 +163,74 @@ runs/<name>/
 |---|---|
 | orchestrator | `python -m rmlearn.rmtrain _run RUN`: the phase loop (every 0.5 s), the control socket, `state.json` / `status.json` / `metrics.jsonl`. No GPU, no torch |
 | GPU process | `python -m rmlearn.orchestrator.gpu RUN` (`orchestrator/gpu.py`): **the only process of the run that touches the GPU**: the learner (BC: `BCTrainer` and its replay window; R-NaD: `RNaDLearner`, `ServerLink` and the self-play window) and the RMIP `InferenceServer` at `/tmp/rmtrain-<hash>/rmip.sock`. Holds the flock `run.gpu_lock` while it lives (fails at once naming the lock, or with `run.gpu_lock_wait` waits for it and the status says so): two runs, or a run and another GPU job using the same lock, never share the GPU. Commands as JSON lines on its stdin, replies and events on its stdout (fd 1 redirected to `gpu.log` so a library cannot corrupt the protocol); it ignores SIGTERM / SIGINT and exits on end of input |
-| actors | `bin/<build>/robomage_nn --actor` (docs/actor.md) with the run's `schedule.json`, the GPU hidden (`HIP_VISIBLE_DEVICES=` …), one process group each (their teachers, `python/teacher.py`, with them) |
+| actors | `bin/<build>/robomage_nn --actor` (docs/actor.md) with the run's `schedule.json`, the GPU hidden (`HIP_VISIBLE_DEVICES=` …) and `OMP_NUM_THREADS=1` (one thread each), one process group each (their teachers, `python/teacher.py`, with them) |
 | evaluation actors | the same with `--actor-matches`, in `eval/<seq>-<label>/` |
 | exporter | `python -m rmlearn.orchestrator.exporter` (CPU only), one at a time: `.ts.pt` / `.pt2` of a checkpoint |
+| live exporter | `python -m rmlearn.orchestrator.exporter --serve` (CPU only, one process kept running): local actors' and local evaluations' exports (`orchestrator/live.py`) |
+
+### 5.1 Local evaluation (`actors.policy_eval = "local"`)
+
+With `remote` the actors evaluate every decision through the GPU process's inference server, which
+shares the GPU with the learner; with `local` each actor evaluates in process (`nn:<export>`, one
+CPU thread: `src/actor/evaluator.cpp` sets libtorch to one intra-op and one inter-op thread, and
+the actors run with `OMP_NUM_THREADS=1` / `MKL_NUM_THREADS=1`), the GPU only learns, and the
+learner computes the regularisation policies' log π itself.
+
+- **The weights.** In R-NaD the GPU process saves the current network (`exports/live/src-v<step>.pt`)
+  when B4 starts and then every `actors.export_every_s` seconds (or `export_every_steps` learner
+  steps) when the learner stepped (a `policy_saved` event); in DAgger once at each round's start
+  (the round's frozen policy). The **live exporter** (`exporter --serve`, one CPU process kept
+  running, `orchestrator/live.py`) exports it to `exports/live/current.ts.pt` through a temporary
+  file renamed over it; a newer save replaces one still queued. The actors' schedule names that file
+  (`nn:<run>/exports/live/current.ts.pt`), and each actor's agents reload it before a match when it
+  changed (docs/actor.md §7). After the GPU process loads a model (a start, a resume, R-NaD's
+  seeding) or a DAgger round starts, the actors wait for that model's first export (`status`: actors
+  "waiting for the live export"), so a resume never plays an export of lost steps. Every export is a
+  `live_export` metrics line (version, seconds, latency); `status` shows the last one.
+- **The format** is TorchScript (`actors.export_format = "ts"`): measured on this box (d 192 /
+  4 layers, one thread, idle machine), TorchScript exports in ~0.07 s and evaluates in 6.7 ms per
+  decision, an AOTInductor `.pt2` takes ~16 s to compile and evaluates in 6.2 ms (−7 %); at a 30 s
+  cadence the `.pt2` compile would occupy a core half the time and lag the policy by its compile.
+  In the run the live export (load, fold, script, save) takes ~0.43 s, ~0.5 s from the save.
+- **Reload between games?** The actor reloads between matches only. Reloading before each game
+  of a bo3 would be easy and safe (the agent keeps no game-scoped state beside its evaluator; each
+  step records its policy version), but it would bound a lag that is already small: with 26 local
+  actors a game takes 3.8 s on average (114 decisions; ~30 decisions/s per actor), a bo3 match ~9 s,
+  against the 30 s export cadence, so it is not done.
+- **Each record's `policy_version`** is the export's (its metadata: the learner step it was
+  saved at). The learner's step metrics report the lag (learner step − the step's policy version)
+  per report window: `policy_lag_p50`, `_p95`, `_max`, `_mean`. `rnad.max_policy_lag` (0: off)
+  drops games older than that, `rnad.fresh_order = "newest"` takes the newest fresh games first
+  (the least lag when the actors play more than the learner takes).
+- **Regularisation log π.** Local trajectories record only the played policy's evaluation, so
+  every step's π_m,reg and π_m−1,reg log π is recomputed by the learner (`stale_reg = "recompute"`,
+  `reg_recomputed` in the metrics): no-grad forwards of the frozen networks in the step's precision
+  (fp16), on the same row groups and input tensors as the step's forward (no second gather), one
+  network while π_0,reg sits in both slots, two after the first boundary.
+- **Evaluations** (`eval.policy_eval = "local"`, separate since evaluation actors are separate):
+  the evaluated policy (a fixed point, or the current network saved by `save_model`) and each
+  ladder rung are exported first (`exports/eval/<name>-v<version>.ts.pt`, reused while newer than
+  their checkpoint), then played in process; the exploiter trains in the GPU process and stays
+  remote.
+
+**Measured** (the option-2 benchmark; the full table and the actor-count scaling in
+`docs/rnad_training_plan.md` §5): val1's two matchups and BC policy (d 192 / 4 layers), Δm 100, B4
+only, ~12–22 min each, one after the other:
+
+| | remote, 26 actors | local, 26 actors | local, 16 actors (the default) |
+|---|---|---|---|
+| self-play decisions/s (games/hour) | 500 (15.9k) | 754 (23.7k) | 1,045 (33.7k) |
+| learner steps/min; decisions/s (wall) | 8.2; 496 | 12.0; 730 | 14.9; 879 |
+| learner waiting for games | 41 % | 5 % | 3 % |
+| GPU use (mean), VRAM (max) | 93 %, 12.0 GB | 78 %, 11.8 GB | 89 %, 11.9 GB |
+| actors' CPU (cores) | 0.44 (waiting for the server) | 25.3 | 15.7 |
+| policy lag p50 / p95 / max (learner steps) | 28 / 38 / 52 | 6 / 10 / 20 | 6 / 10 / 18 |
+| exports | — | every 32.5 s, 0.43 s each | every 32.2 s, 0.25 s each |
+| loss, KL to the regularisation policy (means; finite) | 0.46, 0.0102 | 0.95, 0.0097 | 0.99, 0.0108 |
+
+More than 16 local actors play fewer decisions in all (16 physical cores; 26 also starve the GPU
+process's CPU-side batch building), so `actors.local_count` is 16. At d 128 the same 16 actors play
+2,061 decisions/s and the learner takes 1,180.
 
 **Served policies:** 0 the current policy (BC: pushed at each DAgger round's start; R-NaD:
 `ServerLink`, every `rnad.push_every` steps), 1 and 2 the regularisation policies (π_m,reg,
@@ -187,16 +261,16 @@ evaluation's result waits as *pending* and happens on `release`).
 | B0 | collect | the teacher corpus: both seats `first` + the scripted teacher at mix 1 over the league (swap decks), `b0.explore_frac` scripted vs explore (the scripted side recorded), episodes with the omniscient part | `b0.decisions` decisions played (counted from the actors' results lines of schedule version `b0`). Skipped with `b0.corpus_dir` |
 | B1 | train | BC on the window over `episodes/b0` (or the corpus dir) and `episodes/dagger`; a held-out evaluation every `bc.eval_every` steps | held-out agreement not improving by `b1.min_delta` for `b1.patience` evaluations after `b1.min_steps`, or `b1.max_steps` → `bc-b1.pt`, export |
 | B1 | eval | evaluation `b1` (fixed opponents, argmax), the learner idle | its result (the DAgger baseline) |
-| B2 | collect | round r: the BC policy (server policy 0, frozen for the round) on both seats via `nn:remote`, sampling, the teacher on both seats at mix `teacher_mix_start → end`; BC goes on training on the growing window | `b2.decisions_per_round` decisions of version `b2-r<r>` and `b2.min_steps_per_round` BC steps → actors stopped, `bc-r<r>.pt`, export |
+| B2 | collect | round r: the BC policy (frozen for the round: its export in process, or server policy 0 via `nn:remote`) on both seats, sampling, the teacher on both seats at mix `teacher_mix_start → end`; BC goes on training on the growing window | `b2.decisions_per_round` decisions of version `b2-r<r>` and `b2.min_steps_per_round` BC steps → actors stopped, `bc-r<r>.pt`, export |
 | B2 | eval | evaluation `b2-r<r>` (fixed opponents) | after `b2.rounds_min` rounds, a win rate vs scripted:hard not `b2.min_improvement` above the best so far; or `b2.rounds_max` → B3; else round r + 1 |
-| B3 | | `bc-final.pt`; `RNaDLearner.from_bc_checkpoint` (π_0,reg smoothed by `rnad.reg_eps`, `reg_eps_sideboarding`); `rnad-seed.pt` | at once |
-| B4 | selfplay | both seats `nn:remote:…:policies=0,1,2` (+ `b4.nn_options`), train, the league; the learner takes each fresh game once (`take_fresh`, `trainable_episodes`: capped / quit games dropped); at each boundary the fixed point `ckpt/fixed/m<k>.pt`, its export, an evaluation `it<k>` of that fixed point (`eval.per_iteration`); evaluations of the current policy every `eval.every_minutes` | `b4.iterations` iterations or `b4.max_learner_steps` steps (0: never) |
+| B3 | | `bc-final.pt` (or `run.start_from`); `RNaDLearner.from_bc_checkpoint` (π_0,reg smoothed by `rnad.reg_eps`, `reg_eps_sideboarding`); `rnad-seed.pt` | at once |
+| B4 | selfplay | both seats the current policy (local: `nn:<run>/exports/live/current.ts.pt`; remote: `nn:remote:…:policies=0,1,2`; + `b4.nn_options`), train, the league; the learner takes each fresh game once (`take_fresh`, `trainable_episodes`: capped / quit games dropped); at each boundary the fixed point `ckpt/fixed/m<k>.pt`, its export, an evaluation `it<k>` of that fixed point (`eval.per_iteration`); evaluations of the current policy every `eval.every_minutes` | `b4.iterations` iterations or `b4.max_learner_steps` steps (0: never) |
 | B5 | selfplay | the learner's fine-tuning projection from the current step; evaluations with `eval.nn_options_finetune` | `b5.max_learner_steps` (0: never) → `done`: `rnad-final.pt`, exports, exit 0 |
 
-**Why DAgger plays through the server** (`nn:remote`, not `nn:<export>` in process): the actors
-spend no CPU on the network's forward (in process a d 192 forward per decision costs several times
-the engine's decision), the GPU is otherwise idle during DAgger's play, no `.pt2` export (tens of
-seconds) is needed before a round, and it is B4's path, exercised early.
+**DAgger plays in process too** (`actors.policy_eval = "local"`): the round's frozen BC policy is
+exported once at the round's start (TorchScript, ~0.1 s), and the GPU only trains BC. Measured (val1's
+two matchups and corpus, teacher mix 0.5, ~5 min of a round each): 1,050 decisions/s with 16 local
+actors against 751 through the server with 26 (the server shared the GPU with BC's training).
 
 **Pause** stops the actors rather than freezing them (SIGSTOP): the engine's teacher and server
 timeouts are wall-clock deadlines, so a long freeze would fail them. The price is one written-off
@@ -327,9 +401,14 @@ they are not errors. Replay one with `cd bin && ./release/robomage_nn --replay <
 ```sh
 learn/.venv/bin/python learn/check_rmtrain.py            # CPU, no engine, ~4 s: RMTRAIN-CHECK: ok
 learn/.venv/bin/python learn/check_rmtrain.py --smoke    # GPU + bin/release: RMTRAIN-SMOKE: ok
+learn/.venv/bin/python learn/check_rmtrain.py --smoke --policy-eval remote   # the server path
 ```
 
-The CPU checks: config parsing and validation, the control protocol, an orchestrator over a fake
+The CPU checks: config parsing and validation, local evaluation (the schedules' in-process specs,
+the GPU process's save cadence, the live exporter's coalescing against a fake exporter, the actors
+waiting for the first export and `actors.local_count`, local evaluations exporting their subject
+and rungs first — reusing an export newer than its checkpoint, re-exporting an older one, a failed
+export an `eval_failed` —, `rnad.fresh_order`, the policy-lag cap and percentiles), the control protocol, an orchestrator over a fake
 run driven through its socket and its status from the files, and the resume bookkeeping (actor
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
 the window restore, checkpoint pruning, the schedules and evaluators, an SPRT evaluation stopping
@@ -348,7 +427,11 @@ starts it again, and runs it to `done`; per-iteration SPRT evaluations and one e
 (`rmtrain eval --evaluators exploiter`) run on the way. It checks that no evaluation failed, that
 each iteration's evaluations evaluated its fixed point, that every result names its options (an
 argmax and a sampled group with `eval.also_sampled`), that the ladder's rungs stay unique across the
-kill, and the resumes' `restore` lines.
+kill, and the resumes' `restore` lines. In local mode (the default; `--policy-eval remote` runs the
+server path) it also checks that the live exports followed the learner, that DAgger played one,
+that every self-play game's policy versions are exported versions, that the learner recorded no
+regularisation log π and recomputed them, that the steps report the lag percentiles, and that the
+local evaluations ran.
 
 Measured (the training box, after T7; other agents' jobs on the GPU and CPU): B0 ~2 s (5,300
 decisions on 3 actors), B1 ~20 s (the commands exercised, then `phase next`), B2 ~14 s (one round:

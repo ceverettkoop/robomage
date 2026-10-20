@@ -598,7 +598,12 @@ the engine, the gate or `python/` imports it.
   extension point for T8). Checkpoints on a cadence and at phase ends, `state.json` written
   atomically, `metrics.jsonl` / `evals.jsonl`; a resume re-reads the replay window's checkpointed
   episodes (only the untaken ones fresh; games of the lost steps left out) and restarts actors after
-  their last match. `learn/check_rmtrain.py`: CPU checks and a
+  their last match. Since the option-2 benchmark (§5) the actors and evaluations play the policy **in
+process** by default (`actors.policy_eval` / `eval.policy_eval = "local"`, 16 actors): the GPU process
+saves the current network every ~30 s, a CPU live exporter writes the actors' TorchScript export
+(replaced atomically, reloaded between matches), and the learner recomputes both regularisation
+policies' log π; `remote` keeps the server path. `run.start_from` starts a run at B3 from a BC
+checkpoint. `learn/check_rmtrain.py`: CPU checks and a
   `--smoke` tiny end-to-end run (B0 → done in ~6.5 min including a `kill -9` in B4 and a stop/start).
 - **Environment.** `learn/` lives in this repository with `learn/requirements.txt` (torch
   2.10.0+rocm7.0, the build that runs on this GPU) and its own `learn/.venv`.
@@ -632,6 +637,45 @@ processes.
 | GPU inference, small model | well above that |
 | Learner | the GPU is the binding limit; a sustained ~5–10k decisions/s |
 | Result | about 25–50 games/s, i.e. **100–180k games/hour**, about 2–4M games/day |
+
+**Measured: where the policy is evaluated** (the option-2 benchmark, after the first validation run
+`runs/val1`; `docs/rmtrain.md` §5.1). In val1's B4 the actors evaluated through the GPU process's
+inference server (`nn:remote`), which shares the GPU with the learner: under the learner's load it
+served ~500 rows/s at batch ~13, the 26 actors waited on it (0.44 cores busy in all) and the learner
+waited for games 41 % of the time. Evaluating in process on the actors' cores (`actors.policy_eval =
+"local"`: TorchScript exports of the current policy every ~30 s, the learner recomputing the
+regularisation log π) on val1's two matchups and BC policy (d 192 / 4 layers, 3.97M parameters),
+B4, Δm 100, each mode on its own:
+
+| | remote, 26 actors | local, 26 actors | local, 16 actors | local, 16 actors, d 128 |
+|---|---|---|---|---|
+| self-play decisions/s (games/hour) | 500 (15.9k) | 754 (23.7k) | 1,045 (33.7k) | 2,061 (65.7k) |
+| learner steps/min (G 32, ~3.6k decisions) | 8.2 | 12.0 | 14.9 | 19.5 |
+| learner decisions/s: wall; while stepping | 496; 839 | 730; 772 | 879; 907 | 1,180; 1,217 |
+| learner waiting for games | 41 % | 5 % | 3 % | 3 % |
+| GPU use (mean), VRAM (max) | 93 %, 12.0 GB | 78 %, 11.8 GB | 89 %, 11.9 GB | 89 %, 11.8 GB |
+| actors' CPU | 0.44 cores | 25.3 cores | 15.7 cores | 15.6 cores |
+| policy lag p50 / p95 (learner steps) | 28 / 38 | 6 / 10 | 6 / 10 | 7 / 11 |
+
+- **The actors saturate the cores, not the threads.** 16 physical cores (32 threads): self-play
+  decisions/s of N local actors alone (no learner, d 192): 1 → 170, 8 → 923, 12 → 1,310,
+  16 → 1,342, 20 → 1,169, 26 → 949, 32 → 823 (SMT siblings and the two model copies per actor,
+  one per seat, contend for the cores and caches; in the run the 26 actors also starved the GPU
+  process's CPU-side batch building: GPU use p10 14 %). Hence `actors.local_count` 16.
+- **The CPU forward** (one thread, idle box): d 192 6.7 ms per decision (TorchScript; `.pt2` 6.2 ms
+  but ~16 s to compile), d 128 3.9 ms; the engine's own decision is ~0.5 ms.
+- **The learner's recompute** (`learn/bench_rnad.py`, G 32 × chunk 32, fp16, alone on the GPU):
+  1,366 decisions/s with the regularisation log π recorded, 1,112 recomputing one network (π_0,reg
+  in both slots, before the first boundary), 935 recomputing two (−32 %). Local mode still wins
+  because the learner no longer shares the GPU with the server and no longer waits for games.
+- **DAgger (B2)** the same way: 1,050 decisions/s with 16 local actors (the round's BC policy
+  exported once), 751 through the server with 26 (sharing the GPU with BC's training).
+- **The binding limit is now the learner** (~0.9k decisions/s at d 192, ~1.2k at d 128, ≈ 28k /
+  37k games/hour of ~112 decisions); 16 local actors play ~1.2x (d 192) and ~1.7x (d 128) what it
+  takes, so `rnad.fresh_order = "newest"` keeps the lag at the export cadence and the surplus games
+  wait in the window (`rnad.max_policy_lag` drops the stale ones when set). The plan's rough figures
+  above (5–10k decisions/s learner) assumed a cheaper model or step; at these sizes the learner, not
+  the actors, sets the pace.
 
 ---
 

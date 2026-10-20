@@ -26,7 +26,10 @@ projection, ``thresh=…:disc=…``) — and, with ``eval.also_sampled``, the ``
 plays it with the actors' sampling options (groups ``<opponent>@sampled``); every group carries its
 ``options``. Opponents are agents, the scripted teacher (``scripted`` = side ``first`` +
 ``teacher.py`` at mix 1) or other server policies the group loads (ids 10 and up: the ladder of past
-R-NaD fixed points, the evaluated one excluded, and the BC policy). Every game is scored on its own
+R-NaD fixed points, the evaluated one excluded, and the BC policy). With ``eval.policy_eval`` local the
+evaluated policy and the ladder rungs play in process instead (``nn:<export>``): each is exported
+first by the live exporter (``LocalExports``; the evaluation waits for them as an ``ExportWait``),
+and no server policy is loaded. Every game is scored on its own
 (game 1 apart from games 2–3; ``evaluate.summarize``). An evaluation whose groups would collide (a
 repeated group or entry id) is refused; one that plays no game is an error (the orchestrator logs
 it), never an empty result.
@@ -43,7 +46,8 @@ from ..ladder import Ladder
 from ..sprt import SPRT
 from .actors import ActorPool
 from .rundir import write_json
-from .schedules import deck, league_pairs, nn_remote
+from .live import export_path
+from .schedules import deck, league_pairs, nn_local, nn_remote
 
 SUBJECT_PID = 3
 LADDER_PID0 = 10
@@ -87,13 +91,33 @@ class ExploitSpec:
         self.loads = []
 
 
+class LocalExports:
+    """The exports a local evaluation plays (eval.policy_eval local): ``export(name, checkpoint,
+    version)`` names ``exports/eval/<name>-v<version>.<ext>`` and records it in ``needs`` (checkpoint,
+    out, version) for the live exporter; `subject` is the evaluated policy's (checkpoint, version, name)."""
+
+    def __init__(self, run, fmt, subject):
+        self.dir = os.path.join(run.exports, "eval")
+        self.fmt = fmt
+        self.needs = []
+        self.subject = self.export(subject[2], subject[0], subject[1])
+
+    def export(self, name, checkpoint, version):
+        out = export_path(self.dir, "%s-v%d" % (name, int(version)), self.fmt)
+        if all(n[1] != out for n in self.needs):
+            self.needs.append((checkpoint, out, int(version)))
+        return out
+
+
 class Context:
     """`subject_label`: the evaluated fixed point's ladder label (its rung is not an opponent);
-    `sampled_options`: the options of the secondary sampled groups (None: none)."""
+    `sampled_options`: the options of the secondary sampled groups (None: none); `local`: a
+    ``LocalExports`` (the policies play in process) or None (server policies)."""
 
-    def __init__(self, run, cfg, subject_options, ladder, subject_label=None, sampled_options=None):
+    def __init__(self, run, cfg, subject_options, ladder, subject_label=None, sampled_options=None, local=None):
         self.run = run
         self.cfg = cfg
+        self.local = local
         self.options = subject_options
         self.subject = self.subject_with(subject_options)
         self.ladder = ladder        # [{"label", "path", "version"}], oldest first
@@ -101,6 +125,8 @@ class Context:
         self.sampled_options = sampled_options
 
     def subject_with(self, options):
+        if self.local is not None:
+            return nn_local(self.local.subject, options)
         return nn_remote(self.run.rmip_sock, str(SUBJECT_PID), options)
 
 
@@ -143,10 +169,15 @@ def ladder(ctx):
     groups = []
     for j, r in enumerate(rungs):
         pid = LADDER_PID0 + j
-        agent = nn_remote(ctx.run.rmip_sock, str(pid), e["opponent_nn_options"])
         name = "ladder-" + r["label"]
+        if ctx.local is not None:
+            agent = nn_local(ctx.local.export(r["label"], r["path"], r.get("version", 0)), e["opponent_nn_options"])
+            loads = []
+        else:
+            agent = nn_remote(ctx.run.rmip_sock, str(pid), e["opponent_nn_options"])
+            loads = [{"pid": pid, "path": r["path"], "version": r.get("version", 0)}]
         groups.append(Group(name, _pairs_entries(name, ctx.subject, agent, None, e["pairs"]), e["ladder_matches"],
-                            [{"pid": pid, "path": r["path"], "version": r.get("version", 0)}], options=ctx.options))
+                            loads, options=ctx.options))
     return groups
 
 
@@ -222,6 +253,27 @@ def build(ctx, names):
             raise ValueError("no evaluator %r (registered: %s)" % (n, ", ".join(sorted(EVALUATORS))))
         groups += fn(ctx)
     return groups
+
+
+class ExportWait:
+    """A local evaluation waiting for its exports (``LocalExports.needs``, queued to the live
+    exporter): ``ready()`` once every one exists, ``error`` when one failed. The orchestrator then
+    starts its ``EvalJob`` (``groups``, ``meta``)."""
+
+    def __init__(self, seq, label, groups, meta, needs):
+        self.seq, self.label, self.groups, self.meta = seq, label, groups, meta
+        self.outs = [out for _, out, _ in needs]
+        self.error = None
+        self.request = None
+
+    def ready(self):
+        return all(os.path.exists(o) for o in self.outs)
+
+    def loads(self):
+        return []
+
+    def cancel(self):
+        pass
 
 
 class EvalJob:

@@ -292,15 +292,15 @@ class ReplayWindow:
             raise ValueError("the window has no %s games" % split)
         return [eps[i] for i in rng.integers(0, len(eps), n)]
 
-    def take_fresh(self, n, timeout=None, split="train", require_mu=False):
-        """The `n` oldest episodes not yet taken (each episode is taken once), waiting up to
-        `timeout` seconds (None: forever) for enough; fewer only on timeout."""
+    def take_fresh(self, n, timeout=None, split="train", require_mu=False, newest=False):
+        """The `n` oldest (`newest`: the newest) episodes not yet taken (each episode is taken once),
+        waiting up to `timeout` seconds (None: forever) for enough; fewer only on timeout."""
         out = []
         end = None if timeout is None else time.time() + timeout
         while True:
             with self._lock:
                 while self._fresh and len(out) < n:
-                    e = self._fresh.popleft()
+                    e = self._fresh.pop() if newest else self._fresh.popleft()
                     if e.split == split and (not require_mu or bool(e.has_mu.all())):
                         out.append(e)
             if len(out) >= n or (end is not None and time.time() >= end):

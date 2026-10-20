@@ -424,7 +424,7 @@ class RNaDLearner:
 
     def _forward(self, model, inputs, omni, seat_rows):
         """The model's outputs (+ ``critic_value_raw`` under value_activation="linear")."""
-        out = model(*inputs, omni=omni, seat=seat_rows)
+        out = model(*inputs, omni=omni, seat=seat_rows, aux=False)
         if omni is not None and self.cfg.value_activation == "linear":
             c = model.critic
             o = omni
@@ -712,7 +712,7 @@ class RNaDLearner:
                 for rows, xg, _ in _row_groups(x, None, cfg.forward_tokens):
                     rows_t = idx[torch.from_numpy(rows).to(dev)]
                     with self._autocast():
-                        v = self.model(*self._inputs(xg))["value"].float()
+                        v = self.model(*self._inputs(xg), aux=False)["value"].float()
                     se += ((v - out_c[rows_t]) ** 2 * val_c[rows_t]).sum()
         return float(se) / max(int(valid.sum()), 1)
 
@@ -723,15 +723,19 @@ class RNaDLearner:
             if k == 1 and self.regs[1] is self.regs[0]:
                 break
             need = (valid_c & ~reg_known[k][sl]).reshape(-1)[rows_t]
-            if not bool(need.any()):
+            n_need = int(need.sum())
+            if not n_need:
                 continue
-            sel = torch.nonzero(need).squeeze(-1)
-            sub = [t.index_select(0, sel) for t in inputs]
+            if n_need == len(need):         # nothing recorded (local actors): the group's inputs as they are
+                sel, sub = None, inputs
+            else:
+                sel = torch.nonzero(need).squeeze(-1)
+                sub = [t.index_select(0, sel) for t in inputs]
             with torch.no_grad(), self._autocast():
-                rl = self.regs[k].model(*sub)["logits"].float()
+                rl = self.regs[k].model(*sub, aux=False)["logits"].float()
             rl = torch.log_softmax(rl.masked_fill(~sub[9], -float("inf")), -1)
             flat_lp = lps[k].reshape(n_flat, A)
-            flat_lp[rows_t[sel]] = torch.where(sub[9], rl, torch.zeros_like(rl))
+            flat_lp[rows_t if sel is None else rows_t[sel]] = torch.where(sub[9], rl, torch.zeros_like(rl))
 
     def _iteration_boundary(self):
         """π_m−1,reg ← π_m,reg; π_m,reg ← the target network (unsmoothed), version = the learner step."""

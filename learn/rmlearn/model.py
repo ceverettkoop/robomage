@@ -446,16 +446,17 @@ class RMNet(nn.Module):
         self.critic = Critic(spec, cfg) if cfg.omniscient_critic else None
 
     def forward(self, tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok, act_mask,
-                omni=None, seat=None):
-        """A dict: `logits` [B, A], `value` [B], `summary` [B, d]; with aux heads `aux_list`,
+                omni=None, seat=None, aux=True):
+        """A dict: `logits` [B, A], `value` [B], `summary` [B, d]; with aux heads (and `aux`) `aux_list`,
         `aux_archetype`, `aux_hand` [B, n_cards], `aux_own_library`, `aux_opp_library`
         [B, depth, n_cards] (logits; the none row NEG); with the critic and `omni` (the omniscient
-        featurization's ten inputs) and `seat` [B] (0 = A), `critic_value` [B]."""
+        featurization's ten inputs) and `seat` [B] (0 = A), `critic_value` [B]. ``aux=False`` skips
+        the aux heads (R-NaD reads none of them)."""
         extra = self.cards.gather(tok_card, tok_ability, self.cfg.id_dropout)
         x = self.encoder(tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra)
         g = self.summary(x, tok_mask)
         out = {"logits": self.pointer(x, g, act_tok, act_mask), "value": self.value(g), "summary": g}
-        if self.cfg.aux_heads:
+        if self.cfg.aux_heads and aux:
             out.update(self.aux(g))
         if self.critic is not None and omni is not None:
             o = list(omni)

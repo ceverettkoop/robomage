@@ -37,6 +37,7 @@ if "--smoke" not in sys.argv:          # the CPU checks hide the GPU; the smoke'
     os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
 
 import argparse  # noqa: E402
+import glob  # noqa: E402
 import json  # noqa: E402
 import shutil  # noqa: E402
 import signal  # noqa: E402
@@ -441,7 +442,8 @@ def check_window_restore(tmp):
 def check_schedules(tmp):
     run = RD.RunDir(os.path.join(tmp, "sch"))
     run.make()
-    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]"])
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]", "actors.policy_eval=remote",
+                           "eval.policy_eval=remote"])
     allowed = {"id", "weight", "purpose", "deck_a", "deck_b", "format", "swap", "agent_a", "agent_b", "teacher_a",
                "teacher_b", "teacher_mix", "knowledge_a", "knowledge_b", "max_game_decisions", "trajectory_seats",
                "trajectory_omniscient", "rmlog_dir", "trajectory_dir"}
@@ -587,6 +589,7 @@ def _b4_orchestrator(tmp, name, sets=()):
     run = RD.RunDir(os.path.join(tmp, name))
     run.make()
     cfg = C.resolve(None, ["actors.count=0", "run.bin_dir=" + tmp, "eval.actors=2", "eval.matches=2",
+                           "actors.policy_eval=remote", "eval.policy_eval=remote",
                            "eval.ladder_matches=2", "eval.sprt_max_games=2", "league.decks=[\"a\", \"b\"]",
                            "eval.pairs=[[\"a\", \"b\"]]"] + list(sets))
     RD.write_json(run.config, cfg)
@@ -821,6 +824,210 @@ def check_eval_options_and_findings(tmp):
     o.evals_file.close()
 
 
+# ── local actors (actors.policy_eval / eval.policy_eval local) ────────────────────────────────
+
+FAKE_EXPORTER = r"""
+import json, os, sys, time
+for line in sys.stdin:
+    r = json.loads(line)
+    time.sleep(0.05)
+    if "FAIL" in r["checkpoint"]:
+        print(json.dumps({"re": r["id"], "ok": False, "error": "boom", "seconds": 0.05}), flush=True)
+        continue
+    os.makedirs(os.path.dirname(r["out"]), exist_ok=True)
+    with open(r["out"], "w") as fp:
+        fp.write("v%d" % r["version"])
+    print(json.dumps({"re": r["id"], "ok": True, "out": r["out"], "version": r["version"], "seconds": 0.05}),
+          flush=True)
+"""
+
+
+def _fake_live(run, cfg, log):
+    """A LiveExporter whose process is FAKE_EXPORTER (writes "v<version>" to the out file)."""
+    import types
+    from rmlearn.orchestrator.live import LiveExporter
+    live = LiveExporter(run, cfg, log)
+
+    def start(self):
+        import queue as Q
+        self.proc = subprocess.Popen([sys.executable, "-c", FAKE_EXPORTER], stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE, text=True, bufsize=1)
+        q, proc = self.replies, self.proc
+
+        def read():
+            for line in proc.stdout:
+                q.put(json.loads(line))
+            q.put(None)
+        self.reader = threading.Thread(target=read, daemon=True)
+        self.reader.start()
+        del Q
+    live._start = types.MethodType(start, live)
+    return live
+
+
+def _drain(o, cond, timeout=10):
+    end = time.time() + timeout
+    while time.time() < end:
+        o.live_tick()
+        o.eval_tick()
+        if cond():
+            return True
+        time.sleep(0.02)
+    return False
+
+
+def check_local(tmp):
+    """actors.policy_eval / eval.policy_eval local: the config, the schedules' in-process specs, the
+    GPU process's save cadence, the live exporter's coalescing, the actors waiting for the first
+    export, local evaluations exporting their policies first, the policy-lag cap and percentiles."""
+    import types
+    import numpy as np
+    from rmlearn.orchestrator.live import export_path
+    # Config.
+    check(raises(lambda: C.resolve(None, ["actors.policy_eval=gpu"]), "actors.policy_eval"),
+          "local: actors.policy_eval is remote or local")
+    check(C.parse_live("actors.export_every_s", "10") == ("actors.export_every_s", 10.0) and
+          C.parse_live("rnad.max_policy_lag", "8") == ("rnad.max_policy_lag", 8) and
+          raises(lambda: C.parse_live("actors.policy_eval", "local"), "not settable"),
+          "local: the export cadence and the lag cap are live, policy_eval is not")
+    check(raises(lambda: C.resolve(None, ["actors.export_every_s=0"]), "export_every_s"), "local: a cadence > 0")
+    # Schedules.
+    run = RD.RunDir(os.path.join(tmp, "loc"))
+    run.make()
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\"]", "actors.policy_eval=local", "b4.nn_options=temp=2"])
+    cur = os.path.join(run.exports, "live", "current.ts.pt")
+    sp, dg = SCH.selfplay(run, cfg, "b4"), SCH.dagger(run, cfg, 1, 0.5)
+    check(all(e["agent_a"] == e["agent_b"] == "nn:%s:temp=2" % cur for e in sp["entries"]) and
+          all(e["agent_a"] == "nn:%s" % cur and e["teacher_mix"] == 0.5 for e in dg["entries"]),
+          "local: self-play and DAgger play the live export in process (%s)" % sp["entries"][0]["agent_a"])
+    pt2 = SCH.selfplay(run, C.set_key(cfg, "actors.export_format", "pt2"), "b4")
+    check(pt2["entries"][0]["agent_a"].startswith("nn:" + cur[:-len(".ts.pt")] + ".pt2"), "local: a .pt2 export")
+    check(raises(lambda: SCH.nn_local("/a:b/c.ts.pt"), "cannot contain"), "local: a model path with ':' is refused")
+    # The GPU process's save cadence.
+    RD.write_json(run.config, cfg)
+    w = G.Worker(run.path, None)
+    w.cfg = C.resolve(None, ["actors.policy_eval=local", "actors.export_every_s=30"])
+    w.learner = types.SimpleNamespace(learner_steps=10)
+    saved, events = [], []
+    w.save_model = lambda path: saved.append(path) or {"path": path, "version": w.learner.learner_steps,
+                                                       "seconds": 0.0}
+    w.event = lambda name, **kw: events.append((name, kw["version"]))
+    w.maybe_publish()
+    w.maybe_publish()
+    t_first = w.published[1]
+    w.learner.learner_steps = 12
+    w.maybe_publish()                                   # stepped, not due
+    w.published = (12 - 2, t_first - 31)
+    w.maybe_publish()                                   # due, stepped: saved
+    w.published = (12, time.time() - 31)
+    w.maybe_publish()                                   # due, but the learner has not stepped
+    w.cfg["actors"]["export_every_steps"] = 3
+    w.learner.learner_steps = 15
+    w.maybe_publish()                                   # 3 steps: saved before the time is due
+    check(events == [("policy_saved", 10), ("policy_saved", 12), ("policy_saved", 15)] and
+          saved[0].endswith("exports/live/src-v10.pt"),
+          "local: the GPU process saves at once, then every export_every_s / export_every_steps when stepped (%s)"
+          % events)
+    w.cfg["actors"]["policy_eval"] = "remote"
+    w.learner.learner_steps = 30
+    w.published = (15, 0)
+    w.maybe_publish()
+    check(len(events) == 3, "remote: nothing saved for the actors")
+    # The policy-lag cap and percentiles.
+    eps = [types.SimpleNamespace(policy_version=np.array(v)) for v in ([98, 99], [90, 99], [-1, 100], [95])]
+    kept, n = G.drop_stale(eps, 100, 5)
+    check(n == 1 and kept == [eps[0], eps[2], eps[3]] and G.drop_stale(eps, 100, 0) == (eps, 0),
+          "the policy-lag cap drops games older than rnad.max_policy_lag (0: off)")
+    import collections
+    from rmlearn import replay as RP
+    win = RP.ReplayWindow(RP.WindowConfig(dirs=[]))
+    fr = [types.SimpleNamespace(split="train", i=i) for i in range(5)]
+    win._fresh = collections.deque(fr)
+    got = [e.i for e in win.take_fresh(2, timeout=0, newest=True)] + [e.i for e in win.take_fresh(2, timeout=0)]
+    check(got == [4, 3, 0, 1], "rnad.fresh_order newest: a step takes the newest fresh games (%s)" % got)
+    check(C.parse_live("rnad.fresh_order", "newest") == ("rnad.fresh_order", "newest") and
+          raises(lambda: C.resolve(None, ["rnad.fresh_order=random"]), "fresh_order"), "rnad.fresh_order is live")
+    pc = G.lag_percentiles([np.arange(0, 50), np.arange(50, 101)])
+    check(pc["policy_lag_p50"] == 50 and pc["policy_lag_max"] == 100 and abs(pc["policy_lag_p95"] - 95) < 1e-9,
+          "the policy lag's percentiles (%s)" % pc)
+    # The orchestrator: the actors wait for the first export; exports coalesce; evaluations in process.
+    o, run, logs = _b4_orchestrator(tmp, "b4local", ["actors.policy_eval=local", "eval.policy_eval=local",
+                                                     "actors.count=2", "actors.local_count=3",
+                                                     "eval.evaluators=[\"fixed\", \"ladder\"]",
+                                                     "eval.opponents=[\"random\"]"])
+    o.live = _fake_live(run, o.cfg, o.log)
+    o.gpu = _FakeGpu({"save_model": lambda kw: {"path": kw["path"], "version": 42}})
+    o.gpu_model = "rnad"
+    o.gpu_mode = o.gpu_paused = "x"
+    o.live_reset()
+    o.sync()
+    check(o.pool.count == 0, "local: no actor starts before the policy's first export")
+    srcs = [_touch(os.path.join(run.exports, "live", "src-v%d.pt" % v)) for v in (5, 6, 7)]
+    for v, src in zip((5, 6, 7), srcs):
+        o.on_gpu_event({"event": "policy_saved", "path": src, "version": v, "seconds": 0.01})
+    check(not os.path.exists(srcs[1]), "local: a queued live export is replaced by a newer one (its source deleted)")
+    check(_drain(o, lambda: o.live_ok and not o.live.pending()), "local: the live exports finish")
+    with open(SCH.live_export(run, o.cfg)) as fp:
+        content = fp.read()
+    lines = [m for m in RD.read_jsonl(run.metrics) if m["event"] == "live_export"]
+    check(content == "v7" and [m["version"] for m in lines] == [5, 7] and not any(os.path.exists(p) for p in srcs),
+          "local: exported 5 then 7 over the actors' file, the sources deleted (%s, %s)" % (content, lines))
+    o.sync()
+    check(o.pool.count == 3 and o.live_status()["ok"],
+          "local: actors.local_count actors start once the export is in place (%d)" % o.pool.count)
+    o.state["phase"] = "B0"
+    check(o.actor_count() == 2, "local: actors.count in the phases without the network (B0)")
+    o.state["phase"] = "B4"
+    o.pool.stop_all(timeout=1)
+    o.live_reset()
+    o.pool.count = 0
+    o.sync()
+    check(o.pool.count == 0, "local: a new model (a resume, a DAgger round) makes the actors wait again")
+    # A local evaluation: the fixed point and the ladder rungs exported first, played in process.
+    m1 = _touch(os.path.join(run.fixed, "m1.pt"))
+    o.state["ladder"] = [{"label": "bc", "path": _touch(os.path.join(run.ckpt, "bc-final.pt")), "version": 3},
+                         {"label": "m1", "path": m1, "version": 100}]
+    o.queue_eval("it1", "argmax", ["fixed", "ladder"], policy={"label": "m1", "path": m1, "version": 100,
+                                                               "iteration": 1})
+    o.eval_tick()
+    wait = o.eval_job
+    want = [export_path(os.path.join(run.exports, "eval"), s, "ts") for s in ("m1-v100", "bc-v3")]
+    check(isinstance(wait, EVAL.ExportWait) and sorted(wait.outs) == sorted(want),
+          "local evaluation: waits for the subject's and the rungs' exports (%s)" % getattr(wait, "outs", None))
+    check(_drain(o, lambda: isinstance(o.eval_job, EVAL.EvalJob)), "local evaluation: started once exported")
+    job = o.eval_job
+    ents = [e for g in job.groups for e in g.entries]
+    check(all(e["agent_a"].startswith("nn:" + want[0]) for e in ents) and
+          any(e["agent_b"] == "nn:%s:argmax" % want[1] for e in ents) and not job.loads() and
+          not any(c[0] in ("load_policy", "snapshot") for c in o.gpu.calls),
+          "local evaluation: the subject and the rungs in process, no server policy loaded")
+    o.cancel_eval()
+    done = o.live.done
+    o.queue_eval("it1b", "argmax", ["fixed"], policy={"label": "m1", "path": m1, "version": 100, "iteration": 1})
+    check(_drain(o, lambda: isinstance(o.eval_job, EVAL.EvalJob)) and o.live.done == done,
+          "local evaluation: an export newer than its checkpoint is reused")
+    o.cancel_eval()
+    time.sleep(0.02)
+    _touch(m1)                  # the fixed point written again (a resume crossed the boundary again)
+    o.queue_eval("it1c", "argmax", ["fixed"], policy={"label": "m1", "path": m1, "version": 100, "iteration": 1})
+    check(_drain(o, lambda: isinstance(o.eval_job, EVAL.EvalJob)) and o.live.done == done + 1,
+          "local evaluation: an export older than its checkpoint is exported again")
+    o.cancel_eval()
+    o.queue_eval("t9", "argmax", ["fixed"])
+    o.eval_tick()
+    snap = [c for c in o.gpu.calls if c[0] == "save_model"]
+    check(snap and isinstance(o.eval_job, EVAL.ExportWait) and o.eval_job.meta["subject"] == "v42",
+          "local evaluation of the current network: saved (save_model), exported, named v<version>")
+    check(_drain(o, lambda: isinstance(o.eval_job, EVAL.EvalJob)), "local evaluation: the snapshot exported")
+    o.cancel_eval()
+    o.queue_eval("it2", "argmax", ["fixed"], policy={"label": "m2", "path": _touch(os.path.join(run.fixed, "FAIL.pt")),
+                                                     "version": 200, "iteration": 2})
+    check(_drain(o, lambda: o.eval_job is None), "local evaluation: a failed export ends it")
+    check(any(m["event"] == "eval_failed" and m["label"] == "it2" and "export" in m["error"]
+              for m in RD.read_jsonl(run.metrics)), "local evaluation: a failed export is an eval_failed error")
+    o.live.stop()
+
+
 # ── the smoke ───────────────────────────────────────────────────────────────────────────────
 
 SMOKE_CONFIG = """
@@ -834,6 +1041,7 @@ decks = ["ur_delver", "burn", "bw_dnt"]
 max_game_decisions = 3000
 [actors]
 count = 3
+local_count = 0
 [model]
 d = 64
 heads = 2
@@ -906,8 +1114,12 @@ def smoke(args):
         fp.write(SMOKE_CONFIG)
     env_note = "systemd-run" if shutil.which("systemd-run") else "daemon"
     t0 = time.time()
-    r = sh([rmtrain, "start", run.path, "--config", cfgp])
-    check(r.returncode == 0 and "started as" in r.stdout, "start detaches (%s)" % env_note)
+    mode = args.policy_eval or C.defaults()["actors"]["policy_eval"]
+    local = mode == "local"
+    sets = ["--set", "actors.policy_eval=" + mode, "--set", "eval.policy_eval=" + mode]
+    r = sh([rmtrain, "start", run.path, "--config", cfgp] + sets)
+    check(r.returncode == 0 and "started as" in r.stdout, "start detaches (%s%s)" % (
+        env_note, ", local actors and evaluations" if local else ""))
     print(r.stdout.strip(), flush=True)
     daemon = RD.read_json(os.path.join(run.path, "daemon.json")) or {}
 
@@ -1045,10 +1257,41 @@ def smoke(args):
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
+    if local:
+        smoke_local_checks(run, mets, evs)
     print("smoke: phase start times (s): %s; total %.1f s" % (json.dumps({k: round(v, 1) for k, v in
                                                                         phase_at.items()}), total))
     if not args.keep and not FAILURES:
         shutil.rmtree(run.path)
+
+
+def smoke_local_checks(run, mets, evs):
+    """--policy-eval local: the live exports followed the learner, the actors played them (each
+    episode's policy versions are exported versions), the learner recomputed the regularisation log π,
+    and the evaluations played their policies in process."""
+    live = [m for m in mets if m["event"] == "live_export"]
+    check(len(live) >= 3, "live exports of the current policy (%d)" % len(live))
+    vers = [m["version"] for m in live if m["phase"] in ("B4", "B5")]
+    check(vers and vers == sorted(vers) or any(m["event"] == "restore" for m in mets),
+          "live export versions follow the learner (%s)" % vers[:12])
+    check(any(m["phase"] == "B2" for m in live), "DAgger played a live export")
+    steps = [m for m in mets if m["event"] == "rnad_step"]
+    check(steps and all(m.get("reg_recorded", 0) == 0 for m in steps) and sum(m.get("reg_recomputed", 0)
+                                                                                for m in steps) > 0,
+          "the learner recomputed every regularisation log π (none recorded)")
+    check(any("policy_lag_p95" in m for m in steps), "the steps report the policy lag's percentiles")
+    results = []
+    for path in glob.glob(os.path.join(run.actors, "a*.results.jsonl")):
+        results += RD.read_jsonl(path)
+    sp = [r for r in results if str(r.get("schedule", "")).startswith("b") and r["schedule"] in ("b4", "b5")]
+    check(sp and all(str(r.get("agent_a", "")).startswith("nn:") and "remote" not in r["agent_a"] for r in sp),
+          "self-play played in process (%s)" % (sp[0].get("agent_a") if sp else None))
+    exported = set(vers)
+    played = {v for r in sp for v in (r.get("policy_versions_a") or []) + (r.get("policy_versions_b") or [])}
+    check(played and played <= exported | {0}, "the actors' policy versions are exported versions (%s not in %s)"
+          % (sorted(played - exported)[:5], sorted(exported)[:8]))
+    local_evs = [e for e in RD.read_jsonl(run.evals) if e.get("policy_eval") == "local"]
+    check(local_evs and not any(e.get("error") for e in local_evs), "local evaluations ran (%d)" % len(local_evs))
 
 
 def kill9(run, daemon):
@@ -1085,6 +1328,9 @@ def main():
     ap.add_argument("--smoke", action="store_true", help="the end-to-end tiny run (GPU, engine)")
     ap.add_argument("--run", help="--smoke: the run directory (default runs/smoke-rmtrain)")
     ap.add_argument("--keep", action="store_true", help="--smoke: keep the run directory")
+    ap.add_argument("--policy-eval", choices=("remote", "local"),
+                    help="--smoke: the actors' and evaluations' policy_eval (actors.policy_eval, eval.policy_eval; "
+                    "default: the config's default)")
     args = ap.parse_args()
     t0 = time.time()
     if args.smoke:
@@ -1101,6 +1347,7 @@ def main():
             check_t8(tmp)
             check_resume_and_evaluations(tmp)
             check_eval_options_and_findings(tmp)
+            check_local(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
         tag = "RMTRAIN-CHECK"

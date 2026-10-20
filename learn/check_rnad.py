@@ -767,6 +767,30 @@ def check_composition(tables):
        "regularisation paths should be exercised")
     for p in learner.params:
         p.grad = None
+    # Local actors (actors.policy_eval local): nothing recorded, both regularisation policies recomputed
+    # from their networks inside the step's forwards; the same reference loss.
+    eps0 = random_episodes(tables, rng, 9)
+    b0 = RP.TrajectoryBatch(eps0, chunk_len=3, policies=(1, 2))
+    logits0, v_cur0, v_tgt0, lps0 = learner_inputs(learner, b0, eps0)
+    legal0 = b0.legal.astype(np.float64).copy()
+    legal0[b0.valid == 0] = 0
+    legal0[b0.valid == 0, 0] = 1
+    mu0 = b0.mu.astype(np.float64).copy()
+    mu0[b0.valid == 0] = legal0[b0.valid == 0]
+    lv, ln = o_rnad_loss(np.where(legal0 > 0, logits0, 0.0), v_cur0, v_tgt0, lps0[0], lps0[1], 0.7,
+                         b0.valid.astype(np.float64), b0.seat, legal0, mu0, np.eye(b0.A)[np.maximum(b0.chosen, 0)],
+                         b0.reward.astype(np.float64), 0.2, 1.0, np.inf, 2.0, 10_000.0, finetune=(0.05, 8))
+    got = learner.accumulate_gradients(b0, 0.7, finetune_on=True)
+    gv, gn = float(got["sums"]["loss_v"]), float(got["sums"]["loss_nerd"])
+    nv = int(b0.valid.sum())
+    ok(abs(gv - lv) < 1e-5 * (1 + abs(lv)) and abs(gn - ln) < 1e-5 * (1 + abs(ln)) and got["reg_recorded"] == 0
+       and got["reg_recomputed"] == 2 * nv, "composition, nothing recorded: loss_v %.8f / NeuRD %.8f, the reference "
+       "%.8f / %.8f; %d recorded, %d recomputed of 2 x %d" % (gv, gn, lv, ln, got["reg_recorded"],
+                                                               got["reg_recomputed"], nv))
+    info("nothing recorded (local actors): loss_v %.6f (reference %.6f), NeuRD %.6f (reference %.6f), both "
+         "regularisation policies recomputed at all %d steps" % (gv, lv, gn, ln, nv))
+    for p in learner.params:
+        p.grad = None
     # Chunk-length invariance of a whole step (no id-dropout, so the forwards are deterministic).
     grads = []
     for L in (2, 5, 32):

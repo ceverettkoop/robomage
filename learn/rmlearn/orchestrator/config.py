@@ -38,6 +38,8 @@ SPEC = {
         ("gpu_lock_wait", False, "wait for the GPU lock (false: fail at once when another process holds it)"),
         ("torch_threads", 2, "the GPU process's torch CPU threads"),
         ("status_every_s", 2.0, "how often status.json is rewritten"),
+        ("start_from", "", "a BC checkpoint (model.save_checkpoint, e.g. another run's ckpt/bc-final.pt): the run "
+         "starts at B3, R-NaD seeded from it (B0–B2 skipped; the model's config is the checkpoint's)"),
     ],
     "league": [
         ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/"),
@@ -55,6 +57,17 @@ SPEC = {
         ("crash_loop_window_s", 300.0, "the crash-loop window"),
         ("max_backoff_s", 600.0, "the longest delay before restarting a crash-looping actor"),
         ("stop_timeout_s", 30.0, "how long a stopping actor gets before SIGKILL"),
+        ("policy_eval", "local", "how the training actors (DAgger, self-play) evaluate the policy: remote "
+         "(nn:remote through the GPU process's inference server) or local (nn:<export> in process, one CPU thread "
+         "each; the current policy exported on a cadence; the learner computes the regularisation policies' log π)"),
+        ("local_count", 16, "local: the training actors while they play the network in process (DAgger, self-play; "
+         "0: actors.count): with the network's forward on the actors' cores, more than ~16 on this 16-core / "
+         "32-thread box play fewer decisions in all (docs/rmtrain.md §5.1) (live)"),
+        ("export_format", "ts", "local: the actors' export of the current policy (ts: TorchScript, ~0.1 s to export; "
+         "pt2: AOTInductor, ~16 s, ~7% faster on the CPU)"),
+        ("export_every_s", 30.0, "local: seconds between exports of the current policy for the actors (when the "
+         "learner stepped) (live)"),
+        ("export_every_steps", 0, "local: also after this many learner steps (0: off) (live)"),
     ],
     "model": [
         ("d", 192, "token width"),
@@ -144,6 +157,11 @@ SPEC = {
         ("report_every", 10, "learner steps per metrics line"),
         ("value_after_every", 10, "learner steps between the value diagnostic's after-update forwards (0: never) "
          "(live)"),
+        ("max_policy_lag", 0, "drop a self-play game whose oldest step was played by a policy more than this many "
+         "learner steps old (0: off; v-trace corrects the lag) (live)"),
+        ("fresh_order", "newest", "which fresh self-play games a step takes first: oldest (every game in order) or "
+         "newest (the least policy lag when the actors play more than the learner takes; the older ones wait, and "
+         "rnad.max_policy_lag drops them) (live)"),
     ],
     "b4": [
         ("iterations", 0, "R-NaD iterations before B5 (0: stay in B4 until phase next / the step cap)"),
@@ -170,6 +188,9 @@ SPEC = {
         ("also_sampled", False, "the fixed evaluator also plays the policy with the actors' sampling options "
          "(b2.nn_options in B1–B2, b4.nn_options in B4–B5): groups <opponent>@sampled, a secondary result (live)"),
         ("opponent_nn_options", "argmax", "ladder opponents' options"),
+        ("policy_eval", "local", "how the evaluation actors play the evaluated policy and the ladder rungs: remote "
+         "(server policies) or local (nn:<export> in process: each one exported first); the exploiter is always "
+         "remote"),
         ("sprt_opponents", ["scripted"], "the sprt evaluator's opponents (scripted = scripted:hard)"),
         ("sprt_pairs", [], "its deck pairs ([[a, b], ...]; empty: every league pair, both decks and seats each)"),
         ("sprt_p0", 0.45, "H0: the per-game win rate p0"),
@@ -205,6 +226,10 @@ CHOICES = {
     "bc.amp": ("fp16", "bf16", "off"),
     "rnad.precision": ("fp32", "fp16", "bf16"),
     "rnad.stale_reg": ("recompute", "drop"),
+    "rnad.fresh_order": ("oldest", "newest"),
+    "actors.policy_eval": ("remote", "local"),
+    "actors.export_format": ("ts", "pt2"),
+    "eval.policy_eval": ("remote", "local"),
 }
 
 LIVE = {
@@ -213,7 +238,8 @@ LIVE = {
     "b2.rounds_min", "b2.rounds_max", "b2.decisions_per_round", "b2.min_steps_per_round", "b2.min_improvement",
     "rnad.eta", "rnad.learning_rate", "rnad.entropy_schedule_sizes", "rnad.entropy_schedule_repeats",
     "rnad.reg_eps", "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
-    "rnad.value_after_every", "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
+    "rnad.value_after_every", "rnad.max_policy_lag", "rnad.fresh_order", "actors.export_every_s",
+    "actors.export_every_steps", "actors.local_count", "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
     "actors.count", "eval.matches", "eval.ladder", "eval.ladder_matches", "eval.actors", "eval.every_minutes",
     "eval.per_iteration", "eval.also_sampled", "eval.sprt_max_games", "eval.exploiter_every_minutes",
     "eval.exploiter_minutes", "checkpoint.every_minutes",
@@ -223,7 +249,8 @@ LIVE = {
 GPU_LIVE = {"bc.lr", "bc.report_every", "bc.eval_every", "rnad.eta", "rnad.learning_rate",
             "rnad.entropy_schedule_sizes", "rnad.entropy_schedule_repeats", "rnad.reg_eps",
             "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
-            "rnad.value_after_every"}
+            "rnad.value_after_every", "rnad.max_policy_lag", "rnad.fresh_order", "actors.export_every_s",
+            "actors.export_every_steps"}
 
 
 def defaults():
@@ -360,7 +387,7 @@ def validate(cfg):
     need(not lg["pairs"] or len(lg["decks"]) >= 1, "league.pairs needs decks")
     need(lg["pairs"] or len(lg["decks"]) >= 2, "league.decks needs two decks (or league.pairs)")
     need(lg["max_game_decisions"] >= 0, "league.max_game_decisions >= 0")
-    need(cfg["actors"]["count"] >= 0, "actors.count >= 0")
+    need(cfg["actors"]["count"] >= 0 and cfg["actors"]["local_count"] >= 0, "actors.count, local_count >= 0")
     m = cfg["model"]
     need(m["d"] > 0 and m["heads"] > 0 and m["d"] % m["heads"] == 0, "model.d is a positive multiple of model.heads")
     need(m["layers"] > 0, "model.layers > 0")
@@ -390,6 +417,9 @@ def validate(cfg):
     need(r["chunk_len"] > 0 and r["games_per_step"] > 0, "rnad.chunk_len and games_per_step are positive")
     need(r["push_every"] >= 0 and r["report_every"] > 0, "rnad.push_every >= 0, report_every > 0")
     need(r["value_after_every"] >= 0, "rnad.value_after_every >= 0")
+    need(r["max_policy_lag"] >= 0, "rnad.max_policy_lag >= 0")
+    a = cfg["actors"]
+    need(a["export_every_s"] > 0 and a["export_every_steps"] >= 0, "actors.export_every_s > 0, export_every_steps >= 0")
     need(0 <= r["finetune_threshold"] < 1 and r["finetune_discretization"] >= 0, "rnad.finetune_* ranges")
     e = cfg["eval"]
     need(all(x in ("fixed", "ladder") or isinstance(x, str) for x in e["evaluators"]), "eval.evaluators are names")

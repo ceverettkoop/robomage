@@ -343,8 +343,9 @@ def format_status(d):
     a = d.get("actors")
     if a:
         bad = [h for h in a.get("health", []) if not h.get("alive")]
-        L.append("actors %d/%d running, %d restarts%s" % (a.get("running", 0), a.get("wanted", 0),
-                                                           a.get("restarts", 0),
+        L.append("actors %d/%d running%s, %d restarts%s" % (a.get("running", 0), a.get("wanted", 0),
+                                                             " (waiting for %s)" % a["waiting_for"]
+                                                             if a.get("waiting_for") else "", a.get("restarts", 0),
                                                            "; down: " + ", ".join("a%d (%s)" % (h["id"], (h.get(
                                                                "last_exit") or {}).get("reason") or "?")
                                                                for h in bad[:4]) if bad else ""))
@@ -366,11 +367,18 @@ def format_status(d):
                         w.get("fresh", 0), w.get("evicted", 0)))
     elif g.get("error"):
         L.append("gpu: %s" % g["error"])
+    lv = d.get("live")
+    if lv:
+        last = lv.get("last") or {}
+        L.append("live export (local actors): %s; version %s, %s ago, %s s to export, %s exports in 10 min%s" % (
+            "in place" if lv.get("ok") else "WAITING (the actors start once it is in place)", last.get("version", "-"),
+            _dur(now - last["at"]) if last.get("at") else "-", _n(last.get("seconds"), "%.2f"),
+            lv.get("exports_10min", 0), "; queued %s" % lv["queued"] if lv.get("queued") else ""))
     m = d.get("metrics") or {}
     for key, fields in (("bc_train", ("train_policy", "train_agree", "train_value", "lr", "decisions_per_s")),
                         ("bc_eval", ("eval_agree_all", "eval_agree_group:in_game", "eval_value_mse")),
                         ("rnad_step", ("loss", "loss_v", "loss_nerd", "kl_reg", "entropy", "alpha", "policy_lag",
-                                       "decisions_per_s"))):
+                                       "policy_lag_p95", "decisions_per_s", "wait_fraction", "reg_recomputed"))):
         if key in m:
             e = m[key]
             L.append("%s @ step %s, %s ago: %s" % (key, e.get("step"), _dur(now - e.get("time", now)),

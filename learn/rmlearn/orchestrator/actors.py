@@ -22,11 +22,16 @@ import subprocess
 import time
 
 GPU_HIDDEN = {"HIP_VISIBLE_DEVICES": "", "CUDA_VISIBLE_DEVICES": "", "ROCR_VISIBLE_DEVICES": ""}
+# One thread per CPU process of the run: the in-process evaluator sets libtorch to one intra-op and one
+# inter-op thread itself (src/actor/evaluator.cpp) and .pt2 exports compile single-threaded; these keep
+# any OpenMP / BLAS runtime a library brings from spawning a pool per core.
+ONE_THREAD = {"OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"}
 
 
 def cpu_env():
     env = dict(os.environ)
     env.update(GPU_HIDDEN)
+    env.update(ONE_THREAD)
     env.pop("HSA_OVERRIDE_GFX_VERSION", None)
     return env
 
