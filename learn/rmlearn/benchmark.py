@@ -327,7 +327,7 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
     items = policies or default_policies(run)
     root = os.path.join(run.path, "bench", label)
     os.makedirs(root, exist_ok=True)
-    reports, matches = {}, {}
+    reports, records = {}, {}
     for item in items:
         lab, path, opts = resolve_policy(run, item)
         if not os.path.exists(path) and not export_missing(run, path, log):
@@ -335,10 +335,10 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,
                                    engine=engine, extra_args=extra_args, log=log)
-        matches[lab] = match_records(os.path.join(root, slug(lab)))
+        records[lab] = match_records(os.path.join(root, slug(lab)))
     if not reports:
         raise SystemExit("benchmark: no policy to play (%s)" % ", ".join(items))
-    s = summarize(reports, matches=matches)
+    s = summarize(reports, matches=records)
     s.update({"run": run.path, "label": label, "matches": matches, "actors": actors, "seed": seed,
               "opponent": "scripted:hard", "at": time.time()})
     MT.write_json(os.path.join(root, "summary.json"), s)

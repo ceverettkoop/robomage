@@ -1420,6 +1420,21 @@ def check_benchmark(tmp):
     md = BM.format_summary(s, "t")
     check("| final | 4 | 0.750 |" in md and "+0.500 ±" in md and "## Matchups: final" in md
           and "| burn | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)
+    # run_benchmark: each policy played with the match count asked for, the summary paired by match.
+    calls = []
+
+    def fake_play(lab, path, opts, out_dir, matches, *a, **k):
+        calls.append((lab, matches))
+        return reps["bc-final" if lab == "bc-final" else "final"]
+    play, recs = BM.play_policy, BM.match_records
+    BM.play_policy = fake_play
+    BM.match_records = lambda d: mb if d.endswith("bc-final") else mo
+    try:
+        sr = BM.run_benchmark(run, ["bc-final", "final"], label="t", matches=7, actors=2, log=lambda m: None)
+    finally:
+        BM.play_policy, BM.match_records = play, recs
+    check(calls == [("bc-final", 7), ("final", 7)] and sr["matches"] == 7 and sr["policies"]["final"].get("paired")
+          and os.path.exists(os.path.join(run.path, "bench", "t", "summary.md")), "run_benchmark: %s %s" % (calls, sr.get("matches")))
 
 
 def main():
