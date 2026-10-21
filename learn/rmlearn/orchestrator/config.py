@@ -16,6 +16,7 @@ its resolved ``config.json``, so ``start --set`` changes them for the resumed ru
 
 import copy
 import json
+import os
 import tomllib
 
 LEAGUE = ["bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator", "ur_delver", "uw_control", "wrb_energy",
@@ -28,7 +29,7 @@ SPEC = {
         ("seed", 1, "the run seed: actors' --actor-seed, the model's initialisation, the held-out split"),
         ("bin_dir", "bin", "the engine's working directory (relative to the repository)"),
         ("build", "release", "the engine build: bin/<build>/robomage_nn and rmfeat"),
-        ("tables", "", "an existing rmfeat --export-tables directory (empty: export into the run's tables/)"),
+        ("tables", "", "an existing rmfeat --export-tables directory, e.g. another run's tables/ (empty: export into the run's tables/; a relative path is relative to the repository)"),
         ("memory_max", "100G", "systemd MemoryMax of the whole run (orchestrator, GPU process, actors)"),
         ("restart_on_failure", True, "systemd restarts a run that failed (a GPU-process crash, a kill) from its checkpoint"),
         ("restart_delay_s", 60, "the delay before that restart"),
@@ -345,6 +346,17 @@ def resolve(file_cfg=None, sets=None):
         cfg = merge(cfg, file_cfg)
     cfg = apply_sets(cfg, sets)
     validate(cfg)
+    return cfg
+
+
+def absolute_paths(cfg):
+    """`cfg` with ``run.tables`` and ``run.start_from`` absolute: a relative path is relative to the
+    repository, whatever the working directory of the process that reads the config."""
+    from .rundir import REPO_ROOT
+    for key in ("tables", "start_from"):
+        v = cfg["run"].get(key)
+        if v and not os.path.isabs(v):
+            cfg["run"][key] = os.path.normpath(os.path.join(REPO_ROOT, v))
     return cfg
 
 

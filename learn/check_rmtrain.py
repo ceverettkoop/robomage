@@ -1375,6 +1375,18 @@ def check_benchmark(tmp):
         json.dump({"eval": {"nn_options_finetune": "thresh=0.03:disc=16"}}, fp)
     pol = BM.default_policies(run)
     check(pol == ["bc-final", "m1", "m2", "m10", "final", "final@thresh=0.03:disc=16"], "default policies: %s" % pol)
+    for item, want in (("ref-m3=/r/exports/m3.ts.pt", ("ref-m3", "/r/exports/m3.ts.pt", "argmax")),
+                       ("m2@thresh=0.03:disc=16", ("m2@thresh=0.03:disc=16", os.path.join(run.exports, "m2.ts.pt"),
+                                                   "thresh=0.03:disc=16")),
+                       ("p1=final@temp=1", ("p1", os.path.join(run.exports, "final.ts.pt"), "temp=1"))):
+        got = BM.resolve_policy(run, item)
+        check(got == want, "resolve_policy(%s): %s" % (item, got))
+    os.makedirs(run.fixed)
+    open(os.path.join(run.fixed, "m4.pt"), "w").close()
+    open(os.path.join(run.ckpt, "rnad-final.pt"), "w").close()
+    check(BM.checkpoint_of(run, "m4") == os.path.join(run.fixed, "m4.pt")
+          and BM.checkpoint_of(run, "final") == os.path.join(run.ckpt, "rnad-final.pt")
+          and BM.checkpoint_of(run, "m9") is None, "checkpoint_of")
     lab, path, opts = BM.resolve_policy(run, pol[-1])
     check(lab == "final@thresh=0.03:disc=16" and path == os.path.join(run.exports, "final.ts.pt")
           and opts == "thresh=0.03:disc=16", "resolve_policy: %s" % [lab, path, opts])

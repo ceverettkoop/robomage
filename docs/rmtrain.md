@@ -377,7 +377,10 @@ learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 9
 ```
 
 - **Policies.** Export names of the run (`exports/<name>.ts.pt`) or export paths, each optionally
-  `name@<nn options>` (default `argmax`). The default set: `bc-final` (the DAgger policy: the
+  `name@<nn options>` (default `argmax`) and `<label>=` in front, to tell apart policies of several
+  runs (`ctl-m3=runs/r1/exports/m3.ts.pt`). A run's name with a checkpoint but no export (a fixed
+  point `ckpt/fixed/m<k>.pt` whose evaluation never ran, `final` from `ckpt/rnad-final.pt`) is
+  exported first (TorchScript, CPU, a few seconds). The default set: `bc-final` (the DAgger policy: the
   **baseline**), every R-NaD fixed point `m<k>`, `final` at argmax, and `final@<eval.nn_options_finetune>`
   (the fine-tuning projection B5 trained for, sampled). A missing export is skipped with a note.
 - **Matches.** Each policy plays `--matches` (default 480) bo3 matches against scripted:hard on

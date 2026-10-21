@@ -5,7 +5,10 @@ league pair, the same matches for each, scored per game and per deck.
     python -m rmlearn.benchmark --run runs/league12h [--matches 480] [--actors 12] [--label end]
 
 A policy is an export name of the run (``exports/<name>.ts.pt``: ``bc-final``, ``m<k>``, ``final``) or
-an export path, optionally with ``@<nn options>`` (default ``argmax``). The default set is the
+an export path, optionally with ``@<nn options>`` (default ``argmax``) and a ``<label>=`` prefix (to
+tell apart policies of several runs: ``ref-m3=runs/r1/exports/m3.ts.pt``). A run's policy without an
+export but with a checkpoint (an R-NaD fixed point ``ckpt/fixed/m<k>.pt``, ``ckpt/rnad-final.pt``
+for ``final``, a BC ``ckpt/<name>.pt``) is exported first (TorchScript, on the CPU). The default set is the
 DAgger policy (``bc-final``, the baseline), every R-NaD fixed point ``m<k>``, and the final network
 at argmax and with the fine-tuning projection (the run's ``eval.nn_options_finetune``). Each policy
 plays `matches` matches (side a, both decks of each pair and both seats: ``matches.eval_schedule``)
@@ -27,11 +30,12 @@ import json
 import math
 import os
 import re
+import subprocess
 import sys
 import time
 
 from . import matches as MT
-from .corpus import LEAGUE
+from .corpus import CPU_ENV, LEAGUE
 from .orchestrator.control import alive
 from .orchestrator.rundir import RunDir, read_json, resolve_run
 
@@ -52,14 +56,46 @@ def default_policies(run):
 
 
 def resolve_policy(run, item):
-    """(label, export path, nn options) of a policy item ``name[@options]``."""
-    name, _, opts = item.partition("@")
+    """(label, export path, nn options) of a policy item ``[label=]name[@options]``."""
+    label, eq, spec = item.partition("=")
+    if not eq or any(c in label for c in "/:@"):
+        label, spec = None, item
+    name, _, opts = spec.partition("@")
     opts = opts or "argmax"
     path = name if MT.is_export(name) else os.path.join(run.exports, name + ".ts.pt")
-    label = os.path.basename(name)[:-len(".ts.pt")] if name.endswith(".ts.pt") else os.path.basename(name)
-    if opts != "argmax":
-        label += "@" + opts
+    if label is None:
+        label = os.path.basename(name)[:-len(".ts.pt")] if name.endswith(".ts.pt") else os.path.basename(name)
+        if opts != "argmax":
+            label += "@" + opts
     return label, os.path.abspath(path), opts
+
+
+def checkpoint_of(run, name):
+    """The checkpoint an export name of the run comes from, or None."""
+    for p in (os.path.join(run.fixed, name + ".pt"), os.path.join(run.ckpt, "rnad-%s.pt" % name),
+              os.path.join(run.ckpt, name + ".pt")):
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def export_missing(run, path, log=print):
+    """Exports the run's checkpoint behind a missing export `path` (``exports/<name>.ts.pt``); True
+    when it now exists."""
+    if os.path.dirname(path) != os.path.abspath(run.exports) or not path.endswith(".ts.pt"):
+        return False
+    ck = checkpoint_of(run, os.path.basename(path)[:-len(".ts.pt")])
+    if ck is None:
+        return False
+    tables = (read_json(run.config) or {}).get("run", {}).get("tables") or run.tables
+    argv = [sys.executable, "-m", "rmlearn.orchestrator.exporter", "--tables", tables, "--checkpoint", ck,
+            "--prefix", path[:-len(".ts.pt")], "--formats", "ts"]
+    log("exporting %s from %s" % (path, ck))
+    r = subprocess.run(argv, cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), env=CPU_ENV,
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        log("export failed (exit %d): %s" % (r.returncode, r.stderr[-2000:]))
+    return os.path.exists(path)
 
 
 def slug(label):
@@ -294,7 +330,7 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
     reports, matches = {}, {}
     for item in items:
         lab, path, opts = resolve_policy(run, item)
-        if not os.path.exists(path):
+        if not os.path.exists(path) and not export_missing(run, path, log):
             log("%s: no export %s; skipped" % (lab, path))
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,
@@ -313,8 +349,8 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
 
 
 def add_args(ap):
-    ap.add_argument("--policies", help="comma-separated name[@options] (default: bc-final, every m<k>, final, "
-                                       "final@<eval.nn_options_finetune>)")
+    ap.add_argument("--policies", help="comma-separated [label=]name[@options] (default: bc-final, every m<k>, "
+                                       "final, final@<eval.nn_options_finetune>)")
     ap.add_argument("--label", default="end", help="the benchmark's directory under <run>/bench/")
     ap.add_argument("--matches", type=int, default=DEFAULT_MATCHES, help="matches per policy")
     ap.add_argument("--actors", type=int, default=DEFAULT_ACTORS)

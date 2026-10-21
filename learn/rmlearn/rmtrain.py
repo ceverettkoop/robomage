@@ -52,7 +52,7 @@ def prepare(run, args):
                 % (run.path, run.config))
         cfg, added = C.fill_defaults(read_json(run.config))
         try:
-            cfg = C.apply_sets(cfg, args.set)
+            cfg = C.absolute_paths(C.apply_sets(cfg, args.set))
             C.validate(cfg)
         except ValueError as err:
             die(str(err))
@@ -62,7 +62,7 @@ def prepare(run, args):
             write_json(run.config, cfg)
         return cfg, False
     try:
-        cfg = C.resolve(C.load_file(args.config) if args.config else None, args.set)
+        cfg = C.absolute_paths(C.resolve(C.load_file(args.config) if args.config else None, args.set))
     except (ValueError, OSError) as err:
         die(str(err))
     run.make()
