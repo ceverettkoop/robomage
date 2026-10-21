@@ -775,8 +775,78 @@ tokenises it, so sideboarding needs no format change and no head of its own:
 - the knowledge sidecar's memory of the opponent across games (revealed cards, `k_archetype`).
 
 The pointer head picks sideboarding rows like any other menu rows. A sideboarding decision is part
-of the next game's episode (T1) and is credited with that game's result. Exploration comes from the
-larger sideboarding ε in `π_0,reg` (B3); B1–B2 teach Done there, which is all the teacher does.
+of the next game's episode (T1) and is credited with that game's result. A sideboarding row moves
+one copy, so a phase of k swaps is 2k decisions (each in, then its cut) and a Done.
+
+**Measured in league12h (2026-10-20), with the teacher answering Done and `reg_eps_sideboarding`
+0.25:** under argmax no policy ever swapped (0 of ~690 phases per policy in the end-of-run
+benchmark); in self-play the policy's probability off Done at sideboarding decisions climbed with
+every fixed point (0.05 BC → 0.10 m1 → 0.27 final, still rising), its swaps were close to random
+(doomsday boarding in Plains for Brainstorm), and a swapping seat won its next game 2.4 points less
+often than a non-swapping one in the same matchup. The smoothing in `π_0,reg` pulled the policy
+itself toward random swaps instead of exploring them. Section 6.2 replaces it.
+
+### 6.2 Sideboarding: a heuristic warm start and structured exploration
+
+The goal is a policy that sideboards from what it sees (its own 75, the opponent's registered list
+under open decklists, what the opponent showed in earlier games), in a way that carries to
+matchups and cards it was not taught. Two parts:
+
+**1. A teacher that sideboards (the warm start).** A scripted tier with basic sideboarding
+heuristics, `scripted:hard+sb`, labels B0–B2; `scripted:hard` stays unchanged as an evaluation
+opponent, so results stay comparable across runs. The heuristics may be hard-coded per matchup
+(which cards each league deck brings in and cuts against each opponent); they are a prior, not the
+target. Behaviour cloning learns them; R-NaD starts from them (`π_0,reg` is that policy, with
+`reg_eps_sideboarding` about 0: exploration moves to the actors, part 2).
+
+**2. Structured exploration in the actors.** In self-play (B4–B5), at each sideboarding phase a
+seat explores with probability `p_explore` (a run setting, scheduled from high to low over the
+run, live). An exploring phase follows a proposal distribution `q` instead of the policy for the
+whole phase:
+
+- **How many swaps:** a target count k from 0 to 10 (0 is the control: Done at once), drawn from a
+  configurable distribution over 0–10 (default uniform). It is realised as a stopping hazard over
+  the phase's swap count, the match token's `sb_swaps`: at a balanced deck with s swaps made,
+  `q(Done) = P(k = s) / P(k ≥ s)`. So `q` at every decision is a function of what the seat sees,
+  and the distribution of k is the configured one.
+- **Which card in:** among the offered `SIDEBOARD_IN` rows, by per-card weights; **which cut:**
+  among the offered `SIDEBOARD_OUT` rows, by per-card weights. No masking: every card the engine
+  offers stays possible, the engine's balance rules and its 15-swap cap apply as for any agent.
+- **Coverage:** the orchestrator keeps per matchup (own deck, opponent deck) counts of explored
+  (card in) and (card out) and writes weights favouring the least explored into each schedule
+  entry, so over a run every sideboard card is tried in and every maindeck card tried out in every
+  matchup, at every swap count. Uniform weights are the fallback.
+
+The actor records `q` of the chosen row as μ at every step of an exploring phase (the coin that
+chose exploration is taken per phase; each branch is a valid behaviour policy, so the importance
+ratios π/μ of v-trace and NeuRD stay unbiased). The learner therefore sees outcome-credited
+evidence for swaps the policy would not make, without being pulled toward them: the policy changes
+only when the outcomes favour a swap. Exploration is training-only: evaluations play the policy.
+
+**What the learner can resolve, and when.** A day is about 750k sideboarding phases (both seats),
+some 8k per deck ordering; at `p_explore` 0.1 with ten candidate swaps per matchup, a single
+(matchup, swap) cell sees about 80 tries a day, and a 5-point effect needs about 1,500. Per cell,
+outcome-only learning takes weeks; the policy shares what it learns across matchups through the
+card tokens (a graveyard-hate card against any graveyard deck), and that sharing is what
+generalisation means here. The value head's early-game error (section 7, open issue 10) sets the
+noise of every sideboarding decision's credit, so it should be fixed first.
+
+**Measurements** (`rmtrain bench` and the run's status):
+
+- per policy: the swap rate, the swap-count distribution, cards in and out per deck, and the next
+  game's win rate after a swap vs Done, per matchup (the paired benchmark against `scripted:hard`
+  and `scripted:hard+sb`);
+- in self-play: the same over the explored phases per (matchup, card), the evidence the learner sees;
+- **generalisation:** hold some matchups' heuristics out of the teacher (it answers Done there);
+  the policy's sideboarding in those matchups after R-NaD, against the held-in ones, shows whether
+  it learned more than the hard-coded table.
+
+**Work:** the `scripted:hard+sb` tier (`python/scripted_core.py`; card scripts untouched); the
+actor's exploring phase and its μ (`src/actor/nn_agent`, the schedule entry's `sb_explore` fields:
+`p`, the count distribution, in and out weights); the orchestrator's coverage counts and schedule
+weights, `p_explore`'s schedule (`rmtrain` config, live); `reg_eps_sideboarding` to about 0; the
+benchmark's sideboarding report; the gate (`actor` tier: an exploring phase's μ is `q`, the counts
+cover 0–10, a replay of an exploring match).
 
 ---
 
@@ -796,12 +866,11 @@ Open:
 1. **Omniscient critic:** adopt it after the A/B test in L4, or keep the observation-only critic.
 2. **Teacher smoothing ε and the first Δm.** Tune them on a small run (two matchups) before the
    full league.
-3. **No teacher for sideboarding.** The scripted agent never sideboards (it always answers Done),
-   so imitation teaches nothing about sideboarding, and sideboarding skill comes only from R-NaD's
-   exploration, credited through one game's result per sideboarding phase: a weak, noisy signal.
-   To refine later: a sideboarding teacher (rules in the scripted agent, or the archive's
-   dead-card rules table, `sb_dead_rules.json` on `archive/rl-stack`), or the user's own guidance
-   per matchup as labels or as a prior in `π_0,reg`.
+3. **Sideboarding** (decided 2026-10-20, section 6.2): a teacher tier with basic sideboarding
+   heuristics (per matchup allowed) for the warm start, and structured exploration in the actors
+   (0–10 swaps, coverage-weighted cards, no masking) instead of smoothing in `π_0,reg`. The
+   archive's dead-card table (`sb_dead_rules.json` on `archive/rl-stack`) is not used as a mask;
+   it can inform the heuristics.
 4. **Memory / history.** The network sees the current state only. Candidate: recent-event tokens
    over a short window (this turn and the previous one), without the fields that fingerprint a game
    (handles, sequence numbers, exact turn counts), with dropout on them. Behaviour cloning's
@@ -855,3 +924,18 @@ Open:
 9. **Knowledge error with test-harness presets in bo3 game 2.** "A card is created from zone none
    with nothing set aside" (found during T7, pre-existing): the knowledge sidecar reports it in
    game 2 of a bo3 started with test-harness zone presets. It does not occur in training games.
+10. **The value head underuses the matchup** (league12h, 2026-10-20). R-NaD made it calibrated
+    (DAgger predicted +0.95 for positions that ended +0.80; the final network +0.93 → +0.95) and cut
+    its self-play error from 0.66 to 0.51, but early in a game it is worse than a lookup of each
+    matchup's mean result, which it can compute (open decklists put the opponent's registered list
+    in its ledger tokens from the first decision): 0.82 vs 0.69 at the start of game 1, 0.73 vs
+    0.66 at the start of games 2–3. Its gradient on a 32-game batch is about 2% signal (break-even
+    near 1,650 games), and the trunk's about 1%. Candidates: a value-only pass over more replayed
+    games per learner step, the omniscient critic (open issue 1).
+11. **Learning pace** (league12h, 2026-10-20). Against `scripted:hard`, paired by match, the final
+    network gained +0.017 ± 0.013 over the DAgger policy, rising steadily with steps (about +0.23
+    points per 1,000 learner steps; 15k steps a day). The policy moved little (its top move differs
+    from DAgger's at 1% of decisions) because each step is mostly noise: a 32-game gradient is about
+    7% signal overall and 1.4% per coordinate (Adam's view), with a break-even batch near 420 games
+    (DeepNash's 768 is above it). Candidates, to pilot before a multi-day run: learning rate 2–4×
+    5e-5, larger batches, and the value-head pass above.
