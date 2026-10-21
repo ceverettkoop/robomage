@@ -397,7 +397,10 @@ learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 9
   and `report.txt`), then `summary.json` and **`summary.md`**: the overall table (win rate per
   decisive game, Wilson 95%, ± two SEs, game 1, games 2–3, the difference from the baseline, draws,
   caps); per deck the policy's win rate **playing** it and **facing** it; each policy's per-deck
-  difference from the baseline ± two SEs; each policy's 10 × 10 deck-vs-deck matrix; the findings
+  difference from the baseline ± two SEs, **paired by match** (`benchmark.paired_delta`: the same
+  seeds, decks and seats, so the shared luck cancels; with policies a few percent of decisions apart
+  this is several times tighter than the win rates' own ±, and `same` gives the share of matches
+  played exactly as the baseline did); each policy's 10 × 10 deck-vs-deck matrix; the findings
   (draws and caps, with their decision logs). A policy whose `report.json` exists is not played
   again: an interrupted benchmark resumes, and `--policies` with the same `--label` adds policies to
   an existing summary.

@@ -1393,6 +1393,18 @@ def check_benchmark(tmp):
     check(s["baseline"] == "bc-final" and f["plays"]["burn"]["win_rate"] == 0.75
           and f["faces"]["uw_control"]["win_rate"] == 0.75 and abs(f["delta_plays"]["burn"]["delta"] - 0.5) < 1e-9
           and f["all"]["draws"] == 1 and len(f["findings"]) == 1, "benchmark summary: %s" % json.dumps(f)[:600])
+    # Paired by match: the same matches, the other policy flips match 0 (a loss) and wins match 4's
+    # game where the baseline drew nothing: identical elsewhere.
+    mb = {("0", k): {"wins": int(r["result_a"] > 0), "decisive": 1, "deck": "burn", "decisions": [1]}
+          for k, r in enumerate(base)}
+    mo = {("0", k): {"wins": int(k != 0) if k else 0, "decisive": 1, "deck": "burn", "decisions": [1 if k > 1 else 2]}
+          for k in range(4)}
+    pd = BM.paired_delta(mb, mo)
+    check(pd and abs(pd["delta"] - 0.5) < 1e-9 and pd["identical"] == 0.5 and pd["matches"] == 4
+          and pd["two_se"] > 0, "paired_delta: %s" % pd)
+    sp = BM.summarize(reps, matches={"bc-final": mb, "final": mo})
+    check(sp["policies"]["final"].get("paired") and sp["policies"]["final"]["delta_all"]["identical"] == 0.5,
+          "summarize paired: %s" % json.dumps(sp["policies"]["final"].get("delta_all")))
     md = BM.format_summary(s, "t")
     check("| final | 4 | 0.750 |" in md and "+0.500 ±" in md and "## Matchups: final" in md
           and "| burn | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)

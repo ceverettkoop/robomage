@@ -126,8 +126,52 @@ def _cell(t):
     return "-" if not t or t.get("win_rate") is None else "%.3f (%d)" % (t["win_rate"], t["decisive"])
 
 
-def summarize(reports, baseline=None):
-    """The summary dict of {label: report} (in order; the first is the baseline unless named)."""
+def match_records(out_dir):
+    """{(actor, match): {"wins", "decisive", "deck", "decisions"}} of a policy's results files: its
+    decisive games per match and the decisions of each game (equal across policies when the policies
+    chose alike)."""
+    out = {}
+    for line in MT.ResultsReader(out_dir).poll():
+        r = MT.game_record(line)
+        m = out.setdefault(r["key"], {"wins": 0, "decisive": 0, "deck": r["deck"], "decisions": []})
+        if r["end"] != "cap" and r["result"] != 0:
+            m["wins"] += r["result"] > 0
+            m["decisive"] += 1
+        m["decisions"].append(r["decisions"])
+    return out
+
+
+def paired_delta(base, other, deck=None):
+    """The win rate difference of `other` from `base` over the matches both played (``match_records``),
+    paired by match (the same seeds, decks and seats: common random numbers), with two SEs of the
+    ratio estimators' linearisation over matches; the share of matches played identically. None
+    with fewer than two matches."""
+    keys = [k for k in base if k in other and base[k]["decisive"] and other[k]["decisive"]
+            and (deck is None or base[k]["deck"] == deck)]
+    if len(keys) < 2:
+        return None
+    nb = sum(base[k]["decisive"] for k in keys)
+    no = sum(other[k]["decisive"] for k in keys)
+    pb = sum(base[k]["wins"] for k in keys) / nb
+    po = sum(other[k]["wins"] for k in keys) / no
+    m = len(keys)
+    z = [m * ((other[k]["wins"] - po * other[k]["decisive"]) / no - (base[k]["wins"] - pb * base[k]["decisive"]) / nb)
+         for k in keys]
+    mean = sum(z) / m
+    se = math.sqrt(sum((x - mean) ** 2 for x in z) / (m - 1) / m)
+    same = sum(base[k]["decisions"] == other[k]["decisions"] for k in keys)
+    return {"delta": po - pb, "two_se": 2 * se, "matches": m, "identical": same / m}
+
+
+def _delta(d):
+    s = "%+.3f ± %.3f" % (d["delta"], d["two_se"])
+    return s + (" (same %.0f%%)" % (100 * d["identical"]) if "identical" in d else "")
+
+
+def summarize(reports, baseline=None, matches=None):
+    """The summary dict of {label: report} (in order; the first is the baseline unless named). With
+    `matches` ({label: match_records}) the differences from the baseline are paired by match, else
+    the two policies' samples are taken as independent."""
     labels = list(reports)
     base = baseline or labels[0]
     seen = {d for r in reports.values() for k in r["by_matchup"] for d in k.split(" vs ", 1)}
@@ -137,7 +181,16 @@ def summarize(reports, baseline=None):
         p = {"all": rep["all"], "game1": rep["game1"], "games23": rep["games23"], "plays": rep["by_deck"],
              "faces": by_opponent_deck(rep), "matchups": rep["by_matchup"], "findings": rep["findings"],
              "delta_plays": {}}
-        if lab != base:
+        if lab != base and matches and lab in matches and base in matches:
+            p["paired"] = True
+            for d in decks:
+                pd = paired_delta(matches[base], matches[lab], d)
+                if pd:
+                    p["delta_plays"][d] = pd
+            pd = paired_delta(matches[base], matches[lab])
+            if pd:
+                p["delta_all"] = pd
+        elif lab != base:
             for d in decks:
                 t, b = rep["by_deck"].get(d), reports[base]["by_deck"].get(d)
                 if t and b and t["win_rate"] is not None and b["win_rate"] is not None:
@@ -158,8 +211,10 @@ def format_summary(s, title):
     L = ["# %s" % title, "",
          "Every policy against scripted:hard over all %d league pairs, both decks and seats, the same "
          "matches for each (common random numbers). Win rates are per decisive game; draws and caps "
-         "are excluded and listed under findings. ± is two standard errors (match-clustered)." % len(
-             MT.league_pairs()), "",
+         "are excluded and listed under findings. ± is two standard errors (match-clustered). A "
+         "difference from the baseline is paired by match: the policies played the same matches, so "
+         "the shared luck of the deal cancels and its ± is smaller than the win rates' (`same` is the "
+         "share of matches a policy played exactly as the baseline did)." % len(MT.league_pairs()), "",
          "## Overall", "",
          "| policy | games | win rate | 95%% (Wilson) | ± 2 SE | game 1 | games 2–3 | Δ vs %s | draws | caps |" % base,
          "|---|---|---|---|---|---|---|---|---|---|"]
@@ -170,8 +225,7 @@ def format_summary(s, title):
         d = p.get("delta_all")
         L.append("| %s | %d | %s | %.3f–%.3f | %s | %s | %s | %s | %d | %d |" % (
             lab, a["decisive"], _pct(a), lo, hi, "%.3f" % (2 * _se(a)) if _se(a) else "-", _pct(p["game1"]),
-            _pct(p["games23"]), "%+.3f ± %.3f" % (d["delta"], d["two_se"]) if d else "baseline", a["draws"],
-            a["caps"]))
+            _pct(p["games23"]), _delta(d) if d else "baseline", a["draws"], a["caps"]))
     for head, key, note in (("The policy playing each deck", "plays", "win rate (decisive games)"),
                             ("The policy facing each deck", "faces", "win rate (decisive games)")):
         L += ["", "## %s" % head, "", "%s; rows are decks, columns policies." % note, "",
@@ -187,7 +241,7 @@ def format_summary(s, title):
             cells = []
             for lab in others:
                 d = s["policies"][lab]["delta_plays"].get(dk)
-                cells.append("%+.3f ± %.3f" % (d["delta"], d["two_se"]) if d else "-")
+                cells.append(_delta(d) if d else "-")
             L.append("| %s | " % dk + " | ".join(cells) + " |")
     ab = {d: d[:6] for d in s["decks"]}
     for lab in labs:
@@ -237,7 +291,7 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
     items = policies or default_policies(run)
     root = os.path.join(run.path, "bench", label)
     os.makedirs(root, exist_ok=True)
-    reports = {}
+    reports, matches = {}, {}
     for item in items:
         lab, path, opts = resolve_policy(run, item)
         if not os.path.exists(path):
@@ -245,9 +299,10 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,
                                    engine=engine, extra_args=extra_args, log=log)
+        matches[lab] = match_records(os.path.join(root, slug(lab)))
     if not reports:
         raise SystemExit("benchmark: no policy to play (%s)" % ", ".join(items))
-    s = summarize(reports)
+    s = summarize(reports, matches=matches)
     s.update({"run": run.path, "label": label, "matches": matches, "actors": actors, "seed": seed,
               "opponent": "scripted:hard", "at": time.time()})
     MT.write_json(os.path.join(root, "summary.json"), s)
