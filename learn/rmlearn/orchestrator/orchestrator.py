@@ -46,7 +46,7 @@ from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
 from .control import ControlServer
 from .gpulink import GpuError, GpuLink
 from .live import LiveExporter
-from .rundir import REPO_ROOT, JsonLines, Log, read_json, read_jsonl, write_json
+from .rundir import NO_RUN_EXIT, REPO_ROOT, JsonLines, Log, read_json, read_jsonl, write_json
 
 PHASES = ["B0", "B1", "B2", "B3", "B4", "B5", "done"]
 FINDINGS_KEPT = 10
@@ -62,7 +62,8 @@ class Orchestrator:
         self.run = run
         self.cfg = read_json(run.config)
         if self.cfg is None:
-            raise SystemExit("rmtrain: %s has no config.json" % run.path)
+            print("rmtrain: %s has no config.json" % run.path, file=sys.stderr)
+            raise SystemExit(NO_RUN_EXIT)
         self.cfg, added = C.fill_defaults(self.cfg)
         C.validate(self.cfg)
         if added:

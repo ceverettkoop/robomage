@@ -58,6 +58,7 @@ from rmlearn.orchestrator import evaluation as EVAL  # noqa: E402
 from rmlearn.orchestrator import gpu as G  # noqa: E402
 from rmlearn.orchestrator import rundir as RD  # noqa: E402
 from rmlearn.orchestrator import schedules as SCH  # noqa: E402
+from rmlearn import rmtrain as RT  # noqa: E402
 
 FAILURES = []
 
@@ -1120,6 +1121,7 @@ def smoke(args):
     rmtrain = os.path.join(HERE, "rmtrain")
     run = RD.RunDir(args.run or os.path.join(REPO_ROOT, "runs", "smoke-rmtrain"))
     if os.path.exists(run.path):
+        stop_unit(run)
         shutil.rmtree(run.path)
     cfgp = os.path.join(tempfile.mkdtemp(), "smoke.toml")
     with open(cfgp, "w") as fp:
@@ -1274,7 +1276,14 @@ def smoke(args):
     print("smoke: phase start times (s): %s; total %.1f s" % (json.dumps({k: round(v, 1) for k, v in
                                                                         phase_at.items()}), total))
     if not args.keep and not FAILURES:
+        stop_unit(run)
         shutil.rmtree(run.path)
+
+
+def stop_unit(run):
+    """Stops the run's systemd unit, also one waiting to restart, before its directory is deleted."""
+    subprocess.run(["systemctl", "--user", "stop", RT.unit_name(run) + ".service"], stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
 
 
 def smoke_local_checks(run, mets, evs):

@@ -13,6 +13,9 @@ import time
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 RUNS_DIR = os.path.join(REPO_ROOT, "runs")
+# The run daemon's exit status when its run directory has no config.json (deleted): systemd does not
+# restart it.
+NO_RUN_EXIT = 3
 
 
 def resolve_run(name):

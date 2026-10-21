@@ -24,7 +24,7 @@ import time
 
 from .orchestrator import config as C
 from .orchestrator.control import alive, request
-from .orchestrator.rundir import REPO_ROOT, RunDir, read_json, resolve_run, write_json
+from .orchestrator.rundir import NO_RUN_EXIT, REPO_ROOT, RunDir, read_json, resolve_run, write_json
 
 LEARN_DIR = os.path.join(REPO_ROOT, "learn")
 PASS_ENV = ("PATH", "HOME", "USER", "LOGNAME", "LANG", "LC_ALL", "TMPDIR", "LD_LIBRARY_PATH", "XDG_RUNTIME_DIR",
@@ -106,6 +106,7 @@ def detach(run, cfg):
                "-p", "MemoryMax=" + cfg["run"]["memory_max"], "-p", "KillMode=mixed", "-p", "TimeoutStopSec=600",
                "-p", "Restart=" + ("on-failure" if cfg["run"]["restart_on_failure"] else "no"),
                "-p", "RestartSec=%ds" % cfg["run"]["restart_delay_s"], "-p", "StartLimitIntervalSec=0",
+               "-p", "RestartPreventExitStatus=%d" % NO_RUN_EXIT,
                "--working-directory=" + LEARN_DIR, "--description=rmtrain run " + run.path]
         cmd += ["--setenv=%s=%s" % (k, v) for k, v in sorted(env.items())]
         r = subprocess.run(cmd + ["--"] + argv, capture_output=True, text=True)
