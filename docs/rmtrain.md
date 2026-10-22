@@ -67,7 +67,7 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 `rnad.learning_rate`, `rnad.entropy_schedule_sizes` (Δm; an integer is a one-size schedule),
 `rnad.entropy_schedule_repeats`, `rnad.reg_eps`, `rnad.reg_eps_sideboarding` (also applied to the
 smoothed π_0,reg while it is still a regularisation policy), `rnad.push_every`,
-`rnad.report_every`, `rnad.games_per_step`, `rnad.value_after_every`; `actors.count`; the phase limits (`b0.decisions`,
+`rnad.report_every`, `rnad.games_per_step`, `rnad.value_after_every`; `replay.max_decision_tokens`; `actors.count`; the phase limits (`b0.decisions`,
 `b1.*` but `play_eval`, `b2.rounds_*`, `b2.decisions_per_round`, `b2.min_steps_per_round`,
 `b2.min_improvement`, `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options`,
 `b5.max_learner_steps`); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
