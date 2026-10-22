@@ -424,6 +424,7 @@ per-deck counts are tiny), and nothing evaluates the final network: the run ends
 ```sh
 learn/rmtrain bench r1 --wait            # waits for r1 to stop, then plays (CPU only, ~3 min per policy)
 learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 960
+learn/rmtrain bench r1 --opponent scripted:hard+sb       # the same against the sideboarding tier: bench/end-vs-hard_sb/
 ```
 
 - **Policies.** Export names of the run (`exports/<name>.ts.pt`) or export paths, each optionally
@@ -433,7 +434,14 @@ learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 9
   exported first (TorchScript, CPU, a few seconds). The default set: `bc-final` (the DAgger policy: the
   **baseline**), every R-NaD fixed point `m<k>`, `final` at argmax, and `final@<eval.nn_options_finetune>`
   (the fine-tuning projection B5 trained for, sampled). A missing export is skipped with a note.
-- **Matches.** Each policy plays `--matches` (default 480) bo3 matches against scripted:hard on
+- **Opponent.** `--opponent` (default `scripted:hard`, the opponent every run's evaluations use)
+  takes any `scripted:<tier>`; `scripted:hard+sb` sideboards per the guides
+  (`python/sideboard_guides.json`) except in its ten held-out matchups. Against another opponent
+  than `scripted:hard` the directory is `bench/<label>-vs-<tier>/` (`end-vs-hard_sb`;
+  `benchmark.bench_dir`), so results against different opponents never mix; each `report.json`
+  records its opponent (one without the key was played against `scripted:hard`), and one played
+  against another opponent is refused rather than reused.
+- **Matches.** Each policy plays `--matches` (default 480) bo3 matches against the opponent on
   `--actors` (default 12) engine actors, as side a of `matches.eval_schedule` over all 45 league
   pairs, both orders (so both decks), seats by `swap: sides`. Every policy uses the same run seed,
   actor ids and per-actor match count, so each meets the same deck pairs, seats and game seeds
@@ -453,10 +461,29 @@ learn/rmtrain bench r1 --policies bc-final,m3,final --label m3-check --matches 9
   difference from the baseline ± two SEs, **paired by match** (`benchmark.paired_delta`: the same
   seeds, decks and seats, so the shared luck cancels; with policies a few percent of decisions apart
   this is several times tighter than the win rates' own ±, and `same` gives the share of matches
-  played exactly as the baseline did); each policy's 10 × 10 deck-vs-deck matrix; the findings
-  (draws and caps, with their decision logs). A policy whose `report.json` exists is not played
-  again: an interrupted benchmark resumes, and `--policies` with the same `--label` adds policies to
-  an existing summary.
+  played exactly as the baseline did); each policy's 10 × 10 deck-vs-deck matrix; the
+  **sideboarding** section (below); the findings (draws and caps, with their decision logs). A
+  policy whose `report.json` exists (against the same opponent) is not played again: an interrupted
+  benchmark resumes, and `--policies` with the same `--label` adds policies to an existing summary.
+- **Sideboarding** (`rmlearn/sb_report.py`, from the results lines' `sb`, `docs/actor.md` §4; in
+  `summary.json` each policy's `sideboarding`: `policy`, and `opponent` when the opponent is not
+  `scripted:hard`, which always takes Done). Per policy, from its own seat's phases before games 2
+  and 3 (the opponent's in separate rows), overall and per deck: the **swap rate** (the share of
+  phases with at least one swap) and the swap-count histogram (0 … 9, 10+); the five cards most
+  moved in and most cut (copies, as the frames name them); the **next game's win rate** after a
+  phase with swaps and after Done (decisive games, with counts; observational: the policy chose
+  when to swap, so this mixes a swap's effect with where it swapped); and **agreement with the
+  guides**: the share of phases whose resulting maindeck equals the guide's target for (deck,
+  opponent deck, play / draw) (`python/sideboard_guides.py`'s `Guides.target`, the held-out rows
+  included), held-in and held-out matchups apart (the held-out ones, where the teacher took Done,
+  measure generalisation), held-in also on the play and on the draw. The maindeck is tracked through
+  the match: the registered list (the league deck file), then each phase's cuts and cards in, so game
+  3's phase starts from game 2's deck. Play / draw is the line's `first` (who played first in the
+  game the phase precedes; without it, the previous game's loser, the same player after a draw).
+  Card names are compared by their front face with accents folded (`Dead` for `Dead/Gone`,
+  `Lórien Revealed` for `Lorien Revealed`). A benchmark's policies play argmax and its entries carry
+  no `sb_explore`, so no phase is explored; any that were would be left out and counted, as are
+  games 2–3 whose lines lack `sb` (an engine from before the key).
 
 Read the per-deck tables before the overall rate: in league self-play the decks are far from even
 (the fast decks win most games with any pilot), so an overall rate near 0.5 can hide a policy that
@@ -531,7 +558,11 @@ fresh again, an iteration's evaluation loading its fixed point (also after a pau
 one snapshots the current network, an evaluation whose actors all fail reported as an error,
 colliding groups refused, argmax by default with the sampled groups optional and every result
 labelled with its options, and draws as findings in the status; the benchmark's default policy set
-and its summary (per-deck playing and facing rates, the difference from the baseline, the tables). The smoke runs a tiny run
+and its summary (per-deck playing and facing rates, the difference from the baseline, the tables), its
+sideboarding report (from synthetic results lines: the swap rate and histogram, the top cards, the
+next game after swaps vs Done, guide agreement on the play and on the draw with a game-3 flip carried
+from game 2's maindeck, held-in vs held-out, explored and missing phases left out, the opponent's side
+apart) and `--opponent` (its directory, report reuse against the same opponent only). The smoke runs a tiny run
 (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`, one DAgger round of
 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises every command, kills
 the whole unit with SIGKILL in B4 (systemd restarts it; it resumes at the checkpoint), stops and

@@ -1,7 +1,8 @@
-"""The end-of-run benchmark (docs/rmtrain.md §7.1): a run's policies against scripted:hard over every
-league pair, the same matches for each, scored per game and per deck.
+"""The end-of-run benchmark (docs/rmtrain.md §7.1): a run's policies against scripted:hard (or another
+``--opponent``) over every league pair, the same matches for each, scored per game and per deck.
 
     learn/rmtrain bench <run> [--wait] [--policies bc-final,m3,final,final@thresh=0.03:disc=16]
+    learn/rmtrain bench <run> --opponent scripted:hard+sb      # under bench/end-vs-hard_sb/
     python -m rmlearn.benchmark --run runs/league12h [--matches 480] [--actors 12] [--label end]
 
 A policy is an export name of the run (``exports/<name>.ts.pt``: ``bc-final``, ``m<k>``, ``final``) or
@@ -16,12 +17,14 @@ on `actors` actors with the same run seed, actor ids and match counts, so every 
 same deck pairs, seats and game seeds (common random numbers): differences between policies are
 the policies'. ``--wait`` waits for the run to stop first (its shutdown finishes the final export).
 
-Writes ``<run>/bench/<label>/``: per policy a directory (the actors' files, ``report.json`` — the
+Writes ``<run>/bench/<label>/`` (``<label>-vs-<opponent>`` for an opponent other than scripted:hard,
+``bench_dir``): per policy a directory (the actors' files, ``report.json`` — the
 ``matches.report`` —, ``report.txt``), then ``summary.json`` and ``summary.md``: per policy the
 per-game win rate (Wilson 95%, match-clustered SE), game 1 apart from games 2–3; per deck the
 policy's win rate playing it and facing it, each policy's difference from the baseline with its
-two-SE half-width; per policy the deck-vs-deck matrix. A policy whose ``report.json`` exists is not
-played again (an interrupted benchmark resumes).
+two-SE half-width; per policy the deck-vs-deck matrix; the sideboarding report (``sb_report``: the
+policy's phases, and the opponent's when it is not scripted:hard). A policy whose ``report.json``
+exists (against the same opponent) is not played again (an interrupted benchmark resumes).
 """
 
 import argparse
@@ -35,13 +38,14 @@ import sys
 import time
 
 from . import matches as MT
+from . import sb_report as SB
 from .corpus import CPU_ENV, LEAGUE
 from .orchestrator.control import alive
 from .orchestrator.rundir import RunDir, read_json, resolve_run
 
 DEFAULT_MATCHES = 480
 DEFAULT_ACTORS = 12
-OPPONENT = "scripted:hard"     # the benchmark's opponent, whatever tier a run's teacher had
+OPPONENT = "scripted:hard"     # the benchmark's default opponent, whatever tier a run's teacher had
 
 
 def default_policies(run):
@@ -103,15 +107,52 @@ def slug(label):
     return re.sub(r"[^A-Za-z0-9_.-]", "_", label)
 
 
-def play_policy(label, path, opts, out_dir, matches, actors, seed, engine=None, extra_args=(), log=print):
-    """The policy's report (``matches.report``) against scripted:hard over every league pair; reuses
-    an existing ``report.json``."""
+def normal_opponent(opponent):
+    """The opponent spec as reports name it (``scripted`` is ``scripted:hard``)."""
+    return OPPONENT if opponent in (None, "", "scripted") else opponent
+
+
+def bench_dir(label, opponent=OPPONENT):
+    """The benchmark's directory name under ``<run>/bench/``: the label against scripted:hard, else
+    ``<label>-vs-<opponent>`` (``scripted:`` dropped, slugged: ``end-vs-hard_sb``), so results
+    against different opponents never share a directory."""
+    opponent = normal_opponent(opponent)
+    if opponent == OPPONENT:
+        return label
+    short = opponent[len("scripted:"):] if opponent.startswith("scripted:") else os.path.basename(opponent)
+    return "%s-vs-%s" % (label, slug(short))
+
+
+def results_lines(out_dir):
+    """Every results line of a policy's directory, each actor's file in its order."""
+    return MT.ResultsReader(out_dir).poll()
+
+
+def sideboarding(out_dir, opponent=OPPONENT):
+    """A policy's sideboarding report (``sb_report``): the policy's side, and the opponent's when it
+    is not scripted:hard (which always takes Done)."""
+    lines = results_lines(out_dir)
+    out = {"policy": SB.report(lines, "a")}
+    if normal_opponent(opponent) != OPPONENT:
+        out["opponent"] = SB.report(lines, "b")
+    return out
+
+
+def play_policy(label, path, opts, out_dir, matches, actors, seed, engine=None, extra_args=(), log=print,
+                opponent=OPPONENT):
+    """The policy's report (``matches.report``) against `opponent` over every league pair; reuses an
+    existing ``report.json`` played against the same opponent (one without the key was played
+    against scripted:hard) and refuses one played against another."""
+    opponent = normal_opponent(opponent)
     done = os.path.join(out_dir, "report.json")
     rep = read_json(done)
     if rep is not None:
+        had = normal_opponent((rep.get("policy") or {}).get("opponent"))
+        if had != opponent:
+            raise SystemExit("benchmark: %s was played against %s, not %s (use another --label)" % (done, had, opponent))
         log("%s: already played (%s)" % (label, done))
         return rep
-    sched = MT.eval_schedule(path, OPPONENT, out_dir, pairs=MT.league_pairs(), policy_options=opts,
+    sched = MT.eval_schedule(path, opponent, out_dir, pairs=MT.league_pairs(), policy_options=opts,
                              version="bench")
     per = int(math.ceil(matches / float(actors)))
     pool = MT.ActorPool(sched, out_dir, actors=actors, engine=engine, seed=seed, matches_per_actor=per,
@@ -126,9 +167,9 @@ def play_policy(label, path, opts, out_dir, matches, actors, seed, engine=None, 
         log("%s: %d actors failed: %s" % (label, len(failed), json.dumps(failed)[:2000]))
     rep = MT.report([MT.game_record(ln) for ln in lines])
     rep["policy"] = {"label": label, "export": path, "options": opts, "seconds": round(time.time() - t0, 1),
-                     "failed_actors": len(failed)}
+                     "failed_actors": len(failed), "opponent": opponent}
     with open(os.path.join(out_dir, "report.txt"), "w") as fp:
-        fp.write(MT.format_report(rep, "%s vs scripted:hard" % label) + "\n")
+        fp.write(MT.format_report(rep, "%s vs %s" % (label, opponent)) + "\n")
     MT.write_json(done, rep)
     a = rep["all"]
     log("%s: %s over %d games (%.0f s)" % (label, _pct(a), a["decisive"], time.time() - t0))
@@ -205,10 +246,11 @@ def _delta(d):
     return s + (" (same %.0f%%)" % (100 * d["identical"]) if "identical" in d else "")
 
 
-def summarize(reports, baseline=None, matches=None):
+def summarize(reports, baseline=None, matches=None, sideboards=None):
     """The summary dict of {label: report} (in order; the first is the baseline unless named). With
     `matches` ({label: match_records}) the differences from the baseline are paired by match, else
-    the two policies' samples are taken as independent."""
+    the two policies' samples are taken as independent; `sideboards` ({label: ``sideboarding``})
+    goes into each policy's ``sideboarding``."""
     labels = list(reports)
     base = baseline or labels[0]
     seen = {d for r in reports.values() for k in r["by_matchup"] for d in k.split(" vs ", 1)}
@@ -218,6 +260,8 @@ def summarize(reports, baseline=None, matches=None):
         p = {"all": rep["all"], "game1": rep["game1"], "games23": rep["games23"], "plays": rep["by_deck"],
              "faces": by_opponent_deck(rep), "matchups": rep["by_matchup"], "findings": rep["findings"],
              "delta_plays": {}}
+        if sideboards and lab in sideboards:
+            p["sideboarding"] = sideboards[lab]
         if lab != base and matches and lab in matches and base in matches:
             p["paired"] = True
             for d in decks:
@@ -245,13 +289,14 @@ def format_summary(s, title):
     """summary.md: the tables of ``summarize``."""
     labs = list(s["policies"])
     base = s["baseline"]
+    opp = s.get("opponent", OPPONENT)
     L = ["# %s" % title, "",
-         "Every policy against scripted:hard over all %d league pairs, both decks and seats, the same "
+         "Every policy against %s over all %d league pairs, both decks and seats, the same "
          "matches for each (common random numbers). Win rates are per decisive game; draws and caps "
          "are excluded and listed under findings. ± is two standard errors (match-clustered). A "
          "difference from the baseline is paired by match: the policies played the same matches, so "
          "the shared luck of the deal cancels and its ± is smaller than the win rates' (`same` is the "
-         "share of matches a policy played exactly as the baseline did)." % len(MT.league_pairs()), "",
+         "share of matches a policy played exactly as the baseline did)." % (opp, len(MT.league_pairs())), "",
          "## Overall", "",
          "| policy | games | win rate | 95%% (Wilson) | ± 2 SE | game 1 | games 2–3 | Δ vs %s | draws | caps |" % base,
          "|---|---|---|---|---|---|---|---|---|---|"]
@@ -283,7 +328,7 @@ def format_summary(s, title):
     ab = {d: d[:6] for d in s["decks"]}
     for lab in labs:
         p = s["policies"][lab]
-        L += ["", "## Matchups: %s" % lab, "", "Rows: the policy's deck; columns: scripted:hard's deck.", "",
+        L += ["", "## Matchups: %s" % lab, "", "Rows: the policy's deck; columns: %s's deck." % opp, "",
               "| deck | " + " | ".join(ab[d] for d in s["decks"]) + " |", "|---|" + "---|" * len(s["decks"])]
         for x in s["decks"]:
             row = []
@@ -291,6 +336,9 @@ def format_summary(s, title):
                 t = p["matchups"].get("%s vs %s" % (x, y))
                 row.append("-" if x == y or not t or t["win_rate"] is None else "%.2f" % t["win_rate"])
             L.append("| %s | " % x + " | ".join(row) + " |")
+    sbs = {lab: s["policies"][lab]["sideboarding"] for lab in labs if s["policies"][lab].get("sideboarding")}
+    if sbs:
+        L += SB.format_section(sbs, s["decks"], opp)
     fnd = [(lab, f) for lab in labs for f in s["policies"][lab]["findings"]]
     if fnd:
         L += ["", "## Findings (draws and caps)", ""]
@@ -319,32 +367,37 @@ def wait_for_run(run, poll=60, settle=600, log=print):
 
 
 def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, actors=DEFAULT_ACTORS, seed=11,
-                  engine=None, extra_args=(), wait=False, log=print):
-    """Plays every policy (``play_policy``) and writes the summary; the summary dict."""
+                  engine=None, extra_args=(), wait=False, log=print, opponent=OPPONENT):
+    """Plays every policy (``play_policy``) against `opponent` and writes the summary under
+    ``bench/<bench_dir(label, opponent)>``; the summary dict."""
+    opponent = normal_opponent(opponent)
     if wait:
         wait_for_run(run, log=log)
     elif alive(run.control_sock):
         log("note: run %s is running; the benchmark's actors compete with its actors for the CPU" % run.name)
     items = policies or default_policies(run)
-    root = os.path.join(run.path, "bench", label)
+    root = os.path.join(run.path, "bench", bench_dir(label, opponent))
     os.makedirs(root, exist_ok=True)
-    reports, records = {}, {}
+    reports, records, sbs = {}, {}, {}
     for item in items:
         lab, path, opts = resolve_policy(run, item)
         if not os.path.exists(path) and not export_missing(run, path, log):
             log("%s: no export %s; skipped" % (lab, path))
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,
-                                   engine=engine, extra_args=extra_args, log=log)
+                                   engine=engine, extra_args=extra_args, log=log, opponent=opponent)
         records[lab] = match_records(os.path.join(root, slug(lab)))
+        sbs[lab] = sideboarding(os.path.join(root, slug(lab)), opponent)
+        if sbs[lab]["policy"]["explored"]:
+            log("%s: %d explored sideboarding phases (left out of the report)" % (lab, sbs[lab]["policy"]["explored"]))
     if not reports:
         raise SystemExit("benchmark: no policy to play (%s)" % ", ".join(items))
-    s = summarize(reports, matches=records)
-    s.update({"run": run.path, "label": label, "matches": matches, "actors": actors, "seed": seed,
-              "opponent": "scripted:hard", "at": time.time()})
+    s = summarize(reports, matches=records, sideboards=sbs)
+    s.update({"run": run.path, "label": label, "dir": bench_dir(label, opponent), "matches": matches,
+              "actors": actors, "seed": seed, "opponent": opponent, "at": time.time()})
     MT.write_json(os.path.join(root, "summary.json"), s)
     with open(os.path.join(root, "summary.md"), "w") as fp:
-        fp.write(format_summary(s, "Benchmark %s of %s" % (label, run.name)))
+        fp.write(format_summary(s, "Benchmark %s of %s" % (bench_dir(label, opponent), run.name)))
     log("summary: %s" % os.path.join(root, "summary.md"))
     return s
 
@@ -352,7 +405,10 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
 def add_args(ap):
     ap.add_argument("--policies", help="comma-separated [label=]name[@options] (default: bc-final, every m<k>, "
                                        "final, final@<eval.nn_options_finetune>)")
-    ap.add_argument("--label", default="end", help="the benchmark's directory under <run>/bench/")
+    ap.add_argument("--label", default="end", help="the benchmark's directory under <run>/bench/ (with -vs-<opponent> "
+                                                   "appended for an opponent other than scripted:hard)")
+    ap.add_argument("--opponent", default=OPPONENT, help="the opponent: scripted:<tier> (default scripted:hard; "
+                                                         "scripted:hard+sb sideboards per the guides)")
     ap.add_argument("--matches", type=int, default=DEFAULT_MATCHES, help="matches per policy")
     ap.add_argument("--actors", type=int, default=DEFAULT_ACTORS)
     ap.add_argument("--seed", type=int, default=11, help="the actors' run seed (the same for every policy)")
@@ -365,7 +421,7 @@ def run_from_args(run, a):
     extra = ["--feature-history", str(a.feature_history)] if a.feature_history > 0 else []
     pol = [p for p in a.policies.split(",") if p] if a.policies else None
     run_benchmark(run, pol, a.label, a.matches, a.actors, a.seed, a.engine, extra, a.wait,
-                  log=lambda m: print(time.strftime("%Y-%m-%d %H:%M:%S ") + m, flush=True))
+                  log=lambda m: print(time.strftime("%Y-%m-%d %H:%M:%S ") + m, flush=True), opponent=a.opponent)
     return 0
 
 

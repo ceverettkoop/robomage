@@ -21,7 +21,8 @@ weights, the self-play schedule's ``sb_explore`` and no other schedule's, the or
 cadence, metrics, status and state; the engine's own schedule check when a built engine knows the key),
 and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
-ladder record and ratings).
+ladder record and ratings), and the end-of-run benchmark (its policy set, summary, sideboarding report
+and ``--opponent``).
 
 **The smoke** (``--smoke``; needs ``bin/release/robomage_nn`` and ``rmfeat``, the learner's venv and
 the GPU): a tiny run (3 actors, a d 64 / 2-layer model, B0 a few thousand decisions, B1 a few
@@ -1547,6 +1548,158 @@ def check_benchmark(tmp):
           and os.path.exists(os.path.join(run.path, "bench", "t", "summary.md")), "run_benchmark: %s %s" % (calls, sr.get("matches")))
 
 
+def _bench_line(match, game, seat_a, deck_a, deck_b, result_a, sb=None, first=None, end="win"):
+    line = {"actor": 0, "match": match, "game": game, "entry": "x", "side_a_seat": seat_a,
+            "deck_a": "league/" + deck_a, "deck_b": "league/" + deck_b, "result_a": result_a, "result_b": -result_a,
+            "end_reason": end, "decisions": 10}
+    if first:
+        line["first"] = first
+    if sb is not None:
+        line["sb"] = sb
+    return line
+
+
+def check_benchmark_sideboarding(tmp):
+    """The benchmark's sideboarding report (docs/rmtrain.md §7.1): the policy's own seat only, the
+    configuration tracked across the match (game 3 from game 2's), play / draw from ``first`` or
+    the previous game's loser, guide agreement on the play and on the draw (a game-3 flip, the draw
+    land), held-in vs held-out, frame names (front faces, accents) against the guides', the swap
+    rate and histogram, the top cards, the next game's win rate after swaps vs Done, explored and
+    missing phases left out, the opponent's side apart; ``--opponent``'s directory and the reuse of
+    ``report.json`` against the same opponent only."""
+    from rmlearn import benchmark as BM
+    from rmlearn import matches as MT
+    from rmlearn import sb_report as SB
+    from rmlearn.orchestrator.rundir import RunDir
+    seat = _sb_seat
+    burn_bug_in = ["Roiling Vortex", "Searing Blood", "Roiling Vortex", "Searing Blood"]
+    burn_bug_out = ["Light Up the Stage", "Skewer the Critics", "Skewer the Critics", "Skewer the Critics"]
+    lines = [
+        # 1: the policy (burn, seat A) vs bug. Game 2 on the play (A lost game 1): the guide's board;
+        # game 3 on the draw (B lost game 2): from game 2's maindeck the draw swap (Mountain out,
+        # Dead/Gone's front face in).
+        _bench_line(1, 1, "A", "burn", "bug", -1, first="A"),
+        _bench_line(1, 2, "A", "burn", "bug", 1, first="A",
+                    sb={"A": seat(False, 4, burn_bug_in, burn_bug_out), "B": seat(False, 0)}),
+        _bench_line(1, 3, "A", "burn", "bug", -1, first="B",
+                    sb={"A": seat(False, 1, ["Dead"], ["Mountain"]), "B": seat(False, 0)}),
+        # 2: the policy (burn, seat B) vs uw_control, held out. Game 2 on the draw: Done (not the
+        # guide's); game 3 without "first" (B lost game 2: on the play) boarded as the guide on the play.
+        _bench_line(2, 1, "B", "uw_control", "burn", -1, first="A"),
+        _bench_line(2, 2, "B", "uw_control", "burn", 1, first="A",
+                    sb={"A": seat(False, 1, ["Containment Priest"], ["Island"]), "B": seat(False, 0)}),
+        _bench_line(2, 3, "B", "uw_control", "burn", -1,
+                    sb={"A": seat(False, 0), "B": seat(False, 4, ["Roiling Vortex", "Roiling Vortex",
+                                                                  "Smash to Smithereens", "Smash to Smithereens"],
+                                                         burn_bug_out)}),
+        # 3: burn vs bug, game 2 on the play, a board that is not the guide's; the game capped.
+        _bench_line(3, 1, "A", "burn", "bug", -1, first="A"),
+        _bench_line(3, 2, "A", "burn", "bug", 0, first="A", end="cap",
+                    sb={"A": seat(False, 1, ["Searing Blood"], ["Mountain"]), "B": seat(False, 0)}),
+        # 4: an engine from before the sb key: no phase, counted as missing.
+        _bench_line(4, 1, "A", "burn", "bug", -1, first="A"),
+        _bench_line(4, 2, "A", "burn", "bug", 1, first="A"),
+        # 5: an explored phase: left out, counted.
+        _bench_line(5, 1, "A", "burn", "bug", -1, first="A"),
+        _bench_line(5, 2, "A", "burn", "bug", 1, first="A",
+                    sb={"A": seat(True, 2, ["Dead", "Dead"], ["Mountain", "Mountain"]), "B": seat(False, 0)}),
+        # 6: bug vs bw_dnt on the play, the guide's board, cutting the frames' "Lórien Revealed".
+        _bench_line(6, 1, "A", "bug", "bw_dnt", -1, first="A"),
+        _bench_line(6, 2, "A", "bug", "bw_dnt", 1, first="A",
+                    sb={"A": seat(False, 3, ["Pernicious Deed", "Pernicious Deed", "Toxic Deluge"],
+                                  ["Thoughtseize", "Thoughtseize", "Lórien Revealed"]), "B": seat(False, 0)}),
+    ]
+    recs = SB.phases(lines, "a")
+    got = [(r["deck"], r["game"], r["on_play"], r["swaps"], r["held_out"], r["agree"]) for r in recs]
+    want = [("burn", 2, True, 4, False, True), ("burn", 3, False, 1, False, True),
+            ("burn", 2, False, 0, True, False), ("burn", 3, True, 4, True, True),
+            ("burn", 2, True, 1, False, False), ("burn", 2, True, 2, False, False),
+            ("bug", 2, True, 3, False, True)]
+    check(got == want, "sb_report phases: %s" % got)
+    # A wrong game-2 board leaves game 3's draw swap off the guide too (the configuration carries over).
+    alt = [dict(x) for x in lines[:3]]
+    alt[1]["sb"] = {"A": seat(False, 3, burn_bug_in[:3], burn_bug_out[:3]), "B": seat(False, 0)}
+    check([r["agree"] for r in SB.phases(alt, "a")] == [False, False], "sb_report: game 3 from game 2's maindeck")
+    rep = SB.report(lines, "a")
+    a = rep["all"]
+    ag = a["agreement"]
+    check(rep["explored"] == 1 and rep["missing"] == 1 and a["phases"] == 6
+          and a["hist"] == [1, 2, 0, 1, 2, 0, 0, 0, 0, 0, 0] and abs(a["swap_rate"] - 5 / 6) < 1e-9,
+          "sb_report counts: %s" % json.dumps(rep)[:800])
+    check(a["after_swap"] == {"wins": 3, "decisive": 4, "win_rate": 0.75}
+          and a["after_done"] == {"wins": 0, "decisive": 1, "win_rate": 0.0}, "sb_report next game: %s / %s"
+          % (a["after_swap"], a["after_done"]))
+    check((ag["held_in"]["phases"], ag["held_in"]["agree"]) == (4, 3)
+          and (ag["held_in"]["on_play"]["phases"], ag["held_in"]["on_play"]["agree"]) == (3, 2)
+          and (ag["held_in"]["on_draw"]["phases"], ag["held_in"]["on_draw"]["agree"]) == (1, 1)
+          and (ag["held_out"]["phases"], ag["held_out"]["agree"], ag["held_out"]["rate"]) == (2, 1, 0.5),
+          "sb_report agreement: %s" % ag)
+    burn = rep["by_deck"]["burn"]
+    check(set(rep["by_deck"]) == {"burn", "bug"} and burn["phases"] == 5
+          and burn["in"] == [["Roiling Vortex", 4], ["Searing Blood", 3], ["Smash to Smithereens", 2], ["Dead", 1]]
+          and burn["out"][:3] == [["Skewer the Critics", 6], ["Light Up the Stage", 2], ["Mountain", 2]]
+          and burn["agreement"]["held_out"]["rate"] == 0.5 and rep["by_deck"]["bug"]["agreement"]["held_in"]["rate"] == 1.0,
+          "sb_report per deck: %s" % json.dumps(rep["by_deck"])[:800])
+    opp = SB.report(lines, "b")
+    check(opp["all"]["phases"] == 7 and opp["all"]["hist"][:2] == [6, 1] and opp["by_deck"]["uw_control"]["in"]
+          == [["Containment Priest", 1]] and "bw_dnt" in opp["by_deck"], "sb_report opponent: %s" % json.dumps(opp)[:600])
+    # The summary: the section with the policy's row and, against hard+sb, the opponent's.
+    reps = {"p": MT.report([MT.game_record(x) for x in lines])}
+    s = BM.summarize(reps, sideboards={"p": {"policy": rep, "opponent": opp}})
+    s["opponent"] = "scripted:hard+sb"
+    md = BM.format_summary(s, "t")
+    check("## Sideboarding" in md and "| p | 6 | 0.833 | 1/2/0/1/2/0/0/0/0/0/0 | 0.750 (4) | 0.000 (1) | 0.75 (3/4) | "
+          "0.50 (1/2) | 0.67 (2/3) / 1.00 (1/1) |" in md and "| scripted:hard+sb (vs p) | 7 |" in md
+          and "### Sideboarding per deck: scripted:hard+sb vs p" in md and "Roiling Vortex ×4" in md
+          and "Explored phases left out" in md and "without sideboarding data" in md
+          and "Every policy against scripted:hard+sb" in md, "summary sideboarding:\n" + md)
+    # --opponent: the directory, the schedule's opponent, report.json reused only against its opponent.
+    check(BM.bench_dir("end") == "end" and BM.bench_dir("end", "scripted") == "end"
+          and BM.bench_dir("end", "scripted:hard+sb") == "end-vs-hard_sb", "bench_dir")
+    ap = argparse.ArgumentParser()
+    BM.add_args(ap)
+    check(ap.parse_args([]).opponent == "scripted:hard"
+          and ap.parse_args(["--opponent", "scripted:hard+sb"]).opponent == "scripted:hard+sb", "bench --opponent")
+    sched = MT.eval_schedule("/x/p.ts.pt", "scripted:hard+sb", tmp)
+    check(all("--tier hard+sb" in e["teacher_b"] and "teacher_a" not in e for e in sched["entries"]),
+          "eval_schedule against hard+sb")
+    pd = os.path.join(tmp, "bench-reuse")
+    os.makedirs(pd)
+    MT.write_json(os.path.join(pd, "report.json"), {"policy": {"label": "p"}, "all": {}})
+    check(BM.play_policy("p", "/x", "argmax", pd, 1, 1, 11, log=lambda m: None) is not None, "reuse: hard (no key)")
+    refused = False
+    try:
+        BM.play_policy("p", "/x", "argmax", pd, 1, 1, 11, log=lambda m: None, opponent="scripted:hard+sb")
+    except SystemExit:
+        refused = True
+    check(refused, "reuse: a report against scripted:hard refused for hard+sb")
+    run = RunDir(os.path.join(tmp, "bench-run-opp"))
+    os.makedirs(run.exports)
+    calls = []
+
+    def fake_play(lab, path, opts, out_dir, matches, *a, **k):
+        calls.append((lab, k.get("opponent"), out_dir))
+        os.makedirs(out_dir, exist_ok=True)
+        with open(os.path.join(out_dir, "a0.results.jsonl"), "w") as fp:
+            fp.write("".join(json.dumps(x) + "\n" for x in lines))
+        return reps["p"]
+    export = os.path.join(run.exports, "p.ts.pt")
+    open(export, "w").close()
+    play = BM.play_policy
+    BM.play_policy = fake_play
+    try:
+        sr = BM.run_benchmark(run, [export], label="t", matches=2, actors=1, log=lambda m: None,
+                              opponent="scripted:hard+sb")
+    finally:
+        BM.play_policy = play
+    root = os.path.join(run.path, "bench", "t-vs-hard_sb")
+    check(calls and calls[0][1] == "scripted:hard+sb" and calls[0][2].startswith(root)
+          and sr["opponent"] == "scripted:hard+sb" and sr["dir"] == "t-vs-hard_sb"
+          and sr["policies"]["p"]["sideboarding"]["policy"]["all"]["phases"] == 6
+          and sr["policies"]["p"]["sideboarding"]["opponent"]["all"]["phases"] == 7
+          and os.path.exists(os.path.join(root, "summary.md")), "run_benchmark --opponent: %s" % calls)
+
+
 # ── structured sideboard exploration: p_explore, coverage counts, the schedule's weights ────────
 
 def _sb_line(schedule, deck_a, deck_b, sb, purpose="train", game=2):
@@ -1806,6 +1959,7 @@ def main():
             check_eval_options_and_findings(tmp)
             check_eval_scoring(tmp)
             check_benchmark(tmp)
+            check_benchmark_sideboarding(tmp)
             check_local(tmp)
             check_sb_explore(tmp)
         finally:

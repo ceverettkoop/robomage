@@ -465,7 +465,7 @@ def main(argv=None):
     p = sub.add_parser("eval", help="queue an evaluation now")
     p.add_argument("run")
     p.add_argument("--evaluators", help="comma-separated (default eval.evaluators)")
-    p = sub.add_parser("bench", help="the end-of-run benchmark: the run's policies vs scripted:hard, per deck")
+    p = sub.add_parser("bench", help="the end-of-run benchmark: the run's policies vs scripted:hard (or --opponent), per deck")
     p.add_argument("run")
     from .benchmark import add_args as bench_args
     bench_args(p)

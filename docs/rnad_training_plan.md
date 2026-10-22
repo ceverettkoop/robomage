@@ -861,8 +861,13 @@ in and out from the training actors' results lines (kept in `state.json` with th
 the weights `(1 + n)^-coverage_power` written into each self-play entry's `sb_explore` (rewritten every
 `sb_explore.rewrite_every_s` and when p moves), and the status line and `sb_explore` metrics (explored
 phases per matchup, the share of (matchup, card) cells tried, the explored and policy swap-count
-histograms, the policy's swap rate). Left: `reg_eps_sideboarding` about 0 (a run setting; the
-default stays 0.25); the benchmark's sideboarding report.
+histograms, the policy's swap rate). Done too: the benchmark's sideboarding report (`rmtrain bench`,
+`learn/rmlearn/sb_report.py`; `docs/rmtrain.md` §7.1): per policy and per deck the swap rate, the
+swap-count histogram, the cards most moved in and cut, the next game's win rate after swaps vs Done,
+and agreement with the guides' targets (the maindeck tracked through the match, play / draw per
+game) held-in vs held-out; `--opponent scripted:hard+sb` plays the same benchmark against the
+sideboarding tier (its own directory), whose phases are reported beside the policy's. Left:
+`reg_eps_sideboarding` about 0 (a run setting; the default stays 0.25).
 
 ---
 
