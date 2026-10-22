@@ -178,6 +178,21 @@ SPEC = {
     "b5": [
         ("max_learner_steps", 0, "learner steps at which the run ends (0: never)"),
     ],
+    "sb_explore": [
+        ("p_start", 0.0, "p_explore, the probability that a self-play seat's sideboarding phase explores "
+         "(docs/actor.md sb_explore), from B4's start until hold_frac of b4.max_learner_steps (live)"),
+        ("p_end", 0.0, "p_explore at b4.max_learner_steps, linear from p_start after the hold (0 in B5, in other "
+         "phases and in every evaluation) (live)"),
+        ("hold_frac", 0.5, "the share of b4.max_learner_steps held at p_start (b4.max_learner_steps 0: p_start "
+         "throughout B4) (live)"),
+        ("count_weights", [1.0] * 11, "the weights of an exploring phase's swap count k = 0 ... 10 (live)"),
+        ("coverage", True, "weight cards by coverage: a card's in- (out-) weight in a matchup is "
+         "(1 + n) ** -coverage_power, n the explored phases of that matchup that moved it in (out); false: "
+         "uniform (live)"),
+        ("coverage_power", 1.0, "the coverage weights' power (0: uniform) (live)"),
+        ("rewrite_every_s", 600.0, "seconds between the schedule's rewrites with the current counts (also when p "
+         "moves by 0.01, the phase changes or a key here is set) (live)"),
+    ],
     "eval": [
         ("evaluators", ["sprt", "fixed", "ladder"], "the evaluators of an evaluation (the registry's names: sprt, "
          "fixed, ladder, exploiter; sprt and exploiter run as evaluations of their own)"),
@@ -250,7 +265,9 @@ LIVE = {
     "actors.export_every_steps", "actors.local_count", "b4.iterations", "b4.max_learner_steps", "b4.nn_options", "b5.max_learner_steps",
     "actors.count", "eval.matches", "eval.ladder", "eval.ladder_matches", "eval.actors", "eval.every_minutes",
     "eval.per_iteration", "eval.also_sampled", "eval.sprt_max_games", "eval.exploiter_every_minutes",
-    "eval.exploiter_minutes", "checkpoint.every_minutes",
+    "eval.exploiter_minutes", "checkpoint.every_minutes", "sb_explore.p_start", "sb_explore.p_end",
+    "sb_explore.hold_frac", "sb_explore.count_weights", "sb_explore.coverage", "sb_explore.coverage_power",
+    "sb_explore.rewrite_every_s",
 }
 
 # Live keys the GPU process applies (the others are the orchestrator's).
@@ -455,6 +472,14 @@ def validate(cfg):
          "eval.exploiter_every_minutes, exploiter_minutes >= 0, exploiter_actors >= 1")
     for k in ("sprt_pairs", "exploiter_pairs"):
         need(all(isinstance(p, list) and len(p) == 2 for p in e[k]), "eval.%s are [a, b] pairs" % k)
+    sx = cfg["sb_explore"]
+    need(0 <= sx["p_start"] <= 1 and 0 <= sx["p_end"] <= 1, "sb_explore.p_start, p_end in [0, 1]")
+    need(0 <= sx["hold_frac"] <= 1, "sb_explore.hold_frac in [0, 1]")
+    cw = sx["count_weights"]
+    need(len(cw) == 11 and all(isinstance(x, (int, float)) and not isinstance(x, bool) and x >= 0 for x in cw)
+         and any(x > 0 for x in cw), "sb_explore.count_weights: 11 numbers >= 0 (k = 0 ... 10), not all 0")
+    need(sx["coverage_power"] >= 0, "sb_explore.coverage_power >= 0")
+    need(sx["rewrite_every_s"] > 0, "sb_explore.rewrite_every_s > 0")
     c = cfg["checkpoint"]
     need(c["every_minutes"] > 0 and c["keep"] >= 1, "checkpoint.every_minutes > 0, keep >= 1")
     need(all(f in ("ts", "pt2", "onnx") for f in c["export_formats"]), "checkpoint.export_formats: ts, pt2, onnx")

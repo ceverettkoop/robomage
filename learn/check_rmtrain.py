@@ -16,6 +16,9 @@ crash-loop back-off, SIGTERM on stop), the replay window's restore (recent files
 checkpoint's window with its fresh episodes, older files left out), checkpoint pruning, the
 phase schedules, the sideboarding warm start (``actors.teacher_tier`` the teacher of B0 and DAgger,
 evaluations against scripted:hard, ``bc.sideboard_weight``, ``rnad.reg_eps_sideboarding`` near 0),
+structured sideboard exploration (``p_explore``'s schedule, the coverage counts from results lines, the
+weights, the self-play schedule's ``sb_explore`` and no other schedule's, the orchestrator's snapshot
+cadence, metrics, status and state; the engine's own schedule check when a built engine knows the key),
 and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
 ladder record and ratings).
@@ -1544,6 +1547,238 @@ def check_benchmark(tmp):
           and os.path.exists(os.path.join(run.path, "bench", "t", "summary.md")), "run_benchmark: %s %s" % (calls, sr.get("matches")))
 
 
+# ── structured sideboard exploration: p_explore, coverage counts, the schedule's weights ────────
+
+def _sb_line(schedule, deck_a, deck_b, sb, purpose="train", game=2):
+    line = {"actor": 0, "match": 0, "game": game, "schedule": schedule, "purpose": purpose, "deck_a": deck_a,
+            "deck_b": deck_b, "decisions": 10, "end_reason": "win"}
+    if sb is not None:
+        line["sb"] = sb
+    return line
+
+
+def _sb_seat(explored, swaps, cards_in=(), cards_out=()):
+    return {"explored": explored, "swaps": swaps, "in": list(cards_in), "out": list(cards_out)}
+
+
+def _engine_with_sb_explore(tmp):
+    """An engine binary (bin/debug, else bin/release) whose --actor schedule reader knows sb_explore,
+    or None (a probe: p 1.5 must be refused as sb_explore's p)."""
+    bad = os.path.join(tmp, "probe.json")
+    RD.write_json(bad, {"entries": [{"id": "x", "deck_a": "league/bug", "deck_b": "league/burn", "agent_a": "first",
+                                     "agent_b": "first", "sb_explore": {"p": 1.5}}]})
+    for build in ("debug", "release"):
+        eng = os.path.join(REPO_ROOT, "bin", build, "robomage")
+        if not os.path.exists(eng):
+            continue
+        r = subprocess.run([eng, "--actor", "--actor-schedule", bad, "--actor-out", os.path.join(tmp, "probe"),
+                            "--actor-matches", "0"], cwd=os.path.join(REPO_ROOT, "bin"), capture_output=True,
+                           text=True, timeout=60)
+        if r.returncode != 0 and "sb_explore.p" in r.stdout + r.stderr:
+            return eng
+    return None
+
+
+def check_sb_explore(tmp):
+    """Structured sideboard exploration's orchestrator side (docs/rmtrain.md §6.1): p_explore's
+    schedule (hold, ramp, end; 0 outside B4; live), the coverage counts from results lines (the seat's
+    deck after a swap, explored vs policy phases, distinct cards per phase), the weights
+    (1 + n)^-power, the self-play schedule's sb_explore (both decks' weights; none at p 0, in B5, in B0,
+    DAgger and evaluation schedules), the orchestrator's snapshot cadence, metrics, status and state
+    round trip, the league deck files' card keys, and the engine's own schedule check when built."""
+    from rmlearn.orchestrator import sb_explore as SBX
+    from rmlearn.rmtrain import format_status
+    d = C.resolve(None, [])
+    check(d["sb_explore"]["p_start"] == 0.0 and d["sb_explore"]["count_weights"] == [1.0] * 11 and
+          d["sb_explore"]["coverage"] is True and SBX.p_explore(d, "B4", 0) == 0.0,
+          "sb_explore: off by default (p_start 0)")
+    cfg = C.resolve(None, ["sb_explore.p_start=0.4", "sb_explore.p_end=0.1", "sb_explore.hold_frac=0.5",
+                           "b4.max_learner_steps=1000"])
+    ps = [SBX.p_explore(cfg, "B4", s) for s in (0, 500, 750, 1000, 5000)]
+    check(all(abs(a - b) < 1e-12 for a, b in zip(ps, [0.4, 0.4, 0.25, 0.1, 0.1])),
+          "sb_explore: p held, then linear, then the end (%s)" % ps)
+    check(all(SBX.p_explore(cfg, ph, 750) == 0.0 for ph in ("B0", "B1", "B2", "B3", "B5", "done")),
+          "sb_explore: p 0 outside B4")
+    check(SBX.p_explore(C.set_key(cfg, "b4.max_learner_steps", 0), "B4", 10 ** 6) == 0.4,
+          "sb_explore: p_start throughout B4 without b4.max_learner_steps")
+    check(SBX.p_explore(C.set_key(cfg, "sb_explore.hold_frac", 1.0), "B4", 999) == 0.4 and
+          SBX.p_explore(C.set_key(cfg, "sb_explore.hold_frac", 1.0), "B4", 1000) == 0.1,
+          "sb_explore: hold_frac 1 holds to the end")
+    for key in ("p_start", "p_end", "hold_frac", "count_weights", "coverage", "coverage_power", "rewrite_every_s"):
+        check("sb_explore." + key in C.LIVE and "sb_explore." + key not in C.GPU_LIVE,
+              "sb_explore.%s is live (the orchestrator's)" % key)
+    key, v = C.parse_live("sb_explore.p_start", "0.2")
+    check(abs(SBX.p_explore(C.set_key(cfg, key, v), "B4", 0) - 0.2) < 1e-12, "sb_explore: a live p_start")
+    check(C.parse_live("sb_explore.count_weights", "[0,1,1,1,1,1,1,1,1,1,2]")[1][10] == 2, "live count_weights")
+    for bad, needle in (("sb_explore.p_start=1.5", "p_start"), ("sb_explore.count_weights=[1,1]", "count_weights"),
+                        ("sb_explore.count_weights=[0,0,0,0,0,0,0,0,0,0,0]", "count_weights"),
+                        ("sb_explore.coverage_power=-1", "coverage_power"),
+                        ("sb_explore.rewrite_every_s=0", "rewrite_every_s"), ("sb_explore.hold_frac=2", "hold_frac")):
+        check(raises(lambda: C.resolve(None, [bad]), needle), "sb_explore: %s refused" % bad)
+    check(SBX.p_moved(0.3, 0.29) and not SBX.p_moved(0.3, 0.295) and SBX.p_moved(0.001, 0.0) and
+          not SBX.p_moved(0.0, 0.0), "sb_explore: when p moved enough to rewrite")
+    check(SBX.card_key("Dead/Gone") == SBX.card_key("Dead") == SBX.card_key("Dead // Gone") == "dead" and
+          SBX.card_key("Lórien Revealed") == SBX.card_key("Lorien Revealed") == "lorienrevealed",
+          "sb_explore: card keys (front face, accents folded)")
+
+    # Counting from results lines: seat A plays deck_a, seat B deck_b (per seat after the swap).
+    X, Y = "league/x", "league/y"
+    cov = SBX.Coverage()
+    n = cov.add(_sb_line("b4", X, Y, {"A": _sb_seat(True, 2, ["Dead", "Pyroblast"], ["Bolt", "Bolt"]),
+                                      "B": _sb_seat(False, 0)}))
+    n += cov.add(_sb_line("b4", Y, X, {"A": _sb_seat(True, 1, ["Hydroblast"], ["Brainstorm"]),       # swapped
+                                       "B": _sb_seat(True, 12, ["Dead", "Dead", "Smash"], ["Bolt", "Rift Bolt"])}))
+    n += cov.add(_sb_line("b5", X, Y, {"A": _sb_seat(False, 3, ["Smash"], ["Bolt"]), "B": _sb_seat(False, 1)}))
+    ignored = [cov.add(_sb_line("b4", X, Y, None, game=1)),
+               cov.add(_sb_line("b4", X, Y, {"A": _sb_seat(True, 1, ["Dead"], ["Bolt"])}, purpose="eval")),
+               cov.add(_sb_line("b0", X, Y, {"A": _sb_seat(True, 1, ["Dead"], ["Bolt"])})),
+               cov.add(_sb_line("b2-r1", X, Y, {"A": _sb_seat(False, 1, ["Dead"], ["Bolt"])}))]
+    xy, yx = cov.explored.get("league/x|league/y", {}), cov.explored.get("league/y|league/x", {})
+    check(n == 6 and ignored == [0, 0, 0, 0], "sb_explore counts: 6 phases counted, game 1 / eval / B0 / DAgger "
+          "lines ignored (%d, %s)" % (n, ignored))
+    check(xy.get("phases") == 2 and xy["in"] == {"Dead": 2, "Pyroblast": 1, "Smash": 1} and
+          xy["out"] == {"Bolt": 2, "Rift Bolt": 1} and xy["hist"][2] == 1 and xy["hist"][10] == 1,
+          "sb_explore counts: x vs y from seat A unswapped and seat B swapped, a card once per phase, 10+ (%s)" % xy)
+    check(yx.get("phases") == 1 and yx["in"] == {"Hydroblast": 1} and yx["out"] == {"Brainstorm": 1},
+          "sb_explore counts: y vs x from the swapped line's seat A (%s)" % yx)
+    pol = cov.policy
+    check(pol.get("league/y|league/x", {}).get("hist", [0])[0] == 1 and
+          pol.get("league/x|league/y", {}).get("phases") == 1 and pol["league/x|league/y"]["hist"][3] == 1 and
+          pol["league/y|league/x"]["phases"] == 2 and pol["league/y|league/x"]["hist"][1] == 1,
+          "sb_explore counts: the policy's phases and swap counts (%s)" % pol)
+    check(SBX.Coverage(json.loads(json.dumps(cov.state()))).state() == cov.state(),
+          "sb_explore counts: the state round trip")
+    check(cov.take_recent() == [1, 1, 0, 1] + [0] * 7 and cov.take_recent() == [0] * 11,
+          "sb_explore counts: the policy's recent histogram, taken and reset")
+
+    # Weights and the self-play schedule.
+    run = RD.RunDir(os.path.join(tmp, "sbx"))
+    run.make()
+    cfg = C.resolve(None, ["league.decks=[\"x\", \"y\", \"z\"]", "actors.policy_eval=remote",
+                           "eval.policy_eval=remote", "sb_explore.p_start=0.3",
+                           "sb_explore.count_weights=[1,2,1,1,1,1,1,1,1,1,0]"])
+    snap = SBX.snapshot(cfg, cov, 0.3)
+    w = snap["weights"]
+    def close(got, want):
+        return set(got) == set(want) and all(abs(got[k] - want[k]) < 1e-6 for k in want)
+
+    check(close(w["league/x|league/y"]["in"], {"Dead": 1 / 3, "Pyroblast": 0.5, "Smash": 0.5}) and
+          close(w["league/x|league/y"]["out"], {"Bolt": 1 / 3, "Rift Bolt": 0.5}),
+          "sb_explore weights: (1 + n)^-1 (%s)" % w.get("league/x|league/y"))
+    w2 = SBX.snapshot(C.set_key(cfg, "sb_explore.coverage_power", 2.0), cov, 0.3)["weights"]
+    check(abs(w2["league/x|league/y"]["in"]["Dead"] - 1 / 9) < 1e-6, "sb_explore weights: power 2")
+    check(SBX.snapshot(C.set_key(cfg, "sb_explore.coverage", False), cov, 0.3)["weights"] == {} and
+          SBX.snapshot(C.set_key(cfg, "sb_explore.coverage_power", 0.0), cov, 0.3)["weights"] == {},
+          "sb_explore weights: none with coverage off or power 0 (uniform)")
+    sp = SCH.selfplay(run, cfg, "b4", snap)
+    by = {e["id"]: e for e in sp["entries"]}
+    sx = by["sp-x-y"].get("sb_explore") or {}
+    check(sx.get("p") == 0.3 and sx.get("count_weights") == [1.0, 2.0] + [1.0] * 8 + [0.0] and
+          sx.get("default_weight") == 1.0 and sx.get("weights") == {X: w["league/x|league/y"], Y: w["league/y|league/x"]},
+          "selfplay: sb_explore with p, the count weights and both decks' weights (%s)" % sx)
+    check(by["sp-x-z"]["sb_explore"]["weights"] == {} and by["sp-y-z"]["sb_explore"]["p"] == 0.3,
+          "selfplay: an unexplored matchup explores with uniform weights")
+    check(not any("sb_explore" in e for e in SCH.selfplay(run, cfg, "b4", SBX.snapshot(cfg, cov, 0.0))["entries"]),
+          "selfplay: no sb_explore at p 0")
+    check(not any("sb_explore" in e for e in SCH.selfplay(run, cfg, "b4")["entries"]), "selfplay: none without a snapshot")
+    others = [SCH.b0(run, cfg), SCH.dagger(run, cfg, 1, 0.5)]
+    ctx = EVAL.Context(run, cfg, "argmax", [{"label": "bc", "path": "b.pt", "version": 1}])
+    ents = [e for s_ in others for e in s_["entries"]] + [e for g in EVAL.build(ctx, ["fixed", "ladder", "sprt"])
+                                                          for e in g.entries]
+    check(ents and not any("sb_explore" in e for e in ents) and
+          not any("sb_explore" in s_["defaults"] for s_ in others), "B0, DAgger and evaluation schedules never explore")
+
+    # The orchestrator: counts from the results files, the snapshot's cadence, metrics, status, state.
+    o, orun, logs = _b4_orchestrator(tmp, "sbxo", ["sb_explore.p_start=0.5", "sb_explore.p_end=0.1",
+                                                   "b4.max_learner_steps=1000", "sb_explore.rewrite_every_s=3600"])
+    o.bin_dir = os.path.join(tmp, "sbx-bin")
+    ddir = os.path.join(o.bin_dir, "resources", "decks", "league")
+    os.makedirs(ddir)
+    with open(os.path.join(ddir, "a.dk"), "w") as fp:
+        fp.write("4 Lightning Bolt\n4 Lórien Revealed\n\nSIDEBOARD:\n2 Dead/Gone\n2 Pyroblast\n")
+    with open(os.path.join(ddir, "b.dk"), "w") as fp:
+        fp.write("4 Brainstorm\n\nSIDEBOARD:\n1 Hydroblast\n")
+    lines = [_sb_line("b4", "league/a", "league/b", {"A": _sb_seat(True, 1, ["Dead"], ["Lorien Revealed"]),
+                                                     "B": _sb_seat(False, 0)})] * 10
+    lines.append(_sb_line("b4", "league/b", "league/a", {"A": _sb_seat(False, 1, ["Hydroblast"], ["Brainstorm"]),
+                                                         "B": _sb_seat(True, 2, ["Pyroblast", "Dead"],
+                                                                       ["Lightning Bolt", "Lightning Bolt"])}))
+    with open(os.path.join(orun.actors, "a0.results.jsonl"), "w") as fp:
+        fp.write("".join(json.dumps(x) + "\n" for x in lines))
+    o.ingest_results()
+    o.sb_tick()
+    snap = o.sb_snap
+    entry = o.wanted()[0]["entries"][0]
+    ab = (entry.get("sb_explore") or {}).get("weights", {}).get("league/a", {})
+    check(snap and snap["p"] == 0.5 and abs(ab.get("in", {}).get("Dead", 0) - 1 / 12) < 1e-6 and
+          abs(ab["in"]["Pyroblast"] - 0.5) < 1e-6 and abs(ab["out"]["Lorien Revealed"] - 1 / 11) < 1e-6,
+          "orchestrator: B4's schedule carries the counted weights (%s)" % ab)
+    mets = [m for m in RD.read_jsonl(orun.metrics) if m["event"] == "sb_explore"]
+    m = mets[-1] if mets else {}
+    check(len(mets) == 1 and m.get("p") == 0.5 and m.get("explored_phases") == 11 and m.get("policy_phases") == 11
+          and m.get("explored_hist", [])[1:3] == [10, 1] and m.get("policy_hist", [])[:2] == [10, 1] and
+          abs(m.get("policy_swap_rate", 0) - 1 / 11) < 1e-9 and m.get("policy_hist_recent", [])[:2] == [10, 1],
+          "orchestrator: an sb_explore metrics line with both histograms and the swap rate (%s)" % m)
+    check(m.get("in_cells") == 3 and abs(m.get("in_tried_1", 0) - 2 / 3) < 1e-9 and
+          abs(m.get("in_tried_10", 0) - 1 / 3) < 1e-9 and m.get("out_cells") == 3 and
+          abs(m.get("out_tried_1", 0) - 2 / 3) < 1e-9 and abs(m.get("out_tried_10", 0) - 1 / 3) < 1e-9 and
+          m.get("phases_min") == 0 and m.get("phases_median") == 5.5 and m.get("matchups") == 2,
+          "orchestrator: the coverage cells from the deck files (Dead/Gone is Dead, Lórien folded) (%s)" % m)
+    o.sb_tick()
+    check(len([m for m in RD.read_jsonl(orun.metrics) if m["event"] == "sb_explore"]) == 1 and o.sb_snap is snap,
+          "orchestrator: the snapshot is kept until it is due")
+    o.state["rnad"]["learner_steps"] = 760
+    o.sb_tick()
+    check(o.sb_snap is not snap and abs(o.sb_snap["p"] - 0.292) < 1e-9, "orchestrator: p moved, a new snapshot")
+    o.cfg = C.set_key(o.cfg, "sb_explore.coverage", False)
+    o.sb_tick()
+    check(not o.wanted()[0]["entries"][0]["sb_explore"]["weights"], "orchestrator: a set key, a new snapshot (uniform)")
+    o.write_status()
+    doc = RD.read_json(orun.status)
+    text = format_status(doc)
+    check(abs(doc["sb_explore"]["p"] - 0.292) < 1e-9 and "sb explore: p 0.292" in text and "11 explored phases" in text
+          and "in-cells 3 tried >=1 67%" in text and "policy swap rate 0.091 (11 phases)" in text,
+          "status: p_explore and the coverage line (%s)" % [x for x in text.splitlines() if "sb explore" in x])
+    o.save_state()
+    o2 = type(o).__new__(type(o))
+    o2.sb_cov = SBX.Coverage(RD.read_json(orun.state).get("sb_explore"))
+    check(o2.sb_cov.state() == o.sb_cov.state() and o2.sb_cov.explored, "state.json keeps the counts")
+    o.state["phase"] = "B5"
+    o.sb_tick()
+    check(o.sb_snap["p"] == 0.0 and not any("sb_explore" in e for e in o.wanted()[0]["entries"]),
+          "orchestrator: B5's schedule does not explore")
+    o.state["phase"] = "B2"
+    o.sb_tick()
+    check(o.sb_snap is None, "orchestrator: no snapshot outside B4 and B5")
+    o.metrics.close()
+    o.evals_file.close()
+
+    # The league deck files: every card reaches a key; Dead/Gone is the frames' Dead.
+    decks = SBX.read_decks(os.path.join(REPO_ROOT, "bin"), ["league/" + x for x in C.LEAGUE])
+    if decks:
+        check(len(decks) == len(C.LEAGUE) and SBX.card_key("Dead") in decks["league/burn"][1] and
+              all(all(k for k in m | sd) for m, sd in decks.values()), "the league deck files' card keys")
+
+    # The engine's own schedule check, when an engine with sb_explore is built.
+    eng = _engine_with_sb_explore(tmp)
+    if eng is None:
+        print("check_sb_explore: no engine with sb_explore built; the engine's schedule check skipped", flush=True)
+        return
+    rcfg = C.resolve(None, ["league.decks=[\"bug\", \"burn\", \"uw_control\"]", "actors.policy_eval=remote",
+                            "sb_explore.p_start=0.25"])
+    rcov = SBX.Coverage()
+    rcov.add(_sb_line("b4", "league/burn", "league/bug", {"A": _sb_seat(True, 1, ["Dead"], ["Lightning Bolt"]),
+                                                          "B": _sb_seat(True, 1, ["Pernicious Deed"], ["Ponder"])}))
+    sched = SCH.selfplay(run, rcfg, "b4", SBX.snapshot(rcfg, rcov, SBX.p_explore(rcfg, "B4", 0)))
+    path = os.path.join(tmp, "sbx-schedule.json")
+    RD.write_json(path, sched)
+    r = subprocess.run([eng, "--actor", "--actor-schedule", path, "--actor-out", os.path.join(tmp, "sbx-actor"),
+                        "--actor-matches", "0"], cwd=os.path.join(REPO_ROOT, "bin"), capture_output=True, text=True,
+                       timeout=60)
+    check(r.returncode == 0 and all("sb_explore" in e for e in sched["entries"]),
+          "the engine accepts the written self-play schedule (%s: %s)" % (eng, (r.stdout + r.stderr)[-300:]))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--smoke", action="store_true", help="the end-to-end tiny run (GPU, engine)")
@@ -1572,6 +1807,7 @@ def main():
             check_eval_scoring(tmp)
             check_benchmark(tmp)
             check_local(tmp)
+            check_sb_explore(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
         tag = "RMTRAIN-CHECK"

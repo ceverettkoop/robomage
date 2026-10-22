@@ -7,7 +7,7 @@ import itertools
 import os
 
 from ..corpus import teacher_command
-
+from . import sb_explore as SBX
 
 
 def league_pairs(cfg):
@@ -110,17 +110,23 @@ def dagger(run, cfg, round_no, mix):
             "defaults": _defaults(cfg, cfg["league"]["omniscient"]), "entries": entries}
 
 
-def selfplay(run, cfg, version):
+def selfplay(run, cfg, version, sb=None):
     """R-NaD self-play: policies 0, 1, 2 evaluated at every decision (the regularisation policies'
     log π recorded), sampled from 0, on both seats; with actors.policy_eval local, the current
-    policy's live export in process on both seats (the learner computes the regularisation log π)."""
+    policy's live export in process on both seats (the learner computes the regularisation log π).
+    `sb`: structured sideboard exploration's snapshot (``sb_explore.snapshot``; B4 only): each entry
+    carries its ``sb_explore`` when p > 0."""
     agent = nn_local(live_export(run, cfg), cfg["b4"]["nn_options"]) if local(cfg) else \
         nn_remote(run.rmip_sock, "0,1,2", cfg["b4"]["nn_options"])
     entries = []
     for a, b, w in league_pairs(cfg):
         if w <= 0:
             continue
-        entries.append({"id": "sp-%s-%s" % (a, b), "weight": w, "deck_a": deck(a), "deck_b": deck(b),
-                        "swap": "decks", "agent_a": agent, "agent_b": agent})
+        e = {"id": "sp-%s-%s" % (a, b), "weight": w, "deck_a": deck(a), "deck_b": deck(b), "swap": "decks",
+             "agent_a": agent, "agent_b": agent}
+        sx = SBX.entry_sb_explore(sb, deck(a), deck(b))
+        if sx is not None:
+            e["sb_explore"] = sx
+        entries.append(e)
     return {"version": version, "outputs": {"train": _outputs(run, "selfplay")},
             "defaults": _defaults(cfg, cfg["model"]["omniscient_critic"]), "entries": entries}

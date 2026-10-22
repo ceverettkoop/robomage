@@ -41,6 +41,7 @@ import traceback
 
 from . import config as C
 from . import evaluation as EVAL
+from . import sb_explore as SBX
 from . import schedules as SCH
 from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
 from .control import ControlServer
@@ -107,6 +108,9 @@ class Orchestrator:
         self.live_last = None           # the last live export: version, seconds, at
         self.live_versions = []         # recent (time, version) of live exports, for the status
         self.actors_waiting = None      # what the actors wait for before they start (the status says)
+        self.sb_cov = SBX.Coverage()    # structured sideboard exploration's counts (state.json's sb_explore)
+        self.sb_snap = None             # what the B4 schedule's entries carry (sb_tick)
+        self.sb_decks = None            # the league deck files' card keys (the coverage cells)
 
     # ── state ────────────────────────────────────────────────────────────────────────────────
 
@@ -121,6 +125,7 @@ class Orchestrator:
 
     def save_state(self):
         self.state["results"] = {"offsets": self.tail.offsets, "counters": self.counters.state()}
+        self.state["sb_explore"] = self.sb_cov.state()
         self.state["saved_at"] = time.time()
         write_json(self.run.state, self.state)
         self.last_state_save = time.time()
@@ -162,6 +167,7 @@ class Orchestrator:
         res = self.state.get("results", {})
         self.tail = ResultsTail(self.run.actors, res.get("offsets"))
         self.counters = Counters(res.get("counters"))
+        self.sb_cov = SBX.Coverage(self.state.get("sb_explore"))
         self.pool = ActorPool(self.engine, self.bin_dir, self.run.schedule, self.run.actors, self.run.actor_logs,
                               self.cfg["run"]["seed"], self.cfg["actors"], self.log)
         for sig in (signal.SIGTERM, signal.SIGINT):
@@ -203,9 +209,11 @@ class Orchestrator:
         return self.exit_code
 
     def ingest_results(self):
-        """The training actors' new results lines: the counters, and the draws as findings."""
+        """The training actors' new results lines: the counters, the sideboarding phases' counts
+        (structured exploration's coverage), and the draws as findings."""
         for line in self.tail.poll():
             self.counters.add(line)
+            self.sb_cov.add(line)
             self.note_finding(line, "train", os.path.join(self.run.actors, "a%s.results.jsonl" % line.get("actor")))
 
     def note_finding(self, line, source, results_file=None):
@@ -236,6 +244,7 @@ class Orchestrator:
         self.serve_requests()
         if not self.state["paused"] and not self.stopping:
             self.phase_tick()
+        self.sb_tick()
         self.sync()
         self.live_tick()
         self.eval_tick()
@@ -263,8 +272,51 @@ class Orchestrator:
                 return SCH.dagger(self.run, self.cfg, r, self.dagger_mix(r)), "bc"
             return None, "bc"
         if p in ("B4", "B5"):
-            return SCH.selfplay(self.run, self.cfg, self.state["selfplay_version"]), "rnad"
+            return SCH.selfplay(self.run, self.cfg, self.state["selfplay_version"],
+                                self.sb_snap if p == "B4" else None), "rnad"
         return None, None
+
+    # ── structured sideboard exploration (B4) ───────────────────────────────────────────────
+
+    def sb_tick(self):
+        """In B4 and B5, the snapshot the self-play schedule's entries carry (``sb_explore.snapshot``:
+        p_explore, the count weights, the coverage weights), taken anew every
+        sb_explore.rewrite_every_s, when p moves by 0.01 (or onto or off 0), at a phase change or
+        when an sb_explore key is set; each new snapshot writes an ``sb_explore`` metrics line."""
+        st = self.state
+        phase = st["phase"]
+        if phase not in ("B4", "B5"):
+            self.sb_snap = None
+            return
+        p = SBX.p_explore(self.cfg, phase, st["rnad"]["learner_steps"])
+        key = json.dumps(self.cfg["sb_explore"], sort_keys=True)
+        snap = self.sb_snap
+        if snap is not None and snap["phase"] == phase and snap["cfg"] == key and not SBX.p_moved(snap["p"], p) \
+                and time.time() - snap["at"] < self.cfg["sb_explore"]["rewrite_every_s"]:
+            return
+        self.sb_snap = dict(SBX.snapshot(self.cfg, self.sb_cov, p), phase=phase, cfg=key, at=time.time())
+        recent = self.sb_cov.take_recent()
+        n = sum(recent)
+        self.emit("sb_explore", p=self.sb_snap["p"], policy_hist_recent=recent,
+                  policy_swap_rate_recent=(n - recent[0]) / n if n else None,
+                  weighted_matchups=len(self.sb_snap["weights"]), **self.sb_summary())
+
+    def sb_summary(self):
+        """The coverage summary (``sb_explore.summary``) over the league's matchups and deck files."""
+        pairs = [(SCH.deck(a), SCH.deck(b), w) for a, b, w in SCH.league_pairs(self.cfg)]
+        mups = SBX.matchups(pairs)
+        if self.sb_decks is None:
+            self.sb_decks = SBX.read_decks(self.bin_dir, sorted({d for m in mups for d in m}))
+        return SBX.summary(self.sb_cov, mups, self.sb_decks)
+
+    def sb_status(self):
+        """status.json's ``sb_explore``: p now, the p the schedule carries, the coverage summary."""
+        st = self.state
+        out = {"p": SBX.p_explore(self.cfg, st["phase"], st["rnad"]["learner_steps"]),
+               "schedule_p": self.sb_snap["p"] if self.sb_snap else 0.0,
+               "snapshot_at": self.sb_snap["at"] if self.sb_snap else None}
+        out.update(self.sb_summary())
+        return out
 
     def sync(self):
         if self.stopping:
@@ -1238,7 +1290,7 @@ class Orchestrator:
                             self.eval_job, EVAL.ExploitJob) else None},
                "exports": {"running": self.export_job[1] if self.export_proc else None,
                            "queue": [x[1] for x in self.export_queue], "done": len(st["exports"])},
-               "live": self.live_status(),
+               "live": self.live_status(), "sb_explore": self.sb_status(),
                "checkpoint": st["checkpoint"], "transitions": st["transitions"][-6:], "findings": st.get("findings"),
                "config": {k: C.get_key(self.cfg, k) for k in sorted(C.LIVE)}, "sockets": {
                    "control": self.run.control_sock, "rmip": self.run.rmip_sock}}

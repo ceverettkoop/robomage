@@ -48,7 +48,7 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 
 | Command | What |
 |---|---|
-| `status <run> [--json]` | phase and stage, hold / pause, the phase's progress, games and decisions (and per second, over the last minute), actor health (running, restarts, why one is down), the GPU process (mode, inference server stats from `InferenceServer.stats()`: rows/s, batch mean, queue p99, clients, served policies and versions; GPU memory; the replay window), the latest metrics of each kind, the evaluation running / queued / last results (its subject, version and options; an error when it failed), the findings (drawn games, §7), the last checkpoint, recent transitions. When the run is not running: the same from `status.json` and `state.json` (marked NOT RUNNING) |
+| `status <run> [--json]` | phase and stage, hold / pause, the phase's progress, games and decisions (and per second, over the last minute), actor health (running, restarts, why one is down), the GPU process (mode, inference server stats from `InferenceServer.stats()`: rows/s, batch mean, queue p99, clients, served policies and versions; GPU memory; the replay window), the latest metrics of each kind, the evaluation running / queued / last results (its subject, version and options; an error when it failed), structured sideboard exploration's line in B4–B5 (§6.1), the findings (drawn games, §7), the last checkpoint, recent transitions. When the run is not running: the same from `status.json` and `state.json` (marked NOT RUNNING) |
 | `tail <run> [component] [-n N] [--no-follow]` | `orchestrator` (default), `gpu`, `export`, `metrics`, `evals`, `a<k>` (an actor), `actors` (all), `all` |
 | `pause <run>` | the actors are stopped (SIGTERM: a match in progress is written off) and the learner stops stepping; evaluations stop (queued again). Kept across restarts |
 | `resume <run>` | undoes `pause` |
@@ -69,7 +69,8 @@ smoothed π_0,reg while it is still a regularisation policy), `rnad.push_every`,
 `b2.min_improvement`, `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options`,
 `b5.max_learner_steps`); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
 `eval.every_minutes`, `eval.per_iteration`, `eval.also_sampled`, `eval.sprt_max_games`, `eval.exploiter_every_minutes`,
-`eval.exploiter_minutes`; `checkpoint.every_minutes`. The schedule's Δm is the
+`eval.exploiter_minutes`; `checkpoint.every_minutes`; every `sb_explore.*` key (§6.1: the next
+self-play schedule carries the change). The schedule's Δm is the
 reference's function of the learner step, so a changed Δm can move α and the next boundary.
 
 ## 3. The config
@@ -117,6 +118,10 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `rnad.value_after_every` | 10 | learner steps between the value diagnostic's after-update forwards (0: never): `value_mse_first_sight` (every step), `value_mse_after`, `value_mse_gap` in `rnad_step` and `status` |
 | `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options` | 0, 0, `""` | B4's exit (0: until `phase next`); self-play sampling options |
 | `b5.max_learner_steps` | 0 | the run's end (0: never) |
+| `sb_explore.p_start`, `p_end`, `hold_frac` | 0, 0, 0.5 | `p_explore`, structured sideboard exploration's probability per self-play seat and sideboarding phase (§6.1): `p_start` until `hold_frac` × `b4.max_learner_steps` learner steps, then linear to `p_end` at `b4.max_learner_steps` (`p_start` throughout B4 when that is 0); 0 in B5, in every other phase and in every evaluation. The default 0 explores nothing (live) |
+| `sb_explore.count_weights` | 11 × 1 | the weights of an exploring phase's swap count k = 0 … 10 (live) |
+| `sb_explore.coverage`, `coverage_power` | true, 1 | a card's in- (out-) weight in a matchup is `(1 + n) ** -coverage_power`, n the explored phases of that (own deck, opponent deck) that moved it in (out); `false` or power 0: uniform (live) |
+| `sb_explore.rewrite_every_s` | 600 | seconds between rewrites of the self-play schedule with the current counts; also at once when `p_explore` moves by 0.01 (or onto or off 0), at the B4 → B5 transition or when an `sb_explore` key is set (live) |
 | `eval.evaluators` | `["sprt", "fixed", "ladder"]` | the evaluators of a per-iteration / cadence evaluation (`exploiter` too; §7) |
 | `eval.opponents`, `eval.pairs`, `eval.matches` | scripted, explore, random; 4 pairs; 48 | `scripted` is `scripted:hard` whatever `actors.teacher_tier` is; `scripted:<tier>` names another tier |
 | `eval.ladder`, `eval.ladder_matches` | 3, 24 | |
@@ -137,13 +142,14 @@ reference's function of the learner step, so a changed Δm can move α and the n
 ```
 runs/<name>/
   config.json  config.toml       the resolved config (live) / as created
-  state.json                     phase, stage, hold, pause, counters + results offsets, last checkpoint,
-                                 ladder, evaluation queue and history, transitions, findings (atomic, every ~10 s)
+  state.json                     phase, stage, hold, pause, counters + results offsets, sideboard exploration's
+                                 counts (sb_explore), last checkpoint, ladder, evaluation queue and history,
+                                 transitions, findings (atomic, every ~10 s)
   status.json                    the last status (every run.status_every_s)
   sockets.json  daemon.json      the socket paths; how it was detached (unit name or pid)
   metrics.jsonl                  one line per learner report, held-out evaluation, evaluation (eval, or
                                  eval_failed with its error), checkpoint, export, transition, set / pause /
-                                 hold, start / restore / stop: time, phase, stage, step
+                                 hold, start / restore / stop, sb_explore (§6.1): time, phase, stage, step
   evals.jsonl                    every evaluation's full result (per opponent, per pair, game 1 vs 2–3)
   schedule.json                  the actors' schedule (docs/actor.md §2)
   cards.rmstate  tables/         the cards frame and the exported card tables
@@ -268,13 +274,55 @@ evaluation's result waits as *pending* and happens on `release`).
 | B2 | collect | round r: the BC policy (frozen for the round: its export in process, or server policy 0 via `nn:remote`) on both seats, sampling, the teacher on both seats at mix `teacher_mix_start → end`; BC goes on training on the growing window | `b2.decisions_per_round` decisions of version `b2-r<r>` and `b2.min_steps_per_round` BC steps → actors stopped, `bc-r<r>.pt`, export |
 | B2 | eval | evaluation `b2-r<r>` (fixed opponents) | after `b2.rounds_min` rounds, a win rate vs scripted:hard not `b2.min_improvement` above the best so far; or `b2.rounds_max` → B3; else round r + 1 |
 | B3 | | `bc-final.pt` (or `run.start_from`); `RNaDLearner.from_bc_checkpoint` (π_0,reg smoothed by `rnad.reg_eps`, `reg_eps_sideboarding`); `rnad-seed.pt` | at once |
-| B4 | selfplay | both seats the current policy (local: `nn:<run>/exports/live/current.ts.pt`; remote: `nn:remote:…:policies=0,1,2`; + `b4.nn_options`), train, the league; the learner takes each fresh game once (`take_fresh`, `trainable_episodes`: capped / quit games dropped); at each boundary the fixed point `ckpt/fixed/m<k>.pt`, its export, an evaluation `it<k>` of that fixed point (`eval.per_iteration`); evaluations of the current policy every `eval.every_minutes` | `b4.iterations` iterations or `b4.max_learner_steps` steps (0: never) |
-| B5 | selfplay | the learner's fine-tuning projection from the current step; evaluations with `eval.nn_options_finetune` | `b5.max_learner_steps` (0: never) → `done`: `rnad-final.pt`, exports, exit 0 |
+| B4 | selfplay | both seats the current policy (local: `nn:<run>/exports/live/current.ts.pt`; remote: `nn:remote:…:policies=0,1,2`; + `b4.nn_options`), train, the league; each entry's `sb_explore` while `p_explore` > 0 (§6.1); the learner takes each fresh game once (`take_fresh`, `trainable_episodes`: capped / quit games dropped); at each boundary the fixed point `ckpt/fixed/m<k>.pt`, its export, an evaluation `it<k>` of that fixed point (`eval.per_iteration`); evaluations of the current policy every `eval.every_minutes` | `b4.iterations` iterations or `b4.max_learner_steps` steps (0: never) |
+| B5 | selfplay | the learner's fine-tuning projection from the current step (no sideboard exploration); evaluations with `eval.nn_options_finetune` | `b5.max_learner_steps` (0: never) → `done`: `rnad-final.pt`, exports, exit 0 |
 
 **DAgger plays in process too** (`actors.policy_eval = "local"`): the round's frozen BC policy is
 exported once at the round's start (TorchScript, ~0.1 s), and the GPU only trains BC. Measured (val1's
 two matchups and corpus, teacher mix 0.5, ~5 min of a round each): 1,050 decisions/s with 16 local
 actors against 751 through the server with 26 (the server shared the GPU with BC's training).
+
+### 6.1 Structured sideboard exploration (B4)
+
+The actors' side is the schedule entry's `sb_explore` (`docs/actor.md` §2: a coin `p` per seat and
+sideboarding phase; an exploring phase plays the proposal `q` with μ = `q`); the orchestrator's
+(`orchestrator/sb_explore.py`; `docs/rnad_training_plan.md` §6.2) is `p_explore`'s schedule and the
+coverage weights.
+
+- **Counts.** Every training actor's results line of a self-play game 2 or 3 (purpose `train`,
+  schedule `b4` / `b5`) carries `sb` per engine seat. A seat's deck is the line's `deck_a` (seat A) or
+  `deck_b` (seat B): both name the seat's deck after the match's swap coin, and decks keep their
+  seats for the match, so the matchup of seat A is (`deck_a`, `deck_b`) and of seat B (`deck_b`,
+  `deck_a`). An explored phase adds to its matchup one phase, its swap count's bucket (0 … 9, 10+)
+  and each distinct card it moved in, and out, once; a phase the policy played (its coin did not
+  land, or p 0) adds a phase and a bucket to the policy's counts. The counts live in `state.json`
+  (`sb_explore`), saved together with the results files' offsets, so a restarted orchestrator goes
+  on from both without counting a line twice; the results files are append-only and never pruned.
+- **Weights.** In a matchup, a card's in-weight is `(1 + n) ** -coverage_power` with n the explored
+  phases that moved it in (out-weight: moved out); an untried card needs no entry (the entry's
+  `default_weight` 1 is the n = 0 weight). Names are the frames' (`Dead` for Dead/Gone), as the
+  actor matches them.
+- **The schedule.** Each B4 entry (deck a vs deck b) gets `sb_explore` = `{p, count_weights, weights:
+  {deck a: its weights against deck b, deck b: against deck a}, default_weight: 1}` when `p` > 0.
+  The snapshot behind it is retaken every `sb_explore.rewrite_every_s`, when `p_explore` moves by 0.01
+  or onto / off 0, when the phase changes and when an `sb_explore` key is set; the schedule file is
+  rewritten (atomically) when its text changes, and each actor picks it up before its next match.
+  B5's schedule, B0's, DAgger's and every evaluation's carry no `sb_explore` (the engine refuses an
+  eval entry with p > 0).
+- **Status** (`rmtrain status`, B4–B5, or once phases were counted), one line, for example:
+  `sb explore: p 0.250 (schedule 0.250); 5210 explored phases, per matchup min 41 / median 58 over 90;
+  in-cells 1260 tried >=1 87%, >=10 31%; out-cells 2950 >=1 64%, >=10 9%; policy swap rate 0.083
+  (48120 phases)` — `p` now and the `p` the schedule carries; explored phases in all and per
+  matchup; the shares of (matchup, sideboard card) in-cells and (matchup, maindeck card) out-cells
+  tried at least once and at least 10 times (cells from the league deck files, names compared by
+  front face, accents folded and letters and digits only, so `Dead/Gone` is the frames' `Dead`); the
+  share of the policy's phases with at least one swap. `status --json` has the same as
+  `sb_explore`.
+- **Metrics:** each new snapshot in B4–B5 writes an `sb_explore` line: `p`, `explored_phases`,
+  `policy_phases`, `matchups`, `phases_min`, `phases_median`, `explored_hist` and `policy_hist`
+  (swap counts 0 … 9, 10+, cumulative), `policy_swap_rate`, `policy_hist_recent` and
+  `policy_swap_rate_recent` (the policy's phases since the previous line), `in_cells`,
+  `in_tried_1`, `in_tried_10`, `out_cells`, `out_tried_1`, `out_tried_10`, `weighted_matchups`.
 
 **Pause** stops the actors rather than freezing them (SIGSTOP): the engine's teacher and server
 timeouts are wall-clock deadlines, so a long freeze would fail them. The price is one written-off
@@ -425,7 +473,8 @@ pilots the simple decks well and the complex ones (doomsday, control, reanimator
 - **Resume** (after `stop`, a crash or `kill -9` of everything): the phase and stage from
   `state.json`; BC reloads its checkpoint and re-reads the newest episodes up to the window's
   limit; R-NaD reloads the learner and re-reads the checkpoint's window; the results files are read
-  on from the recorded offsets; actors start after their last match. An evaluation that was running
+  on from the recorded offsets (sideboard exploration's counts with them, §6.1); actors start after
+  their last match. An evaluation that was running
   (`state.json`'s `eval.running`) is queued again and played from its start. At most one checkpoint
   interval of learning is lost.
 - **Which self-play games are fresh after a resume.** A checkpoint polls the window first, so it
@@ -467,7 +516,13 @@ start indices, the results tail, the actor pool's crash restarts and back-off ag
 the window restore, checkpoint pruning, the schedules and evaluators (with `actors.teacher_tier = "hard+sb"`:
 the teacher command, B0's scripted seats and DAgger's labels at that tier, every evaluation opponent
 `scripted:hard`), `bc.sideboard_weight` on a synthetic batch (1: the plain mean exactly; the weighted
-mean otherwise), `rnad.reg_eps_sideboarding` at 0 and 0.01 (finite log π and gradients), an SPRT evaluation stopping
+mean otherwise), `rnad.reg_eps_sideboarding` at 0 and 0.01 (finite log π and gradients), structured sideboard exploration
+(`p_explore`'s hold, ramp and end, 0 outside B4, live keys and refusals; the counts from synthetic
+results lines — the seat's deck with and without the swap, explored vs policy phases, a card once per
+phase —; the weights `(1 + n)^-power`; the self-play schedule's `sb_explore` with both decks' weights,
+none at p 0, in B5, B0, DAgger and evaluations; the orchestrator's snapshot cadence, its metrics line,
+the status line, the counts in `state.json`; the league deck files' card keys; and, when a built
+engine knows `sb_explore`, the engine's `--actor --actor-matches 0` reading the written schedule), an SPRT evaluation stopping
 when its test decides, the request split, the ladder's ratings), and the first validation run's
 findings: a B4 resume at an earlier step (progress, metrics and checkpoint names follow the restored
 learner; the lost iteration's rung, evaluation and ladder players dropped; a re-crossed boundary

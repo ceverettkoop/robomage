@@ -853,9 +853,16 @@ evaluation kept at every exploring step, μ = `q`), each results line's `sb` (pe
 swaps, cards in and out; `docs/actor.md` §4), and the gate (`actorloop`: μ = `q` recomputed from
 replayed frames, the counts cover 0–10 in proportion, the card weights move the frequencies, p 0
 changes nothing, replays and reruns identical, the schedule's refusals; `actor`: the same on `nn:`
-self-play at p 0.5, the other phases' μ the policy's). Left: the orchestrator's coverage counts and
-schedule weights, `p_explore`'s schedule (`rmtrain` config, live); `reg_eps_sideboarding` about 0
-(a run setting; the default stays 0.25); the benchmark's sideboarding report.
+self-play at p 0.5, the other phases' μ the policy's). Done too: the orchestrator's side
+(`learn/rmlearn/orchestrator/sb_explore.py`; `docs/rmtrain.md` §6.1): `p_explore`'s schedule
+(`sb_explore.p_start` held for `hold_frac` of `b4.max_learner_steps`, then linear to `p_end`; 0 in
+B5 and every evaluation; live, default 0), the coverage counts per (own deck, opponent deck, card)
+in and out from the training actors' results lines (kept in `state.json` with the results offsets),
+the weights `(1 + n)^-coverage_power` written into each self-play entry's `sb_explore` (rewritten every
+`sb_explore.rewrite_every_s` and when p moves), and the status line and `sb_explore` metrics (explored
+phases per matchup, the share of (matchup, card) cells tried, the explored and policy swap-count
+histograms, the policy's swap rate). Left: `reg_eps_sideboarding` about 0 (a run setting; the
+default stays 0.25); the benchmark's sideboarding report.
 
 ---
 

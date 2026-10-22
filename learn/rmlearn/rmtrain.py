@@ -24,6 +24,7 @@ import time
 
 from .orchestrator import config as C
 from .orchestrator.control import alive, request
+from .orchestrator.sb_explore import status_line as sb_status_line
 from .orchestrator.rundir import NO_RUN_EXIT, REPO_ROOT, RunDir, read_json, resolve_run, write_json
 
 LEARN_DIR = os.path.join(REPO_ROOT, "learn")
@@ -393,6 +394,9 @@ def format_status(d):
             if key == "rnad_step" and "value_mse_first_sight" in e:
                 L.append("  value MSE: first sight %s, after the update %s, gap %s" % (
                     _n(e.get("value_mse_first_sight")), _n(e.get("value_mse_after")), _n(e.get("value_mse_gap"))))
+    sx = d.get("sb_explore")
+    if sx and (d.get("phase") in ("B4", "B5") or sx.get("explored_phases") or sx.get("policy_phases")):
+        L.append(sb_status_line(sx))
     ev = d.get("eval") or {}
     if ev.get("running") or ev.get("queue"):
         L.append("eval: running %s, queued %s" % (ev.get("running"), ev.get("queue")))
