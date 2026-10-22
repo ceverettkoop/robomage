@@ -828,8 +828,8 @@ some 8k per deck ordering; at `p_explore` 0.1 with ten candidate swaps per match
 (matchup, swap) cell sees about 80 tries a day, and a 5-point effect needs about 1,500. Per cell,
 outcome-only learning takes weeks; the policy shares what it learns across matchups through the
 card tokens (a graveyard-hate card against any graveyard deck), and that sharing is what
-generalisation means here. The value head's early-game error (section 7, open issue 10) sets the
-noise of every sideboarding decision's credit, so it should be fixed first.
+generalisation means here. A game's result is mostly unpredictable at its start (section 7, open
+issue 10): that, not the value head, sets the noise of every sideboarding decision's credit.
 
 **Measurements** (`rmtrain bench` and the run's status):
 
@@ -924,14 +924,17 @@ Open:
 9. **Knowledge error with test-harness presets in bo3 game 2.** "A card is created from zone none
    with nothing set aside" (found during T7, pre-existing): the knowledge sidecar reports it in
    game 2 of a bo3 started with test-harness zone presets. It does not occur in training games.
-10. **The value head underuses the matchup** (league12h, 2026-10-20). R-NaD made it calibrated
-    (DAgger predicted +0.95 for positions that ended +0.80; the final network +0.93 → +0.95) and cut
-    its self-play error from 0.66 to 0.51, but early in a game it is worse than a lookup of each
-    matchup's mean result, which it can compute (open decklists put the opponent's registered list
-    in its ledger tokens from the first decision): 0.82 vs 0.69 at the start of game 1, 0.73 vs
-    0.66 at the start of games 2–3. Its gradient on a 32-game batch is about 2% signal (break-even
-    near 1,650 games), and the trunk's about 1%. Candidates: a value-only pass over more replayed
-    games per learner step, the omniscient critic (open issue 1).
+10. **The value head and the matchup** (league12h, 2026-10-20; corrected 2026-10-21). R-NaD made
+    the value head calibrated (DAgger predicted +0.95 for positions that ended +0.80; the final
+    network +0.93 → +0.95) and cut its self-play error from 0.66 to 0.51. Early in a game it is
+    about as good as a lookup of each matchup's mean result: 0.82 at the start of game 1 and 0.73
+    at the start of games 2–3, against the lookup's 0.79 when the lookup is fitted on the run's
+    other games (some 7,000 per matchup). An earlier comparison fitted the lookup on the ~400
+    scored games themselves (about 9 per matchup), which flattered it (0.67–0.69) and suggested the
+    head ignored the matchup; it does not. What remains is that a game's result is mostly
+    unpredictable at its start (squared error near 0.8 against 1.0 for predicting 0), which is the
+    noise of every sideboarding decision's credit, not a defect of the head. Its gradient on a
+    32-game batch is about 2% signal (break-even near 1,650 games), the trunk's about 1%.
 11. **Learning pace** (league12h, 2026-10-20). Against `scripted:hard`, paired by match, the final
     network gained +0.017 ± 0.013 over the DAgger policy, rising steadily with steps (about +0.23
     points per 1,000 learner steps; 15k steps a day). The policy moved little (its top move differs
