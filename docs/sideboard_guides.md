@@ -5,7 +5,7 @@ for each league deck, what it brings in and cuts against each other league deck,
 changes on the draw. These are a prior for the warm start, not the target: the trained policy is
 meant to learn sideboarding that carries beyond this table.
 
-**Status:** draft, 2026-10-20, for the user's corrections.
+**Status:** reviewed 2026-10-21; for training.
 
 ## How the guides are applied
 
@@ -17,7 +17,8 @@ meant to learn sideboarding that carries beyond this table.
   not a league deck, or a matchup a guide leaves out, gets Done (no swaps).
 - **On the play:** the matchup's *In* and *Out*.
 - **On the draw:** the same, plus one more swap: the deck's draw land out and the matchup's *Draw +1*
-  card in.
+  card in. gw_maverick, lands and wubg_doomsday cut no land on the draw: their guides are the same
+  on the play and on the draw.
 - Every swap is one card in and one out (the engine's balance rule), so *In* and *Out* have equal
   counts. All of a deck's phases stay under the engine's 15-swap cap.
 
@@ -28,13 +29,13 @@ meant to learn sideboarding that carries beyond this table.
 | bug | 1 Swamp |
 | burn | 1 Mountain |
 | bw_dnt | 1 Plains |
-| gw_maverick | 1 Talon Gates of Madara |
-| lands | 1 Rishadan Port |
+| gw_maverick | none |
+| lands | none |
 | reanimator | 1 Swamp |
 | ur_delver | 1 Thundering Falls |
 | uw_control | 1 Island |
 | wrb_energy | 1 Plains |
-| wubg_doomsday | 1 Cavern of Souls; against the blue decks (bug, reanimator, ur_delver, uw_control) 1 Scrubland instead, keeping Cavern against counterspells |
+| wubg_doomsday | none |
 
 ## bug
 
@@ -45,14 +46,14 @@ Sideboard: 2 Carpet of Flowers, 2 Consign to Memory, 2 Endurance, 1 Force of Vig
 | vs | In | Out | Draw +1 |
 |---|---|---|---|
 | burn | 1 Hydroblast, 2 Endurance | 2 Thoughtseize, 1 Life from the Loam | Pernicious Deed |
-| bw_dnt | 2 Pernicious Deed, 1 Toxic Deluge, 1 Null Rod | 2 Thoughtseize, 1 Lorien Revealed, 1 Flow State | Force of Vigor |
+| bw_dnt | 2 Pernicious Deed, 1 Toxic Deluge | 2 Thoughtseize, 1 Lorien Revealed | Force of Vigor |
 | gw_maverick | 2 Pernicious Deed, 1 Toxic Deluge | 2 Thoughtseize, 1 Lorien Revealed | Force of Vigor |
 | lands | 1 Force of Vigor, 1 Surgical Extraction, 2 Consign to Memory, 1 Pernicious Deed | 2 Orcish Bowmasters, 2 Fatal Push, 1 Witherbloom Command | Null Rod |
 | reanimator | 1 Surgical Extraction, 2 Consign to Memory, 1 Force of Negation, 2 Endurance | 3 Fatal Push, 2 Witherbloom Command, 1 Lorien Revealed | Veil of Summer |
 | ur_delver | 1 Hydroblast, 1 Null Rod, 1 Toxic Deluge | 2 Thoughtseize, 1 Life from the Loam | Veil of Summer |
 | uw_control | 2 Carpet of Flowers, 1 Veil of Summer, 1 Force of Negation, 1 Consign to Memory | 2 Fatal Push, 2 Witherbloom Command, 1 Sheoldred's Edict | Force of Vigor |
 | wrb_energy | 2 Pernicious Deed, 1 Toxic Deluge, 1 Hydroblast | 2 Thoughtseize, 1 Lorien Revealed, 1 Life from the Loam | Endurance |
-| wubg_doomsday | 2 Consign to Memory, 1 Surgical Extraction, 1 Veil of Summer, 1 Force of Negation, 1 Null Rod | 3 Fatal Push, 2 Sheoldred's Edict, 1 Witherbloom Command | Carpet of Flowers |
+| wubg_doomsday | 2 Consign to Memory, 1 Surgical Extraction, 1 Veil of Summer, 1 Force of Negation | 3 Fatal Push, 2 Sheoldred's Edict | Carpet of Flowers |
 
 Notes: Consign counters Thassa's Oracle's trigger, Archon's and Atraxa's enter triggers, Saga
 chapters and colorless spells (The One Ring, Mox Diamond, Sphere). Edicts stay against reanimator
@@ -110,15 +111,15 @@ Sideboard: 2 Choke, 3 Deafening Silence, 2 Endurance, 2 Erode, 3 Force of Vigor,
 
 | vs | In | Out | Draw +1 |
 |---|---|---|---|
-| bug | 2 Choke, 2 Erode, 1 Deafening Silence | 1 Collector Ouphe, 1 Gaddock Teeg, 2 Once Upon a Time, 1 Icetill Explorer | Deafening Silence |
-| burn | 1 Sheltered by Ghosts, 2 Endurance | 1 Collector Ouphe, 1 Gaddock Teeg, 1 Once Upon a Time | Erode |
-| bw_dnt | 3 Force of Vigor, 2 Erode | 1 Gaddock Teeg, 1 Keen-Eyed Curator, 3 Once Upon a Time | Sheltered by Ghosts |
-| lands | 3 Force of Vigor, 2 Endurance | 2 Swords to Plowshares, 1 Scythecat Cub, 1 Icetill Explorer, 1 Outland Liberator | Mole Man, Moloid Master |
-| reanimator | 2 Endurance, 2 Deafening Silence | 1 Icetill Explorer, 1 Outland Liberator, 2 Once Upon a Time | Deafening Silence |
-| ur_delver | 2 Choke, 2 Erode, 1 Force of Vigor | 1 Gaddock Teeg, 1 Keen-Eyed Curator, 1 Icetill Explorer, 2 Once Upon a Time | Deafening Silence |
-| uw_control | 2 Choke, 1 Force of Vigor, 1 Gaddock Teeg, 2 Erode | 1 Collector Ouphe, 1 Keen-Eyed Curator, 2 Once Upon a Time, 1 Outland Liberator, 1 Scythecat Cub | Deafening Silence |
-| wrb_energy | 2 Erode, 1 Sheltered by Ghosts, 1 Force of Vigor | 1 Collector Ouphe, 1 Gaddock Teeg, 2 Once Upon a Time | Endurance |
-| wubg_doomsday | 3 Deafening Silence, 2 Choke | 2 Swords to Plowshares, 1 Keen-Eyed Curator, 2 Endurance | Sheltered by Ghosts |
+| bug | 2 Choke, 2 Erode, 1 Deafening Silence | 1 Collector Ouphe, 1 Gaddock Teeg, 2 Once Upon a Time, 1 Icetill Explorer | - |
+| burn | 1 Sheltered by Ghosts, 2 Endurance | 1 Collector Ouphe, 1 Gaddock Teeg, 1 Once Upon a Time | - |
+| bw_dnt | 3 Force of Vigor, 2 Erode | 1 Gaddock Teeg, 1 Keen-Eyed Curator, 3 Once Upon a Time | - |
+| lands | 3 Force of Vigor, 2 Endurance | 2 Swords to Plowshares, 1 Scythecat Cub, 1 Icetill Explorer, 1 Outland Liberator | - |
+| reanimator | 2 Endurance, 2 Deafening Silence | 1 Icetill Explorer, 1 Outland Liberator, 2 Once Upon a Time | - |
+| ur_delver | 2 Choke, 2 Erode, 1 Force of Vigor | 1 Gaddock Teeg, 1 Keen-Eyed Curator, 1 Icetill Explorer, 2 Once Upon a Time | - |
+| uw_control | 2 Choke, 1 Force of Vigor, 1 Gaddock Teeg, 2 Erode | 1 Collector Ouphe, 1 Keen-Eyed Curator, 2 Once Upon a Time, 1 Outland Liberator, 1 Scythecat Cub | - |
+| wrb_energy | 2 Erode, 1 Sheltered by Ghosts, 1 Force of Vigor | 1 Collector Ouphe, 1 Gaddock Teeg, 2 Once Upon a Time | - |
+| wubg_doomsday | 3 Deafening Silence, 2 Choke | 2 Swords to Plowshares, 1 Keen-Eyed Curator, 2 Endurance | - |
 
 Notes: Collector Ouphe stays against lands, reanimator and doomsday (Mox Diamond, Lotus Petal,
 Lion's Eye Diamond). Keen-Eyed Curator stays against reanimator and lands. Against uw_control the
@@ -131,15 +132,15 @@ Sideboard: 1 Damping Sphere, 3 Endurance, 3 Faerie Macabre, 3 Force of Vigor, 1 
 
 | vs | In | Out | Draw +1 |
 |---|---|---|---|
-| bug | 1 Pithing Needle, 2 Endurance | 1 Skateboard, 1 Expedition Map, 1 Malevolent Rumble | Swords to Plowshares |
-| burn | 3 Endurance, 2 Twinshot Sniper, 2 Swords to Plowshares | 1 Pithing Needle, 1 Grafdigger's Cage, 1 Expedition Map, 1 Skateboard, 3 Crop Rotation | Damping Sphere |
-| bw_dnt | 3 Force of Vigor, 1 Pithing Needle, 2 Swords to Plowshares | 2 Sphere of Resistance, 1 Grafdigger's Cage, 1 Skateboard, 1 Expedition Map, 1 Malevolent Rumble | Twinshot Sniper |
-| gw_maverick | 2 Swords to Plowshares, 2 Twinshot Sniper, 1 Pithing Needle | 1 Skateboard, 1 Expedition Map, 2 Sphere of Resistance, 1 Malevolent Rumble | Force of Vigor |
-| reanimator | 3 Faerie Macabre, 2 Swords to Plowshares | 1 Skateboard, 1 Expedition Map, 1 Pithing Needle, 2 Malevolent Rumble | Endurance |
-| ur_delver | 1 Pithing Needle, 2 Swords to Plowshares, 2 Twinshot Sniper | 1 Skateboard, 1 Expedition Map, 1 Grafdigger's Cage, 2 Malevolent Rumble | Force of Vigor |
-| uw_control | 1 Pithing Needle, 3 Force of Vigor, 1 Damping Sphere | 1 Grafdigger's Cage, 1 Skateboard, 2 Malevolent Rumble, 1 Expedition Map | Swords to Plowshares |
-| wrb_energy | 2 Swords to Plowshares, 2 Twinshot Sniper, 1 Force of Vigor | 1 Grafdigger's Cage, 1 Skateboard, 1 Expedition Map, 2 Sphere of Resistance | Endurance |
-| wubg_doomsday | 1 Damping Sphere, 1 Pithing Needle, 1 Force of Vigor | 2 Swords to Plowshares, 1 Grafdigger's Cage | Force of Vigor |
+| bug | 1 Pithing Needle, 2 Endurance | 1 Skateboard, 1 Expedition Map, 1 Malevolent Rumble | - |
+| burn | 3 Endurance, 2 Twinshot Sniper, 2 Swords to Plowshares | 1 Pithing Needle, 1 Grafdigger's Cage, 1 Expedition Map, 1 Skateboard, 3 Crop Rotation | - |
+| bw_dnt | 3 Force of Vigor, 1 Pithing Needle, 2 Swords to Plowshares | 2 Sphere of Resistance, 1 Grafdigger's Cage, 1 Skateboard, 1 Expedition Map, 1 Malevolent Rumble | - |
+| gw_maverick | 2 Swords to Plowshares, 2 Twinshot Sniper, 1 Pithing Needle | 1 Skateboard, 1 Expedition Map, 2 Sphere of Resistance, 1 Malevolent Rumble | - |
+| reanimator | 3 Faerie Macabre, 2 Swords to Plowshares | 1 Skateboard, 1 Expedition Map, 1 Pithing Needle, 2 Malevolent Rumble | - |
+| ur_delver | 1 Pithing Needle, 2 Swords to Plowshares, 2 Twinshot Sniper | 1 Skateboard, 1 Expedition Map, 1 Grafdigger's Cage, 2 Malevolent Rumble | - |
+| uw_control | 1 Pithing Needle, 3 Force of Vigor, 1 Damping Sphere | 1 Grafdigger's Cage, 1 Skateboard, 2 Malevolent Rumble, 1 Expedition Map | - |
+| wrb_energy | 2 Swords to Plowshares, 2 Twinshot Sniper, 1 Force of Vigor | 1 Grafdigger's Cage, 1 Skateboard, 1 Expedition Map, 2 Sphere of Resistance | - |
+| wubg_doomsday | 1 Damping Sphere, 1 Pithing Needle, 1 Force of Vigor | 2 Swords to Plowshares, 1 Grafdigger's Cage | - |
 
 Notes: the sideboard Pithing Needle names Wasteland or Karakas (DnT, maverick), The One Ring or
 Teferi (uw_control), Kaito (bug), Lion's Eye Diamond (doomsday). Grafdigger's Cage stays against
@@ -221,13 +222,13 @@ Sideboard: 1 Clarion Conqueror, 2 Containment Priest, 1 Damping Sphere, 1 Deafen
 |---|---|---|---|
 | bug | 2 Pyroblast, 1 Clarion Conqueror | 2 Cabal Therapy, 1 Goblin Bombardment | Deafening Silence |
 | burn | 1 Clarion Conqueror, 2 Containment Priest, 1 Disruptor Flute | 4 Thoughtseize | Deafening Silence |
-| bw_dnt | 1 Null Rod, 1 Stony Silence, 1 Clarion Conqueror | 2 Cabal Therapy, 1 Thoughtseize | Containment Priest |
+| bw_dnt | 1 Stony Silence, 1 Clarion Conqueror | 1 Cabal Therapy, 1 Thoughtseize | Containment Priest |
 | gw_maverick | 1 Clarion Conqueror, 1 Containment Priest | 2 Cabal Therapy | Containment Priest |
 | lands | 4 Leyline of the Void, 1 Null Rod, 1 Disruptor Flute | 3 Orcish Bowmasters, 2 Cabal Therapy, 1 Goblin Bombardment | Clarion Conqueror |
 | reanimator | 4 Leyline of the Void, 2 Containment Priest | 2 Goblin Bombardment, 1 Static Prison, 2 Amped Raptor, 1 Cabal Therapy | Disruptor Flute |
 | ur_delver | 2 Pyroblast, 1 Null Rod | 1 Static Prison, 1 Cabal Therapy, 1 Goblin Bombardment | Deafening Silence |
 | uw_control | 2 Pyroblast, 1 Clarion Conqueror | 1 Goblin Bombardment, 1 Static Prison, 1 Swords to Plowshares | Null Rod |
-| wubg_doomsday | 1 Deafening Silence, 1 Damping Sphere, 1 Null Rod, 1 Disruptor Flute, 2 Pyroblast | 4 Swords to Plowshares, 2 Goblin Bombardment | Clarion Conqueror |
+| wubg_doomsday | 1 Deafening Silence, 1 Damping Sphere, 1 Disruptor Flute, 2 Pyroblast | 4 Swords to Plowshares, 1 Goblin Bombardment | Clarion Conqueror |
 
 Notes: Clarion Conqueror stops activated abilities of artifacts, creatures and planeswalkers, mana
 abilities included: the Stoneforge package and Vial, Knight of the Reliquary and the mana elves,
@@ -241,25 +242,22 @@ Mysteries, 1 Plains, 3 Prismatic Ending, 3 Swords to Plowshares.
 
 | vs | In | Out | Draw +1 |
 |---|---|---|---|
-| bug | 3 Force of Negation, 2 Carpet of Flowers | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 2 Teferi, Time Raveler | Carpet of Flowers |
-| burn | 3 Swords to Plowshares, 2 Prismatic Ending, 1 Force of Negation | 3 Veil of Summer, 2 Daze, 1 Consider | Prismatic Ending |
-| bw_dnt | 3 Prismatic Ending, 2 Swords to Plowshares, 1 Jace, Wielder of Mysteries | 2 Veil of Summer, 2 Daze, 1 Consider, 1 Edge of Autumn | Swords to Plowshares |
-| gw_maverick | 3 Swords to Plowshares, 3 Prismatic Ending | 3 Veil of Summer, 2 Daze, 1 Consider | Force of Negation |
-| lands | 2 Force of Negation, 2 Prismatic Ending, 2 Swords to Plowshares | 3 Veil of Summer, 2 Daze, 1 Edge of Autumn | Swords to Plowshares |
-| reanimator | 3 Force of Negation, 1 Grafdigger's Cage | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 1 Consider | Carpet of Flowers |
-| ur_delver | 3 Force of Negation, 1 Jace, Wielder of Mysteries | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 1 Consider | Carpet of Flowers |
-| uw_control | 3 Force of Negation, 1 Jace, Wielder of Mysteries, 1 Carpet of Flowers | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 1 Consider, 1 Daze | Carpet of Flowers |
-| wrb_energy | 3 Swords to Plowshares, 3 Prismatic Ending | 2 Daze, 1 Veil of Summer, 1 Edge of Autumn, 1 Consider, 1 Street Wraith | Force of Negation |
+| bug | 3 Force of Negation, 2 Carpet of Flowers | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 2 Teferi, Time Raveler | - |
+| burn | 3 Swords to Plowshares, 2 Prismatic Ending, 1 Force of Negation | 3 Veil of Summer, 2 Daze, 1 Consider | - |
+| bw_dnt | 3 Prismatic Ending, 2 Swords to Plowshares, 1 Jace, Wielder of Mysteries | 2 Veil of Summer, 2 Daze, 1 Consider, 1 Edge of Autumn | - |
+| gw_maverick | 3 Swords to Plowshares, 3 Prismatic Ending | 3 Veil of Summer, 2 Daze, 1 Consider | - |
+| lands | 2 Force of Negation, 2 Prismatic Ending, 2 Swords to Plowshares | 3 Veil of Summer, 2 Daze, 1 Edge of Autumn | - |
+| reanimator | 3 Force of Negation, 1 Grafdigger's Cage | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 1 Consider | - |
+| ur_delver | 3 Force of Negation, 1 Jace, Wielder of Mysteries | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 1 Consider | - |
+| uw_control | 3 Force of Negation, 1 Jace, Wielder of Mysteries, 1 Carpet of Flowers | 1 Edge of Autumn, 1 Street Wraith, 1 Quantum Riddler, 1 Consider, 1 Daze | - |
+| wrb_energy | 3 Swords to Plowshares, 3 Prismatic Ending | 2 Daze, 1 Veil of Summer, 1 Edge of Autumn, 1 Consider, 1 Street Wraith | - |
 
 Notes: Jace is a second win condition against Surgical Extraction or Consign to Memory on Thassa's
 Oracle. Prismatic Ending and Swords need white: Scrubland, Tundra and the fetches find it; the
-sideboard Plains is not used (land counts stay fixed apart from the draw rule). Veil of Summer goes
+sideboard Plains is not used (land counts stay fixed). Veil of Summer goes
 out against decks with neither blue nor black (burn, maverick, lands).
 
-## Open questions for review
+## Open question
 
-1. The draw land per deck (above), and whether lands and doomsday, which rely on land counts and
-   fast mana, should follow the draw rule at all (the brief says every deck).
-2. Whether the teacher should also vary by game (game 2 vs game 3) beyond play/draw.
-3. Which matchups to hold out of the teacher for the generalisation test (§6.2): one per deck, e.g.
+1. Which matchups to hold out of the teacher for the generalisation test (§6.2): one per deck, e.g.
    each deck's guide against one opponent left as Done.
