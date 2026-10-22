@@ -156,7 +156,8 @@ library only: it launches the engine with `--machine`, decodes each seat's frame
 
 | Spec | Agent |
 |---|---|
-| `scripted` (`hard`, `heuristic`, `scripted:hard`) | the hard tier: smart mulligan, combat simulation, combo lines |
+| `scripted` (`hard`, `heuristic`, `scripted:hard`) | the hard tier: smart mulligan, combat simulation, combo lines; Done at every sideboarding phase |
+| `scripted:hard+sb` (`hard+sb`) | the hard tier, sideboarding between bo3 games per the league guides (`docs/sideboard_guides.md`, `python/sideboard_guides.py`): both league decks identified from the registered lists, the matchup's target configuration for the coming game on the play or on the draw; Done for an unknown deck or a held-out matchup |
 | `scripted:easy` / `greedy` (`easy`) | the greedy tier |
 | `scripted:random` (`random`) | uniform random |
 | `explore` (`fuzz`), `explore:patient` (`patient`) | the coverage fuzzer (`python/explore_agent.py`; the same games as the engine's C++ port for the same seed) |

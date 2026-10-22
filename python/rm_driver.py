@@ -10,7 +10,8 @@ the deciding seat's agent for one integer and writes it back. It needs only ``rm
 
 **Agents** (``make_agent``; one spec per seat):
 
-- the scripted tiers (``scripted`` = hard, ``scripted:easy`` / ``greedy``, ``scripted:random``):
+- the scripted tiers (``scripted`` = hard, ``scripted:hard+sb`` (hard, sideboarding per the league
+  guides, ``sideboard_guides.py``), ``scripted:easy`` / ``greedy``, ``scripted:random``):
   ``scripted_core.ScriptedCore`` on the seat's decoded frame (``rm_agent.decide``);
 - ``explore`` / ``explore:patient``: the coverage fuzzer (``explore_agent.py``) the same way;
 - ``first`` / ``auto``: always action 0 (pass priority, the first choice);

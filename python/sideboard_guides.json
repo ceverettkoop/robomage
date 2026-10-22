@@ -1,0 +1,138 @@
+{
+  "draw_land": {
+    "bug": "Swamp",
+    "burn": "Mountain",
+    "bw_dnt": "Plains",
+    "gw_maverick": null,
+    "lands": null,
+    "reanimator": "Swamp",
+    "ur_delver": "Thundering Falls",
+    "uw_control": "Island",
+    "wrb_energy": "Plains",
+    "wubg_doomsday": null
+  },
+  "holdout": [
+    ["bug", "reanimator"],
+    ["burn", "uw_control"],
+    ["bw_dnt", "lands"],
+    ["gw_maverick", "ur_delver"],
+    ["lands", "wrb_energy"],
+    ["reanimator", "wubg_doomsday"],
+    ["ur_delver", "bug"],
+    ["uw_control", "gw_maverick"],
+    ["wrb_energy", "bw_dnt"],
+    ["wubg_doomsday", "burn"]
+  ],
+  "guides": {
+    "bug": {
+      "burn": {"in": {"Hydroblast": 1, "Endurance": 2}, "out": {"Thoughtseize": 2, "Life from the Loam": 1}, "draw": "Pernicious Deed"},
+      "bw_dnt": {"in": {"Pernicious Deed": 2, "Toxic Deluge": 1}, "out": {"Thoughtseize": 2, "Lorien Revealed": 1}, "draw": "Force of Vigor"},
+      "gw_maverick": {"in": {"Pernicious Deed": 2, "Toxic Deluge": 1}, "out": {"Thoughtseize": 2, "Lorien Revealed": 1}, "draw": "Force of Vigor"},
+      "lands": {"in": {"Force of Vigor": 1, "Surgical Extraction": 1, "Consign to Memory": 2, "Pernicious Deed": 1}, "out": {"Orcish Bowmasters": 2, "Fatal Push": 2, "Witherbloom Command": 1}, "draw": "Null Rod"},
+      "reanimator": {"in": {"Surgical Extraction": 1, "Consign to Memory": 2, "Force of Negation": 1, "Endurance": 2}, "out": {"Fatal Push": 3, "Witherbloom Command": 2, "Lorien Revealed": 1}, "draw": "Veil of Summer"},
+      "ur_delver": {"in": {"Hydroblast": 1, "Null Rod": 1, "Toxic Deluge": 1}, "out": {"Thoughtseize": 2, "Life from the Loam": 1}, "draw": "Veil of Summer"},
+      "uw_control": {"in": {"Carpet of Flowers": 2, "Veil of Summer": 1, "Force of Negation": 1, "Consign to Memory": 1}, "out": {"Fatal Push": 2, "Witherbloom Command": 2, "Sheoldred's Edict": 1}, "draw": "Force of Vigor"},
+      "wrb_energy": {"in": {"Pernicious Deed": 2, "Toxic Deluge": 1, "Hydroblast": 1}, "out": {"Thoughtseize": 2, "Lorien Revealed": 1, "Life from the Loam": 1}, "draw": "Endurance"},
+      "wubg_doomsday": {"in": {"Consign to Memory": 2, "Surgical Extraction": 1, "Veil of Summer": 1, "Force of Negation": 1}, "out": {"Fatal Push": 3, "Sheoldred's Edict": 2}, "draw": "Carpet of Flowers"}
+    },
+    "burn": {
+      "bug": {"in": {"Roiling Vortex": 2, "Searing Blood": 2}, "out": {"Light Up the Stage": 1, "Skewer the Critics": 3}, "draw": "Dead/Gone"},
+      "bw_dnt": {"in": {"Searing Blood": 3, "Dead/Gone": 2, "Smash to Smithereens": 2}, "out": {"Eidolon of the Great Revel": 4, "Lava Spike": 2, "Light Up the Stage": 1}, "draw": "Smash to Smithereens"},
+      "gw_maverick": {"in": {"Searing Blood": 3, "Dead/Gone": 2}, "out": {"Eidolon of the Great Revel": 4, "Light Up the Stage": 1}, "draw": "Roiling Vortex"},
+      "lands": {"in": {"Leyline of the Void": 4, "Smash to Smithereens": 2}, "out": {"Exquisite Firecraft": 2, "Light Up the Stage": 1, "Skewer the Critics": 3}, "draw": "Smash to Smithereens"},
+      "reanimator": {"in": {"Leyline of the Void": 4, "Roiling Vortex": 2}, "out": {"Exquisite Firecraft": 2, "Light Up the Stage": 1, "Skewer the Critics": 3}, "draw": "Dead/Gone"},
+      "ur_delver": {"in": {"Searing Blood": 3, "Roiling Vortex": 2}, "out": {"Light Up the Stage": 1, "Skewer the Critics": 3, "Rift Bolt": 1}, "draw": "Smash to Smithereens"},
+      "uw_control": {"in": {"Roiling Vortex": 2, "Smash to Smithereens": 2}, "out": {"Light Up the Stage": 1, "Skewer the Critics": 3}, "draw": "Searing Blood"},
+      "wrb_energy": {"in": {"Searing Blood": 3, "Dead/Gone": 1, "Roiling Vortex": 2}, "out": {"Eidolon of the Great Revel": 4, "Lava Spike": 1, "Light Up the Stage": 1}, "draw": "Dead/Gone"},
+      "wubg_doomsday": {"in": {"Roiling Vortex": 2}, "out": {"Light Up the Stage": 1, "Skewer the Critics": 1}, "draw": "Dead/Gone"}
+    },
+    "bw_dnt": {
+      "bug": {"in": {"Erode": 2}, "out": {"Meteor Sword": 1, "Cloak and Dagger, Entwined": 1}, "draw": "Deafening Silence"},
+      "burn": {"in": {"Erode": 2, "Disruptor Flute": 2}, "out": {"Thoughtseize": 4}, "draw": "Containment Priest"},
+      "gw_maverick": {"in": {"Erode": 2, "Grafdigger's Cage": 1}, "out": {"Thoughtseize": 2, "Orcish Bowmasters": 1}, "draw": "Disruptor Flute"},
+      "lands": {"in": {"Surgical Extraction": 1, "Faerie Macabre": 1, "Disruptor Flute": 2}, "out": {"Orcish Bowmasters": 3, "Meteor Sword": 1}, "draw": "Deafening Silence"},
+      "reanimator": {"in": {"Containment Priest": 1, "Faerie Macabre": 1, "Grafdigger's Cage": 1, "Surgical Extraction": 1, "Disruptor Flute": 2}, "out": {"Pre-War Formalwear": 2, "Meteor Sword": 1, "Cloak and Dagger, Entwined": 1, "Flickerwisp": 1, "Orcish Bowmasters": 1}, "draw": "Deafening Silence"},
+      "ur_delver": {"in": {"Erode": 2, "Deafening Silence": 1}, "out": {"Meteor Sword": 1, "Cloak and Dagger, Entwined": 1, "Thoughtseize": 1}, "draw": "Deafening Silence"},
+      "uw_control": {"in": {"Deafening Silence": 2, "Erode": 2}, "out": {"Meteor Sword": 1, "Cloak and Dagger, Entwined": 1, "Swords to Plowshares": 2}, "draw": "Deafening Silence"},
+      "wrb_energy": {"in": {"Erode": 2}, "out": {"Thoughtseize": 2}, "draw": "Disruptor Flute"},
+      "wubg_doomsday": {"in": {"Deafening Silence": 3, "Disruptor Flute": 2, "Surgical Extraction": 1}, "out": {"Swords to Plowshares": 3, "Meteor Sword": 1, "Cloak and Dagger, Entwined": 1, "Lion Sash": 1}, "draw": "Erode"}
+    },
+    "gw_maverick": {
+      "bug": {"in": {"Choke": 2, "Erode": 2, "Deafening Silence": 1}, "out": {"Collector Ouphe": 1, "Gaddock Teeg": 1, "Once Upon a Time": 2, "Icetill Explorer": 1}, "draw": null},
+      "burn": {"in": {"Sheltered by Ghosts": 1, "Endurance": 2}, "out": {"Collector Ouphe": 1, "Gaddock Teeg": 1, "Once Upon a Time": 1}, "draw": null},
+      "bw_dnt": {"in": {"Force of Vigor": 3, "Erode": 2}, "out": {"Gaddock Teeg": 1, "Keen-Eyed Curator": 1, "Once Upon a Time": 3}, "draw": null},
+      "lands": {"in": {"Force of Vigor": 3, "Endurance": 2}, "out": {"Swords to Plowshares": 2, "Scythecat Cub": 1, "Icetill Explorer": 1, "Outland Liberator": 1}, "draw": null},
+      "reanimator": {"in": {"Endurance": 2, "Deafening Silence": 2}, "out": {"Icetill Explorer": 1, "Outland Liberator": 1, "Once Upon a Time": 2}, "draw": null},
+      "ur_delver": {"in": {"Choke": 2, "Erode": 2, "Force of Vigor": 1}, "out": {"Gaddock Teeg": 1, "Keen-Eyed Curator": 1, "Icetill Explorer": 1, "Once Upon a Time": 2}, "draw": null},
+      "uw_control": {"in": {"Choke": 2, "Force of Vigor": 1, "Gaddock Teeg": 1, "Erode": 2}, "out": {"Collector Ouphe": 1, "Keen-Eyed Curator": 1, "Once Upon a Time": 2, "Outland Liberator": 1, "Scythecat Cub": 1}, "draw": null},
+      "wrb_energy": {"in": {"Erode": 2, "Sheltered by Ghosts": 1, "Force of Vigor": 1}, "out": {"Collector Ouphe": 1, "Gaddock Teeg": 1, "Once Upon a Time": 2}, "draw": null},
+      "wubg_doomsday": {"in": {"Deafening Silence": 3, "Choke": 2}, "out": {"Swords to Plowshares": 2, "Keen-Eyed Curator": 1, "Endurance": 2}, "draw": null}
+    },
+    "lands": {
+      "bug": {"in": {"Pithing Needle": 1, "Endurance": 2}, "out": {"Skateboard": 1, "Expedition Map": 1, "Malevolent Rumble": 1}, "draw": null},
+      "burn": {"in": {"Endurance": 3, "Twinshot Sniper": 2, "Swords to Plowshares": 2}, "out": {"Pithing Needle": 1, "Grafdigger's Cage": 1, "Expedition Map": 1, "Skateboard": 1, "Crop Rotation": 3}, "draw": null},
+      "bw_dnt": {"in": {"Force of Vigor": 3, "Pithing Needle": 1, "Swords to Plowshares": 2}, "out": {"Sphere of Resistance": 2, "Grafdigger's Cage": 1, "Skateboard": 1, "Expedition Map": 1, "Malevolent Rumble": 1}, "draw": null},
+      "gw_maverick": {"in": {"Swords to Plowshares": 2, "Twinshot Sniper": 2, "Pithing Needle": 1}, "out": {"Skateboard": 1, "Expedition Map": 1, "Sphere of Resistance": 2, "Malevolent Rumble": 1}, "draw": null},
+      "reanimator": {"in": {"Faerie Macabre": 3, "Swords to Plowshares": 2}, "out": {"Skateboard": 1, "Expedition Map": 1, "Pithing Needle": 1, "Malevolent Rumble": 2}, "draw": null},
+      "ur_delver": {"in": {"Pithing Needle": 1, "Swords to Plowshares": 2, "Twinshot Sniper": 2}, "out": {"Skateboard": 1, "Expedition Map": 1, "Grafdigger's Cage": 1, "Malevolent Rumble": 2}, "draw": null},
+      "uw_control": {"in": {"Pithing Needle": 1, "Force of Vigor": 3, "Damping Sphere": 1}, "out": {"Grafdigger's Cage": 1, "Skateboard": 1, "Malevolent Rumble": 2, "Expedition Map": 1}, "draw": null},
+      "wrb_energy": {"in": {"Swords to Plowshares": 2, "Twinshot Sniper": 2, "Force of Vigor": 1}, "out": {"Grafdigger's Cage": 1, "Skateboard": 1, "Expedition Map": 1, "Sphere of Resistance": 2}, "draw": null},
+      "wubg_doomsday": {"in": {"Damping Sphere": 1, "Pithing Needle": 1, "Force of Vigor": 1}, "out": {"Swords to Plowshares": 2, "Grafdigger's Cage": 1}, "draw": null}
+    },
+    "reanimator": {
+      "bug": {"in": {"Force of Negation": 2, "Flusterstorm": 1, "The Creation of Avacyn": 2}, "out": {"Flow State": 3, "Careful Study": 2}, "draw": "Show and Tell"},
+      "burn": {"in": {"Show and Tell": 4, "The Creation of Avacyn": 2, "Fatal Push": 2}, "out": {"Thoughtseize": 4, "Otherworldly Gaze": 3, "Flow State": 1}, "draw": "Echoing Truth"},
+      "bw_dnt": {"in": {"Echoing Truth": 2, "Consign to Memory": 2, "Fatal Push": 2}, "out": {"Flow State": 3, "Raph & Mikey, Troublemakers": 1, "Careful Study": 2}, "draw": "Show and Tell"},
+      "gw_maverick": {"in": {"Fatal Push": 2, "Echoing Truth": 2, "Show and Tell": 2}, "out": {"Flow State": 3, "Careful Study": 2, "Raph & Mikey, Troublemakers": 1}, "draw": "The Creation of Avacyn"},
+      "lands": {"in": {"Echoing Truth": 2, "Force of Negation": 2, "Show and Tell": 2}, "out": {"Flow State": 3, "Careful Study": 2, "Raph & Mikey, Troublemakers": 1}, "draw": "The Creation of Avacyn"},
+      "ur_delver": {"in": {"Force of Negation": 2, "Flusterstorm": 1, "Fatal Push": 2}, "out": {"Flow State": 3, "Raph & Mikey, Troublemakers": 1, "Dark Ritual": 1}, "draw": "Show and Tell"},
+      "uw_control": {"in": {"Force of Negation": 2, "Flusterstorm": 1, "Echoing Truth": 2, "The Creation of Avacyn": 1}, "out": {"Flow State": 3, "Careful Study": 2, "Raph & Mikey, Troublemakers": 1}, "draw": "The Creation of Avacyn"},
+      "wrb_energy": {"in": {"Echoing Truth": 2, "Fatal Push": 2, "Show and Tell": 2, "The Creation of Avacyn": 2}, "out": {"Otherworldly Gaze": 3, "Careful Study": 3, "Thoughtseize": 2}, "draw": "Show and Tell"},
+      "wubg_doomsday": {"in": {"Force of Negation": 2, "Flusterstorm": 1, "Consign to Memory": 2}, "out": {"Flow State": 3, "Raph & Mikey, Troublemakers": 1, "Dark Ritual": 1}, "draw": "Echoing Truth"}
+    },
+    "ur_delver": {
+      "bug": {"in": {"Red Elemental Blast": 3, "Grafdigger's Cage": 1}, "out": {"Mishra's Bauble": 2, "Daze": 2}, "draw": "Force of Negation"},
+      "burn": {"in": {"Blue Elemental Blast": 2, "Unholy Heat": 1}, "out": {"Daze": 2, "Mishra's Bauble": 1}, "draw": "Consign to Memory"},
+      "bw_dnt": {"in": {"Unholy Heat": 1, "Meltdown": 1, "Price of Freedom": 2}, "out": {"Daze": 4}, "draw": "Consign to Memory"},
+      "gw_maverick": {"in": {"Unholy Heat": 1, "Grafdigger's Cage": 1, "Price of Freedom": 1}, "out": {"Daze": 2, "Mishra's Bauble": 1}, "draw": "Price of Freedom"},
+      "lands": {"in": {"Price of Freedom": 2, "Meltdown": 1, "Consign to Memory": 2, "Surgical Extraction": 1}, "out": {"Lightning Bolt": 3, "Unholy Heat": 1, "Daze": 2}, "draw": "Force of Negation"},
+      "reanimator": {"in": {"Surgical Extraction": 1, "Grafdigger's Cage": 1, "Consign to Memory": 2, "Red Elemental Blast": 2}, "out": {"Lightning Bolt": 3, "Unholy Heat": 1, "Mishra's Bauble": 2}, "draw": "Force of Negation"},
+      "uw_control": {"in": {"Red Elemental Blast": 3, "Force of Negation": 2}, "out": {"Unholy Heat": 1, "Mishra's Bauble": 2, "Into the Flood Maw": 1, "Daze": 1}, "draw": "Price of Freedom"},
+      "wrb_energy": {"in": {"Blue Elemental Blast": 2, "Unholy Heat": 1}, "out": {"Daze": 2, "Mishra's Bauble": 1}, "draw": "Consign to Memory"},
+      "wubg_doomsday": {"in": {"Force of Negation": 2, "Consign to Memory": 2, "Red Elemental Blast": 1}, "out": {"Lightning Bolt": 3, "Unholy Heat": 1, "Into the Flood Maw": 1}, "draw": "Surgical Extraction"}
+    },
+    "uw_control": {
+      "bug": {"in": {"Flusterstorm": 2, "Lavinia, Azorius Renegade": 1, "Surgical Extraction": 1}, "out": {"Wrath of the Skies": 2, "Tune the Narrative": 2}, "draw": "Consign to Memory"},
+      "burn": {"in": {"Triumph of Saint Katherine": 2, "Prismatic Ending": 2, "Containment Priest": 2}, "out": {"Lorien Revealed": 2, "Tune the Narrative": 2, "Spell Snare": 1, "Geist of Saint Traft": 1}, "draw": "Consign to Memory"},
+      "bw_dnt": {"in": {"Wrath of the Skies": 1, "Prismatic Ending": 2}, "out": {"Force of Negation": 2, "Spell Pierce": 1}, "draw": "Triumph of Saint Katherine"},
+      "gw_maverick": {"in": {"Wrath of the Skies": 1, "Prismatic Ending": 2}, "out": {"Force of Negation": 2, "Spell Pierce": 1}, "draw": "Containment Priest"},
+      "lands": {"in": {"Prismatic Ending": 2, "Consign to Memory": 2, "Surgical Extraction": 1, "Lavinia, Azorius Renegade": 1}, "out": {"Wrath of the Skies": 2, "Spell Snare": 1, "Geist of Saint Traft": 1, "Tune the Narrative": 2}, "draw": "Consign to Memory"},
+      "reanimator": {"in": {"Containment Priest": 2, "Surgical Extraction": 1, "Consign to Memory": 2, "Flusterstorm": 2}, "out": {"Wrath of the Skies": 2, "Geist of Saint Traft": 1, "Tune the Narrative": 2, "Lorien Revealed": 1, "Murktide Regent": 1}, "draw": "Lavinia, Azorius Renegade"},
+      "ur_delver": {"in": {"Flusterstorm": 2, "Prismatic Ending": 2, "Lavinia, Azorius Renegade": 1}, "out": {"Tune the Narrative": 2, "Lorien Revealed": 2, "Teferi, Time Raveler": 1}, "draw": "Consign to Memory"},
+      "wrb_energy": {"in": {"Wrath of the Skies": 1, "Prismatic Ending": 2, "Triumph of Saint Katherine": 1}, "out": {"Force of Negation": 2, "Spell Pierce": 1, "Lorien Revealed": 1}, "draw": "Triumph of Saint Katherine"},
+      "wubg_doomsday": {"in": {"Flusterstorm": 2, "Lavinia, Azorius Renegade": 1, "Consign to Memory": 2, "Surgical Extraction": 1}, "out": {"Wrath of the Skies": 2, "Swords to Plowshares": 2, "Geist of Saint Traft": 1, "Murktide Regent": 1}, "draw": "Consign to Memory"}
+    },
+    "wrb_energy": {
+      "bug": {"in": {"Pyroblast": 2, "Clarion Conqueror": 1}, "out": {"Cabal Therapy": 2, "Goblin Bombardment": 1}, "draw": "Deafening Silence"},
+      "burn": {"in": {"Clarion Conqueror": 1, "Containment Priest": 2, "Disruptor Flute": 1}, "out": {"Thoughtseize": 4}, "draw": "Deafening Silence"},
+      "bw_dnt": {"in": {"Stony Silence": 1, "Clarion Conqueror": 1}, "out": {"Cabal Therapy": 1, "Thoughtseize": 1}, "draw": "Containment Priest"},
+      "gw_maverick": {"in": {"Clarion Conqueror": 1, "Containment Priest": 1}, "out": {"Cabal Therapy": 2}, "draw": "Containment Priest"},
+      "lands": {"in": {"Leyline of the Void": 4, "Null Rod": 1, "Disruptor Flute": 1}, "out": {"Orcish Bowmasters": 3, "Cabal Therapy": 2, "Goblin Bombardment": 1}, "draw": "Clarion Conqueror"},
+      "reanimator": {"in": {"Leyline of the Void": 4, "Containment Priest": 2}, "out": {"Goblin Bombardment": 2, "Static Prison": 1, "Amped Raptor": 2, "Cabal Therapy": 1}, "draw": "Disruptor Flute"},
+      "ur_delver": {"in": {"Pyroblast": 2, "Null Rod": 1}, "out": {"Static Prison": 1, "Cabal Therapy": 1, "Goblin Bombardment": 1}, "draw": "Deafening Silence"},
+      "uw_control": {"in": {"Pyroblast": 2, "Clarion Conqueror": 1}, "out": {"Goblin Bombardment": 1, "Static Prison": 1, "Swords to Plowshares": 1}, "draw": "Null Rod"},
+      "wubg_doomsday": {"in": {"Deafening Silence": 1, "Damping Sphere": 1, "Disruptor Flute": 1, "Pyroblast": 2}, "out": {"Swords to Plowshares": 4, "Goblin Bombardment": 1}, "draw": "Clarion Conqueror"}
+    },
+    "wubg_doomsday": {
+      "bug": {"in": {"Force of Negation": 3, "Carpet of Flowers": 2}, "out": {"Edge of Autumn": 1, "Street Wraith": 1, "Quantum Riddler": 1, "Teferi, Time Raveler": 2}, "draw": null},
+      "burn": {"in": {"Swords to Plowshares": 3, "Prismatic Ending": 2, "Force of Negation": 1}, "out": {"Veil of Summer": 3, "Daze": 2, "Consider": 1}, "draw": null},
+      "bw_dnt": {"in": {"Prismatic Ending": 3, "Swords to Plowshares": 2, "Jace, Wielder of Mysteries": 1}, "out": {"Veil of Summer": 2, "Daze": 2, "Consider": 1, "Edge of Autumn": 1}, "draw": null},
+      "gw_maverick": {"in": {"Swords to Plowshares": 3, "Prismatic Ending": 3}, "out": {"Veil of Summer": 3, "Daze": 2, "Consider": 1}, "draw": null},
+      "lands": {"in": {"Force of Negation": 2, "Prismatic Ending": 2, "Swords to Plowshares": 2}, "out": {"Veil of Summer": 3, "Daze": 2, "Edge of Autumn": 1}, "draw": null},
+      "reanimator": {"in": {"Force of Negation": 3, "Grafdigger's Cage": 1}, "out": {"Edge of Autumn": 1, "Street Wraith": 1, "Quantum Riddler": 1, "Consider": 1}, "draw": null},
+      "ur_delver": {"in": {"Force of Negation": 3, "Jace, Wielder of Mysteries": 1}, "out": {"Edge of Autumn": 1, "Street Wraith": 1, "Quantum Riddler": 1, "Consider": 1}, "draw": null},
+      "uw_control": {"in": {"Force of Negation": 3, "Jace, Wielder of Mysteries": 1, "Carpet of Flowers": 1}, "out": {"Edge of Autumn": 1, "Street Wraith": 1, "Quantum Riddler": 1, "Consider": 1, "Daze": 1}, "draw": null},
+      "wrb_energy": {"in": {"Swords to Plowshares": 3, "Prismatic Ending": 3}, "out": {"Daze": 2, "Veil of Summer": 1, "Edge of Autumn": 1, "Consider": 1, "Street Wraith": 1}, "draw": null}
+    }
+  }
+}

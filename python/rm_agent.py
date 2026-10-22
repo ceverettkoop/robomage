@@ -19,7 +19,9 @@ What the view reads (``docs/state_format.md`` Appendix A): ``header``, ``turn``,
 ``object`` with ``object_keyword`` / ``object_counter``, ``stack``, ``pending`` with
 ``pending_cost`` / ``pending_cost_pip`` (the life a payment row pays), ``menu``,
 ``k_position`` / ``k_pool`` / ``k_pool_card`` / ``k_known_hand`` (memory), ``k_template`` (the
-opponent's possible lists under ``--closed-decklist``). It has no caps (every permanent, hand
+opponent's possible lists under ``--closed-decklist``), and for sideboarding ``decklist_card`` (each
+registered list's main and sideboard), ``match`` (who plays first in the coming game) and
+``own_deck`` (the current 75). It has no caps (every permanent, hand
 card, graveyard and exile card and stack object is there), reads summoning sickness as the rule
 (``object.sick``: a creature, haste considered), all keywords, a token's real characteristics,
 each permanent's own mana value and types, joins an action to its own object by handle
@@ -32,6 +34,8 @@ from __future__ import annotations
 import re
 import unicodedata
 from functools import cached_property
+
+from sideboard_guides import card_key
 
 _NONE8, _NONE16, _NONE32 = 0xFF, 0xFFFF, 0xFFFFFFFF
 _SELF, _OPP = 1, 2                    # player-rel values
@@ -68,8 +72,8 @@ FRAME_TABLES = frozenset({
     "card", "card_subtype", "card_keyword", "card_ability", "card_pip",
     "decklist", "decklist_card", "meta_list", "meta_list_card",
     "header", "turn", "player", "object", "object_keyword", "object_counter", "stack", "pending",
-    "pending_cost", "pending_cost_pip", "menu", "match", "k_position", "k_pool", "k_pool_card",
-    "k_known_hand", "k_template",
+    "pending_cost", "pending_cost_pip", "menu", "match", "own_deck", "k_position", "k_pool",
+    "k_pool_card", "k_known_hand", "k_template",
 })
 
 
@@ -236,6 +240,22 @@ class FrameCards:
                 if r["kind"] == phyrexian:
                     f.phyrexian.append(pip)
 
+    @cached_property
+    def _by_key(self) -> dict:
+        out = {}
+        for cid, front in self.front.items():
+            back = self.back.get(cid)
+            keys = [front] + ([back, front + back] if back is not None else [])
+            for k in keys:
+                out.setdefault(card_key(k), front)
+        return out
+
+    def canonical(self, name):
+        """The front face name of the card ``name`` spells (any face, both faces joined, punctuation
+        and accents ignored: a deck file's ``Dead/Gone`` is ``Dead``); None for a card not in the
+        frame."""
+        return self._by_key.get(card_key(name))
+
     def name(self, cid, back=False):
         """The name of card ``cid``'s front (or back) face; None for no card."""
         if cid < 0:
@@ -341,6 +361,7 @@ class SeatFrames:
         self.cards = None                   # FrameCards
         self.deck_names = {}                # seat value (1 A, 2 B) -> registered deck name
         self.lists = {}                     # player-rel -> {card name: copies} (main + side)
+        self.registered = {}                # player-rel -> ({name: main copies}, {name: side copies})
         self.meta_lists = []                # per reference list: {card name: copies}
         self._metagame = None
 
@@ -357,10 +378,15 @@ class SeatFrames:
             t = frame.tables
             self.deck_names = {r["player"]: r["name"] for r in t.get("decklist", [])}
             self.lists = {}
+            self.registered = {}
             for r in t.get("decklist_card", []):
                 name = self.cards.name(_card(r["card"]))
                 d = self.lists.setdefault(r["player_rel"], {})
                 d[name] = d.get(name, 0) + r["main"] + r["side"]
+                reg = self.registered.setdefault(r["player_rel"], ({}, {}))
+                for part, n in zip(reg, (r["main"], r["side"])):
+                    if n:
+                        part[name] = part.get(name, 0) + n
         elif frame.kind == "METAGAME":
             self._metagame = frame
             if self.cards is not None:
@@ -880,6 +906,29 @@ class FrameView:
         if lists is None:
             return None
         return any(card in lst for lst in lists)
+
+    # ── sideboarding ────────────────────────────────────────────────────────────────────────
+    def registered_list(self, mine: bool):
+        """A seat's registered list as (main, side), card name -> copies (DECKLISTS); None when
+        withheld (the opponent's under ``--closed-decklist``)."""
+        return self._s.registered.get(_SELF if mine else _OPP)
+
+    @cached_property
+    def own_current_main(self) -> dict:
+        """The own maindeck as it stands (``own_deck``: while sideboarding, after every move made),
+        card name -> copies."""
+        out = {}
+        for r in self.t.get("own_deck", []):
+            if r["player_rel"] == _SELF and r["main"]:
+                name = self.cards.name(_card(r["card"]))
+                out[name] = out.get(name, 0) + r["main"]
+        return out
+
+    @property
+    def plays_first(self) -> bool:
+        """Whether the viewer plays first in this game (while sideboarding: the coming game)."""
+        rows = self.t.get("match")
+        return bool(rows) and rows[0]["plays_first_rel"] == _SELF
 
 
 def decide(agent, seat: SeatFrames, frame) -> int:

@@ -147,7 +147,7 @@ background** and make the live output inspectable by the user:
   | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
-  | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples) |
+  | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples, the sideboard guides and `scripted:hard+sb` bo3 matches at their targets) |
 
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
@@ -157,7 +157,8 @@ background** and make the live output inspectable by the user:
   (bo3 by default; game i uses seed `--seed`+i; `--verbose` per-decision narrative + menu, `--out
   FILE`, `--quiet`, `--max-decisions N`, `--timing`, `--rmlog-dir DIR` (keep every game's decision
   log); `--help` lists all). Agents: `scripted` (= the
-  **hard** tier: smart mulligan, combat simulation, combo lines), `scripted:easy` / `greedy` /
+  **hard** tier: smart mulligan, combat simulation, combo lines), `scripted:hard+sb` (hard,
+  sideboarding per the league guides, `docs/sideboard_guides.md`), `scripted:easy` / `greedy` /
   `random`, `explore` / `explore:patient` (coverage fuzzer; big-mana mode), `first` (= `auto`),
   `actions:<ints>`. Choose `--deck-a/-b` that exercise what you changed (decks relative to
   `bin/resources/decks/`). Details: [`docs/game_running.md`](docs/game_running.md).
@@ -713,8 +714,12 @@ handshake JSON, the shared region, request / response layouts.
   `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
 - `record_corpus.py` — re-records the replay corpus with the live scripted agent, plus explore
   `--no-auto-mana` games (`make regen`)
+- `sideboard_guides.py` + `sideboard_guides.json` — the league sideboard guides
+  (`docs/sideboard_guides.md`'s machine-readable copy, with the held-out matchups) and the
+  `scripted:hard+sb` tier's sideboarding over them
 - `pycheck.py` — the kept Python's checks (Python decoder vs the engine's JSON, refusals, the
-  self-lethal guard, the driver's seeds and imports), run by the `smoke` tier (its `featurize` /
+  self-lethal guard, the driver's seeds and imports, the sideboard guides against their doc and
+  the decks, `scripted:hard+sb` bo3 matches at the guides' targets), run by the `smoke` tier (its `featurize` /
   `traj` parts by those tiers)
 
 **Tests (`tests/`)**

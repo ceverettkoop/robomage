@@ -5,7 +5,10 @@ for each league deck, what it brings in and cuts against each other league deck,
 changes on the draw. These are a prior for the warm start, not the target: the trained policy is
 meant to learn sideboarding that carries beyond this table.
 
-**Status:** reviewed 2026-10-21; for training.
+**Status:** reviewed 2026-10-21; for training. The machine-readable copy the tier reads is
+`python/sideboard_guides.json` (draw lands, every table row and the held-out matchups, card names
+as the league deck files spell them); `python/pycheck.py` (the gate's `smoke` tier) checks that it
+agrees with the tables here and with the deck files.
 
 ## How the guides are applied
 
@@ -14,7 +17,8 @@ meant to learn sideboarding that carries beyond this table.
   from game 2's configuration, and play/draw can flip between games 2 and 3, so the land rule is
   undone or applied as needed.
 - The opponent's deck is known from its registered list (open decklists). An opponent list that is
-  not a league deck, or a matchup a guide leaves out, gets Done (no swaps).
+  not a league deck, a matchup a guide leaves out, or a held-out matchup (below) gets Done (no
+  swaps).
 - **On the play:** the matchup's *In* and *Out*.
 - **On the draw:** the same, plus one more swap: the deck's draw land out and the matchup's *Draw +1*
   card in. gw_maverick, lands and wubg_doomsday cut no land on the draw: their guides are the same
@@ -257,7 +261,26 @@ Oracle. Prismatic Ending and Swords need white: Scrubland, Tundra and the fetche
 sideboard Plains is not used (land counts stay fixed). Veil of Summer goes
 out against decks with neither blue nor black (burn, maverick, lands).
 
-## Open question
+## Held-out matchups
 
-1. Which matchups to hold out of the teacher for the generalisation test (§6.2): one per deck, e.g.
-   each deck's guide against one opponent left as Done.
+For the generalisation test (`docs/rnad_training_plan.md` §6.2) the teacher answers Done in these
+ten matchups (deck vs opponent), though their rows stay in the tables above:
+
+| Deck | vs |
+|---|---|
+| bug | reanimator |
+| burn | uw_control |
+| bw_dnt | lands |
+| gw_maverick | ur_delver |
+| lands | wrb_energy |
+| reanimator | wubg_doomsday |
+| ur_delver | bug |
+| uw_control | gw_maverick |
+| wrb_energy | bw_dnt |
+| wubg_doomsday | burn |
+
+Each deck is held out once as the sideboarding deck and once as the opponent, and each held-out
+matchup has a held-in one calling for similar cards (bug against reanimator brings in the
+graveyard hate it brings in against lands; burn against uw_control brings in Roiling Vortex as
+against bug and Smash to Smithereens as against lands; …), so a policy that learned what the cards are for can board the
+held-out matchups without having been shown them.

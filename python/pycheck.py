@@ -19,6 +19,21 @@ playing does not:
             when it would kill the opponent too, while the opponent's board has it dead next
             turn), nor a Dismember whose Phyrexian pip only life can pay; at 3 life it casts the
             same Price of Progress (the position does tempt it).
+  guides    ``sideboard_guides.json`` against ``docs/sideboard_guides.md``'s tables (the same draw lands
+            and rows) and the league deck files (each row balanced, its In cards and Draw +1 card in
+            the deck's sideboard and its Out cards and draw land in its main deck with enough
+            copies, no card both in and out, each deck held out once as each side); and the
+            ``scripted:hard+sb`` tier's phases over a simulated engine sideboard menu (in-first,
+            one-shot locks, Done only while balanced): every row's target on the play and on the
+            draw from the registered list, game 3 after a play/draw flip (one swap: the land swap
+            undone or applied), a deck with no draw land the same on both, a held-out pair and an
+            unknown opponent list Done at once.
+  sideboard ``SIDEBOARD_MATCHES``: bo3 matches of ``scripted:hard+sb`` on both seats through
+            ``rm_driver.py``; at each seat's first decision of games 2 and 3 its main deck (the
+            frame's ``own_deck``) is its guide's target (the registered main where held out) for
+            the play or draw the game results give (the loser plays first; after a draw the same
+            player again), which the frame's ``match.plays_first`` also says; and the narrative's
+            swap count of each phase is the number of cards the main deck changed by.
   rmtb      ``python/rmtb.py`` reads the RMTB files the C++ writer wrote (``src/featurize/rmtb.cpp``;
             ``robomage_check``'s smoke tier writes two samples, an array of every dtype and a text
             table, and their meta and values, ``--rmtb-samples FILE``) to exactly those values,
@@ -44,7 +59,7 @@ playing does not:
 Stdlib only. Prints one ``  OK   …`` line per passing check and one ``FAIL: …`` line per finding;
 exit 1 on any finding::
 
-    python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,selfkill,driver]
+    python3 python/pycheck.py [--binary bin/debug/robomage] [--out-dir DIR] [--part decode,selfkill,guides]
                               [--rmtb-samples FILE] [--featurize-expected FILE] [--traj-expected FILE]
 """
 from __future__ import annotations
@@ -53,6 +68,7 @@ import argparse
 import json
 import math
 import os
+import re
 import shutil
 import struct
 import subprocess
@@ -65,10 +81,11 @@ if _HERE not in sys.path:
 
 import rm_driver  # noqa: E402
 import rmstate  # noqa: E402
+import sideboard_guides  # noqa: E402
 import rmtb  # noqa: E402
 import rmtraj  # noqa: E402
 
-PARTS = ("decode", "refusals", "selfkill", "driver", "rmtb", "featurize", "traj")
+PARTS = ("decode", "refusals", "selfkill", "driver", "guides", "sideboard", "rmtb", "featurize", "traj")
 # The committed oracle-text table (docs/featurizer.md §5).
 TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
@@ -332,6 +349,337 @@ def check_driver(binary, work):
     if not fails:
         print(f"  OK   driver: {len(PINNED_ENGINE_SEEDS)} engine seeds pinned, a game imports only the "
               "standard library and the kept Python", flush=True)
+    return fails
+
+
+# ── sideboard guides: the hard+sb tier's data and its sideboarding ──────────────────────────────
+
+GUIDES_DOC = os.path.join(os.path.dirname(_HERE), "docs", "sideboard_guides.md")
+_LIST_SPLIT = re.compile(r",\s*(?=\d+ )")
+
+
+def _doc_cards(cell):
+    """A guide table cell ("1 Hydroblast, 2 Endurance") as name -> copies."""
+    out = {}
+    for item in _LIST_SPLIT.split(cell.strip()):
+        n, _, name = item.strip().partition(" ")
+        out[name.strip()] = out.get(name.strip(), 0) + int(n)
+    return out
+
+
+def parse_guides_doc(text):
+    """``docs/sideboard_guides.md``'s tables as (draw land per deck (None for none), per (deck,
+    opponent) (in, out, draw card or None)), names as the doc spells them."""
+    draw_land, rows = {}, {}
+    section = None
+    for line in text.splitlines():
+        if line.startswith("## "):
+            section = line[3:].strip()
+            continue
+        if not line.startswith("|") or line.startswith("|---"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if section == "Draw land per deck" and len(cells) == 2 and cells[0] != "Deck":
+            draw_land[cells[0]] = None if cells[1] == "none" else cells[1].partition(" ")[2]
+        elif len(cells) == 4 and cells[0] != "vs":
+            rows[(section, cells[0])] = (_doc_cards(cells[1]), _doc_cards(cells[2]),
+                                         None if cells[3] == "-" else cells[3])
+    return draw_land, rows
+
+
+def _guides_data_fails(g, doc_text):
+    """The guides' JSON against the doc's tables and the league deck files; returns failures."""
+    key = sideboard_guides.card_key
+    fails = []
+    doc_land, doc_rows = parse_guides_doc(doc_text)
+
+    def keyed(cards):
+        return {key(n): c for n, c in cards.items()}
+    if set(g.draw_land) != set(g.decks) or set(doc_land) != set(g.decks):
+        fails.append(f"guides: draw lands for {sorted(g.draw_land)} (doc {sorted(doc_land)}), "
+                     f"league decks {sorted(g.decks)}")
+    for deck, land in g.draw_land.items():
+        if (land and key(land)) != (doc_land.get(deck) and key(doc_land[deck])):
+            fails.append(f"guides: {deck}'s draw land is {land!r} in the JSON, {doc_land.get(deck)!r} in the doc")
+        if land is not None and g.decks.get(deck, ({}, {}))[0].get(land, 0) < 1:
+            fails.append(f"guides: {deck}'s draw land {land!r} is not in its main deck")
+    json_rows = {(d, o): r for d, opps in g.guides.items() for o, r in opps.items()}
+    if set(json_rows) != set(doc_rows):
+        fails.append(f"guides: rows only in the JSON {sorted(set(json_rows) - set(doc_rows))}, only in the doc "
+                     f"{sorted(set(doc_rows) - set(json_rows))}")
+    for (deck, opp), r in sorted(json_rows.items()):
+        where = f"guides: {deck} vs {opp}"
+        if deck not in g.decks or opp not in g.decks or deck == opp:
+            fails.append(f"{where}: not a pair of league decks")
+            continue
+        doc = doc_rows.get((deck, opp))
+        if doc is not None and (keyed(r["in"]), keyed(r["out"]), r["draw"] and key(r["draw"])) != \
+                (keyed(doc[0]), keyed(doc[1]), doc[2] and key(doc[2])):
+            fails.append(f"{where}: the JSON row differs from the doc's")
+        if sum(r["in"].values()) != sum(r["out"].values()):
+            fails.append(f"{where}: {sum(r['in'].values())} in, {sum(r['out'].values())} out")
+        main, side = g.decks[deck]
+        land = g.draw_land[deck]
+        if (r["draw"] is None) != (land is None):
+            fails.append(f"{where}: Draw +1 {r['draw']!r} with draw land {land!r}")
+        need_in = dict(r["in"])
+        if r["draw"] is not None:
+            need_in[r["draw"]] = need_in.get(r["draw"], 0) + 1
+        for name, n in need_in.items():
+            if side.get(name, 0) < n:
+                fails.append(f"{where}: {n} {name} in (with the draw), {side.get(name, 0)} in its sideboard")
+        need_out = dict(r["out"])
+        if land is not None:
+            need_out[land] = need_out.get(land, 0) + 1
+        for name, n in need_out.items():
+            if main.get(name, 0) < n:
+                fails.append(f"{where}: {n} {name} out (with the draw land), {main.get(name, 0)} in its main deck")
+        if set(need_in) & set(need_out):
+            fails.append(f"{where}: {sorted(set(need_in) & set(need_out))} both in and out")
+    for deck, opp in sorted(g.holdout):
+        if (deck, opp) not in json_rows:
+            fails.append(f"guides: held-out {deck} vs {opp} has no guide row")
+    held = sorted(g.holdout)
+    if len(held) != len(g.decks) or {d for d, _ in held} != set(g.decks) or {o for _, o in held} != set(g.decks):
+        fails.append(f"guides: the holdout {held} does not hold each deck out once as each side")
+    return fails
+
+
+class _FakeCards:
+    """The view's ``cards`` for the simulated phases: names are the deck files'."""
+
+    @staticmethod
+    def canonical(name):
+        return name
+
+
+class _PhaseView:
+    """A sideboarding decision of ``_simulate_phase`` as the tier's view."""
+
+    cards = _FakeCards()
+
+    def __init__(self, rows, main, own, opp, plays_first):
+        self.cats = [c for c, _ in rows]
+        self._cards = [n for _, n in rows]
+        self.n = len(rows)
+        self.own_current_main = {k: v for k, v in main.items() if v}
+        self._lists = {True: own, False: opp}
+        self.plays_first = plays_first
+
+    def card(self, i):
+        return self._cards[i]
+
+    def registered_list(self, mine):
+        return self._lists[mine]
+
+
+def _simulate_phase(main, side, own, opp, plays_first, choose):
+    """One sideboarding phase as the engine runs it (``run_sideboard_phase``: in-first, the one-shot
+    locks, Done only while balanced, the swap cap) with ``choose(view)`` deciding; returns (main,
+    side, swaps)."""
+    main, side = dict(main), dict(side)
+    locked_in, locked_out = set(), set()
+    swaps, outstanding = 0, False
+    for _ in range(200):
+        if not outstanding:
+            if swaps >= 15:
+                break
+            rows = [("SIDEBOARD_DONE", None)] + [("SIDEBOARD_IN", n) for n, c in side.items()
+                                                 if c and n not in locked_out]
+        else:
+            rows = [("SIDEBOARD_OUT", n) for n, c in main.items() if c and n not in locked_in]
+        pick = choose(_PhaseView(rows, main, own, opp, plays_first)) if len(rows) > 1 else 0
+        cat, name = rows[pick]
+        if cat == "SIDEBOARD_DONE":
+            return main, side, swaps
+        src, dst = (side, main) if cat == "SIDEBOARD_IN" else (main, side)
+        src[name] -= 1
+        dst[name] = dst.get(name, 0) + 1
+        (locked_in if cat == "SIDEBOARD_IN" else locked_out).add(name)
+        swaps += outstanding
+        outstanding = not outstanding
+    return main, side, swaps
+
+
+def _nonzero(deck):
+    return {k: v for k, v in deck.items() if v}
+
+
+def _guides_unit_fails(g):
+    """The tier's target and its phases over a simulated engine menu; returns failures."""
+    fails = []
+    choose = sideboard_guides.choose
+
+    def phase(own, opp, plays_first, start=None, opp_lists=None):
+        reg = g.decks[own]
+        main, side = start if start is not None else reg
+        return _simulate_phase(main, side, reg, opp_lists or g.decks[opp], plays_first, choose)
+
+    def expect(label, got, want):
+        if _nonzero(got) != _nonzero(want):
+            diff = {k: (got.get(k, 0), want.get(k, 0)) for k in set(got) | set(want) if got.get(k, 0) != want.get(k, 0)}
+            fails.append(f"guides unit: {label}: main differs from the target (got, want): {diff}")
+
+    play = g.target("burn", "bw_dnt", True)
+    draw = g.target("burn", "bw_dnt", False)
+    reg = g.decks["burn"][0]
+    if play is None or play.get("Smash to Smithereens") != 2 or play.get("Eidolon of the Great Revel", 0) != 0 \
+            or play.get("Mountain") != reg["Mountain"]:
+        fails.append(f"guides unit: burn vs bw_dnt on the play: target {play}")
+    if draw is None or draw.get("Smash to Smithereens") != 3 or draw.get("Mountain") != reg["Mountain"] - 1:
+        fails.append(f"guides unit: burn vs bw_dnt on the draw: target {draw}")
+    m, s, n = phase("burn", "bw_dnt", True)
+    expect("burn vs bw_dnt on the play", m, play)
+    if n != 7:
+        fails.append(f"guides unit: burn vs bw_dnt on the play: {n} swaps, want 7")
+    m2, s2, n = phase("burn", "bw_dnt", False)
+    expect("burn vs bw_dnt on the draw", m2, draw)
+    # Game 3 after a flip from the draw to the play: the land swap is undone, nothing else moves.
+    m3, _s3, n = phase("burn", "bw_dnt", True, start=(m2, s2))
+    expect("burn vs bw_dnt, game 3 from the draw to the play", m3, play)
+    if n != 1:
+        fails.append(f"guides unit: burn vs bw_dnt, game 3 from the draw to the play: {n} swaps, want 1")
+    # And back: the play configuration onto the draw.
+    m4, _s4, n = phase("burn", "bw_dnt", False, start=(m, s))
+    expect("burn vs bw_dnt, game 3 from the play to the draw", m4, draw)
+    if n != 1:
+        fails.append(f"guides unit: burn vs bw_dnt, game 3 from the play to the draw: {n} swaps, want 1")
+    # A deck with no draw land boards the same on the play and on the draw.
+    mp, _, _ = phase("gw_maverick", "bug", True)
+    md, _, _ = phase("gw_maverick", "bug", False)
+    expect("gw_maverick vs bug on the play", mp, g.target("gw_maverick", "bug", True))
+    if _nonzero(mp) != _nonzero(md) or g.target("gw_maverick", "bug", True) != g.target("gw_maverick", "bug", False):
+        fails.append("guides unit: gw_maverick vs bug boards differently on the play and on the draw")
+    # A held-out pair, and an opponent that is no league deck: Done at once.
+    if g.target("bug", "reanimator", False) is not None or g.target("bug", "reanimator", False, holdout=False) is None:
+        fails.append("guides unit: bug vs reanimator is not held out (or has no row)")
+    for label, opp_lists in (("bug vs reanimator (held out)", None),
+                             ("bug vs an unknown list", ({"Island": 60}, {}))):
+        mh, _, n = phase("bug", "reanimator", False, opp_lists=opp_lists)
+        if n != 0 or _nonzero(mh) != _nonzero(g.decks["bug"][0]):
+            fails.append(f"guides unit: {label}: {n} swaps, want Done at once")
+    # Every row: a phase from the registered list on the play and on the draw reaches its target.
+    for own, opps in g.guides.items():
+        for opp in opps:
+            for first in (True, False):
+                want = g.target(own, opp, first)
+                got, _, _ = phase(own, opp, first)
+                expect(f"{own} vs {opp} {'on the play' if first else 'on the draw'}", got,
+                       want if want is not None else g.decks[own][0])
+    return fails
+
+
+def check_guides():
+    """The guides part: the JSON against the doc and the deck files, and the tier's unit checks;
+    returns failures."""
+    g = sideboard_guides.guides()
+    with open(GUIDES_DOC, encoding="utf-8") as f:
+        fails = _guides_data_fails(g, f.read())
+    fails += _guides_unit_fails(g)
+    if not fails:
+        print(f"  OK   guides: {sum(len(o) for o in g.guides.values())} guide rows agree with the doc and the "
+              f"deck files, {len(g.holdout)} held out; the tier's phases reach their targets", flush=True)
+    return fails
+
+
+# The sideboard part's bo3 matches, scripted:hard+sb on both seats: (deck_a, deck_b, seed). Burn has
+# a draw land, gw_maverick none; bug vs reanimator is held out for bug (not for reanimator). The seeds
+# are matches that go to three games (each seat's play/draw flips between games 2 and 3); the part
+# fails when none of them does any more (repin the seeds).
+SIDEBOARD_MATCHES = (("league/burn", "league/gw_maverick", 4),
+                     ("league/bug", "league/reanimator", 3),
+                     ("league/uw_control", "league/wubg_doomsday", 9))
+_SB_HEADER = re.compile(r"^Player ([AB]) sideboarding \(\d+ in sideboard, (\d+) swap\(s\) made\):")
+_GAME_RESULT = re.compile(r"^GAME_RESULT: (\d+) (?:Player ([AB]) wins|draw)")
+
+
+class _DeckRecorder:
+    """A scripted agent that also records, at its seat's first decision of each game, the maindeck
+    and who plays first (the frames' ``own_deck`` and ``match``)."""
+
+    def __init__(self, spec, seen):
+        self.inner = rm_driver.make_agent(spec)
+        self.seen = seen
+
+    def new_game(self):
+        self.inner.new_game()
+
+    def decide(self, seat, frame):
+        header = frame.tables["header"][0]
+        if not header["sideboarding"] and (seat.seat, header["game"]) not in self.seen:
+            v = seat.view(frame)
+            self.seen[(seat.seat, header["game"])] = (v.own_current_main, v.plays_first, seat.cards.canonical)
+        return self.inner.decide(seat, frame)
+
+
+def check_sideboard(binary, work):
+    """The sideboard part: SIDEBOARD_MATCHES played by rm_driver.py; each seat's maindeck at games 2
+    and 3 is its guide's target for the matchup and play/draw (the registered list where held out),
+    the play/draw the loser-goes-first rule's and each phase's swap count the difference to the
+    previous game's deck; returns failures."""
+    g = sideboard_guides.guides()
+    fails, phases, game3 = [], 0, 0
+    cwd = os.getcwd()
+    os.chdir(work)
+    try:
+        for deck_a, deck_b, seed in SIDEBOARD_MATCHES:
+            label = f"sideboard: {deck_a} vs {deck_b} seed {seed}"
+            seen, narrative = {}, []
+            rec = rm_driver.play_game(_DeckRecorder("scripted:hard+sb", seen), _DeckRecorder("scripted:hard+sb", seen),
+                                      binary=binary, deck_a=deck_a, deck_b=deck_b, bo3=True, seed=seed,
+                                      on_narrative=narrative.extend)
+            winners, swaps = [], [{}]
+            for ln in narrative:
+                m = _GAME_RESULT.match(ln.strip())
+                if m:
+                    winners.append(m.group(2))
+                    swaps.append({})
+                m = _SB_HEADER.match(ln.strip())
+                if m:
+                    swaps[-1][m.group(1)] = int(m.group(2))
+            if len(winners) < 2:
+                fails.append(f"{label}: {len(winners)} game(s) in a bo3 match")
+            game3 += len(winners) >= 3
+            decks = {"A": (deck_a.split("/")[-1], deck_b.split("/")[-1]),
+                     "B": (deck_b.split("/")[-1], deck_a.split("/")[-1])}
+            a_first = True
+            for game in range(1, len(winners)):
+                if winners[game - 1] is not None:
+                    a_first = winners[game - 1] == "B"
+                for seat in "AB":
+                    got = seen.get((seat, game))
+                    if got is None:
+                        fails.append(f"{label}: no decision of Player {seat} in game {game + 1}")
+                        continue
+                    main, plays_first, canonical = got
+                    own, opp = decks[seat]
+                    on_play = a_first == (seat == "A")
+                    if plays_first != on_play:
+                        fails.append(f"{label}: game {game + 1}: Player {seat}'s frames say "
+                                     f"{'play' if plays_first else 'draw'}, the results "
+                                     f"{'play' if on_play else 'draw'}")
+                    want = g.target(own, opp, on_play)
+                    want = {canonical(n): c for n, c in (want if want is not None else g.decks[own][0]).items()}
+                    if _nonzero(main) != _nonzero(want):
+                        diff = {k: (main.get(k, 0), want.get(k, 0)) for k in set(main) | set(want)
+                                if main.get(k, 0) != want.get(k, 0)}
+                        fails.append(f"{label}: game {game + 1}: Player {seat}'s main differs from the target "
+                                     f"(got, want): {diff}")
+                    prev = seen.get((seat, game - 1), ({},))[0]
+                    moved = sum(max(0, c - prev.get(k, 0)) for k, c in main.items())
+                    if swaps[game].get(seat, -1) != moved:
+                        fails.append(f"{label}: game {game + 1}: Player {seat} made {swaps[game].get(seat)} swap(s), "
+                                     f"its main moved {moved} card(s)")
+                    phases += 1
+            if rec.drawn_games:
+                fails.append(f"{label}: {rec.drawn_games} drawn game(s)")
+    finally:
+        os.chdir(cwd)
+    if not game3:
+        fails.append("sideboard: no match went to three games (repin SIDEBOARD_MATCHES' seeds)")
+    if not fails:
+        print(f"  OK   sideboard: {len(SIDEBOARD_MATCHES)} bo3 matches of scripted:hard+sb ({game3} to three games), "
+              f"{phases} sideboarding phases each at the guide's target", flush=True)
     return fails
 
 
@@ -615,6 +963,10 @@ def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected
             fails += check_selfkill(binary, work)
         if "driver" in parts:
             fails += check_driver(binary, work)
+        if "guides" in parts:
+            fails += check_guides()
+        if "sideboard" in parts:
+            fails += check_sideboard(binary, work)
         if "rmtb" in parts:
             fails += check_rmtb(rmtb_samples)
         if "featurize" in parts:

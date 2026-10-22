@@ -9,6 +9,10 @@ frame. This script is that command for the scripted tiers:
 
     python3 python/teacher.py [--tier hard] [--seed N] [--record FILE]
 
+``--tier`` is a ``scripted_core.preset_config`` tier: ``hard`` (the default; Done at every
+sideboarding phase), ``hard+sb`` (hard, sideboarding between games per the league guides,
+``sideboard_guides.py``), ``easy`` / ``greedy``, ``random``, ``explore``, ...
+
 It answers every non-terminal ``STATE`` frame that holds a menu with
 ``scripted_core.ScriptedCore``'s row (``rm_agent.decide``, exactly as ``rm_driver.py`` plays a
 scripted seat), as a plain menu row (never ``-1``; it never concedes), one line per decision,
@@ -131,8 +135,8 @@ def serve(inp, out, *, tier: str = "hard", seed: int = 0, record=None) -> int:
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="teacher.py", description=__doc__.split("\n")[0])
     p.add_argument("--tier", default="hard",
-                   help="the scripted tier labelling (scripted_core.preset_config: hard, easy, greedy, "
-                        "random, explore, ...; default hard)")
+                   help="the scripted tier labelling (scripted_core.preset_config: hard, hard+sb (hard, "
+                        "sideboarding per the league guides), easy, greedy, random, explore, ...; default hard)")
     p.add_argument("--seed", type=int, default=0,
                    help="Python's random is seeded with it at each match start (default 0)")
     p.add_argument("--record", metavar="FILE", help="write every record read to FILE")

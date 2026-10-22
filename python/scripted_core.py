@@ -58,7 +58,12 @@ guard — see ``ScriptedCore``).
   (whether the own library can hold the card; None when the view cannot tell);
 - ``opp_runs_card(card, deck_name)``: whether the opponent's list holds the card (True / False,
   None when unknown);
-- ``cards``: card knowledge by name (``mana_value``, ``cost_colors``, ``is_land``, ``power``,
+- sideboarding (the ``hard+sb`` tier, ``sideboard_guides.choose``): ``registered_list(mine)`` (a
+  seat's registered list as (main, side), name -> copies; None when withheld),
+  ``own_current_main`` (the own maindeck as it stands, name -> copies), ``plays_first`` (the
+  viewer plays first in this game; while sideboarding, the coming one);
+- ``cards``: card knowledge by name (``canonical`` — the name a deck file's spelling of a card
+  reads as, ``mana_value``, ``cost_colors``, ``is_land``, ``power``,
   ``is_delve``, ``is_equipment``, ``has_miracle``, ``is_legendary``, ``land_colors``,
   ``deals_damage``, ``has_nonmana_activation``, ``is_artifact_or_enchantment``, ``is_creature``,
   ``phyrexian_pips``, ``life_effects`` — what the card's oracle text and costs do to life,
@@ -92,9 +97,10 @@ abilities, and opponents' instant-speed responses.
 """
 
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 
+import sideboard_guides
 from explore_agent import explore_choice
 
 
@@ -187,6 +193,8 @@ class AgentConfig:
     rng_seed: int | None = None         # seed for RANDOM's generator (reproducible)
     explore_profile: str = "default"    # EXPLORE weight profile: "default" (coverage)
                                         # or "patient" (big-mana; explore_agent.py)
+    sideboard_guides: bool = False      # sideboard per the league guides (sideboard_guides.py)
+                                        # instead of taking Done
 
 
 # The "hard" configuration: heuristic play with combat simulation, evaluation-based
@@ -207,6 +215,9 @@ _PRESETS: dict[str, AgentConfig] = {
     "scripted":  _HARD_CONFIG,     # bare "scripted"/default now == hard (was greedy)
     "hard":      _HARD_CONFIG,
     "heuristic": _HARD_CONFIG,
+    # hard, sideboarding between games per the league guides (sideboard_guides.py); every other
+    # decision is hard's.
+    "hard+sb":   replace(_HARD_CONFIG, sideboard_guides=True),
     # Coverage fuzzer (see Skill.EXPLORE). Combo lines are intentionally OFF so it
     # never collapses into a fixed deck-specific line — it fans out across cards.
     "explore":   AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
@@ -224,11 +235,13 @@ _PRESETS: dict[str, AgentConfig] = {
 def preset_config(spec: str = "scripted") -> AgentConfig:
     """The AgentConfig a spec string names.
 
-    Accepts ``"scripted"``, ``"scripted:hard"``, ``"scripted:easy"``,
+    Accepts ``"scripted"``, ``"scripted:hard"``, ``"scripted:hard+sb"``, ``"scripted:easy"``,
     ``"scripted:random"``, ``"scripted:explore"``, or the bare suffixes
-    ``"greedy"``/``"hard"``/``"heuristic"``/``"easy"``/``"random"``/
+    ``"greedy"``/``"hard"``/``"hard+sb"``/``"heuristic"``/``"easy"``/``"random"``/
     ``"explore"``/``"fuzz"``/``"explore:patient"``/``"patient"``
-    (case-insensitive). ``explore``/``fuzz`` select the coverage fuzzer
+    (case-insensitive). ``hard+sb`` is hard that sideboards between games per the league
+    guides (``sideboard_guides.py``); every other tier takes Done at every sideboarding
+    phase. ``explore``/``fuzz`` select the coverage fuzzer
     (Skill.EXPLORE) — vary the game ``--seed`` to fan it across engine paths.
     ``explore:patient`` (or bare ``patient``; ``scripted:explore:patient`` also
     resolves) is the fuzzer's big-mana profile: it develops mana and holds
@@ -1447,7 +1460,8 @@ def _greedy_action(v,
     oracle_kill_ready = (_hand_has_card(v, _THASSAS_ORACLE)
                          and library <= _ORACLE_WIN_LIBRARY)
 
-    # 0a. Sideboarding: the scripted agent never sideboards, so it takes Done as
+    # 0a. Sideboarding: the scripted agent never sideboards here (the hard+sb tier's
+    # sideboarding is sideboard_guides.choose, ahead of this), so it takes Done as
     # soon as the deck is balanced (Done is index 0 whenever it is offered). On the
     # IN-FIRST menu that is every decision it can reach, since it never opens a
     # swap. The fallback matters only if it inherits a phase mid-swap (Done is
@@ -2840,6 +2854,8 @@ class ScriptedCore:
             return self._random_action(v.n)
         if self.config.skill is Skill.EXPLORE:
             return self._explore_action(v)
+        if self.config.sideboard_guides and any(c in sideboard_guides.SIDEBOARD_CATS for c in v.cats):
+            return sideboard_guides.choose(v)
         return self._hard_act(v)
 
     def _hard_act(self, v) -> int:
