@@ -1,6 +1,6 @@
-# League sideboard guides (draft for review)
+# League sideboard guides
 
-Proposed sideboarding for the `scripted:hard+sb` teacher tier (`docs/rnad_training_plan.md` §6.2):
+Sideboarding for the `scripted:hard+sb` teacher tier (`docs/rnad_training_plan.md` §6.2):
 for each league deck, what it brings in and cuts against each other league deck, and what it
 changes on the draw. These are a prior for the warm start, not the target: the trained policy is
 meant to learn sideboarding that carries beyond this table.
