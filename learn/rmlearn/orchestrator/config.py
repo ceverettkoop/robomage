@@ -34,6 +34,9 @@ SPEC = {
         ("memory_max", "100G", "systemd MemoryMax of the whole run (orchestrator, GPU process, actors)"),
         ("restart_on_failure", True, "systemd restarts a run that failed (a GPU-process crash, a kill) from its checkpoint"),
         ("restart_delay_s", 60, "the delay before that restart"),
+        ("crash_loop_fatals", 3, "fatal stops in a row without progress (the same phase and stage, its step and "
+         "collected decisions not past the last fatal stop's) after which the daemon exits with a status systemd "
+         "does not restart (4); `rmtrain start` resets the count (0: never)"),
         ("device", "cuda", "the GPU process's torch device (cpu for tests)"),
         ("hsa_override_gfx_version", "10.3.0", "HSA_OVERRIDE_GFX_VERSION of the GPU process (empty: unset)"),
         ("gpu_lock", "/tmp/rm-gpu.lock", "the flock the GPU process holds while it runs (empty: none)"),
@@ -435,6 +438,7 @@ def validate(cfg):
     need(not lg["pairs"] or len(lg["decks"]) >= 1, "league.pairs needs decks")
     need(lg["pairs"] or len(lg["decks"]) >= 2, "league.decks needs two decks (or league.pairs)")
     need(lg["max_game_decisions"] >= 0, "league.max_game_decisions >= 0")
+    need(cfg["run"]["crash_loop_fatals"] >= 0, "run.crash_loop_fatals >= 0")
     need(cfg["actors"]["count"] >= 0 and cfg["actors"]["local_count"] >= 0, "actors.count, local_count >= 0")
     need(re.fullmatch(r"[a-z][a-z0-9+:_-]*", cfg["actors"]["teacher_tier"]) is not None,
          "actors.teacher_tier is a scripted tier name (hard, hard+sb, ...), not %r" % cfg["actors"]["teacher_tier"])

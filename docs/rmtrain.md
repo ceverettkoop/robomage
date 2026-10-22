@@ -34,7 +34,10 @@ learn/rmtrain bench r1 --wait                            # after the run: its po
   `KillMode=mixed` (a `systemctl stop` signals only the orchestrator, which stops the rest in
   order), `Restart=on-failure` (`run.restart_on_failure`, after `run.restart_delay_s`): a run that
   fails — the GPU process crashed, the orchestrator was killed — is restarted by systemd and
-  resumes from its checkpoint. `start` returns once the control socket answers and prints the
+  resumes from its checkpoint; after `run.crash_loop_fatals` fatal stops in a row without progress
+  it exits with status 4, which systemd does not restart (`RestartPreventExitStatus=3 4`; 3: the
+  run directory has no `config.json`), and `status` shows it FAILED with the last fatal message. An
+  explicit `start` resets that count. `start` returns once the control socket answers and prints the
   status. Without a usable `systemd-run --user` it double-forks a plain daemon and warns: no
   memory limit, no restart. **After a reboot** the transient unit is gone: `rmtrain start <run>`
   resumes it.
@@ -48,7 +51,7 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 
 | Command | What |
 |---|---|
-| `status <run> [--json]` | phase and stage, hold / pause, the phase's progress, games and decisions (and per second, over the last minute), actor health (running, restarts, why one is down), the GPU process (mode, inference server stats from `InferenceServer.stats()`: rows/s, batch mean, queue p99, clients, served policies and versions; GPU memory; the replay window), the latest metrics of each kind, the evaluation running / queued / last results (its subject, version and options; an error when it failed), structured sideboard exploration's line in B4–B5 (§6.1), the findings (drawn games, §7), the last checkpoint, recent transitions. When the run is not running: the same from `status.json` and `state.json` (marked NOT RUNNING) |
+| `status <run> [--json]` | phase and stage, hold / pause, the phase's progress, games and decisions (and per second, over the last minute), actor health (running, restarts, why one is down), the GPU process (mode, inference server stats from `InferenceServer.stats()`: rows/s, batch mean, queue p99, clients, served policies and versions; GPU memory; the replay window), the latest metrics of each kind, the evaluation running / queued / last results (its subject, version and options; an error when it failed), structured sideboard exploration's line in B4–B5 (§6.1), the findings (drawn games, §7), the last checkpoint, recent transitions, the fatal stops in a row without progress (§5). When the run is not running: the same from `status.json` and `state.json` (marked NOT RUNNING; FAILED after a crash loop, with the last fatal message and the command that resumes it) |
 | `tail <run> [component] [-n N] [--no-follow]` | `orchestrator` (default), `gpu`, `export`, `metrics`, `evals`, `a<k>` (an actor), `actors` (all), `all` |
 | `pause <run>` | the actors are stopped (SIGTERM: a match in progress is written off) and the learner stops stepping; evaluations stop (queued again). Kept across restarts |
 | `resume <run>` | undoes `pause` |
@@ -87,6 +90,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `run.hsa_override_gfx_version` | `10.3.0` | the GPU process's `HSA_OVERRIDE_GFX_VERSION` |
 | `run.gpu_lock`, `run.gpu_lock_wait` | `/tmp/rm-gpu.lock`, false | the flock the GPU process holds; fail at once or wait |
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
+| `run.crash_loop_fatals` | 3 | fatal stops in a row without progress after which the daemon exits with status 4, which systemd does not restart (0: never; §5) |
 | `run.start_from` | `""` | a BC checkpoint (another run's `ckpt/bc-final.pt`): the run starts at B3, R-NaD seeded from it (B0–B2 skipped; the model is the checkpoint's) |
 | `league.decks` / `league.pairs` | the 10 league decks / every pair | matchups and weights (`[[a, b, w], …]`) |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
@@ -256,6 +260,15 @@ and never below the results file's last match + 1. More than `crash_loop_restart
 `crash_loop_window_s` back off exponentially up to `max_backoff_s`; `status` lists restarts and the
 last exit's reason. **The GPU process dying** (or failing a command) stops the run: actors stopped,
 state saved, exit status 2 — systemd restarts it (`Restart=on-failure`), or `start` does.
+**A crash loop** — the same failure at every restart, such as a batch that runs out of GPU memory
+at the same step — ends after `run.crash_loop_fatals` (3) fatal stops in a row without progress:
+the same phase and stage, and neither its step (BC's or the learner's) nor the decisions its
+actors collected (B0, the DAgger round) past the previous fatal stop's. The daemon then exits with
+status 4, which systemd does not restart. `state.json`'s `crash_loop` records the count, the
+progress mark, the last fatal message and whether the run failed; `status` shows a failed run as
+`FAILED (a crash loop)` with that message and the command that resumes it, and the `fatal` and
+`crash_loop` events are in `metrics.jsonl`. Fix the cause, then `rmtrain start <run>`: an explicit
+start resets the count. A unit keeps the `RestartPreventExitStatus` of the `start` that launched it.
 
 **Memory.** The replay window holds the episodes' bytes (~13 KB per decision with the omniscient
 part, ~5 KB without): `replay.max_gb` bounds it (B0's 5M decisions with the omniscient part
@@ -559,7 +572,10 @@ the GPU process's save cadence, the live exporter's coalescing against a fake ex
 waiting for the first export and `actors.local_count`, local evaluations exporting their subject
 and rungs first — reusing an export newer than its checkpoint, re-exporting an older one, a failed
 export an `eval_failed` —, `rnad.fresh_order`, the policy-lag cap and percentiles), the control protocol, an orchestrator over a fake
-run driven through its socket and its status from the files, and the resume bookkeeping (actor
+run driven through its socket and its status from the files, the crash-loop guard (three fatal
+stops without progress ending in exit 4, progress starting the count over, the FAILED status with
+the last message and the resume command, `start` resetting the count, the unit's
+`RestartPreventExitStatus`), and the resume bookkeeping (actor
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
 the window restore, the window's decision-size cap (an episode over `replay.max_decision_tokens` left
 out whole, counted and logged; a lowered cap live; the default on a run created before the key; the

@@ -25,7 +25,7 @@ import time
 from .orchestrator import config as C
 from .orchestrator.control import alive, request
 from .orchestrator.sb_explore import status_line as sb_status_line
-from .orchestrator.rundir import NO_RUN_EXIT, REPO_ROOT, RunDir, read_json, resolve_run, write_json
+from .orchestrator.rundir import CRASH_LOOP_EXIT, NO_RUN_EXIT, REPO_ROOT, RunDir, read_json, resolve_run, write_json
 
 LEARN_DIR = os.path.join(REPO_ROOT, "learn")
 PASS_ENV = ("PATH", "HOME", "USER", "LOGNAME", "LANG", "LC_ALL", "TMPDIR", "LD_LIBRARY_PATH", "XDG_RUNTIME_DIR",
@@ -84,12 +84,23 @@ def cmd_start(args):
     state = read_json(run.state) or {}
     if state.get("phase") == "done":
         die("run %s is finished (phase done)" % run.name)
+    reset_crash_loop(run, state)
     print("rmtrain: %s run %s (%s)%s" % ("new" if new else "resuming", run.name, run.path,
                                          ", phase %s" % state["phase"] if state.get("phase") else ""))
     if args.foreground:
         from .orchestrator.orchestrator import Orchestrator
         return Orchestrator(run, echo=True).main()
     return detach(run, cfg)
+
+
+def reset_crash_loop(run, state):
+    """An explicit start clears the count of fatal stops without progress (state.json's crash_loop)."""
+    cl = state.pop("crash_loop", None)
+    if not cl:
+        return
+    write_json(run.state, state)
+    print("rmtrain: the crash-loop count reset (%d fatal stop%s in a row without progress; the last: %s)"
+          % (cl.get("fatals", 0), "s" if cl.get("fatals", 0) != 1 else "", cl.get("last_fatal")))
 
 
 def detach(run, cfg):
@@ -107,7 +118,7 @@ def detach(run, cfg):
                "-p", "MemoryMax=" + cfg["run"]["memory_max"], "-p", "KillMode=mixed", "-p", "TimeoutStopSec=600",
                "-p", "Restart=" + ("on-failure" if cfg["run"]["restart_on_failure"] else "no"),
                "-p", "RestartSec=%ds" % cfg["run"]["restart_delay_s"], "-p", "StartLimitIntervalSec=0",
-               "-p", "RestartPreventExitStatus=%d" % NO_RUN_EXIT,
+               "-p", "RestartPreventExitStatus=%d %d" % (NO_RUN_EXIT, CRASH_LOOP_EXIT),
                "--working-directory=" + LEARN_DIR, "--description=rmtrain run " + run.path]
         cmd += ["--setenv=%s=%s" % (k, v) for k, v in sorted(env.items())]
         r = subprocess.run(cmd + ["--"] + argv, capture_output=True, text=True)
@@ -327,6 +338,7 @@ def _n(x, fmt="%.4g"):
 def format_status(d):
     now = time.time()
     L = []
+    cl = d.get("crash_loop") or {}
     if d.get("running"):
         head = "running, pid %s, up %s" % (d.get("pid"), _dur(d.get("uptime_s")))
     else:
@@ -334,7 +346,16 @@ def format_status(d):
             "NOT RUNNING"
         if d.get("finished"):
             head = "FINISHED, " + head
+        elif cl.get("failed"):
+            head = "FAILED (a crash loop), " + head
     L.append("run %s (%s): %s" % (d.get("run"), d.get("path"), head))
+    if cl:
+        L.append("fatal stops without progress: %d in a row (limit %s), the last %s ago: %s" % (
+            cl.get("fatals", 0), cl.get("limit", "-"), _dur(now - cl["at"]) if cl.get("at") else "-",
+            cl.get("last_fatal")))
+        if cl.get("failed") and not d.get("running"):
+            L.append("  exit %d: systemd does not restart it; fix the cause, then `rmtrain start %s` resumes it from "
+                     "its checkpoint (and resets the count)" % (CRASH_LOOP_EXIT, d.get("path")))
     flags = "".join([" [HOLD%s]" % (": " + d["held_reason"] if d.get("held_reason") else "") if d.get("hold") else "",
                      " [PAUSED]" if d.get("paused") else "", " [stopping: %s]" % d["stopping"]
                      if d.get("stopping") else ""])

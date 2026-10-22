@@ -16,6 +16,9 @@ RUNS_DIR = os.path.join(REPO_ROOT, "runs")
 # The run daemon's exit status when its run directory has no config.json (deleted): systemd does not
 # restart it.
 NO_RUN_EXIT = 3
+# The run daemon's exit status after run.crash_loop_fatals fatal stops in a row without progress:
+# systemd does not restart it either.
+CRASH_LOOP_EXIT = 4
 
 
 def resolve_run(name):

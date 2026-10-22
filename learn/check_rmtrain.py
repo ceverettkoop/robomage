@@ -9,7 +9,9 @@ to the defaults, files and ``--set`` overrides, refusals naming the key, live pa
 control socket (round trips, errors, a dead socket); an orchestrator over a fake run directory
 driven through its control socket (status, pause / resume, set with persistence, phase
 hold / release / next, eval refused without a policy, stop) and its status from the files once it
-is gone; the resume bookkeeping: an actor's first match after a crash (the match in progress written
+is gone; the crash-loop guard (fatal stops in a row without progress ending in a status systemd does
+not restart, progress starting the count over, the status's failure and resume hint, ``start``
+resetting the count, the unit's ``RestartPreventExitStatus``); the resume bookkeeping: an actor's first match after a crash (the match in progress written
 off, never below its results), the results tail (offsets, a torn line, counts per schedule version,
 the state round trip), the actor pool against a fake engine (a crash restarted at the next match,
 crash-loop back-off, SIGTERM on stop), the replay window's restore (recent files by budget, a
@@ -298,6 +300,76 @@ while not stopped:
     time.sleep(0.05)
 status("stopped", {"match": start})
 '''
+
+
+def check_crash_loop(tmp):
+    """run.crash_loop_fatals: fatal stops in a row without progress end in CRASH_LOOP_EXIT, progress
+    starts the count over, the status shows the failure and how to resume, `start` resets the count,
+    and the systemd unit does not restart either no-restart status."""
+    import contextlib
+    import io
+    from rmlearn.orchestrator.orchestrator import Orchestrator, status_from_files
+    run, cfg = fake_run(tmp, "crashloop")       # no engine under run.bin_dir: every start stops fatally in B0
+
+    def daemon(make=lambda: Orchestrator(run).main()):
+        """One daemon's life in this process: its run lock released and the signal handlers restored
+        at the end, as the process's exit would."""
+        handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)}
+        made = []
+        real = Orchestrator.main
+
+        def main(self):
+            made.append(self)
+            return real(self)
+        Orchestrator.main = main
+        try:
+            return make()
+        finally:
+            Orchestrator.main = real
+            for o in made:
+                o.lock_fp.close()
+            for sig, h in handlers.items():
+                signal.signal(sig, h)
+
+    codes = [daemon() for _ in range(3)]
+    cl = RD.read_json(run.state)["crash_loop"]
+    check(codes == [2, 2, RD.CRASH_LOOP_EXIT] and cl["fatals"] == 3 and cl["failed"] and "no engine" in cl["last_fatal"],
+          "three fatal stops without progress: exit %d, which systemd does not restart (%s, %s)"
+          % (RD.CRASH_LOOP_EXIT, codes, cl))
+    text = RT.format_status(status_from_files(run))
+    check("FAILED (a crash loop)" in text and "3 in a row (limit 3)" in text and "no engine" in text and
+          "rmtrain start %s" % run.path in text, "the status of a crash-looped run: failed, the last fatal message, "
+          "how to resume:\n" + text)
+
+    def fatal_at(step):
+        st = RD.read_json(run.state)
+        st.update(phase="B1", stage="train", bc_step=step)
+        RD.write_json(run.state, st)
+        return daemon(), RD.read_json(run.state)["crash_loop"]["fatals"]
+
+    got = [fatal_at(10), fatal_at(10), fatal_at(20), fatal_at(5)]
+    check(got == [(2, 1), (2, 2), (2, 1), (2, 2)],
+          "a new phase or step past the last fatal stop's starts the count over; a step behind it does not (%s)" % got)
+    args = types.SimpleNamespace(run=run.path, config=None, set=[], foreground=True)
+    with contextlib.redirect_stdout(io.StringIO()) as out:
+        code = daemon(lambda: RT.cmd_start(args))
+    cl = RD.read_json(run.state)["crash_loop"]
+    check(code == 2 and cl["fatals"] == 1 and not cl["failed"] and "crash-loop count reset" in out.getvalue(),
+          "rmtrain start resets the count (%s, %s)" % (code, cl))
+    calls = []
+    saved = (RT.shutil.which, RT._systemd_user_ok, RT._unit_active, RT.subprocess.run)
+    RT.shutil.which = lambda name: "/usr/bin/" + name
+    RT._systemd_user_ok = lambda: True
+    RT._unit_active = lambda unit: False
+    RT.subprocess.run = lambda cmd, **kw: calls.append(cmd) or types.SimpleNamespace(returncode=0, stdout="", stderr="")
+    try:
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            RT.detach(run, cfg)
+    finally:
+        RT.shutil.which, RT._systemd_user_ok, RT._unit_active, RT.subprocess.run = saved
+    unit = [c for c in calls if c[0] == "systemd-run"]
+    check(unit and "RestartPreventExitStatus=%d %d" % (RD.NO_RUN_EXIT, RD.CRASH_LOOP_EXIT) in unit[0],
+          "the systemd unit restarts on neither %d nor %d (%s)" % (RD.NO_RUN_EXIT, RD.CRASH_LOOP_EXIT, unit))
 
 
 def check_resume(tmp):
@@ -2108,6 +2180,7 @@ def main():
             check_config(tmp)
             check_control(tmp)
             check_orchestrator(tmp)
+            check_crash_loop(tmp)
             check_resume(tmp)
             check_schedules(tmp)
             check_sideboarding_warm_start(tmp)

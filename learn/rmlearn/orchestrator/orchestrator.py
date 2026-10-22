@@ -26,7 +26,11 @@ wait for that model's first export (``live_ok``), so they never play a policy th
 have (a resume's earlier export may be of lost steps).
 
 **Failures.** A crashed actor is restarted (actors.py); the GPU process dying (or failing a command)
-stops the run: actors stopped, state saved, exit status 2. ``start`` resumes it from its checkpoint.
+stops the run: actors stopped, state saved, exit status 2, which systemd restarts. ``start`` resumes
+it from its checkpoint. After ``run.crash_loop_fatals`` fatal stops in a row without progress
+(``progress_mark``: the same phase and stage, its step and collected decisions not past the last
+fatal stop's; ``state.json``'s ``crash_loop``) the exit status is ``CRASH_LOOP_EXIT``, which systemd
+does not restart; ``rmtrain start`` resets the count.
 """
 
 import json
@@ -47,7 +51,7 @@ from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
 from .control import ControlServer
 from .gpulink import GpuError, GpuLink
 from .live import LiveExporter
-from .rundir import NO_RUN_EXIT, REPO_ROOT, JsonLines, Log, read_json, read_jsonl, write_json
+from .rundir import CRASH_LOOP_EXIT, NO_RUN_EXIT, REPO_ROOT, JsonLines, Log, read_json, read_jsonl, write_json
 
 PHASES = ["B0", "B1", "B2", "B3", "B4", "B5", "done"]
 FINDINGS_KEPT = 10
@@ -192,13 +196,11 @@ class Orchestrator:
             self.shutdown(self.stopping)
         except (Fatal, GpuError) as err:
             self.log("FATAL: %s" % err)
-            self.emit("fatal", message=str(err))
-            self.exit_code = 2
+            self.note_fatal(str(err))
             self.shutdown("fatal: %s" % err, checkpoint=False)
         except Exception as err:  # the run stops; start resumes it
             self.log("FATAL: %r\n%s" % (err, traceback.format_exc()))
-            self.emit("fatal", message=repr(err))
-            self.exit_code = 2
+            self.note_fatal(repr(err))
             self.shutdown("fatal: %r" % err, checkpoint=False)
         finally:
             control.stop()
@@ -207,6 +209,38 @@ class Orchestrator:
             self.evals_file.close()
         self.log("exit %d" % self.exit_code)
         return self.exit_code
+
+    def progress_mark(self):
+        """What a crash loop is measured against: the phase, its stage, its step (BC's or the
+        learner's) and the decisions its actors collected (B0's, the DAgger round's)."""
+        st = self.state
+        p = st["phase"]
+        version = "b0" if p == "B0" else "b2-r%d" % st["b2"]["round"] if p == "B2" else None
+        return {"phase": p, "stage": st["stage"], "step": self.current_step(),
+                "decisions": self.counters.of(version)["decisions"] if version else 0}
+
+    def note_fatal(self, message):
+        """A fatal stop: exit status 2 (systemd restarts the run), or CRASH_LOOP_EXIT once
+        run.crash_loop_fatals of them in a row made no progress (``progress_mark`` not past the
+        last fatal stop's, which stays the mark); state.json's ``crash_loop``."""
+        self.emit("fatal", message=message)
+        mark = self.progress_mark()
+        cl = self.state.get("crash_loop") or {}
+        last = cl.get("mark")
+        stalled = last is not None and (last["phase"], last["stage"]) == (mark["phase"], mark["stage"]) and \
+            mark["step"] <= last["step"] and mark["decisions"] <= last["decisions"]
+        fatals = cl.get("fatals", 0) + 1 if stalled else 1
+        limit = self.cfg["run"]["crash_loop_fatals"]
+        failed = 0 < limit <= fatals
+        self.state["crash_loop"] = {"fatals": fatals, "limit": limit, "mark": last if stalled else mark,
+                                    "last_fatal": message, "at": time.time(), "failed": failed}
+        self.exit_code = CRASH_LOOP_EXIT if failed else 2
+        if failed:
+            self.log("crash loop: %d fatal stops in a row without progress (phase %s%s, step %s); exit %d, which "
+                     "systemd does not restart; `rmtrain start %s` resumes the run" % (
+                         fatals, mark["phase"], "/" + mark["stage"] if mark["stage"] else "", mark["step"],
+                         CRASH_LOOP_EXIT, self.run.path))
+            self.emit("crash_loop", fatals=fatals, message=message)
 
     def ingest_results(self):
         """The training actors' new results lines: the counters, the sideboarding phases' counts
@@ -1292,6 +1326,7 @@ class Orchestrator:
                            "queue": [x[1] for x in self.export_queue], "done": len(st["exports"])},
                "live": self.live_status(), "sb_explore": self.sb_status(),
                "checkpoint": st["checkpoint"], "transitions": st["transitions"][-6:], "findings": st.get("findings"),
+               "crash_loop": st.get("crash_loop"),
                "config": {k: C.get_key(self.cfg, k) for k in sorted(C.LIVE)}, "sockets": {
                    "control": self.run.control_sock, "rmip": self.run.rmip_sock}}
         with self.status_lock:
@@ -1369,6 +1404,7 @@ def status_from_files(run):
         doc.setdefault("eval", {})["last"] = (st.get("eval") or {}).get("last")
         doc["eval"]["ratings"] = (st.get("eval") or {}).get("ratings")
         doc["findings"] = st.get("findings")
+        doc["crash_loop"] = st.get("crash_loop")
     doc["running"] = False
     doc.pop("stopping", None)
     if st.get("phase") == "done":
