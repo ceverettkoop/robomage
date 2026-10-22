@@ -5,6 +5,7 @@
 #include <set>
 #include <tuple>
 
+#include "../../src/card_vocab.h"
 #include "../../src/featurize/featurizer.h"
 #include "../../src/featurize/json.h"
 #include "../../src/featurize/setup.h"
@@ -54,6 +55,7 @@ static std::string out_path(const rmcheck::Options &opt, const std::string &name
 static bool load_inputs(const rmcheck::Options &opt, rmcheck::Report &rep, Featurization *f, std::string *cards);
 static void tables_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
     const std::string &cards, const std::string &tables_dir);
+static void vocab_coverage_part(rmcheck::Report &rep, const Featurization &f);
 static bool same_tensors(const Tensors &a, const Tensors &b);
 static std::string check_shapes(
     const featurize::FeatureSpec &spec, const featurize::CardTables &tables, const Tensors &t, size_t menu_rows);
@@ -146,6 +148,33 @@ static bool load_inputs(const rmcheck::Options &opt, rmcheck::Report &rep, Featu
         return false;
     }
     return true;
+}
+
+// Every vocab card (each face's own entry) has a card-table row: the whole-vocab CARDS frame
+// describes it and its row is filled. A card whose script spells its name otherwise (an accented
+// `Name:`) counts as its ASCII vocab entry.
+static void vocab_coverage_part(rmcheck::Report &rep, const Featurization &f) {
+    const featurize::CardTables &t = f.tables;
+    const size_t width = t.card_columns.size();
+    const auto present_col = std::find(t.card_columns.begin(), t.card_columns.end(), "present");
+    if (present_col == t.card_columns.end()) {
+        rep.error("featurize", "the card table has no present column");
+        return;
+    }
+    const size_t pc = static_cast<size_t>(present_col - t.card_columns.begin());
+    size_t missing = 0;
+    for (int i = 0; i < CARD_VOCAB_SIZE; ++i) {
+        const size_t id = static_cast<size_t>(card_vocab_entries[i].index);
+        if (id < t.present.size() && t.present[id] && id * width + pc < t.card.size() &&
+            t.card[id * width + pc] == 1.0f)
+            continue;
+        if (++missing <= MAX_FAILS)
+            rep.error("featurize", std::string("vocab card ") + std::to_string(id) + " " + card_vocab_entries[i].name +
+                                       " has no card-table row (not in the whole-vocab CARDS frame)");
+    }
+    if (missing == 0)
+        rep.info(
+            "OK   vocab coverage: all " + std::to_string(CARD_VOCAB_SIZE) + " vocab entries have a card-table row");
 }
 
 // The exported tables read back give the same tables and spec; rmfeat's --spec and --export-tables
@@ -845,8 +874,8 @@ static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
 namespace rmcheck {
 
 // The featurize tier (docs/featurizer.md §7): the card tables and the spec from the whole-vocab
-// cards file, exported and read back (C++, rmfeat and Python alike); the recent-event history
-// option (featurize_history.h); the corpus's and four explore
+// cards file, every vocab card with a card-table row, exported and read back (C++, rmfeat and
+// Python alike); the recent-event history option (featurize_history.h); the corpus's and four explore
 // games' dumps featurized with the checks of check_dump; the engine's --selfcheck-featurize on the
 // explore games; rmfeat's tensors and targets against the in-process ones.
 void tier_featurize(const Options &opt, Report &rep) {
@@ -856,6 +885,7 @@ void tier_featurize(const Options &opt, Report &rep) {
     if (!load_inputs(opt, rep, &f, &cards)) return;
     const std::string tables_dir = out_path(opt, "tables");
     tables_part(opt, rep, f, cards, tables_dir);
+    vocab_coverage_part(rep, f);
     featurize_history_part(opt, rep, f, cards);
     const double t1 = now_seconds();
     DumpResult total, kept;

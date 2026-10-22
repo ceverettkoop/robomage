@@ -1,4 +1,5 @@
 #include "card_db.h"
+#include "card_vocab.h"
 #include "components/carddata.h"
 #include "ecs/coordinator.h"
 #include "parse.h"
@@ -63,6 +64,12 @@ const CardData *card_data_by_name(const std::string &card_name) {
     const CardData *cd = script_file_exists(path) ? parsed_card_data(path) : nullptr;
     by_uid.emplace(uid, cd);
     return cd;
+}
+
+const CardData *vocab_front_card_data(int pos) {
+    const CardVocabEntry &e = card_vocab_entries[pos];
+    const CardData *cd = card_data_by_name(e.name);
+    return cd != nullptr && ascii_fold_card_name(cd->name) == ascii_fold_card_name(e.name) ? cd : nullptr;
 }
 
 std::string card_script_text(const std::string &card_name) {

@@ -441,8 +441,7 @@ static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     std::set<int> ids;
     if (closed_decklist) {
         for (int i = 0; i < CARD_VOCAB_SIZE; ++i) {
-            const CardData *cd = card_data_by_name(card_vocab_entries[i].name);
-            if (cd != nullptr && cd->name == card_vocab_entries[i].name) ids.insert(card_vocab_entries[i].index);
+            if (vocab_front_card_data(i) != nullptr) ids.insert(card_vocab_entries[i].index);
         }
         return std::vector<int>(ids.begin(), ids.end());
     }

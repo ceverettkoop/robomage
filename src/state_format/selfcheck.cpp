@@ -492,15 +492,24 @@ static bool is_word_char(char ch) {
     return u >= 0x80 || std::isalnum(u) != 0;
 }
 
-// Every vocab card name (both faces of a double-faced card are entries), grouped by first byte,
-// each group longest first.
+// Every vocab card name (both faces of a double-faced card are entries), and a face's name as its
+// script spells it when that differs (an accented `Name:`, the spelling the engine's text uses),
+// grouped by first byte, each group longest first.
 static const std::vector<std::vector<std::string>> &vocab_names_by_initial() {
     static const std::vector<std::vector<std::string>> by_initial = [] {
-        std::vector<std::vector<std::string>> out(256);
+        std::set<std::string> names;
         for (int i = 0; i < CARD_VOCAB_SIZE; ++i) {
             const std::string name = card_vocab_entries[i].name;
-            if (!name.empty()) out[static_cast<unsigned char>(name[0])].push_back(name);
+            if (name.empty()) continue;
+            names.insert(name);
+            if (const CardData *cd = card_data_by_name(name))
+                for (const CardData *face : {cd, static_cast<const CardData *>(cd->backside.get())})
+                    if (face != nullptr && !face->name.empty() &&
+                        card_name_to_index(face->name) == card_vocab_entries[i].index)
+                        names.insert(face->name);
         }
+        std::vector<std::vector<std::string>> out(256);
+        for (const std::string &name : names) out[static_cast<unsigned char>(name[0])].push_back(name);
         for (std::vector<std::string> &group : out)
             std::stable_sort(group.begin(), group.end(),
                 [](const std::string &a, const std::string &b) { return a.size() > b.size(); });

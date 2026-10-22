@@ -78,8 +78,8 @@ static std::vector<LegalAction> vocab_name_card_choices(
     const std::string &valid_filter, std::vector<std::string> &out_names) {
     std::vector<std::pair<std::string, int>> cards;
     for (int i = 0; i < CARD_VOCAB_SIZE; i++) {
-        const CardData *cd = card_data_by_name(card_vocab_entries[i].name);
-        if (cd == nullptr || cd->name != card_vocab_entries[i].name) continue;
+        const CardData *cd = vocab_front_card_data(i);
+        if (cd == nullptr) continue;
         if (!valid_filter.empty() && !card_matches_any(*cd, valid_filter)) continue;
         cards.push_back({cd->name, card_vocab_entries[i].index});
     }
