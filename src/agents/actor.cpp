@@ -11,6 +11,7 @@
 #include <fstream>
 #include <set>
 #include <sstream>
+#include <vector>
 
 #include "../cli_args.h"
 #include "../cli_output.h"
@@ -54,6 +55,13 @@ struct FileStamp {
         }
 };
 
+// One seat's sideboarding phase before the game: its coin, its moves in order.
+struct SideboardTally {
+        bool explored = false;
+        int swaps = 0;  // completed swaps: the cuts
+        std::vector<std::string> in, out;
+};
+
 // The game being played (its episode: the sideboarding before it included), for its results line.
 struct GameTally {
         int game_number = 1;  // 1-based
@@ -63,6 +71,7 @@ struct GameTally {
         size_t seat_decisions[2] = {0, 0};
         std::set<uint64_t> versions[2];
         bool conceded = false;
+        SideboardTally sb[2];
         Clock::time_point started = Clock::now();
 };
 
@@ -142,6 +151,8 @@ static void add_int(std::string &o, const char *key, int64_t value);
 static void add_num(std::string &o, const char *key, double value, int decimals);
 static void add_raw(std::string &o, const char *key, const std::string &raw);
 static std::string versions_json(const std::set<uint64_t> &versions);
+static std::string names_json(const std::vector<std::string> &names);
+static std::string sideboard_json(const GameTally &g);
 static const char *knowledge_name(int level);
 
 uint64_t actor_game_seed(uint64_t run_seed, uint64_t actor, uint64_t match) {
@@ -377,6 +388,9 @@ static void plan_match_globals(int64_t index) {
     if (!make_dirs(rmlog_dir)) fatal_error("--actor: cannot create " + rmlog_dir);
     m.rmlog = rmlog_dir + "/" + m.stem + ".rmlog";
     decision_log_path = m.rmlog;
+    agents::SbExplore explore[2];
+    for (int s = 0; s < 2; ++s) explore[s] = agents::sb_explore_for_deck(m.entry.sb_explore, m.deck[s]);
+    agents_set_sb_explore(explore, m.entry.sb_explore.every_agent);
 }
 
 // One match from its planned globals: its decision log, the agents, the games.
@@ -456,6 +470,18 @@ void actor_note_decision(int seat, int reply, const agents::Behaviour *behaviour
     maybe_write_status();
 }
 
+void actor_note_sideboard_explore(int seat, bool explored) {
+    if (!actor || !actor->in_match || (seat != 0 && seat != 1)) return;
+    actor->game.sb[seat].explored = explored;
+}
+
+void actor_note_sideboard_move(int seat, bool in, const std::string &card) {
+    if (!actor || !actor->in_match || (seat != 0 && seat != 1)) return;
+    SideboardTally &t = actor->game.sb[seat];
+    (in ? t.in : t.out).push_back(card);
+    if (!in) ++t.swaps;
+}
+
 static void note_version(uint64_t v) {
     actor->versions.insert(v);
     actor->last_version = v;
@@ -501,6 +527,7 @@ static void write_results_line(int winner, const char *end_reason) {
     add_int(o, "decisions_b", static_cast<int64_t>(g.seat_decisions[1]));
     add_raw(o, "policy_versions_a", versions_json(g.versions[0]));
     add_raw(o, "policy_versions_b", versions_json(g.versions[1]));
+    if (g.game_number >= 2) add_raw(o, "sb", sideboard_json(g));
     add_str(o, "rmlog", m.rmlog);
     if (trajectory_out_dir.empty())
         add_raw(o, "episode", "null");
@@ -541,6 +568,27 @@ static std::string versions_json(const std::set<uint64_t> &versions) {
     std::string out = "[";
     for (const uint64_t v : versions) out += (out.size() > 1 ? "," : "") + std::to_string(v);
     return out + "]";
+}
+
+static std::string names_json(const std::vector<std::string> &names) {
+    std::string out = "[";
+    for (const std::string &n : names) out += (out.size() > 1 ? "," : "") + featurize::json_quote(n);
+    return out + "]";
+}
+
+// The sideboarding phase before the game, per seat: {"A": {...}, "B": {...}}.
+static std::string sideboard_json(const GameTally &g) {
+    std::string o = "{";
+    for (int s = 0; s < 2; ++s) {
+        const SideboardTally &t = g.sb[s];
+        std::string seat = "{";
+        add_raw(seat, "explored", t.explored ? "true" : "false");
+        add_int(seat, "swaps", t.swaps);
+        add_raw(seat, "in", names_json(t.in));
+        add_raw(seat, "out", names_json(t.out));
+        add_raw(o, s == 0 ? "A" : "B", seat + "}");
+    }
+    return o + "}";
 }
 
 static double unix_now() {

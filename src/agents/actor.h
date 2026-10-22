@@ -43,7 +43,8 @@
 // process is reset too (agents/driver.h agents_install: the agents' generator, the seat streams,
 // the in-process feed's once-per-match frames, the knowledge instances, the teacher channel and the
 // trajectory writer; game_driver.h reset_match_state), and each agent's begin_match runs (an
-// in-process nn: model is reloaded when its file changed).
+// in-process nn: model is reloaded when its file changed). The entry's sb_explore is handed to the
+// driver per seat, with the weights of the deck that seat plays (agents_set_sb_explore).
 
 // The options.
 extern bool actor_mode;
@@ -72,5 +73,11 @@ void actor_stopped_at_decision();
 // After each decision (agents_end_decision): the deciding seat (0 A, 1 B, -1 none), the reply as
 // the decision log holds it and the behaviour distribution it was drawn from (null for none).
 void actor_note_decision(int seat, int reply, const agents::Behaviour *behaviour);
+// A sideboarding phase's exploration coin for seat `seat` (agents/driver.h agents_set_sb_explore):
+// whether the phase explores. The phase is the one before the game being tallied.
+void actor_note_sideboard_explore(int seat, bool explored);
+// A sideboarding move of seat `seat` (decided, or a one-row menu the engine took): `card` brought
+// in (`in`) or cut, named as the seat's frames name it.
+void actor_note_sideboard_move(int seat, bool in, const std::string &card);
 
 #endif /* AGENTS_ACTOR_H */

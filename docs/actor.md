@@ -93,11 +93,56 @@ unless `swap` moves them:
 | `trajectory_seats` | `A`, `B` or `AB` (default): the recorded sides |
 | `trajectory_omniscient` | bool: the episodes' omniscient part |
 | `rmlog_dir`, `trajectory_dir` | override the purpose's outputs |
+| `sb_explore` | structured sideboard exploration (below); the whole object replaces the defaults' |
 
 An unknown key, a wrong type or value, a missing deck file, an entry without both decks and both
-agents (after the defaults and the command line), or a mix without a teacher is an error naming the
-entry. Relative paths are relative to the engine's working directory, `bin/`. Agent specs and
-teacher commands are checked when a match uses them (a bad one is fatal then).
+agents (after the defaults and the command line), a mix without a teacher, or an `eval` entry whose
+`sb_explore` has p > 0 (also one inherited from `defaults`) is an error naming the entry. Relative
+paths are relative to the engine's working directory, `bin/`. Agent specs and teacher commands are
+checked when a match uses them (a bad one is fatal then).
+
+**Structured sideboard exploration** (`docs/rnad_training_plan.md` §6.2 part 2;
+`src/agents/sb_explore.{h,cpp}`, the driver's decision hook `src/agents/driver.cpp`):
+
+```json
+"sb_explore": {
+  "p": 0.25,
+  "count_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  "weights": {"league/bug": {"in": {"Pernicious Deed": 0.5}, "out": {"Fatal Push": 2.0}}},
+  "default_weight": 1.0
+}
+```
+
+| Key | Meaning |
+|---|---|
+| `p` | required, in [0, 1]: per seat and sideboarding phase, the probability that the phase explores |
+| `count_weights` | 11 numbers ≥ 0, not all 0: the weights of k = 0 … 10 swaps (default uniform) |
+| `weights` | per deck stem as `deck_a` / `deck_b` name it: `in` and `out`, card name → weight > 0. Names are the frames' card names (the `CARDS` frame's front face name: `Dead` for Dead/Gone), compared on their ASCII letters and digits, lower-cased; a name that matches no card is never used |
+| `default_weight` | > 0 (default 1): the weight of a card its deck's map does not name |
+| `agents` | `nn` (default): only seats whose agent is the learned policy (`nn:`, `nn:remote:`); `all`: every seat an in-process agent decides (the gate's torch-free check) |
+
+It applies to each seat of the match whose agent qualifies (in self-play both); the weights are
+looked up by the deck that seat plays, so under `swap` the deck, not the side, picks the map.
+At a seat's first decision of a sideboarding phase (before game 2, before game 3) one coin
+`random() < p` is drawn from the agents' shared generator (seeded per match, §6, so a rerun
+reproduces it); it holds for every decision of that seat's phase. In an exploring phase the agent
+decides as always (an `nn:` agent's evaluation is made and recorded), then the row played is drawn
+from the proposal `q` on the same generator, and the step's μ is `q` over the whole menu (the
+agent's policy version and evaluations kept, so the learner's ratios π/μ are exact). With `s` the
+phase's completed swaps (the `MATCH` table's `sb_swaps`: an IN paired with the OUT that balances
+it) and `P` the count weights normalised:
+
+- a balanced deck (Done offered): `q(Done) = P(k = s) / P(k ≥ s)` (1 when `P(k ≥ s)` is 0 or no
+  IN row is offered), the rest over the offered IN rows in proportion to their card's in-weight;
+- a swap opened (an IN made, Done withheld): the offered OUT rows in proportion to their card's
+  out-weight;
+- any other row 0 (a menu with none of the three kinds: uniform).
+
+So the number of swaps is k drawn from `P` (fewer only when the deck runs out of IN rows), every
+offered IN and OUT row has mass (no masking; the engine's locks and its 15-swap cap apply as for
+any agent), and `q` at each decision is a function of the seat's frame. Non-sideboarding decisions
+and phases whose coin did not land are the policy's. A seat that does not qualify, `p` 0 or no
+`sb_explore` draws nothing: the matches are those without the key, byte for byte.
 
 **The opponent pool** is entries: self-play (`nn:remote:` on both sides), the current policy
 against a past checkpoint (`nn:<past export>` in process on one side, or a second server policy id),
@@ -144,6 +189,7 @@ before a game writes no line for that game. One JSON object per line:
 | `decisions`, `decisions_a`, `decisions_b` | the game's decisions (its episode's: the sideboarding before it included; = the footer's `game_decisions`), per seat |
 | `policy_versions_a`, `policy_versions_b` | the distinct versions of the seat's behaviour policy in the game (arrays; the random agent's 0, none for `explore`) |
 | `rmlog` | the match's decision log |
+| `sb` | games 2 and 3 only: the sideboarding phase before the game, per seat (A / B, engine seats), for every agent kind: `{"A": {"explored": bool, "swaps": n, "in": [card, …], "out": [card, …]}, "B": {…}}`, `explored` whether the phase's sb_explore coin landed (false for a seat that does not explore), `swaps` the completed swaps (the cuts), `in` / `out` the cards moved in order, named as the frames name them (including a one-row menu the engine took) |
 | `episode` | the game's episode file, or null (an eval match, no recorded seat) |
 | `seconds` | the game's wall time |
 

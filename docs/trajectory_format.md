@@ -63,7 +63,8 @@ match's stream.
 - **μ under mixing.** The reply was drawn from the mixture, so the step's μ is
   `p·onehot(teacher) + (1 − p)·μ_agent` when the agent gave μ_agent (its policy version and
   evaluations kept), `onehot(teacher)` at p = 1 when it gave none (policy version 0), μ_agent itself
-  when the label is −1 or p = 0, and absent otherwise.
+  when the label is −1 or p = 0, and absent otherwise. In an exploring sideboarding phase μ_agent is
+  the proposal `q`.
 - **Replay.** The decision log records the reply played, so `--replay` needs no teacher; a replay's
   episodes carry the labels only when a teacher is attached to it.
 - **Failures.** A teacher that exits or closes its output, does not read its frames or reply within
@@ -114,6 +115,7 @@ irregular and every record carries its seat. Concession unwinding (CR 104.3a) as
 | `random` | uniform, `1/n` | version 0, none |
 | `explore`, `first`, `actions:`, `play:`, a human seat, a stream seat (`--machine`, e.g. the Python scripted agent), every decision of `--replay` | absent | -1, none |
 | `--play` / `--actions` script | absent on the script's own replies; the seat agent's once the script hands over | as the seat agent |
+| an exploring sideboarding phase (the actor's `sb_explore`, `docs/actor.md` §2) | the proposal `q` the row was drawn from, over every menu row | the agent's (`nn:`: its version and evaluation of the decision, made as always; an agent with none: version 0, none) |
 
 ## 2. Episodes
 

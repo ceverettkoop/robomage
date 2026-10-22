@@ -26,11 +26,20 @@
 #include "actor.h"
 #include "agent.h"
 #include "play_spec.h"
+#include "sb_explore.h"
 #include "teacher.h"
 #include "trace.h"
 #include "trajectory.h"
 
 namespace {
+
+// A seat's sideboard exploration in the match (agents_set_sb_explore).
+struct SeatExplore {
+        bool on = false;  // the seat may explore (p > 0, its agent qualifies)
+        agents::SbExplore cfg;
+        int phase = -1;  // match_game_number of the phase whose coin was drawn
+        bool exploring = false;
+};
 
 // Everything the hook keeps across the run.
 struct AgentRun {
@@ -51,9 +60,13 @@ struct AgentRun {
         rmstate::DecodedFrame frame;
         std::optional<agents::DecisionView> view;
         bool traced = false;
+        const std::vector<LegalAction> *menu = nullptr;  // the decision's menu (row i = reply i)
         // The behaviour distribution the decision's reply was drawn from (decide(): the deciding
-        // agent's, or the teacher channel's mixture), for the trajectory writer.
+        // agent's, an exploring phase's proposal, or the teacher channel's mixture), for the
+        // trajectory writer.
         const agents::Behaviour *behaviour = nullptr;
+        SeatExplore explore[2];
+        agents::Behaviour explored;  // an exploring decision's behaviour: the agent's, μ = q
         // --featurize-seats: the inputs, the last tensors and the totals.
         std::unique_ptr<featurize::Featurization> featurization;
         featurize::Tensors tensors;
@@ -65,6 +78,9 @@ struct AgentRun {
 }  // namespace
 
 static AgentRun *run = nullptr;
+// agents_set_sb_explore's configuration, applied by agents_install.
+static agents::SbExplore sb_explore_option[2];
+static bool sb_explore_every_agent = false;
 
 static int seat_index(Zone::Ownership seat);
 static std::unique_ptr<agents::Agent> agent_for(const std::string &spec, const char *flag);
@@ -76,6 +92,10 @@ static void featurize_decision();
 static void print_line(const std::string &line);
 static void seat_specs(std::string out[2]);
 static agents::MenuAction auto_menu_row(const LegalAction &la, Zone::Ownership seat, const std::string &description);
+static void install_sb_explore(bool scripted);
+static bool explores_now(int s);
+static int explore_choice(int s, const agents::Behaviour **behaviour);
+static void note_sideboard_move(int s, const LegalAction &la);
 
 static int seat_index(Zone::Ownership seat) {
     return seat == Zone::PLAYER_A ? 0 : seat == Zone::PLAYER_B ? 1 : -1;
@@ -165,6 +185,7 @@ void agents_install(unsigned int engine_seed) {
         std::atexit(report_featurized);
     }
     for (featurize::EventHistory &h : run->history) h.clear();
+    install_sb_explore(scripted);
     std::string specs_for_trajectory[2];
     seat_specs(specs_for_trajectory);
     trajectory_install(engine_seed, specs_for_trajectory);
@@ -185,8 +206,26 @@ void agents_install(unsigned int engine_seed) {
     }
 }
 
+void agents_set_sb_explore(const agents::SbExplore seat[2], bool every_agent) {
+    for (int s = 0; s < 2; ++s) sb_explore_option[s] = seat[s];
+    sb_explore_every_agent = every_agent;
+}
+
+// Each seat's exploration for the match about to start: on when p > 0 and an in-process agent of
+// the right kind decides the seat (no script).
+static void install_sb_explore(bool scripted) {
+    for (int s = 0; s < 2; ++s) {
+        SeatExplore &e = run->explore[s];
+        e = SeatExplore();
+        e.cfg = sb_explore_option[s];
+        const agents::Agent *agent = run->seat_agent[s].get();
+        e.on = e.cfg.p > 0 && !scripted && agent && (sb_explore_every_agent || agent->label() == "nn");
+    }
+}
+
 void agents_begin_decision(const std::vector<LegalAction> &actions, size_t number) {
     if (!run) return;
+    run->menu = &actions;
     run->view.reset();
     run->traced = false;
     run->behaviour = nullptr;
@@ -223,6 +262,7 @@ void agents_auto_decision(const LegalAction &taken) {
     const Zone::Ownership seat = rmstate_deciding_seat();
     const int s = seat_index(seat);
     if (s < 0) return;
+    if (sideboard_phase) note_sideboard_move(s, taken);
     const std::string description = menu_row_description(taken, seat);
     if (run->play) run->play->auto_taken(s == 0 ? 'A' : 'B', auto_menu_row(taken, seat, description));
     if (!trace_decisions) return;
@@ -263,10 +303,48 @@ void agents_end_decision(int choice, int reply) {
     const int label = teacher_take_label();
     trajectory_end_decision(reply, run->behaviour, label);
     actor_note_decision(run->seat, reply, run->behaviour);
+    if (sideboard_phase && run->seat >= 0 && reply >= 0 && run->menu && choice >= 0 &&
+        static_cast<size_t>(choice) < run->menu->size())
+        note_sideboard_move(run->seat, (*run->menu)[static_cast<size_t>(choice)]);
+    run->menu = nullptr;
+}
+
+// A sideboarding row taken by seat s: its move (an IN or an OUT) to the actor, the card named as
+// the seat's frames name it (the CARDS frame's name of the row's card).
+static void note_sideboard_move(int s, const LegalAction &la) {
+    const bool in = la.category == ActionCategory::SIDEBOARD_IN;
+    if (!in && la.category != ActionCategory::SIDEBOARD_OUT) return;
+    actor_note_sideboard_move(s, in, entity_name(la.source_entity));
+}
+
+// Whether seat s's decision explores: at its first decision of a sideboarding phase the phase's
+// coin is drawn (and reported to the actor); every decision of the phase follows it.
+static bool explores_now(int s) {
+    SeatExplore &e = run->explore[s];
+    if (!e.on || !sideboard_phase) return false;
+    if (e.phase != match_game_number) {
+        e.phase = match_game_number;
+        e.exploring = run->rng.random() < e.cfg.p;
+        actor_note_sideboard_explore(s, e.exploring);
+    }
+    return e.exploring;
+}
+
+// An exploring decision: a row drawn from the proposal q on the shared generator; *behaviour (the
+// agent's, or none) becomes a copy with μ = q.
+static int explore_choice(int s, const agents::Behaviour **behaviour) {
+    std::vector<double> q;
+    std::string err;
+    if (!agents::sb_proposal(*run->view, run->explore[s].cfg, &q, &err)) fatal_error(err);
+    run->explored = *behaviour ? **behaviour : agents::Behaviour();
+    run->explored.mu = q;
+    *behaviour = &run->explored;
+    return static_cast<int>(run->rng.weighted_index(q.data(), q.size()));
 }
 
 // The decision hook: the deciding seat's agent (or the script) on the view agents_begin_decision
-// built for this decision, its reply mixed with a teacher's label under --teacher-mix.
+// built for this decision, replaced by a draw from the proposal in an exploring sideboarding
+// phase, then mixed with a teacher's label under --teacher-mix.
 static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions) {
     const int s = seat_index(seat);
     if (s < 0 || !run->view || run->seat != s) fatal_error("in-process agent: no frame was built for this decision");
@@ -274,10 +352,13 @@ static int decide(Zone::Ownership seat, const std::vector<LegalAction> &actions)
                            : run->seat_agent[s] ? run->seat_agent[s].get()
                                                 : run->human[s].get();
     const agents::Decision d{*run->view, run->number > 0 ? run->number - 1 : 0};
-    const int choice = agent->decide(d);
+    const bool explore = !run->script && explores_now(s);
+    int choice = agent->decide(d);
     if (choice == agents::AGENT_FAILED) fatal_error(agent->failure());
     if (choice == agents::AGENT_QUIT) InputLogger::instance().end_run_by_quit();
-    return teacher_mix(choice, agent->last_behaviour(), actions.size(), &run->behaviour);
+    const agents::Behaviour *behaviour = agent->last_behaviour();
+    if (explore && choice >= 0) choice = explore_choice(s, &behaviour);
+    return teacher_mix(choice, behaviour, actions.size(), &run->behaviour);
 }
 
 // Each seat's decider as the trajectory writer's header names it: the --replay log, the --play /

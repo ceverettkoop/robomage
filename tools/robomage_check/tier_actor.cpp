@@ -281,8 +281,8 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
 // behaviour distributions are the projection (check_projected_evals), the .pt2 export playing the
 // same argmax bo3 match as the TorchScript one, the refusals, the three exports' agreement on the
 // match's decisions, then the remote evaluation checks (actor_remote_checks), the actor's hot
-// reload of an in-process model (actor_reload_check) and the continuous smoke run
-// (actor_smoke_check).
+// reload of an in-process model (actor_reload_check), the continuous smoke run (actor_smoke_check)
+// and the actor's sideboard exploration (actor_sb_explore_check).
 void tier_actor(const Options &opt, Report &rep) {
     projection_checks(rep);
     ActorSetup a;
@@ -348,6 +348,7 @@ void tier_actor(const Options &opt, Report &rep) {
     actor_remote_checks(opt, rep, a);
     actor_reload_check(opt, rep, a);
     actor_smoke_check(opt, rep, a);
+    actor_sb_explore_check(opt, rep, a);
 }
 
 }  // namespace rmcheck

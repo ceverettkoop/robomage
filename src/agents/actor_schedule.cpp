@@ -18,7 +18,7 @@ using featurize::Json;
 // The keys an entry may carry (the defaults object the same, but id).
 const char *const ENTRY_KEYS[] = {"id", "weight", "purpose", "deck_a", "deck_b", "format", "swap", "agent_a", "agent_b",
     "teacher_a", "teacher_b", "teacher_mix", "knowledge_a", "knowledge_b", "max_game_decisions", "trajectory_seats",
-    "trajectory_omniscient", "rmlog_dir", "trajectory_dir"};
+    "trajectory_omniscient", "rmlog_dir", "trajectory_dir", "sb_explore"};
 const char *const PURPOSES[] = {"train", "eval"};
 
 }  // namespace
@@ -30,6 +30,11 @@ static bool get_optional_string(const Json &v, const std::string &key, std::stri
 static bool knowledge_value(const std::string &name, int *out);
 static bool apply_outputs(const Json &obj, const std::string &where, PurposeOutputs *out, std::string *err);
 static bool apply_entry_keys(const Json &obj, const std::string &where, ScheduleEntry *e, std::string *err);
+static bool positive_number(const Json &v, const std::string &name, double *out, std::string *err);
+static bool apply_card_weights(
+    const Json &obj, const std::string &where, std::map<std::string, double> *out, std::string *err);
+static bool apply_deck_weights(const Json &obj, const std::string &where, SbCardWeights *out, std::string *err);
+static bool apply_sb_explore(const Json &obj, const std::string &where, SbExploreSpec *out, std::string *err);
 static bool check_entry(const ScheduleEntry &e, const std::string &decks_dir, std::string *err);
 static bool file_exists(const std::string &path);
 
@@ -201,8 +206,129 @@ static bool apply_entry_keys(const Json &obj, const std::string &where, Schedule
         } else if (k == "trajectory_dir") {
             if (!get_optional_string(v, name, &e->outputs.trajectory_dir, err)) return false;
             e->outputs.trajectory_set = true;
+        } else if (k == "sb_explore") {
+            if (!apply_sb_explore(v, name, &e->sb_explore, err)) return false;
         }
     }
+    return true;
+}
+
+// A finite number > 0.
+static bool positive_number(const Json &v, const std::string &name, double *out, std::string *err) {
+    if (!v.is_number() || !(v.as_number() > 0) || !std::isfinite(v.as_number())) {
+        *err = name + " must be a number > 0";
+        return false;
+    }
+    *out = v.as_number();
+    return true;
+}
+
+// {card: weight > 0, ...}, keyed by sb_card_key.
+static bool apply_card_weights(
+    const Json &obj, const std::string &where, std::map<std::string, double> *out, std::string *err) {
+    if (!obj.is_object()) {
+        *err = where + " must be an object of card names and weights";
+        return false;
+    }
+    for (const auto &m : obj.members()) {
+        const std::string key = sb_card_key(m.first);
+        if (key.empty()) {
+            *err = where + ": '" + m.first + "' is not a card name";
+            return false;
+        }
+        if (out->count(key)) {
+            *err = where + ": '" + m.first + "' names a card twice";
+            return false;
+        }
+        if (!positive_number(m.second, where + "." + m.first, &(*out)[key], err)) return false;
+    }
+    return true;
+}
+
+// One deck's {"in": {...}, "out": {...}}.
+static bool apply_deck_weights(const Json &obj, const std::string &where, SbCardWeights *out, std::string *err) {
+    if (!obj.is_object()) {
+        *err = where + " must be an object";
+        return false;
+    }
+    for (const auto &m : obj.members()) {
+        if (m.first != "in" && m.first != "out") {
+            *err = where + ": unknown key '" + m.first + "' (in, out)";
+            return false;
+        }
+        if (!apply_card_weights(m.second, where + "." + m.first, m.first == "in" ? &out->in : &out->out, err))
+            return false;
+    }
+    return true;
+}
+
+// An sb_explore object; it replaces whatever `out` held.
+static bool apply_sb_explore(const Json &obj, const std::string &where, SbExploreSpec *out, std::string *err) {
+    if (!obj.is_object()) {
+        *err = where + " must be an object";
+        return false;
+    }
+    SbExploreSpec spec;
+    bool have_p = false;
+    for (const auto &m : obj.members()) {
+        const std::string &k = m.first;
+        const Json &v = m.second;
+        const std::string name = where + "." + k;
+        if (k == "p") {
+            if (!v.is_number() || !(v.as_number() >= 0 && v.as_number() <= 1)) {
+                *err = name + " must be a number in [0, 1]";
+                return false;
+            }
+            spec.p = v.as_number();
+            have_p = true;
+        } else if (k == "count_weights") {
+            const size_t n = SB_MAX_COUNT + 1;
+            if (!v.is_array() || v.items().size() != n) {
+                *err = name + " must be an array of " + std::to_string(n) + " numbers (k = 0 .. " +
+                       std::to_string(SB_MAX_COUNT) + ")";
+                return false;
+            }
+            double total = 0;
+            for (size_t i = 0; i < n; ++i) {
+                const Json &x = v.items()[i];
+                if (!x.is_number() || !(x.as_number() >= 0) || !std::isfinite(x.as_number())) {
+                    *err = name + "[" + std::to_string(i) + "] must be a number >= 0";
+                    return false;
+                }
+                spec.count_weights[i] = x.as_number();
+                total += x.as_number();
+            }
+            if (!(total > 0)) {
+                *err = name + " must not be all 0";
+                return false;
+            }
+        } else if (k == "weights") {
+            if (!v.is_object()) {
+                *err = name + " must be an object keyed by deck stem";
+                return false;
+            }
+            for (const auto &d : v.members())
+                if (!apply_deck_weights(d.second, name + "." + d.first, &spec.weights[d.first], err)) return false;
+        } else if (k == "default_weight") {
+            if (!positive_number(v, name, &spec.default_weight, err)) return false;
+        } else if (k == "agents") {
+            std::string text;
+            if (!get_string(v, name, &text, err)) return false;
+            if (text != "nn" && text != "all") {
+                *err = name + " must be \"nn\" or \"all\"";
+                return false;
+            }
+            spec.every_agent = text == "all";
+        } else {
+            *err = where + ": unknown key '" + k + "' (p, count_weights, weights, default_weight, agents)";
+            return false;
+        }
+    }
+    if (!have_p) {
+        *err = where + ": no p";
+        return false;
+    }
+    *out = std::move(spec);
     return true;
 }
 
@@ -227,6 +353,10 @@ static bool check_entry(const ScheduleEntry &e, const std::string &decks_dir, st
     }
     if (e.teacher_mix > 0 && e.teacher[0].empty() && e.teacher[1].empty()) {
         *err = where + ": teacher_mix needs teacher_a or teacher_b";
+        return false;
+    }
+    if (e.purpose == "eval" && e.sb_explore.p > 0) {
+        *err = where + ": an eval entry does not explore (sb_explore p > 0; evaluations play the policy)";
         return false;
     }
     return true;
@@ -299,6 +429,16 @@ bool parse_schedule(
     if (s.version.empty()) s.version = featurize::hex16(rmstate::fnv1a64(text.data(), text.size()));
     *out = std::move(s);
     return true;
+}
+
+SbExplore sb_explore_for_deck(const SbExploreSpec &spec, const std::string &deck) {
+    SbExplore out;
+    out.p = spec.p;
+    out.count_weights = spec.count_weights;
+    out.default_weight = spec.default_weight;
+    const auto it = spec.weights.find(deck);
+    if (it != spec.weights.end()) out.weights = it->second;
+    return out;
 }
 
 uint64_t splitmix64(uint64_t x) {

@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "sb_explore.h"
+
 // ── The actor's schedule: matchups, seats, agents, teachers, purposes (training plan T5) ──────
 //
 // Standard library and featurize/json.h only. docs/actor.md §2 is the reference. A JSON object:
@@ -39,10 +41,23 @@
 //   trajectory_seats       A | B | AB (default AB): the recorded sides
 //   trajectory_omniscient  bool
 //   rmlog_dir, trajectory_dir  override the purpose's outputs (trajectory_dir null: no episodes)
+//   sb_explore             optional: structured sideboard exploration (agents/sb_explore.h) of the
+//                          seats whose agent is the learned policy (nn:), an object:
+//                            p               in [0, 1], required: per seat and sideboarding phase,
+//                                            the probability that the phase explores
+//                            count_weights   SB_MAX_COUNT + 1 numbers >= 0, not all 0 (k = 0 .. 10
+//                                            swaps; default uniform)
+//                            weights         per deck stem (as deck_a / deck_b name it):
+//                                            {"in": {card: w > 0, ...}, "out": {card: w > 0, ...}}
+//                            default_weight  > 0 (default 1): a card its deck's map does not name
+//                            agents          "nn" (default) or "all": every in-process agent's seat
+//                                            (the gate's torch-free check)
+//                          the whole object replaces the defaults' (no merge)
 //
 // An unknown key, a value of the wrong type or out of range, a missing deck file, an entry without
-// both decks and both agents (after the defaults and the command line's) is an error naming the
-// entry. Relative paths are relative to the engine's working directory (bin/).
+// both decks and both agents (after the defaults and the command line's), or an eval entry with
+// an sb_explore p > 0 is an error naming the entry. Relative paths are relative to the engine's working directory
+// (bin/).
 
 namespace agents {
 
@@ -57,6 +72,18 @@ struct PurposeOutputs {
         bool rmlog_set = false, trajectory_set = false;
         std::string rmlog_dir, trajectory_dir;
 };
+
+// An entry's sb_explore (p 0: off).
+struct SbExploreSpec {
+        double p = 0;
+        std::vector<double> count_weights = std::vector<double>(SB_MAX_COUNT + 1, 1.0);
+        std::map<std::string, SbCardWeights> weights;  // per deck stem
+        double default_weight = 1.0;
+        bool every_agent = false;  // "agents": "all"
+};
+
+// The configuration of a seat playing `deck` (its deck stem's weights, else none).
+SbExplore sb_explore_for_deck(const SbExploreSpec &spec, const std::string &deck);
 
 // One entry, every field resolved against the defaults (by side: [0] = side a).
 struct ScheduleEntry {
@@ -74,6 +101,7 @@ struct ScheduleEntry {
         std::string trajectory_seats = "AB";
         bool trajectory_omniscient = false;
         PurposeOutputs outputs;  // the entry's own rmlog_dir / trajectory_dir
+        SbExploreSpec sb_explore;
 };
 
 struct Schedule {

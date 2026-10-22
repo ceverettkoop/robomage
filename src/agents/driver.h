@@ -5,6 +5,10 @@
 
 #include "../classes/action.h"
 
+namespace agents {
+struct SbExplore;
+}
+
 // ── The in-process agents in the engine: options, the decision hook, --trace-decisions ────────
 //
 // The engine side of src/agents/ (the agents themselves read only frames, agents/agent.h).
@@ -42,6 +46,18 @@
 // sidecar start the match afresh (every seat gets its once-per-match frames again), and the
 // trajectory writer and the teacher channel are installed again.
 void agents_install(unsigned int engine_seed);
+
+// Structured sideboard exploration (agents/sb_explore.h, docs/actor.md §2), set by an actor before
+// each match's agents_install and kept until set again (off, p 0, unless set): `seat` each seat's
+// configuration; it applies to a seat whose agent is the learned policy (an nn: agent), or under
+// `every_agent` to any in-process agent's seat (never a script's or a human seat's). At a seat's
+// first decision of a sideboarding phase one coin random() < p is drawn from the agents' shared
+// generator (none when p is 0 or the seat does not explore); when it lands, every decision of
+// the seat's phase is played from the proposal q (sb_proposal): the agent decides as always (an
+// nn: agent's evaluation is made and kept), then a row is drawn from q on the shared generator and
+// the decision's behaviour distribution is q (the agent's policy version and evaluations kept).
+// Each phase's coin and every sideboarding move go to the actor (actor_note_sideboard_*).
+void agents_set_sb_explore(const agents::SbExplore seat[2], bool every_agent);
 
 // Called as each decision is read (InputLogger::choose), after the frame writers and before the
 // input is read: for a seat an agent decides, a seat the trajectory writer records

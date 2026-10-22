@@ -79,6 +79,15 @@ void actor_reload_check(const Options &opt, Report &rep, const ActorSetup &a);
 // match's decision log replayed alone to the same episodes and labels; under <out>/actor/smoke/.
 void actor_smoke_check(const Options &opt, Report &rep, const ActorSetup &a);
 
+// The actor tier's sideboard exploration run (tier_actorloop.cpp, sharing the actorloop tier's
+// sb_explore checks; docs/actor.md §2): robomage_nn --actor, nn: self-play of the reference policy
+// over three bo3 matches with sb_explore at p 0.5: exploring and policy phases both played, each
+// exploring step's mu the proposal q recomputed from its replay's dump frame with the policy's
+// evaluation kept, each other sideboarding step's mu the policy's pi, the results lines' sb the
+// moves made, each match's decision log replayed alone to the same episodes; under
+// <out>/actor/sb_explore/.
+void actor_sb_explore_check(const Options &opt, Report &rep, const ActorSetup &a);
+
 }  // namespace rmcheck
 
 #endif /* ROBOMAGE_CHECK_ACTOR_H */

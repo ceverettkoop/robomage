@@ -1,13 +1,17 @@
 #include <signal.h>
 
+#include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <map>
 #include <set>
+#include <tuple>
 
 #include "../../src/featurize/json.h"
 #include "actor.h"
+#include "frames.h"
 #include "gate.h"
 #include "proc.h"
 #include "scan.h"
@@ -23,7 +27,9 @@ struct ActorRun {
         std::string dir;  // <tier out>/<part>
         std::string out;  // the actor's --actor-out
         std::string schedule;
-        std::string binary;  // the engine ("" = the gate's; robomage_nn for nn: agents)
+        std::string binary;              // the engine ("" = the gate's; robomage_nn for nn: agents)
+        int id = 2;                      // --actor-id
+        std::vector<std::string> extra;  // more options (--actor-start, ...)
         rmcheck::ProcResult result;
         std::vector<Json> lines;  // the results file's lines, parsed
         Json status;
@@ -31,6 +37,33 @@ struct ActorRun {
 
 const size_t MAX_FAILS = 20;
 const char *const TIER = "actorloop";
+
+// The gate's sb_explore (sb_explore_json): count weights k = 0 .. 10; SB_DECK's card weights.
+const size_t SB_COUNTS = 11;
+const double SB_COUNT_WEIGHTS[SB_COUNTS] = {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3};
+const char *const SB_DECK = "league/burn";
+struct SbCardWeight {
+        const char *card;
+        double weight;
+};
+// [0] favoured, [1] disfavoured; the reference cards keep the default weight.
+const SbCardWeight SB_IN[2] = {{"Leyline of the Void", 30}, {"Searing Blood", 0.02}};
+const SbCardWeight SB_OUT[2] = {{"Lightning Bolt", 30}, {"Mountain", 0.02}};
+const char *const SB_IN_REFERENCE = "Smash to Smithereens";
+const char *const SB_OUT_REFERENCE = "Goblin Guide";
+const double SB_DEFAULT_WEIGHT = 2;
+
+// A seat's sideboarding frame in a dump: each menu row's category and card name, the swaps made.
+struct SbFrame {
+        std::vector<std::string> category, card;
+        uint64_t swaps = 0;
+};
+using SbKey = std::tuple<int, uint64_t, uint64_t>;  // viewer, game, decision
+
+// What check_sb_steps saw.
+struct SbStepCounts {
+        size_t explored_steps = 0, policy_steps = 0, phases = 0, explored_phases = 0;
+};
 
 }  // namespace
 
@@ -59,14 +92,29 @@ static void part_teacher(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void part_change_stop(const rmcheck::Options &opt, rmcheck::Report &rep);
 static void check_smoke_steps(const std::map<std::string, std::vector<rmcheck::EpisodeFile>> &eps,
     const std::vector<Json> &lines, std::vector<std::string> *fails);
+static std::string sb_explore_json(double p, bool every_agent);
+static std::string sb_key(const std::string &name);
+static double sb_weight(const std::string &deck, bool in, const std::string &card);
+static std::vector<double> sb_expected_q(const SbFrame &f, const std::string &deck);
+static bool dump_sideboarding(const std::string &path, std::map<SbKey, SbFrame> *out, std::string *err);
+static const Json *sb_seat(const Json &line, int seat);
+static std::vector<std::string> json_strings(const Json *arr);
+static std::string sb_step_problem(
+    const featurize::EpisodeStep &st, const SbFrame &f, const std::string &deck, bool explored, bool nn);
+static void check_sb_steps(const rmcheck::Options &opt, const ActorRun &a,
+    const std::map<std::string, std::vector<rmcheck::EpisodeFile>> &eps, bool nn, SbStepCounts *counts,
+    std::vector<std::string> *fails);
+static void check_sb_statistics(const std::vector<Json> &lines, std::vector<std::string> *fails, std::string *summary);
+static void part_sb_explore(const rmcheck::Options &opt, rmcheck::Report &rep);
+static void part_sb_schedule_errors(const rmcheck::Options &opt, rmcheck::Report &rep);
 
-// The actor's command line: its schedule, out dir, id 2, run seed `seed` and `matches` (< 0: until
-// stopped).
+// The actor's command line: its schedule, out dir, id, run seed `seed`, `matches` (< 0: until
+// stopped) and the run's extra options.
 static std::vector<std::string> actor_args(const rmcheck::Options &opt, const ActorRun &a, long matches, long seed) {
     std::vector<std::string> argv = {a.binary.empty() ? opt.binary : a.binary, "--actor", "--actor-schedule",
-        a.schedule, "--actor-out", a.out,
-        "--actor-id", "2", "--actor-seed", std::to_string(seed)};
+        a.schedule, "--actor-out", a.out, "--actor-id", std::to_string(a.id), "--actor-seed", std::to_string(seed)};
     if (matches >= 0) argv.insert(argv.end(), {"--actor-matches", std::to_string(matches)});
+    argv.insert(argv.end(), a.extra.begin(), a.extra.end());
     return argv;
 }
 
@@ -89,7 +137,8 @@ static void run_actor(const rmcheck::Options &opt, ActorRun *a, long matches, lo
 // The results file's lines and the status file, parsed.
 static bool read_outputs(ActorRun *a, std::vector<std::string> *fails) {
     std::string text, err;
-    if (!rmcheck::read_file(rmcheck::path_join(a->out, "a2.results.jsonl"), &text)) {
+    const std::string stem = "a" + std::to_string(a->id);
+    if (!rmcheck::read_file(rmcheck::path_join(a->out, stem + ".results.jsonl"), &text)) {
         fails->push_back(a->out + ": no results file");
         return false;
     }
@@ -102,7 +151,7 @@ static bool read_outputs(ActorRun *a, std::vector<std::string> *fails) {
         }
         a->lines.push_back(j);
     }
-    if (!rmcheck::read_file(rmcheck::path_join(a->out, "a2.status.json"), &text) ||
+    if (!rmcheck::read_file(rmcheck::path_join(a->out, stem + ".status.json"), &text) ||
         !Json::parse(text, &a->status, &err)) {
         fails->push_back(a->out + ": the status file does not parse: " + err);
         return false;
@@ -332,8 +381,9 @@ static void report(
 
 // Six matches of a two-entry schedule (a bo1 entry swapping sides, a bo3 entry swapping decks): the
 // run, its status and results against the episodes, every match's decision log replayed alone to
-// the same episodes, and a rerun with the same run seed and actor id writing the same decision logs
-// and results.
+// the same episodes, and a rerun with the same run seed and actor id, its schedule's defaults
+// carrying an sb_explore of p 0 for every agent (which must change nothing), writing the same
+// decision logs and results.
 static void part_main(const rmcheck::Options &opt, rmcheck::Report &rep) {
     std::vector<std::string> fails;
     const std::string base = rmcheck::path_join(opt.out(TIER), "main");
@@ -341,16 +391,20 @@ static void part_main(const rmcheck::Options &opt, rmcheck::Report &rep) {
     rmcheck::make_dirs(base);
     ActorRun a, b;
     a.dir = b.dir = base;
-    a.schedule = b.schedule = rmcheck::path_join(base, "schedule.json");
+    a.schedule = rmcheck::path_join(base, "schedule.json");
+    b.schedule = rmcheck::path_join(base, "schedule_p0.json");
     a.out = rmcheck::path_join(base, "run1");
     b.out = rmcheck::path_join(base, "run2");
-    write_schedule(a.schedule,
-        "{\"version\": \"main\", \"entries\": [\n"
+    const std::string entry_list =
+        "\"entries\": [\n"
         " {\"id\": \"bo1_sides\", \"format\": \"bo1\", \"swap\": \"sides\", \"deck_a\": \"league/burn\", "
         "\"deck_b\": \"league/bug\", \"agent_a\": \"random\", \"agent_b\": \"explore\"},\n"
         " {\"id\": \"bo3_decks\", \"format\": \"bo3\", \"swap\": \"decks\", \"deck_a\": \"league/ur_delver\", "
         "\"deck_b\": \"league/lands\", \"agent_a\": \"explore\", \"agent_b\": \"random\", \"knowledge_b\": "
-        "\"off\"}]}\n");
+        "\"off\"}]}\n";
+    write_schedule(a.schedule, "{\"version\": \"main\", " + entry_list);
+    write_schedule(b.schedule,
+        "{\"version\": \"main\", \"defaults\": {\"sb_explore\": " + sb_explore_json(0, true) + "}, " + entry_list);
     const long seed = opt.seed + 900;
     std::vector<ActorRun *> runs = {&a, &b};
     rmcheck::parallel_for(2, opt.jobs, [&](size_t i) { run_actor(opt, runs[i], 6, seed); });
@@ -400,7 +454,7 @@ static void part_main(const rmcheck::Options &opt, rmcheck::Report &rep) {
     if (fails.empty())
         rep.info("actorloop main: 6 matches, " + std::to_string(a.lines.size()) + " games (" +
                  std::to_string(entries["bo1_sides"]) + " bo1, " + std::to_string(entries["bo3_decks"]) + " bo3), " +
-                 std::to_string(swapped) + " swapped; replays and rerun identical");
+                 std::to_string(swapped) + " swapped; replays and rerun (sb_explore p 0) identical");
     report(rep, "main", fails);
 }
 
@@ -629,6 +683,445 @@ static void check_smoke_steps(const std::map<std::string, std::vector<rmcheck::E
     if (steps == 0) fails->push_back("no recorded step");
 }
 
+// The gate's sb_explore (docs/actor.md §2): count weights favouring 0 and 10 swaps; league/burn's
+// in and out weights, one card strongly favoured and one nearly never taken each way; every other
+// card SB_DEFAULT_WEIGHT.
+static std::string sb_explore_json(double p, bool every_agent) {
+    std::string out = "{\"p\": " + std::to_string(p) + ", \"count_weights\": [";
+    for (size_t k = 0; k < SB_COUNTS; ++k) out += (k ? ", " : "") + std::to_string(SB_COUNT_WEIGHTS[k]);
+    out += "], \"default_weight\": " + std::to_string(SB_DEFAULT_WEIGHT) + ", \"weights\": {" +
+           featurize::json_quote(SB_DECK) + ": {";
+    for (int dir = 0; dir < 2; ++dir) {
+        out += std::string(dir ? ", \"out\": {" : "\"in\": {");
+        const SbCardWeight *w = dir ? SB_OUT : SB_IN;
+        for (size_t i = 0; i < 2; ++i)
+            out += (i ? ", " : "") + featurize::json_quote(w[i].card) + ": " + std::to_string(w[i].weight);
+        out += "}";
+    }
+    out += "}}";
+    if (every_agent) out += ", \"agents\": \"all\"";
+    return out + "}";
+}
+
+// A card name as sb_explore keys it: ASCII letters and digits, lower case.
+static std::string sb_key(const std::string &name) {
+    std::string key;
+    for (const char c : name) {
+        const unsigned char u = static_cast<unsigned char>(c);
+        if (u < 0x80 && std::isalnum(u)) key += static_cast<char>(std::tolower(u));
+    }
+    return key;
+}
+
+// The weight the gate's sb_explore gives `card` of `deck` brought in (`in`) or cut.
+static double sb_weight(const std::string &deck, bool in, const std::string &card) {
+    if (deck == SB_DECK)
+        for (size_t i = 0; i < 2; ++i) {
+            const SbCardWeight &w = (in ? SB_IN : SB_OUT)[i];
+            if (sb_key(w.card) == sb_key(card)) return w.weight;
+        }
+    return SB_DEFAULT_WEIGHT;
+}
+
+// The proposal q of an exploring phase (agents/sb_explore.h), recomputed from a dump frame: at a
+// balanced deck q(Done) = P(k = s) / P(k >= s) (1 without IN rows or when P(k >= s) is 0) and the
+// rest over the IN rows by in-weight; else the OUT rows by out-weight; other rows 0.
+static std::vector<double> sb_expected_q(const SbFrame &f, const std::string &deck) {
+    const size_t n = f.category.size();
+    std::vector<double> q(n, 0.0);
+    std::vector<size_t> in, out;
+    size_t done = n;
+    for (size_t i = 0; i < n; ++i) {
+        if (f.category[i] == "SIDEBOARD_IN") in.push_back(i);
+        if (f.category[i] == "SIDEBOARD_OUT") out.push_back(i);
+        if (f.category[i] == "SIDEBOARD_DONE" && done == n) done = i;
+    }
+    double rest = 1.0;
+    bool bring_in = true;
+    if (done < n) {
+        double tail = 0;
+        for (size_t k = f.swaps; k < SB_COUNTS; ++k) tail += SB_COUNT_WEIGHTS[k];
+        const double stop = f.swaps < SB_COUNTS ? SB_COUNT_WEIGHTS[f.swaps] : 0.0;
+        q[done] = in.empty() || tail <= 0 ? 1.0 : stop / tail;
+        rest = 1.0 - q[done];
+    } else if (!out.empty()) {
+        bring_in = false;
+    } else if (in.empty()) {
+        for (double &x : q) x = 1.0 / static_cast<double>(n);
+        return q;
+    }
+    const std::vector<size_t> &rows = bring_in ? in : out;
+    double total = 0;
+    for (size_t r : rows) total += sb_weight(deck, bring_in, f.card[r]);
+    if (rest > 0)
+        for (size_t r : rows) q[r] = rest * sb_weight(deck, bring_in, f.card[r]) / total;
+    return q;
+}
+
+// The seats' sideboarding frames of a dump, by (viewer, game, decision): each menu row's category
+// and card (its CARDS frame's front face name), the MATCH row's sb_swaps.
+static bool dump_sideboarding(const std::string &path, std::map<SbKey, SbFrame> *out, std::string *err) {
+    std::vector<std::string> payloads;
+    if (!rmcheck::read_records(path, &payloads, err)) return false;
+    rmcheck::FrameDecoder dec;
+    std::map<uint64_t, std::string> names[2];
+    for (const std::string &p : payloads) {
+        rmstate::DecodedFrame f;
+        if (!dec.feed(p, &f, err)) return false;
+        const int viewer = f.header.viewer;
+        if (viewer != rmcheck::VIEWER_A && viewer != rmcheck::VIEWER_B) continue;
+        const rmstate::Schema &schema = *dec.schema(viewer);
+        if (f.header.kind == rmcheck::KIND_CARDS) {
+            const rmcheck::Rows c(f, schema, "card");
+            const int card = c.col("card"), face = c.col("face"), name = c.col("name");
+            for (size_t r = 0; r < c.size(); ++r)
+                if (!c.null(r, card) && c.name(r, face) == "FRONT" && !names[viewer].count(c.u(r, card)))
+                    names[viewer][c.u(r, card)] = c.text(r, name);
+            continue;
+        }
+        if (f.header.kind != rmcheck::KIND_STATE || !rmcheck::header_value(f, schema, "sideboarding") ||
+            rmcheck::header_value(f, schema, "terminal"))
+            continue;
+        const rmcheck::Rows m(f, schema, "menu"), match(f, schema, "match");
+        if (m.size() == 0) continue;
+        SbFrame sf;
+        const int cat = m.col("category"), src = m.col("source_card");
+        for (size_t r = 0; r < m.size(); ++r) {
+            sf.category.push_back(m.name(r, cat));
+            const auto it = m.null(r, src) ? names[viewer].end() : names[viewer].find(m.u(r, src));
+            sf.card.push_back(it == names[viewer].end() ? std::string() : it->second);
+        }
+        sf.swaps = match.size() ? match.u(0, match.col("sb_swaps")) : 0;
+        (*out)[SbKey(viewer, rmcheck::header_value(f, schema, "game"), rmcheck::header_value(f, schema, "decision"))] =
+            std::move(sf);
+    }
+    return true;
+}
+
+// A results line's sb.<seat> object, or nullptr.
+static const Json *sb_seat(const Json &line, int seat) {
+    const Json *sb = line.get("sb");
+    return sb && sb->is_object() ? sb->get(seat == 0 ? "A" : "B") : nullptr;
+}
+
+// A JSON array of strings.
+static std::vector<std::string> json_strings(const Json *arr) {
+    std::vector<std::string> out;
+    if (arr && arr->is_array())
+        for (const Json &x : arr->items()) out.push_back(x.is_string() ? x.as_string() : x.text());
+    return out;
+}
+
+// One sideboarding step against its dump frame: an exploring phase's μ is q (within 1e-6) with mass
+// on the reply and (`nn`) the evaluation kept, the random-free explore agent's version 0 without
+// one; another phase's μ the policy's π (`nn`, within 1e-5) or none. "" when it holds.
+static std::string sb_step_problem(
+    const featurize::EpisodeStep &st, const SbFrame &f, const std::string &deck, bool explored, bool nn) {
+    const size_t n = f.category.size();
+    if (st.chosen < 0 || static_cast<size_t>(st.chosen) >= n) return "the reply is not a menu row";
+    const bool evaluated = !st.policies.empty() && st.policies[0].log_pi.size() == n && st.policy_version >= 0;
+    if (explored) {
+        const std::vector<double> q = sb_expected_q(f, deck);
+        if (!st.has_mu || st.mu.size() != n) return "an exploring step without a behaviour distribution";
+        for (size_t i = 0; i < n; ++i)
+            if (std::fabs(st.mu[i] - q[i]) > 1e-6)
+                return "an exploring step's mu[" + std::to_string(i) + "] " + std::to_string(st.mu[i]) +
+                       " is not q's " + std::to_string(q[i]);
+        if (!(st.mu[static_cast<size_t>(st.chosen)] > 0)) return "an exploring step's reply has no mass in q";
+        if (nn && !evaluated) return "an exploring step without the policy's evaluation";
+        if (!nn && (!st.policies.empty() || st.policy_version != 0))
+            return "an exploring explore-agent step with an evaluation or a version other than 0";
+        return "";
+    }
+    if (!nn) return st.has_mu ? "a non-exploring explore-agent step with a behaviour distribution" : "";
+    if (!st.has_mu || !evaluated || st.mu.size() != n) return "a policy step without mu or its evaluation";
+    for (size_t i = 0; i < n; ++i)
+        if (std::fabs(st.mu[i] - std::exp(static_cast<double>(st.policies[0].log_pi[i]))) > 1e-5)
+            return "a non-exploring step's mu is not the policy's";
+    return "";
+}
+
+// Every sideboarding step of `a`'s matches (both seats recorded; each match's decision log replayed
+// with --rmstate-dump) against the dump's frame (sb_step_problem, the explored flag its results
+// line's), and each results line's sb (games 2 and 3 only) the moves its steps made in order.
+static void check_sb_steps(const rmcheck::Options &opt, const ActorRun &a,
+    const std::map<std::string, std::vector<rmcheck::EpisodeFile>> &eps, bool nn, SbStepCounts *counts,
+    std::vector<std::string> *fails) {
+    std::map<std::string, std::vector<const Json *>> matches;  // rmlog -> its lines
+    for (const Json &l : a.lines) matches[jstr(l, "rmlog")].push_back(&l);
+    const std::vector<std::pair<std::string, std::vector<const Json *>>> list(matches.begin(), matches.end());
+    std::vector<std::vector<std::string>> part(list.size());
+    std::vector<SbStepCounts> part_counts(list.size());
+    const std::string dump_dir = rmcheck::path_join(a.dir, "sbdump");
+    rmcheck::make_dirs(dump_dir);
+    rmcheck::parallel_for(list.size(), opt.jobs, [&](size_t i) {
+        const std::string stem = stem_of(list[i].first);
+        const std::string dump = rmcheck::path_join(dump_dir, stem + ".rmstate");
+        std::vector<std::string> &bad = part[i];
+        SbStepCounts &c = part_counts[i];
+        rmcheck::ProcSpec spec;
+        spec.argv = {opt.binary, "--replay", list[i].first, "--rmstate-dump", dump, "--knowledge-a", "off",
+            "--knowledge-b", "off"};
+        spec.cwd = opt.bin_dir;
+        spec.timeout_s = 600;
+        spec.merge_stderr = true;
+        const rmcheck::ProcResult r = rmcheck::run_process(spec);
+        std::map<SbKey, SbFrame> frames;
+        std::string err;
+        if (!r.ok()) {
+            bad.push_back(stem + ": --replay with a dump " + r.status_text());
+            return;
+        }
+        if (!dump_sideboarding(dump, &frames, &err)) {
+            bad.push_back(stem + ": the dump: " + err);
+            return;
+        }
+        rmcheck::remove_tree(dump);
+        const auto ep_it = eps.find(stem);
+        for (const Json *l : list[i].second) {
+            const int64_t g = jint(*l, "game");
+            if (g == 1) {
+                if (l->get("sb")) bad.push_back(stem + " game 1: a results line with sb");
+                continue;
+            }
+            if (!sb_seat(*l, 0) || !sb_seat(*l, 1)) {
+                bad.push_back(stem + " game " + std::to_string(g) + ": no sb.A / sb.B");
+                continue;
+            }
+            const rmcheck::EpisodeFile *e = nullptr;
+            if (ep_it != eps.end())
+                for (const rmcheck::EpisodeFile &f : ep_it->second)
+                    if (f.game_number == g) e = &f;
+            if (!e) {
+                bad.push_back(stem + " game " + std::to_string(g) + ": no episode");
+                continue;
+            }
+            std::vector<std::string> moved[2][2];  // [seat][0 in, 1 out]
+            bool seen[2] = {false, false};
+            for (const featurize::EpisodeStep &st : e->ep.steps) {
+                if (!st.sideboarding) continue;
+                const int s = st.seat;
+                const Json *seat = sb_seat(*l, s);
+                const bool explored = seat->get("explored") && seat->get("explored")->as_bool();
+                const auto f =
+                    frames.find(SbKey(s, static_cast<uint64_t>(st.game), static_cast<uint64_t>(st.decision)));
+                const std::string at = e->name + " decision " + std::to_string(st.decision) + ": ";
+                if (f == frames.end()) {
+                    bad.push_back(at + "no sideboarding frame of its seat in the dump");
+                    continue;
+                }
+                seen[s] = true;
+                const std::string problem =
+                    sb_step_problem(st, f->second, jstr(*l, s == 0 ? "deck_a" : "deck_b"), explored, nn);
+                if (!problem.empty()) bad.push_back(at + problem);
+                (explored ? c.explored_steps : c.policy_steps) += 1;
+                if (st.chosen < 0 || static_cast<size_t>(st.chosen) >= f->second.category.size()) continue;
+                const std::string &cat = f->second.category[static_cast<size_t>(st.chosen)];
+                if (cat == "SIDEBOARD_IN" || cat == "SIDEBOARD_OUT")
+                    moved[s][cat == "SIDEBOARD_OUT"].push_back(f->second.card[static_cast<size_t>(st.chosen)]);
+            }
+            for (int s = 0; s < 2; ++s) {
+                const Json *seat = sb_seat(*l, s);
+                const std::string where = stem + " game " + std::to_string(g) + " sb." + (s == 0 ? "A" : "B") + ": ";
+                if (json_strings(seat->get("in")) != moved[s][0] || json_strings(seat->get("out")) != moved[s][1])
+                    bad.push_back(where + "in / out are not the moves its steps made");
+                if (jint(*seat, "swaps") != static_cast<int64_t>(moved[s][1].size()))
+                    bad.push_back(where + "swaps is not the number of cuts");
+                if (seen[s]) {
+                    ++c.phases;
+                    c.explored_phases += seat->get("explored") && seat->get("explored")->as_bool();
+                }
+            }
+        }
+    });
+    for (size_t i = 0; i < list.size(); ++i) {
+        fails->insert(fails->end(), part[i].begin(), part[i].end());
+        counts->explored_steps += part_counts[i].explored_steps;
+        counts->policy_steps += part_counts[i].policy_steps;
+        counts->phases += part_counts[i].phases;
+        counts->explored_phases += part_counts[i].explored_phases;
+    }
+}
+
+// Over every phase of `lines` (all exploring, p 1): the realised swap counts cover 0 .. 10 with
+// roughly count_weights' share at 0 and 10, and SB_DECK's favoured cards are its most frequent in
+// and out, its disfavoured ones rarer than a default-weight card. `summary` describes them.
+static void check_sb_statistics(const std::vector<Json> &lines, std::vector<std::string> *fails, std::string *summary) {
+    std::vector<size_t> hist(SB_COUNTS + 1, 0);
+    std::map<std::string, size_t> moved[2];  // SB_DECK's cards brought in, cut
+    size_t phases = 0;
+    for (const Json &l : lines) {
+        if (jint(l, "game") == 1) continue;
+        for (int s = 0; s < 2; ++s) {
+            const Json *seat = sb_seat(l, s);
+            if (!seat || !seat->get("explored") || !seat->get("explored")->as_bool()) {
+                fails->push_back("match " + std::to_string(jint(l, "match")) + " game " +
+                                 std::to_string(jint(l, "game")) + ": a phase that did not explore at p 1");
+                continue;
+            }
+            ++phases;
+            const int64_t k = jint(*seat, "swaps");
+            ++hist[k >= 0 && k <= static_cast<int64_t>(SB_COUNTS - 1) ? static_cast<size_t>(k) : SB_COUNTS];
+            if (jstr(l, s == 0 ? "deck_a" : "deck_b") != SB_DECK) continue;
+            for (int dir = 0; dir < 2; ++dir)
+                for (const std::string &card : json_strings(seat->get(dir ? "out" : "in"))) ++moved[dir][card];
+        }
+    }
+    std::string h;
+    for (size_t k = 0; k < SB_COUNTS; ++k) {
+        h += (k ? " " : "") + std::to_string(hist[k]);
+        if (hist[k] == 0) fails->push_back("no phase made " + std::to_string(k) + " swaps");
+    }
+    if (hist[SB_COUNTS]) fails->push_back("a phase made more than 10 swaps");
+    const double ends = phases ? static_cast<double>(hist[0] + hist[SB_COUNTS - 1]) / static_cast<double>(phases) : 0;
+    double want = 0, total = 0;
+    for (size_t k = 0; k < SB_COUNTS; ++k) total += SB_COUNT_WEIGHTS[k];
+    want = (SB_COUNT_WEIGHTS[0] + SB_COUNT_WEIGHTS[SB_COUNTS - 1]) / total;
+    if (ends < want - 0.15 || ends > want + 0.15)
+        fails->push_back("0 or 10 swaps in " + rmcheck::fmt1(100 * ends) + "% of the phases, count_weights give " +
+                         rmcheck::fmt1(100 * want) + "%");
+    for (int dir = 0; dir < 2; ++dir) {
+        const SbCardWeight *w = dir ? SB_OUT : SB_IN;
+        const size_t favoured = moved[dir][w[0].card], disfavoured = moved[dir][w[1].card];
+        size_t next = 0, reference = moved[dir][dir ? SB_OUT_REFERENCE : SB_IN_REFERENCE];
+        for (const auto &kv : moved[dir])
+            if (kv.first != w[0].card) next = std::max(next, kv.second);
+        if (favoured <= 2 * next)
+            fails->push_back(std::string(SB_DECK) + ": " + w[0].card + " " + (dir ? "cut " : "brought in ") +
+                             std::to_string(favoured) + " times, not well above any other card (" +
+                             std::to_string(next) + ")");
+        if (disfavoured >= reference)
+            fails->push_back(std::string(SB_DECK) + ": " + w[1].card + " " + (dir ? "cut " : "brought in ") +
+                             std::to_string(disfavoured) + " times, not below a default-weight card's " +
+                             std::to_string(reference));
+        *summary += std::string(dir ? ", cut " : "; in ") + w[0].card + " " + std::to_string(favoured) + " / " +
+                    w[1].card + " " + std::to_string(disfavoured) + " (next " + std::to_string(next) + ")";
+    }
+    *summary = std::to_string(phases) + " phases, swaps 0..10: " + h + *summary;
+}
+
+// Structured sideboard exploration (docs/actor.md §2) for every agent ("agents": "all"), explore
+// on both seats, a bo3 entry swapping decks, p 1 (knowledge off): six matches recorded, each
+// match's sideboarding steps against its replay's dump (check_sb_steps: μ = q, the results lines'
+// sb), its decision log replayed alone to the same episodes, a rerun of its first three matches
+// writing the same logs and results; then three more actors' 11 matches each without episodes:
+// the swap counts and card frequencies over every phase (check_sb_statistics).
+static void part_sb_explore(const rmcheck::Options &opt, rmcheck::Report &rep) {
+    std::vector<std::string> fails;
+    const std::string base = rmcheck::path_join(opt.out(TIER), "sb_explore");
+    rmcheck::remove_tree(base);
+    rmcheck::make_dirs(base);
+    const std::string entry = "\"format\": \"bo3\", \"swap\": \"decks\", \"deck_a\": \"" + std::string(SB_DECK) +
+                              "\", \"deck_b\": \"league/ur_delver\", \"agent_a\": \"explore\", \"agent_b\": "
+                              "\"explore\", \"knowledge_a\": \"off\", \"knowledge_b\": \"off\", \"sb_explore\": " +
+                              sb_explore_json(1, true);
+    std::vector<ActorRun> runs(5);
+    for (size_t i = 0; i < runs.size(); ++i) {
+        ActorRun &r = runs[i];
+        r.dir = base;
+        r.out = rmcheck::path_join(base, "run" + std::to_string(i));
+        r.id = i < 2 ? 2 : static_cast<int>(i + 1);
+        r.schedule = rmcheck::path_join(base, i < 2 ? "schedule.json" : "schedule_stats.json");
+    }
+    write_schedule(runs[0].schedule, "{\"version\": \"sb\", \"entries\": [{\"id\": \"sb\", " + entry + "}]}\n");
+    write_schedule(runs[2].schedule,
+        "{\"version\": \"sb\", \"entries\": [{\"id\": \"sb\", \"trajectory_dir\": null, " + entry + "}]}\n");
+    const long seed = opt.seed + 940;
+    const long matches[] = {6, 3, 11, 11, 11};
+    rmcheck::parallel_for(runs.size(), opt.jobs, [&](size_t i) { run_actor(opt, &runs[i], matches[i], seed); });
+    for (ActorRun &r : runs)
+        if (!read_outputs(&r, &fails)) return report(rep, "sb_explore", fails);
+    for (size_t i = 0; i < runs.size(); ++i) check_run(runs[i], matches[i], "done", &fails);
+    const ActorRun &a = runs[0], &b = runs[1];
+    std::map<std::string, std::vector<rmcheck::EpisodeFile>> eps;
+    std::string err;
+    if (!episodes_by_stem(rmcheck::path_join(a.out, "train/traj"), &eps, &err)) fails.push_back(err);
+    check_footers(a, eps, &fails);
+    SbStepCounts counts;
+    check_sb_steps(opt, a, eps, false, &counts, &fails);
+    check_replays(opt, a, eps, "", &fails);
+    for (size_t i = 0; i < b.lines.size(); ++i) {
+        const std::string name = stem_of(jstr(b.lines[i], "rmlog")) + ".rmlog";
+        std::string x, y;
+        rmcheck::read_file(rmcheck::path_join(rmcheck::path_join(a.out, "train/rmlog"), name), &x);
+        rmcheck::read_file(rmcheck::path_join(rmcheck::path_join(b.out, "train/rmlog"), name), &y);
+        if (x != y || x.empty()) fails.push_back("the rerun's " + name + " differs");
+        Json p = i < a.lines.size() ? a.lines[i] : Json(), q = b.lines[i];
+        for (Json *j : {&p, &q})
+            for (const char *k : {"seconds", "rmlog", "episode"}) j->erase(k);
+        if (canonical(p) != canonical(q)) fails.push_back("the rerun's results line " + std::to_string(i) + " differs");
+    }
+    std::vector<Json> all = a.lines;
+    for (size_t i = 2; i < runs.size(); ++i) all.insert(all.end(), runs[i].lines.begin(), runs[i].lines.end());
+    std::string summary;
+    check_sb_statistics(all, &fails, &summary);
+    if (fails.empty())
+        rep.info("actorloop sb_explore: " + std::to_string(counts.explored_steps) + " exploring steps of " +
+                 std::to_string(counts.phases) + " phases (6 matches) with mu = q, the results lines' sb their " +
+                 "moves, replays and a rerun identical; " + summary);
+    report(rep, "sb_explore", fails);
+}
+
+// Schedules with a bad sb_explore are refused at start: exit 1, a FATAL line naming the entry and
+// the fault.
+static void part_sb_schedule_errors(const rmcheck::Options &opt, rmcheck::Report &rep) {
+    struct Bad {
+            const char *name, *schedule, *message;
+    };
+    const std::string entry =
+        "\"deck_a\": \"league/burn\", \"deck_b\": \"league/bug\", \"agent_a\": \"explore\", "
+        "\"agent_b\": \"explore\"";
+    const std::vector<Bad> bad = {{"p", "{\"entries\": [{\"id\": \"x\", @, \"sb_explore\": {\"p\": 1.5}}]}",
+                                      "entries[0].sb_explore.p must be a number in [0, 1]"},
+        {"no_p", "{\"entries\": [{\"id\": \"x\", @, \"sb_explore\": {\"default_weight\": 2}}]}",
+            "entries[0].sb_explore: no p"},
+        {"counts",
+            "{\"entries\": [{\"id\": \"x\", @, \"sb_explore\": {\"p\": 0.5, \"count_weights\": "
+            "[1,1,1,1,1,1,1,1,1,1]}}]}",
+            "entries[0].sb_explore.count_weights must be an array of 11 numbers"},
+        {"zero_counts",
+            "{\"entries\": [{\"id\": \"x\", @, \"sb_explore\": {\"p\": 0.5, \"count_weights\": "
+            "[0,0,0,0,0,0,0,0,0,0,0]}}]}",
+            "entries[0].sb_explore.count_weights must not be all 0"},
+        {"weight",
+            "{\"entries\": [{\"id\": \"x\", @, \"sb_explore\": {\"p\": 0.5, \"weights\": {\"league/burn\": {\"in\": "
+            "{\"Leyline of the Void\": 0}}}}}]}",
+            "entries[0].sb_explore.weights.league/burn.in.Leyline of the Void must be a number > 0"},
+        {"key", "{\"entries\": [{\"id\": \"x\", @, \"sb_explore\": {\"p\": 0.5, \"q\": 1}}]}",
+            "entries[0].sb_explore: unknown key 'q'"},
+        {"eval", "{\"entries\": [{\"id\": \"ev\", \"purpose\": \"eval\", @, \"sb_explore\": {\"p\": 0.1}}]}",
+            "entry 'ev': an eval entry does not explore"},
+        {"eval_defaults",
+            "{\"defaults\": {\"sb_explore\": {\"p\": 0.25}}, \"entries\": [{\"id\": \"tr\", @}, {\"id\": \"ev\", "
+            "\"purpose\": \"eval\", @}]}",
+            "entry 'ev': an eval entry does not explore"}};
+    const std::string base = rmcheck::path_join(opt.out(TIER), "sb_errors");
+    rmcheck::remove_tree(base);
+    rmcheck::make_dirs(base);
+    std::vector<std::string> part(bad.size());
+    rmcheck::parallel_for(bad.size(), opt.jobs, [&](size_t i) {
+        std::string text = bad[i].schedule;
+        for (size_t at; (at = text.find('@')) != std::string::npos;) text.replace(at, 1, entry);
+        ActorRun a;
+        a.dir = base;
+        a.schedule = rmcheck::path_join(base, std::string(bad[i].name) + ".json");
+        a.out = rmcheck::path_join(base, bad[i].name);
+        write_schedule(a.schedule, text);
+        run_actor(opt, &a, 1, opt.seed);
+        const std::string all = a.result.out + a.result.err;
+        if (a.result.exit_code != 1 || !rmcheck::contains(all, "FATAL") || !rmcheck::contains(all, bad[i].message))
+            part[i] = std::string(bad[i].name) + ": " + a.result.status_text() + ", not a FATAL naming '" +
+                      bad[i].message + "' (see " + a.out + ".txt)";
+    });
+    std::vector<std::string> fails;
+    for (const std::string &p : part)
+        if (!p.empty()) fails.push_back(p);
+    if (fails.empty())
+        rep.info("actorloop sb_errors: " + std::to_string(bad.size()) +
+                 " schedules with a bad sb_explore refused, each naming its entry and fault");
+    report(rep, "sb_errors", fails);
+}
+
 namespace rmcheck {
 
 // The actor tier's continuous smoke run (plan T8; actor.h).
@@ -677,9 +1170,54 @@ void actor_smoke_check(const Options &opt, Report &rep, const ActorSetup &setup)
     ::report(rep, part, fails, "actor");
 }
 
+// The actor tier's sideboard exploration run (actor.h): robomage_nn --actor, self-play of the
+// reference policy (sampled, in process) on both seats over three bo3 matches of an entry swapping
+// decks with sb_explore at p 0.5: both kinds of phase played, every sideboarding step against its
+// replay's dump (an exploring step's mu = q with the policy's evaluation kept, another's mu the
+// policy's pi), the results lines' sb their moves, each decision log replayed alone to the same
+// episodes; under <out>/actor/sb_explore/.
+void actor_sb_explore_check(const Options &opt, Report &rep, const ActorSetup &setup) {
+    const char *part = "actor sb_explore";
+    std::vector<std::string> fails;
+    ActorRun a;
+    a.dir = path_join(setup.dir, "sb_explore");
+    remove_tree(a.dir);
+    make_dirs(a.dir);
+    a.schedule = path_join(a.dir, "schedule.json");
+    a.out = path_join(a.dir, "run");
+    a.binary = setup.nn_binary;
+    const std::string nn = featurize::json_quote("nn:" + setup.ts());
+    ::write_schedule(a.schedule,
+        "{\"version\": \"sb\", \"entries\": [{\"id\": \"self\", \"format\": \"bo3\", \"swap\": \"decks\", "
+        "\"deck_a\": \"" +
+            std::string(SB_DECK) + "\", \"deck_b\": \"league/ur_delver\", \"agent_a\": " + nn + ", \"agent_b\": " + nn +
+            ", \"knowledge_a\": \"off\", \"knowledge_b\": \"off\", \"sb_explore\": " + sb_explore_json(0.5, false) +
+            "}]}\n");
+    ::run_actor(opt, &a, 3, opt.seed + 960);
+    if (!::read_outputs(&a, &fails)) return ::report(rep, part, fails, "actor");
+    ::check_run(a, 3, "done", &fails);
+    std::map<std::string, std::vector<EpisodeFile>> eps;
+    std::string err;
+    if (!::episodes_by_stem(path_join(a.out, "train/traj"), &eps, &err)) fails.push_back(err);
+    ::check_footers(a, eps, &fails);
+    SbStepCounts counts;
+    ::check_sb_steps(opt, a, eps, true, &counts, &fails);
+    ::check_replays(opt, a, eps, "", &fails);
+    if (counts.explored_phases == 0 || counts.explored_phases == counts.phases)
+        fails.push_back(std::to_string(counts.explored_phases) + " of " + std::to_string(counts.phases) +
+                        " phases explored: not both kinds");
+    if (fails.empty())
+        rep.info("actor sb_explore: robomage_nn --actor, 3 bo3 matches of nn: self-play at p 0.5, " +
+                 std::to_string(a.lines.size()) + " games: " + std::to_string(counts.explored_phases) + " of " +
+                 std::to_string(counts.phases) + " phases explored, " + std::to_string(counts.explored_steps) +
+                 " exploring steps with mu = q and the evaluation kept, " + std::to_string(counts.policy_steps) +
+                 " policy steps with mu = pi; the results lines' sb their moves; replays identical");
+    ::report(rep, part, fails, "actor");
+}
+
 void tier_actorloop(const Options &opt, Report &rep) {
     const std::vector<void (*)(const Options &, Report &)> parts = {
-        part_main, part_cap, part_teacher, part_change_stop};
+        part_main, part_cap, part_teacher, part_change_stop, part_sb_explore, part_sb_schedule_errors};
     parallel_for(parts.size(), opt.jobs, [&](size_t i) { parts[i](opt, rep); });
 }
 
