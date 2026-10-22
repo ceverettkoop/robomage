@@ -91,6 +91,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
 | `league.omniscient` | true | B0/B2 episodes carry the omniscient part (aux targets) |
 | `actors.count` | 26 | training actors |
+| `actors.teacher_tier` | `hard` | the scripted teacher's tier (`python/teacher.py --tier`): both seats of B0's scripted-vs-scripted corpus, the scripted seat of its explore matches and every DAgger label (B2). `hard+sb` sideboards per the league guides, so BC learns to sideboard (plan §6.2). Self-play has no teacher, and every evaluation opponent stays `scripted:hard` whatever this is (`eval.opponents`, `sprt`, `rmtrain bench`), so results compare across runs |
 | `actors.policy_eval` | `local` | how the training actors (DAgger, self-play) evaluate the policy: `local` (in process, §5.1) or `remote` (the GPU process's server) |
 | `actors.local_count` | 16 | `local`: the training actors while they play the network (DAgger, self-play; 0: `actors.count`; live) — more play fewer decisions in all on this box (§5.1) |
 | `actors.export_format`, `export_every_s`, `export_every_steps` | `ts`, 30, 0 | `local`: the actors' export of the current policy and its cadence (seconds, and learner steps when > 0; both live) |
@@ -102,13 +103,14 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `server.max_batch`, `deadline_us`, `precision` | 512, 2000, fp32 | the RMIP server |
 | `b0.decisions`, `b0.explore_frac`, `b0.corpus_dir` | 5M, 0.2, `""` | the corpus; a corpus directory skips B0 |
 | `bc.*` | `BCConfig` | batch 128, lr 3e-4, warm-up 300, smoothing 0.05, fp16; `eval_every` 2000, `report_every` 250 |
+| `bc.sideboard_weight` | 1.0 | the policy loss's weight of a sideboarding decision (others 1): the batch's loss is `sum(w·loss) / sum(w)`, in B1 and B2 (one trainer); value and aux losses unweighted. `bc_train` reports the sideboarding decisions' own `train_policy_sideboarding`, `train_agree_sideboarding`, `train_frac_sideboarding`, `bc_eval` their `eval_agree_group:sideboarding` and `eval_policy_loss_group:sideboarding` |
 | `b1.min_steps`, `max_steps`, `patience`, `min_delta`, `play_eval` | 2000, 30000, 3, 0.002, true | B1's exit |
 | `b2.rounds_min`, `rounds_max` | 3, 5 | DAgger rounds |
 | `b2.teacher_mix_start`, `teacher_mix_end` | 0.5, 0 | linear over the rounds |
 | `b2.decisions_per_round`, `min_steps_per_round`, `min_improvement` | 1M, 2000, 0.01 | |
 | `rnad.eta`, `learning_rate`, `entropy_schedule_sizes` | 0.2, 5e-5, [10000] | `RNaDConfig` |
 | `rnad.games_per_step`, `chunk_len`, `precision` | 32, 32, fp16 | G × chunk (fits a d 192 model in 12 GB) |
-| `rnad.reg_eps`, `reg_eps_sideboarding` | 0.1, 0.25 | π_0,reg's smoothing (B3) |
+| `rnad.reg_eps`, `reg_eps_sideboarding` | 0.1, 0.25 | π_0,reg's smoothing (B3), `reg_eps_sideboarding` at sideboarding steps. With a sideboarding teacher (`actors.teacher_tier = "hard+sb"`) set `reg_eps_sideboarding` to about 0: π_0,reg is then the taught sideboarding, and exploration belongs to the actors (plan §6.2). 0 is valid (π_0,reg's raw log π at those steps) |
 | `rnad.push_every` | 50 | learner steps between pushes of policy 0 |
 | `rnad.max_policy_lag` | 0 | drop a self-play game whose oldest step was played by a policy more than this many learner steps old (0: off; live) |
 | `rnad.fresh_order` | `newest` | which fresh self-play games a learner step takes first: `newest` (the least policy lag when the actors play more than the learner takes) or `oldest` (live) |
@@ -116,7 +118,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options` | 0, 0, `""` | B4's exit (0: until `phase next`); self-play sampling options |
 | `b5.max_learner_steps` | 0 | the run's end (0: never) |
 | `eval.evaluators` | `["sprt", "fixed", "ladder"]` | the evaluators of a per-iteration / cadence evaluation (`exploiter` too; §7) |
-| `eval.opponents`, `eval.pairs`, `eval.matches` | scripted, explore, random; 4 pairs; 48 | |
+| `eval.opponents`, `eval.pairs`, `eval.matches` | scripted, explore, random; 4 pairs; 48 | `scripted` is `scripted:hard` whatever `actors.teacher_tier` is; `scripted:<tier>` names another tier |
 | `eval.ladder`, `eval.ladder_matches` | 3, 24 | |
 | `eval.actors`, `eval.every_minutes`, `eval.per_iteration` | 4, 60, true | |
 | `eval.policy_eval` | `local` | the evaluation actors: `local` (the evaluated policy and the ladder rungs exported, then played in process; the exploiter stays remote) or `remote` (server policies) |
@@ -260,7 +262,7 @@ evaluation's result waits as *pending* and happens on `release`).
 
 | Phase | Stage | What | Exit |
 |---|---|---|---|
-| B0 | collect | the teacher corpus: both seats `first` + the scripted teacher at mix 1 over the league (swap decks), `b0.explore_frac` scripted vs explore (the scripted side recorded), episodes with the omniscient part | `b0.decisions` decisions played (counted from the actors' results lines of schedule version `b0`). Skipped with `b0.corpus_dir` |
+| B0 | collect | the teacher corpus: both seats `first` + the scripted teacher (`actors.teacher_tier`) at mix 1 over the league (swap decks), `b0.explore_frac` the teacher vs explore (the scripted side recorded), episodes with the omniscient part | `b0.decisions` decisions played (counted from the actors' results lines of schedule version `b0`). Skipped with `b0.corpus_dir` |
 | B1 | train | BC on the window over `episodes/b0` (or the corpus dir) and `episodes/dagger`; a held-out evaluation every `bc.eval_every` steps | held-out agreement not improving by `b1.min_delta` for `b1.patience` evaluations after `b1.min_steps`, or `b1.max_steps` → `bc-b1.pt`, export |
 | B1 | eval | evaluation `b1` (fixed opponents, argmax), the learner idle | its result (the DAgger baseline) |
 | B2 | collect | round r: the BC policy (frozen for the round: its export in process, or server policy 0 via `nn:remote`) on both seats, sampling, the teacher on both seats at mix `teacher_mix_start → end`; BC goes on training on the growing window | `b2.decisions_per_round` decisions of version `b2-r<r>` and `b2.min_steps_per_round` BC steps → actors stopped, `bc-r<r>.pt`, export |
@@ -462,7 +464,10 @@ and rungs first — reusing an export newer than its checkpoint, re-exporting an
 export an `eval_failed` —, `rnad.fresh_order`, the policy-lag cap and percentiles), the control protocol, an orchestrator over a fake
 run driven through its socket and its status from the files, and the resume bookkeeping (actor
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
-the window restore, checkpoint pruning, the schedules and evaluators, an SPRT evaluation stopping
+the window restore, checkpoint pruning, the schedules and evaluators (with `actors.teacher_tier = "hard+sb"`:
+the teacher command, B0's scripted seats and DAgger's labels at that tier, every evaluation opponent
+`scripted:hard`), `bc.sideboard_weight` on a synthetic batch (1: the plain mean exactly; the weighted
+mean otherwise), `rnad.reg_eps_sideboarding` at 0 and 0.01 (finite log π and gradients), an SPRT evaluation stopping
 when its test decides, the request split, the ladder's ratings), and the first validation run's
 findings: a B4 resume at an earlier step (progress, metrics and checkpoint names follow the restored
 learner; the lost iteration's rung, evaluation and ladder players dropped; a re-crossed boundary

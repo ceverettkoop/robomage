@@ -17,7 +17,11 @@ their keys ``evaltrain_*``: the train / held-out gap).
 
 **Losses.**
 - Policy: cross-entropy of the masked log-softmax over the menu rows to the label, with label
-  smoothing ``label_smoothing`` (the smoothed target puts ε uniformly over the legal rows).
+  smoothing ``label_smoothing`` (the smoothed target puts ε uniformly over the legal rows). The
+  batch's mean is weighted: a sideboarding decision weighs ``sideboard_weight``, any other 1
+  (``sum(w·loss) / sum(w)``; at 1 the plain mean). The training metrics carry the sideboarding
+  decisions' own loss and agreement (``train_policy_sideboarding``, ``train_agree_sideboarding``,
+  ``train_frac_sideboarding``; left out of a call that drew none).
 - Value: mean squared error of the value head (tanh, the contract's one value) to the deciding
   seat's game result (+1 / -1 / 0), weighted ``value_weight``. A scalar regression rather than a
   win/draw/loss head, so the exported value is what the actor and R-NaD read without a change.
@@ -36,8 +40,8 @@ and copying the next batches while the GPU computes).
 
 **Evaluation** walks the window's held-out games (split by game, ``WindowConfig.heldout_fraction``):
 top-1 agreement with the label overall, per decision group (``mulligan``: a menu with a mulligan or
-keep row; ``sideboarding``; ``in_game``: the rest) and per action category of the label's menu row
-(the menu token's ``category`` slot, found in the spec by name; names from a cards file's SCHEMA
+keep row; ``sideboarding``; ``in_game``: the rest; with each group's unweighted policy loss) and per
+action category of the label's menu row (the menu token's ``category`` slot, found in the spec by name; names from a cards file's SCHEMA
 when given), the value's MSE and sign agreement on decisive games, and the auxiliary heads'
 top-1 accuracies (the hand's: the top card is in the hand).
 """
@@ -75,6 +79,7 @@ class BCConfig:
     aux_weight: float = 0.05
     aux_head_weights: dict = field(default_factory=dict)
     grad_clip: float = 1.0
+    sideboard_weight: float = 1.0  # the policy loss's weight of a sideboarding decision (others 1)
     amp: str = "fp16"             # "fp16" | "bf16" | "off" (only on a GPU)
     loader_workers: int = 2
     sort_pool: int = 4            # draw this many batches at once, sorted by token count (less padding)
@@ -163,6 +168,16 @@ def policy_loss(logits, act_mask, label, smoothing):
     return (1.0 - smoothing) * nll + smoothing * uniform, lp
 
 
+def weighted_policy_loss(pl, sideboarding, sideboard_weight):
+    """The batch's policy loss from the per-decision `pl` [B]: its mean, or at a `sideboard_weight`
+    other than 1 the mean weighted by it at the sideboarding decisions (`sideboarding` [B] bool)."""
+    if sideboard_weight == 1.0:
+        return pl.mean()
+    w = torch.where(sideboarding, torch.as_tensor(float(sideboard_weight), dtype=pl.dtype, device=pl.device),
+                    torch.ones_like(pl))
+    return (w * pl).sum() / w.sum().clamp(min=1e-12)
+
+
 class BCTrainer:
     """Behaviour cloning of `model` (an RMNet) on `window` (a replay.ReplayWindow)."""
 
@@ -234,11 +249,15 @@ class BCTrainer:
         return torch.autocast(self.device.type, dtype=self.amp_dtype)
 
     def losses(self, b, out):
-        """{name: scalar tensor}: total, policy, value and each aux head's; plus the batch's agreement."""
+        """{name: scalar tensor}: total, policy, value and each aux head's; plus the batch's agreement
+        and the sideboarding decisions' sums (``sum_policy_sideboarding``, ``sum_agree_sideboarding``,
+        ``n_sideboarding``, ``n_decisions``)."""
         c = self.cfg
         mask = b.inputs[9]
         pl, lp = policy_loss(out["logits"], mask, b.label, c.label_smoothing)
-        loss = {"policy": pl.mean(), "value": ((out["value"].float() - b.outcome) ** 2).mean()}
+        sb = b.sideboarding
+        loss = {"policy": weighted_policy_loss(pl, sb, c.sideboard_weight),
+                "value": ((out["value"].float() - b.outcome) ** 2).mean()}
         total = loss["policy"] + c.value_weight * loss["value"]
         if b.targets is not None and "aux_list" in out:
             al = M.aux_losses(out, b.targets)
@@ -246,7 +265,12 @@ class BCTrainer:
                 loss["aux_" + k] = v
                 total = total + c.aux_head_weights.get(k, c.aux_weight) * v
         loss["total"] = total
-        loss["agree"] = (lp.argmax(-1) == b.label).float().mean()
+        hit = (lp.argmax(-1) == b.label).float()
+        loss["agree"] = hit.mean()
+        loss["sum_policy_sideboarding"] = (pl.detach() * sb).sum()
+        loss["sum_agree_sideboarding"] = (hit * sb).sum()
+        loss["n_sideboarding"] = sb.sum().float()
+        loss["n_decisions"] = torch.tensor(float(b.n), device=pl.device)
         return loss
 
     # ── training ──
@@ -284,8 +308,14 @@ class BCTrainer:
             self.step += 1
             self.decisions += b.n
         dt = time.time() - t0
+        sb = {k: float(sums.pop(k)) for k in ("sum_policy_sideboarding", "sum_agree_sideboarding", "n_sideboarding",
+                                              "n_decisions")}
         m = {k: float(v) / steps for k, v in sums.items()}
         m = {("train_" + k): v for k, v in m.items()}
+        if sb["n_sideboarding"] > 0:
+            m["train_policy_sideboarding"] = sb["sum_policy_sideboarding"] / sb["n_sideboarding"]
+            m["train_agree_sideboarding"] = sb["sum_agree_sideboarding"] / sb["n_sideboarding"]
+            m["train_frac_sideboarding"] = sb["n_sideboarding"] / max(sb["n_decisions"], 1.0)
         m.update({"step": self.step, "lr": self.lr_at(self.step - 1), "grad_norm": float(gn_sum) / max(float(gn_n), 1.0),
                   "skipped_steps": steps - int(float(gn_n)),
                   "decisions": self.decisions, "decisions_per_s": (self.decisions - n0) / dt,
@@ -310,6 +340,7 @@ class BCTrainer:
         aux_hit = {k: 0.0 for k in AUX_HEADS}
         aux_n = {k: 0.0 for k in AUX_HEADS}
         loss_sum = 0.0
+        group_loss = {}
         n = 0
 
         def add(key, hits, count):
@@ -334,6 +365,7 @@ class BCTrainer:
             for gi, gname in enumerate(("in_game", "mulligan", "sideboarding")):
                 sel = group == gi
                 add("group:" + gname, int((hit & sel).sum()), int(sel.sum()))
+                group_loss[gname] = group_loss.get(gname, 0.0) + float((pl * sel).sum())
             for v in torch.unique(lab_cat).tolist():
                 sel = lab_cat == v
                 add("cat:" + cat.name(int(v)), int((hit & sel).sum()), int(sel.sum()))
@@ -370,6 +402,8 @@ class BCTrainer:
             if tot_n[k]:
                 m["eval_agree_" + k] = agree_n[k] / tot_n[k]
                 m["eval_count_" + k] = tot_n[k]
+                if k.startswith("group:"):
+                    m["eval_policy_loss_" + k] = group_loss[k[len("group:"):]] / tot_n[k]
         for k in AUX_HEADS:
             if aux_n[k]:
                 m["eval_aux_acc_" + k] = aux_hit[k] / aux_n[k]

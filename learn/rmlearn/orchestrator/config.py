@@ -17,6 +17,7 @@ its resolved ``config.json``, so ``start --set`` changes them for the resumed ru
 import copy
 import json
 import os
+import re
 import tomllib
 
 LEAGUE = ["bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator", "ur_delver", "uw_control", "wrb_energy",
@@ -52,7 +53,9 @@ SPEC = {
     ],
     "actors": [
         ("count", 26, "training actors (engine processes)"),
-        ("teacher_tier", "hard", "the scripted teacher's tier"),
+        ("teacher_tier", "hard", "the scripted teacher's tier (python/teacher.py --tier; hard+sb: hard that sideboards "
+         "per the league guides): both scripted seats of B0's corpus, the scripted seat of its explore matches and "
+         "every DAgger label; evaluations play scripted:hard whatever this is"),
         ("restart_delay_s", 2.0, "delay before restarting a crashed actor"),
         ("crash_loop_restarts", 5, "restarts within crash_loop_window_s that count as a crash loop"),
         ("crash_loop_window_s", 300.0, "the crash-loop window"),
@@ -108,6 +111,8 @@ SPEC = {
         ("value_weight", 0.5, ""),
         ("aux_weight", 0.05, ""),
         ("grad_clip", 1.0, ""),
+        ("sideboard_weight", 1.0, "the policy loss's weight of a sideboarding decision against 1 for any other (a "
+         "weighted mean over the batch; value and aux losses unweighted)"),
         ("amp", "fp16", "fp16, bf16 or off"),
         ("loader_workers", 2, ""),
         ("sort_pool", 4, ""),
@@ -150,7 +155,8 @@ SPEC = {
         ("forward_tokens", 65536, ""),
         ("precision", "fp16", "fp32, fp16 or bf16"),
         ("reg_eps", 0.1, "π_0,reg's smoothing ε (live)"),
-        ("reg_eps_sideboarding", 0.25, "π_0,reg's smoothing ε at sideboarding steps (live)"),
+        ("reg_eps_sideboarding", 0.25, "π_0,reg's smoothing ε at sideboarding steps; about 0 with a sideboarding "
+         "teacher (actors.teacher_tier hard+sb: exploration belongs to the actors, plan §6.2) (live)"),
         ("stale_reg", "recompute", "recompute or drop"),
         ("finetune_threshold", 0.03, "B5's threshold"),
         ("finetune_discretization", 16, "B5's discretisation"),
@@ -175,7 +181,8 @@ SPEC = {
     "eval": [
         ("evaluators", ["sprt", "fixed", "ladder"], "the evaluators of an evaluation (the registry's names: sprt, "
          "fixed, ladder, exploiter; sprt and exploiter run as evaluations of their own)"),
-        ("opponents", ["scripted", "explore", "random"], "the fixed opponents (scripted = scripted:hard)"),
+        ("opponents", ["scripted", "explore", "random"], "the fixed opponents (scripted = scripted:hard, "
+         "whatever actors.teacher_tier is; scripted:<tier> another tier)"),
         ("pairs", copy.deepcopy(EVAL_PAIRS), "evaluation deck pairs (both decks and seats each)"),
         ("matches", 48, "matches per fixed opponent (live)"),
         ("ladder", 3, "past R-NaD fixed points in the ladder (plus the BC policy) (live)"),
@@ -400,6 +407,8 @@ def validate(cfg):
     need(lg["pairs"] or len(lg["decks"]) >= 2, "league.decks needs two decks (or league.pairs)")
     need(lg["max_game_decisions"] >= 0, "league.max_game_decisions >= 0")
     need(cfg["actors"]["count"] >= 0 and cfg["actors"]["local_count"] >= 0, "actors.count, local_count >= 0")
+    need(re.fullmatch(r"[a-z][a-z0-9+:_-]*", cfg["actors"]["teacher_tier"]) is not None,
+         "actors.teacher_tier is a scripted tier name (hard, hard+sb, ...), not %r" % cfg["actors"]["teacher_tier"])
     m = cfg["model"]
     need(m["d"] > 0 and m["heads"] > 0 and m["d"] % m["heads"] == 0, "model.d is a positive multiple of model.heads")
     need(m["layers"] > 0, "model.layers > 0")
@@ -409,6 +418,7 @@ def validate(cfg):
     need(cfg["b0"]["decisions"] >= 0, "b0.decisions >= 0")
     need(0 <= cfg["b0"]["explore_frac"] < 1, "b0.explore_frac in [0, 1)")
     need(cfg["bc"]["lr"] > 0 and cfg["bc"]["batch_size"] > 0, "bc.lr and bc.batch_size are positive")
+    need(cfg["bc"]["sideboard_weight"] >= 0, "bc.sideboard_weight >= 0")
     need(cfg["bc"]["unit_steps"] > 0 and cfg["bc"]["report_every"] > 0 and cfg["bc"]["eval_every"] > 0,
          "bc.unit_steps, report_every, eval_every are positive")
     b1 = cfg["b1"]

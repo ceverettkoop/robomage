@@ -61,12 +61,15 @@ def _outputs(run, phase, episodes=True):
 
 
 def teacher(cfg):
+    """The scripted teacher's command at ``actors.teacher_tier``: B0's scripted seats and DAgger's
+    labels (evaluations play scripted:hard, ``evaluate.opponent_side``)."""
     return teacher_command(cfg["actors"]["teacher_tier"], cfg["run"]["seed"])
 
 
 def b0(run, cfg):
-    """Scripted:hard vs scripted:hard over the league (both seats ``first`` + the teacher at mix 1,
-    swap decks), and with share b0.explore_frac scripted vs explore (the scripted side recorded)."""
+    """The teacher tier against itself over the league (both seats ``first`` + the teacher at mix 1,
+    swap decks: with a sideboarding tier both seats' sideboarding is demonstrated), and with share
+    b0.explore_frac the teacher vs explore (the scripted side recorded)."""
     pairs = league_pairs(cfg)
     total = sum(w for _, _, w in pairs) or 1.0
     frac = cfg["b0"]["explore_frac"]

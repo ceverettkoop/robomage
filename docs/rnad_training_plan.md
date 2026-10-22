@@ -841,12 +841,16 @@ issue 10): that, not the value head, sets the noise of every sideboarding decisi
   the policy's sideboarding in those matchups after R-NaD, against the held-in ones, shows whether
   it learned more than the hard-coded table.
 
-**Work:** the `scripted:hard+sb` tier (`python/scripted_core.py`; card scripts untouched); the
-actor's exploring phase and its μ (`src/actor/nn_agent`, the schedule entry's `sb_explore` fields:
-`p`, the count distribution, in and out weights); the orchestrator's coverage counts and schedule
-weights, `p_explore`'s schedule (`rmtrain` config, live); `reg_eps_sideboarding` to about 0; the
-benchmark's sideboarding report; the gate (`actor` tier: an exploring phase's μ is `q`, the counts
-cover 0–10, a replay of an exploring match).
+**Work.** Done: the `scripted:hard+sb` tier (`python/scripted_core.py`,
+`python/sideboard_guides.{py,json}`; card scripts untouched) and the warm start's wiring in
+`rmtrain`: `actors.teacher_tier = "hard+sb"` makes it B0's scripted players (both seats) and
+DAgger's labeller while every evaluation opponent stays `scripted:hard`, and `bc.sideboard_weight`
+weights the sideboarding decisions in BC's policy loss (`docs/rmtrain.md` §3). Left: the actor's
+exploring phase and its μ (`src/actor/nn_agent`, the schedule entry's `sb_explore` fields: `p`,
+the count distribution, in and out weights); the orchestrator's coverage counts and schedule
+weights, `p_explore`'s schedule (`rmtrain` config, live); `reg_eps_sideboarding` about 0 (a run
+setting; the default stays 0.25); the benchmark's sideboarding report; the gate (`actor` tier: an
+exploring phase's μ is `q`, the counts cover 0–10, a replay of an exploring match).
 
 ---
 

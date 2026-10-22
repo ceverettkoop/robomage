@@ -41,6 +41,7 @@ from .orchestrator.rundir import RunDir, read_json, resolve_run
 
 DEFAULT_MATCHES = 480
 DEFAULT_ACTORS = 12
+OPPONENT = "scripted:hard"     # the benchmark's opponent, whatever tier a run's teacher had
 
 
 def default_policies(run):
@@ -110,7 +111,7 @@ def play_policy(label, path, opts, out_dir, matches, actors, seed, engine=None, 
     if rep is not None:
         log("%s: already played (%s)" % (label, done))
         return rep
-    sched = MT.eval_schedule(path, "scripted", out_dir, pairs=MT.league_pairs(), policy_options=opts,
+    sched = MT.eval_schedule(path, OPPONENT, out_dir, pairs=MT.league_pairs(), policy_options=opts,
                              version="bench")
     per = int(math.ceil(matches / float(actors)))
     pool = MT.ActorPool(sched, out_dir, actors=actors, engine=engine, seed=seed, matches_per_actor=per,

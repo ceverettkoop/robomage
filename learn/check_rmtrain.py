@@ -14,7 +14,9 @@ off, never below its results), the results tail (offsets, a torn line, counts pe
 the state round trip), the actor pool against a fake engine (a crash restarted at the next match,
 crash-loop back-off, SIGTERM on stop), the replay window's restore (recent files by budget, a
 checkpoint's window with its fresh episodes, older files left out), checkpoint pruning, the
-phase schedules, and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
+phase schedules, the sideboarding warm start (``actors.teacher_tier`` the teacher of B0 and DAgger,
+evaluations against scripted:hard, ``bc.sideboard_weight``, ``rnad.reg_eps_sideboarding`` near 0),
+and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
 ladder record and ratings).
 
@@ -489,6 +491,102 @@ def check_schedules(tmp):
     check(lad.loads[0]["pid"] == 13 and ":policies=13" in lad.entries[0]["agent_b"] and
           ":policies=3:argmax" in lad.entries[0]["agent_a"], "a ladder rung's server policy")
     check(raises(lambda: EVAL.build(ctx, ["nope"]), "no evaluator"), "an unknown evaluator is refused")
+
+
+def check_sideboarding_warm_start(tmp):
+    """The sideboarding warm start (docs/rnad_training_plan.md §6.2): actors.teacher_tier is the
+    teacher of B0's scripted seats and DAgger's labels while every evaluation opponent stays
+    scripted:hard; bc.sideboard_weight weights the policy loss (1: the plain mean); rnad.reg_eps_sideboarding
+    at 0 or 0.01 validates and smooths finitely."""
+    import types
+    import torch
+    from rmlearn import bc as BC
+    from rmlearn import benchmark as BM
+    from rmlearn import evaluate as EV
+    from rmlearn import matches as MT
+    from rmlearn import model as M
+    from rmlearn.rnad_learner import RegPolicy
+    run = RD.RunDir(os.path.join(tmp, "sbw"))
+    run.make()
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]", "actors.teacher_tier=hard+sb",
+                           "actors.policy_eval=remote", "eval.policy_eval=remote"])
+    t = SCH.teacher(cfg)
+    check(" --tier hard+sb " in t + " ", "the teacher command carries --tier hard+sb (%s)" % t)
+    check(raises(lambda: C.resolve(None, ["actors.teacher_tier=hard; rm -rf x"]), "actors.teacher_tier"),
+          "a teacher tier that is no tier name is refused")
+    b0 = SCH.b0(run, cfg)
+    ss = [e for e in b0["entries"] if e["id"].startswith("ss-")]
+    se = [e for e in b0["entries"] if e["id"].startswith("se-")]
+    check(ss and all(e["agent_a"] == e["agent_b"] == "first" and e["teacher_a"] == e["teacher_b"] == t and
+                     e["teacher_mix"] == 1 for e in ss), "b0: both scripted seats are the hard+sb teacher")
+    check(se and all(e["agent_a"] == "first" and e["teacher_a"] == t and e["agent_b"] == "explore" and
+                     "teacher_b" not in e for e in se), "b0: the scripted seat vs explore is the hard+sb teacher")
+    dg = SCH.dagger(run, cfg, 1, 0.5)
+    check(all(e["teacher_a"] == e["teacher_b"] == t for e in dg["entries"]), "dagger: hard+sb labels both seats")
+    sp = SCH.selfplay(run, cfg, "b4")
+    check(not any(k.startswith("teacher") for e in sp["entries"] for k in e), "selfplay: no teacher")
+
+    def hard(cmd):
+        return bool(cmd) and " --tier hard " in cmd + " " and "hard+sb" not in cmd
+
+    ctx = EVAL.Context(run, cfg, "argmax", [])
+    groups = {g.name: g for g in EVAL.build(ctx, ["fixed", "sprt"])}
+    for name in ("scripted", "sprt-scripted"):
+        g = groups.get(name)
+        check(g is not None and all(hard(e.get("teacher_b")) and "teacher_a" not in e for e in g.entries),
+              "evaluation %s: the opponent stays scripted:hard under a hard+sb teacher" % name)
+    check(hard(EV.opponent_side("scripted")[1]) and hard(MT.agent_side("scripted")[1]) and
+          hard(MT.agent_side(BM.OPPONENT)[1]), "rmtrain eval / sprt / bench: scripted is scripted:hard")
+    check(MT.agent_side("scripted:hard+sb")[1] and "--tier hard+sb" in MT.agent_side("scripted:hard+sb")[1],
+          "scripted:hard+sb names the sideboarding tier as an opponent")
+
+    # bc.sideboard_weight on a synthetic batch: 6 decisions, 2 of them sideboarding.
+    g = torch.Generator().manual_seed(5)
+    n, a = 6, 5
+    mask = torch.ones(n, a, dtype=torch.bool)
+    mask[0, 3:] = False
+    mask[4, 2:] = False
+    label = torch.tensor([1, 0, 4, 2, 1, 3])
+    sbf = torch.tensor([False, True, False, False, True, False])
+    out = {"logits": torch.randn(n, a, generator=g), "value": torch.tanh(torch.randn(n, generator=g))}
+    b = types.SimpleNamespace(inputs=[None] * 9 + [mask], label=label, outcome=torch.tensor([1., -1, 1, 0, -1, 1]),
+                              targets=None, sideboarding=sbf, n=n)
+
+    def losses(w):
+        bc = BC.BCConfig(sideboard_weight=w)
+        return BC.BCTrainer.losses(types.SimpleNamespace(cfg=bc), b, out), bc
+
+    pl, _ = BC.policy_loss(out["logits"], mask, label, BC.BCConfig().label_smoothing)
+    l1, c1 = losses(1.0)
+    check(torch.equal(l1["policy"], pl.mean()), "sideboard_weight 1: the plain mean (the old loss) exactly")
+    check(torch.equal(l1["total"], pl.mean() + c1.value_weight * l1["value"]), "sideboard_weight 1: the old total")
+    l3, _ = losses(3.0)
+    want = (pl[~sbf].sum() + 3 * pl[sbf].sum()) / (4 + 3 * 2)
+    check(torch.allclose(l3["policy"], want) and torch.equal(l3["value"], l1["value"]),
+          "sideboard_weight 3: sum(w·loss) / sum(w), the value loss unweighted")
+    l0, _ = losses(0.0)
+    check(torch.allclose(l0["policy"], pl[~sbf].mean()), "sideboard_weight 0: the other decisions' mean")
+    check(float(l1["n_sideboarding"]) == 2 and torch.allclose(l1["sum_policy_sideboarding"], pl[sbf].sum()),
+          "the sideboarding decisions' own loss sums")
+    allsb = types.SimpleNamespace(**dict(vars(b), sideboarding=torch.ones(n, dtype=torch.bool)))
+    z = BC.BCTrainer.losses(types.SimpleNamespace(cfg=BC.BCConfig(sideboard_weight=0.0)), allsb, out)
+    check(bool(torch.isfinite(z["policy"])) and float(z["policy"]) == 0.0, "sideboard_weight 0 on an all-sideboarding batch: 0, finite")
+    check(raises(lambda: C.resolve(None, ["bc.sideboard_weight=-1"]), "bc.sideboard_weight"), "a negative weight refused")
+    check(BC.BCConfig.from_dict(C.resolve(None, ["bc.sideboard_weight=4"])["bc"]).sideboard_weight == 4.0,
+          "bc.sideboard_weight reaches BCConfig")
+
+    # rnad.reg_eps_sideboarding about 0.
+    for eps in (0.0, 0.01):
+        C.resolve(None, ["rnad.reg_eps_sideboarding=%s" % eps])
+        lg = out["logits"].clone().requires_grad_(True)
+        sm = M.smoothed_log_policy(lg, mask, 0.1, sbf, eps)
+        sm[mask].sum().backward()
+        ok = bool(torch.isfinite(sm[mask]).all()) and bool(torch.isfinite(lg.grad).all())
+        if eps == 0.0:
+            ok = ok and torch.allclose(sm[sbf], M.masked_log_softmax(out["logits"], mask)[sbf])
+        check(ok and RegPolicy(None, 0, 0.1, eps).smoothed(),
+              "reg_eps_sideboarding %s: validates, finite log π and gradients%s" %
+              (eps, ", the raw π at sideboarding steps" if eps == 0.0 else ""))
 
 
 def check_t8(tmp):
@@ -1467,6 +1565,7 @@ def main():
             check_orchestrator(tmp)
             check_resume(tmp)
             check_schedules(tmp)
+            check_sideboarding_warm_start(tmp)
             check_t8(tmp)
             check_resume_and_evaluations(tmp)
             check_eval_options_and_findings(tmp)

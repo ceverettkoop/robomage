@@ -515,8 +515,9 @@ def masked_log_softmax(logits, act_mask):
 def smoothed_log_policy(logits, act_mask, eps, sideboarding=None, eps_sideboarding=None):
     """log of (1 - ε)·π + ε·uniform-over-legal (R-NaD's smoothed π_0,reg, plan B3), -inf at padded
     rows. `eps` a float or a [B] tensor; with `sideboarding` [B] (bool) and `eps_sideboarding`, the
-    sideboarding decisions take that ε instead."""
-    logp = masked_log_softmax(logits.float(), act_mask)
+    sideboarding decisions take that ε instead. An ε of 0 gives the raw log π; the padded rows are
+    taken out before the mix, so its gradient stays finite there too."""
+    logp = masked_log_softmax(logits.float(), act_mask).masked_fill(~act_mask, 0.0)
     b = logits.shape[0]
     e = torch.as_tensor(eps, dtype=logp.dtype, device=logp.device).expand(b).clone()
     if sideboarding is not None and eps_sideboarding is not None:
