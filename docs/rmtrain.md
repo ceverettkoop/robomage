@@ -103,6 +103,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `replay.max_decision_tokens` | 640 | the window (BC's and R-NaD's) leaves out a whole episode with a decision of more seat tokens (menu tokens included; 0: no cap; live: a change applies to the episodes ingested from then on, and a lowered cap drops the window's episodes over it). One such decision pads its whole batch to it, and attention is quadratic in the padded length (§5 Memory). Each one is logged once in `gpu.log` with its path and largest decision and counted in the window's stats (`skipped_oversize`, `oversize_max_tokens`: the `window` of `bc_eval`, `rnad_step` and `status`, `bc_train`'s `window_skipped_oversize`, the status's window line). The actors still play such games, and their results lines count as any other's |
 | `replay.delete_evicted_selfplay` | true | evicted self-play `.rmtraj` deleted (RMLOGs kept) |
 | `server.max_batch`, `deadline_us`, `precision` | 512, 2000, fp32 | the RMIP server |
+| `server.attention_budget` | 2^26 | the most attention cells (rows × padded tokens², per head and layer) of one forward: a batch runs sorted by token count in forwards of at most 64 decisions and this many cells, so a few long decisions run in forwards of their own (§5 Memory) |
 | `b0.decisions`, `b0.explore_frac`, `b0.corpus_dir` | 5M, 0.2, `""` | the corpus; a corpus directory skips B0 |
 | `bc.*` | `BCConfig` | batch 128, lr 3e-4, warm-up 300, smoothing 0.05, fp16; `eval_every` 2000, `report_every` 250 |
 | `bc.sideboard_weight` | 1.0 | the policy loss's weight of a sideboarding decision (others 1): the batch's loss is `sum(w·loss) / sum(w)`, in B1 and B2 (one trainer); value and aux losses unweighted. `bc_train` reports the sideboarding decisions' own `train_policy_sideboarding`, `train_agree_sideboarding`, `train_frac_sideboarding`, `bc_eval` their `eval_agree_group:sideboarding` and `eval_policy_loss_group:sideboarding` |
@@ -112,6 +113,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `b2.decisions_per_round`, `min_steps_per_round`, `min_improvement` | 1M, 2000, 0.01 | |
 | `rnad.eta`, `learning_rate`, `entropy_schedule_sizes` | 0.2, 5e-5, [10000] | `RNaDConfig` |
 | `rnad.games_per_step`, `chunk_len`, `precision` | 32, 32, fp16 | G × chunk (fits a d 192 model in 12 GB) |
+| `rnad.forward_tokens`, `attention_budget`, `checkpoint_tokens` | 65536, 2^26, 2^17 | a chunk's forwards take rows of similar token counts, at most `forward_tokens` padded tokens and `attention_budget` attention cells (rows × padded tokens²) each; a chunk whose forwards hold more than `checkpoint_tokens` padded tokens or `attention_budget` cells together checkpoints each forward (its activations recomputed in the backward, one forward at a time: the same gradients for one more forward, ~15% of a step; §5 Memory) |
 | `rnad.reg_eps`, `reg_eps_sideboarding` | 0.1, 0.25 | π_0,reg's smoothing (B3), `reg_eps_sideboarding` at sideboarding steps. With a sideboarding teacher (`actors.teacher_tier = "hard+sb"`) set `reg_eps_sideboarding` to about 0: π_0,reg is then the taught sideboarding, and exploration belongs to the actors (plan §6.2). 0 is valid (π_0,reg's raw log π at those steps) |
 | `rnad.push_every` | 50 | learner steps between pushes of policy 0 |
 | `rnad.max_policy_lag` | 0 | drop a self-play game whose oldest step was played by a policy more than this many learner steps old (0: off; live) |
@@ -263,7 +265,20 @@ teacher. `run.memory_max` caps all of it; leave room for the page cache.
 On the GPU, attention is quadratic in a batch's padded token count, and almost every decision
 has at most ~600 seat tokens; a rare legal game (a board of hundreds of tokens) has decisions of
 2000 and more. `replay.max_decision_tokens` (640) leaves such games out of the window, so a BC
-batch of `bc.batch_size` decisions pads to at most the cap.
+batch of `bc.batch_size` decisions pads to at most the cap. The actors still play such games, and
+the inference server still evaluates them: `server.attention_budget` puts a batch's long decisions
+in forwards of their own. An R-NaD chunk (G × `chunk_len` decisions) back-propagates as one, so
+its forwards' activations add up; past `rnad.checkpoint_tokens` or `rnad.attention_budget` they
+are checkpointed and the backward holds one forward's at a time. Peaks measured on the RX 6700 XT
+with the default d 192 / 4-layer model (the learner and the server share the process):
+
+| Work | Peak |
+|---|---|
+| BC step, 128 decisions padded to 640 tokens (the cap) | 4.7 GiB |
+| BC held-out evaluation, 256 decisions at 640 tokens | 2.2 GiB |
+| R-NaD step, a chunk of 1024 decisions at 640 tokens | 4.0 GiB (out of memory without checkpointing) |
+| R-NaD step, a chunk of 1024 decisions of ~150 tokens | 2.8 GiB (7.6 GiB without checkpointing) |
+| Server batch of 512 with four decisions of ~2070 tokens (fp32) | 0.6 GiB (out of memory in chunks of 64 alone) |
 
 ## 6. The phases
 
@@ -548,7 +563,9 @@ run driven through its socket and its status from the files, and the resume book
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
 the window restore, the window's decision-size cap (an episode over `replay.max_decision_tokens` left
 out whole, counted and logged; a lowered cap live; the default on a run created before the key; the
-status line), checkpoint pruning, the schedules and evaluators (with `actors.teacher_tier = "hard+sb"`:
+status line), the attention budget (`forward_groups`' limits; a server batch cut by
+`server.attention_budget` and an R-NaD chunk cut by `rnad.attention_budget` or checkpointed give the
+plain forwards' values, losses and gradients, the generators' stream unchanged), checkpoint pruning, the schedules and evaluators (with `actors.teacher_tier = "hard+sb"`:
 the teacher command, B0's scripted seats and DAgger's labels at that tier, every evaluation opponent
 `scripted:hard`), `bc.sideboard_weight` on a synthetic batch (1: the plain mean exactly; the weighted
 mean otherwise), `rnad.reg_eps_sideboarding` at 0 and 0.01 (finite log π and gradients), structured sideboard exploration

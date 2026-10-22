@@ -625,6 +625,9 @@ checkpoint. `learn/check_rmtrain.py`: CPU checks and a
 3–10M parameters, d ≈ 192–256, 4 layers): that size is enough to start with, and the VRAM holds
 the current, target and two regularisation networks plus activations. Prefer large server
 batches; the archive measured about 3 ms per forward at batch 1 and about 8 ms at batch 256.
+Attention is quadratic in the padded token count: the replay window leaves out games with
+decisions over 640 tokens, the server and the learner bound each forward's attention cells, and an
+R-NaD chunk past its budget is checkpointed (the measured peaks: `docs/rmtrain.md` §5).
 
 **Replay in RAM.** Store tensors in fp16 with variable lengths and no padding, at roughly
 10 KB per decision. A window of up to ~4M decisions (~40 GB) fits in 124 GB with room for the

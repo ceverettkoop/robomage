@@ -13,6 +13,10 @@ batch's largest N, R and A rounded up to a multiple of 8 and at least 8; pads 0 
 ``tok_ability`` -1) and every mask 0; ``rel_mask`` marks the real relations. ``min_dims`` pads
 further (the padding-invariance check).
 
+``forward_groups`` cuts decisions sorted by token count into the forwards of a batch too large for
+one: attention's scores are rows × N² per head and layer (``attention_cells``), so a few long
+decisions bound how many rows a forward can take.
+
 ``Targets`` reads an RMTB ``targets`` file (``rmfeat --targets``, ``src/featurize/targets.h``) and
 gives per decision the auxiliary heads' targets.
 """
@@ -40,6 +44,29 @@ def _starts(sizes):
     s = np.zeros(len(sizes) + 1, np.int64)
     np.cumsum(sizes, out=s[1:])
     return s
+
+
+def attention_cells(rows, n):
+    """The attention scores of a forward of `rows` decisions padded to `n` tokens, per head and layer."""
+    return rows * padded(n) ** 2
+
+
+def forward_groups(n, order, max_rows=0, max_tokens=0, max_attention=0):
+    """`order` (decision indices by ascending token count `n[i]`) cut into consecutive groups, one
+    forward each, each padded to its last decision's count N: a group grows while it stays within
+    `max_rows` rows, `max_tokens` padded tokens (rows × N) and `max_attention` attention cells
+    (rows × N², ``attention_cells``), each 0 for no limit; a decision alone is always a group."""
+    groups, cur = [], []
+    for i in order:
+        k, m = len(cur) + 1, padded(int(n[i]))
+        if cur and ((max_rows and k > max_rows) or (max_tokens and k * m > max_tokens) or
+                    (max_attention and attention_cells(k, m) > max_attention)):
+            groups.append(np.array(cur, np.int64))
+            cur = []
+        cur.append(i)
+    if cur:
+        groups.append(np.array(cur, np.int64))
+    return groups
 
 
 class Decisions:

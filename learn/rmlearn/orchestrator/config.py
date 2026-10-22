@@ -98,6 +98,9 @@ SPEC = {
         ("max_batch", 512, "the inference server's batch"),
         ("deadline_us", 2000, "its micro-timeout"),
         ("precision", "fp32", "fp32, fp16 or bf16 (autocast)"),
+        ("attention_budget", 1 << 26, "the most attention cells (rows × padded tokens², per head and layer) of one "
+         "forward of a batch, so a few long decisions run in forwards of their own (~2 GiB of scores at fp32 with 4 "
+         "heads)"),
     ],
     "b0": [
         ("corpus_dir", "", "reuse an existing corpus's episode directory (skips B0)"),
@@ -156,7 +159,12 @@ SPEC = {
         ("c_vtrace", 1.0, ""),
         ("chunk_len", 32, "time steps per chunk"),
         ("games_per_step", 32, "G: games per learner step (live)"),
-        ("forward_tokens", 65536, ""),
+        ("forward_tokens", 65536, "the most padded tokens (rows × tokens) of one forward of a chunk"),
+        ("attention_budget", 1 << 26, "the most attention cells (rows × padded tokens², per head and layer) of one "
+         "forward of a chunk; a chunk whose forwards hold more together checkpoints them"),
+        ("checkpoint_tokens", 1 << 17, "a chunk whose forwards hold more padded tokens together checkpoints them: "
+         "each forward's activations recomputed in the backward, one forward at a time (the same gradients, one "
+         "more forward; a chunk of 1024 decisions of ~150 tokens peaks at ~7.6 GiB without, ~2.8 GiB with)"),
         ("precision", "fp16", "fp32, fp16 or bf16"),
         ("reg_eps", 0.1, "π_0,reg's smoothing ε (live)"),
         ("reg_eps_sideboarding", 0.25, "π_0,reg's smoothing ε at sideboarding steps; about 0 with a sideboarding "
@@ -459,6 +467,9 @@ def validate(cfg):
          "rnad.entropy_schedule_repeats has one positive int per size")
     need(0 <= r["reg_eps"] <= 1 and 0 <= r["reg_eps_sideboarding"] <= 1, "rnad.reg_eps* in [0, 1]")
     need(r["chunk_len"] > 0 and r["games_per_step"] > 0, "rnad.chunk_len and games_per_step are positive")
+    need(r["forward_tokens"] > 0 and r["attention_budget"] > 0 and r["checkpoint_tokens"] > 0 and
+         cfg["server"]["attention_budget"] > 0,
+         "rnad.forward_tokens, attention_budget, checkpoint_tokens and server.attention_budget are positive")
     need(r["push_every"] >= 0 and r["report_every"] > 0, "rnad.push_every >= 0, report_every > 0")
     need(r["value_after_every"] >= 0, "rnad.value_after_every >= 0")
     need(r["max_policy_lag"] >= 0, "rnad.max_policy_lag >= 0")

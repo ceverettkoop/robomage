@@ -166,7 +166,8 @@ class Worker:
         self.tables = S.load_tables(tdir)
         sv = c["server"]
         self.server = InferenceServer(self.rd.rmip_sock, device=dev, max_batch=sv["max_batch"],
-                                      deadline_us=sv["deadline_us"], precision=sv["precision"], name="rmtrain",
+                                      deadline_us=sv["deadline_us"], precision=sv["precision"],
+                                      attention_budget=sv["attention_budget"], name="rmtrain",
                                       log=lambda m: log("server: " + m))
         self.server.start()
         log("ready: device %s, tables %s, server %s" % (dev, tdir, self.rd.rmip_sock))
@@ -260,8 +261,8 @@ class Worker:
             learner.configure(**{k: v for k, v in self.rnad_config().to_dict().items()
                                  if k in ("eta", "learning_rate", "entropy_schedule_sizes", "entropy_schedule_repeats",
                                           "reg_eps", "reg_eps_sideboarding", "finetune_threshold",
-                                          "finetune_discretization", "stale_reg", "forward_tokens",
-                                          "value_after_every")})
+                                          "finetune_discretization", "stale_reg", "forward_tokens", "attention_budget",
+                                          "checkpoint_tokens", "value_after_every")})
             saved_window = data.get("window")
         else:
             learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device)

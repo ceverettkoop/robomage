@@ -27,7 +27,10 @@ the torch generators' states.
    after a boundary moves that policy to π_m−1,reg); else recomputed here from the frozen network
    (``stale_reg="recompute"``) or the whole game dropped (``"drop"``); both counted.
 3. The chunks, last to first: the current network's forward with gradient on the chunk's valid
-   steps (logits, value), the target network's value (no gradient); the reward transform
+   steps (logits, value; in forwards bounded by ``forward_tokens`` and ``attention_budget``, each
+   checkpointed when together they pass ``checkpoint_tokens`` or ``attention_budget``, so a chunk
+   of long decisions holds one forward's activations at a time), the target network's value (no
+   gradient); the reward transform
    ``log π − (α·log π_m,reg + (1 − α)·log π_m−1,reg)``; per player v-trace carried across chunks;
    the critic loss and NeuRD normalised over the whole batch's steps; backward.
 4. Adam (b1 0, b2 0.999, ε 1e-8, eps_root 0), scaled by −lr, each update clipped to
@@ -102,9 +105,10 @@ from dataclasses import asdict, dataclass, field
 import numpy as np
 import torch
 import torch.nn.functional as Fn
+from torch.utils.checkpoint import checkpoint
 
 from . import rnad as R
-from .batch import INPUTS, padded
+from .batch import INPUTS, attention_cells, forward_groups, padded
 from .model import ModelConfig, RMNet, load_checkpoint, smoothed_log_policy
 
 
@@ -133,9 +137,15 @@ class RNaDConfig:
     finetune_threshold: float = 0.03
     finetune_discretization: int = 16
     # Time steps per chunk (the backward unit; memory ~ chunk_len × games); the forwards inside a
-    # chunk take rows of similar token counts, at most `forward_tokens` padded tokens each.
+    # chunk take rows of similar token counts, at most `forward_tokens` padded tokens and
+    # `attention_budget` attention cells (rows × padded tokens², per head and layer) each. A chunk
+    # whose forwards hold more than `checkpoint_tokens` padded tokens or `attention_budget` cells
+    # together checkpoints each forward: its activations are recomputed in the backward, one forward
+    # at a time (the same gradients, one more forward).
     chunk_len: int = 32
     forward_tokens: int = 65536
+    attention_budget: int = 1 << 26
+    checkpoint_tokens: int = 1 << 17
     # π_0,reg's smoothing (B3) and the served ids of the regularisation policies.
     reg_eps: float = 0.1
     reg_eps_sideboarding: float = 0.25
@@ -610,13 +620,18 @@ class RNaDLearner:
                 xo = batch.chunk_inputs(c, viewer="omni")[0] if critic else None
                 seat_chunk = seat[sl].reshape(-1)
                 parts = {"logits": [], "v": [], "vt": [], "v_head": [], "value": [], "rows": []}
-                for rows, xg, xog in _row_groups(x, xo, cfg.forward_tokens):
+                groups = list(_row_groups(x, xo, cfg.forward_tokens, cfg.attention_budget))
+                ckpt = _checkpointed(groups, cfg)
+                for rows, xg, xog in groups:
                     inputs = self._inputs(xg)
                     rows_t = idx[torch.from_numpy(rows).to(dev)]
                     seat_rows = seat_chunk[rows_t]
                     omni = self._inputs(xog)[:8] if critic else None
                     with self._autocast():
-                        out = self._forward(self.model, inputs, omni, seat_rows)
+                        if ckpt:
+                            out = checkpoint(self._forward, self.model, inputs, omni, seat_rows, use_reentrant=False)
+                        else:
+                            out = self._forward(self.model, inputs, omni, seat_rows)
                         with torch.no_grad():
                             tout = self._forward(self.target, inputs, omni, seat_rows)
                     parts["rows"].append(rows_t)
@@ -709,7 +724,7 @@ class RNaDLearner:
                 idx = torch.from_numpy(np.asarray(flat, np.int64) - t0 * G).to(dev)
                 val_c = valid[t0:t0 + L].reshape(-1).float()
                 out_c = outcome[t0:t0 + L].reshape(-1)
-                for rows, xg, _ in _row_groups(x, None, cfg.forward_tokens):
+                for rows, xg, _ in _row_groups(x, None, cfg.forward_tokens, cfg.attention_budget):
                     rows_t = idx[torch.from_numpy(rows).to(dev)]
                     with self._autocast():
                         v = self.model(*self._inputs(xg), aux=False)["value"].float()
@@ -799,29 +814,35 @@ def _trim(x, rows, n, r):
     return out
 
 
-def _row_groups(x, xo, max_tokens):
+def _row_groups(x, xo, max_tokens, max_attention=0):
     """A chunk's padded inputs (and the omniscient ones, or None) split into forwards of rows of
     similar token counts: rows sorted by token count, grouped while rows × padded tokens stays within
-    `max_tokens`, each group padded only to its own largest decision (attention is quadratic in the
-    padded length, and a chunk's decisions vary several-fold). Yields (rows, inputs, omni inputs)."""
+    `max_tokens` and rows × padded tokens² within `max_attention` (0: no limit), each group padded
+    only to its own largest decision (attention is quadratic in the padded length, and a chunk's
+    decisions vary several-fold). Yields (rows, inputs, omni inputs)."""
     n = x["tok_mask"].sum(1)
     r = x["rel_mask"].sum(1)
     no = xo["tok_mask"].sum(1) if xo is not None else n
     ro = xo["rel_mask"].sum(1) if xo is not None else r
     key = np.maximum(n, no)
     order = np.argsort(key, kind="stable")
-    groups, cur = [], []
-    for i in order:
-        if cur and (len(cur) + 1) * padded(int(key[i])) > max_tokens:
-            groups.append(np.array(cur, np.int64))
-            cur = []
-        cur.append(i)
-    if cur:
-        groups.append(np.array(cur, np.int64))
-    for rows in groups:
+    for rows in forward_groups(key, order, max_tokens=max_tokens, max_attention=max_attention):
         xg = _trim(x, rows, padded(int(n[rows].max())), padded(int(r[rows].max())))
         xog = _trim(xo, rows, padded(int(no[rows].max())), padded(int(ro[rows].max()))) if xo is not None else None
         yield rows, xg, xog
+
+
+def _checkpointed(groups, cfg):
+    """Whether a chunk's forwards (`_row_groups`, the seat's inputs and the omniscient critic's) are
+    checkpointed: more than ``checkpoint_tokens`` padded tokens or ``attention_budget`` attention
+    cells together."""
+    tokens = cells = 0
+    for _, xg, xog in groups:
+        for x in (xg, xog) if xog is not None else (xg,):
+            b, n = x["tok_type"].shape
+            tokens += b * n
+            cells += attention_cells(b, n)
+    return tokens > cfg.checkpoint_tokens or cells > cfg.attention_budget
 
 
 def _load_with_config(path, tables, model_cfg):

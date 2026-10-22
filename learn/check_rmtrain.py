@@ -15,7 +15,9 @@ the state round trip), the actor pool against a fake engine (a crash restarted a
 crash-loop back-off, SIGTERM on stop), the replay window's restore (recent files by budget, a
 checkpoint's window with its fresh episodes, older files left out) and its decision-size cap
 (``replay.max_decision_tokens``: an episode over it left out whole, counted and logged; a lowered cap
-set live; a run created before the key), checkpoint pruning, the
+set live; a run created before the key), the forwards' attention budget (``batch.forward_groups``'
+limits; a server batch cut by ``server.attention_budget``, an R-NaD chunk cut by
+``rnad.attention_budget`` and one checkpointed give the plain forwards' results), checkpoint pruning, the
 phase schedules, the sideboarding warm start (``actors.teacher_tier`` the teacher of B0 and DAgger,
 evaluations against scripted:hard, ``bc.sideboard_weight``, ``rnad.reg_eps_sideboarding`` near 0),
 structured sideboard exploration (``p_explore``'s schedule, the coverage counts from results lines, the
@@ -54,6 +56,7 @@ import tempfile  # noqa: E402
 import threading  # noqa: E402
 import time  # noqa: E402
 import tomllib  # noqa: E402
+import types  # noqa: E402
 
 import numpy as np  # noqa: E402
 
@@ -515,6 +518,75 @@ def check_window_cap(tmp):
           worker.cfg["replay"]["max_decision_tokens"] == 3, "the GPU process sets the windows' cap live")
     text = RT.format_status({"running": True, "gpu": {"window": dict(win.stats())}})
     check("2 left out over 3 tokens a decision (largest 13)" in text, "the status line counts the episodes left out")
+
+
+def check_attention_budget(tmp):
+    """The forwards' attention budget (rows × padded tokens²): batch.forward_groups' limits; the
+    inference server's batch and an R-NaD chunk cut by it, and an R-NaD chunk checkpointed, give the
+    results of the forwards without it."""
+    import torch
+    import check_rnad as CR
+    from rmlearn import batch as B
+    from rmlearn import replay as RP
+    from rmlearn import rnad_learner as RL
+    from rmlearn import server as SV
+    n = np.array([8, 9, 16, 30, 40, 100, 120])
+    order = np.argsort(n, kind="stable")
+    groups = B.forward_groups(n, order, max_rows=3, max_tokens=200, max_attention=4 * 32 ** 2)
+    sizes = [[int(n[i]) for i in g] for g in groups]
+    check(sizes == [[8, 9, 16], [30, 40], [100], [120]] and all(
+        len(g) <= 3 and len(g) * B.padded(max(s)) <= 200 and B.attention_cells(len(g), max(s)) <= 4 * 32 ** 2
+        or len(g) == 1 for g, s in zip(groups, sizes)),
+        "forward_groups: rows, padded tokens and attention cells within their limits, a long decision alone (%s)"
+        % sizes)
+    check([list(g) for g in B.forward_groups(n, order)] == [list(order)], "forward_groups without limits: one group")
+    tables = CR.fake_tables()
+    rng = np.random.RandomState(4)
+    # The server: a batch with a few long decisions, in forwards by the budget and in plain chunks.
+    model = CR.tiny_model(tables, seed=2)
+    menus = list(rng.randint(1, 5, size=40)) + [13, 14, 15]
+    decs = CR.make_decisions([CR.step_tokens(1 + rng.randint(7), int(m), rng) for m in menus])
+    dims = {"F": 2, "C": 2, "K": 1, "Q": 1}
+    req = types.SimpleNamespace(decs=decs, policies=[0], d=len(decs), client=types.SimpleNamespace(hello={"dims": dims}))
+    out = []
+    for budget in (1 << 40, 2 * 16 ** 2):
+        srv = SV.InferenceServer(os.path.join(tmp, "unused.sock"), device="cpu", chunk=16, attention_budget=budget)
+        srv.set_policy(0, model, 1)
+        work = srv._launch([req])
+        out.append((len(work[2]), srv._collect(work)[0]))
+    (f0, (_, v0, l0, _)), (f1, (_, v1, l1, _)) = out
+    check(f1 > f0 and np.allclose(v0, v1, atol=1e-5) and all(np.allclose(a, b, atol=1e-5) for a, b in zip(l0, l1)),
+          "server.attention_budget: the long decisions in forwards of their own (%d forwards, %d without), the same "
+          "values and logits" % (f1, f0))
+    # R-NaD: a chunk checkpointed, and cut by the budget, against the plain forwards.
+    eps = CR.random_episodes(tables, rng, 6)
+    eps += [CR.make_episode(tables.hashes["spec_hash"], [0, 1, 0], [CR.step_tokens(2, m, rng) for m in (13, 15, 3)],
+                            [np.full(m, 1.0 / m) for m in (13, 15, 3)], [0, 1, 2], (1, -1))]
+    batch = RP.TrajectoryBatch(eps, chunk_len=4, policies=(1, 2))
+
+    def grads(**kw):
+        cfg = RL.RNaDConfig(chunk_len=4, forward_tokens=64, **kw)
+        learner = RL.RNaDLearner(CR.tiny_model(tables, seed=3, id_dropout=0.3), cfg)
+        torch.manual_seed(11)
+        info = learner.accumulate_gradients(batch, 0.4)
+        return [p.grad.clone() if p.grad is not None else torch.zeros_like(p) for p in learner.params], \
+            {k: float(v) for k, v in info["sums"].items()}, torch.rand(1)
+
+    plain = grads(attention_budget=1 << 40, checkpoint_tokens=1 << 40)
+    for what, kw in (("checkpointed (rnad.checkpoint_tokens)", {"attention_budget": 1 << 40, "checkpoint_tokens": 1}),
+                     ("cut by rnad.attention_budget", {"attention_budget": 300, "checkpoint_tokens": 1 << 40})):
+        g, sums, after = grads(**kw)
+        same = all(torch.allclose(a, b, rtol=1e-5, atol=1e-6) for a, b in zip(plain[0], g)) and \
+            all(abs(sums[k] - plain[1][k]) <= 1e-5 * max(1.0, abs(plain[1][k])) for k in sums)
+        check(same and torch.equal(after, plain[2]),
+              "an R-NaD chunk %s: the plain forwards' losses and gradients, the generators' stream unchanged" % what)
+    x, _ = batch.chunk_inputs(0)
+    cfg = RL.RNaDConfig(forward_tokens=64, attention_budget=300)
+    gs = list(RL._row_groups(x, None, cfg.forward_tokens, cfg.attention_budget))
+    check(len(gs) > len(list(RL._row_groups(x, None, cfg.forward_tokens))) and
+          all(len(r) == 1 or B.attention_cells(len(r), xg["tok_type"].shape[1]) <= cfg.attention_budget
+              for r, xg, _ in gs) and RL._checkpointed(gs, RL.RNaDConfig(checkpoint_tokens=1)) and
+          not RL._checkpointed(gs, RL.RNaDConfig()), "rnad: forwards within the budget; the checkpoint test")
 
 
 def check_schedules(tmp):
@@ -2047,6 +2119,7 @@ def main():
             check_benchmark_sideboarding(tmp)
             check_local(tmp)
             check_sb_explore(tmp)
+            check_attention_budget(tmp)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
         tag = "RMTRAIN-CHECK"

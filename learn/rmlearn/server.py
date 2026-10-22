@@ -19,7 +19,8 @@ request is a batch of its own), evaluated when the queued decisions reach ``max_
 every connected client has a request queued (nobody else can add to the batch), or
 ``deadline_us`` after the oldest queued request arrived. It pads the batch as
 ``src/featurize/batch.cpp`` does (sorted by token count, in chunks of at most ``chunk``
-decisions) and queues each requested policy's forward on the device (under
+decisions and ``attention_budget`` attention cells, rows × N² per head and layer, so a few long
+decisions run in forwards of their own) and queues each requested policy's forward on the device (under
 ``torch.inference_mode()``, fp32 or, with ``precision="fp16"|"bf16"``, autocast); a finisher thread
 reads the results back and writes each response (per policy its version, values, logits and
 ``log π`` over the real menu rows) into the client's region before sending ``DONE``, so the next
@@ -46,7 +47,7 @@ import time
 import numpy as np
 import torch
 
-from .batch import Decisions, INPUTS, TENSORS, pad
+from .batch import Decisions, INPUTS, TENSORS, forward_groups, pad
 from .model import InferencePolicy, RMNet
 
 MSG = struct.Struct("<4sHHI")
@@ -136,7 +137,7 @@ class InferenceServer:
     """An RMIP v1 server running in the host process (see the module docstring)."""
 
     def __init__(self, socket_path, device="cuda", max_batch=512, deadline_us=2000, precision="fp32",
-                 chunk=64, template=None, name="rmlearn", log=None, pause_after=None):
+                 chunk=64, attention_budget=1 << 26, template=None, name="rmlearn", log=None, pause_after=None):
         if precision not in ("fp32", "fp16", "bf16"):
             raise ValueError("precision is fp32, fp16 or bf16")
         self.socket_path = socket_path
@@ -145,6 +146,7 @@ class InferenceServer:
         self.deadline = deadline_us / 1e6
         self.precision = precision
         self.chunk = int(chunk)           # most decisions per forward (a batch runs in chunks)
+        self.attention_budget = int(attention_budget)   # most attention cells (rows × N²) per forward
         self.template = template          # an RMNet whose state_dicts set_policy may receive
         self.name = name
         self.pause_after = pause_after    # tests: stop answering after this many requests
@@ -598,7 +600,8 @@ class InferenceServer:
     def _launch(self, batch):
         """Queues the batch's forwards on the device: (decisions, the policies' versions, per forward
         (policy, batch positions, logits, log π, value) still on the device). The decisions run sorted
-        by token count in chunks of at most `chunk` (less padding per forward, bounded memory)."""
+        by token count in chunks of at most `chunk` decisions and `attention_budget` attention cells
+        (less padding per forward, bounded memory)."""
         with self._plock:
             pols = dict(self._policies)
         decs = _concat([r.decs for r in batch])
@@ -617,8 +620,8 @@ class InferenceServer:
         order = np.argsort(decs.sizes["n"], kind="stable")
         pending = []
         with torch.inference_mode():
-            for start in range(0, total, self.chunk):
-                ch = order[start:start + self.chunk]
+            for ch in forward_groups(decs.sizes["n"], order, max_rows=self.chunk,
+                                     max_attention=self.attention_budget):
                 x = pad(decs.select(ch), dims)
                 inputs = [torch.from_numpy(x[k]).to(dev, non_blocking=True) for k in INPUTS]
                 for pid, want in wants.items():
