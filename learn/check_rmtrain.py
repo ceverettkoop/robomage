@@ -1157,6 +1157,7 @@ max_game_decisions = 3000
 [actors]
 count = 3
 local_count = 0
+teacher_tier = "hard+sb"
 [model]
 d = 64
 heads = 2
@@ -1172,6 +1173,7 @@ unit_steps = 10
 report_every = 50
 eval_every = 100
 eval_limit = 3000
+sideboard_weight = 4.0
 [b1]
 min_steps = 100000
 max_steps = 100000
@@ -1185,12 +1187,18 @@ min_steps_per_round = 50
 games_per_step = 2
 chunk_len = 16
 entropy_schedule_sizes = [30]
+reg_eps_sideboarding = 0.01
 push_every = 10
 report_every = 10
 [b4]
 max_learner_steps = 250
 [b5]
 max_learner_steps = 300
+[sb_explore]
+p_start = 0.5
+p_end = 0.1
+hold_frac = 0.5
+rewrite_every_s = 5
 [eval]
 pairs = [["ur_delver", "burn"]]
 matches = 2
@@ -1371,6 +1379,7 @@ def smoke(args):
     check(rest and all(m["learner_steps"] <= m["previous_learner_steps"] for m in rest),
           "the resumes' restore lines (%s)" % [(m["learner_steps"], m["previous_learner_steps"]) for m in rest])
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
+    smoke_sideboarding_checks(run, mets)
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
     if local:
@@ -1386,6 +1395,23 @@ def stop_unit(run):
     """Stops the run's systemd unit, also one waiting to restart, before its directory is deleted."""
     subprocess.run(["systemctl", "--user", "stop", RT.unit_name(run) + ".service"], stdout=subprocess.DEVNULL,
                    stderr=subprocess.DEVNULL)
+
+
+def smoke_sideboarding_checks(run, mets):
+    """The sideboarding teacher's phases in B0–B2 and the actors' exploring phases in B4, from the
+    results lines and the orchestrator's sb_explore metrics."""
+    lines = [json.loads(ln) for f in glob.glob(os.path.join(run.actors, "*.results.jsonl")) for ln in open(f)]
+    phases = [(ln.get("schedule"), seat) for ln in lines for seat in (ln.get("sb") or {}).values()]
+    taught = [s for v, s in phases if v not in ("b4", "b5")]
+    check(any(s["swaps"] > 0 for s in taught), "the hard+sb teacher sideboarded in B0–B2 (%d phases, %d with swaps)"
+          % (len(taught), sum(1 for s in taught if s["swaps"] > 0)))
+    b4 = [s for v, s in phases if v == "b4"]
+    check(any(s["explored"] for s in b4), "the actors explored sideboarding in B4 (%d of %d phases)"
+          % (sum(1 for s in b4 if s["explored"]), len(b4)))
+    check(not any(s["explored"] for v, s in phases if v != "b4"), "no exploring phase outside B4")
+    sx = [m for m in mets if m["event"] == "sb_explore"]
+    check(sx and sx[-1].get("explored_phases", 0) > 0, "sb_explore metrics lines with explored phases (%s)"
+          % (sx[-1] if sx else None))
 
 
 def smoke_local_checks(run, mets, evs):
