@@ -65,11 +65,13 @@ def log(msg):
 
 class Worker:
     def __init__(self, run_path, out):
+        from .config import fill_defaults
         from .rundir import RunDir, read_json
         self.rd = RunDir(run_path)
         self.cfg = read_json(self.rd.config)
         if self.cfg is None:
             raise SystemExit("gpu: %s has no config.json" % self.rd.path)
+        self.cfg = fill_defaults(self.cfg)[0]
         self.out = out
         self.out_lock = threading.Lock()
         self.cmds = queue.Queue()
@@ -178,7 +180,7 @@ class Worker:
                                delete_evicted=bool(selfplay and r["delete_evicted_selfplay"]),
                                poll_interval=r["poll_interval_s"], spec_hash=self.tables.spec.hash,
                                heldout_fraction=0.0 if selfplay else r["heldout_fraction"],
-                               split_seed=self.cfg["run"]["seed"])
+                               split_seed=self.cfg["run"]["seed"], max_decision_tokens=r["max_decision_tokens"])
 
     def bc_init(self, dirs, resume=None):
         import torch
@@ -191,7 +193,7 @@ class Worker:
             model = M.load_checkpoint(resume, self.tables)
         else:
             model = M.RMNet(M.ModelConfig.from_dict(c["model"]), self.tables)
-        win = RP.ReplayWindow(self._window_cfg(dirs, False))
+        win = RP.ReplayWindow(self._window_cfg(dirs, False), log=lambda m: log("bc window: " + m))
         skipped = restore_recent(win, dirs, win.cfg.max_bytes)
         win.start()
         names = BC.category_names(self.rd.cards) if os.path.exists(self.rd.cards) else None
@@ -214,7 +216,7 @@ class Worker:
         m = self.trainer.train(int(c["unit_steps"]))
         self._aggregate(m, ("step", "lr", "decisions", "amp_scale"), ("seconds", "skipped_steps"))
         if self.agg["n"] >= c["report_every"]:
-            self.event("bc_train", **self._flush(m["step"]))
+            self.event("bc_train", **self._flush(m["step"]), window_skipped_oversize=st.get("skipped_oversize", 0))
         if self.trainer.step - self.last_bc_eval >= c["eval_every"]:
             self.bc_evaluate(event=True)
 
@@ -269,7 +271,7 @@ class Worker:
         self.learner = learner
         sp = self.rd.episode_dir("selfplay")
         os.makedirs(sp, exist_ok=True)
-        self.window = RP.ReplayWindow(self._window_cfg([sp], True))
+        self.window = RP.ReplayWindow(self._window_cfg([sp], True), log=lambda m: log("rnad window: " + m))
         restored, left_out = restore_window(self.window, saved_window, [sp]) if saved_window else (0, 0)
         self.window.start()
         log("rnad: %s learner at step %d (iteration %d), window restored with %d episodes, %d episode files "
@@ -536,6 +538,10 @@ class Worker:
                             setattr(reg, "eps" if k == "reg_eps" else "eps_sideboarding", float(value))
             if k == "push_every" and self.link is not None:
                 self.link.push_every = int(value)
+        if key == "replay.max_decision_tokens":
+            for w in (self.bc_window, self.window):
+                if w is not None:
+                    w.set_max_decision_tokens(value)
         return {"key": key, "value": value}
 
     def stats(self):

@@ -370,9 +370,12 @@ def format_status(d):
                 mem.get("used_mb", 0), mem.get("total_mb", 0), mem.get("allocated_mb", 0), mem.get("peak_mb", 0)))
         w = g.get("window")
         if w:
-            L.append("     window: %d episodes, %d decisions (%d labelled), %.2f GB, %d fresh, %d evicted"
+            L.append("     window: %d episodes, %d decisions (%d labelled), %.2f GB, %d fresh, %d evicted%s"
                      % (w.get("episodes", 0), w.get("decisions", 0), w.get("labelled", 0), w.get("bytes", 0) / 2 ** 30,
-                        w.get("fresh", 0), w.get("evicted", 0)))
+                        w.get("fresh", 0), w.get("evicted", 0),
+                        ", %d left out over %s tokens a decision (largest %s)"
+                        % (w["skipped_oversize"], w.get("max_decision_tokens"), w.get("oversize_max_tokens"))
+                        if w.get("skipped_oversize") else ""))
     elif g.get("error"):
         L.append("gpu: %s" % g["error"])
     lv = d.get("live")

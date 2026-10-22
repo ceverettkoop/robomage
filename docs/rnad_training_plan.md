@@ -467,7 +467,8 @@ the engine, the gate or `python/` imports it.
   per tensor, equal to `batch.pad`; nothing names a token type, the widths come from each file) and
   `learn/rmlearn/replay.py`: `ReplayWindow` (polls trajectory directories, ingests renamed-in
   `*.rmtraj` oldest first, evicts oldest past `max_decisions` / `max_bytes`, deletes evicted
-  `.rmtraj` only with `delete_evicted`, never an `.rmlog`; skips other specs; labels per step: the
+  `.rmtraj` only with `delete_evicted`, never an `.rmlog`; skips other specs and, whole, episodes with
+  a decision over `max_decision_tokens` seat tokens (`replay.max_decision_tokens`); labels per step: the
   teacher's, else the reply at steps without μ unless the seat is `explore` / `random`; held-out
   split by a hash of the game), `DecisionBatch` (uniform over labelled decisions; inputs, label,
   outcome, aux targets, optional omniscient inputs), `TrajectoryBatch` (G games time-major

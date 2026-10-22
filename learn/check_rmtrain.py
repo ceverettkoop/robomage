@@ -13,7 +13,9 @@ is gone; the resume bookkeeping: an actor's first match after a crash (the match
 off, never below its results), the results tail (offsets, a torn line, counts per schedule version,
 the state round trip), the actor pool against a fake engine (a crash restarted at the next match,
 crash-loop back-off, SIGTERM on stop), the replay window's restore (recent files by budget, a
-checkpoint's window with its fresh episodes, older files left out), checkpoint pruning, the
+checkpoint's window with its fresh episodes, older files left out) and its decision-size cap
+(``replay.max_decision_tokens``: an episode over it left out whole, counted and logged; a lowered cap
+set live; a run created before the key), checkpoint pruning, the
 phase schedules, the sideboarding warm start (``actors.teacher_tier`` the teacher of B0 and DAgger,
 evaluations against scripted:hard, ``bc.sideboard_weight``, ``rnad.reg_eps_sideboarding`` near 0),
 structured sideboard exploration (``p_explore``'s schedule, the coverage counts from results lines, the
@@ -52,6 +54,8 @@ import tempfile  # noqa: E402
 import threading  # noqa: E402
 import time  # noqa: E402
 import tomllib  # noqa: E402
+
+import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(HERE)
@@ -387,6 +391,7 @@ def check_resume(tmp):
     check(left == ["bc-b1.pt", "bc-p30.pt", "bc-p40.pt"] and not os.path.exists(os.path.join(cdir, "bc-p10.pt.opt")),
           "pruning keeps the newest periodic checkpoints and the phase checkpoints (%s)" % left)
     check_window_restore(tmp)
+    check_window_cap(tmp)
 
 
 class _FakeWindow:
@@ -456,6 +461,60 @@ def check_window_restore(tmp):
     st = G.window_state(_PollWindow(), [_Ep("c")])
     check(st["files"] == ["a", "b"] and st["fresh"] == ["b", "c"] and st["complete"],
           "window_state polls first: every episode on disk is in the checkpoint (%s)" % st)
+
+
+def check_window_cap(tmp):
+    """replay.max_decision_tokens: an episode with a decision over the cap left out whole, counted,
+    logged once; a lowered cap drops the window's episodes over it; the config key, its default on a
+    run created before it, the GPU process's live set and the status line."""
+    import types
+    import check_rnad as CR
+    from rmlearn import replay as RP
+    tables = CR.fake_tables()
+    rng = np.random.RandomState(0)
+
+    def episode(name, menus):
+        toks = [CR.step_tokens(1, m, rng) for m in menus]
+        mus = [np.full(m, 1.0 / m) for m in menus]
+        ep = CR.make_episode(tables.hashes["spec_hash"], [0, 1] * (len(menus) // 2) + [0] * (len(menus) % 2), toks,
+                             mus, [0] * len(menus), (1, -1))
+        ep.path = os.path.join(tmp, name)
+        return ep
+
+    small, big = episode("small.rmtraj", [2, 3, 1]), episode("big.rmtraj", [2, 12, 3])    # 4 and 13 tokens
+    logs = []
+    win = RP.ReplayWindow(RP.WindowConfig(dirs=[], max_decision_tokens=8), log=logs.append)
+    added = [win.add(small), win.add(big)]
+    st = win.stats()
+    check(added == [True, False] and st["episodes"] == 1 and st["decisions"] == 3 and st["skipped_oversize"] == 1
+          and st["oversize_max_tokens"] == 13 and st["max_decision_tokens"] == 8,
+          "the window leaves out an episode with a decision over the cap, counted (%s, %s)" % (added, st))
+    check(len(logs) == 1 and "big.rmtraj" in logs[0] and "13 seat tokens" in logs[0],
+          "an episode left out over the cap is logged with its path and largest decision (%s)" % logs)
+    check([e.path for e in win.take_fresh(5, timeout=0)] == [small.path], "R-NaD never takes an episode over the cap")
+    whole = RP.ReplayWindow(RP.WindowConfig(dirs=[]))
+    check(whole.add(big) and whole.stats()["episodes"] == 1, "max_decision_tokens 0: no cap")
+    check(win.set_max_decision_tokens(3) == 1 and win.stats()["episodes"] == 0 and
+          win.stats()["skipped_oversize"] == 2 and len(logs) == 2,
+          "a lowered cap drops the window's episodes over it (%s)" % win.stats())
+    d = C.defaults()
+    check(d["replay"]["max_decision_tokens"] == 640 and "replay.max_decision_tokens" in C.LIVE and
+          "replay.max_decision_tokens" in C.GPU_LIVE, "replay.max_decision_tokens: default 640, live, the GPU's")
+    old = C.defaults()
+    del old["replay"]["max_decision_tokens"]
+    filled, added_keys = C.fill_defaults(old)
+    check(filled["replay"]["max_decision_tokens"] == 640 and "replay.max_decision_tokens" in added_keys,
+          "a run created before replay.max_decision_tokens resumes with its default")
+    check(raises(lambda: C.resolve(None, ["replay.max_decision_tokens=-1"]), "max_decision_tokens"),
+          "replay.max_decision_tokens >= 0")
+    w2 = RP.ReplayWindow(RP.WindowConfig(dirs=[], max_decision_tokens=100))
+    w2.add(small)
+    worker = types.SimpleNamespace(cfg=C.defaults(), trainer=None, learner=None, link=None, bc_window=w2, window=None)
+    G.Worker.set(worker, "replay.max_decision_tokens", 3)
+    check(w2.cfg.max_decision_tokens == 3 and w2.stats()["episodes"] == 0 and
+          worker.cfg["replay"]["max_decision_tokens"] == 3, "the GPU process sets the windows' cap live")
+    text = RT.format_status({"running": True, "gpu": {"window": dict(win.stats())}})
+    check("2 left out over 3 tokens a decision (largest 13)" in text, "the status line counts the episodes left out")
 
 
 def check_schedules(tmp):

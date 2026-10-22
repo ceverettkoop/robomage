@@ -21,6 +21,14 @@ it evicts the oldest episodes while the window holds more than ``max_decisions``
 than ``spec_hash`` (when set) and episodes with no steps are skipped and counted; a file that does
 not read is counted as an error, never retried.
 
+**The decision-size cap** (``max_decision_tokens``, 0: none): an episode with a decision of more
+seat tokens (menu tokens included) is left out whole, so R-NaD's games stay contiguous; it is
+counted (``skipped_oversize``, the largest such decision ``oversize_max_tokens``) and logged once
+with its path and largest decision. Attention is quadratic in a batch's padded length, so one such
+decision pads its whole batch to it. ``set_max_decision_tokens`` changes the cap of a running
+window: it applies to the episodes ingested from then on, and a lowered cap also drops the window's
+episodes over it.
+
 **Labels** (``LabelConfig``), per step at ingestion: the teacher's label when it has one (≥ 0),
 else, with ``chosen_without_mu``, the reply itself when the step has no behaviour distribution (a
 replayed or stream-decided seat: the scripted corpus through ``--replay``) and the seat's agent is
@@ -78,6 +86,7 @@ class WindowConfig:
     split_seed: int = 0
     heldout_by: str = "game"             # "game", or "match": a match's games are held out together
     probe_fraction: float = 0.0          # training games also walked by iter_decisions("probe")
+    max_decision_tokens: int = 0         # leave out an episode with a decision of more seat tokens (0: none)
     labels: LabelConfig = field(default_factory=LabelConfig)
 
 
@@ -104,8 +113,9 @@ def heldout(ep, fraction, seed, by="game", salt=""):
 class ReplayWindow:
     """A bounded window of episodes in RAM (see the module docstring)."""
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, log=None):
         self.cfg = cfg
+        self.log = log or (lambda msg: None)
         self.spec_hash = cfg.spec_hash
         self._eps = collections.deque()
         self._fresh = collections.deque()
@@ -119,6 +129,7 @@ class ReplayWindow:
         self.decisions = 0
         self.bytes = 0
         self.counts = collections.Counter()
+        self.oversize_max_tokens = 0
         self.last_error = ""
 
     # ── ingestion and eviction ──
@@ -168,6 +179,11 @@ class ReplayWindow:
         if ep.spec_hash != self.spec_hash:
             self.counts["skipped_spec"] += 1
             return False
+        ep.max_tokens = int(np.diff(ep.seat_feat.tok_off).max())
+        if self._over_cap(ep):
+            with self._lock:
+                self._note_oversize(ep)
+            return False
         ep.labels = step_labels(ep, self.cfg.labels)
         ep.split = "heldout" if heldout(ep, self.cfg.heldout_fraction, self.cfg.split_seed,
                                         self.cfg.heldout_by) else "train"
@@ -201,6 +217,34 @@ class ReplayWindow:
                     pass
         while self._fresh and getattr(self._fresh[0], "evicted", False):
             self._fresh.popleft()
+
+    def _over_cap(self, ep):
+        cap = self.cfg.max_decision_tokens
+        return cap > 0 and ep.max_tokens > cap
+
+    def _note_oversize(self, ep):
+        self.counts["skipped_oversize"] += 1
+        self.oversize_max_tokens = max(self.oversize_max_tokens, ep.max_tokens)
+        self.log("left out %s: a decision of %d seat tokens (replay.max_decision_tokens %d)"
+                 % (ep.path or ep.name, ep.max_tokens, self.cfg.max_decision_tokens))
+
+    def set_max_decision_tokens(self, cap):
+        """The decision-size cap from now on; a lowered cap drops the window's episodes over it. The
+        number dropped."""
+        self.cfg.max_decision_tokens = int(cap)
+        with self._lock:
+            over = [e for e in self._eps if self._over_cap(e)]
+            if not over:
+                return 0
+            for e in over:
+                self.decisions -= e.steps
+                self.bytes -= e.nbytes
+                e.evicted = True
+                self._note_oversize(e)
+            self._eps = collections.deque(e for e in self._eps if not getattr(e, "evicted", False))
+            self._fresh = collections.deque(e for e in self._fresh if not getattr(e, "evicted", False))
+            self._version += 1
+        return len(over)
 
     def skip(self, paths):
         """Marks `paths` as seen: ``poll`` never ingests them (a resume leaving older files out)."""
@@ -250,7 +294,9 @@ class ReplayWindow:
             split = collections.Counter(e.split for e in self._eps)
             return {"episodes": len(self._eps), "decisions": self.decisions, "labelled": labelled,
                     "bytes": self.bytes, "train_episodes": split["train"], "heldout_episodes": split["heldout"],
-                    "fresh": len(self._fresh), **dict(self.counts), "last_error": self.last_error}
+                    "fresh": len(self._fresh), "max_decision_tokens": self.cfg.max_decision_tokens,
+                    "oversize_max_tokens": self.oversize_max_tokens, **dict(self.counts),
+                    "last_error": self.last_error}
 
     def _split_index(self, split, labelled):
         key = (split, labelled)

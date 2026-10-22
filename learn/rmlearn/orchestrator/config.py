@@ -87,6 +87,10 @@ SPEC = {
         ("max_decisions", 4_000_000, "the window's decisions"),
         ("max_gb", 40.0, "the window's bytes (GiB)"),
         ("heldout_fraction", 0.05, "BC's held-out games"),
+        ("max_decision_tokens", 640, "leave out of the window (BC's and R-NaD's) a whole episode with a decision of "
+         "more seat tokens, menu tokens included: one pads its whole batch to it, and attention is quadratic in "
+         "the padded length (0: no cap; a change applies to episodes ingested from then on, and a lowered cap "
+         "drops the window's episodes over it) (live)"),
         ("delete_evicted_selfplay", True, "delete self-play .rmtraj files evicted from the window (RMLOGs are kept)"),
         ("poll_interval_s", 2.0, "the window's directory polling interval"),
     ],
@@ -267,7 +271,7 @@ LIVE = {
     "eval.per_iteration", "eval.also_sampled", "eval.sprt_max_games", "eval.exploiter_every_minutes",
     "eval.exploiter_minutes", "checkpoint.every_minutes", "sb_explore.p_start", "sb_explore.p_end",
     "sb_explore.hold_frac", "sb_explore.count_weights", "sb_explore.coverage", "sb_explore.coverage_power",
-    "sb_explore.rewrite_every_s",
+    "sb_explore.rewrite_every_s", "replay.max_decision_tokens",
 }
 
 # Live keys the GPU process applies (the others are the orchestrator's).
@@ -275,7 +279,7 @@ GPU_LIVE = {"bc.lr", "bc.report_every", "bc.eval_every", "rnad.eta", "rnad.learn
             "rnad.entropy_schedule_sizes", "rnad.entropy_schedule_repeats", "rnad.reg_eps",
             "rnad.reg_eps_sideboarding", "rnad.push_every", "rnad.report_every", "rnad.games_per_step",
             "rnad.value_after_every", "rnad.max_policy_lag", "rnad.fresh_order", "actors.export_every_s",
-            "actors.export_every_steps"}
+            "actors.export_every_steps", "replay.max_decision_tokens"}
 
 
 def defaults():
@@ -432,6 +436,7 @@ def validate(cfg):
     need(0 <= m["id_dropout"] < 1, "model.id_dropout in [0, 1)")
     need(cfg["replay"]["max_decisions"] > 0 and cfg["replay"]["max_gb"] > 0, "replay limits are positive")
     need(0 <= cfg["replay"]["heldout_fraction"] < 1, "replay.heldout_fraction in [0, 1)")
+    need(cfg["replay"]["max_decision_tokens"] >= 0, "replay.max_decision_tokens >= 0")
     need(cfg["b0"]["decisions"] >= 0, "b0.decisions >= 0")
     need(0 <= cfg["b0"]["explore_frac"] < 1, "b0.explore_frac in [0, 1)")
     need(cfg["bc"]["lr"] > 0 and cfg["bc"]["batch_size"] > 0, "bc.lr and bc.batch_size are positive")

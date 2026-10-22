@@ -100,6 +100,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `model.d`, `heads`, `layers`, `id_dropout`, `omniscient_critic` | 192, 4, 4, 0.1, false | `ModelConfig` |
 | `replay.max_decisions`, `replay.max_gb` | 4M, 40 | the window (BC's and R-NaD's) |
 | `replay.heldout_fraction` | 0.05 | BC's held-out games |
+| `replay.max_decision_tokens` | 640 | the window (BC's and R-NaD's) leaves out a whole episode with a decision of more seat tokens (menu tokens included; 0: no cap; live: a change applies to the episodes ingested from then on, and a lowered cap drops the window's episodes over it). One such decision pads its whole batch to it, and attention is quadratic in the padded length (§5 Memory). Each one is logged once in `gpu.log` with its path and largest decision and counted in the window's stats (`skipped_oversize`, `oversize_max_tokens`: the `window` of `bc_eval`, `rnad_step` and `status`, `bc_train`'s `window_skipped_oversize`, the status's window line). The actors still play such games, and their results lines count as any other's |
 | `replay.delete_evicted_selfplay` | true | evicted self-play `.rmtraj` deleted (RMLOGs kept) |
 | `server.max_batch`, `deadline_us`, `precision` | 512, 2000, fp32 | the RMIP server |
 | `b0.decisions`, `b0.explore_frac`, `b0.corpus_dir` | 5M, 0.2, `""` | the corpus; a corpus directory skips B0 |
@@ -258,6 +259,11 @@ state saved, exit status 2 — systemd restarts it (`Restart=on-failure`), or `s
 part, ~5 KB without): `replay.max_gb` bounds it (B0's 5M decisions with the omniscient part
 are ~65 GB on disk; the BC window keeps the newest 40 GB). Each actor is ~30 MB plus ~40 MB per
 teacher. `run.memory_max` caps all of it; leave room for the page cache.
+
+On the GPU, attention is quadratic in a batch's padded token count, and almost every decision
+has at most ~600 seat tokens; a rare legal game (a board of hundreds of tokens) has decisions of
+2000 and more. `replay.max_decision_tokens` (640) leaves such games out of the window, so a BC
+batch of `bc.batch_size` decisions pads to at most the cap.
 
 ## 6. The phases
 
@@ -540,7 +546,9 @@ and rungs first — reusing an export newer than its checkpoint, re-exporting an
 export an `eval_failed` —, `rnad.fresh_order`, the policy-lag cap and percentiles), the control protocol, an orchestrator over a fake
 run driven through its socket and its status from the files, and the resume bookkeeping (actor
 start indices, the results tail, the actor pool's crash restarts and back-off against a fake engine,
-the window restore, checkpoint pruning, the schedules and evaluators (with `actors.teacher_tier = "hard+sb"`:
+the window restore, the window's decision-size cap (an episode over `replay.max_decision_tokens` left
+out whole, counted and logged; a lowered cap live; the default on a run created before the key; the
+status line), checkpoint pruning, the schedules and evaluators (with `actors.teacher_tier = "hard+sb"`:
 the teacher command, B0's scripted seats and DAgger's labels at that tier, every evaluation opponent
 `scripted:hard`), `bc.sideboard_weight` on a synthetic batch (1: the plain mean exactly; the weighted
 mean otherwise), `rnad.reg_eps_sideboarding` at 0 and 0.01 (finite log π and gradients), structured sideboard exploration
