@@ -17,6 +17,7 @@ checks: ``spec_hash``, ``vocab_hash``, ``text_model`` and ``policy_version``:
 callable over the contract's ten inputs.
 """
 
+import copy
 import importlib
 import os
 import zipfile
@@ -66,8 +67,50 @@ def metadata(policy):
     return {k: str(getattr(policy, k)) for k in META_KEYS}
 
 
+_SCRIPTED = {}     # _script_key -> the ScriptModule compiled for that structure
+
+
+def _script_key(policy):
+    """What a compiled policy depends on besides its tensors' values and the metadata strings: each
+    submodule's class and plain attributes, each tensor's name, shape and dtype."""
+    attrs = []
+    for name, m in policy.named_modules():
+        plain = sorted((k, v) for k, v in vars(m).items()
+                       if isinstance(v, (bool, int, float, str)) and not (m is policy and k in META_KEYS))
+        attrs.append((name, type(m).__module__, type(m).__qualname__, tuple(plain)))
+    tensors = sorted((k, tuple(v.shape), v.dtype) for k, v in _named_tensors(policy).items())
+    return tuple(attrs), tuple(tensors)
+
+
+def _named_tensors(module):
+    """Parameters and buffers by name, non-persistent buffers included."""
+    out = dict(module.named_parameters())
+    out.update(module.named_buffers())
+    return out
+
+
+def _scripted(policy):
+    """`policy` as a ScriptModule. torch.jit.script compiles new types on every call and never frees
+    them (~14 MB a call for this model), so a policy of an already compiled structure reuses that
+    ScriptModule with `policy`'s tensors copied in and its metadata strings set. The cached module is
+    compiled from a copy (a ScriptModule shares its source's tensors), so no caller's policy is
+    overwritten by a later export."""
+    key = _script_key(policy)
+    sm = _SCRIPTED.get(key)
+    if sm is None:
+        sm = _SCRIPTED[key] = torch.jit.script(copy.deepcopy(policy))
+        return sm
+    src, dst = _named_tensors(policy), _named_tensors(sm)
+    with torch.no_grad():
+        for k, v in src.items():
+            dst[k].copy_(v)
+    for k in META_KEYS:
+        setattr(sm, k, getattr(policy, k))
+    return sm
+
+
 def export_torchscript(policy, path):
-    scripted = torch.jit.script(policy)
+    scripted = _scripted(policy)
     tmp = path + ".tmp"
     scripted.save(tmp)
     os.replace(tmp, path)
