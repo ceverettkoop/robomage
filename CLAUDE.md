@@ -609,7 +609,7 @@ sections above are not repeated here.
   reader), `rmtb` (RMTB named-array files, `docs/featurizer.md` §4.4), `oracle_text` (text
   normalisation, text / vocab hashes, the model pin, staleness, the inputs file), `wordpiece`
   (the BERT WordPiece tokenizer); the featurizer (`docs/featurizer.md`): `columns` (the tag rules),
-  `registry` (+ the committed `registry.json`, compiled in with `#embed`: the layout registry, every
+  `registry` (+ the committed `registry.json`, compiled in with the assembler's `.incbin`: the layout registry, every
   slot's, column's, enum value's, type's, relation's and key's permanent position and capacity,
   `layout_hash`; `docs/featurizer.md` §6.1), `card_tables` (the card, ability and part tables from a
   whole-vocab CARDS frame at the registry's positions, their RMTB files and the ability index: card

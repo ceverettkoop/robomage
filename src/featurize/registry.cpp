@@ -6,19 +6,28 @@
 #include "../state_format/schema.h"
 #include "json.h"
 
-namespace {
+// The committed registry (src/featurize/registry.json), compiled in: the assembler's .incbin copies
+// the file's bytes, then a NUL, into read-only data (the Makefile passes the file's path as
+// RM_REGISTRY_JSON and makes this object depend on it).
+#ifndef RM_REGISTRY_JSON
+#define RM_REGISTRY_JSON "src/featurize/registry.json"
+#endif
+#ifdef __APPLE__
+#define RM_REGISTRY_SYM "_rm_featurize_registry_json"
+#define RM_REGISTRY_PUSH ".const\n"
+#define RM_REGISTRY_POP ".text\n"
+#else
+#define RM_REGISTRY_SYM "rm_featurize_registry_json"
+#define RM_REGISTRY_PUSH ".pushsection .rodata\n"
+#define RM_REGISTRY_POP ".popsection\n"
+#endif
+__asm__(RM_REGISTRY_PUSH ".globl " RM_REGISTRY_SYM "\n"
+                         ".p2align 4\n" RM_REGISTRY_SYM ":\n"
+                         ".incbin \"" RM_REGISTRY_JSON "\"\n"
+                         ".byte 0\n" RM_REGISTRY_POP);
+extern "C" const char rm_featurize_registry_json[];
 
-// The committed registry (src/featurize/registry.json), compiled in.
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc23-extensions"
-#endif
-const unsigned char REGISTRY_BYTES[] = {
-#embed "registry.json"
-    , 0};
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+namespace {
 
 // Enums whose values the rules fix (a face, a seat, a step, a colour, a layer of CR 613, …) or the
 // schema lists whole (every subtype, card type and supertype the parser knows): their capacity is
@@ -859,7 +868,7 @@ std::string registry_error(const Registry &registry) {
 }
 
 const std::string &builtin_registry_text() {
-    static const std::string text(reinterpret_cast<const char *>(REGISTRY_BYTES), sizeof REGISTRY_BYTES - 1);
+    static const std::string text(rm_featurize_registry_json);
     return text;
 }
 

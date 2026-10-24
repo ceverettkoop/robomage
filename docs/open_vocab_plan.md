@@ -326,7 +326,8 @@ identity, kept for logs and episodes).
   row numbers for every existing (card, index).
 
 **Done** (one commit on `refactor/open-vocab`). The registry, `src/featurize/registry.{h,cpp,json}`
-(`docs/featurizer.md` §6.1 has the design; the file is compiled in with `#embed`), and everything
+(`docs/featurizer.md` §6.1 has the design; the file is compiled in with `#embed`, which S3 replaced by an assembler `.incbin`: GitHub CI's gcc 13
+has no `#embed`), and everything
 above, plus what it implied:
 
 - **The registry.** Sections `dims`, `enums`, `token_types`, `numeric`, `categorical`, `cards`,

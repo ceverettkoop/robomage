@@ -105,6 +105,13 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
+# src/featurize/registry.cpp compiles src/featurize/registry.json in (the assembler's .incbin, which
+# the compiler's dependency files do not list): its object depends on the file.
+REGISTRY := src/featurize/registry.json
+REGISTRY_CARDS := .cache/registry/cards.rmst
+$(ODIR)/featurize/registry.o: $(REGISTRY)
+$(ODIR)/featurize/registry.o: CXXFLAGS += -DRM_REGISTRY_JSON='"$(abspath $(REGISTRY))"'
+
 .DEFAULT_GOAL := all
 
 # text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
@@ -270,8 +277,6 @@ text-table: program
 # slots, token and relation types, ability keys; never moving one; past a capacity it fails), then
 # rebuilds so the binaries compile the new file in. Run it after a change that adds a mechanic,
 # keyword or column; the gate's vocab tier fails while the file is stale. Commit the file.
-REGISTRY := src/featurize/registry.json
-REGISTRY_CARDS := .cache/registry/cards.rmst
 
 registry: program rmfeat
 	@mkdir -p $(dir $(REGISTRY_CARDS))

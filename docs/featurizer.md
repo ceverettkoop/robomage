@@ -479,7 +479,8 @@ rather than an RMSTATE frame, so consumers outside C++ read it with any JSON par
 **The layout is the contract, the vocab is data** (`docs/open_vocab_plan.md` S2). Every position a
 network's parameters are indexed by is fixed by one committed, append-only file,
 `src/featurize/registry.json` (`src/featurize/registry.h`; compiled into every binary that
-featurizes, with `#embed`), rather than by a running offset over today's schema and vocab. Its
+featurizes: the assembler's `.incbin` in `registry.cpp`, the Makefile making its object depend on
+the file), rather than by a running offset over today's schema and vocab. Its
 sections, every entry matched by name:
 
 | Section | Gives | Capacity |
