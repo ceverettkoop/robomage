@@ -36,6 +36,8 @@ corpus/
 # unstaged after a re-record.
 !tests/corpus/
 !tests/corpus/**
+# ...and so is the open-vocabulary baseline's copy of its decision logs (docs/open_vocab_plan.md S0).
+!tests/open_vocab/sources/corpus/
 
 # robomage_check transcript/draw-log output directory, and the draw logs rm_driver.py
 # writes to cwd.

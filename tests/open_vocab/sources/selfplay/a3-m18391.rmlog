@@ -1,0 +1,601 @@
+RMLOG v3
+SEED 545850224
+FLAGS bo3 machine max-game-decisions=5000
+DECK_A league/bug
+2 Baleful Strix
+1 Bayou
+4 Brainstorm
+3 Fatal Push
+3 Flow State
+4 Force of Will
+1 Forest
+1 Island
+1 Kaito, Bane of Nightmares
+1 Life from the Loam
+1 Lorien Revealed
+4 Misty Rainforest
+4 Orcish Bowmasters
+3 Polluted Delta
+4 Ponder
+2 Sheoldred's Edict
+1 Swamp
+3 Tamiyo, Inquisitive Student
+2 Thoughtseize
+3 Tropical Island
+1 Undercity Sewers
+2 Underground Sea
+2 Uro, Titan of Nature's Wrath
+1 Verdant Catacombs
+4 Wasteland
+2 Witherbloom Command
+
+SIDEBOARD:
+2 Carpet of Flowers
+2 Consign to Memory
+2 Endurance
+1 Force of Vigor
+1 Hydroblast
+1 Null Rod
+2 Pernicious Deed
+1 Force of Negation
+1 Surgical Extraction
+1 Toxic Deluge
+1 Veil of Summer
+END_DECK
+DECK_B league/uw_control
+4 Brainstorm
+4 Flooded Strand
+4 Flow State
+2 Force of Negation
+4 Force of Will
+1 Geist of Saint Traft
+2 Island
+2 Lorien Revealed
+1 Meticulous Archive
+2 Misty Rainforest
+2 Murktide Regent
+1 Mystic Sanctuary
+1 Plains
+2 Polluted Delta
+4 Ponder
+1 Spell Pierce
+1 Spell Snare
+4 Swords to Plowshares
+4 Tamiyo, Inquisitive Student
+1 Teferi, Time Raveler
+2 The One Ring
+3 Tundra
+2 Tune the Narrative
+4 Wasteland
+2 Wrath of the Skies
+
+SIDEBOARD:
+4 Consign to Memory
+2 Containment Priest
+2 Flusterstorm
+1 Lavinia, Azorius Renegade
+2 Prismatic Ending
+1 Surgical Extraction
+2 Triumph of Saint Katherine
+1 Wrath of the Skies
+END_DECK
+DECISIONS
+0
+0
+1
+1
+6
+1
+0
+3
+4
+2
+1
+2
+0
+1
+1
+1
+1
+0
+0
+1
+0
+1
+0
+0
+2
+1
+3
+0
+0
+1
+0
+1
+1
+1
+1
+1
+0
+3
+0
+0
+0
+0
+0
+1
+0
+1
+4
+3
+2
+1
+1
+2
+0
+2
+0
+0
+0
+1
+1
+1
+4
+0
+1
+1
+3
+1
+2
+1
+4
+3
+2
+1
+0
+1
+0
+5
+0
+1
+2
+1
+0
+0
+0
+1
+3
+0
+1
+1
+1
+0
+0
+1
+0
+5
+0
+1
+8
+0
+1
+0
+1
+4
+0
+1
+0
+6
+1
+1
+1
+1
+1
+1
+0
+0
+1
+3
+1
+2
+0
+1
+1
+2
+0
+1
+1
+4
+1
+1
+0
+0
+0
+0
+0
+0
+1
+1
+0
+3
+2
+1
+0
+0
+0
+1
+0
+1
+0
+1
+0
+0
+0
+7
+1
+3
+0
+0
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0
+0
+1
+1
+0
+0
+1
+0
+1
+3
+1
+11
+0
+0
+3
+1
+1
+2
+0
+1
+7
+0
+1
+0
+4
+0
+1
+0
+0
+4
+6
+3
+21
+3
+22
+0
+0
+0
+3
+1
+0
+2
+0
+1
+1
+6
+1
+0
+6
+4
+4
+2
+0
+0
+1
+1
+2
+0
+1
+8
+1
+1
+1
+4
+1
+0
+7
+1
+2
+0
+1
+1
+0
+0
+0
+1
+1
+3
+0
+0
+3
+0
+0
+1
+0
+1
+1
+0
+1
+2
+2
+1
+0
+0
+1
+3
+1
+0
+0
+2
+1
+1
+1
+0
+0
+0
+1
+1
+1
+0
+1
+0
+1
+1
+1
+1
+2
+1
+1
+1
+1
+1
+0
+0
+0
+0
+0
+0
+1
+1
+1
+1
+0
+2
+0
+0
+0
+1
+1
+4
+3
+1
+1
+2
+1
+3
+3
+1
+1
+3
+0
+1
+1
+1
+0
+1
+4
+5
+0
+1
+1
+2
+1
+1
+1
+4
+0
+3
+1
+0
+1
+1
+4
+0
+0
+6
+0
+0
+1
+1
+1
+0
+0
+0
+0
+0
+0
+0
+0
+1
+0
+1
+1
+1
+1
+0
+1
+0
+0
+0
+0
+0
+0
+0
+1
+0
+0
+2
+0
+0
+1
+0
+1
+1
+2
+4
+0
+3
+0
+1
+0
+0
+2
+2
+1
+1
+0
+1
+0
+3
+0
+0
+4
+0
+0
+0
+0
+0
+1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+2
+4
+0
+0
+0
+0
+0
+0
+1
+0
+5
+1
+10
+7
+4
+9
+0
+0
+1
+1
+0
+0
+0
+3
+0
+1
+1
+0
+1
+1
+6
+6
+0
+1
+1
+0
+0
+0
+4
+0
+0
+0
+1
+1
+1
+0
+0
+1
+0
+2
+1
+0
+0
+1
+0
+1
+0
+1
+0
+0
+0
+0
+1
+0
+0
+1
+0
+0
+0
+0
+3
+0
+0
+0
+4
+0
+8
+0
+0
+8
+0
+1
+0
+0
+0
+1
+3
+0
+2
+0
+0
+0
+0
+1
+2
+1
+3
+0
+0
+1
+0
+0
+0
+0

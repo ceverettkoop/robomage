@@ -44,9 +44,10 @@ This plan is written to be executed in a session with no context beyond the repo
    benchmark; `pilotB` (pilotA + the omniscient critic, `runs/pilotB.toml`, critic pretraining
    script `runs/pilotB-prep/pretrain_critic.py`) never ran, so no checkpoint has a critic. The A
    vs B experiment is deferred until this plan is complete, if it is run at all; it would then
-   start from the migrated `m11`. Every checkpoint under `runs/*/ckpt/` (fixed points, `*-final.pt`,
+   start from the migrated `m11`. Every checkpoint under `runs/**/ckpt/` (fixed points, `*-final.pt`,
    `bc-*.pt`, `rnad-*.pt`) is migrated in S5 — none is to be lost. The critic paths of S0 / S5 are
-   still required (the code supports a critic) and are tested on a checkpoint built with one.
+   still required (the code supports a critic) and are tested on a checkpoint built with one
+   (S0's `runs/open_vocab_s0/ckpt/m11-critic.pt`).
    **What the pilots' results carry over:** the refactor keeps a migrated model's behaviour on the
    league decks (S5 verifies it), so the pilots' *training-recipe* conclusions apply to training
    after it: the warm start, `rnad.reg_eps` / `reg_eps_sideboarding`, pair weighting, and whether
@@ -127,6 +128,49 @@ Each stage lists what to change, then **acceptance** (all must hold before its c
 - Note the current best policy from the benchmark summaries (`runs/*/bench/end/summary.md`): it is
   the policy S5's verification continues from.
 - **Acceptance:** the fixture files reproduce bit-for-bit when regenerated.
+
+**Done** (`learn/open_vocab_baseline.py`, its docstring has the details; `generate` ~18 min on 8 × 4
+CPU threads). Decision sources are committed copies, `tests/open_vocab/sources/`: the 66 corpus logs
+and five complete self-play bo3 matches from the end of `league24h-sb` (`select` checked that their
+replay featurizes to the run's episodes step for step); 8831 seat decisions (every corpus seat
+decision, 200 of the self-play ones), 30987 menu rows. A decision is (source, viewer, game,
+sideboarding, decision) — a sideboarding phase numbers its decisions from 1 again. Outputs:
+`tests/open_vocab/baseline/` (`decisions.rmtb` + one RMTB per distinct network, ~12 MB) and
+`manifest.json` (tables' hashes, torch 2.10.0+rocm7.0, numpy 2.4.2, threads 4, every source's and
+checkpoint's sha256). Intermediates (dumps, tensors, tables) are under `runs/open_vocab_s0/`.
+
+- **Removed, not zeroed.** The reference for S5 removes the `lists` / `b_lists` **tokens** (arrays
+  `logits_nolists`, `value_nolists`, `critic_value_nolists`): S1 stops emitting them, while zeroing
+  their numeric slots would keep the tokens with their type and `player_rel` embeddings, which a
+  migrated model never sees. `b_lists` appears only at knowledge `expert+belief`, which no fixture
+  decision (and no run) uses; omniscient frames carry no `k_*` tables, so the critic values do not
+  change. **The removal is not small:** on the fixture decisions it changes m11's argmax on 2.9% of
+  decisions (mean total variation 0.014, p99 0.22) and its value by 0.13 on average (bc-final
+  0.23): the trained networks read the archetype tokens.
+- **Runnable: 30 of 80 checkpoints, 35 distinct networks** (an R-NaD learner state is `model`,
+  `target` and its distinct regularisation policies; a network stored several times — `m11` is
+  pilotA's seed and the regularisation policy of league24h-sb's last learners — is evaluated once):
+  every `league24h-sb` checkpoint (8 `bc-*`, `m1`–`m11`, `rnad-final`, three `rnad-p*`, `rnad-seed`),
+  every `pilotA` one (`m1`, `rnad-p319/p481/p562`, `rnad-seed`) and the critic fixture.
+  **Not runnable** (spec hash `9dd29020dd612c00`, not today's `9430d9f42d4559c0`): every checkpoint
+  of `league12h`, `val1`, `pilot-p1`, `pilot-p2` and `bc1/bc`; `bc1/v1` is older still
+  (`c557af8b9dea864a`). The `9dd2…` tables predate Lorien Revealed's (id 273) two ability rows and
+  the `TypeCycling` key row (`ab_keys` 72 → 73): card row 273 differs, ability rows from 310 on
+  are shifted (B8 in practice); parameter shapes are the same, so S5 can migrate them by name like
+  the others, but no fixture checks their outputs. `runs/t8/*.pt` and `runs/*/exports/live/src-*.pt`
+  are not in a `ckpt/` directory and are not covered.
+- **Critic fixture** (no run's checkpoint has a critic; `runs/pilotB-prep/m11-critic.pt` was never
+  produced): `runs/open_vocab_s0/ckpt/m11-critic.pt`, league24h-sb's `m11` through
+  `rnad_learner._load_with_config` with `omniscient_critic` on (critic initialised under a fixed
+  seed, its layers' zero-initialised relation biases drawn from a second seeded generator); its
+  policy outputs equal `m11`'s bit for bit. `generate` rebuilds it identically.
+- **Best policy:** `league24h-sb` `m11` (with `m10` and `final`, tied within their SEs at +0.04
+  paired over `bc-final` in both `bench/end` and `bench/end-vs-hard_sb`; the pilots have no
+  benchmark).
+- **For S5:** featurize exactly as `generate` does (replay each source with `--machine
+  --rmstate-dump`, `rmfeat --featurize`, f32 `tok_num` — episodes store f16) and select by the
+  index's key; a fixture's batching (sorted by token count, 32 a forward) only moves results at the
+  1e-7 level (against `exports/m11.ts.pt`: logits 1.9e-6, values 1.2e-7).
 
 ### S1. Remove archetypes and the reference metagame (3–4 days)
 
@@ -272,14 +316,14 @@ and capacities only) beside `spec_hash` (exact identity, kept for logs and episo
   heads), zero reserved positions, set `card_seen` from the ids whose `card_id` row differs from its
   initialisation (or from the run's episodes when available), zero never-seen rows. The migration
   needs the old tables (each run's `tables/`) and the old spec to read names from. **The omniscient
-  critic** (`model.critic`, present in pilotB's checkpoints and `runs/pilotB-prep/m11-critic.pt`)
+  critic** (`model.critic`; in no run's checkpoint, in S0's fixture `runs/open_vocab_s0/ckpt/m11-critic.pt`)
   has its own `Encoder` and so its own `num_proj` / `type_emb` / `cat_emb`: remap those the same
   way, and include critic values (on the decisions' omniscient frames) in S0's fixtures and the
   acceptance test.
 - **Acceptance test** (a new check in the gate's `featurize` tier; `actor` when opt-in): (a) S0's
   fixtures: each migrated checkpoint on the new layout gives the fixture outputs, except for the
   effect of S1's removed inputs — so the comparison is against the old checkpoint run with the
-  `lists` / `b_lists` slots zeroed (generate that reference in S0 too); logits and values within
+  `lists` / `b_lists` tokens removed (S0's `*_nolists` arrays); logits and values within
   1e-5 (fp32, CPU); (b) the synthetic one-card expansion: identical outputs on every decision not
   mentioning the new card.
 - **Cut-over:** migrate every checkpoint listed in §0.3 into `runs/<run>/ckpt-v2/` (originals kept);
@@ -287,7 +331,10 @@ and capacities only) beside `spec_hash` (exact identity, kept for logs and episo
   with its original config (`run.start_from`), 2–3 h of R-NaD, benchmarked (`rmtrain bench`) paired
   against the pre-cut-over export of the same checkpoint: the overall Δ and every deck's Δ must be
   within two SEs of 0 at step 0 (bench the migrated export itself) and not negative beyond two SEs
-  after the continuation.
+  after the continuation. The step-0 Δ includes S1's removal of the archetype inputs, which S0
+  measured as not small (m11's argmax moves on 2.9% of the fixture decisions): a step-0 Δ beyond
+  two SEs is then S1's cost, not a migration error, when the acceptance test (a) passes; the
+  continuation must recover it.
 - Old episodes (the replay windows, B0/DAgger corpora) are of the old layout and are not migrated;
   a resumed or new run starts with an empty window (self-play refills it in minutes). Keep the
   old corpora on disk until no experiment needs them.

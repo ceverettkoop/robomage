@@ -32,6 +32,7 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `check_rmtrain.py` | rmtrain's CPU checks, and `--smoke`: a tiny end-to-end run (GPU, engine) |
 | `bench_rnad.py` | the learner step's throughput and memory |
 | `integration.py` | checks and benches against the C++ actor (`robomage_nn`): `actor`, `server`, `bench` |
+| `open_vocab_baseline.py` | the open-vocabulary refactor's baseline fixtures (`docs/open_vocab_plan.md` S0): every runnable `runs/**/ckpt/` checkpoint's logits, values and critic values on a fixed decision set (`tests/open_vocab/`: sources, `baseline/`, `manifest.json`), also with the `lists` / `b_lists` tokens removed; `generate` (CPU, reproduces bit for bit), `select` (the decision sources) |
 
 ## Using it
 
