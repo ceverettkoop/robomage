@@ -49,8 +49,8 @@ linear maps (``Linear``) compute their weight gradient in the orientation rocBLA
 width-1 maps are products and sums. All of it is the same function as the plain formulation.
 
 Export-friendly: no control flow that depends on the data; gathers, scatter-adds and masks only.
-``InferencePolicy`` holds the card and ability rows folded into buffers (constants of the weights)
-and the four metadata strings; ``export.py`` writes it as TorchScript and AOTInductor ``.pt2``.
+``InferencePolicy`` holds the card and ability rows folded into a buffer (constants of the weights;
+each row once, the slot vectors added at lookup) and the four metadata strings; ``export.py`` writes it as TorchScript and AOTInductor ``.pt2``.
 """
 
 import copy
@@ -524,8 +524,15 @@ def smoothed_log_policy(logits, act_mask, eps, sideboarding=None, eps_sideboardi
 
 class InferencePolicy(nn.Module):
     """forward(ten contract inputs) -> (logits [B, A], value [B]); the card and ability rows folded
-    into buffers. Carries spec_hash, vocab_hash, text_model and policy_version as string attributes
-    (what export.py writes into each format's metadata)."""
+    into one buffer (``folded_rows``). Carries spec_hash, vocab_hash, text_model and policy_version
+    as string attributes (what export.py writes into each format's metadata).
+
+    ``folded_rows`` holds each card's row once, each distinct ability row once (every ability
+    address no ability has — no features, no parts — shares one row: they project alike) and the
+    per-slot vectors, not a copy of the rows per slot as the training model's ``token_table``: a
+    token's card slot k adds its card's row and slot vector k, an ability slot its row (through
+    ``ability_index``) and its slot vector, as one bag (``gather_folded``). The same function as the
+    training model's, the sums in another order."""
 
     def __init__(self, model, version=0):
         super().__init__()
@@ -543,21 +550,66 @@ class InferencePolicy(nn.Module):
         with torch.no_grad():
             was = cards.training
             cards.eval()
-            token_table = cards.token_table().detach().float().cpu().clone()
+            folded, ability_index = _fold_rows(cards)
             cards.train(was)
-        self.register_buffer("token_table", token_table)
+        self.register_buffer("folded_rows", folded)
+        self.register_buffer("ability_index", ability_index)
         self.n_cards = int(cards.n_cards)
         self.n_abilities = int(cards.n_abilities)
+        self.slot_at = int(folded.shape[0] - 1 - self.K - self.Q)
         self.none_card = int(cards.n_cards - 1)
         self.none_ability = int(cards.n_abilities)
         self.eval()
 
     def forward(self, tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok,
                 act_mask):
-        extra = gather_tokens(tok_card, tok_card, tok_ability, self.token_table, self.n_cards, self.n_abilities)
+        extra = gather_folded(tok_card, tok_ability, self.folded_rows, self.ability_index, self.slot_at, self.K)
         x = self.encoder(tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra)
         g = self.summary(x, tok_mask)
         return self.pointer(x, g, act_tok, act_mask), self.value(g)
+
+
+def _fold_rows(cards):
+    """(``folded_rows`` [n_cards + distinct ability rows + K + Q + 1, d] f32 on the CPU: the card
+    rows, the distinct ability rows, the card slots' and the ability slots' vectors, a zero row;
+    ``ability_index`` [n_abilities] i64: per ability row its row in ``folded_rows``)."""
+    card_rows = cards.card_rows().detach().float().cpu()
+    ability_rows = cards.ability_rows()[:-1].detach().float().cpu()
+    has_parts = torch.zeros(cards.n_abilities, dtype=torch.bool)
+    has_parts[cards.part_ability.cpu()] = True
+    used = (cards.ability_table.cpu() != 0).any(1) | has_parts
+    keep = torch.nonzero(used).squeeze(1)
+    empty = torch.nonzero(~used).squeeze(1)
+    if empty.numel():
+        keep = torch.cat([keep, empty[:1]])
+    position = torch.full((cards.n_abilities,), keep.numel() - 1, dtype=torch.int64)
+    position[keep] = torch.arange(keep.numel(), dtype=torch.int64)
+    d = card_rows.shape[1]
+    folded = torch.cat([card_rows, ability_rows[keep], cards.card_slot.detach().float().cpu(),
+                        cards.ability_slot.detach().float().cpu(), torch.zeros(1, d)], 0).clone()
+    return folded, position + card_rows.shape[0]
+
+
+def gather_folded(tok_card, tok_ability, table, ability_index, slot_at: int, n_card_slots: int):
+    """[B, N, d]: ``gather_tokens``' sums over ``InferencePolicy.folded_rows``: per present card slot
+    k the card's row and the slot vector at `slot_at` + k, per present ability slot q the ability's
+    row (`ability_index`) and the slot vector at `slot_at` + `n_card_slots` + q; a -1 slot adds
+    nothing (the zero row last is the bag's padding)."""
+    b, n, k = tok_card.shape
+    q = tok_ability.shape[2]
+    pad = table.shape[0] - 1
+    card_slot = torch.arange(k, dtype=tok_card.dtype, device=tok_card.device) + slot_at
+    ability_slot = torch.arange(q, dtype=tok_ability.dtype, device=tok_ability.device) + slot_at + n_card_slots
+    c_on, a_on = tok_card >= 0, tok_ability >= 0
+    padded = torch.full_like(tok_card, pad)
+    cards = torch.stack([torch.where(c_on, tok_card, padded),
+                         torch.where(c_on, card_slot.expand(b, n, k), padded)], 3).view(b, n, 2 * k)
+    padded = torch.full_like(tok_ability, pad)
+    rows = ability_index[tok_ability.clamp(min=0)]
+    abilities = torch.stack([torch.where(a_on, rows, padded),
+                             torch.where(a_on, ability_slot.expand(b, n, q), padded)], 3).view(b, n, 2 * q)
+    idx = torch.cat([cards, abilities], 2)
+    return Fn.embedding_bag(idx.view(b * n, -1), table, mode="sum", padding_idx=pad).view(b, n, -1)
 
 
 def save_checkpoint(model, path, extra=None):
