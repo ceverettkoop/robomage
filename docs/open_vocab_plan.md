@@ -37,11 +37,16 @@ This plan is written to be executed in a session with no context beyond the repo
    stopping, any active unit. Build and test only with `make` (debug) until no run is active.
 3. **Experiments that precede this plan** (results under `runs/`, read them, do not rerun):
    `league24h-sb` (the 24 h R-NaD run; its fixed points `ckpt/fixed/m1.pt` … `m11.pt`, `bc-final.pt`,
-   `rnad-final.pt`; benchmark `bench/end/summary.md`), `pilotA` (warm start from `m11`, lower
-   `reg_eps`, fair-pair weights) and `pilotB` (pilotA + the omniscient critic, seeded from
-   `runs/pilotB-prep/m11-critic.pt`); their benchmarks are `runs/pilot{A,B}/bench/end/summary.md`,
-   their chain log `runs/pilot-chain.log`. Every checkpoint under `runs/*/ckpt/` (fixed points, `*-final.pt`,
-   `bc-*.pt`) plus `runs/pilotB-prep/m11-critic.pt` is migrated in S5 — none is to be lost.
+   `rnad-final.pt`; benchmark `bench/end/summary.md`) is the source of the best checkpoints
+   (`m10`, `m11`, `final`, +0.04 paired over `bc-final`). **The pilots were stopped before a
+   result** (2026-10-24): `pilotA` (warm start from `m11`, `reg_eps` 0.02, fair-pair weights,
+   `runs/pilotA.toml`) ran to learner step 562 (`ckpt/rnad-p562.pt`, fixed point `m1`) and has no
+   benchmark; `pilotB` (pilotA + the omniscient critic, `runs/pilotB.toml`, critic pretraining
+   script `runs/pilotB-prep/pretrain_critic.py`) never ran, so no checkpoint has a critic. The A
+   vs B experiment is deferred until this plan is complete, if it is run at all; it would then
+   start from the migrated `m11`. Every checkpoint under `runs/*/ckpt/` (fixed points, `*-final.pt`,
+   `bc-*.pt`, `rnad-*.pt`) is migrated in S5 — none is to be lost. The critic paths of S0 / S5 are
+   still required (the code supports a critic) and are tested on a checkpoint built with one.
    **What the pilots' results carry over:** the refactor keeps a migrated model's behaviour on the
    league decks (S5 verifies it), so the pilots' *training-recipe* conclusions apply to training
    after it: the warm start, `rnad.reg_eps` / `reg_eps_sideboarding`, pair weighting, and whether
