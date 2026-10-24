@@ -265,7 +265,10 @@ class Worker:
                                           "checkpoint_tokens", "value_after_every")})
             saved_window = data.get("window")
         else:
-            learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device)
+            # The run's critic settings: a start_from checkpoint's config would otherwise decide them.
+            critic_cfg = {k: c["model"][k] for k in ("omniscient_critic", "critic_layers")}
+            learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device,
+                                                     model_cfg=critic_cfg)
         self.link = ServerLink(self.server, push_every=int(c["rnad"]["push_every"]))
         learner.add_hook(self.link)
         learner.add_hook(self._on_learner_event)
