@@ -9,7 +9,7 @@
 // ── --selfcheck-featurize: the featurizer under the state self-check (docs/featurizer.md §3.5) ─
 //
 // Implies --selfcheck-state. Each seat's featurizer inputs are built once per match from its own
-// SCHEMA, CARDS and METAGAME frames (card tables of the match's cards, N_CARD_TYPES + 1 card rows;
+// SCHEMA and CARDS frames (card tables of the match's cards, N_CARD_TYPES + 1 card rows;
 // featurize/card_tables.h, feature_spec.h). Then:
 //
 //   scramble     at every decision the seat's frame, k_* tables included, featurized by the actor
@@ -26,7 +26,7 @@
 
 extern bool selfcheck_featurize;  // --selfcheck-featurize
 
-// The seat's match frames (SCHEMA, CARDS, DECKLISTS, METAGAME), once per match; ignored for the
+// The seat's match frames (SCHEMA, CARDS, DECKLISTS), once per match; ignored for the
 // omniscient viewer.
 void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<std::string> &payloads);
 

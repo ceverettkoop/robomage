@@ -1,6 +1,5 @@
 #include "frames.h"
 #include "gate.h"
-#include "knowledge_meta.h"
 #include "proc.h"
 #include "scan.h"
 #include "sessions.h"
@@ -9,10 +8,9 @@
 using rmcheck::FuzzGame;
 using rmcheck::StreamGame;
 
-// One stream session of the tier (the isolation and belief parts) and what came of it.
+// One stream session of the tier (the isolation part) and what came of it.
 struct KnowledgeSession {
         StreamGame game;
-        bool belief = false;
         std::string label, dump, saved, err_path;
         std::vector<std::string> fails;
 };
@@ -65,20 +63,20 @@ static std::vector<FuzzGame> fuzz_games() {
     return out;
 }
 
-// The knowledge tier's RMSTATE sessions (expert, and expert+belief).
+// The knowledge tier's RMSTATE sessions.
 static std::vector<KnowledgeSession> sessions() {
     struct Row {
             const char *a, *b;
             bool bo3;
             long seed;
-            bool closed, belief, selfcheck;
+            bool closed, selfcheck;
     };
     static const Row rows[] = {
-        {"league/ur_delver", "league/bug", false, 31, false, false, true},
-        {"league/reanimator", "league/uw_control", true, 32, false, false, true},
-        {"league/bug", "league/wubg_doomsday", true, 33, true, false, true},
-        {"league/reanimator", "league/ur_delver", false, 51, true, true, true},
-        {"league/burn", "mav", false, 52, false, true, false},
+        {"league/ur_delver", "league/bug", false, 31, false, true},
+        {"league/reanimator", "league/uw_control", true, 32, false, true},
+        {"league/bug", "league/wubg_doomsday", true, 33, true, true},
+        {"league/reanimator", "league/ur_delver", false, 51, true, true},
+        {"league/burn", "mav", false, 52, false, false},
     };
     std::vector<KnowledgeSession> out;
     for (const Row &r : rows) {
@@ -87,26 +85,23 @@ static std::vector<KnowledgeSession> sessions() {
         s.game.deck_b = r.b;
         s.game.bo3 = r.bo3;
         s.game.seed = r.seed;
-        if (r.belief) s.game.flags = {"--knowledge-a", "expert+belief", "--knowledge-b", "expert+belief"};
         if (r.selfcheck) s.game.flags.push_back("--selfcheck-knowledge");
         if (r.closed) s.game.flags.push_back("--closed-decklist");
-        s.belief = r.belief;
-        s.label = rmcheck::stream_label(r.belief ? "belief" : "stream", s.game);
+        s.label = rmcheck::stream_label("stream", s.game);
         out.push_back(s);
     }
     return out;
 }
 
-// rmknow's own checks: the update rules, the exact solver and the belief layer's posterior.
+// rmknow's own checks: the update rules and the exact solver.
 static void selftest_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     struct Run {
             std::vector<std::string> args;
             const char *summary;
             bool fail_word;  // a line holding FAIL fails it too
     };
-    const std::vector<Run> runs = {{{"--selftest"}, "RMKNOW_SELFTEST:", true},
-        {{"--exactness", "40"}, "RMKNOW_EXACTNESS:", true},
-        {{"--belief-exactness", "10"}, "RMKNOW_BELIEF_EXACTNESS:", false}};
+    const std::vector<Run> runs = {
+        {{"--selftest"}, "RMKNOW_SELFTEST:", true}, {{"--exactness", "40"}, "RMKNOW_EXACTNESS:", true}};
     std::vector<rmcheck::ProcResult> results(runs.size());
     rmcheck::parallel_for(runs.size(), opt.jobs, [&](size_t i) {
         rmcheck::ProcSpec spec;
@@ -131,9 +126,9 @@ static void selftest_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
 }
 
 // One stream session with its dump: the stream against the dump, saved; the self-check summaries;
-// a bo3 session's sideboarding; a belief session's rows, isolation and truth at expert+belief.
+// a bo3 session's sideboarding.
 static void play_session(const rmcheck::Options &opt, const std::string &dir, KnowledgeSession *s) {
-    const std::string stem = std::string(s->belief ? "belief_" : "stream_") + std::to_string(s->game.seed);
+    const std::string stem = "stream_" + std::to_string(s->game.seed);
     s->dump = rmcheck::path_join(dir, stem + ".rms");
     s->saved = rmcheck::path_join(dir, stem + ".stream.rms");
     s->err_path = rmcheck::path_join(dir, stem + ".err");
@@ -156,35 +151,23 @@ static void play_session(const rmcheck::Options &opt, const std::string &dir, Kn
         s->fails.push_back(f);
     rmcheck::FrameDecoder dec;
     bool sideboarding = false;
-    size_t b_rows = 0;
     for (const std::string &p : run.payloads) {
         rmstate::DecodedFrame f;
         if (!dec.feed(p, &f, &err)) break;
         if (rmcheck::frame_kind(p) != rmcheck::KIND_STATE) continue;
         const rmstate::Schema &schema = *dec.schema(rmcheck::frame_viewer(p));
         sideboarding = sideboarding || rmcheck::header_value(f, schema, "sideboarding");
-        b_rows += rmcheck::Rows(f, schema, "b_list").size();
     }
     if (s->game.bo3 && !sideboarding)
         s->fails.push_back(s->label + ": no sideboarding frame (the session should cover sideboarding)");
-    if (!s->belief) return;
-    if (!b_rows) s->fails.push_back(s->label + ": no b_list rows at level expert+belief");
-    for (const std::string &path : {s->dump, s->saved})
-        for (const std::string &f : rmcheck::rmknow_isolation(opt, path, "expert+belief", nullptr))
-            s->fails.push_back(s->label + ": " + f);
-    for (const char *seat : {"A", "B"})
-        for (const std::string &f : rmcheck::rmknow_truth(opt, s->dump, seat, "expert+belief", nullptr))
-            s->fails.push_back(s->label + ": " + f);
 }
 
 namespace rmcheck {
 
-// The knowledge tier, on the engine and rmknow: selftest (rmknow
-// --selftest, --exactness 40, --belief-exactness 10), fuzz (explore games under
-// --selfcheck-knowledge), isolation (RMSTATE sessions against their dumps, k_* tables included,
-// and rmknow --isolation on every dump and saved stream), truth (rmknow --truth on every dump),
-// the belief layer's structure (expert+belief sessions: stream against dump, isolation and truth at that level),
-// archetype inference and the belief calibration report (knowledge_meta.h).
+// The knowledge tier, on the engine and rmknow: selftest (rmknow --selftest, --exactness 40), fuzz
+// (explore games under --selfcheck-knowledge), isolation (RMSTATE sessions against their dumps,
+// k_* tables included, and rmknow --isolation on every dump and saved stream) and truth (rmknow
+// --truth on every dump).
 void tier_knowledge(const Options &opt, Report &rep) {
     const std::string dir = opt.out("knowledge");
     const double t0 = now_seconds();
@@ -224,7 +207,7 @@ void tier_knowledge(const Options &opt, Report &rep) {
     for (const KnowledgeSession &s : sess) {
         for (const std::string &f : s.fails) rep.error("knowledge", f);
         if (s.fails.empty()) rep.info("OK   " + s.label + ": stream frames equal the dump's (k_* included)");
-        if (s.belief || s.dump.empty()) continue;
+        if (s.dump.empty()) continue;
         dumps.push_back(s.dump);
         isolation_files.push_back(s.dump);
         isolation_files.push_back(s.saved);
@@ -252,17 +235,13 @@ void tier_knowledge(const Options &opt, Report &rep) {
                      (j.truth ? " viewer " + j.seat : "") + ": " + j.summary);
     }
     if (isolation_files.empty()) rep.error("knowledge", "isolation: no dump or saved stream to check");
-    const double t2 = now_seconds();
-    archetype_part(opt, rep, dir);
-    calibration_part(opt, rep, dir);
     for (const KnowledgeSession &s : sess) {
         remove_tree(s.dump);
         remove_tree(s.saved);
     }
     for (const FuzzOutcome &o : outs)
         if (!o.dump.empty()) remove_tree(o.dump);
-    rep.info("knowledge: selftest + games " + fmt1(t1 - t0) + "s, isolation + truth " + fmt1(t2 - t1) +
-             "s, archetype + calibration " + fmt1(now_seconds() - t2) + "s");
+    rep.info("knowledge: selftest + games " + fmt1(t1 - t0) + "s, isolation + truth " + fmt1(now_seconds() - t1) + "s");
 }
 
 }  // namespace rmcheck

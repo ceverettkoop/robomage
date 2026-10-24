@@ -856,13 +856,11 @@ def check_featurize(expected_path):
         elif kind == "tensors":
             fails += _tensor_fails(arrays, spec)
         elif kind == "targets":
-            depth, lists = spec["library_depth"], spec["metagame"].get("meta_list", 0)
+            depth = spec["library_depth"]
             for lib in ("own_library", "opp_library"):
                 off = arrays[lib + "_offsets"].values
                 if any(off[d + 1] - off[d] > depth for d in range(len(off) - 1)):
                     fails.append(f"featurize: {name}: {lib} deeper than {depth}")
-            if any(not -1 <= v < lists for v in arrays["opp_list"].values):
-                fails.append(f"featurize: {name}: an opp_list is no meta_list row")
     if not fails:
         print(f"  OK   featurize: {len(expected['files'])} files read as written, spec {spec_hash}: shapes and "
               "indices agree", flush=True)
@@ -916,7 +914,6 @@ def _episode_fails(want):
             if _decision_slices(omni, rmtraj.TENSORS, d) != {k: s.omniscient[k] for k in rmtraj.TENSORS}:
                 fails.append(f"traj: {name}: step {d}: the omniscient tensors differ from the C++ reader's")
             tg = _decision_slices(targets, ("opp_hand", "own_library", "opp_library"), d)
-            tg["opp_list"], tg["opp_archetype"] = targets["opp_list"].values[d], targets["opp_archetype"].values[d]
             if tg != s.targets:
                 fails.append(f"traj: {name}: step {d}: the targets differ from the C++ reader's")
         if len(fails) > 10:

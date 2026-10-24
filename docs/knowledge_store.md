@@ -9,9 +9,7 @@ update rules, bound propagation, the per-frame consistency check, the `k_*` rows
 and the verification of T12: the cadence-independent model (section 9.6), `--selfcheck-knowledge`
 (soundness and the snapshot check, section 9.5; the shadow comparison with the old vector,
 section 9.7, ran until plan step 3b deleted the old vector and its memory), the sharpness scenarios (section 9.7) and the `knowledge` gate tier (`docs/ci.md`); section 9
-says how. Archetype inference's sound layer (the reference metagame, `k_template`, `k_archetype`) is
-built on it, and the belief layer (a posterior over the reference lists, `b_*` tables at level
-`expert+belief`) on that: section 10.
+says how. Section 10 is a history note on the reference-list layers once built on it.
 It builds on
 [`state_format.md`](state_format.md): the engine
 sends only what each viewer explicitly knows right now. This component supplies everything a
@@ -21,17 +19,15 @@ consistent form for every kind of agent.
 ## 1. What it is
 
 - **A C++ component, separate from the engine's rules state.** Its only input is the byte
-  stream one viewer receives: `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME`, then each frame's
+  stream one viewer receives: `SCHEMA`, `CARDS`, `DECKLISTS`, then each frame's
   snapshot and observation events. Its output is a set of **knowledge tables** attached to that viewer's
   frames.
 - **Level per seat:**
   - `off` — the knowledge tables are present but empty: the `k_meta` row alone, with level off;
-  - `expert` — full recall plus every sound logical deduction (section 4);
-  - `expert+belief` — expert's `k_*` tables plus the belief layer's `b_*` tables: probabilities
-    under a stated model, kept out of `k_*` (section 10.6).
+  - `expert` — full recall plus every sound logical deduction (section 4).
 
-  Flags are `--knowledge-a off|expert|expert+belief` / `--knowledge-b …`; the default is `expert`.
-  The level changes only the seat's `k_*` and `b_*` tables, never play.
+  Flags are `--knowledge-a off|expert` / `--knowledge-b …`; the default is `expert`.
+  The level changes only the seat's `k_*` tables, never play.
 - **The same output for every consumer:**
   - the C++ CLI renders it as a "you know / you can deduce" panel;
   - the scripted agent decodes it like any other table;
@@ -97,8 +93,7 @@ consistent form for every kind of agent.
 - On the opponent's side: hand, library, sideboard (games 2–3) and face-down cards.
 - With `--closed-decklist` the opponent's root is "unknown cards from the vocab", so only
   recall-type deductions remain. The model is the same; the root is unconstrained (lower bounds
-  only: the copies seen earlier in the match). Which reference lists of the metagame the opponent
-  can still be playing is section 10.
+  only: the copies seen earlier in the match).
 
 ## 4. What `expert` reports
 
@@ -125,9 +120,7 @@ consistent form for every kind of agent.
   per card covers deck versus sideboard.
 
 **Excluded, and left to agent policy:** probabilities, opponent modelling, and any
-"strategic" inference ("they didn't counter, so no Force of Will"). (The belief layer, section 10.6,
-is the exception for the reference lists: a posterior under a stated model at a level of its own,
-never in the `k_*` facts.)
+"strategic" inference ("they didn't counter, so no Force of Will").
 
 ### 4.3 Solving
 
@@ -172,7 +165,7 @@ enter or leave above them and converts between top and bottom.
 
 | Event (state_format §5) | Update |
 |---|---|
-| `game_start` | new networks: deck node from the root (section 3.2); library pool = the stated library count of units from it; the rest of the main deck is a set-aside pool (test-harness presets, which arrive as `zone_move` from `none`); sideboard pool = the stated sideboard count (games 2–3: the registered 75 split, unknown to the opponent). Hands start empty. Game 1 roots the main deck and the sideboard separately, each with its own set-aside rest (a companion comes from the sideboard's); the viewer's own root is the registered list in game 1 (it holds the harness presets, which `own_deck` does not) and `own_deck` in games 2–3. Under `--closed-decklist` the opponent's roots are lower-bound roots of the stated sizes (game 1 one for the library and one for the sideboard, nothing below them; games 2-3 one for both, the copies seen earlier in the match below it), which compaction keeps (section 10); a card created from `none` is a free unit of its own |
+| `game_start` | new networks: deck node from the root (section 3.2); library pool = the stated library count of units from it; the rest of the main deck is a set-aside pool (test-harness presets, which arrive as `zone_move` from `none`); sideboard pool = the stated sideboard count (games 2–3: the registered 75 split, unknown to the opponent). Hands start empty. Game 1 roots the main deck and the sideboard separately, each with its own set-aside rest (a companion comes from the sideboard's); the viewer's own root is the registered list in game 1 (it holds the harness presets, which `own_deck` does not) and `own_deck` in games 2–3. Under `--closed-decklist` the opponent's roots are lower-bound roots of the stated sizes (game 1 one for the library and one for the sideboard, nothing below them; games 2-3 one for both, the copies seen earlier in the match below it), which compaction keeps; a card created from `none` is a free unit of its own |
 | `draw` (own) | known cards leave the top of own library one at a time; positions shift; known-position facts move up |
 | `draw` (opponent) | an anonymous unit moves from the top of their library into the hand pool (each card drawn is its own `draw` event). A known top card becomes a known card in hand; a card in the viewer's live window arrives with its identity. Unless the opening-hand flag is set, the units also join the hand's **drawn-this-turn** sub-pool for the event's `turn`; a unit leaves it when it leaves the hand, and the sub-pool empties when `turn` advances |
 | `zone_move` to a public zone | pin the identity on the source pool (at the stated library position or range; e.g. a card cast from hand proves the hand held it), then remove the unit. A card the viewer holds a handle for is exactly that unit. From a hand (or another set zone) without a handle: a unit already known to be that card if there is one (copies are interchangeable), else the sub-pools whose bounds allow the card, merged when there are several; handled units are never candidates (a handled card moves with its handle). The unit stays in the network as a public unit keyed by its handle, so a later move back to a hidden zone continues it |
@@ -212,10 +205,6 @@ check confirms it), whichever frame the `game_start` arrives in.
 | `k_pool_card` | per (pool, card) with max > 0 | min copies, max copies |
 | `k_position` | per library position with a known identity or a narrowed candidate set | owner, position (from top or bottom), card if exact, pool id otherwise |
 | `k_known_hand` | per known card in the opponent's hand | card, copies known |
-| `k_template` | per (player, reference list of the METAGAME frame) | consistent, exact, registered (section 10) |
-| `k_archetype` | per (player, archetype label) | possible, exact (section 10) |
-| `b_list` | per (player, reference list); level expert+belief only | probability (10^-9 units), log-likelihood, exact (section 10.6) |
-| `b_archetype` | per (player, archetype label); level expert+belief only | probability (section 10.6) |
 
 Positions refer to the snapshot's library positions; public objects use the snapshot's handles.
 Columns: state_format Appendix A.6.
@@ -291,11 +280,6 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   variant and a library-position one), the rest quirks; no sidecar bug remained.
 - **Snapshot/restore:** the knowledge state is saved and restored with the engine snapshot,
   and frames after a restore match the originals.
-- **Archetype inference** (section 10): soundness (the true registered list, when it is a
-  reference list, is never excluded, its archetype is possible, no other archetype exact), exactness
-  (the consistency answers against an enumerator of the hypothesis networks' worlds and against the
-  sidecar given that list as an open decklist) and sharpness (at least as sharp as counting the
-  cards seen) are section 10.5.
 
 ## 8. Effect on the scripted-agent port (plan step 2)
 
@@ -337,7 +321,7 @@ standalone driver `tools/rmknow/` and the engine side `src/state_format/knowledg
 |---|---|
 | `Node` (`network.h`) | a set of one player's units the viewer cannot tell apart, at one moment: size, pin (the known card of a one-unit node), the junction that made it and the one that consumed it, root index, and while live its location (`Loc`), handle, drawn-this-turn turn and draw seq |
 | `Junction` | `in` units plus `in_fixed` cards = `out` units plus `out_fixed` cards (a split: one in; a merge: one out; after compaction any number on either side, the fixed cards being pinned units compaction replaced by their card) |
-| `Root` | a node no junction made: `EXACT` contents (a registered list), `LOWER` bounds (a closed decklist's roots), or `FREE` (a closed decklist's card created from zone none); and the part of the registered list it stands for (`RootPart`: main deck, sideboard, the 75, none), which section 10's hypotheses replace |
+| `Root` | a node no junction made: `EXACT` contents (a registered list), `LOWER` bounds (a closed decklist's roots), or `FREE` (a closed decklist's card created from zone none); and the part of the registered list it stands for (`RootPart`: main deck, sideboard, the 75, none) |
 | `Network` | one player's nodes, junctions, roots and the log of pins added to existing nodes; nodes never change, so the network is the flow-over-time record of section 3.2 |
 | `PlayerModel` (`player_model.h`) | the network plus where its live nodes are: the library as a sequence of runs (top first; a run is one node filling that many consecutive positions in an unknown order; a one-unit run is an exact position), the hand, sideboard and set-aside as sets of sub-pools, face-down and public units (one each, keyed by handle) |
 | `BoundStore` (`bounds.h`) | per node and per card class of the player's `Universe` (the cards tracked, plus one OTHER class), the least and most copies; two per player: `full` (roots constrain: the deductions) and `seen` (roots free: what was observed) |
@@ -473,13 +457,11 @@ the search. The sweep (debug build, 4 cores) takes as long as T9's bounds alone 
 costs about 12 ns in a release build. `rmknow --truth` finds no error in any of the
 31,532 frames.
 
-`Knowledge::serialize` writes a self-contained little-endian blob (`RMKN`, version 4): level,
-viewer, the SCHEMA payload (re-decoded on load), the decklists with their names, the metagame,
-match memory (copies seen, the reference lists excluded or left unproven by a finished game), both
-`PlayerModel`s (network with its fixed cards and root parts, both stores' bounds, zone lists, the
-node count at the last compaction), the handle and draw-link maps, the latest turn, the last
-frame's solutions and the template network with its per-list answers and the belief layer's
-log-likelihoods and match memory (section 10); card names and
+`Knowledge::serialize` writes a self-contained little-endian blob (`RMKN`, version 5): level,
+viewer, the SCHEMA payload (re-decoded on load), the decklists with their names, match memory
+(copies seen), both `PlayerModel`s (network with its fixed cards and root parts, both stores'
+bounds, zone lists, the node count at the last compaction), the handle and draw-link maps, the
+latest turn and the last frame's solutions; card names and
 the solver's memos are not included. `deserialize` refuses a malformed
 blob.
 
@@ -523,8 +505,8 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
   put-back example (the two put-back units, which nothing tells apart, are one run of the top two
   holding exactly one Force of Will and one Daze, exact), cut accounting, a scry range, a batch, drawn-this-turn, a draw link,
   the viewer's own rearrangement, the search rejoin, a London mulligan, closed-decklist match
-  memory, serialisation round trip, forty draw / reveal / put-back / shuffle rounds staying
-  under 20 nodes, and the reference lists of section 10.
+  memory, serialisation round trip and forty draw / reveal / put-back / shuffle rounds staying
+  under 20 nodes.
 - **`rmknow --exactness N`** (`tools/rmknow/exactness.cpp`): the solver and compaction against
   an enumerator of the worlds (`tools/rmknow/enumerate.h`) written independently of the solver. It
   takes a plain description of the constraints (node sizes and pins, roots, junctions with fixed
@@ -562,11 +544,11 @@ still sees no engine header) keeps one `Knowledge` per RMSTATE frame writer (`Ob
 seat. An
 instance is made at its writer's first frame for that seat and lives outside `Game` for the whole
 match, so match memory crosses the per-game reset (the instance resets its networks itself at
-`game_start`). The writer feeds it the seat's SCHEMA, CARDS, DECKLISTS and METAGAME frames as it writes them,
+`game_start`). The writer feeds it the seat's SCHEMA, CARDS and DECKLISTS frames as it writes them,
 then every STATE frame of the seat exactly as encoded, its events drained from that writer's own
 queue (terminal frames included). `Knowledge::table_blocks` gives the `k_*` tables as table blocks
 and `rmstate::append_frame_blocks` adds them to the frame before the writer emits it. Their ids
-(90-97, and the belief layer's 98-99 at expert+belief) are the highest and they have no text
+(90-95) are the highest and they have no text
 column, so the result is the frame one `FrameWriter` would have written with those rows (the self-check's roundtrip confirms it at every frame). The
 omniscient frames carry no `k_*` tables. With no writer on, no instance exists and nothing runs.
 
@@ -631,7 +613,7 @@ expert, 1.7 s at off and 0.8 s with no dump, so about 1 ms per seat frame) and 1
 one (22.7 s, 8.5 s, 3.3 s). A dump pays it twice per decision, the stream once per decision of the
 seat, the self-check twice more. The `rmstate` gate tier (corpus under `--selfcheck-knowledge`,
 fuzz under the self-check, two fuzz dumps, two stream sessions) takes about 3 min 10 s on 4 cores
-(2 min 30 s without the sidecar), the `knowledge` tier about 90 s (its archetype part about 12 s, section 10.5), and the whole
+(2 min 30 s without the sidecar), the `knowledge` tier about 90 s, and the whole
 `make check` about 8 min (figures of the Python gate at T11; the C++ gate's are in `docs/ci.md`).
 
 ### 9.7 Shadow comparison and sharpness (T12)
@@ -717,280 +699,16 @@ plus the divergence scenarios above, which assert expert's side of each differen
 `--knowledge-a off --knowledge-b off` all twelve fail; with the draw link ignored the miracle
 scenario fails, and with the drawn-this-turn subset ignored the Sylvan Library one does.
 
-## 10. Archetype inference: the sound layer
+## 10. History: reference lists, archetypes and beliefs (removed)
 
-What a strong player can say for certain about which deck the opponent is on: among a set of known
-decklists (the metagame), which ones the opponent could still be playing, and so which archetypes.
-It is the same kind of fact as everything else in `k_*` (true in every world); the probabilistic
-layer that weighs the consistent lists is kept apart, in `b_*` tables of a level of its own
-(section 10.6).
-
-### 10.1 The reference metagame (input)
-
-- **`METAGAME` frame** (state_format §4, A.4), sent to every viewer once per match after
-  `DECKLISTS`, the same bytes for every viewer (it is public): the archetype labels (row index =
-  archetype id), the reference lists (row index = list id: deck name, archetype, main and side
-  counts) and their cards (physical card ids, main and side copies). The sidecar never reads a file;
-  the metagame reaches it only through this frame, so it stays a pure function of the viewer's
-  stream.
-- **Source** (`src/state_format/metagame.{h,cpp}`, read once per process): `bin/resources/decks/archetypes.json`.
-  Its `_archetypes` key is the canonical label list, in index order (append only), and `unknown`
-  is appended last. Every tagged deck stem whose
-  `.dk` file exists, whose label is listed and whose every card has a vocab entry is a reference
-  list, in ascending stem order. Today all 13 tagged decks are: the ten league decks plus `delver`,
-  `doomsday` and `mav` (none is left out; the `knowledge` tier fails when a tagged deck is missing).
-- **The registered decks are not added.** The metagame is the same for every match; a match's deck
-  is a reference list only when it is a tagged deck (a test-harness or temp deck usually is not).
-  CARDS carries a row for every metagame card, so every card id of the frame resolves.
-
-### 10.2 Consistency (the sound layer)
-
-For each player and reference list L, `k_template.consistent` says whether L can be the player's
-registered list given everything the viewer knows.
-
-- **A list the viewer sees** (their own; the opponent's with open decklists, register 11) is
-  explicit: L is consistent exactly when it has the same counts (main and side, per physical card)
-  as that list, `exact` always 1. The model's own solve of that root (section 9.2) is the network
-  check of the registered list: the network has a world with it, or an `ERROR` line says otherwise.
-- **The opponent's hidden list** (`--closed-decklist`): L is consistent when a world of the
-  opponent's network exists with L as the root: game 1 the main deck exactly L's main deck and the
-  sideboard exactly L's sideboard; games 2-3 the 75 exactly L's 75, split between deck and sideboard
-  in any way (test-harness presets and a companion, outside the zones at `game_start`, come from L's
-  set-aside rest). This is the solver's feasibility question with the root swapped:
-  `hypothesis_network` (`src/knowledge/templates.h`) rebuilds the network with each list root
-  (`Root::part`: the closed decklist's lower-bound roots of the stated library and sideboard
-  sizes, game 1 one each, games 2-3 one for both) made the output of a junction from a new `EXACT`
-  root of L's part, beside a set-aside node of the units L has beyond the stated size (fewer: no
-  world); every card created from zone `none` (free roots, and the pinned ones compaction turned
-  into fixed cards: the network's net fixed cards) comes out of those set-aside nodes, with a
-  remainder for the set-aside cards not seen yet (negative: no world). Nothing else changes, so every
-  pin, junction and size constrains L as it constrains the opponent's own root. `Solver::feasible`
-  (`src/knowledge/solver.h`) answers it: the system of section 9.2 step 1 with no pool, compacted
-  keeping no node (exact for whether a world exists), seeded with the hypothesis network's own
-  propagated bounds (a contradiction there: no world), each component searched for any leaf with
-  worlds. Cards nothing pins or fixes share the OTHER class (they are interchangeable, so this is
-  exact).
-- **Exact when proven.** A finished search (or a size or propagation contradiction) proves the
-  answer, `exact` = 1. Past the budget (250,000 steps per list and template network) the list is
-  reported consistent with `exact` = 0: sound, a list is never excluded without proof. On the
-  gate's sessions no row is unproven.
-- **Copies seen.** A list holding fewer copies of a card than the opponent was seen to own in any
-  game of the match (`k_seen.match`) is excluded without a search.
-- **Match memory.** The registered list is the same in every game, and the games' worlds are
-  independent, so at `game_end` the game's answer for every list becomes match memory: a list proven
-  inconsistent stays so for the match (in game 2 a Force of Will cast from the hand no longer
-  says it was in the main deck, but game 1 did), and one left unproven keeps `exact` 0. Between
-  games the rows are the match memory and the copies seen.
-
-### 10.3 Cost and cadence: the template network
-
-Only an event that pins one of the opponent's cards or adds a root (or starts a game) can make a
-list inconsistent: a split or merge of nodes (a draw, a shuffle, a put-back) always has a solution.
-So the lists are checked against the **template network**, the opponent's network as it was after
-the last such event (settled), each list once per template network, at the first frame after it
-(or at `game_end`). Every answer is then a function of the events, whichever frames computed it, so
-the dump's and the stream's frames carry the same rows and a restored snapshot recomputes the same
-(the template network and its answers are serialised). A frame with no new pin costs nothing; the
-steps are not in `k_meta.steps` (section 6).
-
-Measured with a release `rmknow` over saved `--closed-decklist` streams, with and without their
-METAGAME frame: the archetype work adds 6-18 ms per seat over a whole match (bo1 and bo3 streams of
-250-370 frames; about 0.03-0.06 ms per frame on average), and about as much over a dump's every
-decision. With open decklists it is the rows alone. Unseeded, the feasibility search of a game-3
-template network ran past its budget on the true list (31 unproven rows in one bo3 session);
-seeding it with the hypothesis network's propagated bounds settles every check of the gate's
-sessions. The CARDS frame's metagame cards cost the engine about 4 ms (debug build) once per writer.
-
-### 10.4 Output tables (`k_template`, `k_archetype`; state_format A.6)
-
-- **`k_template`**: per player (self first, then the opponent) and reference list (list id order),
-  always every list, at level expert, between games too: `consistent`, `exact` (the answer is
-  proven) and `registered` (the list is the classification of the player's registered list, when
-  the viewer sees it: the reference list of the same deck name if there is one, else the one with
-  the most cards in common, Σ over cards of the lesser main count plus the lesser side count, ties
-  to the lower id, and none when nothing is in common). `registered` is a deterministic
-  classification of explicit information, not a deduction; it is never set for a hidden list.
-- **`k_archetype`**: per player and archetype label (label order, `unknown` included): `possible`
-  (some consistent list has this label) and `exact` (possible, and every consistent list has it).
-  The hypothesis space is the metagame: with no consistent list (an off-metagame deck) no label is
-  possible. An unproven list counts as consistent, so `exact` stays sound: the true list, when it is
-  a reference list, is among the consistent ones.
-- Level off: no rows (k_meta alone). No METAGAME frame (or no lists): no rows.
-
-### 10.5 Verification
-
-- **Soundness** (`knowledge::check_truth`, zero tolerance; `--selfcheck-knowledge` against the
-  engine's registered lists, `rmknow --truth` against the omniscient DECKLISTS frame): when a
-  player's registered list equals a reference list, its row is consistent, its archetype possible
-  and no other archetype exact; the rows marked registered are exactly the classification of the
-  true list when the viewer sees it, none otherwise.
-- **Exactness** (`rmknow --exactness N`, the `templates` cases): simulated closed-decklist games of
-  small decks (3-4 reference lists, main 8-10 and sideboard 2-3 cards of 4 kinds; draws, casts, top
-  and hand reveals, put-backs, scries, mills, shuffles, a wish from the sideboard, sometimes a
-  companion from zone none): after every frame each list's row against two independent answers, the
-  enumeration of its hypothesis network's worlds (`tools/rmknow/enumerate.h`) and a sidecar fed the
-  same events with that list as the opponent's open registered list (no error and its network's
-  enumeration finds a world). `--exactness 40`: 2,576 template checks, all exact and equal;
-  `--exactness 400`: 25,104 (11,916 of them lists with no world) in 1.3 s (release).
-  Deliberately broken, the sideboard root standing for the 75 (192 failures), the cards from zone
-  none left free (3) and a feasibility search ignoring an infeasible component (132) are caught.
-- **Sharpness** (the `knowledge` tier's `archetype` part, RMSTATE stream sessions; and
-  the scenario `knowledge_archetype_open_registered`): with open decklists every list a seat sees is
-  exactly consistent and classified registered from the first frame; under `--closed-decklist`,
-  before any of the opponent's cards is seen every label of a list that can hold the library and
-  sideboard the game started with is possible (all seven against a 60/15 deck; only slow_midrange
-  against bw_dnt's 80 cards), no consistent list lacks a card the opponent was seen to own, the
-  archetype is exact once the cards seen leave one label (Delver of Secrets is only in `delver`;
-  Daze and Lightning Bolt only in the two tempo Delver lists), and it becomes exact in each session.
-  `rmknow --selftest`'s `reference_lists` case covers the main-deck attribution (a Force of Will
-  cast in game 1 excludes a list holding it only in the sideboard), the copies-seen exclusion, the
-  match memory in game 2, the classification by cards in common and serialisation.
-
-### 10.6 The belief layer (`b_*`, level `expert+belief`)
-
-The sound layer says which reference lists the opponent can still be on; the belief layer says how
-likely each is. Its numbers are probabilities under a stated model, not facts, so they live in their
-own tables (`b_list`, `b_archetype`, ids 98-99) behind a level of their own: `--knowledge-a/-b
-expert+belief` (state_format register 38). At that level the `k_*` tables are expert's, byte for
-byte except `k_meta.level`; at `off` and `expert` the `b_*` tables are empty (so absent from the
-frame; the schema is the same). Code: `src/knowledge/belief.{h,cpp}` (the likelihood and the
-posterior), the integration in `src/knowledge/archetype.cpp`.
-
-**The model** (one game of a player whose registered list L is hidden):
-- the prior is uniform over the METAGAME frame's reference lists;
-- every junction of L's hypothesis network (section 10.2, built on the same template network)
-  distributes the units it takes in uniformly at random among its out nodes and out-side fixed
-  cards. For the random parts of the game this is exact: a shuffled library is a uniformly random
-  order, a draw takes the top of a run, a mill or a top reveal shows it. The opponent's own choices
-  among cards the viewer cannot tell apart are modelled the same way, as uninformative: which
-  unknown hand card is cast, discarded or put back, which of several looked-at cards goes where, is
-  a uniformly random one ("the cards seen are a uniformly random sample of the cards that could be
-  them"). A card the viewer already knew to be in the hand that is played is that card (the network
-  takes the known unit, section 9.1), which says nothing more; a card set aside beyond the stated
-  library and sideboard (a companion, a preset) is a uniformly random card of the list part;
-- the evidence is every pin and fixed card of the network (each identity the viewer saw), and the
-  likelihood P(evidence | L) is the probability that all of them hold. A junction with in-side
-  composition y (n units) gives its out nodes compositions x_o (sizes s_o) with probability
-  Π_c y_c! / Π_o Π_c x_oc! × Π_o s_o! / n! (multivariate hypergeometric), so the likelihood is the
-  sum over the network's consistent worlds of the product of its junctions' probabilities: the
-  sound layer's worlds, weighted. The weight counts arrangements of the physical (distinguishable)
-  cards, not multisets: a one-card draw that turns out to be Lightning Bolt has probability 4/60
-  under a list with four Bolts and 1/60 under one with one, where the number of consistent multiset
-  worlds (one each) would not tell the lists apart;
-- games are independent shuffles, so a match's likelihood is the product over its games: at each
-  `game_end` the game's log-likelihood joins the match memory (beside the sound layer's), games 2-3
-  adding theirs under the 75 hypothesis (the deck a uniformly random part of the 75, the sideboard
-  the rest: the opponent's sideboarding is a choice, modelled as uninformative like the others).
-  Main deck and sideboard are told apart only in game 1, as in the sound layer;
-- the posterior: p(L) ∝ P(evidence | L) over the lists the `k_template` rows keep (consistent,
-  proven or not), zero for the others. A list the sound layer could not exclude never gets zero:
-  if its weighted count is zero (it then has no world, but the sound layer did not prove it) or runs
-  past its budget, the copies-seen fallback below stands in. A list the viewer sees (their own, the
-  opponent's with open decklists) is explicit: the reference lists equal to it share probability 1
-  (`loglik` 0), so there is nothing to infer under open decklists.
-
-**The weighted count** (`network_likelihood`): exact, swept backwards over the junctions. A
-junction's uniform distribution is a uniformly random bijection from its out slots to its in slots,
-so a pinned slot holds the card of the in slot it maps to: a known one (a pinned in node, an
-in-side fixed card), a slot of the EXACT root (a shuffle of the list part: Π_c (T_c)_d over the
-demanded slots) or a slot of an unpinned in node, which passes the demand for that card on to the
-junction that made the node. The state is the demand (a count per named card) on the nodes whose
-consumer has been swept and whose producer not yet, summed per producer (a junction reads only the
-sum of its outs' demands), so its size is bounded by the pins, not by the nodes' sizes (a 60-card
-library run costs nothing); a node's slots are exchangeable, so the demand's multiset is all that
-matters. Per junction, with D the demand on its out side and n in
-slots, P = Π_c D_c! / (a_c! Π_t d_tc!) × Π_c (K_c)_a_c × Π_t (s_t)_|d_t| / (n)_|D|, summed over the
-ways a_c of each card's demand land on its K_c known slots and d_t on each other in node t of s_t
-slots ((a)_k the falling factorial). A forward sweep over the nodes' full compositions, the obvious
-alternative, ran past any budget on the first real game (a 60-unit node between the root and the
-rest of the network). Budget: 200,000 leaves per list and template network; the fallback past it
-(`seen_log_likelihood`, the row's `exact` 0): the cards seen this game as a uniformly random ordered
-sample of the list's 75, Σ_c log (T_c)_k_c − log (N)_m (how often it is needed: Cost, below).
-
-**Arithmetic and determinism.** Doubles in a fixed evaluation order (ordered maps, a log-factorial
-table built by cumulative sums), states rescaled after every junction with the scale kept as a log;
-log-likelihoods are summed per list. The posterior is turned into integers of 10^-9
-(`fixed_point_posterior`): one unit for each kept list, the remaining 10^9 − k units by largest
-remainder (ties to the lower list id), so a player's rows sum to exactly 10^9 (0 when no list is
-consistent), a kept list is never 0 and an excluded one always is. `b_archetype` is the sum of its
-lists' units. `b_list.loglik` is the match log-likelihood in milli-nats (i32 minimum for an excluded
-list). Like the sound layer, the likelihood is computed once per list and template network (at the
-first frame after it, or at `game_end`), so the rows are a function of the seat's events: the stream's
-and the dump's frames carry the same bytes, `rmknow --isolation --level expert+belief` reproduces
-them, and the serialised state (version 4) holds the per-list template log-likelihoods, the copies
-seen they were taken at (the fallback's input) and the match memory, so a restored snapshot
-continues exactly.
-
-**Verification** (the `knowledge` tier's `belief` part, `docs/ci.md`):
-- *structure*: two RMSTATE stream sessions at expert+belief, each with a dump (one
-  under `--closed-decklist` and `--selfcheck-knowledge`): stream frames equal the dump's (`b_*`
-  included), `rmknow --isolation` on each writer's frames, `rmknow --truth` (and the self-check's
-  soundness pass, through `knowledge::check_truth`): per player a list has probability zero exactly
-  when `k_template` excludes it, the true list (a reference list) is positive, the rows sum to the
-  full scale, each label is the sum of its lists; the self-check's snapshot restores compare the
-  serialised state. A bo3 session under `--closed-decklist` with sideboarding (776 frames per seat,
-  288,735 self-checked facts) shows no difference and no error;
-- *exactness* (`rmknow --belief-exactness N`, `tools/rmknow/exactness.cpp`): the simulated
-  closed-decklist games of section 10.5 with the viewer at expert+belief, after every frame against
-  two independent answers: the weighted forward enumeration of each consistent list's hypothesis
-  network over the lists' full card classes (`weighted_world_probability`, `tools/rmknow/enumerate.h`:
-  the same probability, so the log-likelihoods must agree to 10^-9), and each list's game played out
-  directly under the model (`tools/rmknow/generative.h`: an exact distribution over the true states,
-  library order included, that every observation reweighs; nothing in common with the network): the
-  posteriors must agree to 10^-9 and the fixed-point rows round them; and the serialised state must
-  restore to the same bytes and posterior. `--belief-exactness 100`
-  (release, 22 s): 1,622 enumeration and 873 model checks, all equal (the gate runs 10 cases, 179
-  and 95 checks, about 5 s in a debug build). Deliberately broken, multiset instead of arrangement
-  counting (a root slot holding any card the list has, unweighted) fails 327 checks in 10 cases, and
-  the known slots' (K_c)_a factor dropped fails 23 in 100 (the first at case 40: two known copies of
-  one card on one in side are rare);
-- *calibration* (not soundness): the probability the seat's `b_list` / `b_archetype` rows give the
-  opponent's true list and archetype at every seat frame of a live game, closed-decklist sessions
-  over all 13 reference lists (each list against others; release build). Figures: mean log-loss of
-  the true list (uniform prior: ln 13 = 2.565; "sound layer" is uniform over the consistent lists,
-  `k_template` alone), the same on the frames where more than one list is still consistent (where
-  the weighting matters), the archetype's log-loss (the uniform prior over lists gives a label its
-  share of the lists), Brier score, expected calibration error over 10 bins of every (frame, list)
-  pair, and the true archetype's mean probability at a game's first and last frame:
-
-  | Sessions | Frames | List log-loss (uniform / sound layer) | Several lists consistent: frames, log-loss (sound layer) | Archetype log-loss (uniform) | Brier list | ECE | True archetype first → last |
-  |---|---|---|---|---|---|---|---|
-  | random replies (`--calibration 3`: 78 sessions, bo1 and bo3, 256 games) | 21,887 | 0.125 (2.565 / 0.128) | 1,712: 1.601 (1.638) | 0.080 (1.745) | 0.055 | 0.0005 | 0.568 → 1.000 |
-  | explore agents, bo1 (26 sessions) | 7,166 | 0.217 (2.565 / 0.227) | 1,053: 1.479 (1.545) | 0.139 (1.773) | 0.096 | 0.0011 | 0.282 → 1.000 |
-  | scripted (hard) agents, bo1 (26) | 8,098 | 0.176 (2.565 / 0.168) | 1,121: 1.274 (1.213) | 0.078 (1.716) | 0.097 | 0.0030 | 0.282 → 1.000 |
-  | scripted agents, bo3 (13 matches, 58 games) | 9,380 | 0.122 (2.565 / 0.094) | 918: 1.247 (0.963) | 0.029 (1.659) | 0.080 | 0.0050 | 0.678 → 1.000 |
-
-  When this was measured the agents' games ran on BQUERY, which refused `--closed-decklist` (its
-  name-a-card menus are uncapped), so they were played with open decklists and replayed through `rmknow --belief
-  --hide-lists`, which feeds the seat's DECKLISTS frame without the opponent's list (the events are
-  the same either way). Under random and explore play the weighting beats the sound layer's
-  uniform answer where it matters (1.601 against 1.638 and 1.479 against 1.545 nats) and the
-  reliability bins track the frequencies (random play: predicted 0.13 / 0.25 / 0.34 / 0.44 / 0.52 /
-  0.65 against 0.16 / 0.17 / 0.36 / 0.52 / 0.46 / 0.58, bins of a few hundred correlated frames).
-  Against the scripted agent it is worse than uniform over the consistent lists (1.274 against
-  1.213 in bo1, 1.247 against 0.963 in bo3) and overconfident (bo3: pairs predicted 0.6-0.9 are the
-  true list 0-9% of the time): its choices are not random (a smart mulligan keeps hands with the
-  cards it wants, tutors fetch them), so the cards it shows over-represent what it looks for, and
-  the lists it confuses are near-copies within one archetype (archetype log-loss 0.029). In games
-  2-3 the match memory usually leaves one list (random play: no frame with several). The gate's
-  light version (13 random-reply bo1 sessions, every list against the one five on: 2,401 frames)
-  checks only that the list and archetype log-losses beat the uniform prior's and that the true
-  archetype's mean probability rises from a game's first frame to its last (it printed list
-  log-loss 0.253 against 2.565, 1.175 against the sound layer's 1.195 on its 517 frames with several
-  consistent lists, archetype 0.122 against 1.725, true archetype 0.282 → 1.000).
-
-**Cost.** The likelihood runs once per consistent list and template network (an opponent pin or
-root event), beside the consistency check. Release `rmknow` over saved closed-decklist streams, both
-seats: bug vs wubg_doomsday bo3 (785 records) 213 ms at expert, 232 ms at expert+belief; reanimator
-vs uw_control bo3 338 / 360 ms; so about 10 ms per seat and match. The worst case is a hand merged
-turn after turn with that turn's draws (gw_maverick's Sylvan Library): the demand on the library's
-draws spreads over many states (up to 2.5 million leaves for one list), the sweep gives up at its
-budget (about 0.15 s each in a release build) and the fallback stands in: gw_maverick vs lands bo1
-620 / 1,213 ms. Over the random-reply calibration sessions 310 of 21,887 frames (1.4%) carry a
-fallback likelihood, 299 of them against gw_maverick and 11 against reanimator; none in the agents'
-sessions. The rows themselves (an exp and a rounding per list) cost nothing measurable. The gate's
-`belief` part takes about 15 s on 4 cores (debug build).
-
-**Not built: `b_card`** (expected copies per hidden pool and card under the posterior). It needs,
-per list, the expected composition of each pool given the evidence, a forward pass of the same
-sweep per pool; left for later.
+Until `docs/open_vocab_plan.md` S1 (format version 2) the sidecar had two more layers over a
+reference metagame: a `METAGAME` frame of labelled decklists read from
+`bin/resources/decks/archetypes.json`, the sound `k_template` / `k_archetype` tables (which
+reference lists the opponent could still be on, checked on a hypothesis network with each list as
+the opponent's root) and, at a level `expert+belief`, the `b_list` / `b_archetype` tables (a
+posterior over those lists from the weighted count of each hypothesis network's worlds), with
+`rmknow --belief`, `--hide-lists`, `--belief-exactness` and the gate's archetype and calibration
+parts. They were removed with the labels: under open decklist the opponent's registered list is
+in the frames and the featurizer's ledger carries it card by card, so the network forms its own
+notion of the opponent's deck; under `--closed-decklist` the sidecar now knows only what it has
+seen. The last commit with them is `13ffb640`.

@@ -482,7 +482,7 @@ the engine, the gate or `python/` imports it.
 - **L2. Model.** The step-5 contract: an entity transformer with relation biases, a pointer
   action head over menu rows, a value head, the card / text / ability tables as frozen buffers,
   and an id embedding with id-dropout. Auxiliary heads predict hidden information (the
-  opponent's hand, its archetype) from omniscient targets. Export to the actor's format at every
+  opponent's hand, the libraries' tops) from omniscient targets. Export to the actor's format at every
   checkpoint.
 - **L3. Behaviour cloning.**
   - Cross-entropy to the teacher's label, with label smoothing.
@@ -776,7 +776,7 @@ tokenises it, so sideboarding needs no format change and no head of its own:
   (the card's vocab id) and `ordinal` (copies). The engine offers a swap in-first (a card in,
   then the cut that balances it), withholds Done while the deck is off-size, and caps a phase at
   15 swaps;
-- the knowledge sidecar's memory of the opponent across games (revealed cards, `k_archetype`).
+- the knowledge sidecar's memory of the opponent across games (revealed cards, `k_seen`).
 
 The pointer head picks sideboarding rows like any other menu rows. A sideboarding decision is part
 of the next game's episode (T1) and is credited with that game's result. A sideboarding row moves
@@ -939,8 +939,8 @@ Open:
    (SELECT_BLOCKER 76% agreement, DIG_CHOICE 72%, NAME_CARD 52%). Candidates: combat previews per
    block (damage, deaths), lethal on board, mana available next turn.
 6. **Decision-time search.** If the R-NaD policy plateaus mainly on combat and combo prompts,
-   search them (or use search for evaluation) over worlds sampled from the knowledge / belief
-   layer, with the snapshot/restore that exists, and this network as prior and value.
+   search them (or use search for evaluation) over worlds sampled from the knowledge sidecar's
+   model, with the snapshot/restore that exists, and this network as prior and value.
 7. **Model size for the long run.** R-NaD decisions per second by size (the model-perf step):
    d192/L4 1,328, d128/L4 1,844, d128/L3 2,249. Decide after a short BC comparison at d128.
 8. **The exploiter gives no meaningful number yet.** Three 20-minute PPO runs against the BC policy

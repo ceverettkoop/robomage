@@ -128,7 +128,7 @@ EFFECT_KIND(Earthbend, "Earthbend", earthbend)
 // handler covers a tap that reaches the stack. See effect_tap.cpp.
 EFFECT_KIND(Tap, "Tap", tap)
 // DB$ RevealHand (Thought-Knot Seer): the targeted player (ValidTgts$ Opponent) reveals their
-// hand to all players (CR 701.16) — logged and recorded in the belief state. General over
+// hand to all players (CR 701.16) — logged and shown to every viewer (a reveal window). General over
 // Duress/Thoughtseize-style "target player reveals their hand". See effect_reveal_hand.cpp.
 EFFECT_KIND(RevealHand, "RevealHand", reveal_hand)
 // DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.

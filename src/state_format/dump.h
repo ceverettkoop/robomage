@@ -9,7 +9,7 @@
 //
 // Writes the state-format frames of every viewer (A, B, omniscient) to FILE as
 // "RMSTATE <nbytes>\n<payload>" records while the normal protocol runs unchanged: for each viewer,
-// at its first decision of the match its SCHEMA, CARDS, DECKLISTS and METAGAME frames, then a STATE frame
+// at its first decision of the match its SCHEMA, CARDS and DECKLISTS frames, then a STATE frame
 // at every decision, and once the match is over a terminal STATE frame (header.terminal = 1, no
 // menu) with its last events. A seat's STATE frames end with the k_* tables of the dump's own
 // knowledge instance for that seat (state_format/knowledge_feed.h). A "%p" in FILE is replaced by the engine's process id. Encoding only

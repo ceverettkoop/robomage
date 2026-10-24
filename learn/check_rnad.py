@@ -517,7 +517,7 @@ def fake_tables(n_cards=12, seed=0):
            "token_types": [{"name": "player", "id": 0, "numeric": [{"name": "x"}, {"name": "y"}]},
                            {"name": "menu", "id": 1, "numeric": [{"name": "z"}]}],
            "relation_types": [["menu", "player", "of"]], "menu": "menu", "library_depth": 2,
-           "metagame": {"meta_list": 3, "meta_archetype": 2}, "card_tables": {"card": {"rows": n_cards + 1}}}
+           "card_tables": {"card": {"rows": n_cards + 1}}}
     spec = S.Spec(json.dumps(doc).encode())
     rng = np.random.RandomState(seed)
     f32 = lambda a: np.ascontiguousarray(a, np.float32)  # noqa: E731
@@ -626,11 +626,10 @@ def make_episode(spec_hash, seats, tokens, mus, chosen, result, sideboarding=Non
                        "eval_log_pi": ev_lp})
     if omni_tokens is not None:
         arrays.update(_compact(omni_tokens, "omni_"))
-        arrays.update({"opp_list": np.full(d, -1, np.int32), "opp_archetype": np.full(d, -1, np.int32)})
         for n in ("opp_hand", "own_library", "opp_library"):
             arrays[n] = np.zeros(0, np.int16)
             arrays[n + "_offsets"] = np.zeros(d + 1, np.int64)
-    attrs = {"episode_version": 1, "F": 2, "C": 2, "K": 1, "Q": 1, "menu_type": 1,
+    attrs = {"episode_version": EP.VERSION, "F": 2, "C": 2, "K": 1, "Q": 1, "menu_type": 1,
              "omniscient": int(omni_tokens is not None), "format": "bo1", "game": 0, "engine_seed": 0,
              "rmlog": "fabricated", "result_a": int(result[0]), "result_b": int(result[1]),
              "end_reason": end_reason, "decisions": d}

@@ -355,6 +355,8 @@ The corpus must stay byte-identical across 3b.
   label list and deck tags, read by `src/state_format/metagame.cpp` for the `METAGAME` frame and the
   sidecar's archetype inference, `knowledge_store.md` §10); only the codegen around it goes
   (`gen_archetypes.py`, `src/gen/archetypes_gen.h`, the BQUERY observation's matchup tail).
+  (History: `docs/open_vocab_plan.md` S1 later removed `archetypes.json`, the `METAGAME` frame and
+  the archetype and belief layers.)
 - Delete `src/search_server.{h,cpp}` and its hooks (cooperative unwind and `SEARCHINFO` in
   `input_logger.cpp`, `search_intercept_game_end` / restore handling in `game_driver.cpp`, the
   flag in `cli_args.cpp`). **Keep `src/snapshot.{h,cpp}`** (search agents, undo, analysis;

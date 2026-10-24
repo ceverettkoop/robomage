@@ -88,7 +88,7 @@ unless `swap` moves them:
 | `agent_a`, `agent_b` | agent specs (`docs/game_running.md`): `explore`, `random`, `nn:<model>[:…]`, `nn:remote:<socket>[:policies=…]`, … |
 | `teacher_a`, `teacher_b` | a teacher command (`--teacher-a/-b`, `docs/trajectory_format.md` §1.1) or null |
 | `teacher_mix` | in [0, 1] (default 0); needs a teacher |
-| `knowledge_a`, `knowledge_b` | `off`, `expert`, `expert+belief` |
+| `knowledge_a`, `knowledge_b` | `off`, `expert` |
 | `max_game_decisions` | ≥ 0: the per-game decision cap (§5) |
 | `trajectory_seats` | `A`, `B` or `AB` (default): the recorded sides |
 | `trajectory_omniscient` | bool: the episodes' omniscient part |
@@ -238,7 +238,7 @@ step records the version it was sampled from).
 **Between matches** the process resets what is match-scoped: the per-game reset as always
 (`init_ecs`, a fresh `Game`), the match state (`reset_match_state`: the score, concession and cap
 latches, the decklist stores), the agents' generator, each seat's decoded stream, the in-process
-feed's once-per-match frames (each seat gets `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME` again), the
+feed's once-per-match frames (each seat gets `SCHEMA`, `CARDS`, `DECKLISTS` again), the
 knowledge instances, the trajectory writer (no episode stays open across matches) and the teacher
 channel (its coin). Agents are reused across matches when a seat's spec repeats (an agent's
 `begin_match` clears what it kept: explore's novelty set; an in-process `nn:<model>` reloads its

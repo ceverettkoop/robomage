@@ -79,8 +79,6 @@ static bool knowledge_value(const std::string &name, int *out) {
         *out = 0;
     else if (name == "expert")
         *out = 1;
-    else if (name == "expert+belief")
-        *out = 2;
     else
         return false;
     return true;
@@ -175,7 +173,7 @@ static bool apply_entry_keys(const Json &obj, const std::string &where, Schedule
         } else if (k == "knowledge_a" || k == "knowledge_b") {
             if (!get_string(v, name, &text, err)) return false;
             if (!knowledge_value(text, &e->knowledge[side])) {
-                *err = name + " must be off, expert or expert+belief";
+                *err = name + " must be off or expert";
                 return false;
             }
         } else if (k == "max_game_decisions") {

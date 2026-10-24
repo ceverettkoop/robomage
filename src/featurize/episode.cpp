@@ -293,8 +293,6 @@ bool EpisodeWriter::add(const EpisodeStep &s, std::string *err) {
     policies_.push_back(s.policies);
     max_policies_ = std::max(max_policies_, s.policies.size());
     if (!omniscient_) return true;
-    opp_list_.push_back(s.targets.opp_list);
-    opp_archetype_.push_back(s.targets.opp_archetype);
     append_list(s.targets.opp_hand, &opp_hand_, &opp_hand_offsets_);
     append_list(s.targets.own_library, &own_library_, &own_library_offsets_);
     append_list(s.targets.opp_library, &opp_library_, &opp_library_offsets_);
@@ -386,8 +384,6 @@ RmtbFile EpisodeWriter::file(const std::string &text_model, const std::vector<Rm
     }
     if (omniscient_) {
         tokens_arrays(omni_tokens_, "omni_", &f);
-        f.arrays.push_back(rmtb_ints("opp_list", Dtype::I32, {d}, opp_list_));
-        f.arrays.push_back(rmtb_ints("opp_archetype", Dtype::I32, {d}, opp_archetype_));
         const Dtype card = spec_.card_rows <= 0x8000 ? Dtype::I16 : Dtype::I32;
         f.arrays.push_back(rmtb_ints("opp_hand", card, {opp_hand_.size()}, opp_hand_));
         f.arrays.push_back(rmtb_ints("opp_hand_offsets", Dtype::I64, {d + 1}, opp_hand_offsets_));
@@ -448,7 +444,7 @@ bool read_episode(const RmtbFile &file, Episode *out, std::string *err) {
     TokenArrays seat_tokens, omni_tokens;
     if (!read_tokens(file, "", d, &seat_tokens, err)) return false;
     if (out->omniscient && !read_tokens(file, "omni_", d, &omni_tokens, err)) return false;
-    std::vector<int64_t> eval_policy, eval_version, opp_list, opp_archetype;
+    std::vector<int64_t> eval_policy, eval_version;
     std::vector<float> eval_value, eval_log_pi;
     if (const RmtbArray *ep = file.find("eval_policy")) {
         if (ep->shape.size() != 2 || ep->shape[0] != d) {
@@ -463,14 +459,6 @@ bool read_episode(const RmtbFile &file, Episode *out, std::string *err) {
         if (eval_version.size() != d * out->policies || eval_value.size() != d * out->policies ||
             eval_log_pi.size() != mu.size() * out->policies) {
             *err = "the eval_* arrays are not [D, P] / [sum A, P]";
-            return false;
-        }
-    }
-    if (out->omniscient) {
-        if (!int_array(file, "opp_list", &opp_list, err) || !int_array(file, "opp_archetype", &opp_archetype, err))
-            return false;
-        if (opp_list.size() != d || opp_archetype.size() != d) {
-            *err = "opp_list or opp_archetype is not [D]";
             return false;
         }
     }
@@ -526,8 +514,6 @@ bool read_episode(const RmtbFile &file, Episode *out, std::string *err) {
             s.targets.game = s.game;
             s.targets.decision = s.decision;
             s.targets.sideboarding = s.sideboarding;
-            s.targets.opp_list = opp_list[i];
-            s.targets.opp_archetype = opp_archetype[i];
             slice(opp_hand, opp_hand_off, i, &s.targets.opp_hand);
             slice(own_library, own_library_off, i, &s.targets.own_library);
             slice(opp_library, opp_library_off, i, &s.targets.opp_library);

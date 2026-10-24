@@ -11,7 +11,7 @@
 // vocab's) and the featurizing modes --tables DIR (read the exported card tables instead of building
 // them; they must carry the spec's hash) and --history N (the spec's recent-event history tokens, at
 // most N events: docs/featurizer.md §3.7; a seat's frames are fed to its event history in order).
-// CARDS is robomage --cards-frame's file (SCHEMA, the whole-vocab CARDS frame, METAGAME), DUMP an
+// CARDS is robomage --cards-frame's file (SCHEMA, the whole-vocab CARDS frame), DUMP an
 // --rmstate-dump file.
 //
 // --spec prints FEATURE_SPEC (one line of JSON). --export-tables writes OUTDIR/card.rmtb,
@@ -236,8 +236,7 @@ static int run_featurize(const Options &opt, const featurize::Featurization &f, 
 static int run_targets(const Options &opt, const featurize::Featurization &f) {
     std::vector<featurize::Targets> list;
     rmstate::DecodedFrame seat_frame;
-    bool pending = false, have_lists = false;
-    featurize::RegisteredLists lists;
+    bool pending = false;
     std::string err;
     const bool ok = featurize::read_stream(
         opt.targets,
@@ -248,11 +247,9 @@ static int run_targets(const Options &opt, const featurize::Featurization &f) {
                 return true;
             }
             if (state.header.viewer != static_cast<uint8_t>(rmstate::Viewer::OMNISCIENT) || !pending) return true;
-            if (!have_lists && !featurize::registered_lists(v.schema, v.decklists, v.metagame, &lists, e)) return false;
-            have_lists = true;
             pending = false;
             list.emplace_back();
-            return featurize::decision_targets(f.spec, v.schema, seat_frame, state, lists, &list.back(), e);
+            return featurize::decision_targets(f.spec, v.schema, seat_frame, state, &list.back(), e);
         },
         &err);
     if (!ok) {

@@ -10,7 +10,7 @@
 // ── The C++ CLI's renderer: one seat's decoded RMSTATE frames as text (plan step 4b) ──────────
 //
 // Reads only the deciding seat's decoded frames (agents/decision_view.h: its STATE frame with the
-// k_* knowledge tables appended to it, and the stream's SCHEMA, CARDS, DECKLISTS and METAGAME
+// k_* knowledge tables appended to it, and the stream's SCHEMA, CARDS and DECKLISTS
 // frames), never the engine, so it shows exactly what that seat may see: a display bug is a format
 // bug. Standard library and the agents' frame reader only. The human seat (cli/human.h) and
 // --trace-decisions (agents/trace.h) print it.
@@ -45,10 +45,10 @@ std::vector<std::string> pending_lines(const agents::DecisionView &v);
 // -1 also selects.
 std::vector<std::string> menu_lines(const agents::DecisionView &v, bool annotate);
 
-// The knowledge panel from the k_* (and b_*) tables. `full`: every fact (pools with their card
-// bounds, known positions, copies seen, consistent reference lists, archetypes, beliefs); else a
-// short "you know / you can deduce" summary (cards known in the opponent's hand, known library
-// positions, the opponent's archetype), empty when there is nothing to say or knowledge is off.
+// The knowledge panel from the k_* tables. `full`: every fact (pools with their card bounds, known
+// positions, copies seen); else a short "you know / you can deduce" summary (cards known in the
+// opponent's hand, known library positions), empty when there is nothing to say or knowledge is
+// off.
 std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool full);
 
 // One zone as the viewer sees it: `zone` is one of zone_names(), of the opponent's side when

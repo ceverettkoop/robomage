@@ -71,15 +71,12 @@ void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<
     if (!selfcheck_featurize || s < 0 || payloads.empty()) return;
     SeatInputs &in = seats[s];
     in = SeatInputs();
-    rmstate::DecodedFrame cards, metagame;
+    rmstate::DecodedFrame cards;
     rmstate::DecodeResult res = rmstate::decode_schema_frame(payloads[0], &in.schema);
     for (size_t i = 1; i < payloads.size() && res.ok(); ++i) {
         rmstate::DecodedFrame f;
         res = rmstate::decode_frame(payloads[i], in.schema, &f);
-        if (f.header.kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS))
-            cards = std::move(f);
-        else if (f.header.kind == static_cast<uint8_t>(rmstate::FrameKind::METAGAME))
-            metagame = std::move(f);
+        if (f.header.kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS)) cards = std::move(f);
     }
     std::string err;
     if (!res.ok()) {
@@ -87,7 +84,7 @@ void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<
         return;
     }
     if (!featurize::build_card_tables(in.schema, cards, static_cast<uint64_t>(N_CARD_TYPES) + 1, 0, &in.tables, &err) ||
-        !featurize::build_spec(in.schema, metagame, in.tables, featurize::FeatureOptions(), &in.spec, &err)) {
+        !featurize::build_spec(in.schema, in.tables, featurize::FeatureOptions(), &in.spec, &err)) {
         fail("inputs", viewer, err);
         return;
     }

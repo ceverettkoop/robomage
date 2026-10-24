@@ -132,9 +132,9 @@ CLI_FLAGS = (
     {"name": "--rmlog-dir", "metavar": "DIR",
      "help": "Keep every game's (bo3: match's) decision log in DIR, as <deck a>-<deck b>.<format>.seed<seed>.rmlog "
              "(engine --decision-log); robomage --replay LOG --trajectory-out re-featurizes it"},
-    {"name": "--knowledge-a", "kind": "choice", "choices": ("off", "expert", "expert+belief"),
+    {"name": "--knowledge-a", "kind": "choice", "choices": ("off", "expert"),
      "help": "Engine --knowledge-a: seat A's knowledge level (default: the engine's, expert)"},
-    {"name": "--knowledge-b", "kind": "choice", "choices": ("off", "expert", "expert+belief"),
+    {"name": "--knowledge-b", "kind": "choice", "choices": ("off", "expert"),
      "help": "Engine --knowledge-b (see --knowledge-a)"},
     {"name": "--engine-flags", "metavar": "FLAGS",
      "help": "Further engine flags, one quoted string (also read from $ROBOMAGE_ENGINE_FLAGS)"},

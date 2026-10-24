@@ -23,7 +23,7 @@
 namespace rmstate {
 
 constexpr uint32_t FRAME_MAGIC = 0x46534D52u;  // "RMSF", little-endian
-constexpr uint16_t FORMAT_VERSION = 1;
+constexpr uint16_t FORMAT_VERSION = 2;
 constexpr size_t FRAME_HEADER_SIZE = 24;
 constexpr size_t TABLE_HEADER_SIZE = 16;
 constexpr size_t ROW_ALIGN = 8;  // each table block's rows are zero-padded to a multiple of this
@@ -37,7 +37,7 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
 // ── Enums the format adds (Appendix A.7) ──────────────────────────────────────────────────────
 // Each list is an X-macro, so the C++ enum and its SCHEMA string table come from one list.
 
-#define RMSTATE_FRAME_KIND(X) X(SCHEMA) X(CARDS) X(DECKLISTS) X(STATE) X(METAGAME)
+#define RMSTATE_FRAME_KIND(X) X(SCHEMA) X(CARDS) X(DECKLISTS) X(STATE)
 #define RMSTATE_VIEWER(X) X(A) X(B) X(OMNISCIENT)
 #define RMSTATE_STORAGE(X) X(U8) X(U16) X(U32) X(U64) X(I8) X(I16) X(I32) X(I64) X(F32) X(TEXT)
 #define RMSTATE_HAND_SUBSET(X) X(ANY) X(DRAWN_THIS_TURN)
@@ -73,7 +73,7 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
     X(FLASHBACK)                \
     X(EVOKE)                    \
     X(ESCAPE) X(OFFSPRING) X(IMPENDING) X(WARP) X(BACK_FACE) X(ALT_COST) X(IMPULSE) X(COMPANION) X(SUSPEND) X(CANCEL)
-#define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT) X(EXPERT_BELIEF)
+#define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT)
 #define RMSTATE_POOL_KIND(X) X(HAND) X(LIBRARY_RANGE) X(SIDEBOARD) X(FACE_DOWN) X(SET_ASIDE)
 #define RMSTATE_AMOUNT_KIND(X) X(NONE) X(FIXED) X(VARIABLE)
 #define RMSTATE_TARGET_CLASS(X) \
@@ -173,9 +173,8 @@ enum class PartKind : uint8_t {
 };
 
 // ── Tables ────────────────────────────────────────────────────────────────────────────────────
-// Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 9-14, DECKLISTS 15-16, METAGAME
-// 17-19, STATE snapshot 20-48, events 80-82, knowledge 90-97, belief 98-99. The strings pool (1)
-// belongs to every frame.
+// Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 9-14, DECKLISTS 15-16, STATE
+// snapshot 20-48, events 80-82, knowledge 90-95. The strings pool (1) belongs to every frame.
 enum class TableId : uint16_t {
     STRINGS = 1,
     SCHEMA_TABLE = 2,
@@ -189,9 +188,6 @@ enum class TableId : uint16_t {
     CARD_PIP = 14,
     DECKLIST = 15,
     DECKLIST_CARD = 16,
-    META_ARCHETYPE = 17,
-    META_LIST = 18,
-    META_LIST_CARD = 19,
     HEADER = 20,
     TURN = 21,
     PLAYER = 22,
@@ -230,10 +226,6 @@ enum class TableId : uint16_t {
     K_POOL_CARD = 93,
     K_POSITION = 94,
     K_KNOWN_HAND = 95,
-    K_TEMPLATE = 96,
-    K_ARCHETYPE = 97,
-    B_LIST = 98,
-    B_ARCHETYPE = 99,
 };
 
 struct ColumnDef {

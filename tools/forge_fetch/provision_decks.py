@@ -9,7 +9,7 @@ engine asserts the moment it tries to load a card.
 
 It collects the union of (a) every card registered in src/card_vocab.h — the
 engine's full implemented-card set — and (b) every card named by the
-curated/fully-implemented decks (top-level *.dk), the scraped metagame decks
+curated/fully-implemented decks (top-level *.dk), the scraped meta decks
 (meta/), and the PFSP league roster (league/), plus the basic lands the harness
 examples use. Fetching the whole vocab (not just deck cards) gives every
 implemented card its script, whichever decks a run loads. Deck cards not yet in the vocab (unimplemented meta cards) are still

@@ -21,10 +21,8 @@
 //              its output against <name>.replay byte for byte (--record rewrites the baselines)
 //   state      the state format's self-checks over the replayed corpus, explore fuzz games and the
 //              scenarios; dump re-encoding, decoder refusals, RMSTATE sessions, name-a-card menus
-//   knowledge  rmknow --selftest / --exactness / --belief-exactness; explore games under
-//              --selfcheck-knowledge; RMSTATE sessions against their dumps; rmknow --isolation and
-//              --truth; the belief layer's structure;
-//              archetype inference; the belief calibration report
+//   knowledge  rmknow --selftest / --exactness; explore games under --selfcheck-knowledge; RMSTATE
+//              sessions against their dumps; rmknow --isolation and --truth
 //   fuzz       C++ explore vs explore over league matchups (bo1, and bo3 explore:patient matches);
 //              draws are findings
 //   bench      decisions per second of a fixed explore workload

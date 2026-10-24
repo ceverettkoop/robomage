@@ -31,7 +31,7 @@ static bool seat_reads_stdin(int seat);
 // The descriptor stdout had at startup, which carries the frames (stdout itself is pointed at
 // stderr by rmstate_outputs_init).
 static FILE *stream_out = nullptr;
-// Per seat (indexed by Zone::Ownership): its SCHEMA, CARDS, DECKLISTS and METAGAME frames were sent.
+// Per seat (indexed by Zone::Ownership): its SCHEMA, CARDS and DECKLISTS frames were sent.
 static bool stream_match_frames_sent[3] = {false, false, false};
 // The stream is on (rmstate_outputs_init).
 static bool stream_on = false;

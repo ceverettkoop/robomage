@@ -26,12 +26,9 @@
 #include <string>
 #include <vector>
 
-#include "../../src/knowledge/belief.h"
 #include "../../src/knowledge/knowledge.h"
 #include "../../src/knowledge/solver.h"
-#include "../../src/knowledge/templates.h"
 #include "enumerate.h"
-#include "generative.h"
 #include "selftest.h"
 #include "test_stream.h"
 
@@ -53,7 +50,6 @@ namespace {
 
 constexpr uint64_t ENUM_CAP = 200000;  // enumeration states at a time
 constexpr uint64_t SOLVER_STEPS = 1000000;
-constexpr uint64_t GEN_CAP = 2000000;  // the generative model's states at a time
 constexpr int A = 0, B = 1;
 
 // A small deterministic generator (the same sequence on every platform).
@@ -100,9 +96,6 @@ static void stream_case(Tally &t, uint64_t seed, bool compaction);
 static void check_knowledge(Tally &t, const knowledge::Knowledge &k, const std::vector<int> *truth_lib,
     const std::vector<int> *truth_hand, int p, const std::string &where);
 static void sculpted(Tally &t);
-static void template_case(Tally &t, uint64_t seed, Tally *belief);
-static void belief_check(Tally &b, const knowledge::Knowledge &k, const knowledge::Metagame &meta,
-    const std::vector<rmknow_test::GenerativeModel> &gens, const std::string &where);
 
 // The solver on `net` with a store propagated from scratch.
 static Solution solve_fresh(const knowledge::Network &net, const knowledge::Universe &uni,
@@ -626,416 +619,8 @@ static void sculpted(Tally &t) {
     }
 }
 
-// ── Reference lists as alternative roots (templates.h) ──────────────────────────────────────
-
-// A simulated game of opponent B under a closed decklist, B's registered list one of 3-4 small
-// reference lists (main 8-10 cards, sideboard 2-3, of 4 kinds): B draws, casts, reveals its top
-// card or its hand, puts cards back, scries, mills, shuffles, fetches a sideboard card (a wish) and,
-// in some cases, puts a companion into hand from zone none. After every frame each list's k_template
-// row of viewer A is compared with two independent answers: the enumeration of the hypothesis
-// network (hypothesis_network on the sidecar's template network: does it have a world?), and a
-// sidecar fed the same events with that list as B's open registered list (it reports no error and
-// its network's enumeration finds a world). An exact row must equal both; a row not exact must say
-// consistent. The archetype rows must follow from the template rows.
-// With `belief` (rmknow --belief-exactness), viewer A's sidecar runs at level expert+belief and every
-// frame also checks its posterior (belief_check).
-static void template_case(Tally &t, uint64_t seed, Tally *belief) {
-    constexpr int KINDS = 4, BASE = 201, OWN = 301;
-    Rng rng(seed);
-    knowledge::Metagame meta;
-    meta.present = true;
-    meta.archetypes = {"t0", "t1", "unknown"};
-    const int n_lists = 3 + rng.below(2);
-    const auto counts_of = [](const std::vector<int> &cards) {
-        std::map<int, int> m;
-        for (int c : cards) ++m[c];
-        return std::vector<std::pair<int, int>>(m.begin(), m.end());
-    };
-    std::vector<std::vector<int>> mains, sides;
-    for (int i = 0; i < n_lists; ++i) {
-        std::vector<int> main, side;
-        const int nm = 8 + rng.below(3), ns = 2 + rng.below(2);
-        for (int c = 0; c < nm; ++c) main.push_back(BASE + rng.below(KINDS));
-        for (int c = 0; c < ns; ++c) side.push_back(BASE + rng.below(KINDS));
-        knowledge::MetaList l;
-        l.name = "list" + std::to_string(i);
-        l.archetype = rng.below(2);
-        l.main = counts_of(main);
-        l.side = counts_of(side);
-        meta.lists.push_back(l);
-        mains.push_back(main);
-        sides.push_back(side);
-    }
-    const int truth = rng.below(n_lists);
-    std::vector<int> lib_b = mains[static_cast<size_t>(truth)], side_b = sides[static_cast<size_t>(truth)];
-    for (size_t i = lib_b.size(); i > 1; --i)
-        std::swap(lib_b[i - 1], lib_b[static_cast<size_t>(rng.below(static_cast<int>(i)))]);
-    // A companion: the true sideboard's last card, set aside (outside the sideboard at the start).
-    int companion = knowledge::NO_CARD;
-    if (rng.chance(30)) {
-        companion = side_b.back();
-        side_b.pop_back();
-    }
-
-    // Viewer A's sidecar (B's list hidden), then one sidecar per list with it as B's open list.
-    const size_t n = meta.lists.size();
-    std::vector<knowledge::Knowledge> ks;
-    ks.emplace_back(belief ? rmstate::KnowledgeLevel::EXPERT_BELIEF : rmstate::KnowledgeLevel::EXPERT);
-    for (size_t i = 0; i < n; ++i) ks.emplace_back();
-    knowledge::Codes codes;
-    for (size_t i = 0; i <= n; ++i) {
-        knowledge::Decklists lists;
-        lists.present[A] = true;
-        lists.cards.push_back({A, OWN, 10, 0});
-        if (i > 0) {
-            lists.present[B] = true;
-            for (const auto &c : meta.lists[i - 1].main) lists.cards.push_back({B, c.first, c.second, 0});
-            for (const auto &c : meta.lists[i - 1].side) lists.cards.push_back({B, c.first, 0, c.second});
-        }
-        ks[i].begin_match(A, codes, lists);
-        ks[i].begin_metagame(meta);
-    }
-    std::vector<Stream> ss;
-    for (size_t i = 0; i <= n; ++i) ss.emplace_back(ks[i]);
-    const auto all = [&ss](const std::function<void(Stream &)> &op) {
-        for (Stream &s : ss) op(s);
-    };
-    // B's hand: (card, the viewer's handle for it while it has one: a card put into hand openly).
-    std::vector<std::pair<int, uint32_t>> hand_b;
-    uint32_t next_handle = 1000;
-    all([&](Stream &s) { s.game_start(10, static_cast<int>(lib_b.size()), 0, 0, static_cast<int>(side_b.size())); });
-    // Each list's game under the belief layer's model, played out directly (generative.h).
-    std::vector<rmknow_test::GenerativeModel> gens;
-    if (belief)
-        for (size_t l = 0; l < n; ++l)
-            gens.emplace_back(meta.lists[l].main, meta.lists[l].side, static_cast<int>(lib_b.size()),
-                static_cast<int>(side_b.size()), GEN_CAP);
-    const auto gen = [&gens](const std::function<void(rmknow_test::GenerativeModel &)> &op) {
-        for (rmknow_test::GenerativeModel &g : gens) op(g);
-    };
-    for (int i = 0; i < 3; ++i) {
-        all([](Stream &s) { s.draw(B, knowledge::NO_CARD, 0, true, 0); });
-        gen([](rmknow_test::GenerativeModel &g) { g.draw(); });
-        hand_b.emplace_back(lib_b.front(), 0);
-        lib_b.erase(lib_b.begin());
-    }
-    const std::string tag = "template " + std::to_string(seed);
-    std::vector<bool> oracle_failed(n, false);
-    const auto check = [&](int step) {
-        const std::string where = tag + " step " + std::to_string(step);
-        for (const std::string &e : ks[0].take_errors()) t.fail(where + ": " + e);
-        const knowledge::KRows rows = ks[0].rows();
-        std::vector<int> consistent_labels;
-        for (size_t l = 0; l < n; ++l) {
-            const knowledge::KTemplateRow *row = nullptr;
-            for (const knowledge::KTemplateRow &r : rows.templates)
-                if (r.player == B && r.list == l) row = &r;
-            if (!row) {
-                t.fail(where + ": no k_template row for list " + std::to_string(l));
-                continue;
-            }
-            if (row->consistent) consistent_labels.push_back(meta.lists[l].archetype);
-            if (row->registered) t.fail(where + ": a hidden list is marked registered");
-            // The hypothesis network's enumeration.
-            bool have_direct = false, direct = false;
-            if (ks[0].template_network_active()) {
-                knowledge::Network h;
-                if (!knowledge::hypothesis_network(
-                        ks[0].template_network(), meta.lists[l].main, meta.lists[l].side, &h)) {
-                    have_direct = true;
-                } else {
-                    const EnumResult e = rmknow_test::enumerate_worlds(
-                        rmknow_test::spec_of(h, knowledge::network_universe(h)), {}, ENUM_CAP);
-                    have_direct = e.complete;
-                    direct = e.worlds > 0;
-                    if (!e.complete) ++t.skipped;
-                }
-            }
-            // The sidecar with the list as B's open list.
-            if (!ks[l + 1].take_errors().empty()) oracle_failed[l] = true;
-            bool have_open = false, open = false;
-            if (oracle_failed[l]) {
-                have_open = true;
-            } else {
-                const PlayerModel &m = ks[l + 1].player(B);
-                const EnumResult e =
-                    rmknow_test::enumerate_worlds(rmknow_test::spec_of(m.net, m.full.universe), {}, ENUM_CAP);
-                have_open = e.complete;
-                open = e.worlds > 0;
-                if (!e.complete) ++t.skipped;
-            }
-            for (int which = 0; which < 2; ++which) {
-                const bool have = which == 0 ? have_direct : have_open;
-                const bool want = which == 0 ? direct : open;
-                if (!have) continue;
-                ++t.checks;
-                if (row->exact) ++t.exact;
-                const std::string what =
-                    where + " list " + std::to_string(l) + (which == 0 ? " (hypothesis network)" : " (open list)");
-                if (!row->consistent && want)
-                    t.fail(what + ": reported inconsistent, a world exists (unsound)");
-                else if (row->exact && row->consistent != want)
-                    t.fail(what + ": reported consistent as exact, no world exists");
-            }
-            if (static_cast<int>(l) == truth && !row->consistent) t.fail(where + ": the true list is excluded");
-        }
-        for (const knowledge::KArchetypeRow &a : rows.archetypes) {
-            if (a.player != B) continue;
-            const long c =
-                std::count(consistent_labels.begin(), consistent_labels.end(), static_cast<int>(a.archetype));
-            if (a.possible != (c > 0) || a.exact != (c > 0 && c == static_cast<long>(consistent_labels.size())))
-                t.fail(where + ": archetype " + std::to_string(a.archetype) + " does not follow from the lists");
-        }
-        if (belief) belief_check(*belief, ks[0], meta, gens, where);
-    };
-    all([](Stream &s) { s.frame(); });
-    check(0);
-    const int steps = 8 + rng.below(7);
-    for (int step = 1; step <= steps; ++step) {
-        const uint16_t turn = static_cast<uint16_t>(step);
-        const int r = rng.below(100);
-        if (r < 18 && !lib_b.empty()) {  // B draws
-            all([turn](Stream &s) { s.draw(B, knowledge::NO_CARD, 0, false, turn); });
-            gen([](rmknow_test::GenerativeModel &g) { g.draw(); });
-            hand_b.emplace_back(lib_b.front(), 0);
-            lib_b.erase(lib_b.begin());
-        } else if (r < 34 && !hand_b.empty()) {  // B casts a card from hand
-            const size_t at = static_cast<size_t>(rng.below(static_cast<int>(hand_b.size())));
-            const uint32_t h = next_handle++;
-            const std::pair<int, uint32_t> card = hand_b[at];
-            all([&](Stream &s) {
-                s.move(EventKind::CAST_FROM_HIDDEN, B, Zn::HAND, Zn::STACK, Stream::card(card.first, card.second, h), 0,
-                    turn);
-            });
-            gen([&card](rmknow_test::GenerativeModel &g) {
-                if (card.second)
-                    g.cast_known(card.first);
-                else
-                    g.cast_unseen(card.first);
-            });
-            hand_b.erase(hand_b.begin() + static_cast<std::ptrdiff_t>(at));
-        } else if (r < 42 && !lib_b.empty()) {  // B's top card is revealed
-            const uint32_t h = next_handle++;
-            const int card = lib_b.front();
-            all([&](Stream &s) {
-                s.shown(EventKind::REVEAL_START, B, Zn::LIBRARY, {Stream::card(card, 0, h, Stream::top(0))}, turn);
-                s.shown(EventKind::REVEAL_END, B, Zn::LIBRARY, {Stream::card(card, h)}, turn);
-            });
-            gen([card](rmknow_test::GenerativeModel &g) { g.reveal_top(card); });
-        } else if (r < 48 && !hand_b.empty()) {  // B's hand is revealed
-            std::vector<knowledge::EventCard> shown, ended;
-            for (const auto &c : hand_b) {
-                const uint32_t h = c.second ? c.second : next_handle++;
-                shown.push_back(Stream::card(c.first, c.second, h));
-                ended.push_back(Stream::card(c.first, h, c.second));
-            }
-            all([&](Stream &s) {
-                s.shown(EventKind::REVEAL_START, B, Zn::HAND, shown, turn);
-                s.shown(EventKind::REVEAL_END, B, Zn::HAND, ended, turn);
-            });
-            std::vector<int> cards;
-            for (const auto &c : hand_b) cards.push_back(c.first);
-            gen([&cards](rmknow_test::GenerativeModel &g) { g.reveal_hand(cards); });
-        } else if (r < 58 && !hand_b.empty()) {  // B puts a card from hand on top or bottom, unseen
-            const size_t at = static_cast<size_t>(rng.below(static_cast<int>(hand_b.size())));
-            const bool bottom = rng.chance(30);
-            const std::pair<int, uint32_t> card = hand_b[at];
-            all([&](Stream &s) {
-                s.move(EventKind::ZONE_MOVE, B, Zn::HAND, Zn::LIBRARY,
-                    Stream::card(card.second ? card.first : knowledge::NO_CARD, card.second, 0, LibPos{},
-                        bottom ? Stream::bottom(0) : Stream::top(0)),
-                    0, turn);
-            });
-            gen([&card, bottom](rmknow_test::GenerativeModel &g) {
-                if (card.second)
-                    g.put_back_known(card.first, bottom);
-                else
-                    g.put_back_unseen(bottom);
-            });
-            lib_b.insert(bottom ? lib_b.end() : lib_b.begin(), card.first);
-            hand_b.erase(hand_b.begin() + static_cast<std::ptrdiff_t>(at));
-        } else if (r < 64 && lib_b.size() > 1) {  // B scries 2 and bottoms one
-            const size_t at = static_cast<size_t>(rng.below(2));
-            all([&](Stream &s) {
-                s.shown(EventKind::LOOK, B, Zn::LIBRARY,
-                    {Stream::card(knowledge::NO_CARD, 0, 0, Stream::top(0)),
-                        Stream::card(knowledge::NO_CARD, 0, 0, Stream::top(1))},
-                    turn);
-                s.move(EventKind::ZONE_MOVE, B, Zn::LIBRARY, Zn::LIBRARY,
-                    Stream::card(knowledge::NO_CARD, 0, 0, Stream::top(0, 2), Stream::bottom(0)), 0, turn);
-            });
-            gen([](rmknow_test::GenerativeModel &g) { g.scry_bottom_one(); });
-            lib_b.push_back(lib_b[at]);
-            lib_b.erase(lib_b.begin() + static_cast<std::ptrdiff_t>(at));
-        } else if (r < 72 && !lib_b.empty()) {  // B mills the top card
-            const uint32_t h = next_handle++;
-            const int card = lib_b.front();
-            all([&](Stream &s) {
-                s.move(EventKind::ZONE_MOVE, B, Zn::LIBRARY, Zn::GRAVEYARD, Stream::card(card, 0, h, Stream::top(0)), 0,
-                    turn);
-            });
-            gen([card](rmknow_test::GenerativeModel &g) { g.mill_top(card); });
-            lib_b.erase(lib_b.begin());
-        } else if (r < 80 && lib_b.size() > 1) {  // B shuffles
-            all([](Stream &s) { s.shuffle(B); });
-            gen([](rmknow_test::GenerativeModel &g) { g.shuffle(); });
-            for (size_t i = lib_b.size(); i > 1; --i)
-                std::swap(lib_b[i - 1], lib_b[static_cast<size_t>(rng.below(static_cast<int>(i)))]);
-        } else if (r < 88 && !side_b.empty()) {  // B fetches a sideboard card into hand (a wish)
-            const size_t at = static_cast<size_t>(rng.below(static_cast<int>(side_b.size())));
-            const uint32_t h = next_handle++;
-            const int card = side_b[at];
-            all([&](Stream &s) {
-                s.move(EventKind::ZONE_MOVE, B, Zn::SIDEBOARD, Zn::HAND, Stream::card(card, 0, h), 0, turn);
-            });
-            gen([card](rmknow_test::GenerativeModel &g) { g.wish(card); });
-            side_b.erase(side_b.begin() + static_cast<std::ptrdiff_t>(at));
-            hand_b.emplace_back(card, h);
-        } else if (companion != knowledge::NO_CARD) {  // B puts its companion into hand
-            const uint32_t h = next_handle++;
-            const int card = companion;
-            all([&](Stream &s) {
-                s.move(EventKind::ZONE_MOVE, B, Zn::NONE, Zn::HAND, Stream::card(card, 0, h), 0, turn);
-            });
-            gen([card](rmknow_test::GenerativeModel &g) { g.from_set_aside(card); });
-            hand_b.emplace_back(card, h);
-            companion = knowledge::NO_CARD;
-        }
-        if (rng.chance(70) || step == steps) {
-            all([](Stream &s) { s.frame(); });
-            check(step);
-        }
-    }
-}
-
-// The belief layer of viewer A's sidecar `k` against two independent answers, per frame: the
-// weighted enumeration of each consistent list's hypothesis network (enumerate.h: the same
-// probability, so the log-likelihoods must agree) and each list's game played out under the model
-// (generative.h: the same posterior). Lists the k_* tables exclude must have probability zero, the
-// others at least one unit; the fixed-point rows must round the posterior; the archetype rows must sum
-// their lists'; the serialised state must restore to the same state and posterior.
-static void belief_check(Tally &b, const knowledge::Knowledge &k, const knowledge::Metagame &meta,
-    const std::vector<rmknow_test::GenerativeModel> &gens, const std::string &where) {
-    const size_t n = meta.lists.size();
-    const knowledge::KRows rows = k.rows();
-    std::vector<const knowledge::BListRow *> row(n, nullptr);
-    std::vector<bool> consistent(n, false);
-    for (const knowledge::BListRow &r : rows.belief_lists)
-        if (r.player == B && r.list < n) row[r.list] = &r;
-    for (const knowledge::KTemplateRow &r : rows.templates)
-        if (r.player == B && r.list < n) consistent[r.list] = r.consistent;
-    uint64_t sum = 0;
-    bool all_exact = true;
-    for (size_t l = 0; l < n; ++l) {
-        if (!row[l]) {
-            b.fail(where + ": no b_list row for list " + std::to_string(l));
-            return;
-        }
-        sum += row[l]->prob;
-        if (consistent[l] != (row[l]->prob > 0))
-            b.fail(where + ": list " + std::to_string(l) + " has probability " + std::to_string(row[l]->prob) +
-                   (consistent[l] ? " though consistent" : " though excluded"));
-        if (consistent[l] && !row[l]->exact) all_exact = false;
-    }
-    const bool any = std::count(consistent.begin(), consistent.end(), true) > 0;
-    if (sum != (any ? knowledge::PROB_SCALE : 0)) b.fail(where + ": b_list sums to " + std::to_string(sum));
-    std::map<int, uint64_t> by_label;
-    for (size_t l = 0; l < n; ++l) by_label[meta.lists[l].archetype] += row[l]->prob;
-    for (const knowledge::BArchetypeRow &a : rows.belief_archetypes)
-        if (a.player == B && a.prob != by_label[a.archetype])
-            b.fail(where + ": archetype " + std::to_string(a.archetype) + " is not the sum of its lists");
-    // The state round trip keeps the belief layer's memory.
-    std::string blob, again;
-    k.serialize(blob);
-    knowledge::Knowledge restored;
-    if (!restored.deserialize(blob))
-        b.fail(where + ": the serialised state does not restore");
-    else {
-        restored.serialize(again);
-        if (again != blob || restored.belief_posterior(B) != k.belief_posterior(B))
-            b.fail(where + ": the restored state differs");
-    }
-    if (!all_exact) {
-        ++b.skipped;
-        return;
-    }
-    const std::vector<double> post = k.belief_posterior(B);
-    // The weighted enumeration of each consistent list's hypothesis network: the same likelihood.
-    if (k.template_network_active())
-        for (size_t l = 0; l < n; ++l) {
-            if (!consistent[l]) continue;
-            knowledge::Network h;
-            if (!knowledge::hypothesis_network(k.template_network(), meta.lists[l].main, meta.lists[l].side, &h))
-                continue;
-            knowledge::Universe uni = knowledge::network_universe(h);
-            for (const auto &c : meta.lists[l].main) uni.add(c.first);
-            for (const auto &c : meta.lists[l].side) uni.add(c.first);
-            bool complete = false;
-            const double p = rmknow_test::weighted_world_probability(rmknow_test::spec_of(h, uni), ENUM_CAP, &complete);
-            if (!complete) {
-                ++b.skipped;
-                continue;
-            }
-            ++b.checks;
-            bool exact = false;
-            const double ll = k.belief_log_likelihood(l, &exact);
-            if (p <= 0 || std::fabs(ll - std::log(p)) > 1e-9 * std::max(1.0, std::fabs(ll)))
-                b.fail(where + ": list " + std::to_string(l) + " log-likelihood " + std::to_string(ll) +
-                       ", the weighted enumeration " + std::to_string(p > 0 ? std::log(p) : -1e300));
-        }
-    // Each list's game under the model: the same posterior.
-    if (gens.size() != n) return;
-    std::vector<double> mass(n, 0);
-    double total = 0;
-    for (size_t l = 0; l < n; ++l) {
-        if (gens[l].over()) {
-            ++b.skipped;
-            return;
-        }
-        mass[l] = gens[l].probability();
-        total += mass[l];
-    }
-    ++b.checks;
-    ++b.exact;
-    for (size_t l = 0; l < n; ++l) {
-        const double want = total > 0 ? mass[l] / total : 0;
-        if ((mass[l] > 0) != consistent[l])
-            b.fail(where + ": list " + std::to_string(l) +
-                   (mass[l] > 0 ? " is possible under the model, excluded" : " is impossible under the model, kept"));
-        if (std::fabs(post[l] - want) > 1e-9)
-            b.fail(where + ": list " + std::to_string(l) + " posterior " + std::to_string(post[l]) + ", the model's " +
-                   std::to_string(want));
-        const double units = want * static_cast<double>(knowledge::PROB_SCALE);
-        if (std::fabs(static_cast<double>(row[l]->prob) - units) > static_cast<double>(n) + 1)
-            b.fail(where + ": list " + std::to_string(l) + " b_list prob " + std::to_string(row[l]->prob) +
-                   ", the model's posterior " + std::to_string(want));
-    }
-}
-
-int run_belief_exactness(int n) {
-    Tally templates, belief;
-    const std::clock_t t0 = std::clock();
-    for (int i = 1; i <= n; ++i) template_case(templates, static_cast<uint64_t>(i), &belief);
-    const std::clock_t t1 = std::clock();
-    belief.seconds = templates.seconds = static_cast<double>(t1 - t0) / CLOCKS_PER_SEC;
-    int failed = 0;
-    for (const auto &p : {std::make_pair("templates", &templates), std::make_pair("belief", &belief)}) {
-        const Tally &tl = *p.second;
-        std::printf("  %-10s checks=%d exact=%d skipped=%d failures=%d cpu=%.1fs\n", p.first, tl.checks, tl.exact,
-            tl.skipped, tl.failures, tl.seconds);
-        if (tl.failures) {
-            ++failed;
-            std::printf("ERROR: rmknow belief exactness %s: %d failure(s), first: %s\n", p.first, tl.failures,
-                tl.first.c_str());
-        }
-    }
-    std::printf("RMKNOW_BELIEF_EXACTNESS: cases=%d enum_checks=%d model_checks=%d skipped=%d failed=%d\n", n,
-        belief.checks - belief.exact, belief.exact, belief.skipped, failed);
-    return failed == 0 ? 0 : 1;
-}
-
 int run_exactness(int n) {
-    Tally synth, streams, raw_streams, sculpt, templates;
+    Tally synth, streams, raw_streams, sculpt;
     const std::clock_t t0 = std::clock();
     for (int i = 1; i <= n; ++i) synthetic_case(synth, static_cast<uint64_t>(i));
     const std::clock_t t1 = std::clock();
@@ -1045,17 +630,13 @@ int run_exactness(int n) {
     const std::clock_t t2 = std::clock();
     sculpted(sculpt);
     const std::clock_t t3 = std::clock();
-    for (int i = 1; i <= n; ++i) template_case(templates, static_cast<uint64_t>(i), nullptr);
-    const std::clock_t t4 = std::clock();
     synth.seconds = static_cast<double>(t1 - t0) / CLOCKS_PER_SEC;
     streams.seconds = static_cast<double>(tm - t1) / CLOCKS_PER_SEC;
     raw_streams.seconds = static_cast<double>(t2 - tm) / CLOCKS_PER_SEC;
     sculpt.seconds = static_cast<double>(t3 - t2) / CLOCKS_PER_SEC;
-    templates.seconds = static_cast<double>(t4 - t3) / CLOCKS_PER_SEC;
     int failed = 0;
     for (const auto &p : {std::make_pair("synthetic", &synth), std::make_pair("streams", &streams),
-             std::make_pair("raw-stream", &raw_streams), std::make_pair("sculpted", &sculpt),
-             std::make_pair("templates", &templates)}) {
+             std::make_pair("raw-stream", &raw_streams), std::make_pair("sculpted", &sculpt)}) {
         const Tally &tl = *p.second;
         std::printf("  %-10s checks=%d exact=%d compactions=%d skipped=%d failures=%d cpu=%.1fs\n", p.first, tl.checks,
             tl.exact, tl.compactions, tl.skipped, tl.failures, tl.seconds);
@@ -1066,7 +647,7 @@ int run_exactness(int n) {
         }
     }
     Tally all;
-    for (const Tally *tl : {&synth, &streams, &raw_streams, &sculpt, &templates}) {
+    for (const Tally *tl : {&synth, &streams, &raw_streams, &sculpt}) {
         all.checks += tl->checks;
         all.exact += tl->exact;
         all.compactions += tl->compactions;

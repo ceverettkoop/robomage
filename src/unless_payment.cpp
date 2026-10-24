@@ -29,9 +29,9 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // Offer `controller` the choice to discard `count` card(s) of their choice from hand to pay an
 // unless-cost (CR 701.8). Returns true if the cost was NOT paid (they declined or have too few
 // cards), i.e. the spell should be countered. Reusable by any "unless they discard N cards"
-// effect; the chosen cards go to the graveyard (a public zone — record the reveal in the belief
-// state). Asks are seated on `controller` through ctx.ask (which repoints and restores priority
-// around each prompt, reproducing the old caller-side swap). May suspend: `suspended` is set and
+// effect; the chosen cards go to the graveyard (a public zone — every viewer sees them). Asks are
+// seated on `controller` through ctx.ask (which repoints and restores priority around each
+// prompt, reproducing the old caller-side swap). May suspend: `suspended` is set and
 // the return value is meaningless (check it FIRST). The yes/no answer and the discard-count
 // progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from
 // the LIVE hand each ask — between asks the hand only shrinks by the discards themselves.

@@ -155,8 +155,8 @@ def to_torch(x, device="cpu", non_blocking=False):
 
 
 class Targets:
-    """An RMTB targets file: per decision `seat`, `game`, `decision`, `sideboarding`, `opp_list`,
-    `opp_archetype`, and the ragged `opp_hand`, `own_library`, `opp_library` (card ids)."""
+    """An RMTB targets file: per decision `seat`, `game`, `decision`, `sideboarding`, and the ragged
+    `opp_hand`, `own_library`, `opp_library` (card ids)."""
 
     def __init__(self, path):
         meta, arr = rmtb.read(path)
@@ -174,8 +174,8 @@ class Targets:
         return self.arr[name][off[i]:off[i + 1]]
 
     def batch(self, indices, n_cards, depth):
-        """The targets of decisions `indices` as torch tensors: `opp_list`, `opp_archetype` [B] (-1
-        none), `opp_hand` [B, n_cards] counts, `own_library`, `opp_library` [B, depth] (-1 none)."""
+        """The targets of decisions `indices` as torch tensors: `opp_hand` [B, n_cards] counts,
+        `own_library`, `opp_library` [B, depth] (-1 none)."""
         b = len(indices)
         hand = np.zeros((b, n_cards), np.float32)
         own = np.full((b, depth), -1, np.int64)
@@ -186,8 +186,5 @@ class Targets:
             pl = self._ragged("opp_library", i)[:depth]
             own[j, :len(ol)] = ol
             opp[j, :len(pl)] = pl
-        idx = np.asarray(indices, np.int64)
-        return {"opp_list": torch.from_numpy(self.arr["opp_list"][idx].copy()),
-                "opp_archetype": torch.from_numpy(self.arr["opp_archetype"][idx].copy()),
-                "opp_hand": torch.from_numpy(hand), "own_library": torch.from_numpy(own),
+        return {"opp_hand": torch.from_numpy(hand), "own_library": torch.from_numpy(own),
                 "opp_library": torch.from_numpy(opp)}

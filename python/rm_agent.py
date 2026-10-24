@@ -9,25 +9,24 @@ enum names come from the stream's SCHEMA frame, cards from its CARDS frame. No n
 - :class:`FrameCards` is the core's card knowledge, from the match's ``CARDS`` frame's structured
   columns (printed characteristics, keywords, subtypes, ability lists and their costs; no raw
   scripts), with :class:`LifeEffects`, what a card's oracle text and costs do to life.
-- :class:`SeatFrames` follows one seat's frames in stream order (SCHEMA, CARDS, DECKLISTS,
-  METAGAME, then STATE) and keeps what the view needs across them: the schema's enums, the card
-  knowledge, the registered lists and the reference metagame.
+- :class:`SeatFrames` follows one seat's frames in stream order (SCHEMA, CARDS, DECKLISTS, then
+  STATE) and keeps what the view needs across them: the schema's enums, the card knowledge and the
+  registered lists.
 - :class:`FrameView` is one decision frame as the core's view (``scripted_core`` docstring).
 - :func:`decide` asks an agent (a ``ScriptedCore``) for a decision frame's action.
 
 What the view reads (``docs/state_format.md`` Appendix A): ``header``, ``turn``, ``player``,
 ``object`` with ``object_keyword`` / ``object_counter``, ``stack``, ``pending`` with
 ``pending_cost`` / ``pending_cost_pip`` (the life a payment row pays), ``menu``,
-``k_position`` / ``k_pool`` / ``k_pool_card`` / ``k_known_hand`` (memory), ``k_template`` (the
-opponent's possible lists under ``--closed-decklist``), and for sideboarding ``decklist_card`` (each
-registered list's main and sideboard), ``match`` (who plays first in the coming game) and
-``own_deck`` (the current 75). It has no caps (every permanent, hand
+``k_position`` / ``k_pool`` / ``k_pool_card`` / ``k_known_hand`` (memory), ``decklist_card`` (each
+registered list's main and sideboard: the opponent's list, and for sideboarding the own one),
+``match`` (who plays first in the coming game) and ``own_deck`` (the current 75). It has no caps (every permanent, hand
 card, graveyard and exile card and stack object is there), reads summoning sickness as the rule
 (``object.sick``: a creature, haste considered), all keywords, a token's real characteristics,
 each permanent's own mana value and types, joins an action to its own object by handle
 (``exact_refs``), recognises a keyword-built ability by the menu's ability key, and knows what the
 knowledge sidecar knows (candidate sets of library positions, the cards that can be in the
-opponent's hand, the own library's contents, the lists the opponent can be on).
+opponent's hand, the own library's contents).
 """
 from __future__ import annotations
 
@@ -70,10 +69,10 @@ _CAST_DAMAGE = re.compile(r"\bWhenever (a player|an opponent|you) casts? an? spe
 FRAME_TABLES = frozenset({
     "schema_table", "schema_column", "schema_enum",
     "card", "card_subtype", "card_keyword", "card_ability", "card_pip",
-    "decklist", "decklist_card", "meta_list", "meta_list_card",
+    "decklist", "decklist_card",
     "header", "turn", "player", "object", "object_keyword", "object_counter", "stack", "pending",
     "pending_cost", "pending_cost_pip", "menu", "match", "own_deck", "k_position", "k_pool",
-    "k_pool_card", "k_known_hand", "k_template",
+    "k_pool_card", "k_known_hand",
 })
 
 
@@ -362,8 +361,6 @@ class SeatFrames:
         self.deck_names = {}                # seat value (1 A, 2 B) -> registered deck name
         self.lists = {}                     # player-rel -> {card name: copies} (main + side)
         self.registered = {}                # player-rel -> ({name: main copies}, {name: side copies})
-        self.meta_lists = []                # per reference list: {card name: copies}
-        self._metagame = None
 
     def feed(self, frame, schema):
         if frame.kind == "SCHEMA":
@@ -372,8 +369,6 @@ class SeatFrames:
         elif frame.kind == "CARDS":
             self.cards_frame = frame
             self.cards = FrameCards(schema, frame)
-            if self._metagame is not None:
-                self._read_metagame(self._metagame)
         elif frame.kind == "DECKLISTS":
             t = frame.tables
             self.deck_names = {r["player"]: r["name"] for r in t.get("decklist", [])}
@@ -387,19 +382,6 @@ class SeatFrames:
                 for part, n in zip(reg, (r["main"], r["side"])):
                     if n:
                         part[name] = part.get(name, 0) + n
-        elif frame.kind == "METAGAME":
-            self._metagame = frame
-            if self.cards is not None:
-                self._read_metagame(frame)
-
-    def _read_metagame(self, frame):
-        t = frame.tables
-        self.meta_lists = [{} for _ in t.get("meta_list", [])]
-        for r in t.get("meta_list_card", []):
-            if r["list"] < len(self.meta_lists):
-                d = self.meta_lists[r["list"]]
-                name = self.cards.name(_card(r["card"]))
-                d[name] = d.get(name, 0) + r["main"] + r["side"]
 
     def deck_name_pair(self):
         """(deck A, deck B) names from DECKLISTS (None where withheld)."""
@@ -874,38 +856,17 @@ class FrameView:
         return name in exact or any(self._pool_cards.get(i, {}).get(name, (0, 0))[1] > 0 for i in pools)
 
     @cached_property
-    def _opp_possible_lists(self):
-        """The reference lists the opponent can be on (k_template consistent rows), when its
-        registered list is withheld; None without them."""
-        rows = [r for r in self.t.get("k_template", []) if r["player_rel"] == _OPP and r["consistent"]]
-        if not rows or not self._s.meta_lists:
-            return None
-        return [self._s.meta_lists[r["list"]] for r in rows if r["list"] < len(self._s.meta_lists)]
-
-    @cached_property
     def opp_deck(self) -> dict:
-        """The opponent's registered list (name -> copies); under a closed decklist each card's
-        most copies over the reference lists it can be on."""
-        deck = self._s.lists.get(_OPP)
-        if deck is not None:
-            return deck
-        lists = self._opp_possible_lists or []
-        out = {}
-        for lst in lists:
-            for name, n in lst.items():
-                out[name] = max(out.get(name, 0), n)
-        return out
+        """The opponent's registered list (name -> copies); empty under a closed decklist."""
+        return self._s.lists.get(_OPP) or {}
 
     def opp_runs_card(self, card, _deck_name=None):
-        """Whether the opponent's list holds ``card``: its registered list when visible, else
-        whether any reference list it can still be on does (None without either)."""
+        """Whether the opponent's registered list holds ``card``; None under a closed decklist
+        (the list is withheld)."""
         deck = self._s.lists.get(_OPP)
-        if deck is not None:
-            return card in deck
-        lists = self._opp_possible_lists
-        if lists is None:
+        if deck is None:
             return None
-        return any(card in lst for lst in lists)
+        return card in deck
 
     # ── sideboarding ────────────────────────────────────────────────────────────────────────
     def registered_list(self, mine: bool):

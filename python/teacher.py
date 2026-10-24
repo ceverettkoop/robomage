@@ -26,13 +26,13 @@ guard) and Python's global ``random`` (the hard tier breaks ties of uncategorise
 ``random.choice``). It never assumes its advice was followed: the frames say what happened.
 
 **Matches.** A match starts at the stream's first frame and at the first ``SCHEMA`` frame after a
-terminal frame (the engine sends each seat its ``SCHEMA`` / ``CARDS`` / ``DECKLISTS`` /
-``METAGAME`` frames the first time it decides in a match, and a terminal frame to each seat when
-the match is over). At each match start the teacher forgets every seat's frames, calls the core's
-``new_game()`` and seeds ``random`` with ``--seed`` (default 0), as ``rm_driver.play_game`` does
-before each match with the match's seed: given that seed, the labels at a seat are the decisions
-``rm_driver.py`` would have taken there with ``scripted:<tier>`` playing the seat (and an opponent
-that draws nothing from Python's ``random``). One process can therefore label any number of
+terminal frame (the engine sends each seat its ``SCHEMA`` / ``CARDS`` / ``DECKLISTS`` frames
+the first time it decides in a match, and a terminal frame to each seat when the match is over).
+At each match start the teacher forgets every seat's frames, calls the core's ``new_game()`` and
+seeds ``random`` with ``--seed`` (default 0), as ``rm_driver.play_game`` does before each match
+with the match's seed: given that seed, the labels at a seat are the decisions ``rm_driver.py``
+would have taken there with ``scripted:<tier>`` playing the seat (and an opponent that draws
+nothing from Python's ``random``). One process can therefore label any number of
 successive matches on one stream.
 
 The stream may hold both seats' frames (it answers whichever seat a decision frame is for, each

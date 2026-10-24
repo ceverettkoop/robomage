@@ -227,22 +227,6 @@ static void define_cards_tables(std::vector<TableDef> &out) {
     col_card(out.back(), "card");
     col_count(out.back(), "main", Storage::U8);
     col_count(out.back(), "side", Storage::U8);
-
-    // The reference metagame (state_format §4): row index = archetype id, list id.
-    add_table(out, TableId::META_ARCHETYPE, "meta_archetype", FrameKind::METAGAME);
-    col_text(out.back(), "name");
-
-    add_table(out, TableId::META_LIST, "meta_list", FrameKind::METAGAME);
-    col_text(out.back(), "name");
-    col(out.back(), "archetype", Storage::U8, "row:meta_archetype");
-    col_count(out.back(), "main", Storage::U16);
-    col_count(out.back(), "side", Storage::U16);
-
-    add_table(out, TableId::META_LIST_CARD, "meta_list_card", FrameKind::METAGAME);
-    col(out.back(), "list", Storage::U16, "row:meta_list");
-    col_card(out.back(), "card");
-    col_count(out.back(), "main", Storage::U8);
-    col_count(out.back(), "side", Storage::U8);
 }
 
 static void define_snapshot_tables(std::vector<TableDef> &out) {
@@ -611,37 +595,6 @@ static void define_knowledge_tables(std::vector<TableDef> &out) {
     add_table(out, TableId::K_KNOWN_HAND, "k_known_hand", FrameKind::STATE);
     col_card(out.back(), "card");
     col_count(out.back(), "copies", Storage::U8);
-
-    // Archetype inference (knowledge_store §10): `list` is a METAGAME meta_list row, `archetype` a
-    // meta_archetype row.
-    add_table(out, TableId::K_TEMPLATE, "k_template", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "list", Storage::U16, "index");
-    col_bool(out.back(), "consistent");
-    col_bool(out.back(), "exact");
-    col_bool(out.back(), "registered");
-
-    add_table(out, TableId::K_ARCHETYPE, "k_archetype", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "archetype", Storage::U8, "index");
-    col_bool(out.back(), "possible");
-    col_bool(out.back(), "exact");
-
-    // The belief layer (knowledge_store §10.6; level expert+belief only): `prob` columns are
-    // probabilities in units of 10^-9 (tag prob), summing to 10^9 per player unless no list is
-    // possible; `loglik` the list's log-likelihood in milli-nats (the i32 minimum: excluded), `exact`
-    // whether it is the network's exact weighted count in every game of the match.
-    add_table(out, TableId::B_LIST, "b_list", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "list", Storage::U16, "index");
-    col(out.back(), "prob", Storage::U32, "prob");
-    col(out.back(), "loglik", Storage::I32, "signed");
-    col_bool(out.back(), "exact");
-
-    add_table(out, TableId::B_ARCHETYPE, "b_archetype", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "archetype", Storage::U8, "index");
-    col(out.back(), "prob", Storage::U32, "prob");
 }
 
 static void finish_table(TableDef &t) {

@@ -13,8 +13,8 @@
 // A frame writer (ObsConsumer::AGENT) beside --rmstate-dump and the RMSTATE stream. It serves
 // the seats an in-process agent decides (src/agents/, --agent-a / --agent-b, --play, --actions) and,
 // under --trace-decisions, both seats. At a decision of a served seat it builds exactly what the
-// stdout stream would send that seat (state_format/stream.h): the seat's SCHEMA, CARDS, DECKLISTS
-// and METAGAME frames the first time it decides in the match, then its STATE frame with the menu as
+// stdout stream would send that seat (state_format/stream.h): the seat's SCHEMA, CARDS and DECKLISTS
+// frames the first time it decides in the match, then its STATE frame with the menu as
 // offered and its events, ending with the k_* tables of this writer's own knowledge instance for
 // the seat (state_format/knowledge_feed.h). The bytes are the stream's for the same decision; they
 // are handed over in memory instead of being written out. Like every writer it changes nothing

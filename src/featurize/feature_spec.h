@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "../state_format/decode.h"
@@ -13,12 +12,12 @@
 // ── FEATURE_SPEC: what the per-decision tensors hold (docs/featurizer.md §3, §6) ───────────────
 //
 // Standard library and the decoder only. Built from a SCHEMA frame (every table, column, tag and
-// enum), a METAGAME frame (its tables' row counts) and the card tables (their widths, column names
-// and fixed key list), so it is the same for every match. Every STATE table with id 20-48 or 90-99
-// that no fold takes whole is a token type, in ascending id, then the folds' synthetic types; each
-// column becomes slots by its tag (columns.h, §3.2):
+// enum) and the card tables (their widths, column names and fixed key list), so it is the same for
+// every match. Every STATE table with id 20-48 or 90-95 that no fold takes whole is a token type, in
+// ascending id, then the folds' synthetic type; each column becomes slots by its tag (columns.h,
+// §3.2):
 //
-//   bool, count, signed, prob   one numeric slot (x, log1p, sign·log1p|x|, x / 10^9)
+//   bool, count, signed         one numeric slot (x, log1p, sign·log1p|x|)
 //   index                       one numeric slot (log1p, 0 at none) and its none flag
 //   mask:<e>                    one numeric slot per value of e
 //   enum:<e>, player-rel        one categorical slot of e's values (an absolute enum:seat column
@@ -31,17 +30,15 @@
 //                               (the lowest-id table whose first column is a handle named `handle`:
 //                               object, then stack), typed by (table, column); none when no token
 //                               owns it or the row owns it itself
-//   row:<t>                     a relation to row v of t's tokens; into a METAGAME table, a
-//                               categorical slot of that table's rows; else dropped
+//   row:<t>                     a relation to row v of t's tokens; dropped when t has no token
+//                               type
 //   text                        dropped
 //
 // A categorical slot of n values takes ids offset … offset + n of one global id space: offset + 0
 // is the cell's none (all ones, or a value out of range), offset + 1 + v value v; id 0 is the pad.
 // The overrides (§3.4, the only per-column rules) are listed in the spec: object.card's second card
 // slot (the current face), the hashed text columns (FNV-1a 64 modulo HASH_BUCKETS, + 1; empty text
-// is the none id), menu.description dropped, and the knowledge tables' METAGAME row indices
-// (k_template.list, k_archetype.archetype, b_list.list, b_archetype.archetype: the key of their
-// pivot, below).
+// is the none id) and menu.description dropped.
 //
 // The folds (§3.6) are listed in the spec too; they make tokens otherwise than one per row:
 //
@@ -53,15 +50,13 @@
 //              `removed` set; the full set for an object whose face has no card row
 //   LEDGER     `ledger`: one token per (player, card) folding own_deck, k_seen, k_known_hand and the
 //              folded k_pool_card rows (LedgerSlot)
-//   PIVOT      `lists` (k_template, k_archetype) and `b_lists` (b_list, b_archetype): one token per
-//              player, a numeric slot per (METAGAME row of the key, other column)
 //
-// Synthetic types (LEDGER, PIVOT) follow the table types; the folded tables have no type of their
-// own. Token order is canonical: the ledger by (player_rel, card), a pivot by player_rel, a delta
-// type by object row, then removed, then value (folds.h).
+// The synthetic type (LEDGER) follows the table types; the folded tables have no type of their own.
+// Token order is canonical: the ledger by (player_rel, card), a delta type by object row, then
+// removed, then value (folds.h).
 //
 // Recent-event history (FeatureOptions::history_events > 0; off by default, and then the spec and
-// every tensor are those of a spec built without it): two HISTORY types after the synthetic ones,
+// every tensor are those of a spec built without it): two HISTORY types after the synthetic one,
 // `hist_event` (the `event` table's columns) and `hist_card` (`event_card`'s), whose tokens come
 // from the seat's EventHistory (history.h) rather than the frame: the events of the frame's turn
 // and the previous one, newest first, at most history_events, each with at most
@@ -77,7 +72,7 @@
 
 namespace featurize {
 
-const int SPEC_VERSION = 2;
+const int SPEC_VERSION = 3;
 // Buckets of a hashed text column.
 const uint32_t HASH_BUCKETS = 256;
 // The library depth of the learner targets (targets.h).
@@ -91,7 +86,7 @@ struct NumSlot {
 
 struct CatSlot {
         std::string name, column;
-        std::string source;  // enum:<e>, player-rel, hashed, row:<metagame table>
+        std::string source;  // enum:<e>, player-rel, hashed
         int64_t offset = 0;  // the slot's global id of none; values follow
         uint32_t size = 0;   // ids, none included
 };
@@ -107,7 +102,6 @@ enum class TypeKind : uint8_t {
     FILTERED,
     DELTA,
     LEDGER,
-    PIVOT,
     HISTORY
 };
 
@@ -128,19 +122,6 @@ enum LedgerSlot : uint32_t {
     L_SIDEBOARD_MIN,  // the SIDEBOARD pool's k_pool_card min / max
     L_SIDEBOARD_MAX,
     L_SLOTS,
-};
-
-// One table a PIVOT type folds: per row, the columns but the seat pair and the key take the slots
-// first_slot + key · cols.size() + i.
-struct PivotSource {
-        std::string table, key, meta;  // the table, its key column, the METAGAME table the key indexes
-        uint16_t table_id = 0;
-        uint16_t rel_col = 0, key_col = 0;
-        uint64_t keys = 0;  // the METAGAME table's rows
-        std::vector<uint16_t> cols;
-        std::vector<Transform> transforms;
-        std::vector<rmstate::Storage> storages;
-        uint32_t first_slot = 0;
 };
 
 // The columns the ledger reads (-1: the table or column is not in the schema).
@@ -217,11 +198,10 @@ struct TokenType {
         std::vector<uint16_t> value_cols;
         std::vector<uint8_t> value_text;  // per printed column: a text column (compared by its text)
         int32_t removed_slot = -1;
-        // PIVOT: the tables folded; LEDGER and PIVOT: the player_rel categorical's id offset and values.
-        std::vector<PivotSource> pivot;
+        // LEDGER: the player_rel categorical's id offset and values.
         int64_t rel_offset = 0;
         uint32_t rel_values = 0;
-        bool synthetic() const { return kind == TypeKind::LEDGER || kind == TypeKind::PIVOT; }
+        bool synthetic() const { return kind == TypeKind::LEDGER; }
 };
 
 struct Override {
@@ -254,8 +234,6 @@ struct FeatureSpec {
         uint64_t vocab_hash = 0;
         uint32_t hash_buckets = HASH_BUCKETS;
         uint32_t library_depth = LIBRARY_DEPTH;
-        // The rows of each METAGAME table a categorical slot counts (table name, rows), in first use.
-        std::vector<std::pair<std::string, uint64_t>> metagame_rows;
         size_t F = 0, C = 0, K = 0, Q = 0;
         int64_t categorical_size = 0;  // ids 0 … categorical_size - 1
         std::vector<TokenType> types;
@@ -282,8 +260,8 @@ struct FeatureSpec {
 
 // Builds the spec. False with `err` when the schema lacks the menu or header table (or, with history,
 // the event tables).
-bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const CardTables &tables,
-    const FeatureOptions &options, FeatureSpec *out, std::string *err);
+bool build_spec(const rmstate::Schema &schema, const CardTables &tables, const FeatureOptions &options,
+    FeatureSpec *out, std::string *err);
 
 // The spec document (FeatureSpec::json), keys in a fixed order.
 std::string spec_json(const FeatureSpec &spec);

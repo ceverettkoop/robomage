@@ -15,7 +15,7 @@
 // own copy of the event queues (ObsConsumer::SELFCHECK) and checks:
 //
 //   roundtrip    decode → re-encode is byte-identical (state_format/decode.h), for every frame
-//                and, once per match, each viewer's SCHEMA, CARDS, DECKLISTS and METAGAME frames;
+//                and, once per match, each viewer's SCHEMA, CARDS and DECKLISTS frames;
 //   scramble     each seat's frame is encoded again with every card hidden from that seat given
 //                another identity (ScrambledIdentities): the bytes must be the same. Every event
 //                is checked the same way as it is built (state_format/events.cpp);

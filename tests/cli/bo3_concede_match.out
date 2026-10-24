@@ -25,8 +25,6 @@ Your hand (7):
   Mountain                    #7             Basic Land - Mountain
 Player B's graveyard: (empty)
 Player A's graveyard: (empty)
-You know:
-  Player A's archetype: slow_midrange
 Decision: keep this hand or take a mulligan
   0: Keep
   1: Mulligan
@@ -80,8 +78,6 @@ Your hand (7):
   Fireblast                   #7  {4}{R}{R}  Instant
 Player B's graveyard: (empty)
 Player A's graveyard: (empty)
-You know:
-  Player A's archetype: slow_midrange
 Decision: keep this hand or take a mulligan
   0: Keep
   1: Mulligan

@@ -304,7 +304,7 @@ static const CliOption OPTIONS[] = {
             state_dump_json = true;
         },
         nullptr},
-    // Write the whole-vocab CARDS frame (with the SCHEMA and METAGAME frames) instead of playing
+    // Write the whole-vocab CARDS frame (after the SCHEMA frame) instead of playing
     // (state_format/cards_file.h).
     {"--cards-frame", nullptr, true, false, [](const char *v) { cards_frame_path = v; }, nullptr},
     // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
@@ -368,13 +368,15 @@ static bool is_seat_a(const char *value) {
     return std::strcmp(value, "A") == 0 || std::strcmp(value, "a") == 0;
 }
 
-// The value of --knowledge-a / --knowledge-b: off (0), expert (1) or expert+belief (2); anything
-// else is fatal.
+// The value of --knowledge-a / --knowledge-b: off (0) or expert (1); expert+belief is a removed
+// value, anything else is fatal too.
 static int knowledge_level_value(const char *value) {
     if (std::strcmp(value, "off") == 0) return 0;
     if (std::strcmp(value, "expert") == 0) return 1;
-    if (std::strcmp(value, "expert+belief") == 0) return 2;
-    fatal_error("--knowledge-a/--knowledge-b: expected off, expert or expert+belief, got '" + std::string(value) + "'");
+    if (std::strcmp(value, "expert+belief") == 0)
+        fatal_error("--knowledge-a/--knowledge-b expert+belief was removed: the belief layer and its reference "
+                    "lists are gone; use expert");
+    fatal_error("--knowledge-a/--knowledge-b: expected off or expert, got '" + std::string(value) + "'");
     return 0;
 }
 

@@ -38,7 +38,7 @@ _FRAME_HEADER = struct.Struct("<4sHBBQII")  # magic, version, kind, viewer, hash
 _TABLE_HEADER = struct.Struct("<HHIII")     # id, reserved, row_width, row_count, reserved
 _MAGIC = b"RMSF"
 _ROW_ALIGN = 8
-_BOOTSTRAP_VERSION = 1
+_BOOTSTRAP_VERSION = 2
 _BOOT_TABLES = {
     1: ("strings", [("byte", "U8")]),
     2: ("schema_table", [("id", "U16"), ("name", "TEXT"), ("frame_kind", "U8"), ("row_width", "U32")]),

@@ -16,14 +16,10 @@ const featurize::Override OVERRIDES[] = {
     {"player_effect", "filter", "hashed"},
     {"*", "ab_key", "hashed"},
     {"menu", "description", "dropped"},
-    {"k_template", "list", "row:meta_list"},
-    {"k_archetype", "archetype", "row:meta_archetype"},
-    {"b_list", "list", "row:meta_list"},
-    {"b_archetype", "archetype", "row:meta_archetype"},
 };
 
-// The folds (docs/featurizer.md §3.6): a LEDGER or PIVOT rule folds the whole table into the
-// synthetic type `into`; a FILTERED or DELTA rule keeps the table's type, of that kind (`printed`:
+// The folds (docs/featurizer.md §3.6): a LEDGER rule folds the whole table into the synthetic type
+// `into`; a FILTERED or DELTA rule keeps the table's type, of that kind (`printed`:
 // the CARDS table a delta compares with).
 struct FoldRule {
         const char *table, *into, *rows;
@@ -38,10 +34,6 @@ const FoldRule FOLDS[] = {
     {"k_pool_card", "ledger",
         "the rows of a HAND or SIDEBOARD pool and of a player's only LIBRARY_RANGE pool when it is a run",
         featurize::TypeKind::FILTERED, ""},
-    {"k_template", "lists", "every row", featurize::TypeKind::PIVOT, ""},
-    {"k_archetype", "lists", "every row", featurize::TypeKind::PIVOT, ""},
-    {"b_list", "b_lists", "every row", featurize::TypeKind::PIVOT, ""},
-    {"b_archetype", "b_lists", "every row", featurize::TypeKind::PIVOT, ""},
     {"object_subtype", "object_subtype", "the differences from card_subtype", featurize::TypeKind::DELTA,
         "card_subtype"},
     {"object_keyword", "object_keyword", "the differences from card_keyword", featurize::TypeKind::DELTA,
@@ -87,9 +79,6 @@ static bool is_token_table(const rmstate::TableDef &def);
 static const featurize::Override *find_override(const std::string &table, const std::string &column);
 static bool is_abref_at(const rmstate::TableDef &def, size_t c);
 static bool seat_with_partner(const rmstate::TableDef &def, size_t c);
-static uint64_t metagame_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const std::string &table, bool *is_meta);
-static void note_metagame(featurize::FeatureSpec *spec, const std::string &table, uint64_t rows);
 static void add_categorical(featurize::FeatureSpec *spec, featurize::TokenType *t, const std::string &column,
     const std::string &source, uint32_t values, featurize::ColumnOp *op);
 static int32_t add_relation(
@@ -97,26 +86,21 @@ static int32_t add_relation(
 static void add_numeric(featurize::TokenType *t, const std::string &name, const std::string &column,
     featurize::Transform transform, uint32_t bit);
 static void add_card(featurize::TokenType *t, const rmstate::TableDef &def, size_t c, bool current_face);
-static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, size_t c, featurize::FeatureSpec *spec, featurize::TokenType *t);
-static void plan_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t);
+static void plan_column(const rmstate::Schema &schema, const rmstate::TableDef &def, size_t c,
+    featurize::FeatureSpec *spec, featurize::TokenType *t);
+static void plan_type(
+    const rmstate::Schema &schema, const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t);
 static bool plan_delta(
     const rmstate::Schema &schema, const rmstate::TableDef &def, const FoldRule &rule, featurize::TokenType *t);
-static std::string meta_row_name(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const std::string &table, uint64_t row);
-static void plan_pivot_source(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t);
 static void add_rel_slot(featurize::FeatureSpec *spec, featurize::TokenType *t);
 static void plan_ledger(const rmstate::Schema &schema, featurize::FeatureSpec *spec, featurize::TokenType *t);
-static void plan_synthetic(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, featurize::FeatureSpec *spec);
+static void plan_synthetic(const rmstate::Schema &schema, featurize::FeatureSpec *spec);
 static void plan_object(const rmstate::Schema &schema, featurize::FeatureSpec *spec);
 static bool history_dropped(const std::string &table, const std::string &column);
-static size_t plan_history_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, const char *name, featurize::FeatureSpec *spec);
-static bool plan_history(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const featurize::FeatureOptions &options, featurize::FeatureSpec *spec, std::string *err);
+static size_t plan_history_type(
+    const rmstate::Schema &schema, const rmstate::TableDef &def, const char *name, featurize::FeatureSpec *spec);
+static bool plan_history(const rmstate::Schema &schema, const featurize::FeatureOptions &options,
+    featurize::FeatureSpec *spec, std::string *err);
 static std::string json_history(const featurize::FeatureSpec &spec);
 static std::string json_strings(const std::vector<std::string> &items);
 static std::string json_type(const featurize::TokenType &t, size_t id);
@@ -128,10 +112,10 @@ static const FoldRule *find_fold(const std::string &table) {
     return nullptr;
 }
 
-// A token type: a STATE snapshot (20-48) or knowledge (90-99) table.
+// A token type: a STATE snapshot (20-48) or knowledge (90-95) table.
 static bool is_token_table(const rmstate::TableDef &def) {
     const uint16_t id = static_cast<uint16_t>(def.id);
-    return def.frame_kind == rmstate::FrameKind::STATE && ((id >= 20 && id <= 48) || (id >= 90 && id <= 99));
+    return def.frame_kind == rmstate::FrameKind::STATE && ((id >= 20 && id <= 48) || (id >= 90 && id <= 95));
 }
 
 static const featurize::Override *find_override(const std::string &table, const std::string &column) {
@@ -151,22 +135,6 @@ static bool seat_with_partner(const rmstate::TableDef &def, size_t c) {
     if (def.columns[c].tag != "enum:seat") return false;
     const int rel = featurize::column_index(def, def.columns[c].name + "_rel");
     return rel >= 0 && def.columns[static_cast<size_t>(rel)].tag == "player-rel";
-}
-
-// The rows of `table` in the METAGAME frame; `is_meta` whether it is a METAGAME table at all.
-static uint64_t metagame_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const std::string &table, bool *is_meta) {
-    const rmstate::TableDef *def = featurize::table_named(schema, table);
-    *is_meta = def && def->frame_kind == rmstate::FrameKind::METAGAME;
-    if (!*is_meta) return 0;
-    const rmstate::DecodedTable *t = metagame.table(static_cast<uint16_t>(def->id));
-    return t ? t->rows.size() : 0;
-}
-
-static void note_metagame(featurize::FeatureSpec *spec, const std::string &table, uint64_t rows) {
-    for (const auto &m : spec->metagame_rows)
-        if (m.first == table) return;
-    spec->metagame_rows.emplace_back(table, rows);
 }
 
 // A categorical slot of `values` values (and the none id) for `op`.
@@ -225,8 +193,8 @@ static void add_card(featurize::TokenType *t, const rmstate::TableDef &def, size
 }
 
 // Plans column c of token type `t` (the header comment's rules).
-static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, size_t c, featurize::FeatureSpec *spec, featurize::TokenType *t) {
+static void plan_column(const rmstate::Schema &schema, const rmstate::TableDef &def, size_t c,
+    featurize::FeatureSpec *spec, featurize::TokenType *t) {
     const rmstate::ColumnDef &col = def.columns[c];
     const featurize::Override *ov = find_override(def.name, col.name);
     if (ov && ov->treatment == "dropped") return;
@@ -240,13 +208,11 @@ static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFra
         t->ops.push_back(op);
         return;
     }
-    const featurize::Tag tag = ov && ov->treatment.compare(0, 4, "row:") == 0 ? featurize::parse_tag(ov->treatment)
-                                                                              : featurize::parse_tag(col.tag);
+    const featurize::Tag tag = featurize::parse_tag(col.tag);
     switch (tag.kind) {
         case featurize::TagKind::BOOL:
         case featurize::TagKind::COUNT:
         case featurize::TagKind::SIGNED:
-        case featurize::TagKind::PROB:
             op.kind = featurize::OpKind::NUMERIC;
             featurize::scalar_transform(tag.kind, &op.transform);
             op.slot = static_cast<uint32_t>(t->numeric.size());
@@ -297,18 +263,10 @@ static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFra
         case featurize::TagKind::ROW: {
             const rmstate::TableDef *target = featurize::table_named(schema, tag.arg);
             const int32_t tt = target ? spec->type_of_table[static_cast<uint16_t>(target->id)] : -1;
-            if (tt >= 0) {
-                op.kind = featurize::OpKind::ROW;
-                op.target = tt;
-                op.relation = add_relation(spec, t, col.name, tag.arg);
-                break;
-            }
-            bool is_meta = false;
-            const uint64_t rows = metagame_rows(schema, metagame, tag.arg, &is_meta);
-            if (!is_meta) return;
-            note_metagame(spec, tag.arg, rows);
-            op.kind = featurize::OpKind::CATEGORICAL;
-            add_categorical(spec, t, col.name, "row:" + tag.arg, static_cast<uint32_t>(rows), &op);
+            if (tt < 0) return;
+            op.kind = featurize::OpKind::ROW;
+            op.target = tt;
+            op.relation = add_relation(spec, t, col.name, tag.arg);
             break;
         }
         default:
@@ -317,12 +275,12 @@ static void plan_column(const rmstate::Schema &schema, const rmstate::DecodedFra
     t->ops.push_back(op);
 }
 
-static void plan_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t) {
+static void plan_type(const rmstate::Schema &schema, const rmstate::TableDef &def, featurize::FeatureSpec *spec,
+    featurize::TokenType *t) {
     t->owns_handles = !def.columns.empty() && def.columns[0].name == "handle" && def.columns[0].tag == "handle";
     t->columns = static_cast<uint16_t>(def.columns.size());
     for (size_t c = 0; c < def.columns.size(); ++c) {
-        plan_column(schema, metagame, def, c, spec, t);
+        plan_column(schema, def, c, spec, t);
         if (is_abref_at(def, c)) ++c;  // ab_index belongs to the reference; ab_key is planned next
     }
 }
@@ -352,60 +310,6 @@ static bool plan_delta(
     t->removed_slot = static_cast<int32_t>(t->numeric.size());
     add_numeric(t, "removed", "", featurize::Transform::BOOL, 0);
     return true;
-}
-
-// The `name` of row `row` of METAGAME table `table`, else "<table>#<row>".
-static std::string meta_row_name(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const std::string &table, uint64_t row) {
-    const rmstate::TableDef *def = featurize::table_named(schema, table);
-    const rmstate::DecodedTable *t = def ? metagame.table(static_cast<uint16_t>(def->id)) : nullptr;
-    const int name = def ? featurize::column_index(*def, "name") : -1;
-    if (t && name >= 0 && row < t->rows.size() && !t->rows[row][static_cast<size_t>(name)].text.empty())
-        return t->rows[row][static_cast<size_t>(name)].text;
-    return table + "#" + std::to_string(row);
-}
-
-// One table of a PIVOT type: its key (the column whose override is a row: into METAGAME) and, per
-// METAGAME row, a numeric slot per other scalar column (the seat pair left out).
-static void plan_pivot_source(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, featurize::FeatureSpec *spec, featurize::TokenType *t) {
-    featurize::PivotSource src;
-    src.table = def.name;
-    src.table_id = static_cast<uint16_t>(def.id);
-    const int rel = featurize::column_index(def, "player_rel");
-    int key = -1;
-    for (size_t c = 0; c < def.columns.size() && key < 0; ++c) {
-        const featurize::Override *ov = find_override(def.name, def.columns[c].name);
-        if (ov && ov->treatment.compare(0, 4, "row:") == 0) {
-            key = static_cast<int>(c);
-            src.key = def.columns[c].name;
-            src.meta = ov->treatment.substr(4);
-        }
-    }
-    if (rel < 0 || key < 0) return;
-    bool is_meta = false;
-    src.keys = metagame_rows(schema, metagame, src.meta, &is_meta);
-    if (!is_meta) return;
-    note_metagame(spec, src.meta, src.keys);
-    src.rel_col = static_cast<uint16_t>(rel);
-    src.key_col = static_cast<uint16_t>(key);
-    for (size_t c = 0; c < def.columns.size(); ++c) {
-        featurize::Transform tr;
-        if (static_cast<int>(c) == key || seat_with_partner(def, c) || def.columns[c].tag == "player-rel" ||
-            !featurize::scalar_transform(featurize::parse_tag(def.columns[c].tag).kind, &tr))
-            continue;
-        src.cols.push_back(static_cast<uint16_t>(c));
-        src.transforms.push_back(tr);
-        src.storages.push_back(def.columns[c].storage);
-    }
-    src.first_slot = static_cast<uint32_t>(t->numeric.size());
-    for (uint64_t k = 0; k < src.keys; ++k) {
-        const std::string row = meta_row_name(schema, metagame, src.meta, k);
-        for (size_t i = 0; i < src.cols.size(); ++i)
-            add_numeric(t, row + ":" + def.columns[src.cols[i]].name, def.name + "." + def.columns[src.cols[i]].name,
-                src.transforms[i], 0);
-    }
-    t->pivot.push_back(src);
 }
 
 // The player_rel categorical of a synthetic type (none, self, opponent).
@@ -469,11 +373,10 @@ static void plan_ledger(const rmstate::Schema &schema, featurize::FeatureSpec *s
     }
 }
 
-// The synthetic types, after the table types: the ledger, then each pivot, in fold order.
-static void plan_synthetic(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, featurize::FeatureSpec *spec) {
+// The synthetic type, after the table types: the ledger.
+static void plan_synthetic(const rmstate::Schema &schema, featurize::FeatureSpec *spec) {
     for (const FoldRule &f : FOLDS) {
-        if (f.kind != featurize::TypeKind::LEDGER && f.kind != featurize::TypeKind::PIVOT) continue;
+        if (f.kind != featurize::TypeKind::LEDGER) continue;
         const rmstate::TableDef *def = featurize::table_named(schema, f.table);
         if (!def || !is_token_table(*def)) continue;
         size_t at = 0;
@@ -482,14 +385,9 @@ static void plan_synthetic(
             spec->types.emplace_back();
             spec->types.back().kind = f.kind;
             spec->types.back().name = f.into;
-            if (f.kind == featurize::TypeKind::LEDGER) {
-                spec->ledger.type = static_cast<int32_t>(at);
-                plan_ledger(schema, spec, &spec->types.back());
-            } else {
-                add_rel_slot(spec, &spec->types.back());
-            }
+            spec->ledger.type = static_cast<int32_t>(at);
+            plan_ledger(schema, spec, &spec->types.back());
         }
-        if (f.kind == featurize::TypeKind::PIVOT) plan_pivot_source(schema, metagame, *def, spec, &spec->types[at]);
     }
 }
 
@@ -514,8 +412,8 @@ static bool history_dropped(const std::string &table, const std::string &column)
 
 // A HISTORY type over `def`'s columns but the dropped ones and event_card's `event` (its relation
 // to the event's token is planned by plan_history); its index.
-static size_t plan_history_type(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const rmstate::TableDef &def, const char *name, featurize::FeatureSpec *spec) {
+static size_t plan_history_type(
+    const rmstate::Schema &schema, const rmstate::TableDef &def, const char *name, featurize::FeatureSpec *spec) {
     const size_t at = spec->types.size();
     spec->types.emplace_back();
     featurize::TokenType &t = spec->types.back();
@@ -537,14 +435,14 @@ static size_t plan_history_type(const rmstate::Schema &schema, const rmstate::De
             t.ops.push_back(op);
             continue;
         }
-        plan_column(schema, metagame, def, c, spec, &t);
+        plan_column(schema, def, c, spec, &t);
     }
     return at;
 }
 
 // The history types (FeatureOptions::history_events > 0) and the columns the event history reads.
-static bool plan_history(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame,
-    const featurize::FeatureOptions &options, featurize::FeatureSpec *spec, std::string *err) {
+static bool plan_history(const rmstate::Schema &schema, const featurize::FeatureOptions &options,
+    featurize::FeatureSpec *spec, std::string *err) {
     featurize::HistoryPlan &h = spec->history;
     const rmstate::TableDef *ev = featurize::table_named(schema, "event");
     const rmstate::TableDef *card = featurize::table_named(schema, "event_card");
@@ -577,14 +475,14 @@ static bool plan_history(const rmstate::Schema &schema, const rmstate::DecodedFr
     h.cards_per_event = options.history_cards_per_event;
     for (const char *d : HISTORY_DROPPED) h.dropped.push_back(d);
     h.event_type = static_cast<int32_t>(spec->types.size());
-    const size_t e = plan_history_type(schema, metagame, *ev, "hist_event", spec);
+    const size_t e = plan_history_type(schema, *ev, "hist_event", spec);
     h.offset_slot = static_cast<uint32_t>(spec->types[e].numeric.size());
     add_numeric(&spec->types[e], "turn_offset", "event.turn", featurize::Transform::BOOL, 0);
     h.age_slot = static_cast<uint32_t>(spec->types[e].numeric.size());
     add_numeric(&spec->types[e], "age", "", featurize::Transform::LOG1P, 0);
     h.more_slot = static_cast<uint32_t>(spec->types[e].numeric.size());
     add_numeric(&spec->types[e], "more_cards", "event_card", featurize::Transform::LOG1P, 0);
-    h.card_type = static_cast<int32_t>(plan_history_type(schema, metagame, *card, "hist_card", spec));
+    h.card_type = static_cast<int32_t>(plan_history_type(schema, *card, "hist_card", spec));
     return true;
 }
 
@@ -609,14 +507,6 @@ static std::string json_type(const featurize::TokenType &t, size_t id) {
                       ",\"name\":" + featurize::json_quote(t.name) + ",\"kind\":\"" +
                       featurize::type_kind_name(t.kind) + "\"";
     if (t.kind == featurize::TypeKind::DELTA) out += ",\"printed\":" + featurize::json_quote(t.printed);
-    if (t.kind == featurize::TypeKind::PIVOT) {
-        out += ",\"sources\":[";
-        for (size_t i = 0; i < t.pivot.size(); ++i)
-            out += std::string(i ? "," : "") + "{\"table\":" + featurize::json_quote(t.pivot[i].table) +
-                   ",\"key\":" + featurize::json_quote(t.pivot[i].key) +
-                   ",\"meta\":" + featurize::json_quote(t.pivot[i].meta) + "}";
-        out += "]";
-    }
     out += std::string(",\"owns_handles\":") + (t.owns_handles ? "true" : "false") + ",\"numeric\":[";
     for (size_t i = 0; i < t.numeric.size(); ++i) {
         const featurize::NumSlot &s = t.numeric[i];
@@ -655,8 +545,8 @@ static std::string json_table(uint64_t rows, size_t width, const std::vector<std
 
 namespace featurize {
 
-bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &metagame, const CardTables &tables,
-    const FeatureOptions &options, FeatureSpec *out, std::string *err) {
+bool build_spec(const rmstate::Schema &schema, const CardTables &tables, const FeatureOptions &options,
+    FeatureSpec *out, std::string *err) {
     *out = FeatureSpec();
     out->schema_hash = schema.hash;
     out->vocab_hash = tables.vocab_hash;
@@ -665,7 +555,7 @@ bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &meta
     for (const rmstate::TableDef &def : schema.tables) {
         if (!is_token_table(def)) continue;
         const FoldRule *fold = find_fold(def.name);
-        if (fold && (fold->kind == TypeKind::LEDGER || fold->kind == TypeKind::PIVOT)) continue;
+        if (fold && fold->kind == TypeKind::LEDGER) continue;
         out->type_of_table[static_cast<uint16_t>(def.id)] = static_cast<int32_t>(out->types.size());
         out->types.emplace_back();
         out->types.back().table = static_cast<uint16_t>(def.id);
@@ -674,13 +564,13 @@ bool build_spec(const rmstate::Schema &schema, const rmstate::DecodedFrame &meta
     }
     for (TokenType &t : out->types) {
         const rmstate::TableDef &def = *schema.find_table(t.table);
-        plan_type(schema, metagame, def, out, &t);
+        plan_type(schema, def, out, &t);
         const FoldRule *fold = find_fold(def.name);
         if (fold && fold->kind == TypeKind::DELTA) plan_delta(schema, def, *fold, &t);
     }
     plan_object(schema, out);
-    plan_synthetic(schema, metagame, out);
-    if (options.history_events > 0 && !plan_history(schema, metagame, options, out, err)) return false;
+    plan_synthetic(schema, out);
+    if (options.history_events > 0 && !plan_history(schema, options, out, err)) return false;
     for (TokenType &t : out->types) {
         out->F = std::max(out->F, t.numeric.size());
         out->C = std::max(out->C, t.categorical.size());
@@ -726,8 +616,6 @@ const char *type_kind_name(TypeKind k) {
             return "delta";
         case TypeKind::LEDGER:
             return "ledger";
-        case TypeKind::PIVOT:
-            return "pivot";
         case TypeKind::HISTORY:
             return "history";
     }
@@ -738,11 +626,8 @@ std::string spec_json(const FeatureSpec &spec) {
     std::string out = "{\"format\":\"FEATURE_SPEC\",\"version\":" + std::to_string(SPEC_VERSION) +
                       ",\"schema_hash\":\"" + hex16(spec.schema_hash) + "\",\"vocab_hash\":\"" +
                       hex16(spec.vocab_hash) + "\",\"hash_buckets\":" + std::to_string(spec.hash_buckets) +
-                      ",\"library_depth\":" + std::to_string(spec.library_depth) + ",\"metagame\":{";
-    for (size_t i = 0; i < spec.metagame_rows.size(); ++i)
-        out += (i ? "," : "") + json_quote(spec.metagame_rows[i].first) + ":" +
-               std::to_string(spec.metagame_rows[i].second);
-    out += "},\"F\":" + std::to_string(spec.F) + ",\"C\":" + std::to_string(spec.C) +
+                      ",\"library_depth\":" + std::to_string(spec.library_depth);
+    out += ",\"F\":" + std::to_string(spec.F) + ",\"C\":" + std::to_string(spec.C) +
            ",\"K\":" + std::to_string(spec.K) + ",\"Q\":" + std::to_string(spec.Q) +
            ",\"categorical_size\":" + std::to_string(spec.categorical_size) +
            ",\"menu\":" + json_quote(spec.types[static_cast<size_t>(spec.menu_type)].name) + ",\"token_types\":[";

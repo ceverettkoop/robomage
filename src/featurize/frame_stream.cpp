@@ -41,7 +41,6 @@ static bool feed_record(const std::string &payload, featurize::ViewerFrames view
     } else {
         rmstate::DecodedFrame *dst = kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS)       ? &v.cards
                                      : kind == static_cast<uint8_t>(rmstate::FrameKind::DECKLISTS) ? &v.decklists
-                                     : kind == static_cast<uint8_t>(rmstate::FrameKind::METAGAME)  ? &v.metagame
                                                                                                    : nullptr;
         if (!dst) {
             *err = "a frame of kind " + std::to_string(kind);

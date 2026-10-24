@@ -46,8 +46,6 @@ class Spec:
         self.type_ids = {t["name"]: t["id"] for t in self.token_types}
         self.menu_type = self.type_ids[d["menu"]]
         self.library_depth = d["library_depth"]
-        self.n_lists = d["metagame"]["meta_list"]
-        self.n_archetypes = d["metagame"]["meta_archetype"]
         self.card_rows = d["card_tables"]["card"]["rows"]
         # The recent-event history (docs/featurizer.md §3.7; absent unless the spec was built with it):
         # the event tokens' type and the relation tying a card token to its event's token.

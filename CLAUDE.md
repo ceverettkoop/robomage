@@ -114,8 +114,8 @@ debug build and `bin/release/robomage_check` the release one; `python/rm_driver.
 `python/record_corpus.py` default to `bin/debug/robomage`; `ROBOMAGE_BUILD=release` moves the
 driver onto `bin/release/robomage`, and `--binary <path>` overrides one invocation of any of them.
 
-**There is no codegen.** `bin/resources/decks/archetypes.json` is read directly (its `_archetypes`
-key is the canonical label list; `src/state_format/metagame.cpp`, the `METAGAME` frame).
+**There is no codegen.** The data files the engine reads (decks, card scripts, the text table) are
+read directly at run time.
 
 ## Long-running commands (Claude)
 
@@ -149,7 +149,7 @@ background** and make the live output inspectable by the user:
   | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
   | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode; sideboard exploration (`sb_explore` for every agent at p 1): μ = `q` recomputed from replayed frames, the results lines' `sb`, swap counts covering 0–10, card weights moving the frequencies, replays and reruns identical, p 0 changing nothing, the schedule's refusals |
   | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π) |
-  | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
+  | `knowledge` | `rmknow --selftest` / `--exactness`, soundness under `--selfcheck-knowledge`, isolation and truth |
   | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples, the sideboard guides and `scripted:hard+sb` bo3 matches at their targets) |
@@ -473,8 +473,8 @@ interactive payment loop (`prompt_mana_payment`):
 
 - stdout carries only `RMSTATE <nbytes>\n` + payload records; everything else (narrative under
   `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, diagnostics) goes to stderr.
-- The deciding seat gets, the first time it decides in the match, its `SCHEMA`, `CARDS`,
-  `DECKLISTS` and `METAGAME` frames, then a `STATE` frame (snapshot tables, the events since its
+- The deciding seat gets, the first time it decides in the match, its `SCHEMA`, `CARDS` and
+  `DECKLISTS` frames, then a `STATE` frame (snapshot tables, the events since its
   last frame, the menu, its `k_*` knowledge tables) at each of its decisions.
 - The reply is one integer line: a menu row, `-1` (the last row: an attacker/blocker
   declaration's confirm), `-2` / `-3` (concede). End of input or an unparseable line reads as `-1`.
@@ -495,16 +495,15 @@ the match (even from the sideboard phase, where `-2` is a no-op). Python constan
 
 **Other frame writers:** `--rmstate-dump FILE` (every viewer's frames — A, B, omniscient — at each
 decision, beside any protocol; `--state-dump json` adds `FILE.jsonl`), `--rmstate-read FILE`
-(decode → re-encode byte check), `--cards-frame FILE` (the SCHEMA, whole-vocab CARDS and METAGAME
-frames, the featurizer's card-table source; plays no game), the in-process agents' feed and
+(decode → re-encode byte check), `--cards-frame FILE` (the SCHEMA and whole-vocab CARDS frames,
+the featurizer's card-table source; plays no game), the in-process agents' feed and
 `--trace-decisions`. The format
 is defined once in `src/state_format/schema.cpp`; decoders build themselves from the SCHEMA frame
 (C++ `src/state_format/decode.h`, Python `python/rmstate.py`), so no constant is copied.
 
 **Knowledge sidecar** (`src/knowledge/`, `docs/knowledge_store.md`): one instance per frame writer
-and seat, fed only that seat's frames, appends the `k_*` tables (and at `expert+belief` the
-`b_*` belief tables) to each of the seat's STATE frames; `--knowledge-a/-b off|expert|expert+belief`
-(default `expert`) changes those tables only, never play. Self-checks: `--selfcheck-state` (the
+and seat, fed only that seat's frames, appends the `k_*` tables to each of the seat's STATE
+frames; `--knowledge-a/-b off|expert` (default `expert`) changes those tables only, never play. Self-checks: `--selfcheck-state` (the
 format: roundtrip, leak scramble, complete, permutation, snapshot) and `--selfcheck-knowledge`
 (every `k_*` fact against the true world); both print `ERROR:` lines and a summary on stderr and
 change no other output. `bin/<config>/rmknow` runs the sidecar over a recorded stream.
@@ -566,8 +565,6 @@ sections above are not repeated here.
 - `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
   shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
   (match-long `seq`), drained into each STATE frame; `--trace-events`
-- `src/state_format/metagame.{h,cpp}` — the reference metagame (`bin/resources/decks/archetypes.json`:
-  labels and tagged reference lists) the `METAGAME` frame carries, read once per process
 - `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
   per frame writer (dump, stream, self-check, agent feed) and seat, fed that writer's frames,
   appending `k_*` to each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks
@@ -612,8 +609,8 @@ sections above are not repeated here.
   frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported),
   `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays), `episode`
   (the trajectory episode format: `EpisodeWriter`, `read_episode`; `docs/trajectory_format.md`)
-- `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA, whole-vocab CARDS and
-  METAGAME frames for the card tables; plays no game. `load_engine_featurization`: the same
+- `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA and whole-vocab CARDS
+  frames for the card tables; plays no game. `load_engine_featurization`: the same
   records and the text table as the featurizer's inputs in process (`nn:`, `--featurize-seats`)
 - `src/state_format/selfcheck_featurize.{h,cpp}` — `--selfcheck-featurize`: each seat's tensors
   from the actor entry point equal under the scramble and permutation checks' frames, the
@@ -621,13 +618,8 @@ sections above are not repeated here.
 - `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
   card loads and is in the vocab; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
-  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; archetype inference over the
-  METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
-  §10); the shared soundness check `truth.h`; std + `state_format/decode.h`/`schema.h` only;
-  `docs/knowledge_store.md` §9-10)
-- `src/knowledge/belief.{h,cpp}` — the belief layer (level `expert+belief`, `b_list` / `b_archetype`):
-  each reference list's likelihood as the weighted world count of its hypothesis network, the
-  posterior in fixed point (`docs/knowledge_store.md` §10.6)
+  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; the shared soundness check
+  `truth.h`; std + `state_format/decode.h`/`schema.h` only; `docs/knowledge_store.md` §9)
 - `src/agents/` — in-process agents on the decision hook, reading only the seat's decoded frames
   (`agent.h`: the interface, specs `first`/`random`/`actions:`/`play:`/`explore`/`explore:patient`;
   `seat_frames.h`, `decision_view.h`: the decoded stream and decision; `py_random.h`: Python's
@@ -672,9 +664,8 @@ handshake JSON, the shared region, request / response layouts.
   `--scenario GLOB --show output|narrative|dump`, `--record`
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
   (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
-  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
-  `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
-  `generative.h`, the belief model played out directly)
+  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world
+  enumerator)
 - `tools/rmfeat/` — `bin/<config>/rmfeat` (part of `make`; std + the decoder + `src/featurize/`, no
   engine TU): `--spec --cards CARDS`, `--export-tables CARDS OUTDIR`, `--featurize DUMP --viewer
   A|B|omniscient --out FILE`, `--targets DUMP --seat A|B --out FILE`, `--stats` (token counts,

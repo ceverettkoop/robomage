@@ -123,8 +123,6 @@ bool SeatStream::feed_match_frame(const std::string &payload, std::string *err) 
         cards_frame_ = std::move(frame);
     } else if (frame.header.kind == static_cast<uint8_t>(rmstate::FrameKind::DECKLISTS)) {
         decklists_frame_ = std::move(frame);
-    } else if (frame.header.kind == static_cast<uint8_t>(rmstate::FrameKind::METAGAME)) {
-        metagame_frame_ = std::move(frame);
     }
     return true;
 }

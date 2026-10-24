@@ -101,8 +101,8 @@ int frame_viewer(const std::string &payload) {
 }
 
 const char *kind_name(int kind) {
-    static const char *names[] = {"SCHEMA", "CARDS", "DECKLISTS", "STATE", "METAGAME"};
-    return kind >= 0 && kind < 5 ? names[kind] : "?";
+    static const char *names[] = {"SCHEMA", "CARDS", "DECKLISTS", "STATE"};
+    return kind >= 0 && kind < 4 ? names[kind] : "?";
 }
 
 const char *viewer_name(int viewer) {
@@ -334,7 +334,7 @@ std::vector<std::string> check_stream(
                     label + ": " + viewer_name(viewer) + "'s " + kind_name(kind) + " frame differs from the dump's");
             continue;
         }
-        for (int k : {KIND_SCHEMA, KIND_CARDS, KIND_DECKLISTS, KIND_METAGAME})
+        for (int k : {KIND_SCHEMA, KIND_CARDS, KIND_DECKLISTS})
             if (!seen_match.count({viewer, k})) {
                 fails.push_back(label + ": record " + std::to_string(i + 1) + ": " + viewer_name(viewer) +
                                 "'s STATE frame before its match frames");

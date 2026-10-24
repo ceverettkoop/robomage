@@ -35,7 +35,7 @@ The options are output only: not recorded in the decision log, honored under `--
 
 | Flag | Meaning |
 |---|---|
-| `--teacher-a <command>` / `--teacher-b <command>` | run `<command>` (`/bin/sh -c`, working directory `bin/`) as that seat's teacher: it gets the seat's frames, exactly the `--machine` protocol's bytes (`docs/state_format.md` §9: `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME` the first time the seat decides in the match, a `STATE` frame at each of its decisions, sideboarding included, and its terminal frame at the match's end) on its stdin, and answers each decision frame with one integer line on its stdout. Its reply is the step's `teacher` label |
+| `--teacher-a <command>` / `--teacher-b <command>` | run `<command>` (`/bin/sh -c`, working directory `bin/`) as that seat's teacher: it gets the seat's frames, exactly the `--machine` protocol's bytes (`docs/state_format.md` §9: `SCHEMA`, `CARDS`, `DECKLISTS` the first time the seat decides in the match, a `STATE` frame at each of its decisions, sideboarding included, and its terminal frame at the match's end) on its stdin, and answers each decision frame with one integer line on its stdout. Its reply is the step's `teacher` label |
 | `--teacher-mix <p>` | play the teacher's label with probability p (default 0: labels only; 1: the teacher plays the seat) |
 | `--teacher-timeout <s>` | the wait for a teacher to read its frames or reply (default 60 s) |
 
@@ -151,7 +151,7 @@ In this order; integers unless marked as strings.
 
 | Attr | Meaning |
 |---|---|
-| `episode_version` | 1 |
+| `episode_version` | 2 (version 1 also had the `opp_list` / `opp_archetype` targets, `open_vocab_plan.md` S1) |
 | `F`, `C`, `K`, `Q` | the spec's widths of `tok_num`, `tok_cat`, `tok_card`, `tok_ability` |
 | `menu_type` | the spec's token type of `menu` rows (`act_tok` is rebuilt from it, §3.3) |
 | `omniscient` | 1 when the omniscient arrays are present |
@@ -164,7 +164,7 @@ In this order; integers unless marked as strings.
 | `game_engine_seed` | this game's engine seed (bo3: `engine_seed` + game index); −1 when it never started |
 | `game_seed` | `--game-seed` (the driver's seed: the agents' generator), −1 when not given (always under `--replay`) |
 | `agent_a`, `agent_b` (string) | each seat's decider: its agent spec, `play+<agent>` / `actions+<agent>` under a script, `human`, `stream` (the RMSTATE stream: an external agent), `replay` |
-| `knowledge_a`, `knowledge_b` (string) | each seat's knowledge level (`off`, `expert`, `expert+belief`) |
+| `knowledge_a`, `knowledge_b` (string) | each seat's knowledge level (`off`, `expert`) |
 | `seats` (string) | the recorded seats: `A`, `B` or `AB` |
 | `policy_versions_a`, `policy_versions_b` (string) | the distinct policy versions of the seat's steps with μ, ascending, comma-separated |
 | `rmlog` (string) | the decision log, as the engine was given it (relative to its working directory, `bin/`, unless absolute) |
@@ -206,8 +206,7 @@ In this order; integers unless marked as strings.
 | `eval_value` | f32 | `[D, P]` | its value (the deciding seat's view) |
 | `eval_log_pi` | f32 | `[ΣA, P]` | its `log π` over the menu rows (log-softmax of its logits, before temperature) |
 | `omni_*` | | | the omniscient frame's featurization of the same decision, the same eight arrays as the seat's (`omni_tok_offsets` … `omni_rel`), present with `omniscient` |
-| `opp_list`, `opp_archetype` | i32 | `[D]` | the learner targets (`docs/featurizer.md` §3.5): `METAGAME` row indices, −1 none |
-| `opp_hand`, `own_library`, `opp_library` | i16 or i32 | ragged | card ids, each with `<name>_offsets` |
+| `opp_hand`, `own_library`, `opp_library` | i16 or i32 | ragged | the learner targets (`docs/featurizer.md` §3.5): card ids, each with `<name>_offsets` |
 
 The integer widths follow the spec and the file: categorical ids u16 unless the spec's
 categorical size passes 65536 (then i32); card ids i16 unless the card table passes 32768 rows;

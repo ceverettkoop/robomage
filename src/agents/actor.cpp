@@ -561,7 +561,7 @@ static void add_raw(std::string &o, const char *key, const std::string &raw) {
 
 // A --knowledge-a/-b level's name.
 static const char *knowledge_name(int level) {
-    return level == 0 ? "off" : level == 2 ? "expert+belief" : "expert";
+    return level == 0 ? "off" : "expert";
 }
 
 static std::string versions_json(const std::set<uint64_t> &versions) {

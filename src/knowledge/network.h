@@ -73,9 +73,9 @@ enum class RootKind : uint8_t {
     FREE,   // any cards
 };
 
-// Which part of the player's registered list a root stands for (the roots a reference list's
-// hypothesis replaces, templates.h): the main deck (game 1), the sideboard (game 1), the whole 75
-// (games 2-3), or none (a unit of no known origin: a closed decklist's card created from zone none).
+// Which part of the player's registered list a root stands for: the main deck (game 1), the
+// sideboard (game 1), the whole 75 (games 2-3), or none (a unit of no known origin: a closed
+// decklist's card created from zone none).
 enum class RootPart : uint8_t {
     NONE,
     MAIN,

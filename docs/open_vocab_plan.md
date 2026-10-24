@@ -130,7 +130,7 @@ Each stage lists what to change, then **acceptance** (all must hold before its c
 - **Acceptance:** the fixture files reproduce bit-for-bit when regenerated.
 
 **Done** (`learn/open_vocab_baseline.py`, its docstring has the details; `generate` ~18 min on 8 × 4
-CPU threads). Decision sources are committed copies, `tests/open_vocab/sources/`: the 66 corpus logs
+CPU threads; it regenerates the fixtures on the pre-S1 tree only, see S1's Done). Decision sources are committed copies, `tests/open_vocab/sources/`: the 66 corpus logs
 and five complete self-play bo3 matches from the end of `league24h-sb` (`select` checked that their
 replay featurizes to the run's episodes step for step); 8831 seat decisions (every corpus seat
 decision, 200 of the self-play ones), 30987 menu rows. A decision is (source, viewer, game,
@@ -221,6 +221,60 @@ Delete the concept; nothing replaces it but the ledger (§1.3).
   --games 20`) and a `scripted:hard+sb` bo3 smoke behave as before (same results on the same
   seeds: the scripted agent's decisions under open decklist must be byte-identical — compare
   `--rmlog-dir` logs before and after).
+
+**Done** (one commit on `refactor/open-vocab`). Everything in the list above, plus what it implied:
+
+- **Formats.** RMSTATE format version 1 → 2 (`schema.h` `FORMAT_VERSION`, `python/rmstate.py`):
+  `FrameKind::METAGAME` and table ids 17-19 / 96-99 are gone (no other id moved); schema hash
+  `96ba032381f717e7` → `c4411fe5d918f05c`. CARDS now holds the registered lists' cards and their
+  tokens only (no metagame cards; the whole-vocab `--cards-frame` set is unchanged), and
+  `--cards-frame` writes SCHEMA + CARDS. FEATURE_SPEC version 2 → 3 (the `metagame` key and the
+  `pivot` type kind are gone; the `prob` tag and transform went with `b_*`, their only user);
+  `spec_hash` `9430d9f42d4559c0` → `94149a6fc75cbc8d`. Episode version 1 → 2 (no `opp_list` /
+  `opp_archetype`; `src/featurize/episode.h`, `learn/rmlearn/episodes.py`, `python/rmtraj.py`):
+  version-1 episodes are refused. The sidecar's serialised state `RMKN` 4 → 5.
+- **Knowledge.** `expert+belief` is a removed-value error in the engine (`--knowledge-a/-b`),
+  refused by `rmknow --level`, the actor schedule, `rm_driver.py` and `rmtrain`'s
+  `league.knowledge`. `RootPart` stays in the network (still written by the roots; it was only
+  read by the hypotheses). Under `--closed-decklist` the scripted agent's `opp_deck` is `{}` and
+  `opp_runs_card` is `None` (unknown), so its closed-decklist play changes; open decklist is
+  unchanged (below).
+- **Gate.** The `knowledge` tier's two belief sessions became plain expert sessions (seed 51
+  stays `--closed-decklist`); the `featurize` tier's `expert+belief` explore game (seed 304) runs
+  seat A at knowledge `off` instead; the pivot fold check and the `opp_list` target check are gone.
+  The `cli` goldens lost only the archetype / reference-list lines and the `You know:` headers
+  that had no other fact under them (22 lines in 3 files). No `.replay` baseline changed.
+- **Evidence.** `make check` green with every tier, the opt-in `actor` tier included
+  (`ROBOMAGE_TORCH_PYTHON=learn/.venv/bin/python`, `make actor` rebuilt), the fuzz games'
+  `SELFCHECK-KNOWLEDGE` clean (`runs/open_vocab_s1/make_check.log`); `learn/check.py`,
+  `check_rnad.py`, `check_rmtrain.py` ok. Agent games before / after on the same seeds (pre-change
+  binary kept in `runs/open_vocab_s1/before_bin/`, `runs/open_vocab_s1/agent_runs.sh`): 158
+  decision logs (scripted vs explore bo3 ×20 on five league pairs and bo1 ×20, scripted vs scripted
+  bo3 ×10 on two pairs, `scripted:hard+sb` bo3 ×6 on three pairs) byte-identical, the same
+  results. `runs/open_vocab_s1/fixture_check.py`: the S1 engine's featurization of all 8831 S0
+  fixture decisions (seat and omniscient) equals S0's `seat_nolists` / `omni_nolists` decisions
+  (`runs/open_vocab_s0/decisions/`) exactly, every array, once `tok_cat` is remapped slot by slot
+  by offset — so S1 removed the `lists` / `b_lists` inputs and nothing else.
+- **For S5 (the categorical vocabularies S1 changes).** `knowledge_level` (the `header.knowledge`
+  and `k_meta.level` slots) was `[none, OFF, EXPERT, EXPERT_BELIEF]` (size 4) and is `[none, OFF,
+  EXPERT]` (size 3); `frame_kind` lost `METAGAME` (not featurized). No other enum changed. The
+  removed value is the last, so every kept value keeps its index within its slot, and only offsets
+  move: `header.knowledge` stays at 1, every slot after it shifts −1 (`turn.step` 5 → 4) up to
+  `k_meta.level` (3432 → 3431), every slot after that −2 (`k_pool.owner_rel` 3436 → 3434 …
+  `ledger.player_rel` 3456 → 3454); the `lists.player_rel` (3460, 4 ids) and `b_lists.player_rel`
+  (3464, 4) slots are gone; `categorical_size` 3468 → 3458. Types 33 (`lists`) and 34 (`b_lists`)
+  are gone (35 → 33, no other type moves: drop `type_emb` rows 33-34); their numeric slots (55 and
+  47) leave `G` 407 → 305 (`F` stays 74); no relation type changes; the card / ability / part
+  tables are unchanged. `tools/nn/make_reference_policy.py` needed no change (it reads no list
+  size). `RMNet` has no `aux_list` / `aux_archetype` heads (their parameters and
+  Adam state are dropped). Removed-value ids (`EXPERT_BELIEF`) never occur in the fixtures.
+- **For S5 (the S0 tooling).** `learn/open_vocab_baseline.py generate` reproduces the fixtures
+  only on the pre-S1 tree (`13ffb640`, e.g. a worktree): on today's tables every old checkpoint is
+  "not runnable" (spec hash), and `RMNet` would refuse their `aux_list` / `aux_archetype` keys. Its
+  helpers (`featurize_all`, `decision_set`, `load_decisions`, `forward_all`) work on the new layout
+  as they are; `fixture_check.py` shows the use: featurize the committed sources with the current
+  engine and select by the fixture's keys. The committed fixtures (`tests/open_vocab/`) are the
+  reference and stay as they are.
 
 S1 changes the network layout (the pivots go); existing checkpoints are carried across by S5's
 migration, which runs **once, after S2–S4**, so there is one cut-over, not two.
@@ -313,7 +367,7 @@ and capacities only) beside `spec_hash` (exact identity, kept for logs and episo
   model, copy each old parameter slot to its new position **by name** (`cat_emb` rows by slot and
   value name, `num_proj` columns by type and slot name, `type_emb` rows by type name, table
   projection columns by column name), drop slots S1 removed (`lists`, `b_lists` columns, the two aux
-  heads), zero reserved positions, set `card_seen` from the ids whose `card_id` row differs from its
+  heads, the `EXPERT_BELIEF` value of `knowledge_level`: S1's Done lists every id that moved), zero reserved positions, set `card_seen` from the ids whose `card_id` row differs from its
   initialisation (or from the run's episodes when available), zero never-seen rows. The migration
   needs the old tables (each run's `tables/`) and the old spec to read names from. **The omniscient
   critic** (`model.critic`; in no run's checkpoint, in S0's fixture `runs/open_vocab_s0/ckpt/m11-critic.pt`)

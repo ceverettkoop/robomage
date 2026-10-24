@@ -13,7 +13,7 @@
 //
 //   <A|B> d=<decision> g<game> <t<turn>|sb> <fact>
 //
-// with the facts meta, seen, pool, position, known_hand, list, archetype and stack_target as that
+// with the facts meta, seen, pool, position, known_hand and stack_target as that
 // module's docstring lists them.
 
 namespace rmcheck {

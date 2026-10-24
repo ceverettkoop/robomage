@@ -45,8 +45,8 @@ static void run_game(const rmcheck::Options &opt, TrajGame *g);
 static void check_steps(const TrajGame &g, const rmcheck::EpisodeFile &e, std::vector<std::string> *fails);
 static void check_game(
     const TrajGame &g, const std::vector<rmcheck::EpisodeFile> &eps, std::vector<std::string> *fails);
-static bool dump_decisions(const std::string &path, std::vector<DumpDecision> *out, rmstate::Schema *omni_schema,
-    rmstate::DecodedFrame *decklists, rmstate::DecodedFrame *metagame, std::string *err);
+static bool dump_decisions(
+    const std::string &path, std::vector<DumpDecision> *out, rmstate::Schema *omni_schema, std::string *err);
 static void check_against_frames(const Featurization &f, const TrajGame &g,
     const std::vector<rmcheck::EpisodeFile> &eps, std::vector<std::string> *fails, size_t *checked);
 static std::string step_json(const featurize::EpisodeStep &s);
@@ -229,9 +229,9 @@ static void check_game(
 }
 
 // The dump's decisions in order (the seat frame with a menu, and the omniscient frame of the same
-// decision), and the omniscient viewer's schema, DECKLISTS and METAGAME frames.
-static bool dump_decisions(const std::string &path, std::vector<DumpDecision> *out, rmstate::Schema *omni_schema,
-    rmstate::DecodedFrame *decklists, rmstate::DecodedFrame *metagame, std::string *err) {
+// decision), and the omniscient viewer's schema.
+static bool dump_decisions(
+    const std::string &path, std::vector<DumpDecision> *out, rmstate::Schema *omni_schema, std::string *err) {
     std::vector<std::string> payloads;
     if (!rmcheck::read_records(path, &payloads, err)) return false;
     rmcheck::FrameDecoder dec;
@@ -241,8 +241,6 @@ static bool dump_decisions(const std::string &path, std::vector<DumpDecision> *o
         if (!dec.feed(p, &frame, err)) return false;
         const int viewer = frame.header.viewer;
         const int kind = frame.header.kind;
-        if (viewer == rmcheck::VIEWER_OMNISCIENT && kind == rmcheck::KIND_DECKLISTS) *decklists = frame;
-        if (viewer == rmcheck::VIEWER_OMNISCIENT && kind == rmcheck::KIND_METAGAME) *metagame = frame;
         if (kind != rmcheck::KIND_STATE) continue;
         const rmstate::Schema &schema = *dec.schema(viewer);
         if (rmcheck::header_value(frame, schema, "terminal")) continue;
@@ -270,15 +268,9 @@ static void check_against_frames(const Featurization &f, const TrajGame &g,
     const std::vector<rmcheck::EpisodeFile> &eps, std::vector<std::string> *fails, size_t *checked) {
     std::vector<DumpDecision> decisions;
     rmstate::Schema schema;
-    rmstate::DecodedFrame decklists, metagame;
     std::string err;
-    if (!dump_decisions(g.dump_path, &decisions, &schema, &decklists, &metagame, &err)) {
+    if (!dump_decisions(g.dump_path, &decisions, &schema, &err)) {
         fails->push_back(g.name + ": the dump: " + err);
-        return;
-    }
-    featurize::RegisteredLists lists;
-    if (g.omniscient && !featurize::registered_lists(schema, decklists, metagame, &lists, &err)) {
-        fails->push_back(g.name + ": the dump's registered lists: " + err);
         return;
     }
     size_t d = 0;
@@ -301,15 +293,14 @@ static void check_against_frames(const Featurization &f, const TrajGame &g,
             if (g.omniscient) {
                 featurize::Targets tg;
                 if (!featurize::featurize_viewer(f.spec, f.tables, dd.omni_frame, &t, &err) ||
-                    !featurize::decision_targets(f.spec, schema, dd.seat_frame, dd.omni_frame, lists, &tg, &err)) {
+                    !featurize::decision_targets(f.spec, schema, dd.seat_frame, dd.omni_frame, &tg, &err)) {
                     fails->push_back(at + "the dump's omniscient frame: " + err);
                     continue;
                 }
                 diff = rmcheck::compare_tensors(s.omniscient, t);
                 if (!diff.empty()) fails->push_back(at + "omniscient " + diff + " differs from the dump's frame");
                 if (tg.opp_hand != s.targets.opp_hand || tg.own_library != s.targets.own_library ||
-                    tg.opp_library != s.targets.opp_library || tg.opp_list != s.targets.opp_list ||
-                    tg.opp_archetype != s.targets.opp_archetype)
+                    tg.opp_library != s.targets.opp_library)
                     fails->push_back(at + "the targets differ from the dump's");
             }
             ++*checked;
@@ -415,7 +406,7 @@ static void report_sizes(rmcheck::Report &rep, const rmcheck::EpisodeFile &e) {
         total += per;
         const bool o = rmcheck::starts_with(a.name, "omni_") || a.name == "opp_hand" || a.name == "own_library" ||
                        a.name == "opp_library" || rmcheck::ends_with(a.name, "library_offsets") ||
-                       a.name == "opp_hand_offsets" || a.name == "opp_list" || a.name == "opp_archetype";
+                       a.name == "opp_hand_offsets";
         (o ? omni_total : seat_total) += per;
         if (per >= 20) (o ? omni : seat) += " " + a.name + "=" + std::to_string(static_cast<long>(per));
     }

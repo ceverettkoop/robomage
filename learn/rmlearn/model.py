@@ -27,8 +27,8 @@ tokens (an MLP of the row's token, ``g`` and their product; padded rows -1e9) an
 (an MLP of ``g``, tanh).
 
 **Auxiliary heads** (training only, never exported) predict the learner targets from ``g``: the
-opponent's registered list and archetype (``METAGAME`` rows), its hand as a distribution over card
-ids and each seat's library tops (``library_depth`` positions) as card ids. The card-id heads score
+opponent's hand as a distribution over card ids and each seat's library tops (``library_depth``
+positions) as card ids. The card-id heads score
 the same card rows the tokens read (a dot product), so they shape the card representation.
 
 **Omniscient critic** (``omniscient_critic``; the plan's open issue 1): a second encoder of the
@@ -439,19 +439,17 @@ class RMNet(nn.Module):
         self.pointer = PointerHead(d)
         self.value = ValueHead(d)
         if cfg.aux_heads:
-            self.aux_list = nn.Linear(d, spec.n_lists)
-            self.aux_archetype = nn.Linear(d, spec.n_archetypes)
             self.aux_hand = nn.Linear(d, d)
             self.aux_library = nn.Linear(d, 2 * spec.library_depth * d)
         self.critic = Critic(spec, cfg) if cfg.omniscient_critic else None
 
     def forward(self, tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok, act_mask,
                 omni=None, seat=None, aux=True):
-        """A dict: `logits` [B, A], `value` [B], `summary` [B, d]; with aux heads (and `aux`) `aux_list`,
-        `aux_archetype`, `aux_hand` [B, n_cards], `aux_own_library`, `aux_opp_library`
-        [B, depth, n_cards] (logits; the none row NEG); with the critic and `omni` (the omniscient
-        featurization's ten inputs) and `seat` [B] (0 = A), `critic_value` [B]. ``aux=False`` skips
-        the aux heads (R-NaD reads none of them)."""
+        """A dict: `logits` [B, A], `value` [B], `summary` [B, d]; with aux heads (and `aux`)
+        `aux_hand` [B, n_cards], `aux_own_library`, `aux_opp_library` [B, depth, n_cards] (logits;
+        the none row NEG); with the critic and `omni` (the omniscient featurization's ten inputs)
+        and `seat` [B] (0 = A), `critic_value` [B]. ``aux=False`` skips the aux heads (R-NaD reads
+        none of them)."""
         extra = self.cards.gather(tok_card, tok_ability, self.cfg.id_dropout)
         x = self.encoder(tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra)
         g = self.summary(x, tok_mask)
@@ -472,8 +470,7 @@ class RMNet(nn.Module):
         depth = self.spec.library_depth
         lib = self.aux_library(g).view(b, 2, depth, d)
         lib_logits = torch.matmul(lib, rows.t()) / math.sqrt(d) + none
-        return {"aux_list": self.aux_list(g), "aux_archetype": self.aux_archetype(g),
-                "aux_hand": torch.matmul(self.aux_hand(g), rows.t()) / math.sqrt(d) + none,
+        return {"aux_hand": torch.matmul(self.aux_hand(g), rows.t()) / math.sqrt(d) + none,
                 "aux_own_library": lib_logits[:, 0], "aux_opp_library": lib_logits[:, 1]}
 
     def inference_module(self, version=0):
@@ -486,13 +483,9 @@ class RMNet(nn.Module):
 
 def aux_losses(out, targets):
     """Per auxiliary head its mean loss over the decisions that have a target (`targets` from
-    batch.Targets.batch, on the outputs' device): cross-entropy for the list, archetype and each
-    library position (-1 skipped), the hand as a distribution over card ids (empty hands skipped)."""
+    batch.Targets.batch, on the outputs' device): cross-entropy for each library position (-1
+    skipped), the hand as a distribution over card ids (empty hands skipped)."""
     losses = {}
-    losses["list"] = Fn.cross_entropy(out["aux_list"], targets["opp_list"], ignore_index=-1) \
-        if (targets["opp_list"] >= 0).any() else out["aux_list"].sum() * 0
-    losses["archetype"] = Fn.cross_entropy(out["aux_archetype"], targets["opp_archetype"], ignore_index=-1) \
-        if (targets["opp_archetype"] >= 0).any() else out["aux_archetype"].sum() * 0
     hand = targets["opp_hand"]
     n = hand.sum(-1)
     lp = Fn.log_softmax(out["aux_hand"].float(), -1)

@@ -50,7 +50,7 @@ SPEC = {
         ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/"),
         ("pairs", [], "[[deck_a, deck_b, weight], ...]; empty: every pair of decks, weight 1"),
         ("format", "bo3", "bo3 or bo1"),
-        ("knowledge", "expert", "both seats' knowledge level (off, expert, expert+belief)"),
+        ("knowledge", "expert", "both seats' knowledge level (off, expert)"),
         ("max_game_decisions", 5000, "the per-game decision cap"),
         ("omniscient", True, "episodes carry the omniscient featurization (aux targets; the omniscient critic)"),
     ],
@@ -259,7 +259,7 @@ SPEC = {
 
 CHOICES = {
     "league.format": ("bo1", "bo3"),
-    "league.knowledge": ("off", "expert", "expert+belief"),
+    "league.knowledge": ("off", "expert"),
     "server.precision": ("fp32", "fp16", "bf16"),
     "bc.amp": ("fp16", "bf16", "off"),
     "rnad.precision": ("fp32", "fp16", "bf16"),

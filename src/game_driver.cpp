@@ -145,9 +145,9 @@ bool state_dump_json = false;
 // --rmstate-read FILE: decode, re-encode and compare an RMSTATE stream instead of playing
 // (state_format/recode.h); empty = off.
 std::string rmstate_read_path;
-// --knowledge-a / --knowledge-b off|expert|expert+belief: each seat's knowledge sidecar level (an
-// rmstate::KnowledgeLevel value: 0 off, 1 expert, 2 expert+belief), which only sets the k_* and b_*
-// tables of that seat's RMSTATE frames (state_format/knowledge_feed.h); play is the same.
+// --knowledge-a / --knowledge-b off|expert: each seat's knowledge sidecar level (an
+// rmstate::KnowledgeLevel value: 0 off, 1 expert), which only sets the k_* tables of that seat's
+// RMSTATE frames (state_format/knowledge_feed.h); play is the same.
 int knowledge_level_a = 1;
 int knowledge_level_b = 1;
 // --selfcheck-state: the state format's self-checks run at every decision (state_format/selfcheck.h);

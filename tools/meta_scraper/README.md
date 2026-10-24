@@ -6,6 +6,10 @@ Standalone scraper that pulls the current top Legacy metagame decks from
 It depends **only on the Python standard library** and imports nothing from the
 robomage engine or `python/`, so it can run with any Python 3.
 
+It writes deck files only. "Archetype" below is MTGTop8's grouping of decklists
+under a deck name, which names the output file; nothing in robomage reads it as a
+label (the engine and the network see a deck as its list of cards).
+
 ## Usage
 
 ```bash

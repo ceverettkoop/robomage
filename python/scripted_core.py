@@ -384,7 +384,7 @@ _SAC_LAST_LANDS = frozenset({_DARK_DEPTHS, _THESPIANS_STAGE, _URZAS_SAGA, _TABER
 def _deck_named(deck, key):
     """True if `key` occurs anywhere in the deck name (e.g. 'league/car_doomsday').
 
-    The uniform way archetype-specific behavior is keyed: doomsday (combo) and tron
+    The uniform way deck-specific behavior is keyed: doomsday (combo) and tron
     (big-mana ramp) decks are recognised this way."""
     return deck is not None and key in deck.lower()
 

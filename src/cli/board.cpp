@@ -27,10 +27,9 @@ struct Frame {
         agents::Table header, turn, player, pcounter, obj, counter, keyword, combat, stack, smode, starget, lki, reveal,
             pending, cost, pip, menu, match, own_deck, emblem, effect, delayed, permission;
         agents::Table event, event_card, event_player;
-        agents::Table k_meta, k_seen, k_pool, k_pool_card, k_position, k_known_hand, k_template, k_archetype, b_list,
-            b_archetype;
-        // CARDS and METAGAME frames.
-        agents::Table card, card_subtype, meta_archetype, meta_list;
+        agents::Table k_meta, k_seen, k_pool, k_pool_card, k_position, k_known_hand;
+        // CARDS frame.
+        agents::Table card, card_subtype;
         std::map<uint64_t, size_t> by_handle;  // object handle -> object row
         std::map<int, size_t> front, back;     // card id -> its CARDS `card` row, per face
         uint64_t me = 0, opp = 0;              // the viewer's and the opponent's seat values
@@ -72,15 +71,9 @@ Frame::Frame(const agents::DecisionView &view) : v(view), st(view.stream()) {
     k_pool_card = v.table("k_pool_card");
     k_position = v.table("k_position");
     k_known_hand = v.table("k_known_hand");
-    k_template = v.table("k_template");
-    k_archetype = v.table("k_archetype");
-    b_list = v.table("b_list");
-    b_archetype = v.table("b_archetype");
     const rmstate::Schema &schema = st.schema();
     card = agents::Table(st.cards_frame(), schema, "card");
     card_subtype = agents::Table(st.cards_frame(), schema, "card_subtype");
-    meta_archetype = agents::Table(st.metagame_frame(), schema, "meta_archetype");
-    meta_list = agents::Table(st.metagame_frame(), schema, "meta_list");
     const int c_handle = obj.col("handle");
     for (size_t r = 0; r < obj.rows(); ++r) by_handle.emplace(obj.u(r, c_handle), r);
     const int c_card = card.col("card"), c_face = card.col("face");
@@ -156,7 +149,6 @@ static std::string pool_label(const Frame &f, size_t pool, bool owner_name);
 static std::vector<std::string> pool_cards(const Frame &f, size_t pool, bool candidates);
 static std::vector<std::string> known_hand(const Frame &f);
 static std::vector<std::string> known_positions(const Frame &f, uint64_t owner, size_t limit);
-static std::string archetype_summary(const Frame &f, uint64_t seat);
 static std::vector<std::string> library_zone(const Frame &f, uint64_t owner);
 static std::string event_cards(const Frame &f, const std::vector<size_t> &rows, uint64_t *hidden);
 static std::string items_text(const std::vector<std::string> &names, uint64_t hidden, bool article);
@@ -1146,50 +1138,6 @@ static std::vector<std::string> known_positions(const Frame &f, uint64_t owner, 
     return out;
 }
 
-// What the archetype tables say about `seat`'s deck: the label when it is deduced, else the
-// possible labels; with beliefs, the likeliest labels. "" when there is nothing.
-static std::string archetype_summary(const Frame &f, uint64_t seat) {
-    const agents::Table &a = f.k_archetype;
-    const agents::Table &m = f.meta_archetype;
-    std::vector<std::string> possible, exact;
-    size_t total = 0;
-    for (size_t r = 0; r < a.rows(); ++r) {
-        if (a.u(r, a.col("player")) != seat) continue;
-        ++total;
-        const uint64_t id = a.u(r, a.col("archetype"));
-        const std::string name =
-            id < m.rows() ? m.text(static_cast<size_t>(id), m.col("name")) : "#" + std::to_string(id);
-        if (a.u(r, a.col("possible"))) possible.push_back(name);
-        if (a.u(r, a.col("exact"))) exact.push_back(name);
-    }
-    if (total == 0) return "";
-    std::string out;
-    if (exact.size() == 1)
-        out = exact[0];
-    else if (possible.empty())
-        out = "matches no reference list";
-    else if (possible.size() < total)
-        out = "one of " + join(possible, ", ");
-    else
-        out = "any";
-    std::vector<std::pair<uint64_t, std::string>> probs;
-    const agents::Table &b = f.b_archetype;
-    for (size_t r = 0; r < b.rows(); ++r) {
-        if (b.u(r, b.col("player")) != seat) continue;
-        const uint64_t id = b.u(r, b.col("archetype")), p = b.u(r, b.col("prob"));
-        if (p == 0) continue;
-        const std::string name =
-            id < m.rows() ? m.text(static_cast<size_t>(id), m.col("name")) : "#" + std::to_string(id);
-        probs.emplace_back(p, name);
-    }
-    std::sort(probs.rbegin(), probs.rend());
-    std::vector<std::string> top;
-    for (size_t i = 0; i < probs.size() && i < 3; ++i)
-        top.push_back(probs[i].second + " " + std::to_string((probs[i].first + 5000000) / 10000000) + "%");
-    if (!top.empty()) out += " (belief: " + join(top, ", ") + ")";
-    return out;
-}
-
 std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool full) {
     const Frame f(v);
     const bool off =
@@ -1206,9 +1154,6 @@ std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool ful
             const std::vector<std::string> pos = known_positions(f, seat, 3);
             if (!pos.empty()) facts.push_back(possessive(f, seat) + " library: " + join(pos, "; "));
         }
-        const std::string arch = archetype_summary(f, f.opp);
-        if (!arch.empty() && arch != "any" && arch != "matches no reference list")
-            facts.push_back(possessive(f, f.opp) + " archetype: " + arch);
         if (facts.empty()) return out;
         out.push_back("You know:");
         for (const std::string &s : facts) out.push_back("  " + s);
@@ -1242,37 +1187,6 @@ std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool ful
                                                                      : ""));
         if (!seen.empty())
             for (const std::string &l : wrap("  copies seen this game (/match):", seen, "      ")) out.push_back(l);
-        std::vector<std::string> lists;
-        const agents::Table &t = f.k_template;
-        for (size_t r = 0; r < t.rows(); ++r) {
-            if (t.u(r, t.col("player")) != seat || !t.u(r, t.col("consistent"))) continue;
-            const uint64_t id = t.u(r, t.col("list"));
-            std::string name = id < f.meta_list.rows()
-                                   ? f.meta_list.text(static_cast<size_t>(id), f.meta_list.col("name"))
-                                   : "#" + std::to_string(id);
-            if (t.u(r, t.col("registered"))) name += " (registered)";
-            if (!t.u(r, t.col("exact"))) name += " (unproven)";
-            lists.push_back(name);
-        }
-        if (lists.empty()) lists.push_back("none");
-        if (t.rows())
-            for (const std::string &l : wrap("  consistent reference lists:", lists, "      ")) out.push_back(l);
-        const std::string arch = archetype_summary(f, seat);
-        if (!arch.empty()) out.push_back("  archetype: " + arch);
-        std::vector<std::pair<uint64_t, std::string>> probs;
-        const agents::Table &b = f.b_list;
-        for (size_t r = 0; r < b.rows(); ++r) {
-            if (b.u(r, b.col("player")) != seat || b.u(r, b.col("prob")) == 0) continue;
-            const uint64_t id = b.u(r, b.col("list"));
-            probs.emplace_back(b.u(r, b.col("prob")),
-                id < f.meta_list.rows() ? f.meta_list.text(static_cast<size_t>(id), f.meta_list.col("name"))
-                                        : "#" + std::to_string(id));
-        }
-        std::sort(probs.rbegin(), probs.rend());
-        std::vector<std::string> top;
-        for (size_t i = 0; i < probs.size() && i < 5; ++i)
-            top.push_back(probs[i].second + " " + std::to_string((probs[i].first + 5000000) / 10000000) + "%");
-        if (!top.empty()) out.push_back("  belief over lists: " + join(top, ", "));
     }
     return out;
 }

@@ -9,10 +9,9 @@
 
 using rmcheck::Rows;
 
-// One seat's names and reference lists as its CARDS and METAGAME frames gave them so far.
+// One seat's card names as its CARDS frames gave them so far.
 struct SeatNames {
         std::map<int64_t, std::string> cards;
-        std::vector<std::string> lists, labels;
 };
 
 static std::string card_name(const SeatNames &n, const Rows &t, size_t r, int c);
@@ -115,23 +114,6 @@ static void facts(
     for (size_t r = 0; r < kh.size(); ++r)
         out->push_back(
             "known_hand " + card_name(n, kh, r, kh.col("card")) + " x" + std::to_string(kh.u(r, kh.col("copies"))));
-    const Rows tp(f, s, "k_template");
-    for (size_t r = 0; r < tp.size(); ++r) {
-        const uint64_t li = tp.u(r, tp.col("list"));
-        const std::string name = li < n.lists.size() ? n.lists[static_cast<size_t>(li)] : "#" + std::to_string(li);
-        out->push_back("list " + rel_text(tp.u(r, tp.col("player_rel"))) + " " + name + " " +
-                       (tp.u(r, tp.col("consistent")) ? "consistent" : "inconsistent") +
-                       (tp.u(r, tp.col("exact")) ? "" : " unproven") +
-                       (tp.u(r, tp.col("registered")) ? " registered" : ""));
-    }
-    const Rows ar(f, s, "k_archetype");
-    for (size_t r = 0; r < ar.size(); ++r) {
-        const uint64_t ai = ar.u(r, ar.col("archetype"));
-        const std::string label = ai < n.labels.size() ? n.labels[static_cast<size_t>(ai)] : "#" + std::to_string(ai);
-        out->push_back("archetype " + rel_text(ar.u(r, ar.col("player_rel"))) + " " + label + " " +
-                       (ar.u(r, ar.col("possible")) ? "possible" : "impossible") +
-                       (ar.u(r, ar.col("exact")) ? " exact" : ""));
-    }
     stack_target_facts(f, s, n, out);
 }
 
@@ -189,12 +171,6 @@ bool knowledge_frames(const std::vector<std::string> &payloads,
             for (size_t r = 0; r < card.size(); ++r)
                 n.cards.emplace(card.null(r, card.col("card")) ? -1 : static_cast<int64_t>(card.u(r, card.col("card"))),
                     card.text(r, card.col("name")));
-        } else if (kind == KIND_METAGAME) {
-            const Rows lists(f, s, "meta_list"), labels(f, s, "meta_archetype");
-            n.lists.clear();
-            n.labels.clear();
-            for (size_t r = 0; r < lists.size(); ++r) n.lists.push_back(lists.text(r, lists.col("name")));
-            for (size_t r = 0; r < labels.size(); ++r) n.labels.push_back(labels.text(r, labels.col("name")));
         } else if (kind == KIND_STATE) {
             const Rows turn(f, s, "turn");
             const std::string when = header_value(f, s, "sideboarding")

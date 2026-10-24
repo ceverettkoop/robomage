@@ -34,7 +34,7 @@ import numpy as np
 from . import rmtb
 
 KIND = "episode"
-VERSION = 1
+VERSION = 2
 PAD_MULTIPLE = 8
 INPUTS = ["tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask", "rel", "rel_mask", "act_tok",
           "act_mask"]
@@ -114,8 +114,8 @@ class Episode:
     ``decision``, ``sideboarding``, ``chosen``, ``has_mu``, ``policy_version``, ``teacher``,
     ``menu_off``, ``mu``), ``evals`` (None or ``eval_policy`` / ``eval_version`` / ``eval_value``
     [D, P], ``eval_log_pi`` [ΣA, P]), ``seat_feat`` and ``omni_feat`` (``Featurization``, the latter
-    None unless omniscient), the targets (``opp_list``, ``opp_archetype``, ragged ``opp_hand``,
-    ``own_library``, ``opp_library`` as (values, offsets); None unless omniscient)."""
+    None unless omniscient), the targets (ragged ``opp_hand``, ``own_library``, ``opp_library`` as
+    (values, offsets); None unless omniscient)."""
 
     def __init__(self, data, path=None):
         meta, arrays = rmtb.read_bytes(data)
@@ -158,7 +158,7 @@ class Episode:
         self.targets = None
         if self.omniscient:
             self.omni_feat = Featurization(arrays, "omni_", D, self.widths, self.dims)
-            self.targets = {"opp_list": _need(arrays, "opp_list"), "opp_archetype": _need(arrays, "opp_archetype")}
+            self.targets = {}
             for n in ("opp_hand", "own_library", "opp_library"):
                 vals = _need(arrays, n)
                 self.targets[n] = (vals, _offsets(arrays, n + "_offsets", D, len(vals)))
@@ -333,19 +333,16 @@ def evaluations(items, policy_id, A):
 
 def targets(items, n_cards, depth):
     """The auxiliary heads' targets of the steps ``items`` (omniscient episodes; others get none:
-    -1 / empty), as numpy: ``opp_list``, ``opp_archetype`` [B] (-1 none), ``opp_hand`` [B, n_cards]
-    counts, ``own_library``, ``opp_library`` [B, depth] (-1 none); and ``present`` [B] bool."""
+    -1 / empty), as numpy: ``opp_hand`` [B, n_cards] counts, ``own_library``, ``opp_library``
+    [B, depth] (-1 none); and ``present`` [B] bool."""
     b = len(items)
-    out = {"opp_list": np.full(b, -1, np.int64), "opp_archetype": np.full(b, -1, np.int64),
-           "opp_hand": np.zeros((b, n_cards), np.float32), "own_library": np.full((b, depth), -1, np.int64),
+    out = {"opp_hand": np.zeros((b, n_cards), np.float32), "own_library": np.full((b, depth), -1, np.int64),
            "opp_library": np.full((b, depth), -1, np.int64), "present": np.zeros(b, np.bool_)}
     for j, (ep, d) in enumerate(items):
         t = ep.targets
         if t is None:
             continue
         out["present"][j] = True
-        out["opp_list"][j] = t["opp_list"][d]
-        out["opp_archetype"][j] = t["opp_archetype"][d]
         vals, off = t["opp_hand"]
         np.add.at(out["opp_hand"][j], vals[off[d]:off[d + 1]].astype(np.int64), 1.0)
         for name in ("own_library", "opp_library"):

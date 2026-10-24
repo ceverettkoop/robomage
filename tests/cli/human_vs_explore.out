@@ -22,8 +22,6 @@ Your hand (7):
   Goblin Guide          #7  {R}        Creature - Goblin Scout
 Player A's graveyard: (empty)
 Player B's graveyard: (empty)
-You know:
-  Player B's archetype: slow_midrange
 Decision: keep this hand or take a mulligan
   0: Keep
   1: Mulligan
@@ -68,8 +66,6 @@ Your hand (6):
   Goblin Guide          #7  {R}        Creature - Goblin Scout
 Player A's graveyard: (empty)
 Player B's graveyard: (empty)
-You know:
-  Player B's archetype: slow_midrange
 Decision: act or pass priority
   0: Pass priority
   1: Cast Chain Lightning
@@ -118,8 +114,6 @@ Your hand (5):
   Lightning Bolt        #6  {R}        Instant
 Player A's graveyard: (empty)
 Player B's graveyard: (empty)
-You know:
-  Player B's archetype: slow_midrange
 Decision: declare attackers (pick each attacker, then confirm)
   0: Goblin Guide [2/2]
   1: Confirm attackers   (or -1)
@@ -148,8 +142,6 @@ Your hand (5):
   Lightning Bolt        #6  {R}        Instant
 Player A's graveyard: (empty)
 Player B's graveyard: Flow State
-You know:
-  Player B's archetype: slow_midrange
 Decision: act or pass priority
   0: Pass priority
   1: Cast Lightning Bolt
@@ -173,8 +165,6 @@ Your hand (6):
   Mountain              #29             Basic Land - Mountain
 Player A's graveyard: (empty)
 Player B's graveyard: Flow State
-You know:
-  Player B's archetype: slow_midrange
 Decision: act or pass priority
   0: Pass priority
   1: Cast Lightning Bolt
@@ -224,8 +214,6 @@ Player B:
       Force of Vigor 1, Hydroblast 1, Null Rod 1, Pernicious Deed 2, Surgical Extraction 1,
       Toxic Deluge 1, Veil of Summer 1
   copies seen this game (/match): Flow State 1, Tropical Island 1
-  consistent reference lists: league/bug (registered)
-  archetype: slow_midrange
 Player A (you):
   library (52 cards): Chain Lightning 3, Eidolon of the Great Revel 4, Exquisite Firecraft 2,
       Fiery Islet 1, Fireblast 2, Goblin Guide 3, Lava Spike 4, Light Up the Stage 1,
@@ -233,8 +221,6 @@ Player A (you):
       Roiling Vortex 1, Skewer the Critics 2
   copies seen this game (/match): Mountain 2, Lightning Bolt 1, Goblin Guide 1, Chain Lightning 1,
       Fireblast 1, Skewer the Critics 1, Monastery Swiftspear 1
-  consistent reference lists: league/burn (registered)
-  archetype: burn
 Player A [0-1, help]> (8 earlier lines: log all)
   T1: Player B's Tropical Island: library (top) -> hand (by Goblin Guide)
   T2: Player B draws a card

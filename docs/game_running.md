@@ -66,7 +66,7 @@ banner before each decision. Commands at the prompt:
 | `board` | the board and menu again |
 | `zone <name> [opp]` | one zone, yours or the opponent's: `hand`, `library`, `graveyard`, `exile`, `battlefield`, `stack`, `sideboard`; a hidden zone shows its size, the cards the frame shows in it and what the knowledge tables say |
 | `card <#n\|name>` | a card's details from the `CARDS` frame (cost, type line, P/T, oracle text): an object of the board by handle, or a card of the match by name |
-| `know` | the knowledge panel in full: pools with each card's least and most copies, known library positions, copies seen, consistent reference lists, archetypes (and beliefs at `expert+belief`); off under `--knowledge-a/-b off` |
+| `know` | the knowledge panel in full: pools with each card's least and most copies, known library positions, copies seen; off under `--knowledge-a/-b off` |
 | `log [n\|all]` | what this seat saw happen this match (its events), the last *n* lines (default 30) |
 | `z [mine]` (`pass turn [mine]`) | auto-pass: answer "Pass priority" at this seat's priority decisions until the next turn begins (`mine`: until this seat's own next turn begins), printing what happens and one line per pass |
 | `help`, `quit` | |
@@ -227,7 +227,7 @@ categories). An agent is any object with `new_game()` and `decide(seat_frames, f
 
 `--machine` makes every seat without an in-process agent (and not the `--player` seat) decide
 over the RMSTATE stream (`docs/state_format.md` §9): stdout carries only `RMSTATE <nbytes>\n` +
-payload records; the deciding seat gets its `SCHEMA`, `CARDS`, `DECKLISTS` and `METAGAME` frames
+payload records; the deciding seat gets its `SCHEMA`, `CARDS` and `DECKLISTS` frames
 the first time it decides, then a `STATE` frame per decision, answered by one integer line (a menu
 row, `-1` = the last row, `-2` / `-3` = concede game / match); at match end each seat gets a
 terminal `STATE` frame (`header.terminal = 1`, no reply) and the engine exits. Everything else the

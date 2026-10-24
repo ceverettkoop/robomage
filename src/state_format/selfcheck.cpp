@@ -625,7 +625,7 @@ static std::string with_knowledge(Zone::Ownership viewer, const std::string &pay
     return out;
 }
 
-// Once per match: each viewer's SCHEMA, CARDS, DECKLISTS and METAGAME frames decode and re-encode the same,
+// Once per match: each viewer's SCHEMA, CARDS and DECKLISTS frames decode and re-encode the same,
 // and the seats' frames start the self-check's knowledge instances.
 static void check_match_frames() {
     if (match_frames_checked) return;

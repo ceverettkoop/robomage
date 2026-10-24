@@ -32,7 +32,7 @@ if _HERE not in sys.path:
 import rmtb  # noqa: E402
 
 KIND = "episode"
-VERSION = 1
+VERSION = 2
 VIEWER_OMNISCIENT = 2
 TENSORS = ("tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask", "rel", "act_tok", "act_mask")
 
@@ -151,7 +151,6 @@ def read_bytes(data: bytes) -> Episode:
         for n in ("opp_hand", "own_library", "opp_library"):
             lists[n] = (_array(arrays, n), _offsets(_array(arrays, n + "_offsets"), steps, len(arrays[n].values),
                                                      n + "_offsets"))
-        opp_list, opp_arch = _array(arrays, "opp_list"), _array(arrays, "opp_archetype")
     out = []
     for d in range(steps):
         s = Step()
@@ -170,7 +169,7 @@ def read_bytes(data: bytes) -> Episode:
                                    [ev_lp[r * p + k] for r in range(mb, me)]))
         if omniscient:
             s.omniscient = omni_tokens.expand(d, widths, dims, menu_type)
-            s.targets = {"opp_list": opp_list[d], "opp_archetype": opp_arch[d]}
+            s.targets = {}
             for n, (values, off) in lists.items():
                 s.targets[n] = values[off[d]:off[d + 1]]
         out.append(s)

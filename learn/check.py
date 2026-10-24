@@ -428,9 +428,7 @@ def check_episode_reader(files):
                 same = same and np.array_equal(ep.mu[ep.menu_off[d]:ep.menu_off[d + 1]], np.array(s.mu, np.float32))
             if s.targets is not None:
                 t = EP.targets([(ep, d)], 1025, 10)
-                same = same and int(t["opp_list"][0]) == s.targets["opp_list"] and \
-                    int(t["opp_archetype"][0]) == s.targets["opp_archetype"] and \
-                    float(t["opp_hand"].sum()) == len(s.targets["opp_hand"]) and \
+                same = same and float(t["opp_hand"].sum()) == len(s.targets["opp_hand"]) and \
                     list(t["own_library"][0][:len(s.targets["own_library"])]) == list(s.targets["own_library"][:10])
             if not same:
                 bad.append((f, d))

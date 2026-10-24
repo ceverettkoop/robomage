@@ -22,12 +22,11 @@ bool trajectory_omniscient = false;
 
 namespace {
 
-// The omniscient viewer's frames the learner-side featurization reads: its schema, and the
-// registered lists of its DECKLISTS and METAGAME frames (the targets' opp_list / opp_archetype).
+// What the learner-side featurization reads besides the omniscient frame: the omniscient viewer's
+// schema.
 struct OmniscientInputs {
         bool ready = false;
         rmstate::Schema schema;
-        featurize::RegisteredLists lists;
 };
 
 // The episode being built: the game's header facts and its decisions so far.
@@ -159,13 +158,6 @@ static void load_omniscient_inputs() {
     OmniscientInputs &o = traj->omni;
     rmstate::DecodeResult res = rmstate::decode_schema_frame(encode_schema_frame(Zone::UNKNOWN), &o.schema);
     if (!res.ok()) fatal_error("--trajectory-omniscient: the SCHEMA frame does not decode: " + res.message);
-    rmstate::DecodedFrame decklists, metagame;
-    res = rmstate::decode_frame(encode_decklists_frame(Zone::UNKNOWN), o.schema, &decklists);
-    if (res.ok()) res = rmstate::decode_frame(encode_metagame_frame(Zone::UNKNOWN), o.schema, &metagame);
-    if (!res.ok()) fatal_error("--trajectory-omniscient: a match frame does not decode: " + res.message);
-    std::string err;
-    if (!featurize::registered_lists(o.schema, decklists, metagame, &o.lists, &err))
-        fatal_error("--trajectory-omniscient: " + err);
     o.ready = true;
 }
 
@@ -179,8 +171,7 @@ static void omniscient_decision(const rmstate::DecodedFrame &seat_frame, const s
     std::string err;
     const featurize::Featurization &f = traj->featurization;
     if (!featurize::featurize_viewer(f.spec, f.tables, omni, &traj->omni_tensors, &err) ||
-        !featurize::decision_targets(
-            f.spec, traj->omni.schema, seat_frame, omni, traj->omni.lists, &traj->targets, &err))
+        !featurize::decision_targets(f.spec, traj->omni.schema, seat_frame, omni, &traj->targets, &err))
         fatal_error("--trajectory-omniscient: " + err);
 }
 
@@ -276,8 +267,6 @@ static const char *knowledge_name(Zone::Ownership seat) {
             return "off";
         case rmstate::KnowledgeLevel::EXPERT:
             return "expert";
-        case rmstate::KnowledgeLevel::EXPERT_BELIEF:
-            return "expert+belief";
     }
     return "";
 }

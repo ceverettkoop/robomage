@@ -19,7 +19,7 @@
 namespace rmcheck {
 
 // Frame kinds and viewers as the frame header numbers them (state_format/schema.h).
-constexpr int KIND_SCHEMA = 0, KIND_CARDS = 1, KIND_DECKLISTS = 2, KIND_STATE = 3, KIND_METAGAME = 4;
+constexpr int KIND_SCHEMA = 0, KIND_CARDS = 1, KIND_DECKLISTS = 2, KIND_STATE = 3;
 constexpr int VIEWER_A = 0, VIEWER_B = 1, VIEWER_OMNISCIENT = 2;
 
 // The frame kind (or viewer) byte of a payload; -1 when it is too short to have one.

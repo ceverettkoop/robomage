@@ -25,7 +25,7 @@ their keys ``evaltrain_*``: the train / held-out gap).
 - Value: mean squared error of the value head (tanh, the contract's one value) to the deciding
   seat's game result (+1 / -1 / 0), weighted ``value_weight``. A scalar regression rather than a
   win/draw/loss head, so the exported value is what the actor and R-NaD read without a change.
-- Auxiliary: ``model.aux_losses`` (opponent's list and archetype, its hand, both libraries' tops)
+- Auxiliary: ``model.aux_losses`` (the opponent's hand, both libraries' tops)
   on steps of omniscient episodes, weighted ``aux_weight`` each (``aux_head_weights`` overrides
   per head). Id-dropout is the model's own (``ModelConfig.id_dropout``).
 - Event dropout (``event_dropout`` p, a spec with recent-event history only, docs/featurizer.md
@@ -62,7 +62,7 @@ from . import model as M
 from . import replay as RP
 
 MULLIGAN_CATEGORIES = ("MULLIGAN", "KEEP_HAND")
-AUX_HEADS = ("list", "archetype", "hand", "own_library", "opp_library")
+AUX_HEADS = ("hand", "own_library", "opp_library")
 
 
 @dataclass
@@ -259,7 +259,7 @@ class BCTrainer:
         loss = {"policy": weighted_policy_loss(pl, sb, c.sideboard_weight),
                 "value": ((out["value"].float() - b.outcome) ** 2).mean()}
         total = loss["policy"] + c.value_weight * loss["value"]
-        if b.targets is not None and "aux_list" in out:
+        if b.targets is not None and "aux_hand" in out:
             al = M.aux_losses(out, b.targets)
             for k, v in al.items():
                 loss["aux_" + k] = v
@@ -375,13 +375,8 @@ class BCTrainer:
             dec = b.outcome != 0
             v_sign += int(((val > 0) == (b.outcome > 0))[dec].sum())
             v_dec += int(dec.sum())
-            if b.targets is not None and "aux_list" in out:
+            if b.targets is not None and "aux_hand" in out:
                 t = b.targets
-                for k in ("list", "archetype"):
-                    tg = t["opp_" + k]
-                    ok = tg >= 0
-                    aux_hit[k] += float((out["aux_" + k].argmax(-1) == tg)[ok].sum())
-                    aux_n[k] += float(ok.sum())
                 hand = t["opp_hand"]
                 ok = hand.sum(-1) > 0
                 top = out["aux_hand"].argmax(-1)

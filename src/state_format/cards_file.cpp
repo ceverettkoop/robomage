@@ -15,8 +15,7 @@ std::string cards_frame_records() {
     const bool was_closed = closed_decklist;
     closed_decklist = true;
     const std::string records = rmstate::frame_record(encode_schema_frame(Zone::UNKNOWN)) +
-                                rmstate::frame_record(encode_cards_frame(Zone::UNKNOWN)) +
-                                rmstate::frame_record(encode_metagame_frame(Zone::UNKNOWN));
+                                rmstate::frame_record(encode_cards_frame(Zone::UNKNOWN));
     closed_decklist = was_closed;
     return records;
 }
@@ -29,7 +28,7 @@ int write_cards_frame_file(const std::string &path) {
         std::fprintf(stderr, "CARDS-FRAME: cannot write %s\n", path.c_str());
         return 2;
     }
-    std::printf("CARDS-FRAME: wrote %s (SCHEMA, CARDS, METAGAME; %zu bytes)\n", path.c_str(), records.size());
+    std::printf("CARDS-FRAME: wrote %s (SCHEMA, CARDS; %zu bytes)\n", path.c_str(), records.size());
     return 0;
 }
 
