@@ -45,6 +45,7 @@ import traceback
 
 from . import config as C
 from . import evaluation as EVAL
+from . import retable as RT
 from . import sb_explore as SBX
 from . import schedules as SCH
 from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
@@ -186,6 +187,7 @@ class Orchestrator:
             if not os.path.exists(self.engine):
                 raise Fatal("no engine %s (make BUILD=%s actor)" % (self.engine, self.cfg["run"]["build"].upper()))
             self.ensure_tables()
+            self.note_tables()
             self.save_state()
             self.write_status()
             control.start()
@@ -1167,6 +1169,27 @@ class Orchestrator:
             os.makedirs(self.run.tables, exist_ok=True)
             subprocess.run([rmfeat, "--export-tables", self.run.cards, self.run.tables], cwd=self.bin_dir, env=env,
                            check=True, stdout=subprocess.DEVNULL)
+
+    def note_tables(self):
+        """The run's tables against the engine's (a stale run is stopped: rmtrain retable) and against
+        the ones state.json records: tables that changed since (replaced, or a retable whose exports did
+        not all finish) have every export made again from its checkpoint."""
+        why = RT.check_start(self.run, self.cfg, self.engine, self.bin_dir)
+        if why:
+            raise Fatal(why)
+        cur = RT.tables_summary(self.cfg["run"]["tables"] or self.run.tables)
+        last = self.state.get("tables")
+        if cur is not None and last is not None and not RT.same_tables(last, cur):
+            for p in RT.stale_exports(self.run):
+                os.unlink(p)
+            redo = RT.latest_exports(self.state)
+            for e in redo:
+                self.queue_export(e["checkpoint"], e["name"], e["version"])
+            self.log("the run's tables changed since the last start (spec %s -> %s): %d exports queued again"
+                     % (last.get("spec_hash"), cur["spec_hash"], len(redo)))
+            self.emit("tables_changed", previous=last.get("spec_hash"), spec_hash=cur["spec_hash"], exports=len(redo))
+        if cur is not None:
+            self.state["tables"] = cur
 
     # ── control ─────────────────────────────────────────────────────────────────────────────
 

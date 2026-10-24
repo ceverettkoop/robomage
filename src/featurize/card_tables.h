@@ -83,8 +83,10 @@ struct CardTables {
         std::vector<std::string> part_columns;
         std::vector<float> part;            // [part_rows(), part_columns.size()]
         std::vector<int64_t> part_ability;  // per part row: its ability row
-        // Per face vocab id whether a card row describes it, and the printed child rows.
+        // Per face vocab id whether a card row describes it, its name (the row's; "" none) and the
+        // printed child rows.
         std::vector<uint8_t> present;
+        std::vector<std::string> names;
         std::vector<PrintedRows> printed;
         // Lookup (rebuilt by build_index): per key its ability row.
         std::map<std::string, int64_t> key_index;
@@ -117,15 +119,15 @@ bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFram
 bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, uint64_t card_rows,
     uint64_t vocab_hash, CardTables *out, std::string *err);
 
-// The presence flags and printed rows of `out` (card_rows set) from the whole-vocab CARDS frame;
+// The presence flags, names and printed rows of `out` (card_rows set) from the whole-vocab CARDS frame;
 // build_card_tables calls it, a reader of the exported files calls it with the cards file's frame.
 void build_printed_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, CardTables *out);
 
 // The tables as RMTB files, stamped with `spec_hash`.
 CardTableFiles card_table_files(const CardTables &t, uint64_t spec_hash);
 
-// The tables read back from their files (text_rows / text_width are left 0, the printed rows
-// empty: build_printed_rows). False with `err` on a file of another kind, a missing array or a
+// The tables read back from their files (text_rows / text_width are left 0, the names and printed
+// rows empty: build_printed_rows). False with `err` on a file of another kind, a missing array or a
 // shape that does not agree.
 bool read_card_tables(const CardTableFiles &files, CardTables *out, std::string *err);
 

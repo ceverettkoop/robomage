@@ -62,6 +62,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as Fn
 
+from . import spec as S
+
 NEG = -1e9
 
 
@@ -524,8 +526,10 @@ def smoothed_log_policy(logits, act_mask, eps, sideboarding=None, eps_sideboardi
 
 class InferencePolicy(nn.Module):
     """forward(ten contract inputs) -> (logits [B, A], value [B]); the card and ability rows folded
-    into one buffer (``folded_rows``). Carries spec_hash, vocab_hash, text_model and policy_version
-    as string attributes (what export.py writes into each format's metadata).
+    into one buffer (``folded_rows``). Carries spec_hash, vocab_hash, text_model, layout_hash, vocab
+    (the vocab manifest's JSON text) and policy_version as string attributes (what export.py writes
+    into each format's metadata; also tables_digest): the model manifest of the tables it was folded from, which an
+    export must match exactly (spec.check_compatible, exact).
 
     ``folded_rows`` holds each card's row once, each distinct ability row once (every ability
     address no ability has — no features, no parts — shares one row: they project alike) and the
@@ -539,6 +543,9 @@ class InferencePolicy(nn.Module):
         self.spec_hash = str(model.hashes["spec_hash"])
         self.vocab_hash = str(model.hashes["vocab_hash"])
         self.text_model = str(model.hashes["text_model"])
+        self.layout_hash = str(model.hashes.get("layout_hash", ""))
+        self.tables_digest = str(model.hashes.get("tables_digest", ""))
+        self.vocab = S.vocab_text(model.hashes.get("vocab", []))
         self.policy_version = str(int(version))
         self.F, self.C, self.K, self.Q = int(model.spec.F), int(model.spec.C), int(model.spec.K), int(model.spec.Q)
         src = model
@@ -625,12 +632,11 @@ def save_checkpoint(model, path, extra=None):
 
 
 def load_checkpoint(path, tables):
-    """The RMNet a save_checkpoint file holds, built over `tables` (whose hashes must be the model's)."""
+    """The RMNet a save_checkpoint file holds, built over `tables` (the checkpoint's manifest must be
+    compatible with theirs, spec.check_compatible: the vocab may have grown). The model carries the
+    tables' manifest from then on."""
     data = torch.load(path, map_location="cpu", weights_only=True)
-    for k in ("spec_hash", "vocab_hash", "text_model"):
-        if data["hashes"].get(k) != tables.hashes[k]:
-            raise ValueError("%s: the checkpoint's %s %s is not the tables' %s"
-                             % (path, k, data["hashes"].get(k), tables.hashes[k]))
+    S.require_compatible(data["hashes"], tables, path)
     model = RMNet(ModelConfig.from_dict(data["config"]), tables)
     model.load_state_dict(data["state_dict"])
     return model

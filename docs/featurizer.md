@@ -283,7 +283,9 @@ Three whole-vocab tables, the same for every match, indexed by vocab id (`src/ca
 **whole-vocab `CARDS` frame** (the engine's `--cards-frame FILE`: `SCHEMA` and `CARDS` records, the
 `--closed-decklist` card set) by `rmfeat --export-tables` (`src/featurize/card_tables.h`),
 by the same tag rules. The featurizer reads `N_CARD_TYPES + 1` from the text table's row count,
-never from an engine header.
+never from an engine header. `rmfeat --export-tables CARDS DIR` writes `card.rmtb`, `ability.rmtb`,
+`part.rmtb`, `spec.json` (§6), and the tables' model manifest `manifest.json` and layout registry
+`registry.json` (§6.2).
 
 ### 4.1 Card table `[N_CARD_TYPES + 1, Fc]` f32
 
@@ -536,8 +538,8 @@ forward(tok_type [B,N] i64, tok_num [B,N,F] f32, tok_cat [B,N,C] i64, tok_card [
 ```
 
 The card, text, ability and part tables are the model's frozen buffers, loaded from the RMTB
-files when the model is built; the model exports `spec_hash`, `vocab_hash` and `text_model` as
-attributes, and the actor refuses a model whose values differ from its own spec and tables.
+files when the model is built; an export folds them in and carries the tables' model manifest
+(§6.2), and the actor refuses an export that is not of its own tables exactly.
 Logits at padded menu rows are ignored; the actor takes the argmax (or samples) over real rows.
 
 **Padding** (`featurize::pad_batch`, `src/featurize/batch.h`, std only): a batch is padded to its
@@ -545,9 +547,10 @@ largest `N`, `R` and `A`, each rounded up to a multiple of 8 and at least 8 (so 
 1, which `torch.export` would specialise); pads are 0 (`tok_card`, `tok_ability` -1) and every mask
 0; `rel_mask` marks the real relations. The buffers are reused from batch to batch.
 
-**Model files and their metadata.** A model carries four strings: `spec_hash`, `vocab_hash` (16 hex
-digits each), `text_model` (the text table's `model`) and `policy_version` (an unsigned integer,
-`"0"` when absent), each in its export's own metadata, never in a sidecar file: a TorchScript
+**Model files and their metadata.** A model carries seven strings: `spec_hash`, `vocab_hash`,
+`layout_hash`, `tables_digest` (16 hex digits each), `text_model` (the text table's `model`), `vocab` (the vocab
+manifest, a JSON array of `[id, name]`, §6.2) and `policy_version` (an unsigned integer, `"0"` when
+absent), each in its export's own metadata, never in a sidecar file: a TorchScript
 module's string attributes, an AOTInductor package's metadata (written by the export's inductor
 config `aot_inductor.metadata`, read with `AOTIModelPackageLoader::get_metadata`) and an ONNX
 model's `metadata_props`. The evaluator tells the two it loads apart by the zip archive's records
@@ -572,15 +575,16 @@ thread, TorchScript through `torch::jit::load` or AOTInductor through `AOTIModel
 policy) and remote (`connect_remote_evaluator`, `src/actor/remote_evaluator.h`).
 
 **Remote evaluation** (`nn:remote:<endpoint>`) speaks the inference protocol,
-`docs/inference_protocol.md` (RMIP v1; the wire code is `src/inference/protocol.h`, standard
+`docs/inference_protocol.md` (RMIP v2; the wire code is `src/inference/protocol.h`, standard
 library and POSIX): a Unix stream socket at the endpoint carries a handshake (the featurizer's
-`spec_hash`, `vocab_hash`, `text_model` and widths, the policy ids to evaluate) and small
+model manifest without the registry, §6.2, and widths, the policy ids to evaluate) and small
 `EVAL` / `DONE` messages; each connection has a POSIX shared-memory region the client creates,
 names in the handshake and unlinks once the server has it, holding the request (the decisions'
 unpadded tensors, laid out as an RMTB `tensors` file's arrays with per-decision sizes for offsets,
 the spec hash in its header) and the response (per requested policy its version, the values, and
 the logits and `log π` over each decision's menu rows). The server may batch requests across
-clients up to a size or a deadline, refuses a handshake or request whose hashes differ from its
+clients up to a size or a deadline, refuses a handshake whose tables are not its models' exactly
+(§6.2: an export is rebuilt per vocab) or a request whose spec hash differs from the handshake's
 models', and answers each request with each policy's current version, so weights can be swapped
 between decisions. The client fills one `Evaluation` entry per requested policy (`policies=`, the
 first the one sampled from). A server that refuses, errs, goes away or does not answer within the
@@ -637,6 +641,49 @@ projections folded into frozen buffers, constants of the weights, so a forward g
 than projecting the whole vocab) and exports it as
 `<prefix>.ts.pt`, `.pt2` and `.onnx`; `check` evaluates the three on a `tensors` file's decisions
 alone and in padded batches and requires them to agree within 1e-4 (absolute plus relative).
+
+### 6.2 Compatibility: what a model was trained with (`src/featurize/compat.h`)
+
+A checkpoint is the portable artefact; an export is built for one vocab and tables. Every model
+carries the **model manifest** of the tables it was trained on (`rmfeat --export-tables` writes it
+beside them: `manifest.json`, `registry.json`; a checkpoint's `hashes`, an export's metadata, the
+inference protocol's handshake): `spec_hash` and `vocab_hash` (exact identity), `text_model`,
+`layout_hash` (§6.1), `tables_digest` (FNV-1a 64 of the tables' card digests, below: every card's
+card, ability and part rows), `vocab` — the **vocab manifest**, `[id, name]` for every card-table row (the
+name the whole-vocab CARDS frame gives each face vocab id) — and, in a checkpoint, `registry` (the
+layout registry's text: the manifest of positions). **One check**, `check_compatible(model, now,
+exact)`, implemented once in C++ (`featurize::check_compatible`) and once in Python
+(`learn/rmlearn/spec.py`), with the same verdicts (`learn/check.py` runs both on the same cases,
+`rmfeat --compat MODEL NOW [--exact]`):
+
+- **every model:** the same `layout_hash` and `text_model`; every `[id, name]` of the model's vocab
+  present unchanged in the current vocab — a new id passes, a removed or renamed id is refused naming
+  it; and, when both carry a registry, no entry of the model's moved (`registry_moves`, §6.1).
+  `load_checkpoint`, the R-NaD learner's state and `_load_with_config`, the exploiter's and the
+  exporter's loads use it, and a loaded model carries the current tables' manifest from then on;
+- **exact** (an export, whose card and ability rows are folded in): also the same `spec_hash`,
+  `vocab_hash` and `tables_digest` (a known card whose rows changed — drift — makes the folded rows
+  stale) and no current id the model lacks. The evaluator (`nn:`), `rmserve` (its policies
+  among themselves and against each client's handshake), the learner's server (`rmlearn/server.py`),
+  `tools/nn/serve_check.py`, `rmtrain` and the benchmark's `export_missing` refuse or rebuild an
+  export that is not of the current tables; the refusal says to rebuild it from its checkpoint.
+
+The codes are the protocol's (`layout_hash`, `text_model`, `vocab_hash`, `spec_hash`,
+`tables_digest`). The vocab manifest names what the tables hold, which the vocab hash alone does not:
+the vocab hash is the text table's (`oracle_text.rmtb`), so a card appended without `make
+text-table` leaves it and the spec hash as they were, and only the manifest shows the new id. A manifest
+without `layout_hash` (a model made before manifests) passes only on its own tables' `spec_hash`,
+`vocab_hash` and `text_model`.
+
+**Table drift** (`src/featurize/drift.h`). A change to how the engine parses a known card passes
+the check but changes that card's inputs. A card's rows are its card-table row, its ability rows
+(`id · A + i`) and their part rows, as nonzero values by column name. The committed **card digest**
+`src/featurize/card_digest.json` holds per card a hash of its rows (printed with 6 significant
+digits, so a libm's last bit does not move it); the gate's `vocab` tier (`rmfeat --digest-check`)
+fails when a known card's rows hash otherwise, or a card is new or gone, and `make registry`
+rewrites it (`--digest-update`), so the commit's diff names the cards whose inputs changed.
+`rmfeat --table-drift OLD NEW` compares two exported tables directories exactly, naming per changed
+card the columns and their old and new values (`rmtrain retable`'s report, `docs/rmtrain.md` §1.1).
 
 ## 7. Tests
 

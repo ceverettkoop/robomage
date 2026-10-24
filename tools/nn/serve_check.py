@@ -36,6 +36,7 @@ from make_reference_policy import pad_batch  # noqa: E402
 MSG = struct.Struct("<4sHHI")
 REQ = struct.Struct("<4sIQQII4IQQ")
 RESP = struct.Struct("<4sIQQIIIIQQ")
+PROTOCOL = 2
 HELLO, WELCOME, EVAL, DONE, ERROR, BYE = 1, 2, 3, 4, 5, 6
 # The request's tensors in order: name, dtype, the size array counting its rows, its row width.
 ARRAYS = [("tok_type", np.int64, "n", None), ("tok_num", np.float32, "n", "F"), ("tok_cat", np.int64, "n", "C"),
@@ -67,8 +68,8 @@ class Client:
 
 def read_request(buf, hello):
     magic, proto, spec_hash, seq, d, p, f, c, k, q, length, _ = REQ.unpack_from(buf, 0)
-    if magic != b"RMRQ" or proto != 1 or d < 1 or length > hello["request_bytes"]:
-        raise Refused("request", "not a request of protocol 1 within the request area")
+    if magic != b"RMRQ" or proto != PROTOCOL or d < 1 or length > hello["request_bytes"]:
+        raise Refused("request", "not a request of protocol %d within the request area" % PROTOCOL)
     if "%016x" % spec_hash != hello["spec_hash"]:
         raise Refused("spec_hash", "the request's spec_hash is not the handshake's")
     width = {"F": f, "C": c, "K": k, "Q": q, 3: 3}
@@ -126,26 +127,29 @@ def evaluate(models, versions, client):
             off += 4 * len(arr)
     if off > hello["response_bytes"]:
         raise Refused("request", "the response does not fit the response area")
-    RESP.pack_into(buf, base, b"RMRS", 1, spec_hash, seq, len(rows), len(results), len(rows), us, off, 0)
+    RESP.pack_into(buf, base, b"RMRS", PROTOCOL, spec_hash, seq, len(rows), len(results), len(rows), us, off, 0)
     client.send(DONE, struct.pack("<QQ", seq, off))
 
 
 def handshake(models, versions, client, body):
     h = json.loads(body)
-    if h.get("protocol") != 1:
-        raise Refused("protocol", "this server speaks protocol 1")
+    if h.get("protocol") != PROTOCOL:
+        raise Refused("protocol", "this server speaks protocol %d" % PROTOCOL)
     for pid in h["policies"]:
         if pid not in models:
             raise Refused("policy", "policy %d is not served" % pid)
-        for key in ("spec_hash", "vocab_hash", "text_model"):
+        # The export must be of the client's tables exactly (docs/featurizer.md §6.2).
+        for key in ("spec_hash", "vocab_hash", "text_model", "layout_hash", "tables_digest"):
             if getattr(models[pid], key) != h[key]:
-                raise Refused(key, "the client's %s %s is not policy %d's" % (key, h[key], pid))
+                raise Refused(key, "the client's %s %s is not policy %d's: rebuild the export" % (key, h[key], pid))
+        if json.loads(models[pid].vocab) != h["vocab"]:
+            raise Refused("vocab_hash", "the client's vocab manifest is not policy %d's: rebuild the export" % pid)
     client.shm = shared_memory.SharedMemory(h["shm"].lstrip("/"), track=False)
     if client.shm.size < h["request_bytes"] + h["response_bytes"]:
         raise Refused("shm", "the region is smaller than its areas")
     client.hello = h
     pols = [{"id": pid, "version": versions[pid]} for pid in h["policies"]]
-    client.send(WELCOME, json.dumps({"protocol": 1, "server": "serve_check.py", "max_batch": 1,
+    client.send(WELCOME, json.dumps({"protocol": PROTOCOL, "server": "serve_check.py", "max_batch": 1,
                                      "policies": pols}).encode())
     log("%s connected" % h["client"])
 

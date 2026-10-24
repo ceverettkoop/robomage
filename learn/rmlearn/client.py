@@ -1,4 +1,4 @@
-"""A Python RMIP v1 client (docs/inference_protocol.md): the protocol's other side, for checks and
+"""A Python RMIP v2 client (docs/inference_protocol.md): the protocol's other side, for checks and
 benches (the actors' client is the C++ ``nn:remote:``).
 
     cl = Client(socket_path, hashes, dims, policies=[0, 1])   # creates the region, HELLO / WELCOME
@@ -17,7 +17,7 @@ from multiprocessing import shared_memory
 
 import numpy as np
 
-from .server import ARRAYS, BYE, DONE, ERROR, EVAL, HELLO, MSG, REQ, RESP, WELCOME, _align8
+from .server import ARRAYS, BYE, DONE, ERROR, EVAL, HELLO, MSG, PROTOCOL, REQ, RESP, WELCOME, _align8
 
 
 class RmipError(Exception):
@@ -77,8 +77,10 @@ class Client:
         self.seq = 0
         try:
             self.sock.connect(socket_path)
-            hello = {"protocol": 1, "client": name, "spec_hash": hashes["spec_hash"],
-                     "vocab_hash": hashes["vocab_hash"], "text_model": hashes["text_model"], "dims": self.dims,
+            hello = {"protocol": PROTOCOL, "client": name, "spec_hash": hashes["spec_hash"],
+                     "vocab_hash": hashes["vocab_hash"], "text_model": hashes["text_model"],
+                     "layout_hash": hashes.get("layout_hash", ""), "tables_digest": hashes.get("tables_digest", ""),
+                     "vocab": hashes.get("vocab", []), "dims": self.dims,
                      "shm": "/" + shm_name, "request_bytes": request_bytes, "response_bytes": response_bytes,
                      "policies": self.policies}
             send_message(self.sock, HELLO, json.dumps(hello).encode())
@@ -115,7 +117,7 @@ class Client:
             del w
         length = off
         F, C, K, Q = width["F"], width["C"], width["K"], width["Q"]
-        REQ.pack_into(buf, 0, b"RMRQ", 1, int(self.spec_hash, 16), self.seq, d, p, F, C, K, Q, length, 0)
+        REQ.pack_into(buf, 0, b"RMRQ", PROTOCOL, int(self.spec_hash, 16), self.seq, d, p, F, C, K, Q, length, 0)
         return length
 
     def evaluate(self, decs, tamper=None):

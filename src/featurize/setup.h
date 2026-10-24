@@ -4,6 +4,7 @@
 #include <string>
 
 #include "card_tables.h"
+#include "compat.h"
 #include "feature_spec.h"
 #include "frame_stream.h"
 #include "rmtb.h"
@@ -17,7 +18,8 @@
 // with still come from the CARDS frame), and the spec from its SCHEMA frame and the tables, under
 // `options` (the recent-event history, feature_spec.h), both at the positions of `registry` (the
 // compiled-in layout registry unless the caller sets another before loading, registry.h).
-// export_tables writes card.rmtb, ability.rmtb, part.rmtb and spec.json.
+// export_tables writes card.rmtb, ability.rmtb, part.rmtb, spec.json, manifest.json (the tables'
+// model manifest, compat.h, without the registry) and registry.json (the layout registry).
 
 namespace featurize {
 
@@ -37,18 +39,26 @@ class Featurization {
         // The same from the cards file's bytes in memory.
         bool load_records(const std::string &records, const std::string &text_table_path, const std::string &tables_dir,
             std::string *err);
-        // The tables' files and spec.json into `dir` (created by the caller).
+        // The tables' files, spec.json, manifest.json and registry.json into `dir` (created by the
+        // caller).
         bool export_tables(const std::string &dir, std::string *err) const;
+        // What a model trained on these tables carries (compat.h), the registry's text included.
+        Manifest manifest() const;
         // The file names in a tables directory.
         static const char *const CARD_FILE;
         static const char *const ABILITY_FILE;
         static const char *const PART_FILE;
         static const char *const SPEC_FILE;
+        static const char *const MANIFEST_FILE;
+        static const char *const REGISTRY_FILE;
+
+        // The card tables of an exported tables directory (no names or printed rows) and the spec hash
+        // they carry; false with `err`.
+        static bool read_tables_dir(const std::string &dir, CardTables *out, uint64_t *spec_hash, std::string *err);
 
     private:
         // The tables and the spec from `source` and the text table.
         bool build(const std::string &text_table_path, const std::string &tables_dir, std::string *err);
-        static bool read_tables_dir(const std::string &dir, CardTables *out, uint64_t *spec_hash, std::string *err);
 };
 
 }  // namespace featurize

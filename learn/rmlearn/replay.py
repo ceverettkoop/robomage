@@ -18,8 +18,10 @@ it evicts the oldest episodes while the window holds more than ``max_decisions``
 ``max_bytes`` bytes (at least one stays). An evicted episode's file is deleted only with
 ``delete_evicted``, and only that ``.rmtraj``: decision logs (``.rmlog``) are never touched.
 ``start()`` polls on a background thread every ``poll_interval`` seconds. Episodes of another spec
-than ``spec_hash`` (when set) and episodes with no steps are skipped and counted; a file that does
-not read is counted as an error, never retried.
+than ``spec_hash`` (when set: one hash, or a set — after ``rmtrain retable`` the run's earlier
+tables' specs, whose vocab manifests the current one extends at the same layout, so their stored
+card and ability ids still read right) and episodes with no steps are skipped and counted; a file that
+does not read is counted as an error, never retried.
 
 **The decision-size cap** (``max_decision_tokens``, 0: none): an episode with a decision of more
 seat tokens (menu tokens included) is left out whole, so R-NaD's games stay contiguous; it is
@@ -81,13 +83,20 @@ class WindowConfig:
     max_bytes: int = 40 << 30
     delete_evicted: bool = False
     poll_interval: float = 2.0
-    spec_hash: str = None                # skip episodes of another spec (None: take the first's)
+    spec_hash: object = None             # skip episodes of another spec: a hash or a set of them (the run's
+                                         # tables and their lineage, spec.Tables.accepted_spec_hashes; None:
+                                         # take the first's)
     heldout_fraction: float = 0.0
     split_seed: int = 0
     heldout_by: str = "game"             # "game", or "match": a match's games are held out together
     probe_fraction: float = 0.0          # training games also walked by iter_decisions("probe")
     max_decision_tokens: int = 0         # leave out an episode with a decision of more seat tokens (0: none)
     labels: LabelConfig = field(default_factory=LabelConfig)
+
+
+def spec_accepted(ep, spec_hash):
+    """Whether episode `ep` is of `spec_hash` (one hash, or a set / frozenset / list of them)."""
+    return ep.spec_hash == spec_hash if isinstance(spec_hash, str) else ep.spec_hash in spec_hash
 
 
 def step_labels(ep, cfg):
@@ -176,7 +185,7 @@ class ReplayWindow:
             return False
         if self.spec_hash is None:
             self.spec_hash = ep.spec_hash
-        if ep.spec_hash != self.spec_hash:
+        if not spec_accepted(ep, self.spec_hash):
             self.counts["skipped_spec"] += 1
             return False
         ep.max_tokens = int(np.diff(ep.seat_feat.tok_off).max())

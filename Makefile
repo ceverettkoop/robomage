@@ -109,6 +109,7 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 # the compiler's dependency files do not list): its object depends on the file.
 REGISTRY := src/featurize/registry.json
 REGISTRY_CARDS := .cache/registry/cards.rmst
+CARD_DIGEST := src/featurize/card_digest.json
 $(ODIR)/featurize/registry.o: $(REGISTRY)
 $(ODIR)/featurize/registry.o: CXXFLAGS += -DRM_REGISTRY_JSON='"$(abspath $(REGISTRY))"'
 
@@ -276,13 +277,17 @@ text-table: program
 # the engine's schema and whole-vocab card tables need that it lacks (new enum values, columns,
 # slots, token and relation types, ability keys; never moving one; past a capacity it fails), then
 # rebuilds so the binaries compile the new file in. Run it after a change that adds a mechanic,
-# keyword or column; the gate's vocab tier fails while the file is stale. Commit the file.
+# keyword or column; the gate's vocab tier fails while the file is stale. Commit the file. It also
+# rewrites the card digest (src/featurize/card_digest.json, docs/featurizer.md §6.2: per card a hash
+# of its table rows), which the vocab tier checks too: a known card whose inputs changed (an engine
+# parsing change) or a card appended is recorded on purpose, the digest's diff naming the cards.
 
 registry: program rmfeat
 	@mkdir -p $(dir $(REGISTRY_CARDS))
 	cd bin && ./$(CONFIG)/$(BINNAME) --cards-frame ../$(REGISTRY_CARDS)
 	$(BINDIR)/rmfeat --registry-update $(REGISTRY) --cards $(REGISTRY_CARDS) --text-table $(TEXT_TABLE)
 	$(MAKE) --no-print-directory all
+	$(BINDIR)/rmfeat --digest-update $(CARD_DIGEST) --cards $(REGISTRY_CARDS) --text-table $(TEXT_TABLE)
 
 # ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
 # tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only

@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "../../src/featurize/compat.h"
 #include "../../src/featurize/rmtb.h"
 #include "../../src/state_format/schema.h"
 #include "actor.h"
@@ -42,6 +43,8 @@ static void check_refeaturization(const rmcheck::Options &opt, rmcheck::Report &
 static void check_exports(rmcheck::Report &rep, const rmcheck::ActorSetup &a, const std::string &live);
 static void check_trajectories(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
     const std::string &live, const std::string &projected);
+static bool build_variant(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
+    const rmcheck::ActorSetup &a, const std::string &out_ts, void (*mutate)(featurize::Manifest *));
 
 // The FNV-1a 64 of a file's bytes (16 hex digits), "" when it cannot be read.
 static std::string file_stamp(const std::string &path) {
@@ -105,6 +108,8 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
         {a.nn_binary, "nn:" + a.ts() + ":policies=0", "nn:remote: only"},
         {a.nn_binary, "nn:" + a.ts() + ":thresh=1", "thresh= expects"},
         {a.nn_binary, "nn:" + a.ts() + ":disc=-16", "disc= expects"},
+        {a.nn_binary, "nn:" + a.stale, "rebuild it from its checkpoint"},
+        {a.nn_binary, "nn:" + a.drifted, "a known card's rows changed"},
     };
     for (const auto &c : cases) {
         rmcheck::ProcSpec spec;
@@ -119,7 +124,8 @@ static void check_refusals(const rmcheck::Options &opt, rmcheck::Report &rep, co
     }
     rep.info(
         "refusals: robomage refuses nn: (naming `make actor`); robomage_nn refuses an unknown key, a remote-only key "
-        "in process, a bad thresh= or disc= and nn:remote: (with thresh= and disc=) with no server");
+        "in process, a bad thresh= or disc=, nn:remote: (with thresh= and disc=) with no server, an export of the "
+        "vocab before its last card (rebuild the export) and one of other card rows (the tables' digest)");
 }
 
 // rmfeat --featurize over a --replay of the match's decision log equals what nn: featurized live.
@@ -213,6 +219,41 @@ static void check_exports(rmcheck::Report &rep, const rmcheck::ActorSetup &a, co
             "the reference policy's exports disagree or the check failed (" + r.status_text() + ", see " + log + ")");
 }
 
+// The reference policy (TorchScript) at `out_ts` over a copy of the tables whose manifest `mutate`
+// changed (the other files linked): an export of other tables (a.stale, a.drifted).
+static bool build_variant(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
+    const rmcheck::ActorSetup &a, const std::string &out_ts, void (*mutate)(featurize::Manifest *)) {
+    const std::string prefix = out_ts.substr(0, out_ts.size() - 6), dir = prefix + "_tables";
+    rmcheck::remove_tree(dir);
+    rmcheck::make_dirs(dir);
+    for (const char *f : {"card.rmtb", "ability.rmtb", "part.rmtb", "spec.json", "registry.json"})
+        if (symlink(rmcheck::path_join(a.tables, f).c_str(), rmcheck::path_join(dir, f).c_str()) != 0) {
+            rep.error(tier, "cannot link " + rmcheck::path_join(dir, f));
+            return false;
+        }
+    std::string text, err;
+    featurize::Manifest m;
+    if (!rmcheck::read_file(rmcheck::path_join(a.tables, "manifest.json"), &text) ||
+        !featurize::parse_manifest_json(text, &m, &err) || m.vocab.empty()) {
+        rep.error(tier, "the exported tables' manifest.json: " + (err.empty() ? "unreadable or empty" : err));
+        return false;
+    }
+    mutate(&m);
+    rmcheck::write_file(rmcheck::path_join(dir, "manifest.json"), featurize::manifest_json(m, false) + "\n");
+    rmcheck::ProcSpec build;
+    build.argv = {a.python, a.script, "build", "--tables", dir, "--out", prefix, "--text-table",
+        rmcheck::path_join(opt.bin_dir, TEXT_TABLE), "--formats", "ts"};
+    build.timeout_s = 600;
+    build.merge_stderr = true;
+    build.env = {"HIP_VISIBLE_DEVICES=-1", "CUDA_VISIBLE_DEVICES=-1"};
+    const rmcheck::ProcResult r = rmcheck::run_process(build);
+    rmcheck::write_file(prefix + "_build.txt", r.out);
+    if (r.ok()) return true;
+    rep.error(tier, "make_reference_policy.py build (" + out_ts + ") " + r.status_text() + ": " +
+                        rmcheck::quoted(rmcheck::trim(r.out).substr(0, 300)));
+    return false;
+}
+
 namespace rmcheck {
 
 const char *const TORCH_PYTHON_ENV = "ROBOMAGE_TORCH_PYTHON";
@@ -250,8 +291,10 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
     const std::string stamp = file_stamp(path_join(a.tables, "spec.json")) + " " + file_stamp(a.script) + "\n";
     const std::string stamp_path = a.prefix + ".stamp";
     std::string old;
+    a.stale = path_join(a.dir, "stale.ts.pt");
+    a.drifted = path_join(a.dir, "drifted.ts.pt");
     if (read_file(stamp_path, &old) && old == stamp && file_exists(a.ts()) && file_exists(a.pt2()) &&
-        file_exists(a.prefix + ".onnx")) {
+        file_exists(a.prefix + ".onnx") && file_exists(a.stale) && file_exists(a.drifted)) {
         rep.info("reference policy: " + a.prefix + ".{ts.pt,pt2,onnx} (current)");
         return true;
     }
@@ -269,8 +312,13 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
         rep.error(tier, "tools/nn/make_reference_policy.py build " + r.status_text() + " (see " + log + ")");
         return false;
     }
+    if (!build_variant(opt, rep, tier, a, a.stale, [](featurize::Manifest *m) { m->vocab.pop_back(); }) ||
+        !build_variant(
+            opt, rep, tier, a, a.drifted, [](featurize::Manifest *m) { m->tables_digest = "0123456789abcdef"; }))
+        return false;
     write_file(stamp_path, stamp);
-    rep.info("reference policy: built " + a.prefix + ".{ts.pt,pt2,onnx} in " + fmt1(r.seconds) + " s (" + log + ")");
+    rep.info("reference policy: built " + a.prefix + ".{ts.pt,pt2,onnx} in " + fmt1(r.seconds) + " s (" + log + "); " +
+             a.stale + " of the tables before their last card, " + a.drifted + " of other card rows");
     return true;
 }
 

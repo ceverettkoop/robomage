@@ -293,9 +293,12 @@ std::string hello_json(const Hello &h) {
     std::string ids;
     for (uint32_t id : h.policies) ids += (ids.empty() ? "" : ",") + std::to_string(id);
     return "{\"protocol\":" + std::to_string(h.protocol) + ",\"client\":" + featurize::json_quote(h.client) +
-           ",\"spec_hash\":" + featurize::json_quote(h.spec_hash) +
-           ",\"vocab_hash\":" + featurize::json_quote(h.vocab_hash) +
-           ",\"text_model\":" + featurize::json_quote(h.text_model) + ",\"dims\":{\"F\":" + std::to_string(h.dims.F) +
+           ",\"spec_hash\":" + featurize::json_quote(h.tables.spec_hash) +
+           ",\"vocab_hash\":" + featurize::json_quote(h.tables.vocab_hash) +
+           ",\"text_model\":" + featurize::json_quote(h.tables.text_model) +
+           ",\"layout_hash\":" + featurize::json_quote(h.tables.layout_hash) +
+           ",\"tables_digest\":" + featurize::json_quote(h.tables.tables_digest) +
+           ",\"vocab\":" + featurize::vocab_json(h.tables.vocab) + ",\"dims\":{\"F\":" + std::to_string(h.dims.F) +
            ",\"C\":" + std::to_string(h.dims.C) + ",\"K\":" + std::to_string(h.dims.K) +
            ",\"Q\":" + std::to_string(h.dims.Q) + "},\"shm\":" + featurize::json_quote(h.shm) +
            ",\"request_bytes\":" + std::to_string(h.request_bytes) +
@@ -315,12 +318,17 @@ bool parse_hello(const std::string &body, Hello *out, std::string *err) {
         return false;
     }
     out->protocol = static_cast<uint32_t>(std::min<uint64_t>(protocol, 0xFFFFFFFFu));
-    if (!json_string(j, "client", &out->client) || !json_string(j, "spec_hash", &out->spec_hash) ||
-        !json_string(j, "vocab_hash", &out->vocab_hash) || !json_string(j, "text_model", &out->text_model) ||
-        !json_string(j, "shm", &out->shm) || !json_u64(j, "request_bytes", &out->request_bytes) ||
-        !json_u64(j, "response_bytes", &out->response_bytes) || !json_ids(j, "policies", &out->policies) || !dims ||
-        !dims->is_object() || !json_u64(*dims, "F", &f) || !json_u64(*dims, "C", &c) || !json_u64(*dims, "K", &k) ||
-        !json_u64(*dims, "Q", &q)) {
+    const featurize::Json *vocab = j.get("vocab");
+    std::string why;
+    if (!json_string(j, "client", &out->client) || !json_string(j, "spec_hash", &out->tables.spec_hash) ||
+        !json_string(j, "vocab_hash", &out->tables.vocab_hash) ||
+        !json_string(j, "text_model", &out->tables.text_model) ||
+        !json_string(j, "layout_hash", &out->tables.layout_hash) ||
+        !json_string(j, "tables_digest", &out->tables.tables_digest) || !vocab ||
+        !featurize::vocab_from_json(*vocab, &out->tables.vocab, &why) || !json_string(j, "shm", &out->shm) ||
+        !json_u64(j, "request_bytes", &out->request_bytes) || !json_u64(j, "response_bytes", &out->response_bytes) ||
+        !json_ids(j, "policies", &out->policies) || !dims || !dims->is_object() || !json_u64(*dims, "F", &f) ||
+        !json_u64(*dims, "C", &c) || !json_u64(*dims, "K", &k) || !json_u64(*dims, "Q", &q)) {
         *err = "HELLO lacks a key or has one of the wrong type (docs/inference_protocol.md §3)";
         return false;
     }

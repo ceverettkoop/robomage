@@ -3,8 +3,13 @@
     paths = export_policy(model, "run/ckpt/p17", version=17)            # {"ts": ..., "pt2": ...}
     paths = export_policy(model, prefix, version, formats=("ts", "pt2", "onnx"))
 
-Each export carries the four metadata strings the actor's evaluator (``src/actor/evaluator.cpp``)
-checks: ``spec_hash``, ``vocab_hash``, ``text_model`` and ``policy_version``:
+Each export carries the metadata strings the actor's evaluator (``src/actor/evaluator.cpp``) and
+the inference servers check: the model manifest of the tables it was folded from (``spec_hash``,
+``vocab_hash``, ``text_model``, ``layout_hash``, ``tables_digest``, ``vocab``: the vocab manifest's JSON
+text; spec.py)
+and ``policy_version``. An export's card and ability rows are baked in, so it runs only on exactly its
+tables (``spec.check_compatible``, exact): after a vocab expansion it is rebuilt from its checkpoint
+(``export_current``), and checkpoints are the portable artefact:
 
 - ``PREFIX.ts.pt``: TorchScript (``torch.jit.script``), the strings as module attributes;
 - ``PREFIX.pt2``: an AOTInductor package (``torch.export`` + ``aoti_compile_and_package``, CPU),
@@ -13,8 +18,9 @@ checks: ``spec_hash``, ``vocab_hash``, ``text_model`` and ``policy_version``:
 - ``PREFIX.onnx`` (optional; needs onnx + onnxscript): the dynamo exporter, the strings in
   ``metadata_props``.
 
-``read_metadata(path)`` returns the four strings of a ``.ts.pt`` or ``.pt2`` file; ``load(path)`` a
-callable over the contract's ten inputs.
+``read_metadata(path)`` returns the strings of a ``.ts.pt`` or ``.pt2`` file; ``load(path)`` a
+callable over the contract's ten inputs; ``export_refusal(path, manifest)`` why an export is not of
+the tables of that manifest (None when it is).
 """
 
 import copy
@@ -24,10 +30,11 @@ import zipfile
 
 import torch
 
+from . import spec as S
 from .batch import INPUTS
 from .model import InferencePolicy
 
-META_KEYS = ("spec_hash", "vocab_hash", "text_model", "policy_version")
+META_KEYS = ("spec_hash", "vocab_hash", "text_model", "layout_hash", "tables_digest", "vocab", "policy_version")
 
 
 def example_inputs(policy, b=2, n=16, r=24, a=8, seed=0):
@@ -178,7 +185,7 @@ def _format(path):
 
 
 def read_metadata(path):
-    """The four metadata strings of a .ts.pt or .pt2 export."""
+    """The metadata strings of a .ts.pt or .pt2 export."""
     if path.endswith(".onnx"):
         import onnx
         return {p.key: p.value for p in onnx.load(path).metadata_props if p.key in META_KEYS}
@@ -196,3 +203,17 @@ def load(path):
         return torch.jit.load(path, map_location="cpu").eval()
     importlib.import_module("torch._inductor.codecache")
     return torch._inductor.aoti_load_package(path)
+
+
+def export_refusal(path, now):
+    """None when the export at `path` is of the tables of manifest `now` (``Tables.hashes``,
+    ``spec.read_manifest``) exactly (spec.check_compatible, exact), else why not (the message says to
+    rebuild it); a missing or unreadable file is a reason too."""
+    if not os.path.exists(path):
+        return "%s does not exist" % path
+    try:
+        meta = read_metadata(path)
+    except Exception as err:  # an unreadable export is rebuilt
+        return "%s: %s" % (path, err)
+    r = S.check_compatible(meta, now, exact=True)
+    return None if r is None else "%s: %s" % (path, r[1])

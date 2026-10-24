@@ -455,7 +455,8 @@ def main():
         print(json.dumps(m), flush=True)
 
     tables = S.load_tables(a.tables)
-    win = RP.ReplayWindow(RP.WindowConfig(dirs=a.episodes, max_decisions=a.max_decisions, spec_hash=tables.spec.hash,
+    win = RP.ReplayWindow(RP.WindowConfig(dirs=a.episodes, max_decisions=a.max_decisions,
+                                          spec_hash=tables.accepted_spec_hashes(),
                                           heldout_fraction=a.heldout, heldout_by=a.heldout_by,
                                           probe_fraction=a.eval_train,
                                           split_seed=cfg.seed if a.split_seed is None else a.split_seed))

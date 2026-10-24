@@ -90,13 +90,14 @@ bool Server::start(const Options &opt, std::string *err) {
         if (!pol.evaluator) return false;
         const actor::ModelInfo &m = pol.evaluator->info();
         if (policies_.empty()) {
-            spec_hash_ = m.spec_hash;
-            vocab_hash_ = m.vocab_hash;
-            text_model_ = m.text_model;
-        } else if (m.spec_hash != spec_hash_ || m.vocab_hash != vocab_hash_ || m.text_model != text_model_) {
-            *err = p.model + ": its spec_hash, vocab_hash or text_model is not policy " +
-                   std::to_string(policies_[0].id) + "'s (every policy serves one featurization)";
-            return false;
+            tables_ = m.manifest;
+        } else {
+            const featurize::Refusal r = featurize::check_compatible(m.manifest, tables_, true);
+            if (r.refused()) {
+                *err = p.model + ": not an export of policy " + std::to_string(policies_[0].id) +
+                       "'s tables (every policy serves one featurization): " + r.message;
+                return false;
+            }
         }
         pol.version = p.has_version ? p.version : m.policy_version;
         log("policy " + std::to_string(pol.id) + " = " + p.model + " (" + m.format + ", version " +
@@ -106,8 +107,9 @@ bool Server::start(const Options &opt, std::string *err) {
     listen_fd_ = inference::listen_unix(opt_.socket, 64, err);
     if (listen_fd_ < 0) return false;
     set_nonblocking(listen_fd_);
-    log("listening on " + opt_.socket + " (spec " + spec_hash_ + ", max batch " + std::to_string(opt_.max_batch) +
-        ", deadline " + std::to_string(opt_.deadline_us) + " us, " + std::to_string(opt_.threads) + " threads)");
+    log("listening on " + opt_.socket + " (spec " + tables_.spec_hash + ", max batch " +
+        std::to_string(opt_.max_batch) + ", deadline " + std::to_string(opt_.deadline_us) + " us, " +
+        std::to_string(opt_.threads) + " threads)");
     return true;
 }
 
@@ -188,21 +190,15 @@ bool Server::hello(Client *c, const std::string &body) {
             return refuse(c, "policy", "policy " + std::to_string(id) + " is requested twice");
         c->policy_index.push_back(index);
     }
-    if (h.spec_hash != spec_hash_)
-        return refuse(c, "spec_hash", "the client's spec_hash " + h.spec_hash + " is not the models' " + spec_hash_);
-    if (h.vocab_hash != vocab_hash_)
-        return refuse(
-            c, "vocab_hash", "the client's vocab_hash " + h.vocab_hash + " is not the models' " + vocab_hash_);
-    if (h.text_model != text_model_)
-        return refuse(
-            c, "text_model", "the client's text_model " + h.text_model + " is not the models' " + text_model_);
+    const featurize::Refusal r = featurize::check_compatible(tables_, h.tables, true);
+    if (r.refused()) return refuse(c, r.code, "the served models against the client's tables: " + r.message);
     const inference::Dims mine = {static_cast<uint32_t>(spec_.F), static_cast<uint32_t>(spec_.C),
         static_cast<uint32_t>(spec_.K), static_cast<uint32_t>(spec_.Q)};
     if (have_dims_ && !(h.dims == mine)) return refuse(c, "protocol", "the client's dims are not another client's");
     if (h.request_bytes == 0 || h.response_bytes == 0 || h.request_bytes % 8 || h.response_bytes % 8)
         return refuse(c, "shm", "request_bytes and response_bytes must be positive multiples of 8");
     if (!c->region.open(h.shm, h.request_bytes + h.response_bytes, &err)) return refuse(c, "shm", err);
-    featurize::parse_hex16(h.spec_hash, &c->spec_hash);
+    featurize::parse_hex16(h.tables.spec_hash, &c->spec_hash);
     if (!have_dims_) {
         spec_.F = h.dims.F;
         spec_.C = h.dims.C;

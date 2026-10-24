@@ -8,6 +8,7 @@
     learn/rmtrain eval <run>
     learn/rmtrain bench <run> [--wait] [--policies ...]   # the end-of-run benchmark (rmlearn/benchmark.py)
     learn/rmtrain phase <run> hold|release|next|status
+    learn/rmtrain retable <run>         # a stopped run onto the engine's tables after a vocab expansion
     learn/rmtrain config <run>          # the resolved config (TOML)
     learn/rmtrain defaults              # every key with its default and documentation (TOML)
 
@@ -262,6 +263,26 @@ def cmd_bench(args):
     return BM.run_from_args(existing(args.run), args)
 
 
+def cmd_retable(args):
+    """The run's tables replaced by the engine's (orchestrator/retable.py); the run must be stopped."""
+    from .orchestrator import retable as RT
+    run = existing(args.run)
+    if alive(run.control_sock) or _unit_active(unit_name(run)):
+        die("run %s is running: `rmtrain stop %s` first" % (run.name, run.name))
+    cfg, _ = C.fill_defaults(read_json(run.config))
+    try:
+        rec = RT.retable(run, cfg, log=lambda m: print("rmtrain: retable: " + m, flush=True))
+    except RT.RetableError as err:
+        die("retable refused, nothing changed: %s" % err)
+    if rec is None:
+        return 0
+    print("rmtrain: retable: done: spec %s -> %s (%d cards), %d known cards' rows changed, %d exports rebuilt; "
+          "`rmtrain start %s` resumes the run" % ((rec["from"] or {}).get("spec_hash"), rec["to"]["spec_hash"],
+                                                rec["to"]["cards"], len(rec["drift"]["changed"]), len(rec["exports"]),
+                                                run.name))
+    return 0
+
+
 def cmd_phase(args):
     run = existing(args.run)
     if args.what == "status" and not alive(run.control_sock):
@@ -496,6 +517,8 @@ def main(argv=None):
     p = sub.add_parser("phase", help="hold, release or force the phase transition")
     p.add_argument("run")
     p.add_argument("what", choices=("hold", "release", "next", "status"))
+    p = sub.add_parser("retable", help="a stopped run onto the engine's tables after a vocab expansion")
+    p.add_argument("run")
     p = sub.add_parser("config", help="print the run's resolved config")
     p.add_argument("run")
     sub.add_parser("defaults", help="print the default config")
@@ -514,6 +537,8 @@ def main(argv=None):
         return cmd_bench(args)
     if args.cmd == "phase":
         return cmd_phase(args)
+    if args.cmd == "retable":
+        return cmd_retable(args)
     if args.cmd == "tail":
         return cmd_tail(args)
     if args.cmd == "config":

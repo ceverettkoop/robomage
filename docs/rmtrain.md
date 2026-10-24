@@ -14,6 +14,7 @@ learn/rmtrain tail r1 gpu                                # follow a log (tail -F
 learn/rmtrain set r1 rnad.eta 0.15                       # a live parameter
 learn/rmtrain stop r1                                    # checkpoint, stop; `start r1` resumes
 learn/rmtrain bench r1 --wait                            # after the run: its policies vs scripted:hard (§7.1)
+learn/rmtrain retable r1                                 # a stopped run onto the engine's tables (§1.1)
 ```
 
 ## 1. Starting and resuming
@@ -42,6 +43,44 @@ learn/rmtrain bench r1 --wait                            # after the run: its po
   memory limit, no restart. **After a reboot** the transient unit is gone: `rmtrain start <run>`
   resumes it.
 - `--foreground` runs the orchestrator in the terminal (its log echoed; Ctrl-C stops the run cleanly).
+- **At every start** the run's tables are checked against the engine's (`orchestrator/retable.py`
+  `check_start`): the engine's whole-vocab cards frame must be the run's `cards.rmstate` byte for
+  byte and the tables must carry a model manifest (`docs/featurizer.md` §6.2), else the start stops
+  with a fatal error naming `rmtrain retable <run>` (the actors featurize with the engine's own tables
+  and an export bakes the card rows in, so a run never resumes on stale tables). When the tables
+  differ from the ones `state.json` records (`tables`: replaced since, or a retable whose exports did
+  not all finish), every export of `state.json` is queued again from its checkpoint, the evaluations'
+  and the live exports removed (made again on demand), and a `tables_changed` metrics line written.
+  An external `run.tables` directory is the user's: neither check applies.
+
+### 1.1 After a vocab expansion: `rmtrain retable <run>`
+
+The vocab is compiled into the engine, so appending cards (or changing how the engine parses a known
+card) needs a rebuild (`make BUILD=RELEASE && make BUILD=RELEASE actor`) and a stopped run:
+`rmtrain stop <run>`, rebuild, `rmtrain retable <run>`, `rmtrain start <run>`. `retable` (refused while
+the run runs; `orchestrator/retable.py`):
+
+1. writes the engine's cards frame and exports its tables into `<run>/tables.new/`; when the frame
+   and the spec hash are the run's, nothing changed (it says so, exit 0);
+2. checks the old tables' manifest against the new one and **every checkpoint** of the run
+   (`ckpt/**/*.pt`) against the new tables (`spec.check_compatible`: the same layout and text model,
+   every card id of the model's vocab present under its name; new ids pass). Any refusal (a removed or
+   renamed card, a layout bump: that needs a migration) changes nothing and is printed;
+3. prints the **table drift** (`rmfeat --table-drift`): the known cards whose card, ability or part
+   rows changed (each column, old and new value), the new and the removed cards — a known card listed
+   there reads other inputs than it was trained on, so the change must be intended;
+4. keeps the old tables as `tables.<old spec_hash>/` (with their cards frame), moves the new ones to
+   `tables/` and the new frame to `cards.rmstate`, and writes `tables/lineage.json` (the earlier
+   tables, oldest first): the **replay window survives** — the layout is the same and the stored card
+   and ability ids are stable, so the GPU process's window and R-NaD's episode filter accept the
+   lineage's spec hashes beside the current one (`spec.Tables.accepted_spec_hashes`);
+5. rebuilds every export of `state.json` (the latest per name: phase ends, fixed points, `final`)
+   from its checkpoint in `checkpoint.export_formats`, and removes the evaluations' and the live
+   exports (the orchestrator makes them again);
+6. records the change in `state.json` (`tables`; `retables`: from, to, the kept directory, the
+   checkpoints checked, the drift, the exports rebuilt) and a `retable` metrics line.
+
+Then add the new decks to `league.decks` and `start` the run (`docs/open_vocab_plan.md` S8).
 
 ## 2. Inspecting and steering
 
@@ -60,6 +99,7 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 | `eval <run> [--evaluators a,b]` | queue an evaluation of the current policy (the network when the evaluation starts) |
 | `phase <run> hold\|release\|next\|status` | `hold` blocks the next transition (the exit test still runs; the run stays in the phase and says why in `status`); `release` lifts it; `next` forces the current phase's (or stage's) exit, also when held |
 | `bench <run> [--wait] [--policies …]` | the end-of-run benchmark (§7.1): the run's policies against scripted:hard over every league pair, per deck; runs in the terminal, not through the socket |
+| `retable <run>` | a stopped run onto the engine's tables after a vocab expansion (§1.1); runs in the terminal |
 | `config <run>` | the resolved config as TOML |
 | `defaults` | the default config as TOML, documented |
 
@@ -151,15 +191,19 @@ runs/<name>/
   config.json  config.toml       the resolved config (live) / as created
   state.json                     phase, stage, hold, pause, counters + results offsets, sideboard exploration's
                                  counts (sb_explore), last checkpoint, ladder, evaluation queue and history,
-                                 transitions, findings (atomic, every ~10 s)
+                                 transitions, findings, the tables' identity (tables) and their changes
+                                 (retables, §1.1) (atomic, every ~10 s)
   status.json                    the last status (every run.status_every_s)
   sockets.json  daemon.json      the socket paths; how it was detached (unit name or pid)
   metrics.jsonl                  one line per learner report, held-out evaluation, evaluation (eval, or
                                  eval_failed with its error), checkpoint, export, transition, set / pause /
-                                 hold, start / restore / stop, sb_explore (§6.1): time, phase, stage, step
+                                 hold, start / restore / stop, sb_explore (§6.1), retable / tables_changed
+                                 (§1.1): time, phase, stage, step
   evals.jsonl                    every evaluation's full result (per opponent, per pair, game 1 vs 2–3)
   schedule.json                  the actors' schedule (docs/actor.md §2)
-  cards.rmstate  tables/         the cards frame and the exported card tables
+  cards.rmstate  tables/         the cards frame and the exported card tables (with manifest.json, registry.json
+                                 and, after a retable, lineage.json)
+  tables.<spec_hash>/            earlier tables a retable replaced (with their cards.rmstate)
   logs/orchestrator.log gpu.log export.log actors/a<k>.log
   actors/                        a<k>.status.json, a<k>.results.jsonl (the actors' --actor-out)
   episodes/b0 dagger selfplay    trajectory episodes (.rmtraj)

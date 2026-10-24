@@ -7,6 +7,10 @@
 //   rmfeat --stats DUMP --cards CARDS
 //   rmfeat --registry-update FILE --cards CARDS
 //   rmfeat --registry-check FILE --cards CARDS [--base FILE]
+//   rmfeat --digest-update FILE --cards CARDS
+//   rmfeat --digest-check FILE --cards CARDS
+//   rmfeat --table-drift OLD_TABLES NEW_TABLES
+//   rmfeat --compat MODEL NOW [--exact]
 //
 // Every mode also takes --text-table FILE (default bin/resources/embeddings/oracle_text.rmtb, else
 // resources/embeddings/oracle_text.rmtb: its row count is N_CARD_TYPES + 1 and its vocab_hash the
@@ -25,6 +29,18 @@
 // tables make, and, with --base (the committed registry), to move no entry of the base unless
 // layout_version was raised.
 //
+// --digest-update (`make registry`) writes the card digest FILE (src/featurize/card_digest.json,
+// drift.h): per card the cards file describes a hash of its card, ability and part rows.
+// --digest-check (the gate's vocab tier) fails (DIGEST-FAIL lines) when a known card's rows no
+// longer match FILE, or a card is new or gone: a change to a known card's inputs is then made on
+// purpose (`make registry`, and the digest's diff in the commit). --table-drift compares two
+// exported tables directories (an old run's and today's: rmtrain retable) by card id and prints
+// a TABLE-DRIFT summary and one line per changed, new or removed card (the columns that changed,
+// old and new values); exit 0 either way. --compat checks the model manifest MODEL against the
+// tables' manifest NOW (JSON files: compat.h's manifest_json, `registry` included when carried;
+// a tables directory's manifest.json and registry.json, or a checkpoint's), exact (--exact) for an
+// export: COMPAT: ok, exit 0, or COMPAT-REFUSED: <code>: <why>, exit 1.
+//
 // --spec prints FEATURE_SPEC (one line of JSON). --export-tables writes OUTDIR/card.rmtb,
 // ability.rmtb, part.rmtb and spec.json and prints one RMFEAT line per file. --featurize writes one
 // RMTB tensors file with an entry per decision of the viewer that has a menu (featurize_viewer;
@@ -42,6 +58,8 @@
 #include <string>
 #include <vector>
 
+#include "../../src/featurize/compat.h"
+#include "../../src/featurize/drift.h"
 #include "../../src/featurize/featurizer.h"
 #include "../../src/featurize/registry.h"
 #include "../../src/featurize/rmtb.h"
@@ -59,6 +77,8 @@ struct Options {
         std::string out, cards, text_table, tables;
         uint32_t history = 0;
         std::string registry, registry_update, registry_check, base;
+        std::string digest_update, digest_check, drift_old, drift_new, compat_model, compat_now;
+        bool exact = false;
 };
 
 // Per token type rows, and the decisions' totals, for --stats.
@@ -91,6 +111,11 @@ static bool load_registry(const std::string &path, featurize::Registry *out);
 static bool append_pass(const Options &opt, featurize::Registry *reg);
 static int run_registry_update(const Options &opt);
 static int run_registry_check(const Options &opt);
+static bool manifest_of_dir(const std::string &dir, featurize::Manifest *out);
+static int run_digest(const Options &opt, const featurize::Featurization &f);
+static int run_table_drift(const Options &opt);
+static bool read_manifest(const std::string &path, featurize::Manifest *out);
+static int run_compat(const Options &opt);
 
 static int usage() {
     std::fprintf(stderr,
@@ -101,6 +126,10 @@ static int usage() {
         "       rmfeat --stats DUMP --cards CARDS\n"
         "       rmfeat --registry-update FILE --cards CARDS\n"
         "       rmfeat --registry-check FILE --cards CARDS [--base FILE]\n"
+        "       rmfeat --digest-update FILE --cards CARDS\n"
+        "       rmfeat --digest-check FILE --cards CARDS\n"
+        "       rmfeat --table-drift OLD_TABLES NEW_TABLES\n"
+        "       rmfeat --compat MODEL NOW [--exact]\n"
         "  (each also --text-table FILE, --registry FILE and --history N; the featurizing modes --tables DIR)\n");
     return 2;
 }
@@ -149,6 +178,18 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             opt->registry_check = argv[++i];
         } else if (a == "--base" && has1) {
             opt->base = argv[++i];
+        } else if (a == "--digest-update" && has1) {
+            opt->digest_update = argv[++i];
+        } else if (a == "--digest-check" && has1) {
+            opt->digest_check = argv[++i];
+        } else if (a == "--table-drift" && has2) {
+            opt->drift_old = argv[++i];
+            opt->drift_new = argv[++i];
+        } else if (a == "--compat" && has2) {
+            opt->compat_model = argv[++i];
+            opt->compat_now = argv[++i];
+        } else if (a == "--exact") {
+            opt->exact = true;
         } else {
             return false;
         }
@@ -156,8 +197,11 @@ static bool parse_args(int argc, char **argv, Options *opt) {
     if (!opt->export_cards.empty()) opt->cards = opt->export_cards;
     const int modes = (opt->spec ? 1 : 0) + (opt->export_cards.empty() ? 0 : 1) + (opt->featurize.empty() ? 0 : 1) +
                       (opt->targets.empty() ? 0 : 1) + (opt->stats_dump.empty() ? 0 : 1) +
-                      (opt->registry_update.empty() ? 0 : 1) + (opt->registry_check.empty() ? 0 : 1);
-    if (modes != 1 || opt->cards.empty()) return false;
+                      (opt->registry_update.empty() ? 0 : 1) + (opt->registry_check.empty() ? 0 : 1) +
+                      (opt->digest_update.empty() ? 0 : 1) + (opt->digest_check.empty() ? 0 : 1) +
+                      (opt->drift_old.empty() ? 0 : 1) + (opt->compat_model.empty() ? 0 : 1);
+    const bool no_cards = !opt->drift_old.empty() || !opt->compat_model.empty();
+    if (modes != 1 || opt->cards.empty() != no_cards) return false;
     if (!opt->featurize.empty() && (opt->viewer < 0 || (opt->out.empty() && !opt->stats))) return false;
     if (!opt->targets.empty() && (opt->viewer < 0 || opt->viewer > 1 || opt->out.empty())) return false;
     return true;
@@ -414,13 +458,113 @@ static int run_registry_check(const Options &opt) {
     return fails.empty() ? 0 : 1;
 }
 
+// A tables directory's manifest.json and registry.json (each optional: a directory exported before
+// manifests has neither).
+static bool manifest_of_dir(const std::string &dir, featurize::Manifest *out) {
+    std::string text, err;
+    *out = featurize::Manifest();
+    if (read_text(dir + "/" + featurize::Featurization::MANIFEST_FILE, &text) &&
+        !featurize::parse_manifest_json(text, out, &err)) {
+        std::fprintf(stderr, "rmfeat: %s: %s\n", dir.c_str(), err.c_str());
+        return false;
+    }
+    if (read_text(dir + "/" + featurize::Featurization::REGISTRY_FILE, &text)) out->registry = text;
+    return true;
+}
+
+static int run_digest(const Options &opt, const featurize::Featurization &f) {
+    const std::vector<featurize::CardDigest> now = featurize::card_digests(f.tables, f.tables.names);
+    const std::string text = featurize::digest_json(now);
+    if (!opt.digest_update.empty()) {
+        std::string before;
+        if (read_text(opt.digest_update, &before) && before == text) {
+            std::printf("DIGEST: %s is current (%zu cards)\n", opt.digest_update.c_str(), now.size());
+            return 0;
+        }
+        if (!write_text(opt.digest_update, text)) {
+            std::fprintf(stderr, "rmfeat: cannot write %s\n", opt.digest_update.c_str());
+            return 2;
+        }
+        std::printf("DIGEST: wrote %s (%zu cards)\n", opt.digest_update.c_str(), now.size());
+        return 0;
+    }
+    std::string committed_text, err;
+    std::vector<featurize::CardDigest> committed;
+    if (!read_text(opt.digest_check, &committed_text) ||
+        !featurize::parse_digest_json(committed_text, &committed, &err)) {
+        std::fprintf(stderr, "rmfeat: %s: %s\n", opt.digest_check.c_str(), err.empty() ? "cannot read" : err.c_str());
+        return 2;
+    }
+    const featurize::Drift d = featurize::digest_drift(committed, now);
+    const char *const hint = " (if intended, `make registry` records it; commit the digest)";
+    for (const std::string &c : d.changed) std::printf("DIGEST-FAIL: known %s%s\n", c.c_str(), hint);
+    for (const std::string &c : d.added) std::printf("DIGEST-FAIL: %s is not in the digest%s\n", c.c_str(), hint);
+    for (const std::string &c : d.removed) std::printf("DIGEST-FAIL: %s is gone%s\n", c.c_str(), hint);
+    if (d.empty() && committed_text != text)
+        std::printf("DIGEST-FAIL: %s is not in the canonical form `make registry` writes\n", opt.digest_check.c_str());
+    const bool ok = d.empty() && committed_text == text;
+    if (ok) std::printf("DIGEST: %s ok (%zu cards)\n", opt.digest_check.c_str(), now.size());
+    return ok ? 0 : 1;
+}
+
+static int run_table_drift(const Options &opt) {
+    featurize::CardTables before, after;
+    featurize::Manifest mb, ma;
+    uint64_t spec_b = 0, spec_a = 0;
+    std::string err;
+    if (!featurize::Featurization::read_tables_dir(opt.drift_old, &before, &spec_b, &err) ||
+        !featurize::Featurization::read_tables_dir(opt.drift_new, &after, &spec_a, &err)) {
+        std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
+        return 2;
+    }
+    if (!manifest_of_dir(opt.drift_old, &mb) || !manifest_of_dir(opt.drift_new, &ma)) return 2;
+    std::vector<std::string> names_b(before.card_rows), names_a(after.card_rows);
+    for (const auto &e : mb.vocab)
+        if (e.first < names_b.size()) names_b[e.first] = e.second;
+    for (const auto &e : ma.vocab)
+        if (e.first < names_a.size()) names_a[e.first] = e.second;
+    const featurize::Drift d = featurize::table_drift(before, names_b, after, names_a);
+    std::printf("TABLE-DRIFT: %zu known cards changed, %zu new, %zu removed (spec %s -> %s)\n", d.changed.size(),
+        d.added.size(), d.removed.size(), featurize::hex16(spec_b).c_str(), featurize::hex16(spec_a).c_str());
+    for (const std::string &c : d.changed) std::printf("  changed %s\n", c.c_str());
+    for (const std::string &c : d.added) std::printf("  new %s\n", c.c_str());
+    for (const std::string &c : d.removed) std::printf("  removed %s\n", c.c_str());
+    return 0;
+}
+
+static bool read_manifest(const std::string &path, featurize::Manifest *out) {
+    std::string text, err;
+    if (!read_text(path, &text)) {
+        std::fprintf(stderr, "rmfeat: cannot read %s\n", path.c_str());
+        return false;
+    }
+    if (featurize::parse_manifest_json(text, out, &err)) return true;
+    std::fprintf(stderr, "rmfeat: %s: %s\n", path.c_str(), err.c_str());
+    return false;
+}
+
+static int run_compat(const Options &opt) {
+    featurize::Manifest model, now;
+    if (!read_manifest(opt.compat_model, &model) || !read_manifest(opt.compat_now, &now)) return 2;
+    const featurize::Refusal r = featurize::check_compatible(model, now, opt.exact);
+    if (!r.refused()) {
+        std::printf("COMPAT: ok\n");
+        return 0;
+    }
+    std::printf("COMPAT-REFUSED: %s: %s\n", r.code.c_str(), r.message.c_str());
+    return 1;
+}
+
 int main(int argc, char **argv) {
     Options opt;
     if (!parse_args(argc, argv, &opt)) return usage();
     if (!opt.registry_update.empty()) return run_registry_update(opt);
     if (!opt.registry_check.empty()) return run_registry_check(opt);
+    if (!opt.drift_old.empty()) return run_table_drift(opt);
+    if (!opt.compat_model.empty()) return run_compat(opt);
     featurize::Featurization f;
     if (!load(opt, &f)) return 2;
+    if (!opt.digest_update.empty() || !opt.digest_check.empty()) return run_digest(opt, f);
     if (opt.spec) {
         std::printf("%s\n", f.spec.json.c_str());
         return 0;

@@ -370,13 +370,18 @@ def cmd_server(args, tables):
     say("server after the matches: %s" % short_stats(srv.stats()))
 
     # 3. Handshake refusals.
-    base = {"protocol": 1, "client": "integration", "spec_hash": tables.hashes["spec_hash"],
+    base = {"protocol": SV.PROTOCOL, "client": "integration", "spec_hash": tables.hashes["spec_hash"],
             "vocab_hash": tables.hashes["vocab_hash"], "text_model": tables.hashes["text_model"],
+            "layout_hash": tables.hashes["layout_hash"], "tables_digest": tables.hashes["tables_digest"],
+            "vocab": tables.hashes["vocab"],
             "dims": tables.spec.dims(), "shm": "/rmip-none", "request_bytes": 64, "response_bytes": 64,
             "policies": [0]}
     cases = [("spec_hash", dict(base, spec_hash="0123456789abcdef")),
              ("vocab_hash", dict(base, vocab_hash="0123456789abcdef")),
-             ("text_model", dict(base, text_model="other@0")), ("protocol", dict(base, protocol=2)),
+             ("text_model", dict(base, text_model="other@0")), ("protocol", dict(base, protocol=SV.PROTOCOL + 1)),
+             ("layout_hash", dict(base, layout_hash="0123456789abcdef")),
+             ("tables_digest", dict(base, tables_digest="0123456789abcdef")),
+             ("vocab_hash", dict(base, vocab=base["vocab"] + [[899, "A Card Appended"]])),
              ("policy", dict(base, policies=[9])), ("shm", base)]
     for code, hello in cases:
         got = CL.hello_only(sock, hello)

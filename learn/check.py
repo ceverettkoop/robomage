@@ -14,7 +14,11 @@ Checks: the numpy RMTB reader against ``python/rmtb.py`` and its writer's round 
 hashes; the model's forward (shapes, finite outputs, padded rows), padding invariance (a decision's
 outputs do not depend on its batch or its padding), the training model against its folded
 inference module, auxiliary losses and a backward pass, the omniscient critic on paired decisions,
-the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; the inference
+the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; model
+compatibility (``spec.check_compatible``: a checkpoint loads on tables with a card appended and
+carries their manifest, a removed or renamed card, another layout, text model or a moved registry
+entry refused; an export of the old tables refused on the new ones with the rebuild message; the same
+verdicts as the C++ check, ``rmfeat --compat``, case by case, when the engine is given); the inference
 server on the CPU through the Python client (results against the model, several policies and
 versions, a swap, batching across concurrent clients, handshake and request refusals, shutdown);
 BC's event dropout; the replay window's splits by game and by match and its probe sample.
@@ -263,6 +267,104 @@ def check_exports(args, model, pol, x):
         info("%s: metadata %s; outputs vs eager %.3g" % (f, meta, d))
 
 
+def manifest_variants(m):
+    """Named variants of manifest `m` (what the compatibility checks run on): a card appended (new
+    spec and vocab hashes), an id renamed, an id removed, another layout or text model, two ability
+    keys' rows swapped in the registry, another tables' digest (a known card's rows changed), a model
+    made before manifests."""
+    a, b = json.loads(m["registry"])["ab_keys"][:2]
+    line = lambda row, key: '{"row":%d,"key":%s}' % (row, json.dumps(key))  # noqa: E731
+    swapped = m["registry"].replace(line(a["row"], a["key"]), "\x01") \
+        .replace(line(b["row"], b["key"]), line(a["row"], b["key"])).replace("\x01", line(b["row"], a["key"]))
+    v = m["vocab"]
+    return {
+        "same": dict(m),
+        "appended": dict(m, vocab=v + [[899, "A Card Appended"]], spec_hash="0123456789abcdef",
+                         vocab_hash="00000000000000aa"),
+        "renamed": dict(m, vocab=[[i, n + " Renamed" if k == 3 else n] for k, (i, n) in enumerate(v)],
+                        vocab_hash="00000000000000bb"),
+        "removed": dict(m, vocab=v[:3] + v[4:], vocab_hash="00000000000000cc"),
+        "layout": dict(m, layout_hash="0123456789abcdef"),
+        "text": dict(m, text_model="other/model@0"),
+        "registry_moved": dict(m, registry=swapped),
+        "drifted": dict(m, tables_digest="0123456789abcdef"),
+        "legacy": {k: m[k] for k in ("spec_hash", "vocab_hash", "text_model")},
+    }
+
+
+def check_compat(args, tables, model):
+    """spec.check_compatible on checkpoints and exports across manifest variants, and against the C++
+    rule (rmfeat --compat) when the engine is given."""
+    print("compatibility", flush=True)
+    m = S.manifest_of(tables.hashes)
+    var = manifest_variants(m)
+    ok(var["registry_moved"]["registry"] != m["registry"], "the registry variant moved nothing")
+    want = {  # (model, now, exact) -> the refusal code (None: compatible)
+        ("same", "same", False): None, ("same", "same", True): None,
+        ("same", "appended", False): None, ("same", "appended", True): "vocab_hash",
+        ("same", "renamed", False): "vocab_hash", ("same", "removed", False): "vocab_hash",
+        ("same", "layout", False): "layout_hash", ("same", "text", False): "text_model",
+        ("same", "registry_moved", False): "layout_hash", ("appended", "same", False): "vocab_hash",
+        ("legacy", "same", False): None, ("legacy", "appended", False): "spec_hash",
+        ("legacy", "renamed", True): "vocab_hash",
+        ("same", "drifted", False): None, ("same", "drifted", True): "tables_digest",
+    }
+    for (a, b, exact), code in want.items():
+        r = S.check_compatible(var[a], var[b], exact)
+        ok((r and r[0]) == code, "check_compatible(%s, %s, exact=%s): %r, expected %s" % (a, b, exact, r, code))
+        if r and exact:
+            ok("rebuild it from its checkpoint" in r[1], "an exact refusal does not say to rebuild: %s" % r[1])
+    r = S.check_compatible(var["same"], var["removed"])
+    ok(r and "card %d" % m["vocab"][3][0] in r[1], "a removed card is named: %r" % (r,))
+    # A checkpoint of these tables loads on tables with a card appended and carries their manifest.
+    path = os.path.join(args.work, "compat_check.pt")
+    M.save_checkpoint(model, path)
+    grown = S.Tables(tables.spec, tables.card, tables.text, tables.ability, tables.part, tables.part_ability,
+                     var["appended"])
+    m2 = M.load_checkpoint(path, grown)
+    ok(m2.hashes["vocab"] == var["appended"]["vocab"], "the loaded model carries the new tables' manifest")
+    ok(all(torch.equal(a, b) for a, b in zip(m2.state_dict().values(), model.state_dict().values())),
+       "the checkpoint's parameters across the expansion")
+    for bad in ("renamed", "removed", "layout", "text", "registry_moved"):
+        t = S.Tables(tables.spec, tables.card, tables.text, tables.ability, tables.part, tables.part_ability,
+                     var[bad])
+        try:
+            M.load_checkpoint(path, t)
+            ok(False, "a checkpoint loaded on the %s tables" % bad)
+        except ValueError as e:
+            ok(path in str(e), "the refusal names the checkpoint: %s" % e)
+    # An export of these tables runs on them only.
+    prefix = os.path.join(args.work, "compat_policy")
+    ts = E.export_policy(model, prefix, 4, formats=("ts",))["ts"]
+    ok(E.export_refusal(ts, tables.hashes) is None, "the export refused on its own tables: %s"
+       % E.export_refusal(ts, tables.hashes))
+    why = E.export_refusal(ts, var["appended"])
+    ok(why is not None and "A Card Appended" in why and "rebuild it from its checkpoint" in why,
+       "the export on the grown vocab: %s" % why)
+    meta = E.read_metadata(ts)
+    ok(meta["layout_hash"] == m["layout_hash"] and json.loads(meta["vocab"]) == m["vocab"],
+       "the export's layout_hash and vocab metadata")
+    parity = 0
+    if args.engine_dir:
+        rmfeat = os.path.join(args.engine_dir, "rmfeat")
+        files = {}
+        for name, mm in var.items():
+            files[name] = os.path.join(args.work, "manifest_%s.json" % name)
+            with open(files[name], "w") as fp:
+                json.dump(mm, fp)
+        for (a, b, exact), code in want.items():
+            r = subprocess.run([rmfeat, "--compat", files[a], files[b]] + (["--exact"] if exact else []),
+                               capture_output=True, text=True)
+            got = None if r.returncode == 0 else (r.stdout.split("COMPAT-REFUSED: ", 1)[-1].split(":", 1)[0]
+                                                   if r.returncode == 1 else "error %d: %s" % (r.returncode, r.stderr))
+            ok(got == code, "rmfeat --compat %s %s%s: %r, Python %s" % (a, b, " --exact" if exact else "", got, code))
+            parity += 1
+    info("%d manifest cases (%s); a checkpoint loads across a card appended and is refused on a removed or renamed "
+         "card, another layout, text model or a moved registry entry; its export runs on its own tables only (the "
+         "rebuild message)%s" % (len(want), ", ".join(sorted(var)),
+                                 "; rmfeat --compat agrees on all %d" % parity if parity else ""))
+
+
 def check_server(args, tables, model, decs):
     print("server", flush=True)
     sock = os.path.join(tempfile.mkdtemp(prefix="rmlc-", dir="/tmp"), "s.sock")
@@ -318,13 +420,18 @@ def check_server(args, tables, model, decs):
         except CL.RmipError as e:
             ok(e.code == "spec_hash", "a request of another spec hash refused with %s" % e.code)
         c2.close()
-        base = {"protocol": 1, "client": "check", "spec_hash": tables.hashes["spec_hash"],
+        base = {"protocol": SV.PROTOCOL, "client": "check", "spec_hash": tables.hashes["spec_hash"],
                 "vocab_hash": tables.hashes["vocab_hash"], "text_model": tables.hashes["text_model"],
+                "layout_hash": tables.hashes["layout_hash"], "tables_digest": tables.hashes["tables_digest"],
+                "vocab": tables.hashes["vocab"],
                 "dims": tables.spec.dims(), "shm": "/rmip-none", "request_bytes": 64, "response_bytes": 64,
                 "policies": [0]}
         cases = [("spec_hash", dict(base, spec_hash="0123456789abcdef")),
                  ("vocab_hash", dict(base, vocab_hash="0123456789abcdef")),
-                 ("text_model", dict(base, text_model="x@0")), ("protocol", dict(base, protocol=2)),
+                 ("text_model", dict(base, text_model="x@0")), ("protocol", dict(base, protocol=SV.PROTOCOL + 1)),
+                 ("layout_hash", dict(base, layout_hash="0123456789abcdef")),
+                 ("tables_digest", dict(base, tables_digest="0123456789abcdef")),
+                 ("vocab_hash", dict(base, vocab=base["vocab"] + [[899, "A Card Appended"]])),
                  ("policy", dict(base, policies=[7])), ("shm", base)]
         for code, hello in cases:
             got = CL.hello_only(sock, hello)
@@ -770,6 +877,7 @@ def main():
     model, pol, x = check_model(args, tables, decs)
     check_event_dropout()
     check_exports(args, model, pol, x)
+    check_compat(args, tables, model)
     check_server(args, tables, model, decs)
     if args.engine_dir and not args.episodes:
         args.episodes = make_episodes(args)

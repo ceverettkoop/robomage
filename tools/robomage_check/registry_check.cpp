@@ -46,7 +46,27 @@ void registry_check_part(const Options &opt, Report &rep) {
         rep.info("OK   registry: src/featurize/registry.json current, compiled in" +
                  std::string(have_base ? " and no entry moved since HEAD" : ""));
     }
+    digest_check_part(opt, rep, cards);
     remove_tree(cards);
+}
+
+void digest_check_part(const Options &opt, Report &rep, const std::string &cards) {
+    ProcSpec spec;
+    spec.argv = {opt.rmfeat, "--digest-check", path_join(opt.repo, "src/featurize/card_digest.json"), "--cards", cards,
+        "--text-table", path_join(opt.bin_dir, "resources/embeddings/oracle_text.rmtb")};
+    const ProcResult r = run_process(spec);
+    if (r.ok()) {
+        for (const std::string &line : split_lines(r.out))
+            if (starts_with(line, "DIGEST: ")) rep.info("OK   card digest: " + line.substr(8));
+        return;
+    }
+    std::string why;
+    for (const std::string &line : split_lines(r.out + r.err))
+        if (starts_with(line, "DIGEST-FAIL: ") || starts_with(line, "rmfeat: ")) why += "\n           " + line;
+    rep.error("vocab",
+        "rmfeat --digest-check (a known card's table rows changed: the drift report, "
+        "docs/featurizer.md §6.2) " +
+            r.status_text() + why);
 }
 
 }  // namespace rmcheck

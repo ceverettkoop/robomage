@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "../../src/featurize/compat.h"
 #include "../../src/featurize/rmtb.h"
 #include "../../src/inference/protocol.h"
 #include "actor.h"
@@ -51,11 +52,13 @@ static bool read_evals(const std::string &path, size_t *policies, std::vector<fl
     std::vector<float> *log_pi, std::vector<int64_t> *version, std::vector<int64_t> *offsets, std::string *err);
 static EvalDiff compare_evals(const std::string &want, const std::string &got, size_t column);
 static void note_diff(double want, double got, double *worst, const std::string &what, std::string *problem);
-static std::string hello_refusal(const std::string &socket, const inference::Hello &h);
+static std::string hello_refusal(const std::string &socket, const inference::Hello &h, std::string *message);
 static void check_handshake(
     const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a, const std::string &socket);
 static void check_kill(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
     const std::string &rmserve, const std::string &dir, const RemoteGame &g);
+static void check_stale_export(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::string &rmserve, const std::string &dir);
 static bool python_game(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
     const std::string &dir, const RemoteGame &g);
 static void check_remote_trajectories(
@@ -194,44 +197,58 @@ static EvalDiff compare_evals(const std::string &want, const std::string &got, s
     return d;
 }
 
-// The ERROR code the server answers `h` with ("" when it answers otherwise).
-static std::string hello_refusal(const std::string &socket, const inference::Hello &h) {
-    std::string err, code, message;
+// The ERROR code the server answers `h` with ("" when it answers otherwise), its message into `message`.
+static std::string hello_refusal(const std::string &socket, const inference::Hello &h, std::string *message) {
+    std::string err, code;
     const int fd = inference::connect_unix(socket, &err);
     if (fd < 0) return "";
     inference::Message m;
     if (inference::send_message(fd, inference::MSG_HELLO, inference::hello_json(h), &err) &&
         inference::recv_message(fd, 30, &m, &err) == inference::RecvStatus::OK && m.type == inference::MSG_ERROR)
-        inference::parse_error(m.body, &code, &message);
+        inference::parse_error(m.body, &code, message);
     close(fd);
     return code;
 }
 
-// The server refuses a handshake of another spec hash, protocol or an unserved policy (raw HELLOs),
+// The server refuses a handshake of another spec hash, layout, vocab (a card the export lacks:
+// rebuild it), protocol or an unserved policy (raw HELLOs, otherwise of the served export's tables),
 // and an actor asking for an unserved policy fails naming the endpoint.
 static void check_handshake(
     const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a, const std::string &socket) {
     inference::Hello base;
+    std::string text, err;
+    if (!rmcheck::read_file(rmcheck::path_join(a.tables, "manifest.json"), &text) ||
+        !featurize::parse_manifest_json(text, &base.tables, &err)) {
+        rep.error("actor", "the exported tables' manifest.json: " + (err.empty() ? "cannot read" : err));
+        return;
+    }
     base.client = "robomage_check";
-    base.spec_hash = "0123456789abcdef";
-    base.vocab_hash = "0123456789abcdef";
-    base.text_model = "none";
     base.shm = "/rmip-none";
     base.request_bytes = base.response_bytes = 8;
     base.policies = {0};
-    inference::Hello protocol = base, policy = base;
-    protocol.protocol = 2;
+    inference::Hello spec_hash = base, layout = base, digest = base, vocab = base, protocol = base, policy = base;
+    spec_hash.tables.spec_hash = "0123456789abcdef";
+    layout.tables.layout_hash = "0123456789abcdef";
+    digest.tables.tables_digest = "0123456789abcdef";
+    vocab.tables.vocab.emplace_back(899, "A Card Appended");
+    protocol.protocol = inference::PROTOCOL_VERSION + 1;
     policy.policies = {9};
     const struct {
             const inference::Hello *hello;
             const char *what, *code;
-    } cases[] = {{&base, "a spec hash mismatch", "spec_hash"}, {&protocol, "protocol 2", "protocol"},
+    } cases[] = {{&spec_hash, "a spec hash mismatch", "spec_hash"}, {&layout, "another layout_hash", "layout_hash"},
+        {&digest, "another tables' digest (a known card's rows changed)", "tables_digest"},
+        {&vocab, "a card the export lacks", "vocab_hash"}, {&protocol, "the next protocol", "protocol"},
         {&policy, "policy 9", "policy"}};
     for (const auto &c : cases) {
-        const std::string code = hello_refusal(socket, *c.hello);
+        std::string message;
+        const std::string code = hello_refusal(socket, *c.hello, &message);
         if (code != c.code)
             rep.error("actor", std::string("rmserve: a HELLO with ") + c.what + " was not refused with " + c.code +
                                    " (got " + rmcheck::quoted(code) + ")");
+        else if (c.hello == &vocab && !rmcheck::contains(message, "rebuild it from its checkpoint"))
+            rep.error("actor", "rmserve: the refusal of a card the export lacks does not say to rebuild the export: " +
+                                   rmcheck::quoted(message));
     }
     rmcheck::ProcSpec spec;
     spec.argv = {
@@ -243,8 +260,40 @@ static void check_handshake(
         rep.error("actor", "nn:remote:...:policies=9: expected a fatal refusal naming the endpoint, got " +
                                r.status_text() + ": " + rmcheck::quoted(rmcheck::trim(r.out).substr(0, 300)));
     rep.info(
-        "handshake: rmserve refuses a spec hash mismatch, protocol 2 and an unserved policy (ERROR spec_hash, "
-        "protocol, policy); nn:remote: asking for one exits naming the endpoint");
+        "handshake: rmserve refuses a spec hash mismatch, another layout_hash, another tables' digest, a card the "
+        "export lacks (rebuild the export), the next protocol and an unserved policy (ERROR spec_hash, layout_hash, "
+        "tables_digest, vocab_hash, protocol, policy); nn:remote: asking for one exits naming the endpoint");
+}
+
+// rmserve serving the export of the vocab before its last card: an nn:remote: actor on today's
+// tables is refused at the handshake (ERROR vocab_hash, the rebuild message) and exits naming the
+// endpoint.
+static void check_stale_export(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::string &rmserve, const std::string &dir) {
+    const std::string sock = rmcheck::path_join(dir, "stale.sock");
+    rmcheck::ServerRun server;
+    std::string err;
+    if (!rmcheck::start_server(opt, {rmserve, "--socket", sock, "--policy", "0=" + a.stale}, sock, &server, &err)) {
+        rep.error("actor", "stale export: " + err);
+        return;
+    }
+    rmcheck::ProcSpec spec;
+    spec.argv = {a.nn_binary, "--agent-a", "nn:remote:" + sock, "--agent-b", "explore", "--game-seed", "1"};
+    spec.cwd = opt.bin_dir;
+    spec.merge_stderr = true;
+    const rmcheck::ProcResult r = rmcheck::run_process(spec);
+    const rmcheck::ProcResult s = rmcheck::stop_server(&server, SIGTERM);
+    rmcheck::write_file(rmcheck::path_join(dir, "stale.txt"), r.out + "\n=== rmserve ===\n" + s.err);
+    if (r.ok() || !rmcheck::contains(r.out, "vocab_hash") ||
+        !rmcheck::contains(r.out, "rebuild it from its checkpoint") || !rmcheck::contains(r.out, sock.c_str()))
+        rep.error("actor",
+            "nn:remote: against rmserve serving an export of the vocab before its last card: expected "
+            "a fatal vocab_hash refusal saying to rebuild the export, got " +
+                r.status_text() + ": " + rmcheck::quoted(rmcheck::trim(r.out).substr(0, 400)));
+    else
+        rep.info(
+            "stale export: rmserve serving the export of the vocab before its last card refuses today's "
+            "nn:remote: actor (ERROR vocab_hash: rebuild the export), which exits naming the endpoint");
 }
 
 // An rmserve that stops answering after KILL_AFTER requests is killed: the actor (both seats
@@ -370,7 +419,7 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a) {
     };
     std::vector<ProcResult> local(n), remote(n);
     bool python_ok = false;
-    parallel_for(n + 3, opt.jobs, [&](size_t i) {
+    parallel_for(n + 4, opt.jobs, [&](size_t i) {
         if (i < n) {
             const std::string spec = "nn:" + a.ts() + ":argmax:evals=";
             local[i] = run_process(game_spec(opt, a, games[i], spec + file("local", i, "_A.rmtb"),
@@ -379,6 +428,8 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a) {
             check_kill(opt, rep, a, rmserve, dir, games[1]);
         } else if (i == n + 1) {
             check_handshake(opt, rep, a, sock);
+        } else if (i == n + 2) {
+            check_stale_export(opt, rep, a, rmserve, dir);
         } else {
             python_ok = python_game(opt, rep, a, dir, games[0]);
         }

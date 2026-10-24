@@ -104,8 +104,10 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
 - `make registry` — append to the layout registry `src/featurize/registry.json` every entry the
   engine's schema and whole-vocab card tables need that it lacks (new enum values, columns, slots,
   token / relation types, ability keys; never moving one; past a capacity it fails: a layout bump),
-  then rebuild (`docs/featurizer.md` §6.1). Run it after adding a mechanic, keyword or column (the
-  `vocab` tier fails while the file is stale) and commit the file
+  then rebuild (`docs/featurizer.md` §6.1), and rewrite the card digest `src/featurize/card_digest.json`
+  (per card a hash of its table rows, §6.2). Run it after adding a mechanic, keyword, column or card,
+  or after a change to how a known card parses (the `vocab` tier fails while either file is stale;
+  the digest's diff names the cards whose inputs changed) and commit both
 - `make actor` — `bin/<config>/robomage_nn`: the engine plus the libtorch TUs of `src/actor/`
   (exceptions on, C++20), which add the `nn:<model>` and `nn:remote:<socket>` agents
   (`docs/featurizer.md` §6), and `bin/<config>/rmserve`, the reference inference server
@@ -144,7 +146,7 @@ background** and make the live output inspectable by the user:
 
   | Tier | Checks |
   |---|---|
-  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached); the layout registry `src/featurize/registry.json` current, compiled in and append-only against HEAD (`rmfeat --registry-check`) |
+  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached); the layout registry `src/featurize/registry.json` current, compiled in and append-only against HEAD (`rmfeat --registry-check`); the card digest `src/featurize/card_digest.json` (every card's table rows as recorded, the table drift report: `rmfeat --digest-check`) |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
@@ -456,8 +458,10 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 2. Provision the script, then `make`. `bin/debug/robomage_check --tier vocab` (the engine's
    `--check-decks`) lists any deck card that does not load or is missing from the vocab, and the
    layout registry's check names any entry the new card needs (a new keyword or effect category):
-   `make registry` appends it. An appended card moves no existing card's, ability's or slot's
-   position (`docs/featurizer.md` §6.1); a card with more than 16 abilities is a layout bump.
+   `make registry` appends it (and records the card in the card digest). An appended card moves no
+   existing card's, ability's or slot's position (`docs/featurizer.md` §6.1); a card with more than
+   16 abilities is a layout bump. Checkpoints load across it (`docs/featurizer.md` §6.2); exports are
+   rebuilt (a training run: `rmtrain retable`, `docs/rmtrain.md` §1.1).
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
@@ -611,14 +615,19 @@ sections above are not repeated here.
   (the BERT WordPiece tokenizer); the featurizer (`docs/featurizer.md`): `columns` (the tag rules),
   `registry` (+ the committed `registry.json`, compiled in with the assembler's `.incbin`: the layout registry, every
   slot's, column's, enum value's, type's, relation's and key's permanent position and capacity,
-  `layout_hash`; `docs/featurizer.md` §6.1), `card_tables` (the card, ability and part tables from a
+  `layout_hash`; `docs/featurizer.md` §6.1), `compat` (the model manifest — spec, vocab, layout
+  hashes, the tables' digest, text model, the vocab manifest of `[id, name]` — and `check_compatible`, the one rule with
+  `learn/rmlearn/spec.py`'s: a checkpoint runs on a grown vocab, an export only on its own tables;
+  §6.2), `drift` (per card its table rows' digest, the committed `card_digest.json`, and the exact
+  drift between two tables; §6.2), `card_tables` (the card, ability and part tables from a
   whole-vocab CARDS frame at the registry's positions, their RMTB files and the ability index: card
   `c`'s ability `i` at row `c × abilities_per_card + i`, then the key band), `feature_spec`
   (FEATURE_SPEC: token types, slots, relations, per-table column plans at the registry's positions,
   `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
   entry point, refusing a non-seat frame; `featurize_viewer`, learner-side; the tensors file),
   `targets` (learner targets from the omniscient frame), `frame_stream` (a recorded stream frame by
-  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported),
+  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported with
+  their `manifest.json` and `registry.json`, `manifest()`),
   `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays), `episode`
   (the trajectory episode format: `EpisodeWriter`, `read_episode`; `docs/trajectory_format.md`)
 - `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA and whole-vocab CARDS
@@ -658,7 +667,7 @@ sections above are not repeated here.
 **The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
 `Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`,
 value and version; the in-process one loads TorchScript or an AOTInductor `.pt2`, checks the
-model's spec / vocab / text-model metadata), `remote_evaluator.{h,cpp}` (torch-free: the inference
+export's model manifest against the featurizer's tables, exactly: `featurize::check_compatible`), `remote_evaluator.{h,cpp}` (torch-free: the inference
 protocol's client behind `nn:remote:`), `nn_agent.{h,cpp}` (the `nn:` agent: options, sampling
 on the shared generator, the behaviour distribution, `dump=` / `evals=` / `stats`, the remote
 options), `robomage_nn.cpp` (the binary's main: registers `nn:`, then `engine_main`).
@@ -672,7 +681,7 @@ handshake JSON, the shared region, request / response layouts.
   one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
   `traj.*` (episode reading and comparisons, the `traj`, `actorloop` and `actor` tiers),
   `featurize_layout.*` (the layout registry's append-only property, `featurize` tier),
-  `registry_check.*` (the registry's check, `vocab` tier), `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
+  `registry_check.*` (the registry's and the card digest's checks, `vocab` tier), `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
   `--out-dir` (default `ci_out/`), `--fuzz-games`, `--smoke-games`, `--matchups`, `--mode`,
   `--scenario GLOB --show output|narrative|dump`, `--record`
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
@@ -683,7 +692,9 @@ handshake JSON, the shared region, request / response layouts.
   engine TU): `--spec --cards CARDS`, `--export-tables CARDS OUTDIR`, `--featurize DUMP --viewer
   A|B|omniscient --out FILE`, `--targets DUMP --seat A|B --out FILE`, `--stats` (token counts,
   timing); `--registry-update FILE` (`make registry`) and `--registry-check FILE [--base FILE]` (the
-  `vocab` tier); `--tables DIR`, `--text-table FILE`, `--registry FILE`
+  `vocab` tier); `--digest-update` / `--digest-check FILE` (the card digest), `--table-drift OLD NEW`
+  (two tables directories, `rmtrain retable`), `--compat MODEL NOW [--exact]` (two manifests); `--tables
+  DIR`, `--text-table FILE`, `--registry FILE`
 - `tools/rmembed/` — `bin/<config>/rmembed` (`make rmembed`, libtorch): the BERT encoder in the
   libtorch C++ API and its safetensors reader; writes the oracle-text table
 - `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`
@@ -691,7 +702,8 @@ handshake JSON, the shared region, request / response layouts.
   by `make`: the tokenizer golden, the encoder and table checks against transformers)
 - `tools/nn/make_reference_policy.py` — needs torch (+ onnx, onnxscript, onnxruntime), never run by
   `make`: `build` the network contract's reference policy from the exported tables (seeded) as
-  TorchScript, `.pt2` and ONNX with the hashes; `check` the three exports agree on a tensors file
+  TorchScript, `.pt2` and ONNX with the tables' manifest (`--formats`); `check` the three exports agree on a
+  tensors file
 - `tools/rmserve/` — `bin/<config>/rmserve` (`make actor`, libtorch): the reference inference server
   (`--socket PATH --policy ID=MODEL … [--version ID=N] [--max-batch N] [--deadline-us N]
   [--threads N]`): many clients, batches across them, the in-process evaluator per policy,
@@ -702,7 +714,8 @@ handshake JSON, the shared region, request / response layouts.
 
 **Learner (`learn/`, torch, its own venv; `learn/README.md`)**
 - `learn/rmtrain` — the training program (`rmlearn/rmtrain.py`, `rmlearn/orchestrator/`): `start` /
-  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` over a run directory
+  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` / `retable` (a stopped
+  run onto the engine's tables after a vocab expansion, `orchestrator/retable.py`) over a run directory
   (`runs/<name>`), the phases B0–B5, one GPU process (learner + inference server) and the actors
   ([`docs/rmtrain.md`](docs/rmtrain.md)); checks `learn/check_rmtrain.py` (`--smoke`: a tiny run)
 

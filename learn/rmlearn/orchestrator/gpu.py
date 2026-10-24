@@ -179,7 +179,7 @@ class Worker:
         r = self.cfg["replay"]
         return RP.WindowConfig(dirs=list(dirs), max_decisions=r["max_decisions"], max_bytes=int(r["max_gb"] * (1 << 30)),
                                delete_evicted=bool(selfplay and r["delete_evicted_selfplay"]),
-                               poll_interval=r["poll_interval_s"], spec_hash=self.tables.spec.hash,
+                               poll_interval=r["poll_interval_s"], spec_hash=self.tables.accepted_spec_hashes(),
                                heldout_fraction=0.0 if selfplay else r["heldout_fraction"],
                                split_seed=self.cfg["run"]["seed"], max_decision_tokens=r["max_decision_tokens"])
 
@@ -330,7 +330,7 @@ class Worker:
             if len(self.pending) < G:
                 return
         eps, self.pending = self.pending, []
-        kept, dropped = trainable_episodes(eps, missing_mu="drop", spec_hash=self.tables.spec.hash)
+        kept, dropped = trainable_episodes(eps, missing_mu="drop", spec_hash=self.tables.accepted_spec_hashes())
         kept, stale = drop_stale(kept, self.learner.learner_steps, int(r.get("max_policy_lag", 0)))
         if stale:
             dropped["policy_lag"] = stale

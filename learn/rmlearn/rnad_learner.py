@@ -108,6 +108,8 @@ import torch.nn.functional as Fn
 from torch.utils.checkpoint import checkpoint
 
 from . import rnad as R
+from . import spec as S
+from .replay import spec_accepted
 from .batch import INPUTS, attention_cells, forward_groups, padded
 from .model import ModelConfig, RMNet, load_checkpoint, smoothed_log_policy
 
@@ -325,11 +327,9 @@ class RNaDLearner:
 
     @classmethod
     def from_state_dict(cls, sd, tables, device="cpu"):
-        """A learner rebuilt from ``state_dict()`` (over `tables`, whose hashes must be the model's)."""
-        for k in ("spec_hash", "vocab_hash", "text_model"):
-            if sd["hashes"].get(k) != tables.hashes[k]:
-                raise ValueError("learner state: %s %s is not the tables' %s" % (k, sd["hashes"].get(k),
-                                                                                tables.hashes[k]))
+        """A learner rebuilt from ``state_dict()`` (over `tables`, with which the state's manifest must
+        be compatible: spec.check_compatible)."""
+        S.require_compatible(sd["hashes"], tables, "learner state")
         model = RMNet(ModelConfig.from_dict(sd["model_config"]), tables)
         learner = cls(model, RNaDConfig.from_dict(sd["config"]), device)
         learner.load_state_dict(sd)
@@ -768,7 +768,7 @@ def _deciding_seat_result(reward, seat):
 
 def trainable_episodes(eps, missing_mu="error", drop_end_reasons=("cap", "quit"), spec_hash=None):
     """(the episodes R-NaD trains on, {reason: count dropped}); see the module docstring. `eps` are
-    ``episodes.Episode``s."""
+    ``episodes.Episode``s; `spec_hash` (when given) a hash or a set of them (replay.spec_accepted)."""
     if missing_mu not in ("error", "drop"):
         raise ValueError("missing_mu is 'error' or 'drop'")
     kept, dropped = [], {}
@@ -778,7 +778,7 @@ def trainable_episodes(eps, missing_mu="error", drop_end_reasons=("cap", "quit")
 
     for ep in eps:
         end = ep.attrs.get("end_reason", "")
-        if spec_hash is not None and ep.spec_hash != spec_hash:
+        if spec_hash is not None and not spec_accepted(ep, spec_hash):
             drop("spec")
         elif ep.steps == 0:
             drop("empty")
@@ -847,9 +847,7 @@ def _checkpointed(groups, cfg):
 
 def _load_with_config(path, tables, model_cfg):
     data = torch.load(path, map_location="cpu", weights_only=True)
-    for k in ("spec_hash", "vocab_hash", "text_model"):
-        if data["hashes"].get(k) != tables.hashes[k]:
-            raise ValueError("%s: the checkpoint's %s is not the tables'" % (path, k))
+    S.require_compatible(data["hashes"], tables, path)
     cfg = ModelConfig.from_dict({**data["config"], **(model_cfg if isinstance(model_cfg, dict) else
                                                       model_cfg.to_dict())})
     model = RMNet(cfg, tables)

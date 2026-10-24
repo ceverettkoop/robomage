@@ -446,7 +446,8 @@ above, plus what it implied:
   checkpoint of the run against them, rebuild the exports, and record the change in `state.json`
   and `metrics.jsonl`. The replay window survives (same layout; stored episodes' card and ability
   ids are stable by S2); `ReplayWindow` accepts episodes whose layout matches and whose manifest is
-  a subset of the current one.
+  a subset of the current one (episodes carry no manifest: the window accepts the spec hashes of the
+  run's tables lineage, each checked a subset by `retable`; S3's Done).
 - **Table drift report:** `retable` (and the gate's `vocab` tier) also diffs the old and new tables'
   rows for **known** ids: an engine change that alters a known card's parsed features passes the
   compatibility check but changes that card's inputs — the report lists such cards so the change is
@@ -454,6 +455,135 @@ above, plus what it implied:
 - **Acceptance:** the synthetic expansion of S2 loads every migrated checkpoint (after S5) and the
   pre-expansion exports are refused by the evaluator and `rmserve` with a "rebuild the export"
   message; `rmtrain retable` on a copy of a small finished run succeeds and the run resumes.
+
+**Done** (three commits on `refactor/open-vocab`: the two prep items of S2's review, then S3).
+
+- **Prep 1, `#embed` → `.incbin`** (`cf6c5499`). GitHub CI's `ubuntu-latest` g++ 13 has no `#embed`.
+  `src/featurize/registry.cpp` now carries a top-level `asm` block that `.incbin`s
+  `src/featurize/registry.json` and a NUL into `.rodata` (Mach-O `.const`) under a global symbol;
+  the Makefile passes the file's absolute path (`-DRM_REGISTRY_JSON`) and makes `registry.o`
+  depend on it (dependency files do not list an `.incbin`; ccache refuses to cache a TU using it, so
+  a cached object is never stale). No codegen. Built in an `ubuntu:24.04` container with g++ 13.3.0
+  (`runs/open_vocab_s3/gcc13_build.log`): every binary of plain `make`, the release `rmfeat` /
+  `robomage_check` with LTO, the compiled-in text byte-identical to the file in both; the final tree
+  again at the end (below). clangd's complaints about `featurize_layout.{h,cpp}` were clangd's (no
+  compile database): clang++ and g++ 13 compile both cleanly.
+- **Prep 2, the export's size** (`fec48388`). `InferencePolicy` folds each card row once, each
+  distinct ability row once (every address with no ability, no features and no parts projects alike
+  and shares one row) and the slot vectors (`folded_rows`, 1568 × 192 at today's tables, plus
+  `ability_index [16640]` i64), and `gather_folded` adds a slot's row and its slot vector in one bag:
+  the token buffer 30.3 MB → 1.33 MB, a d 192 TorchScript export 44.2 MB → 15.3 MB
+  (`runs/open_vocab_s3/export_size_{before,after}.log`). The training model's `token_table` is
+  unchanged. Folded vs training 1.04e-7, `.ts.pt` 0 and `.pt2` 1.2e-7 from eager (`learn/check.py`).
+- **The model manifest** (`src/featurize/compat.h`, `docs/featurizer.md` §6.2): `spec_hash`,
+  `vocab_hash`, `text_model`, `layout_hash`, `tables_digest` (FNV-1a 64 of the card digests, below),
+  `vocab` — `[id, name]` per card-table row, **named by the whole-vocab CARDS frame** (each face id's
+  `card` row), not by `src/card_vocab.h`'s entries (an alias such as Dead / Gone / Dead/Gone is one
+  row) — and, in a checkpoint, `registry` (the layout registry's text, the manifest of positions).
+  `rmfeat --export-tables` writes it as `manifest.json` (without the registry) and `registry.json`
+  beside the tables; `spec.load_tables` requires them (`legacy=True` reads a directory exported
+  before S3 with a hashes-only manifest). Checkpoints carry it in `hashes` (a loaded model carries
+  the current tables' from then on), exports as metadata strings (`InferencePolicy` attributes,
+  TorchScript attributes, AOTInductor metadata, ONNX props, the reference policy too), the inference
+  protocol's `HELLO` as `layout_hash`, `tables_digest`, `vocab` (**RMIP v2**: those keys are
+  required; requests and responses are v1's but for the number).
+- **One check** (`featurize::check_compatible`, `spec.check_compatible`): the same `layout_hash` and
+  `text_model`, every `[id, name]` of the model's vocab in the current one unchanged (new ids pass; a
+  removed or renamed id refused naming it), no registry entry of the model's moved when both carry a
+  registry (C++ `registry_moves`, Python the registry's entries as a set); **exact** (exports) also the
+  same `spec_hash`, `vocab_hash` and `tables_digest` and no current id the model lacks, the refusal
+  saying to rebuild the export from its checkpoint. Codes are the protocol's (`layout_hash`,
+  `text_model`, `vocab_hash`, `spec_hash`, `tables_digest`). A manifest without `layout_hash` (a model
+  made before S3) passes only on its own spec / vocab / text hashes. Used by `load_checkpoint`,
+  `_load_with_config`, `RNaDLearner.from_state_dict`, the exploiter's and the exporter's loads,
+  `export.export_refusal`, the evaluator (`check_model`), `rmserve` (its policies among themselves and
+  every handshake), `rmlearn/server.py` and `tools/nn/serve_check.py`. `learn/check.py` runs 15 cases
+  through both implementations (`rmfeat --compat`) with the same verdicts.
+- **Beyond the plan's list:** `tables_digest` in the exact check. The plan's export rule (manifest
+  equal) misses drift: a known card parsed otherwise leaves the vocab, the manifest and the spec
+  hash as they were while an export's folded rows go stale; the digest catches it. And **the vocab
+  hash alone does not see an appended card** — it is the text table's (`oracle_text.rmtb`), so a card
+  appended without `make text-table` leaves `vocab_hash` and `spec_hash` unchanged (the synthetic
+  expansion below: both identical before and after); only the manifest shows the new id.
+- **Table drift** (`src/featurize/drift.h`): a card's rows (its card row, ability rows `16 id + i`,
+  their parts) as nonzero values by column name. The committed `src/featurize/card_digest.json` (330
+  cards, 21 KB) holds per card a hash of them printed with 6 significant digits (a libm's last bit does
+  not move it); the gate's `vocab` tier (`rmfeat --digest-check`) fails on a known card whose rows
+  changed, a new or a gone card, and `make registry` rewrites it (`--digest-update`), so the commit's
+  diff names the cards. `rmfeat --table-drift OLD NEW` compares two tables directories exactly
+  (columns, old and new values): `retable`'s report.
+- **rmtrain** (`learn/rmlearn/orchestrator/retable.py`, `docs/rmtrain.md` §1.1). Every start checks the
+  engine's cards frame against the run's `cards.rmstate` (byte for byte) and that the tables carry a
+  manifest, else stops naming `rmtrain retable` (the actors featurize with the engine's tables, so a
+  run never resumes on stale ones); tables that differ from `state.json`'s `tables` (replaced by hand,
+  or a retable's exports interrupted) have every export queued again and the evaluations' and live
+  exports removed. **`rmtrain retable <run>`** (a stopped run): the engine's frame and tables into
+  `tables.new/`, nothing to do when frame and spec are the run's; the old manifest and **every
+  checkpoint** (`ckpt/**/*.pt`) checked against the new tables (any refusal changes nothing); the drift
+  report; `tables/` → `tables.<old spec_hash>/` (with its frame), `tables/lineage.json`; every
+  `state.json` export (latest per name) rebuilt from its checkpoint into `exports/<name>`, the
+  evaluations' and live exports removed; `state.json` (`tables`, `retables`) and a `retable` metrics
+  line. The regularisation policies are served by the GPU process from checkpoints, not exports, so
+  they need nothing. **The window:** episodes carry no manifest, so the plan's "manifest is a subset"
+  is the lineage: `spec.Tables.accepted_spec_hashes` (the tables' and their lineage's, each checked by
+  retable) is what the GPU process's window, R-NaD's `trainable_episodes` and BC accept.
+  `benchmark.export_missing` rebuilds an export that is missing or not of the run's tables
+  (`export_stale`).
+- **Gate.** `vocab`: the card digest. `actor`: the reference policy carries the manifest; two
+  TorchScript variants built over tables whose manifest lacks the vocab's last card (`stale`) or has
+  another digest (`drifted`) are refused by `robomage_nn nn:` (the rebuild message, the digest
+  message), `rmserve` serving `stale` refuses today's `nn:remote:` actor (ERROR `vocab_hash`, the
+  rebuild message), and the raw-HELLO refusals cover `spec_hash`, `layout_hash`, `tables_digest`,
+  `vocab_hash`, the next protocol and an unserved policy. Learner checks: `learn/check.py`
+  (compatibility cases, a checkpoint across an appended card and refused across a removed / renamed
+  card, another layout, text model or a moved registry entry, an export refused on the grown vocab,
+  the C++ parity, the handshake refusals), `check_rmtrain.py` (the start check, the exports a retable
+  rebuilds and removes, the window keeping the lineage, the benchmark's rebuild rule), `check_rnad.py`.
+- **Acceptance** (S3's part; "every migrated checkpoint" is S5's). The scratch tree
+  `runs/open_vocab_s3/vocab_append/` (today's code, Prodigal Sorcerer appended at id 353 with its script
+  in the copy only, and Grizzly Bears parsed with power 3 in the copy's `parse.cpp`: a known card's
+  inputs changed; the tables' `vocab_hash` and `spec_hash` stay `be1266fd27b3ee13` /
+  `a56ad74e27244a25`, the text table not regenerated). `runs/open_vocab_s3/expansion_check.py` (`expansion_check.log`): a checkpoint of
+  today's tables loads on the expanded ones (parameters equal, the new manifest); today's `.ts.pt` and
+  `.pt2` exports are refused by the expanded `robomage_nn nn:` and its `rmserve` refuses an expanded
+  `nn:remote:` client ("the current vocab has card 353 'Prodigal Sorcerer', which the model's lacks;
+  … rebuild it from its checkpoint"); the export rebuilt from the checkpoint on the expanded tables
+  plays (TorchScript, `.pt2`, through `rmserve`); the drift report lists exactly Grizzly Bears (`power
+  1.09861 -> 1.38629`) and the new card, today's tables against themselves nothing, and the digest
+  check flags the same two on the expanded engine and passes on today's.
+  `runs/open_vocab_s3/retable_check.py` (`retable_check.log`): a copy of the finished smoke run
+  (`check_rmtrain.py --smoke --keep`, `runs/open_vocab_s3/smoke/`) on the expanded engine: retable
+  checks its 22 checkpoints, reports the drift, keeps the old tables, rebuilds its 5 exports (the
+  latest per name) with the new manifest, records it; a second retable has nothing to do. A run
+  started from the smoke's `bc-final.pt` and stopped in B4 at learner step 98
+  (`retable_check_resume.log`): its copy on the expanded engine refuses to start (the start check
+  names retable), retable succeeds, and the run resumes (the learner restored at step 98, the window
+  restored with its 273 episodes, stepping on past 148).
+- **Evidence.** `make check` green with every tier, the opt-in `actor` tier included
+  (`runs/open_vocab_s3/make_check5.log`); `learn/check.py`, `check_rnad.py`, `check_rmtrain.py` ok
+  (`runs/open_vocab_s3/learn_check*4.log`, `learn_check_rmtrain5.log`); `check_rmtrain.py --smoke` ok
+  (`smoke2.log`; one earlier smoke, `smoke_race.log`, failed only its `phase next (B5 -> done)` step:
+  B4 had run past B5's `max_learner_steps` while an evaluation held it, so B5 ended on its own as
+  `phase next` arrived and the orchestrator exited unanswered — a race in the smoke's script, not in
+  S3). The final tree built with g++ 13.3.0 in `ubuntu:24.04` (glibc 2.39): the card digest checks
+  there and the tables' digest is the same (`8a70d95cb6314af9`), so the 6-digit printing holds across
+  libms (`runs/open_vocab_s3/gcc13_final.log`). **No decision changed:** no corpus `.replay`, CLI
+  golden or scenario changed; agent games before / after (`runs/open_vocab_s1/agent_runs.sh`; before
+  = S2's logs `runs/open_vocab_s2/agents_after/`, after `runs/open_vocab_s3/agents_after/`): 158
+  decision logs byte-identical.
+- **For S4.** `card_seen` folds in two places: the training `CardRows.token_table` and the export's
+  `model._fold_rows` (card rows now folded once there, the slot vectors separate rows).
+- **For S5.** (1) A migrated checkpoint must carry the S3 manifest: write `hashes` from the new
+  tables (`load_tables` of current tables), never copy the old `hashes` (a manifest without
+  `layout_hash` is the legacy rule: it loads only on its own exact tables). (2) Old runs' `tables/` have
+  no `manifest.json`: read them with `load_tables(dir, legacy=True)` (or the spec and RMTB files
+  directly). (3) The orchestrator refuses to start a run whose tables have no manifest: after
+  migrating a run's checkpoints, `rmtrain retable` it (it exports the current tables, checks the
+  migrated checkpoints, rebuilds the exports; it scans `ckpt/**/*.pt`, so migrated checkpoints must
+  be in `ckpt/`, the originals elsewhere — the plan's `ckpt-v2/` is outside `ckpt/`: decide which side
+  `ckpt/` holds). (4) The S3 acceptance item left to S5: rerun `expansion_check.py`'s pattern with every
+  migrated checkpoint on the scratch tree's expanded tables. (5) Copying a run directory keeps
+  `state.json`'s absolute paths (checkpoints, ladder): `retable_check.py`'s `copy_run` rebases them.
 
 ### S4. Unseen cards read `unknown_id` (½ day)
 

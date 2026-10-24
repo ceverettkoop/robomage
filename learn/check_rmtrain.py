@@ -1701,6 +1701,74 @@ def check_eval_scoring(tmp):
               "summarize scores side a from side_a_seat (%s: %s)" % (opp, s[opp]["all"]))
 
 
+def check_retable(tmp):
+    """The tables' start check (orchestrator/retable.py check_start): a run whose cards frame is not the
+    engine's, or whose tables predate manifests, is stopped naming `rmtrain retable`; the exports a
+    retable rebuilds (latest per name, their checkpoint present) and removes (evaluations', live);
+    the replay window accepting the tables' lineage (spec.Tables.accepted_spec_hashes)."""
+    import check_rnad as CR
+    from rmlearn import replay as RP
+    from rmlearn import spec as S
+    from rmlearn.orchestrator import retable as RTB
+    run, cfg = fake_run(tmp, "retable")
+    eng = os.path.join(tmp, "retable_engine.sh")
+    frame = os.path.join(tmp, "retable_frame.bin")
+    with open(eng, "w") as fp:
+        fp.write("#!/bin/sh\n[ \"$1\" = --cards-frame ] && cp %s \"$2\"\n" % frame)
+    os.chmod(eng, 0o755)
+    with open(frame, "wb") as fp:
+        fp.write(b"cards v1")
+    with open(run.cards, "wb") as fp:
+        fp.write(b"cards v1")
+    os.makedirs(run.tables, exist_ok=True)
+    why = RTB.check_start(run, cfg, eng, tmp)
+    check("before model manifests" in why and "rmtrain retable" in why, "tables without a manifest: %r" % why)
+    RD.write_json(os.path.join(run.tables, "manifest.json"),
+                  {"spec_hash": "a" * 16, "vocab_hash": "b" * 16, "text_model": "m@0", "layout_hash": "c" * 16,
+                   "vocab": [[0, "Mountain"]]})
+    check(RTB.check_start(run, cfg, eng, tmp) == "", "the engine's cards frame is the run's: %r"
+          % RTB.check_start(run, cfg, eng, tmp))
+    summary = RTB.tables_summary(run.tables)
+    check(summary == {"spec_hash": "a" * 16, "vocab_hash": "b" * 16, "layout_hash": "c" * 16, "tables_digest": None,
+                      "text_model": "m@0", "cards": 1}, "tables_summary: %s" % summary)
+    check(not RTB.same_tables(summary, dict(summary, cards=2)) and RTB.same_tables(summary, dict(summary)),
+          "same_tables: a card appended (the spec and vocab hashes as they were) is other tables")
+    with open(frame, "wb") as fp:
+        fp.write(b"cards v2: a card appended")
+    why = RTB.check_start(run, cfg, eng, tmp)
+    check("is not the run's" in why and "rmtrain retable %s" % run.path in why, "a stale run is stopped: %r" % why)
+    check(RTB.check_start(run, dict(cfg, run=dict(cfg["run"], tables="/elsewhere")), eng, tmp) == "",
+          "run.tables (the user's tables) is not checked")
+    ck = os.path.join(run.ckpt, "m1.pt")
+    open(ck, "w").close()
+    state = {"exports": [{"name": "m1", "checkpoint": ck, "version": 3, "prefix": os.path.join(run.exports, "m1")},
+                         {"name": "m1", "checkpoint": ck, "version": 5, "prefix": os.path.join(run.exports, "m1")},
+                         {"name": "gone", "checkpoint": os.path.join(run.ckpt, "gone.pt"), "version": 1,
+                          "prefix": os.path.join(run.exports, "gone")}]}
+    got = RTB.latest_exports(state)
+    check([(e["name"], e["version"]) for e in got] == [("m1", 5)], "latest_exports: %s" % got)
+    for d in ("eval", "live"):
+        os.makedirs(os.path.join(run.exports, d), exist_ok=True)
+        open(os.path.join(run.exports, d, "x.ts.pt"), "w").close()
+    open(os.path.join(run.exports, "m1.ts.pt"), "w").close()
+    stale = sorted(os.path.relpath(p, run.exports) for p in RTB.stale_exports(run))
+    check(stale == ["eval/x.ts.pt", "live/x.ts.pt"], "stale_exports: %s" % stale)
+    # The window: episodes of the tables' lineage are kept, of other specs skipped.
+    tables = CR.fake_tables()
+    t2 = S.Tables(tables.spec, tables.card, tables.text, tables.ability, tables.part, tables.part_ability,
+                  tables.hashes, lineage=[{"spec_hash": "0123456789abcdef"}])
+    check(t2.accepted_spec_hashes() == {tables.spec.hash, "0123456789abcdef"}, "accepted_spec_hashes")
+    rng = np.random.RandomState(1)
+    win = RP.ReplayWindow(RP.WindowConfig(dirs=[], spec_hash=t2.accepted_spec_hashes()))
+    for h in (tables.spec.hash, "0123456789abcdef", "fedcba9876543210"):
+        win.add(CR.make_episode(h, [0, 1], [CR.step_tokens(2, 3, rng) for _ in range(2)], [[1 / 3.0] * 3] * 2, [0, 1],
+                                (1, -1)))
+    check(win.counts["ingested"] == 2 and win.counts["skipped_spec"] == 1,
+          "the window keeps the lineage's episodes: %s" % dict(win.counts))
+    print("  retable: the start check (no manifest, a stale cards frame: retable; current; run.tables), the "
+          "exports rebuilt and removed, the window keeping the lineage's episodes", flush=True)
+
+
 def check_benchmark(tmp):
     """The end-of-run benchmark's policy set and summary: the default policies from a run's exports,
     per-deck win rates playing and facing a deck, the difference from the baseline, the tables."""
@@ -1766,13 +1834,26 @@ def check_benchmark(tmp):
     def fake_play(lab, path, opts, out_dir, matches, *a, **k):
         calls.append((lab, matches))
         return reps["bc-final" if lab == "bc-final" else "final"]
-    play, recs = BM.play_policy, BM.match_records
+    play, recs, stale = BM.play_policy, BM.match_records, BM.export_stale
     BM.play_policy = fake_play
     BM.match_records = lambda d: mb if d.endswith("bc-final") else mo
+    BM.export_stale = lambda run, path: None
     try:
         sr = BM.run_benchmark(run, ["bc-final", "final"], label="t", matches=7, actors=2, log=lambda m: None)
     finally:
         BM.play_policy, BM.match_records = play, recs
+    # export_missing: an existing export of other tables is rebuilt from its checkpoint (here none:
+    # not current); a current one is kept.
+    logged = []
+    BM.export_stale = lambda run, path: "of other tables"
+    try:
+        rebuilt = BM.export_missing(run, os.path.join(run.exports, "m2.ts.pt"), log=logged.append)
+    finally:
+        BM.export_stale = stale
+    check(not rebuilt and any("rebuilding" in m and "of other tables" in m for m in logged),
+          "export_missing rebuilds an export of other tables: %s" % logged)
+    check(BM.export_stale(run, os.path.join(run.exports, "m2.ts.pt")) is not None,
+          "an export the run's tables cannot vouch for (no manifest.json) is stale")
     check(calls == [("bc-final", 7), ("final", 7)] and sr["matches"] == 7 and sr["policies"]["final"].get("paired")
           and os.path.exists(os.path.join(run.path, "bench", "t", "summary.md")), "run_benchmark: %s %s" % (calls, sr.get("matches")))
 
@@ -1914,13 +1995,14 @@ def check_benchmark_sideboarding(tmp):
         return reps["p"]
     export = os.path.join(run.exports, "p.ts.pt")
     open(export, "w").close()
-    play = BM.play_policy
+    play, stale = BM.play_policy, BM.export_stale
     BM.play_policy = fake_play
+    BM.export_stale = lambda run, path: None
     try:
         sr = BM.run_benchmark(run, [export], label="t", matches=2, actors=1, log=lambda m: None,
                               opponent="scripted:hard+sb")
     finally:
-        BM.play_policy = play
+        BM.play_policy, BM.export_stale = play, stale
     root = os.path.join(run.path, "bench", "t-vs-hard_sb")
     check(calls and calls[0][1] == "scripted:hard+sb" and calls[0][2].startswith(root)
           and sr["opponent"] == "scripted:hard+sb" and sr["dir"] == "t-vs-hard_sb"
@@ -2189,6 +2271,7 @@ def main():
             check_eval_options_and_findings(tmp)
             check_eval_scoring(tmp)
             check_benchmark(tmp)
+            check_retable(tmp)
             check_benchmark_sideboarding(tmp)
             check_local(tmp)
             check_sb_explore(tmp)

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../featurize/compat.h"
 #include "../featurize/featurizer.h"
 #include "../featurize/setup.h"
 
@@ -30,11 +31,14 @@
 // make_reference_policy.py's kind, told apart by the file's contents (both are zip archives): an
 // AOTInductor package (`.pt2`, an `archive_format` record) runs through
 // torch::inductor::AOTIModelPackageLoader, a TorchScript module (`.ts.pt`, a `constants.pkl`
-// record) through torch::jit::load. Its metadata, the strings spec_hash, vocab_hash, text_model
-// and policy_version (an unsigned integer; "0" when absent), is the TorchScript module's string
+// record) through torch::jit::load. Its metadata, the strings spec_hash, vocab_hash, text_model,
+// layout_hash, tables_digest, vocab (the vocab manifest, a JSON array of [id, name]:
+// featurize/compat.h) and
+// policy_version (an unsigned integer; "0" when absent), is the TorchScript module's string
 // attributes of those names, or the package's AOTInductor metadata (the export's inductor config
-// `aot_inductor.metadata`): no sidecar file. check_model refuses a model whose spec_hash,
-// vocab_hash or text_model is not the featurizer's.
+// `aot_inductor.metadata`): no sidecar file. check_model refuses a model that is not of the
+// featurizer's tables exactly (check_compatible, exact: an export bakes the card rows in, so it is
+// rebuilt from its checkpoint for every vocab and tables).
 //
 // This header is torch-free (the model lives behind the implementation); the implementation is the
 // only TU that includes libtorch. Every libtorch call is caught inside it: a C++ exception never
@@ -46,8 +50,8 @@ namespace actor {
 // What a model carries.
 struct ModelInfo {
         std::string path;
-        std::string format;  // "torchscript" | "aoti"
-        std::string spec_hash, vocab_hash, text_model;
+        std::string format;            // "torchscript" | "aoti"
+        featurize::Manifest manifest;  // no registry (an export carries none)
         uint64_t policy_version = 0;
 };
 
@@ -82,7 +86,8 @@ class Evaluator {
 std::unique_ptr<Evaluator> load_model_evaluator(
     const std::string &path, const featurize::FeatureSpec &spec, std::string *err);
 
-// False with `err` when the model's hashes or text model are not the featurizer's.
+// False with `err` (naming the path and what differs) when the model is not an export of the
+// featurizer's tables (featurize::check_compatible, exact).
 bool check_model(const ModelInfo &model, const featurize::Featurization &f, std::string *err);
 
 }  // namespace actor

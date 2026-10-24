@@ -5,21 +5,22 @@ NEEDS torch (and, for the ONNX export and --check, onnx, onnxscript and onnxrunt
 /root/torchenv/bin/python; `make` never runs it (the gate's `actor` tier does, when asked).
 
   build   reads the exported card tables (rmfeat --export-tables DIR: card.rmtb, ability.rmtb,
-          part.rmtb, spec.json, the FEATURE_SPEC document) and the text table, builds the recommended
+          part.rmtb, spec.json, the FEATURE_SPEC document, manifest.json) and the text table, builds the recommended
           model family with a seeded random initialisation and exports it three ways:
             PREFIX.ts.pt   TorchScript (torch.jit.script), the hashes as string attributes
             PREFIX.pt2     an AOTInductor package (torch.export + aoti_compile_and_package, CPU), the
                            hashes in the package's metadata (inductor config aot_inductor.metadata)
             PREFIX.onnx    ONNX (the dynamo exporter), the hashes in the model's metadata_props
-          Each carries spec_hash, vocab_hash, text_model and policy_version (strings), what the
-          actor's evaluator (src/actor/evaluator.h) checks on load.
+          Each carries spec_hash, vocab_hash, text_model, layout_hash, tables_digest, vocab (the vocab manifest's
+          JSON text) and policy_version (strings): the tables' manifest (DIR/manifest.json), which
+          the actor's evaluator (src/actor/evaluator.h) and the inference servers check on load.
   check   loads the three exports (torch.jit.load, torch._inductor.aoti_load_package, an
           onnxruntime session) and evaluates the decisions of a tensors file (rmfeat --featurize),
           one at a time and as padded batches; prints the largest logit and value differences of
           each export against the TorchScript one at batch 1 (and TorchScript's own batched against
           unbatched) and exits 1 past the tolerance (1e-4, absolute plus relative).
 
-    python make_reference_policy.py build --tables DIR --out PREFIX [--text-table FILE] [--seed N]
+    python make_reference_policy.py build --tables DIR --out PREFIX [--text-table FILE] [--seed N] [--formats ts]
     python make_reference_policy.py check --out PREFIX --tables DIR --tensors FILE [--decisions N] [--batch B]
 
 The model (featurizer.md §6): per token type a linear projection of tok_num, plus the type's
@@ -60,6 +61,8 @@ INPUTS = ["tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask
           "act_mask"]
 PAD_MULTIPLE = 8
 TOLERANCE = 1e-4
+# The metadata strings every export carries (the tables' manifest and the policy version).
+META_KEYS = ("spec_hash", "vocab_hash", "text_model", "layout_hash", "tables_digest", "vocab", "policy_version")
 
 
 def fnv1a64(data):
@@ -112,6 +115,9 @@ class Policy(nn.Module):
         self.spec_hash = hashes["spec_hash"]
         self.vocab_hash = hashes["vocab_hash"]
         self.text_model = hashes["text_model"]
+        self.layout_hash = hashes["layout_hash"]
+        self.tables_digest = hashes["tables_digest"]
+        self.vocab = hashes["vocab"]
         self.policy_version = hashes["policy_version"]
         # Token type and relation type ids range over the layout registry's capacities.
         self.n_types = spec["type_capacity"]
@@ -294,7 +300,13 @@ def load_inputs(tables_dir, text_table):
                              % (tables_dir, m.get("spec_hash"), spec_hash))
     if text_meta.get("vocab_hash") != card_meta.get("vocab_hash"):
         raise SystemExit("make_reference_policy: the text table is of another vocab")
-    hashes = {"spec_hash": spec_hash, "vocab_hash": card_meta["vocab_hash"], "text_model": text_meta["model"]}
+    with open(os.path.join(tables_dir, "manifest.json")) as fp:
+        manifest = json.load(fp)
+    if manifest.get("spec_hash") != spec_hash or manifest.get("text_model") != text_meta["model"]:
+        raise SystemExit("make_reference_policy: %s/manifest.json is not of these tables" % tables_dir)
+    hashes = {"spec_hash": spec_hash, "vocab_hash": card_meta["vocab_hash"], "text_model": text_meta["model"],
+              "layout_hash": manifest["layout_hash"], "tables_digest": manifest["tables_digest"],
+              "vocab": json.dumps(manifest["vocab"], ensure_ascii=False, separators=(",", ":"))}
     tables = (table_tensor(card, "features"), table_tensor(text, "vectors"), table_tensor(ability, "features"),
               table_tensor(part, "features"), table_tensor(part, "ability"))
     return spec, tables, hashes
@@ -326,9 +338,12 @@ def build(args):
     with torch.no_grad():
         ref_logits, ref_value = model(*ex)
 
+    formats = set(args.formats.split(","))
     scripted = torch.jit.script(model)
     scripted.save(args.out + ".ts.pt")
     print("make_reference_policy: wrote %s.ts.pt" % args.out)
+    if formats == {"ts"}:
+        return 0
 
     ep = torch.export.export(model, ex, dynamic_shapes=dynamic_shapes(), strict=False)
     metadata = dict(hashes)
@@ -376,9 +391,8 @@ def check(args):
     pt2 = torch._inductor.aoti_load_package(args.out + ".pt2")
     sess = ort.InferenceSession(args.out + ".onnx", providers=["CPUExecutionProvider"])
     metas = {
-        "ts": {k: getattr(ts, k) for k in ("spec_hash", "vocab_hash", "text_model", "policy_version")},
-        "pt2": {k: v for k, v in pt2.get_metadata().items()
-                if k in ("spec_hash", "vocab_hash", "text_model", "policy_version")},
+        "ts": {k: getattr(ts, k) for k in META_KEYS},
+        "pt2": {k: v for k, v in pt2.get_metadata().items() if k in META_KEYS},
         "onnx": {p.key: p.value for p in onnx.load(args.out + ".onnx").metadata_props},
     }
     ok = True
@@ -443,6 +457,7 @@ def main():
     b.add_argument("--heads", type=int, default=4)
     b.add_argument("--layers", type=int, default=2)
     b.add_argument("--policy-version", type=int, default=0)
+    b.add_argument("--formats", default="ts,pt2,onnx", help="the exports to write (comma-separated)")
     c = sub.add_parser("check")
     c.add_argument("--out", required=True, help="the exports' path prefix")
     c.add_argument("--tensors", required=True, help="rmfeat --featurize FILE")

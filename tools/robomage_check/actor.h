@@ -31,13 +31,18 @@ struct ActorSetup {
         std::string cards;      // the whole-vocab cards file
         std::string tables;     // the exported tables (spec.json among them)
         std::string prefix;     // the exports' path prefix
+        std::string stale;      // a TorchScript reference policy of the tables before their last card
+        std::string drifted;    // one of the tables with another tables' digest (a known card's rows changed)
         std::string ts() const { return prefix + ".ts.pt"; }
         std::string pt2() const { return prefix + ".pt2"; }
 };
 
-// The actor binary and the reference policy, built when missing or stale. False with `skip` (why,
-// for a `skipped:` line) when the binary or the opt-in is absent; false with `skip` empty after an
-// error reported under `tier`.
+// The actor binary and the reference policy, built when missing or stale; and `stale` / `drifted`, the
+// reference policy exported from the tables with their last vocab card left out of the manifest (an
+// export of the vocab before that card was appended) / with another tables' digest (of a known card's
+// rows before a parsing change): the evaluator and the servers refuse both, rebuild them. False with `skip`
+// (why, for a `skipped:` line) when the binary or the opt-in is absent; false with `skip` empty after an error reported
+// under `tier`.
 bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *out, std::string *skip);
 
 // An inference server (rmserve, tools/nn/serve_check.py) run as a session.

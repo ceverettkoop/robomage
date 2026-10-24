@@ -1,4 +1,4 @@
-"""The learner's inference server (docs/rnad_training_plan.md §4 L5): RMIP v1
+"""The learner's inference server (docs/rnad_training_plan.md §4 L5): RMIP v2
 (docs/inference_protocol.md) as a component inside a host process.
 
     srv = InferenceServer("/run/x/infer.sock", device="cuda", max_batch=512, deadline_us=2000)
@@ -47,6 +47,7 @@ import time
 import numpy as np
 import torch
 
+from . import spec as S
 from .batch import Decisions, INPUTS, TENSORS, forward_groups, pad
 from .model import InferencePolicy, RMNet
 
@@ -55,7 +56,7 @@ REQ = struct.Struct("<4sIQQII4IQQ")
 RESP = struct.Struct("<4sIQQIIIIQQ")
 HELLO, WELCOME, EVAL, DONE, ERROR, BYE = 1, 2, 3, 4, 5, 6
 MAX_BODY = 1 << 20
-PROTOCOL = 1
+PROTOCOL = 2
 # The request's tensors: name, dtype, the size array counting its rows, its row width.
 ARRAYS = [("tok_type", np.int64, "n", None), ("tok_num", np.float32, "n", "F"), ("tok_cat", np.int64, "n", "C"),
           ("tok_card", np.int64, "n", "K"), ("tok_ability", np.int64, "n", "Q"), ("tok_mask", np.uint8, "n", None),
@@ -93,9 +94,7 @@ class _Policy:
     def __init__(self, module, version):
         self.module = module
         self.version = int(version)
-        self.spec_hash = module.spec_hash
-        self.vocab_hash = module.vocab_hash
-        self.text_model = module.text_model
+        self.manifest = S.manifest_of(module)
         emb = module.encoder.embed
         self.bounds = {"types": emb.type_emb.num_embeddings, "cat": emb.cat_emb.num_embeddings,
                        "cards": module.none_card, "abilities": module.none_ability,
@@ -134,7 +133,7 @@ class _Request:
 
 
 class InferenceServer:
-    """An RMIP v1 server running in the host process (see the module docstring)."""
+    """An RMIP v2 server running in the host process (see the module docstring)."""
 
     def __init__(self, socket_path, device="cuda", max_batch=512, deadline_us=2000, precision="fp32",
                  chunk=64, attention_budget=1 << 26, template=None, name="rmlearn", log=None, pause_after=None):
@@ -389,7 +388,8 @@ class InferenceServer:
             raise Refused("protocol", "the HELLO is not JSON")
         if not isinstance(h, dict) or h.get("protocol") != PROTOCOL:
             raise Refused("protocol", "this server speaks protocol %d" % PROTOCOL)
-        need = ("spec_hash", "vocab_hash", "text_model", "dims", "shm", "request_bytes", "response_bytes", "policies")
+        need = ("spec_hash", "vocab_hash", "text_model", "layout_hash", "tables_digest", "vocab", "dims", "shm",
+                "request_bytes", "response_bytes", "policies")
         if any(k not in h for k in need) or not isinstance(h["policies"], list) or not h["policies"] or \
                 len(set(h["policies"])) != len(h["policies"]) or not isinstance(h["dims"], dict):
             raise Refused("protocol", "the HELLO lacks a key or its policies are empty or repeated")
@@ -398,10 +398,12 @@ class InferenceServer:
         for pid in h["policies"]:
             if pid not in pols:
                 raise Refused("policy", "policy %s is not served" % pid)
-            for key in ("spec_hash", "vocab_hash", "text_model"):
-                if getattr(pols[pid], key) != h[key]:
-                    raise Refused(key, "the client's %s %s is not policy %d's (%s)"
-                                  % (key, h[key], pid, getattr(pols[pid], key)))
+            try:
+                r = S.check_compatible(pols[pid].manifest, h, exact=True)
+            except (TypeError, ValueError) as e:
+                raise Refused("protocol", "the HELLO's vocab is not a list of [id, name]: %s" % e)
+            if r is not None:
+                raise Refused(r[0], "policy %d against the client's tables: %s" % (pid, r[1]))
         try:
             dims = {k: int(h["dims"][k]) for k in "FCKQ"}
         except (KeyError, TypeError, ValueError):
@@ -429,7 +431,7 @@ class InferenceServer:
             raise Refused("request", "the request's length %d is outside the request area" % length)
         magic, proto, spec_hash, rseq, d, p, f, cc, k, q, rlen, _ = REQ.unpack_from(buf, 0)
         if magic != b"RMRQ" or proto != PROTOCOL or rseq != seq or rlen != length or d < 1:
-            raise Refused("request", "not a request of protocol 1 matching its EVAL (magic, protocol, seq, length)")
+            raise Refused("request", "not a request of protocol %d matching its EVAL (magic, protocol, seq, length)" % PROTOCOL)
         if "%016x" % spec_hash != h["spec_hash"]:
             raise Refused("spec_hash", "the request's spec_hash is not the handshake's")
         dims = {"F": f, "C": cc, "K": k, "Q": q}
@@ -726,7 +728,7 @@ def _load_policy_arg(text, tables_dir, config):
 def main(argv=None):
     import argparse
     import signal
-    ap = argparse.ArgumentParser(description="The learner's RMIP v1 inference server, standalone (tests, benches).")
+    ap = argparse.ArgumentParser(description="The learner's RMIP v2 inference server, standalone (tests, benches).")
     ap.add_argument("--socket", required=True)
     ap.add_argument("--policy", action="append", required=True, help="ID=MODEL: a .ts.pt, ckpt:PATH or init:SEED")
     ap.add_argument("--version", action="append", default=[], help="ID=N")

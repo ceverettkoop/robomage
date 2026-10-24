@@ -449,6 +449,14 @@ void build_printed_rows(const rmstate::Schema &schema, const rmstate::DecodedFra
     const std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_of =
         face_ids(*card, rows_of(cards, card), out->card_rows);
     for (const auto &f : face_of) out->present[f.second] = 1;
+    out->names.assign(out->card_rows, std::string());
+    const int c_card = column_index(*card, "card"), c_face = column_index(*card, "face"),
+              c_name = column_index(*card, "name");
+    if (c_card >= 0 && c_face >= 0 && c_name >= 0)
+        for (const std::vector<rmstate::Value> &row : rows_of(cards, card)) {
+            auto it = face_of.find({row[static_cast<size_t>(c_card)].bits, row[static_cast<size_t>(c_face)].bits});
+            if (it != face_of.end()) out->names[it->second] = row[static_cast<size_t>(c_name)].text;
+        }
     for (const rmstate::TableDef &def : schema.tables) {
         if (!is_face_child(def)) continue;
         PrintedRows p;

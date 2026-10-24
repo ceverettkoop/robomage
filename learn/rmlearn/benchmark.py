@@ -84,15 +84,25 @@ def checkpoint_of(run, name):
     return None
 
 
+def run_tables(run):
+    return (read_json(run.config) or {}).get("run", {}).get("tables") or run.tables
+
+
 def export_missing(run, path, log=print):
-    """Exports the run's checkpoint behind a missing export `path` (``exports/<name>.ts.pt``); True
-    when it now exists."""
+    """Exports the run's checkpoint behind an export `path` (``exports/<name>.ts.pt``) that is missing
+    or not of the run's tables (an export is built for one vocab and tables, docs/featurizer.md §6.2:
+    after ``rmtrain retable`` it is rebuilt from its checkpoint); True when it now exists and is current."""
+    if os.path.exists(path):
+        why = export_stale(run, path)
+        if why is None:
+            return True
+        log("rebuilding %s: %s" % (path, why))
     if os.path.dirname(path) != os.path.abspath(run.exports) or not path.endswith(".ts.pt"):
         return False
     ck = checkpoint_of(run, os.path.basename(path)[:-len(".ts.pt")])
     if ck is None:
         return False
-    tables = (read_json(run.config) or {}).get("run", {}).get("tables") or run.tables
+    tables = run_tables(run)
     argv = [sys.executable, "-m", "rmlearn.orchestrator.exporter", "--tables", tables, "--checkpoint", ck,
             "--prefix", path[:-len(".ts.pt")], "--formats", "ts"]
     log("exporting %s from %s" % (path, ck))
@@ -100,7 +110,18 @@ def export_missing(run, path, log=print):
                        capture_output=True, text=True)
     if r.returncode != 0:
         log("export failed (exit %d): %s" % (r.returncode, r.stderr[-2000:]))
-    return os.path.exists(path)
+    return os.path.exists(path) and export_stale(run, path) is None
+
+
+def export_stale(run, path):
+    """None when the export `path` is of the run's tables, else why not (rmlearn.export.export_refusal)."""
+    from . import export as EX
+    from . import spec as S
+    try:
+        now = S.read_manifest(run_tables(run))
+    except ValueError as err:
+        return str(err)
+    return EX.export_refusal(path, now)
 
 
 def slug(label):
@@ -381,7 +402,7 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
     reports, records, sbs = {}, {}, {}
     for item in items:
         lab, path, opts = resolve_policy(run, item)
-        if not os.path.exists(path) and not export_missing(run, path, log):
+        if not export_missing(run, path, log):
             log("%s: no export %s; skipped" % (lab, path))
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,
