@@ -42,6 +42,14 @@ This plan is written to be executed in a session with no context beyond the repo
    `runs/pilotB-prep/m11-critic.pt`); their benchmarks are `runs/pilot{A,B}/bench/end/summary.md`,
    their chain log `runs/pilot-chain.log`. Every checkpoint under `runs/*/ckpt/` (fixed points, `*-final.pt`,
    `bc-*.pt`) plus `runs/pilotB-prep/m11-critic.pt` is migrated in S5 — none is to be lost.
+   **What the pilots' results carry over:** the refactor keeps a migrated model's behaviour on the
+   league decks (S5 verifies it), so the pilots' *training-recipe* conclusions apply to training
+   after it: the warm start, `rnad.reg_eps` / `reg_eps_sideboarding`, pair weighting, and whether
+   the omniscient critic earns its ~2× learner cost. The best pilot's migrated checkpoint is the
+   starting point of the first post-refactor run. What does not carry over: pair weights are per
+   deck and must be re-chosen when decks are added (S8); pilotB's critic pretraining read the old
+   B0 / DAgger episodes, which are not migrated, so after the cut-over a critic is carried in
+   migrated checkpoints or retrained from new omniscient episodes.
 4. **Workflow** (CLAUDE.md): a branch `refactor/open-vocab` off the starting branch; one stage at a
    time, each by one subagent told not to spawn agents; every stage ends with the stage's own
    acceptance checks and the gate tiers it touches run locally, then `make check` green in GitHub
@@ -107,7 +115,8 @@ Each stage lists what to change, then **acceptance** (all must hold before its c
 - Record the reference outputs the later stages must reproduce: pick a fixed decision set (the
   replay corpus's dumps, `tests/corpus/*.rmlog` replayed with `--rmstate-dump`, plus 200 decisions
   from recent self-play episodes of the best run) and, for each checkpoint listed in §0.3, its logits
-  and values on that set under the current tables (fp32, CPU). Store them under
+  and values on that set under the current tables (fp32, CPU) — and, for a checkpoint with an
+  omniscient critic, its critic values on the dumps' omniscient frames. Store them under
   `tests/open_vocab/baseline/` with a manifest (checkpoint path, decision source, tables'
   `spec_hash`).
 - Note the current best policy from the benchmark summaries (`runs/*/bench/end/summary.md`): it is
@@ -257,7 +266,11 @@ and capacities only) beside `spec_hash` (exact identity, kept for logs and episo
   projection columns by column name), drop slots S1 removed (`lists`, `b_lists` columns, the two aux
   heads), zero reserved positions, set `card_seen` from the ids whose `card_id` row differs from its
   initialisation (or from the run's episodes when available), zero never-seen rows. The migration
-  needs the old tables (each run's `tables/`) and the old spec to read names from.
+  needs the old tables (each run's `tables/`) and the old spec to read names from. **The omniscient
+  critic** (`model.critic`, present in pilotB's checkpoints and `runs/pilotB-prep/m11-critic.pt`)
+  has its own `Encoder` and so its own `num_proj` / `type_emb` / `cat_emb`: remap those the same
+  way, and include critic values (on the decisions' omniscient frames) in S0's fixtures and the
+  acceptance test.
 - **Acceptance test** (a new check in the gate's `featurize` tier; `actor` when opt-in): (a) S0's
   fixtures: each migrated checkpoint on the new layout gives the fixture outputs, except for the
   effect of S1's removed inputs — so the comparison is against the old checkpoint run with the
