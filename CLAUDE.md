@@ -128,10 +128,13 @@ background** and make the live output inspectable by the user:
 ## Testing guidelines
 
 - **The standard gate is `make check`**: the build, then every tier of the C++ gate
-  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). CI
-  on GitHub runs exactly it on every push, so Claude does not run the full `make check` before
-  committing or pushing unless the user asks; run the tiers a change touches instead (`--tier`,
-  `--scenario`). Tiers, in order (`--tier a,b` runs a subset;
+  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). When
+  working through a task's stages, Claude runs `make check` locally and has it green before each
+  stage's commit (no training run may be active: the gate builds and runs the debug engine only, but
+  it competes for the CPU). GitHub CI runs exactly the same gate on pushes to `main` and pull
+  requests; it is the fallback only when the user says "commit and push" and `make check` has not
+  been run locally for those changes — then push without running it and let CI check. Tiers, in
+  order (`--tier a,b` runs a subset;
   details, runtimes and reproducing a CI failure in [`docs/ci.md`](docs/ci.md)):
 
   | Tier | Checks |

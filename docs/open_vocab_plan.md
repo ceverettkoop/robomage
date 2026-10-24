@@ -57,8 +57,8 @@ This plan is written to be executed in a session with no context beyond the repo
    migrated checkpoints or retrained from new omniscient episodes.
 4. **Workflow** (CLAUDE.md): a branch `refactor/open-vocab` off the starting branch; one stage at a
    time, each by one subagent told not to spawn agents; every stage ends with the stage's own
-   acceptance checks and the gate tiers it touches run locally, then `make check` green in GitHub
-   CI after the push (the full gate runs locally only when the user asks); one commit per stage
+   acceptance checks and `make check` green locally before its commit (CLAUDE.md; GitHub CI is
+   only the fallback for a "commit and push" with no local run); one commit per stage
    (or per coherent sub-step). Long
    commands run in the background with their output path stated. `DO NOT MODIFY CARD SCRIPTS`; no
    retagging of script parameters.
