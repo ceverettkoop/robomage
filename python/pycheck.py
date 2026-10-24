@@ -771,7 +771,8 @@ def _table_fails(kind, arrays, want, spec):
         fails.append("featurize: the card table's back_face is not one entry per card row")
     if kind == "ability":
         keys = arrays["key_rows"]
-        if keys.columns != spec["ab_keys"] or any(not 0 <= r < want["rows"] for r in keys.values):
+        if keys.columns != spec["ab_keys"] or keys.values != spec["ab_key_rows"] or \
+                any(not want["key_base"] <= r < want["rows"] for r in keys.values):
             fails.append("featurize: the ability table's key_rows are not the spec's keys within its rows")
     if kind == "part":
         rows = spec["card_tables"]["ability"]["rows"]
@@ -789,15 +790,16 @@ def _tensor_fails(arrays, spec):
             fails.append(f"featurize: {name} has shape {arrays[name].shape}, width {w} in the spec")
     if fails:
         return fails
-    types = spec["token_types"]
-    menu = next(i for i, t in enumerate(types) if t["name"] == spec["menu"])
+    type_ids = {t["id"] for t in spec["token_types"]}
+    rel_ids = {r["id"] for r in spec["relation_types"]}
+    menu = next(t["id"] for t in spec["token_types"] if t["name"] == spec["menu"])
     cards, abilities = spec["card_tables"]["card"]["rows"], spec["card_tables"]["ability"]["rows"]
     tok_off, rel_off, act_off = (arrays[n + "_offsets"].values for n in ("tok_type", "rel", "act_tok"))
     for name in ("tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask"):
         if arrays[name + "_offsets"].values != tok_off:
             fails.append(f"featurize: {name}_offsets differ from tok_type_offsets")
     tt, rel, act = arrays["tok_type"].values, arrays["rel"].values, arrays["act_tok"].values
-    if any(not 0 <= t < len(types) for t in tt):
+    if any(t not in type_ids for t in tt):
         fails.append("featurize: a tok_type is no token type")
     if any(not -1 <= c < cards for c in arrays["tok_card"].values):
         fails.append("featurize: a tok_card is no card row")
@@ -809,7 +811,7 @@ def _tensor_fails(arrays, spec):
         n = tok_off[d + 1] - tok_off[d]
         for r in range(rel_off[d], rel_off[d + 1]):
             src, dst, ty = rel[3 * r:3 * r + 3]
-            if not (0 <= src < n and 0 <= dst < n and 0 <= ty < len(spec["relation_types"])):
+            if not (0 <= src < n and 0 <= dst < n and ty in rel_ids):
                 fails.append(f"featurize: decision {d}: a relation outside its tokens")
                 break
         for a in act[act_off[d]:act_off[d + 1]]:

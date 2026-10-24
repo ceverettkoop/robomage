@@ -10,8 +10,9 @@
 ``tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok, act_mask``.
 
 **Architecture.** A token is the sum of
-- its numeric slots through one linear map over the spec's (token type, slot) pairs (each type's
-  slots scattered into their own columns, so the map is per type without a per-token weight gather);
+- its numeric slots through one linear map over the spec's ``G`` columns (each type's slots scattered
+  into its own block of the layout registry, so the map is per type without a per-token weight
+  gather);
 - its type's embedding and the sum of its categorical slots' embeddings (one table over the global
   categorical id space, id 0 the pad);
 - per card slot the card's row (frozen card-table and text-table rows projected, plus a learned
@@ -195,11 +196,8 @@ class TokenEmbed(nn.Module):
 
     def __init__(self, spec, d: int):
         super().__init__()
-        counts = spec.numeric_counts()
-        offsets = [0]
-        for c in counts[:-1]:
-            offsets.append(offsets[-1] + c)
-        self.G = sum(counts)
+        offsets, counts = spec.numeric_layout()
+        self.G = int(spec.G)
         self.F = spec.F
         self.cat_size = int(spec.categorical_size)
         self.register_buffer("num_offset", torch.tensor(offsets, dtype=torch.int64), persistent=False)

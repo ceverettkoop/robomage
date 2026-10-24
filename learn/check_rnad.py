@@ -513,11 +513,14 @@ def check_projection(work):
 # ── fabricated tables, tokens and games through a real RMNet ─────────────────────────────────
 
 def fake_tables(n_cards=12, seed=0):
-    doc = {"vocab_hash": "00000000000000aa", "F": 2, "C": 2, "K": 1, "Q": 1, "categorical_size": 24,
-           "token_types": [{"name": "player", "id": 0, "numeric": [{"name": "x"}, {"name": "y"}]},
-                           {"name": "menu", "id": 1, "numeric": [{"name": "z"}]}],
-           "relation_types": [["menu", "player", "of"]], "menu": "menu", "library_depth": 2,
-           "card_tables": {"card": {"rows": n_cards + 1}}}
+    doc = {"vocab_hash": "00000000000000aa", "layout_hash": "00000000000000bb", "F": 2, "C": 2, "K": 1, "Q": 1,
+           "G": 3, "categorical_size": 24, "type_capacity": 2, "relation_capacity": 1,
+           "token_types": [{"name": "player", "id": 0, "num_at": 0, "num_capacity": 2,
+                            "numeric": [{"name": "x", "at": 0}, {"name": "y", "at": 1}]},
+                           {"name": "menu", "id": 1, "num_at": 2, "num_capacity": 1,
+                            "numeric": [{"name": "z", "at": 0}]}],
+           "relation_types": [{"id": 0, "table": "menu", "column": "player", "target": "of"}], "menu": "menu",
+           "library_depth": 2, "card_tables": {"card": {"rows": n_cards + 1}}}
     spec = S.Spec(json.dumps(doc).encode())
     rng = np.random.RandomState(seed)
     f32 = lambda a: np.ascontiguousarray(a, np.float32)  # noqa: E731

@@ -32,7 +32,7 @@ if _HERE not in sys.path:
 import rmtb  # noqa: E402
 
 KIND = "episode"
-VERSION = 2
+VERSION = 3
 VIEWER_OMNISCIENT = 2
 TENSORS = ("tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask", "rel", "act_tok", "act_mask")
 

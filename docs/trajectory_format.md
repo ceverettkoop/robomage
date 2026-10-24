@@ -151,8 +151,9 @@ In this order; integers unless marked as strings.
 
 | Attr | Meaning |
 |---|---|
-| `episode_version` | 2 (version 1 also had the `opp_list` / `opp_archetype` targets, `open_vocab_plan.md` S1) |
-| `F`, `C`, `K`, `Q` | the spec's widths of `tok_num`, `tok_cat`, `tok_card`, `tok_ability` |
+| `episode_version` | 3 (version 2 was of the layout before the layout registry, `open_vocab_plan.md` S2, and had no `layout_hash`; version 1 also had the `opp_list` / `opp_archetype` targets, S1) |
+| `layout_hash` (string) | the spec's `layout_hash` (16 hex digits, `docs/featurizer.md` §6.1): the layout the tensors are in, the same whatever cards or entries were appended to it |
+| `F`, `C`, `K`, `Q` | the spec's widths of `tok_num`, `tok_cat`, `tok_card`, `tok_ability` (the layout registry's) |
 | `menu_type` | the spec's token type of `menu` rows (`act_tok` is rebuilt from it, §3.3) |
 | `omniscient` | 1 when the omniscient arrays are present |
 | `format` (string) | `bo1` or `bo3` |
@@ -181,7 +182,7 @@ In this order; integers unless marked as strings.
 
 | Array | dtype | Shape | Contents |
 |---|---|---|---|
-| `type_widths` | i32 | `[T, 4]` | per token type its numeric, categorical, card and ability slots (columns `num`, `cat`, `card`, `ability`) |
+| `type_widths` | i32 | `[T, 4]` | per token type id (`T` = the highest id the spec uses + 1) its numeric block's capacity and the categorical, card and ability columns its slots use (the highest + 1; 0 for an id the spec does not use) (columns `num`, `cat`, `card`, `ability`) |
 | `seat` | u8 | `[D]` | the deciding seat: 0 = A, 1 = B (the state format's viewer) |
 | `game` | i32 | `[D]` | `header.game` (0-based; a sideboarding step's is the upcoming game) |
 | `decision` | i32 | `[D]` | `header.decision`: within the game from 1, or within the sideboarding phase from 1 |
@@ -198,7 +199,7 @@ In this order; integers unless marked as strings.
 | `tok_num_value` | f16 | `[nnz]` | the value (the featurizer's f32 rounded to nearest-even binary16; every f16 other than +0 is stored, −0 included) |
 | `tok_cat` | u16 or i32 | `[Σ cat widths]` | each token's first `type_widths[t].cat` categorical ids, tokens in order |
 | `tok_card` | i16 or i32 | `[Σ card widths]` | likewise its card slots (vocab ids, −1 none) |
-| `tok_ability` | i16 or i32 | `[Σ ability widths]` | likewise its ability slots (ability-table rows, −1 none) |
+| `tok_ability` | i16 or i32 | `[Σ ability widths]` | likewise its ability slots (ability-table rows, −1 none: stable addresses, card id × abilities_per_card + index or a key-band row, `docs/featurizer.md` §4.3, so a stored episode names the same abilities after cards are appended) |
 | `rel` | u16 or i32 | `[ΣR, 3]` | `(src token, dst token, relation type)`, token indices within the step |
 | `mu` | f32 | `[ΣA]` | μ over each step's menu rows (0s when `has_mu` is 0) |
 | `eval_policy` | i64 | `[D, P]` | per step each evaluated policy's id (−1 pad); present when some step has evaluations |

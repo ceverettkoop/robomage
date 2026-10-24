@@ -10,29 +10,33 @@
 
 namespace {
 
-// One feature column of a table row by the tag rules: column `col` under `transform`.
+// One feature column of a table row by the tag rules: column `col` under `transform`, written at
+// position `at`.
 struct StaticCol {
         int col = 0;
         featurize::Transform transform = featurize::Transform::BOOL;
         uint32_t arg = 0;
         rmstate::Storage storage = rmstate::Storage::U8;
-        std::string name;
+        uint32_t at = 0;
 };
 
-// A (card, face) child table's count columns: rows with value `arg` of column `col`.
+// A (card, face) child table's count columns: rows with value `arg` of column `col`, at `at`.
 struct CountCol {
         int col = 0;
         uint32_t arg = 0;
+        uint32_t at = 0;
 };
 
 const char *const FEATURES = "features";
 
 }  // namespace
 
-static std::vector<StaticCol> static_layout(
-    const rmstate::Schema &schema, const rmstate::TableDef &def, const std::set<std::string> &skip);
+static std::vector<StaticCol> static_layout(const rmstate::Schema &schema, const rmstate::TableDef &def,
+    const std::set<std::string> &skip, const std::string &table, featurize::Registry *reg);
 static void fill_static(const std::vector<rmstate::Value> &row, const std::vector<StaticCol> &layout, float *out);
-static std::vector<std::string> layout_names(const std::vector<StaticCol> &layout);
+static size_t table_width(
+    const featurize::Registry &reg, const std::string &table, const std::vector<StaticCol> &cols, uint32_t extra_at);
+static std::vector<std::string> table_names(const featurize::Registry &reg, const std::string &table, size_t width);
 static bool is_face_child(const rmstate::TableDef &def);
 static std::map<std::pair<uint64_t, uint64_t>, uint64_t> face_ids(
     const rmstate::TableDef &card, const std::vector<std::vector<rmstate::Value>> &rows, uint64_t card_rows);
@@ -66,12 +70,12 @@ static std::vector<size_t> sorted_rows(
     const std::vector<std::vector<rmstate::Value>> &rows, const std::vector<int> &by);
 static std::set<std::string> fixed_keys(
     const rmstate::Schema &schema, const std::vector<std::vector<rmstate::Value>> &ab, int key_col);
-static bool build_card_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::CardTables *out, std::string *err);
-static bool build_ability_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::CardTables *out, std::string *err);
-static bool build_part_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::CardTables *out, std::string *err);
+static bool build_card_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::Registry *reg,
+    featurize::CardTables *out, std::string *err);
+static bool build_ability_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards,
+    featurize::Registry *reg, featurize::CardTables *out, std::string *err);
+static bool build_part_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::Registry *reg,
+    featurize::CardTables *out, std::string *err);
 static bool read_array(
     const featurize::RmtbFile &f, const char *name, size_t rank, featurize::RmtbArray const **out, std::string *err);
 static bool read_features(const featurize::RmtbFile &f, std::vector<std::string> *columns, std::vector<float> *values,
@@ -79,11 +83,12 @@ static bool read_features(const featurize::RmtbFile &f, std::vector<std::string>
 static bool read_ints(
     const featurize::RmtbFile &f, const char *name, uint64_t rows, std::vector<int64_t> *out, std::string *err);
 
-// The feature columns of `def` by the tag rules (columns.h): a scalar one slot (an index also its
-// none flag), a mask one per bit, an enum one-hot; cards, text, handles, row: and seat-relative
-// columns, and the columns in `skip`, none.
-static std::vector<StaticCol> static_layout(
-    const rmstate::Schema &schema, const rmstate::TableDef &def, const std::set<std::string> &skip) {
+// The feature columns of `def` by the tag rules (columns.h), at their positions in table `table` of the
+// registry: a scalar one column (an index also its none flag), a mask one per bit and an enum one-hot,
+// each in its enum's block at the value's registry index; cards, text, handles, row: and
+// seat-relative columns, and the columns in `skip`, none.
+static std::vector<StaticCol> static_layout(const rmstate::Schema &schema, const rmstate::TableDef &def,
+    const std::set<std::string> &skip, const std::string &table, featurize::Registry *reg) {
     std::vector<StaticCol> out;
     for (size_t c = 0; c < def.columns.size(); ++c) {
         const rmstate::ColumnDef &col = def.columns[c];
@@ -93,20 +98,29 @@ static std::vector<StaticCol> static_layout(
         s.col = static_cast<int>(c);
         s.storage = col.storage;
         if (featurize::scalar_transform(tag.kind, &s.transform)) {
-            s.name = col.name;
-            out.push_back(s);
+            const int32_t at = reg->column_at(table, col.name, "scalar", "");
+            if (at >= 0) {
+                s.at = static_cast<uint32_t>(at);
+                out.push_back(s);
+            }
             if (tag.kind == featurize::TagKind::INDEX) {
+                const int32_t flag = reg->column_at(table, col.name + ":none", "scalar", "");
+                if (flag < 0) continue;
                 s.transform = featurize::Transform::NONE_FLAG;
-                s.name = col.name + ":none";
+                s.at = static_cast<uint32_t>(flag);
                 out.push_back(s);
             }
         } else if (tag.kind == featurize::TagKind::MASK || tag.kind == featurize::TagKind::ENUM) {
             const std::vector<std::string> &values = featurize::enum_values(schema, tag.arg);
             const bool mask = tag.kind == featurize::TagKind::MASK;
+            const std::vector<int32_t> map = reg->enum_map(tag.arg, values);
+            const int32_t start = reg->column_at(table, col.name, mask ? "mask" : "onehot", tag.arg);
+            if (start < 0) continue;
             s.transform = mask ? featurize::Transform::MASK_BIT : featurize::Transform::ONE_HOT;
             for (size_t v = 0; v < values.size(); ++v) {
+                if (map[v] < 0) continue;
                 s.arg = static_cast<uint32_t>(v);
-                s.name = col.name + (mask ? ":" : "=") + values[v];
+                s.at = static_cast<uint32_t>(start + map[v]);
                 out.push_back(s);
             }
         }
@@ -115,16 +129,24 @@ static std::vector<StaticCol> static_layout(
 }
 
 static void fill_static(const std::vector<rmstate::Value> &row, const std::vector<StaticCol> &layout, float *out) {
-    for (size_t i = 0; i < layout.size(); ++i) {
-        const StaticCol &s = layout[i];
-        out[i] = featurize::cell_value(s.transform, s.arg, row[static_cast<size_t>(s.col)], s.storage);
-    }
+    for (const StaticCol &s : layout)
+        out[s.at] = featurize::cell_value(s.transform, s.arg, row[static_cast<size_t>(s.col)], s.storage);
 }
 
-static std::vector<std::string> layout_names(const std::vector<StaticCol> &layout) {
-    std::vector<std::string> out;
-    for (const StaticCol &s : layout) out.push_back(s.name);
-    return out;
+// A table's width: its registry capacity, or (a table an append just made) the columns it uses.
+static size_t table_width(
+    const featurize::Registry &reg, const std::string &table, const std::vector<StaticCol> &cols, uint32_t extra_at) {
+    size_t width = reg.table_capacity(table);
+    for (const StaticCol &s : cols) width = std::max<size_t>(width, s.at + 1);
+    return std::max<size_t>(width, extra_at + 1);
+}
+
+// Every position's column name (Registry::column_names), `width` of them.
+static std::vector<std::string> table_names(const featurize::Registry &reg, const std::string &table, size_t width) {
+    std::vector<std::string> names = reg.column_names(table);
+    for (size_t i = names.size(); i < width; ++i) names.push_back("#" + std::to_string(i));
+    names.resize(width);
+    return names;
 }
 
 // A CARDS table other than `card` whose first two columns are a card and its face.
@@ -167,8 +189,8 @@ static std::set<std::string> fixed_keys(
     return keys;
 }
 
-static bool build_card_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::CardTables *out, std::string *err) {
+static bool build_card_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::Registry *reg,
+    featurize::CardTables *out, std::string *err) {
     const rmstate::TableDef *card = featurize::table_named(schema, "card");
     const rmstate::TableDef *ab = featurize::table_named(schema, "card_ability");
     if (!card || !ab) {
@@ -182,10 +204,10 @@ static bool build_card_rows(
         *err = "the card or card_ability table lacks card, face or face_card";
         return false;
     }
-    const std::vector<StaticCol> layout = static_layout(schema, *card, {});
+    const std::vector<StaticCol> layout = static_layout(schema, *card, {}, "card", reg);
     // The (card, face) child tables' count columns, in table order.
     std::vector<std::pair<const rmstate::TableDef *, std::vector<CountCol>>> children;
-    std::vector<std::string> names = layout_names(layout);
+    uint32_t last = 0;
     for (const rmstate::TableDef &def : schema.tables) {
         if (!is_face_child(def)) continue;
         std::vector<CountCol> counts;
@@ -193,19 +215,27 @@ static bool build_card_rows(
             const featurize::Tag tag = featurize::parse_tag(def.columns[c].tag);
             if (tag.kind != featurize::TagKind::ENUM) continue;
             const std::vector<std::string> &values = featurize::enum_values(schema, tag.arg);
-            for (size_t v = 0; v < values.size(); ++v) {
-                counts.push_back({static_cast<int>(c), static_cast<uint32_t>(v)});
-                names.push_back(def.name + "." + def.columns[c].name + "=" + values[v]);
-            }
+            const std::vector<int32_t> map = reg->enum_map(tag.arg, values);
+            const int32_t start = reg->column_at("card", def.name + "." + def.columns[c].name, "count", tag.arg);
+            if (start < 0) continue;
+            for (size_t v = 0; v < values.size(); ++v)
+                if (map[v] >= 0) {
+                    counts.push_back(
+                        {static_cast<int>(c), static_cast<uint32_t>(v), static_cast<uint32_t>(start + map[v])});
+                    last = std::max(last, counts.back().at);
+                }
         }
         children.emplace_back(&def, counts);
     }
-    const size_t n_abilities_col = names.size();
-    names.push_back("n_abilities");
-    const size_t present_col = names.size();
-    names.push_back("present");
-    const size_t width = names.size();
-    out->card_columns = names;
+    const int32_t n_abilities_col = reg->column_at("card", "n_abilities", "scalar", "");
+    const int32_t present_col = reg->column_at("card", "present", "scalar", "");
+    if (!reg->ok()) {
+        *err = featurize::registry_error(*reg);
+        return false;
+    }
+    const size_t width = table_width(
+        *reg, "card", layout, std::max(last, static_cast<uint32_t>(std::max(n_abilities_col, present_col))));
+    out->card_columns = table_names(*reg, "card", width);
     out->card.assign(out->card_rows * width, 0.0f);
     out->back_face.resize(out->card_rows);
     for (size_t c = 0; c < out->card_rows; ++c) out->back_face[c] = static_cast<int64_t>(c);
@@ -226,16 +256,14 @@ static bool build_card_rows(
         fill_static(row, layout, dst);
         dst[present_col] = 1.0f;
     }
-    size_t at = layout.size();
     for (const auto &child : children) {
         for (const std::vector<rmstate::Value> &row : rows_of(cards, child.first)) {
             auto it = face_of.find({row[0].bits, row[1].bits});
             if (it == face_of.end()) continue;
-            float *dst = &out->card[it->second * width + at];
-            for (size_t k = 0; k < child.second.size(); ++k)
-                if (row[static_cast<size_t>(child.second[k].col)].bits == child.second[k].arg) dst[k] += 1.0f;
+            float *dst = &out->card[it->second * width];
+            for (const CountCol &k : child.second)
+                if (row[static_cast<size_t>(k.col)].bits == k.arg) dst[k.at] += 1.0f;
         }
-        at += child.second.size();
     }
     std::vector<uint32_t> n_ab(out->card_rows, 0);
     for (const std::vector<rmstate::Value> &row : rows_of(cards, ab)) {
@@ -243,12 +271,13 @@ static bool build_card_rows(
         if (it != face_of.end()) ++n_ab[it->second];
     }
     for (size_t f = 0; f < out->card_rows; ++f)
-        if (n_ab[f]) out->card[f * width + n_abilities_col] = std::log1p(static_cast<float>(n_ab[f]));
+        if (n_ab[f])
+            out->card[f * width + static_cast<size_t>(n_abilities_col)] = std::log1p(static_cast<float>(n_ab[f]));
     return true;
 }
 
-static bool build_ability_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::CardTables *out, std::string *err) {
+static bool build_ability_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards,
+    featurize::Registry *reg, featurize::CardTables *out, std::string *err) {
     const rmstate::TableDef *ab = featurize::table_named(schema, "card_ability");
     const int a_card = featurize::column_index(*ab, "card"), a_index = featurize::column_index(*ab, "index"),
               a_key = featurize::column_index(*ab, "key");
@@ -256,34 +285,61 @@ static bool build_ability_rows(
         *err = "the card_ability table lacks index or key";
         return false;
     }
-    const std::vector<StaticCol> layout = static_layout(schema, *ab, {"card", "index"});
-    out->ability_columns = layout_names(layout);
-    out->ability_columns.push_back("keyed");
-    const size_t width = out->ability_columns.size();
+    const std::vector<StaticCol> layout = static_layout(schema, *ab, {"card", "index"}, "ability", reg);
+    const int32_t keyed_col = reg->column_at("ability", "keyed", "scalar", "");
     const std::vector<std::vector<rmstate::Value>> &rows = rows_of(cards, ab);
-    std::map<std::string, size_t> first_with_key;
+    // The fixed keys by their row in the key band.
+    std::vector<std::pair<int32_t, std::string>> keys;
+    for (const std::string &key : fixed_keys(schema, rows, a_key)) {
+        const int32_t r = reg->key_row(key);
+        if (r >= 0) keys.push_back({r, key});
+    }
+    if (!reg->ok()) {
+        *err = featurize::registry_error(*reg);
+        return false;
+    }
+    std::sort(keys.begin(), keys.end());
+    const size_t width = table_width(*reg, "ability", layout, static_cast<uint32_t>(keyed_col));
+    out->ability_columns = table_names(*reg, "ability", width);
+    const uint64_t per = reg->dims.abilities_per_card;
+    out->abilities_per_card = static_cast<uint32_t>(per);
+    out->key_base = (out->card_rows - 1) * per;
+    uint64_t key_cap = reg->dims.ab_keys;
+    for (const auto &k : keys) key_cap = std::max<uint64_t>(key_cap, static_cast<uint64_t>(k.first) + 1);
+    const uint64_t total = out->key_base + key_cap;
+    out->ability.assign(total * width, 0.0f);
+    out->ability_card.assign(total, -1);
+    out->ability_index.assign(total, -1);
+    std::map<std::string, uint64_t> first_with_key;
     for (const size_t r : sorted_rows(rows, {a_card, a_index})) {
         const std::vector<rmstate::Value> &row = rows[r];
-        if (row[static_cast<size_t>(a_card)].bits >= out->card_rows - 1) continue;
-        out->ability_card.push_back(static_cast<int64_t>(row[static_cast<size_t>(a_card)].bits));
-        out->ability_index.push_back(static_cast<int64_t>(row[static_cast<size_t>(a_index)].bits));
-        out->ability.resize(out->ability.size() + width, 0.0f);
-        fill_static(row, layout, &out->ability[out->ability.size() - width]);
-        first_with_key.emplace(row[static_cast<size_t>(a_key)].text, out->ability_card.size() - 1);
+        const uint64_t card = row[static_cast<size_t>(a_card)].bits, index = row[static_cast<size_t>(a_index)].bits;
+        if (card >= out->card_rows - 1) continue;
+        if (index >= per) {
+            *err = "card " + std::to_string(card) + " has an ability of index " + std::to_string(index) +
+                   ": past the registry's abilities_per_card " + std::to_string(per) + " (a layout bump)";
+            return false;
+        }
+        const uint64_t at = card * per + index;
+        if (out->ability_card[at] >= 0) {
+            *err = "card " + std::to_string(card) + " has two abilities of index " + std::to_string(index);
+            return false;
+        }
+        out->ability_card[at] = static_cast<int64_t>(card);
+        out->ability_index[at] = static_cast<int64_t>(index);
+        fill_static(row, layout, &out->ability[at * width]);
+        first_with_key.emplace(row[static_cast<size_t>(a_key)].text, at);
     }
-    for (const std::string &key : fixed_keys(schema, rows, a_key)) {
-        const size_t r = out->ability_card.size();
-        out->ab_keys.push_back(key);
+    for (const auto &k : keys) {
+        const uint64_t r = out->key_base + static_cast<uint64_t>(k.first);
+        out->ab_keys.push_back(k.second);
         out->key_rows.push_back(static_cast<int64_t>(r));
-        out->ability_card.push_back(-1);
-        out->ability_index.push_back(-1);
-        out->ability.resize(out->ability.size() + width, 0.0f);
-        auto it = first_with_key.find(key);
+        auto it = first_with_key.find(k.second);
         if (it != first_with_key.end())
             std::copy(out->ability.begin() + static_cast<long>(it->second * width),
                 out->ability.begin() + static_cast<long>((it->second + 1) * width),
                 out->ability.begin() + static_cast<long>(r * width));
-        out->ability[r * width + width - 1] = 1.0f;
+        out->ability[r * width + static_cast<size_t>(keyed_col)] = 1.0f;
     }
     if (!out->build_index()) {
         *err = "a card's card_ability rows are not indices 0 … n-1";
@@ -292,8 +348,8 @@ static bool build_ability_rows(
     return true;
 }
 
-static bool build_part_rows(
-    const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::CardTables *out, std::string *err) {
+static bool build_part_rows(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, featurize::Registry *reg,
+    featurize::CardTables *out, std::string *err) {
     const rmstate::TableDef *part = featurize::table_named(schema, "card_ability_part");
     if (!part) {
         *err = "the schema has no card_ability_part table";
@@ -305,9 +361,13 @@ static bool build_part_rows(
         *err = "the card_ability_part table lacks card, ability or part";
         return false;
     }
-    const std::vector<StaticCol> layout = static_layout(schema, *part, {"card", "ability", "part"});
-    out->part_columns = layout_names(layout);
-    const size_t width = out->part_columns.size();
+    const std::vector<StaticCol> layout = static_layout(schema, *part, {"card", "ability", "part"}, "part", reg);
+    if (!reg->ok()) {
+        *err = featurize::registry_error(*reg);
+        return false;
+    }
+    const size_t width = table_width(*reg, "part", layout, 0);
+    out->part_columns = table_names(*reg, "part", width);
     const std::vector<std::vector<rmstate::Value>> &rows = rows_of(cards, part);
     for (const size_t r : sorted_rows(rows, {p_card, p_ability, p_part})) {
         const std::vector<rmstate::Value> &row = rows[r];
@@ -362,8 +422,9 @@ static bool read_ints(
 namespace featurize {
 
 int64_t CardTables::ability_row(uint64_t card, uint64_t index) const {
-    if (card >= first_ability.size() || first_ability[card] < 0) return -1;
-    return index < static_cast<uint64_t>(n_abilities[card]) ? first_ability[card] + static_cast<int64_t>(index) : -1;
+    if (card + 1 >= card_rows || index >= abilities_per_card) return -1;
+    const uint64_t r = card * abilities_per_card + index;
+    return r < ability_card.size() && ability_card[r] == static_cast<int64_t>(card) ? static_cast<int64_t>(r) : -1;
 }
 
 const PrintedRows *CardTables::printed_rows(const std::string &table) const {
@@ -412,29 +473,44 @@ void build_printed_rows(const rmstate::Schema &schema, const rmstate::DecodedFra
 }
 
 int64_t CardTables::key_row(const std::string &key) const {
-    auto it = std::lower_bound(ab_keys.begin(), ab_keys.end(), key);
-    if (it == ab_keys.end() || *it != key) return -1;
-    return key_rows[static_cast<size_t>(it - ab_keys.begin())];
+    auto it = key_index.find(key);
+    return it == key_index.end() ? -1 : it->second;
 }
 
 bool CardTables::build_index() {
-    first_ability.assign(card_rows, -1);
-    n_abilities.assign(card_rows, 0);
+    key_index.clear();
+    if (abilities_per_card == 0 || key_base != (card_rows - 1) * abilities_per_card || ability_card.size() < key_base ||
+        ability_index.size() != ability_card.size() || key_rows.size() != ab_keys.size())
+        return false;
+    std::vector<int64_t> next(card_rows, 0);
     for (size_t r = 0; r < ability_card.size(); ++r) {
         const int64_t c = ability_card[r];
-        if (c < 0) continue;
-        if (static_cast<uint64_t>(c) >= card_rows) return false;
+        if (c < 0) {
+            if (ability_index[r] != -1) return false;
+            continue;
+        }
         const size_t ci = static_cast<size_t>(c);
-        if (first_ability[ci] < 0) first_ability[ci] = static_cast<int64_t>(r);
-        if (first_ability[ci] + n_abilities[ci] != static_cast<int64_t>(r) || ability_index[r] != n_abilities[ci])
+        if (r >= key_base || ci + 1 >= card_rows || ability_index[r] != next[ci] ||
+            r != ci * abilities_per_card + static_cast<size_t>(ability_index[r]))
             return false;
-        ++n_abilities[ci];
+        ++next[ci];
     }
-    return std::is_sorted(ab_keys.begin(), ab_keys.end()) && key_rows.size() == ab_keys.size();
+    for (size_t k = 0; k < ab_keys.size(); ++k) {
+        if (key_rows[k] < static_cast<int64_t>(key_base) || key_rows[k] >= static_cast<int64_t>(ability_card.size()) ||
+            !key_index.emplace(ab_keys[k], key_rows[k]).second)
+            return false;
+    }
+    return true;
 }
 
 bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, uint64_t card_rows,
     uint64_t vocab_hash, CardTables *out, std::string *err) {
+    Registry registry = builtin_registry();
+    return build_card_tables(schema, cards, card_rows, vocab_hash, &registry, out, err);
+}
+
+bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFrame &cards, uint64_t card_rows,
+    uint64_t vocab_hash, Registry *registry, CardTables *out, std::string *err) {
     *out = CardTables();
     out->vocab_hash = vocab_hash;
     out->card_rows = card_rows;
@@ -442,8 +518,12 @@ bool build_card_tables(const rmstate::Schema &schema, const rmstate::DecodedFram
         *err = "the card tables need at least one card row and the none row";
         return false;
     }
-    if (!build_card_rows(schema, cards, out, err) || !build_ability_rows(schema, cards, out, err) ||
-        !build_part_rows(schema, cards, out, err))
+    if (!registry->ok()) {
+        *err = registry_error(*registry);
+        return false;
+    }
+    if (!build_card_rows(schema, cards, registry, out, err) || !build_ability_rows(schema, cards, registry, out, err) ||
+        !build_part_rows(schema, cards, registry, out, err))
         return false;
     build_printed_rows(schema, cards, out);
     return true;
@@ -469,6 +549,8 @@ CardTableFiles card_table_files(const CardTables &t, uint64_t spec_hash) {
     f.ability.arrays.push_back(rmtb_ints("ab_index", Dtype::I64, {t.ability_rows()}, t.ability_index));
     f.ability.arrays.push_back(rmtb_ints("key_rows", Dtype::I64, {t.key_rows.size()}, t.key_rows));
     f.ability.arrays.back().columns = t.ab_keys;
+    f.ability.set_attr("abilities_per_card", static_cast<int64_t>(t.abilities_per_card));
+    f.ability.set_attr("key_base", static_cast<int64_t>(t.key_base));
     f.part.arrays.push_back(rmtb_floats(FEATURES, Dtype::F32, {t.part_rows(), t.part_columns.size()}, t.part));
     f.part.arrays.back().columns = t.part_columns;
     f.part.arrays.push_back(rmtb_ints("ability", Dtype::I64, {t.part_rows()}, t.part_ability));
@@ -500,6 +582,13 @@ bool read_card_tables(const CardTableFiles &files, CardTables *out, std::string 
         !read_ints(files.part, "ability", part_rows, &out->part_ability, err))
         return false;
     out->ab_keys = keys->columns;
+    const RmtbAttr *per = files.ability.attr("abilities_per_card"), *base = files.ability.attr("key_base");
+    if (!per || !per->is_int || !base || !base->is_int || per->i < 0 || base->i < 0) {
+        *err = "the ability file has no abilities_per_card and key_base attributes";
+        return false;
+    }
+    out->abilities_per_card = static_cast<uint32_t>(per->i);
+    out->key_base = static_cast<uint64_t>(base->i);
     if (out->ab_keys.size() != out->key_rows.size() || !out->build_index()) {
         *err = "the ability file's rows and keys do not form an index";
         return false;

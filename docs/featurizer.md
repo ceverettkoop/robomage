@@ -53,26 +53,30 @@ over every decision concatenated along the first dimension and `<tensor>_offsets
 
 | Tensor | Shape | dtype | Contents |
 |---|---|---|---|
-| `tok_type` | `[N]` | i64 | token type: the table's index in the spec's token-type list |
-| `tok_num` | `[N, F]` | f32 | numeric features, laid out per token type (§3.2); unused slots 0 |
-| `tok_cat` | `[N, C]` | i64 | categorical ids in one global id space (§3.2); unused slots 0 (the pad id) |
+| `tok_type` | `[N]` | i64 | token type: its id in the layout registry (§6.1) |
+| `tok_num` | `[N, F]` | f32 | numeric features, each slot at its registry column within its type (§3.2); unused and reserved columns 0 |
+| `tok_cat` | `[N, C]` | i64 | categorical ids in one global id space (§3.2), each slot at its registry column; unused columns 0 (the pad id) |
 | `tok_card` | `[N, K]` | i64 | vocab ids of the row's card columns, row indices into the card tables; `-1` none |
-| `tok_ability` | `[N, Q]` | i64 | ability-table rows of the row's ability references (§3.3); `-1` none |
+| `tok_ability` | `[N, Q]` | i64 | ability-table rows of the row's ability references (§3.3, stable rows §4.3); `-1` none |
 | `tok_mask` | `[N]` | bool | real token (false = padding) |
 | `rel` | `[R, 3]` | i64 | relations `(src token, dst token, relation type)` (§3.3) |
 | `act_tok` | `[A]` | i64 | the token of menu row `a` (menu row `a` = reply `a`) |
 | `act_mask` | `[A]` | bool | real menu row |
 
-`F`, `C`, `K`, `Q` are the maxima over token types, fixed by the spec. `N`, `R` and `A` vary per
-decision; padding is a runtime option of the batcher, never a format cap.
+`F`, `C`, `K`, `Q` are the layout registry's per-token capacities (§6.1), fixed by the layout, not
+by what today's schema uses. `N`, `R` and `A` vary per decision; padding is a runtime option of the
+batcher, never a format cap.
 
 ### 3.1 Token types
 
-Every `STATE` table with id 20-48 or 90-95 is a token type, in ascending table id, except
-`strings` and the tables a fold takes whole (§3.6: `own_deck`, `k_seen`, `k_known_hand`); a table's
+Every `STATE` table with id 20-48 or 90-95 is a token type, except `strings` and the tables a fold
+takes whole (§3.6: `own_deck`, `k_seen`, `k_known_hand`); so are the fold's synthetic type,
+`ledger`, and with the history option its two types (§3.7). A type's id (its `tok_type`) is its
+permanent position in the layout registry (§6.1), matched by name; tokens come in id order. Today's
+ids are the table types in ascending table id (0-31), `ledger` (32), `hist_event` and `hist_card`
+(33, 34); a type added later takes the next free id, whatever its table id. A table's
 rows are its tokens in frame order, except where a fold filters them (`k_pool_card`) or keeps only an
-object's differences from its card (`object_subtype`, `object_keyword`). The fold's synthetic type,
-`ledger`, follows. Single-row tables (`header`, `turn`, `pending`, `pending_cost`, `match`,
+object's differences from its card (`object_subtype`, `object_keyword`). Single-row tables (`header`, `turn`, `pending`, `pending_cost`, `match`,
 `k_meta`) are one token each, so global state is a few tokens rather than a special vector. Child
 tables (`object_keyword`, `object_counter`, `stack_target`, `k_pool_card`, …) are tokens of their
 own, related to their parent (§3.3).
@@ -85,17 +89,18 @@ own, related to their parent (§3.3).
 | `count` | one numeric slot, `log1p(x)` |
 | `signed` | one numeric slot, `sign(x)·log1p(|x|)` |
 | `index` (a position: `pos`, `order`, `_pos` of a libpos) | one numeric slot, `log1p(x)`, `-1` → slot 0 and the none flag below |
-| `mask:<e>` | one numeric slot per value of `e` (its string table's length) |
-| `enum:<e>` | one categorical slot: the id range of `e` (its `n` values take `n + 1` ids; the first is the cell's none: all ones or out of range) |
+| `mask:<e>` | a block of numeric slots of `e`'s capacity (§6.1): value `v` at the block's start plus `v`'s registry index |
+| `enum:<e>` | one categorical slot: the id range of `e`'s capacity (`c` values take `c + 1` ids; the first is the cell's none: all ones or out of range), value `v` at its registry index |
 | `player-rel` | one categorical slot (none, self, opponent); the absolute `enum:seat` beside it is dropped, so a model is seat-symmetric |
 | `card` | one `tok_card` slot |
 | `handle`, `row:<t>` | a relation (§3.3), no feature |
 | `text` | dropped, except the columns §3.4 hashes |
 
 A `card` or `index` column also gets a numeric none flag (1 at all ones); an enum's none is its
-slot's first id, and a `row:` column's is the missing relation. The global categorical id space is
-the concatenation of every (token type, categorical column) range, with id 0 the pad; one embedding
-table covers it. A composite is recognised by its column names: a seat pair `<n>` / `<n>_rel`, a
+slot's first id, and a `row:` column's is the missing relation. The global categorical id space
+holds every (token type, categorical column) range at its registry offset, with id 0 the pad and the
+ids past the last range reserved; one embedding table covers it. Enum values are matched by name,
+so the engine's string table may be reordered or grown without moving an id. A composite is recognised by its column names: a seat pair `<n>` / `<n>_rel`, a
 library position `<n>_anchor` / `<n>_pos` / `<n>_span` (each part by its tag) and an ability
 reference `ab_card`, `ab_index`, `ab_key` (§3.3).
 
@@ -106,7 +111,7 @@ reference `ab_card`, `ab_index`, `ab_key` (§3.3).
   object is an `object` row too).
 - **Handle columns** (`obj`, `source`, `target`, `attached_to`, `attacker`, `blocker`, `for`, …)
   give a relation from the row's token to the token owning that handle, typed by
-  `(table, column)`; so does an owning table's own `handle` column when another table wins the
+  `(table, column)` (a relation type's id is its registry position, §6.1); so does an owning table's own `handle` column when another table wins the
   handle (a `stack` row relates to its `object` row). A handle no token owns gives no relation (it
   names an object the viewer cannot identify).
 - **`row:<t>` columns** give a relation to row `v` of table `t`'s tokens (`k_pool_card.pool`,
@@ -294,8 +299,11 @@ One row per **face vocab id**: the `card` row whose `face_card` is that id (a fr
 - a `present` slot (0 for an id with no card).
 
 Columns are named `<col>`, `<col>:<VALUE>` (a mask bit), `<col>=<VALUE>` (one-hot) and
-`<table>.<col>=<VALUE>` (a child count), in that order. Row `N_CARD_TYPES` is the none row (all
-zeros): a `-1` card slot reads it. The file also holds `back_face` (i64, a row per card id): a
+`<table>.<col>=<VALUE>` (a child count). Every column sits at its registry position (§6.1): an enum's
+one-hot, mask or child counts are a block of the enum's capacity (value `v` at the block's start plus
+`v`'s registry index), and the table's width is its registry capacity; a reserved column reads 0 and
+is named `<entry>#<i>` (a block's position past its registered values) or `#<position>` (past every
+entry). Row `N_CARD_TYPES` is the none row (all zeros): a `-1` card slot reads it. The file also holds `back_face` (i64, a row per card id): a
 physical card's back face's vocab id (itself when it has none, -1 for a back face with no id of its
 own), which gives `object.card`'s current-face slot (§3.4).
 
@@ -306,9 +314,13 @@ elsewhere and at the none row. Committed (§5).
 
 ### 4.3 Ability table `[Nab, Fa]` f32 and part table `[Npart, Fp]` f32
 
-- **Ability rows**: one per `card_ability` row of every vocab card, in `(card, index)` order,
-  then one per `ab_key` of the spec's fixed key list (abilities with no card row: granted or
-  engine-built). Columns: the row's by the tag rules (`face`, `ability_kind`, `category`, `timing`
+- **Ability rows** are stable addresses, never vocab positions: card id `c`'s ability of index `i`
+  is row `c × A + i` (`A` = the registry's `abilities_per_card`, 16; a card with more abilities is
+  refused, a layout bump), a row no ability has is all zeros, and the **key band** from
+  `key_base = N_CARD_TYPES × A` (16384) holds one row per `ab_key` of the spec's fixed key list
+  (abilities with no card row: granted or engine-built) at the key's registry row, capacity 256
+  (rows 16384-16639). Appending a card fills its own rows only, so a stored `tok_ability` keeps
+  naming the same ability whatever is appended to the vocab. The table is data (no parameters). Columns: the row's by the tag rules (`face`, `ability_kind`, `category`, `timing`
   one-hot; `tap`, `limit`; the structured parameters, `state_format.md` register 41: amount and
   its kind, power/toughness modifiers, target classes, target bounds; `n_parts`, `charm_num`) and
   `keyed` (1 for a key row).
@@ -316,17 +328,20 @@ elsewhere and at the none row. Committed (§5).
   abilities: `Equip`, `Cycling`, `Reconfigure:unattach`), plus the key forms Appendix A.1 gives
   engine-built definitions that the `SCHEMA` frame enumerates: `keyword:<k>` for each `keyword`
   value (keyword-derived triggers), `subtype_mana:<c>` for each `color` value (a land type's mana
-  ability) and `LandType`; sorted. A key row that is some card row's key has the features of the
-  first such row; the others only `keyed`. Keys an abref can carry outside the list (a granted
+  ability) and `LandType`; in key-row order. A key row that is some card row's key has the features
+  of the first such row in `(card, index)` order (a card appended at the next free id never becomes
+  it); the others only `keyed`. Keys an abref can carry outside the list (a granted
   trigger's `granted_trigger:<script>`, `enchant:<filter>`, the engine's delayed-trigger keys such
   as `return_from_exile:<n>`) are built during play from text no frame enumerates; they resolve to
   `-1`, and the hashed `ab_key` categorical (§3.4) still tells them apart.
 - **Part rows**: one per `card_ability_part` row (sub-abilities and modes), in `(card, ability,
   part)` order, with the same parameter columns, the part kind, depth and parent, and `ability`:
-  the ability row it belongs to (an i64 array of the file, not a feature).
+  the ability row it belongs to (an i64 array of the file, not a feature). Their order may shift
+  when a card is appended: they are pooled into their ability rows inside the tables and never
+  referenced by a token.
 - **The ability index** is in the ability file: `ab_card` and `ab_index` (i64, per row its card
-  and index; -1 for a key row) and `key_rows` (i64, per key its row; the array's `columns` are the
-  keys). The featurizer resolves `tok_ability` with it: the row of `(ab_card, ab_index)`, else of
+  and index; -1 for a key row or an unused row), `key_rows` (i64, per key its row; the array's
+  `columns` are the keys) and the attrs `abilities_per_card` and `key_base`. The featurizer resolves `tok_ability` with it: the row of `(ab_card, ab_index)`, else of
   `ab_key`, else `-1`.
 
 ### 4.4 Files: RMTB
@@ -350,7 +365,8 @@ pinned commit, `<repo>@<commit>`; an episode carries it too), `pooling` (`cls`, 
 `norm_version` (the text normalisation, §5) and `rows_meta` (per present row, ascending: `{"id":
 <vocab id>, "hash": <FNV-1a 64 of its normalised text, 16 hex digits>}`); `attrs`, an object of
 named strings and integers in the writer's order (a file kind's own header fields: an episode's,
-`docs/trajectory_format.md` §3.1); then `arrays`: one
+`docs/trajectory_format.md` §3.1; the ability table's `abilities_per_card` and `key_base`); then
+`arrays`: one
 `{"name", "dtype", "shape": [...], "offset"[, "columns": [...]]}` per array in file order (`shape`
 of any rank, `[]` a scalar; `offset` from the start of the data, the previous array's end rounded
 up to a multiple of 8; `columns`, optional, names the last dimension's entries). The same content
@@ -437,19 +453,78 @@ Readers: `src/featurize/rmtb.{h,cpp}` (C++, std only; also the writer and the f1
 
 ## 6. The spec and the network contract
 
-**`FEATURE_SPEC`** is a JSON document `rmfeat --spec` writes (`src/featurize/feature_spec.h`) from
-the whole-vocab cards file's `SCHEMA` frame and the card tables its `CARDS` frame gives (and that
-the actor builds in memory from the same inputs): the schema and vocab hashes; the hashed-text
-bucket count; the targets' library depth; `F`, `C`, `K`, `Q`; the global categorical size; the menu's token type; the token-type list, per
-type its numeric slots (name, source column, transform), categorical slots (name, source, id
-offset, size), card slots, ability slots and relation types; the relation types `(table, column,
-target)`; the §3.4 overrides; the §3.6 folds (per type its `kind`: `table`, `filtered`, `delta`
-with the `printed` table it compares with, `ledger`, `history`; a
-synthetic type's `table` is null); with the history option (§3.7), a final `history` key (the
-caps, the two types and the dropped columns); the card, text, ability and part tables' rows, widths and column
-names; the fixed key list. One line, its keys in a fixed order. Its `spec_hash` (FNV-1a 64 of the
-document bytes) is in every exported file and in a model. A JSON document rather than an RMSTATE
-frame, so consumers outside C++ read it with any JSON parser.
+**`FEATURE_SPEC`** (version 4) is a JSON document `rmfeat --spec` writes
+(`src/featurize/feature_spec.h`) from the whole-vocab cards file's `SCHEMA` frame, the card tables
+its `CARDS` frame gives and the layout registry (§6.1; the actor builds it in memory from the same
+inputs): the layout's version and `layout_hash`; the schema and vocab hashes; the hashed-text
+bucket count; the targets' library depth; the registry's dims `F`, `C`, `K`, `Q`, `G`, the
+categorical id space's size (`categorical_size`), `type_capacity` and `relation_capacity`; the menu's
+token type; the token-type list (the types the schema makes, by registry `id`), per type its
+numeric block in `G` (`num_at`, `num_capacity`) and its numeric slots (name, source column,
+transform, column `at`), categorical slots (name, source, `col`, id offset, size), card slots
+(`col`), ability slots (`col`) and relation types; the relation types `(table, column, target)` by
+registry id; `enums`, the registry's values of every enum a categorical or mask slot reads (value
+`i` is a slot's id `offset + 1 + i`); the §3.4 overrides; the §3.6 folds (per type its `kind`:
+`table`, `filtered`, `delta` with the `printed` table it compares with, `ledger`, `history`; a
+synthetic type's `table` is null); the card, text, ability and part tables' rows, widths and column
+names (every position, reserved ones included; the ability table with `abilities_per_card` and
+`key_base`); the fixed key list (`ab_keys`) and the keys' rows (`ab_key_rows`); with the history
+option (§3.7), a final `history` key (the caps, the two types and the dropped columns). One line,
+its keys in a fixed order. Its `spec_hash` (FNV-1a 64 of the document bytes: the exact identity) is
+in every exported file and in a model; `layout_hash` names the layout alone (§6.1). A JSON document
+rather than an RMSTATE frame, so consumers outside C++ read it with any JSON parser.
+
+### 6.1 The layout registry
+
+**The layout is the contract, the vocab is data** (`docs/open_vocab_plan.md` S2). Every position a
+network's parameters are indexed by is fixed by one committed, append-only file,
+`src/featurize/registry.json` (`src/featurize/registry.h`; compiled into every binary that
+featurizes, with `#embed`), rather than by a running offset over today's schema and vocab. Its
+sections, every entry matched by name:
+
+| Section | Gives | Capacity |
+|---|---|---|
+| `dims` | `F` 96 (numeric columns per token), `C` 12, `K` 6, `Q` 2 (categorical, card, ability columns per token), `G` 1408 (every type's numeric block side by side), `types` 64, `categorical` 6144 ids, `relations` 64, `ab_keys` 256, `abilities_per_card` 16, `hash_buckets` 256 | fixed |
+| `enums` | per enum a slot or column reads: its values (index = position) | closed enums (`face`, `seat`, `step`, `color`, `layer`, `day_night`, `lib_anchor`, `subtype` 518, `card_type`, `supertype`) their size; open ones max(8, the power of two ≥ 2n): `keyword` 128, `effect_kind` 256, `action_category` 128, … |
+| `token_types` | name → id, the type's numeric block (`num_at`, `num_capacity` ≤ F) | `types` |
+| `numeric` | per (type, slot) its column in the block; a mask an enum-capacity block | the type's `num_capacity`: the slots used rounded up to 8 with room for a quarter more (at least 8) |
+| `categorical` | per (type, slot) its `tok_cat` column and its id range (`offset`, `size`: an enum's capacity + 1, a player-rel's values + 1, a hashed column's buckets + 1) | `C` columns, `categorical` ids |
+| `cards`, `abilities` | per (type, slot) its `tok_card` / `tok_ability` column | `K`, `Q` |
+| `relations` | per (table, column, target) its relation type id | `relations` |
+| `tables`, `columns` | per card / ability / part table its width; per column its position (an enum's one-hot, mask or counts an enum-capacity block) | card 960, ability 448, part 448 |
+| `ab_keys` | per fixed ability key its row in the key band | `ab_keys` |
+
+Today's file was generated from the S1 layout in its order (so every slot keeps its order within its
+type, every relation type and key row its index, every enum value its index; only offsets and widths
+moved) and uses 856 of G's 1408 columns, 3902 of 6144 categorical ids, 38 of 64 relation types, 35
+of 64 type ids, 73 of 256 key rows, and the card, ability and part tables' 720, 340 and 320 columns.
+`build_spec` and `build_card_tables` place every slot, column and row at its registry position,
+leave reserved positions 0 (-1 for card and ability slots) and **fail**, naming the entry and `make
+registry`, on a value, column, slot, type, relation or key the registry lacks; past a capacity (an
+enum full, a type's block full, more than `abilities_per_card` abilities on a card, …) they fail
+naming the capacity: that is a layout bump. An entry the schema no longer makes is a hole that reads
+0; an engine enum may be reordered.
+
+- **`make registry`** (`rmfeat --registry-update FILE --cards CARDS`) appends what the engine's schema
+  and whole-vocab tables need at the next free positions (an enum value after its enum's last, a slot
+  at its type's end, a categorical range at the id space's end, a new type's block after the last,
+  with its capacity from its use), never moving an entry, then rebuilds; commit the file.
+- **The check** (the gate's `vocab` tier, `rmfeat --registry-check FILE --cards CARDS --base HEAD's`):
+  the file parses (no overlap, every position within its capacity) and is in its canonical form, is
+  the registry the binaries were built with, needs no `make registry`, and moves no entry of the
+  committed file (`git show HEAD:src/featurize/registry.json`) unless `layout_version` was raised.
+- **`layout_hash`** (FNV-1a 64 over `layout_version`, the dims, the tables' capacities, the card rows
+  and the targets' library depth; in the spec and every episode's attrs) is the same for every spec of
+  one layout whatever was appended to it; `spec_hash` stays the exact identity. A deliberate change
+  that is not an append (a capacity, a moved entry) raises `layout_version` by hand and is migrated
+  by name like the S5 cut-over (`docs/open_vocab_plan.md`).
+
+The gate's `featurize` tier tests the property (`tools/robomage_check/featurize_layout.h`): a card
+appended at the next free id and a fake keyword appended to the registry keep the `layout_hash`,
+every position and every existing card's, ability's and part's rows, and featurize every corpus
+decision to the same tensors; the keyword enum reordered (the fake keyword first, the frames' keyword
+columns shifted) gives the same positions, card table and tensors; a full enum, a card past
+`abilities_per_card` and a missing value are refused.
 
 **Network contract** (the step-5 actor; a policy in any framework follows the same tensors):
 
@@ -571,7 +646,10 @@ export and `rmserve` ones come with 5d):
 - deterministic: the same frames give identical tensors;
 - the folds lose nothing (§3.6): the deltas and the ledger read back to the frame's rows;
 - shapes and slot meanings agree with the spec; every `rel` and `act_tok` index is a real token;
-  every `tok_card` is `-1` or a card-table row, every `tok_ability` `-1` or an ability row;
+  every `tok_card` is `-1` or a card-table row, every `tok_ability` `-1` or an ability row; every
+  column no slot of the token's type uses is 0 (-1);
+- the layout registry's append-only property (§6.1): a card and a keyword appended, the keyword enum
+  reordered, the capacities refused;
 - invariant to row order where the format says order is meaningless: the engine's permutation
   self-check (a permuted hidden zone) gives the same frame bytes and so, under
   `--selfcheck-featurize`, the same tensors; and every token table but `menu` (whose row is the

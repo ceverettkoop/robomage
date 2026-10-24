@@ -102,12 +102,19 @@ static void fill_row(const featurize::FeatureSpec &spec, const featurize::CardTa
                 num[op.slot] = featurize::cell_value(featurize::Transform::INDEX, 0, v, op.storage);
                 num[op.flag] = featurize::cell_value(featurize::Transform::NONE_FLAG, 0, v, op.storage);
                 break;
-            case featurize::OpKind::MASK:
-                for (uint32_t b = 0; b < op.width && b < 64; ++b) num[op.slot + b] = (v.bits >> b) & 1u ? 1.0f : 0.0f;
+            case featurize::OpKind::MASK: {
+                const std::vector<int32_t> &map = spec.enum_maps[static_cast<size_t>(op.enum_map)];
+                for (uint32_t b = 0; b < op.width && b < 64; ++b)
+                    if ((v.bits >> b) & 1u && map[b] >= 0) num[op.slot + static_cast<uint32_t>(map[b])] = 1.0f;
                 break;
-            case featurize::OpKind::CATEGORICAL:
-                cat[op.slot] = op.offset + (v.bits < op.width ? static_cast<int64_t>(v.bits) + 1 : 0);
+            }
+            case featurize::OpKind::CATEGORICAL: {
+                int64_t index = v.bits < op.width ? static_cast<int64_t>(v.bits) : -1;
+                if (op.enum_map >= 0 && index >= 0)
+                    index = spec.enum_maps[static_cast<size_t>(op.enum_map)][static_cast<size_t>(index)];
+                cat[op.slot] = op.offset + (index >= 0 ? index + 1 : 0);
                 break;
+            }
             case featurize::OpKind::HASHED:
                 cat[op.slot] =
                     op.offset + (v.text.empty()
@@ -144,19 +151,20 @@ static void fill_row(const featurize::FeatureSpec &spec, const featurize::CardTa
     }
 }
 
-// A synthetic type's tokens: their numeric slots, player_rel and (the ledger) card.
+// A synthetic type's tokens: their numeric slots (the folds' values in slot order, each at its
+// column), player_rel and (the ledger) card.
 static void fill_synthetic(const featurize::FeatureSpec &spec, size_t type, const featurize::FoldedRows &folded,
     int64_t base, featurize::Tensors *out) {
     const featurize::TokenType &t = spec.types[type];
     const size_t width = t.numeric.size();
     for (size_t k = 0; k < folded.count[type]; ++k) {
         const size_t tok = static_cast<size_t>(base) + k;
-        std::copy(folded.num[type].begin() + static_cast<long>(k * width),
-            folded.num[type].begin() + static_cast<long>((k + 1) * width),
-            out->tok_num.begin() + static_cast<long>(tok * spec.F));
+        float *num = &out->tok_num[tok * spec.F];
+        for (size_t s = 0; s < width; ++s) num[t.numeric[s].at] = folded.num[type][k * width + s];
         const uint64_t rel = folded.rel[type][k];
-        out->tok_cat[tok * spec.C] = t.rel_offset + (rel < t.rel_values ? static_cast<int64_t>(rel) + 1 : 0);
-        if (!t.cards.empty()) out->tok_card[tok * spec.K] = folded.card[type][k];
+        out->tok_cat[tok * spec.C + t.rel_col] =
+            t.rel_offset + (rel < t.rel_values ? static_cast<int64_t>(rel) + 1 : 0);
+        if (!t.cards.empty()) out->tok_card[tok * spec.K + t.card_col] = folded.card[type][k];
     }
 }
 
@@ -330,6 +338,13 @@ bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const r
 bool featurize_traced(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
     const EventHistory *history, Tensors *out, std::vector<TokenSource> *sources, std::string *err) {
     return featurize_frame(spec, tables, state, history, out, sources, err);
+}
+
+bool same_tensors(const Tensors &a, const Tensors &b) {
+    return a.viewer == b.viewer && a.game == b.game && a.decision == b.decision && a.sideboarding == b.sideboarding &&
+           a.tok_type == b.tok_type && a.tok_num == b.tok_num && a.tok_cat == b.tok_cat && a.tok_card == b.tok_card &&
+           a.tok_ability == b.tok_ability && a.tok_mask == b.tok_mask && a.rel == b.rel && a.act_tok == b.act_tok &&
+           a.act_mask == b.act_mask;
 }
 
 RmtbFile tensors_file(const FeatureSpec &spec, const std::vector<Tensors> &list) {

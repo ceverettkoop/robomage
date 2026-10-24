@@ -113,8 +113,9 @@ class Policy(nn.Module):
         self.vocab_hash = hashes["vocab_hash"]
         self.text_model = hashes["text_model"]
         self.policy_version = hashes["policy_version"]
-        self.n_types = len(spec["token_types"])
-        self.n_rel = len(spec["relation_types"])
+        # Token type and relation type ids range over the layout registry's capacities.
+        self.n_types = spec["type_capacity"]
+        self.n_rel = spec["relation_capacity"]
         self.d = d
         self.F, self.C, self.K, self.Q = spec["F"], spec["C"], spec["K"], spec["Q"]
         # The tables' rows as the model reads them (fold): per card id its card-table and text-table
@@ -260,7 +261,7 @@ def pad_batch(batch, spec):
 def example_inputs(spec, card_rows, ability_rows, n_rel, b=2, n=16, r=24, a=8, seed=0):
     """Random inputs of the contract's shapes (for tracing and export)."""
     g = torch.Generator().manual_seed(seed)
-    T = len(spec["token_types"])
+    type_ids = torch.tensor([t["id"] for t in spec["token_types"]], dtype=torch.int64)
     tok_card = torch.randint(-1, card_rows - 1, (b, n, spec["K"]), generator=g)
     tok_ability = torch.randint(-1, ability_rows, (b, n, spec["Q"]), generator=g)
     tok_mask = torch.ones(b, n, dtype=torch.bool)
@@ -271,7 +272,7 @@ def example_inputs(spec, card_rows, ability_rows, n_rel, b=2, n=16, r=24, a=8, s
     rel_mask[:, r - 4:] = False
     act_mask = torch.ones(b, a, dtype=torch.bool)
     act_mask[:, a - 2:] = False
-    return (torch.randint(0, T, (b, n), generator=g), torch.randn(b, n, spec["F"], generator=g),
+    return (type_ids[torch.randint(0, len(type_ids), (b, n), generator=g)], torch.randn(b, n, spec["F"], generator=g),
             torch.randint(0, spec["categorical_size"], (b, n, spec["C"]), generator=g), tok_card, tok_ability,
             tok_mask, rel, rel_mask, torch.randint(0, n - 3, (b, a), generator=g), act_mask)
 

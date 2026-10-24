@@ -220,7 +220,7 @@ bool EpisodeWriter::compact(const Tensors &t, Tokens *out, std::string *err) con
         const TokenType &type = spec_.types[static_cast<size_t>(t.tok_type[i])];
         const std::ptrdiff_t at = static_cast<std::ptrdiff_t>(i);
         out->tok_type.push_back(t.tok_type[i]);
-        for (size_t k = i * spec_.F; k < i * spec_.F + type.numeric.size(); ++k) {
+        for (size_t k = i * spec_.F; k < i * spec_.F + type.num_capacity; ++k) {
             const uint16_t h = f32_to_f16(t.tok_num[k]);
             if (h == 0) continue;
             out->num_index.push_back(static_cast<int64_t>(k));
@@ -228,13 +228,13 @@ bool EpisodeWriter::compact(const Tensors &t, Tokens *out, std::string *err) con
         }
         out->cat.insert(out->cat.end(), t.tok_cat.begin() + at * static_cast<std::ptrdiff_t>(spec_.C),
             t.tok_cat.begin() + at * static_cast<std::ptrdiff_t>(spec_.C) +
-                static_cast<std::ptrdiff_t>(type.categorical.size()));
+                static_cast<std::ptrdiff_t>(type.cat_width));
         out->card.insert(out->card.end(), t.tok_card.begin() + at * static_cast<std::ptrdiff_t>(spec_.K),
             t.tok_card.begin() + at * static_cast<std::ptrdiff_t>(spec_.K) +
-                static_cast<std::ptrdiff_t>(type.cards.size()));
+                static_cast<std::ptrdiff_t>(type.card_width));
         out->ability.insert(out->ability.end(), t.tok_ability.begin() + at * static_cast<std::ptrdiff_t>(spec_.Q),
             t.tok_ability.begin() + at * static_cast<std::ptrdiff_t>(spec_.Q) +
-                static_cast<std::ptrdiff_t>(type.abilities.size()));
+                static_cast<std::ptrdiff_t>(type.ability_width));
     }
     out->rel = t.rel;
     out->num_offsets.push_back(static_cast<int64_t>(out->num_index.size()));
@@ -332,6 +332,7 @@ RmtbFile EpisodeWriter::file(const std::string &text_model, const std::vector<Rm
     f.spec_hash = spec_.hash;
     f.model = text_model;
     f.set_attr("episode_version", EPISODE_VERSION);
+    f.set_attr("layout_hash", hex16(spec_.layout_hash));
     f.set_attr("F", static_cast<int64_t>(spec_.F));
     f.set_attr("C", static_cast<int64_t>(spec_.C));
     f.set_attr("K", static_cast<int64_t>(spec_.K));
@@ -343,10 +344,10 @@ RmtbFile EpisodeWriter::file(const std::string &text_model, const std::vector<Rm
     const uint64_t d = seat_.size(), a = static_cast<uint64_t>(menu_offsets_.back());
     std::vector<int64_t> widths;
     for (const TokenType &t : spec_.types) {
-        widths.push_back(static_cast<int64_t>(t.numeric.size()));
-        widths.push_back(static_cast<int64_t>(t.categorical.size()));
-        widths.push_back(static_cast<int64_t>(t.cards.size()));
-        widths.push_back(static_cast<int64_t>(t.abilities.size()));
+        widths.push_back(static_cast<int64_t>(t.num_capacity));
+        widths.push_back(static_cast<int64_t>(t.cat_width));
+        widths.push_back(static_cast<int64_t>(t.card_width));
+        widths.push_back(static_cast<int64_t>(t.ability_width));
     }
     RmtbArray w = rmtb_ints("type_widths", Dtype::I32, {spec_.types.size(), 4}, widths);
     w.columns = {"num", "cat", "card", "ability"};

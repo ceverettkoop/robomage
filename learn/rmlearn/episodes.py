@@ -34,7 +34,7 @@ import numpy as np
 from . import rmtb
 
 KIND = "episode"
-VERSION = 2
+VERSION = 3
 PAD_MULTIPLE = 8
 INPUTS = ["tok_type", "tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask", "rel", "rel_mask", "act_tok",
           "act_mask"]

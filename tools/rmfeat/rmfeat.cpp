@@ -5,6 +5,8 @@
 //   rmfeat --featurize DUMP --viewer A|B|omniscient --out FILE --cards CARDS [--stats]
 //   rmfeat --targets DUMP --seat A|B --out FILE --cards CARDS
 //   rmfeat --stats DUMP --cards CARDS
+//   rmfeat --registry-update FILE --cards CARDS
+//   rmfeat --registry-check FILE --cards CARDS [--base FILE]
 //
 // Every mode also takes --text-table FILE (default bin/resources/embeddings/oracle_text.rmtb, else
 // resources/embeddings/oracle_text.rmtb: its row count is N_CARD_TYPES + 1 and its vocab_hash the
@@ -12,7 +14,16 @@
 // them; they must carry the spec's hash) and --history N (the spec's recent-event history tokens, at
 // most N events: docs/featurizer.md §3.7; a seat's frames are fed to its event history in order).
 // CARDS is robomage --cards-frame's file (SCHEMA, the whole-vocab CARDS frame), DUMP an
-// --rmstate-dump file.
+// --rmstate-dump file. --registry FILE lays the tables and the spec out by that layout registry
+// instead of the compiled-in one (src/featurize/registry.json, docs/featurizer.md §6.1).
+//
+// --registry-update (`make registry`) adds to the registry FILE (a fresh one when FILE does not
+// exist) every entry the cards file's schema and tables need that it lacks, at the next free
+// positions, and rewrites FILE when anything was added (REGISTRY lines name each); exit 1 past a
+// capacity. --registry-check (the gate's vocab tier) requires FILE to parse and be in its canonical
+// form, to be the registry this binary was built with, to need no entry the cards file's schema and
+// tables make, and, with --base (the committed registry), to move no entry of the base unless
+// layout_version was raised.
 //
 // --spec prints FEATURE_SPEC (one line of JSON). --export-tables writes OUTDIR/card.rmtb,
 // ability.rmtb, part.rmtb and spec.json and prints one RMFEAT line per file. --featurize writes one
@@ -32,6 +43,7 @@
 #include <vector>
 
 #include "../../src/featurize/featurizer.h"
+#include "../../src/featurize/registry.h"
 #include "../../src/featurize/rmtb.h"
 #include "../../src/featurize/setup.h"
 #include "../../src/featurize/targets.h"
@@ -46,6 +58,7 @@ struct Options {
         int viewer = -1;  // rmstate::Viewer
         std::string out, cards, text_table, tables;
         uint32_t history = 0;
+        std::string registry, registry_update, registry_check, base;
 };
 
 // Per token type rows, and the decisions' totals, for --stats.
@@ -72,6 +85,12 @@ static void count(const featurize::Tensors &t, Stats *s);
 static void print_stats(const featurize::FeatureSpec &spec, const Stats &s);
 static int run_featurize(const Options &opt, const featurize::Featurization &f, const std::string &dump, bool write);
 static int run_targets(const Options &opt, const featurize::Featurization &f);
+static bool read_text(const std::string &path, std::string *out);
+static bool write_text(const std::string &path, const std::string &text);
+static bool load_registry(const std::string &path, featurize::Registry *out);
+static bool append_pass(const Options &opt, featurize::Registry *reg);
+static int run_registry_update(const Options &opt);
+static int run_registry_check(const Options &opt);
 
 static int usage() {
     std::fprintf(stderr,
@@ -80,7 +99,9 @@ static int usage() {
         "       rmfeat --featurize DUMP --viewer A|B|omniscient --out FILE --cards CARDS [--stats]\n"
         "       rmfeat --targets DUMP --seat A|B --out FILE --cards CARDS\n"
         "       rmfeat --stats DUMP --cards CARDS\n"
-        "  (each also --text-table FILE and --history N; the featurizing modes --tables DIR)\n");
+        "       rmfeat --registry-update FILE --cards CARDS\n"
+        "       rmfeat --registry-check FILE --cards CARDS [--base FILE]\n"
+        "  (each also --text-table FILE, --registry FILE and --history N; the featurizing modes --tables DIR)\n");
     return 2;
 }
 
@@ -120,13 +141,22 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             opt->tables = argv[++i];
         } else if (a == "--history" && has1) {
             opt->history = static_cast<uint32_t>(std::strtoul(argv[++i], nullptr, 10));
+        } else if (a == "--registry" && has1) {
+            opt->registry = argv[++i];
+        } else if (a == "--registry-update" && has1) {
+            opt->registry_update = argv[++i];
+        } else if (a == "--registry-check" && has1) {
+            opt->registry_check = argv[++i];
+        } else if (a == "--base" && has1) {
+            opt->base = argv[++i];
         } else {
             return false;
         }
     }
     if (!opt->export_cards.empty()) opt->cards = opt->export_cards;
     const int modes = (opt->spec ? 1 : 0) + (opt->export_cards.empty() ? 0 : 1) + (opt->featurize.empty() ? 0 : 1) +
-                      (opt->targets.empty() ? 0 : 1) + (opt->stats_dump.empty() ? 0 : 1);
+                      (opt->targets.empty() ? 0 : 1) + (opt->stats_dump.empty() ? 0 : 1) +
+                      (opt->registry_update.empty() ? 0 : 1) + (opt->registry_check.empty() ? 0 : 1);
     if (modes != 1 || opt->cards.empty()) return false;
     if (!opt->featurize.empty() && (opt->viewer < 0 || (opt->out.empty() && !opt->stats))) return false;
     if (!opt->targets.empty() && (opt->viewer < 0 || opt->viewer > 1 || opt->out.empty())) return false;
@@ -149,6 +179,7 @@ static std::string text_table_path(const Options &opt) {
 static bool load(const Options &opt, featurize::Featurization *f) {
     std::string err;
     f->options.history_events = opt.history;
+    if (!opt.registry.empty() && !load_registry(opt.registry, &f->registry)) return false;
     if (f->load(opt.cards, text_table_path(opt), opt.tables, &err)) return true;
     std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
     return false;
@@ -264,9 +295,130 @@ static int run_targets(const Options &opt, const featurize::Featurization &f) {
     return 0;
 }
 
+static bool read_text(const std::string &path, std::string *out) {
+    FILE *f = std::fopen(path.c_str(), "rb");
+    if (!f) return false;
+    out->clear();
+    char buf[65536];
+    size_t n = 0;
+    while ((n = std::fread(buf, 1, sizeof buf, f)) > 0) out->append(buf, n);
+    std::fclose(f);
+    return true;
+}
+
+// `text` into `path` through a temporary file renamed into place.
+static bool write_text(const std::string &path, const std::string &text) {
+    const std::string tmp = path + ".tmp";
+    FILE *f = std::fopen(tmp.c_str(), "wb");
+    if (!f) return false;
+    const bool ok = std::fwrite(text.data(), 1, text.size(), f) == text.size();
+    if (std::fclose(f) != 0 || !ok) return false;
+    return std::rename(tmp.c_str(), path.c_str()) == 0;
+}
+
+static bool load_registry(const std::string &path, featurize::Registry *out) {
+    std::string text, err;
+    if (!read_text(path, &text)) {
+        std::fprintf(stderr, "rmfeat: cannot read %s\n", path.c_str());
+        return false;
+    }
+    if (featurize::Registry::parse(text, out, &err)) return true;
+    std::fprintf(stderr, "rmfeat: %s: %s\n", path.c_str(), err.c_str());
+    return false;
+}
+
+// The tables and a spec with the history types built over `reg` in append mode, so it gains every
+// entry the cards file makes; then the new types and tables placed. False (the problems printed)
+// past a capacity or on an error in the inputs.
+static bool append_pass(const Options &opt, featurize::Registry *reg) {
+    featurize::Featurization f;
+    f.options.history_events = 1;
+    f.registry = *reg;
+    f.registry.append = true;
+    std::string err;
+    const bool ok = f.load(opt.cards, text_table_path(opt), "", &err);
+    f.registry.finish();
+    for (const std::string &p : f.registry.problems) std::fprintf(stderr, "rmfeat: %s\n", p.c_str());
+    if (!ok && f.registry.problems.empty()) std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
+    if (!ok || !f.registry.ok()) return false;
+    *reg = f.registry;
+    return true;
+}
+
+static int run_registry_update(const Options &opt) {
+    featurize::Registry reg = featurize::Registry::fresh();
+    std::string before;
+    if (read_text(opt.registry_update, &before) && !load_registry(opt.registry_update, &reg)) return 2;
+    if (!append_pass(opt, &reg)) return 1;
+    for (const std::string &a : reg.added) std::printf("REGISTRY: added %s\n", a.c_str());
+    const std::string text = reg.json();
+    if (text == before) {
+        std::printf("REGISTRY: %s is current\n", opt.registry_update.c_str());
+        return 0;
+    }
+    if (!write_text(opt.registry_update, text)) {
+        std::fprintf(stderr, "rmfeat: cannot write %s\n", opt.registry_update.c_str());
+        return 2;
+    }
+    std::printf("REGISTRY: wrote %s (%zu entries added); rebuild (make) to compile it in\n",
+        opt.registry_update.c_str(), reg.added.size());
+    return 0;
+}
+
+static int run_registry_check(const Options &opt) {
+    std::string text;
+    featurize::Registry reg;
+    if (!read_text(opt.registry_check, &text) || !load_registry(opt.registry_check, &reg)) return 2;
+    std::vector<std::string> fails;
+    if (reg.json() != text)
+        fails.push_back(opt.registry_check + " is not in the canonical form `make registry` writes");
+    if (text != featurize::builtin_registry_text())
+        fails.push_back("this binary was built with another registry than " + opt.registry_check + " (rebuild: make)");
+    featurize::Registry grown = reg;
+    if (!append_pass(opt, &grown)) return 1;
+    for (const std::string &a : grown.added)
+        fails.push_back("the registry lacks " + a + " (run `make registry` and commit the file)");
+    for (const uint32_t history : {0u, 1u}) {
+        featurize::Featurization f;
+        f.options.history_events = history;
+        f.registry = reg;
+        std::string err;
+        if (grown.added.empty() && !f.load(opt.cards, text_table_path(opt), "", &err))
+            fails.push_back(
+                "the spec at the registry's positions" + std::string(history ? " (history)" : "") + ": " + err);
+        if (history == 0 && fails.empty())
+            std::printf(
+                "REGISTRY: layout_version %d, layout_hash %s, spec %s; %zu enums, %zu token types, %zu "
+                "numeric slots, %zu categorical slots, %zu relation types, %zu table columns, %zu keys\n",
+                reg.layout_version, featurize::hex16(f.spec.layout_hash).c_str(), featurize::hex16(f.spec.hash).c_str(),
+                reg.enums.size(), reg.types.size(), reg.numeric.size(), reg.categorical.size(), reg.relations.size(),
+                reg.columns.size(), reg.ab_keys.size());
+    }
+    if (!opt.base.empty()) {
+        featurize::Registry base;
+        if (!load_registry(opt.base, &base)) return 2;
+        if (base.layout_version > reg.layout_version) {
+            fails.push_back("layout_version " + std::to_string(reg.layout_version) + " is below the base's " +
+                            std::to_string(base.layout_version));
+        } else if (base.layout_version < reg.layout_version) {
+            std::printf("REGISTRY: layout bump %d -> %d against %s: entries may move (S5-style migration)\n",
+                base.layout_version, reg.layout_version, opt.base.c_str());
+        } else {
+            for (const std::string &m : featurize::registry_moves(base, reg))
+                fails.push_back("against " + opt.base + ": " + m + " (raise layout_version for a deliberate bump)");
+            if (fails.empty()) std::printf("REGISTRY: no entry of %s moved\n", opt.base.c_str());
+        }
+    }
+    for (const std::string &f : fails) std::printf("REGISTRY-FAIL: %s\n", f.c_str());
+    if (fails.empty()) std::printf("REGISTRY: %s ok\n", opt.registry_check.c_str());
+    return fails.empty() ? 0 : 1;
+}
+
 int main(int argc, char **argv) {
     Options opt;
     if (!parse_args(argc, argv, &opt)) return usage();
+    if (!opt.registry_update.empty()) return run_registry_update(opt);
+    if (!opt.registry_check.empty()) return run_registry_check(opt);
     featurize::Featurization f;
     if (!load(opt, &f)) return 2;
     if (opt.spec) {

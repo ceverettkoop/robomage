@@ -75,6 +75,9 @@ bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const r
 bool featurize_traced(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
     const EventHistory *history, Tensors *out, std::vector<TokenSource> *sources, std::string *err);
 
+// Whether two featurizations are the same decision's same tensors (every field and array equal).
+bool same_tensors(const Tensors &a, const Tensors &b);
+
 // The decisions as one RMTB tensors file, stamped with the spec's and vocab's hashes.
 RmtbFile tensors_file(const FeatureSpec &spec, const std::vector<Tensors> &list);
 

@@ -46,7 +46,8 @@ bool Featurization::build(const std::string &text_table_path, const std::string 
     }
     uint64_t want_spec = 0;
     if (tables_dir.empty()) {
-        if (!build_card_tables(source.schema, source.cards, vectors->shape[0], text.vocab_hash, &tables, err))
+        if (!build_card_tables(
+                source.schema, source.cards, vectors->shape[0], text.vocab_hash, &registry, &tables, err))
             return false;
     } else if (!read_tables_dir(tables_dir, &tables, &want_spec, err)) {
         return false;
@@ -60,7 +61,7 @@ bool Featurization::build(const std::string &text_table_path, const std::string 
     tables.text_rows = vectors->shape[0];
     tables.text_width = vectors->shape[1];
     text_model = text.model;
-    if (!build_spec(source.schema, tables, options, &spec, err)) return false;
+    if (!build_spec(source.schema, tables, options, &registry, &spec, err)) return false;
     if (!tables_dir.empty() && want_spec != spec.hash) {
         *err =
             tables_dir + ": the card tables carry spec hash " + hex16(want_spec) + ", the spec is " + hex16(spec.hash);

@@ -36,7 +36,6 @@ static const TierEntry TIERS[] = {
 };
 
 static std::string self_dir();
-static std::string find_python();
 static const TierEntry *find_tier(const std::string &name);
 static std::string all_tier_names();
 static void usage();
@@ -49,21 +48,6 @@ static std::string self_dir() {
     if (n <= 0) return ".";
     buf[n] = '\0';
     return rmcheck::dirname_of(buf);
-}
-
-// The interpreter for the smoke tier (the kept Python is stdlib only): the first python3 on $PATH,
-// else a system one.
-static std::string find_python() {
-    std::vector<std::string> dirs;
-    if (const char *path = std::getenv("PATH"))
-        for (const std::string &d : rmcheck::split(path, ':'))
-            if (!d.empty()) dirs.push_back(d);
-    for (const char *d : {"/usr/bin", "/usr/local/bin", "/bin"}) dirs.push_back(d);
-    for (const std::string &dir : dirs) {
-        const std::string p = dir + "/python3";
-        if (access(p.c_str(), X_OK) == 0) return p;
-    }
-    return "";
 }
 
 static const TierEntry *find_tier(const std::string &name) {
@@ -160,7 +144,8 @@ int gate_main(int argc, char **argv) {
     }
     opt.rmknow = rmcheck::path_join(rmcheck::dirname_of(opt.binary), "rmknow");
     opt.rmfeat = rmcheck::path_join(rmcheck::dirname_of(opt.binary), "rmfeat");
-    opt.python = find_python();
+    // The interpreter for the smoke tier (the kept Python is stdlib only).
+    opt.python = rmcheck::find_program("python3");
     std::vector<const TierEntry *> tiers;
     for (const std::string &name : rmcheck::split(tiers_arg, ',')) {
         const std::string t = rmcheck::trim(name);

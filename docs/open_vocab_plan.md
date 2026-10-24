@@ -291,6 +291,11 @@ permanent position with reserved capacity:
   128; closed enums such as seats or faces: their size). Matched by name, so an engine enum may be
   reordered without moving a column; a removed value leaves a hole that reads 0.
 - **Token types:** name → permanent index (capacity 64; 33 after S1).
+- **Relation types:** (table, column, target) → permanent id (capacity 64; 34 after S1, 38 with the
+  history types): `rel_bias` rows are indexed by them, and a running id would shift on any new
+  handle or `row:` column.
+- **Per-token slot columns:** per (type, slot) its `tok_cat` / `tok_card` / `tok_ability` column, and
+  `C`, `K`, `Q` fixed (`card_slot` / `ability_slot` are indexed by the card / ability column).
 - **Numeric slots per type:** name → permanent column within the type, per-type capacity (today's
   count rounded up to a multiple of 8, plus headroom); `G` becomes the sum of capacities.
 - **Categorical slots:** name → fixed offset and capacity; no running offset. Hashed slots
@@ -309,14 +314,115 @@ permanent position with reserved capacity:
 every slot, column and row at its registry position, zero-fill reserved positions, and **fail** on a
 value with no entry. `make registry` appends new entries (never moves one); the gate's `vocab` tier
 checks the file is current and that no entry moved since the last commit (diff against
-`git show HEAD:src/featurize/registry.json`). The spec gains `layout_hash` (FNV-1a over positions
-and capacities only) beside `spec_hash` (exact identity, kept for logs and episodes).
+`git show HEAD:src/featurize/registry.json`). The spec gains `layout_hash` (FNV-1a over the layout's
+version and capacities — not over the entries, which an append adds to; the append-only check keeps
+every existing entry in place, and a deliberate move raises the version) beside `spec_hash` (exact
+identity, kept for logs and episodes).
 
 - **Acceptance:** `make check` green; `rmfeat --spec` shows the registry layout; a synthetic
   test (a copy of the vocab with one card appended at the next free id and one fake keyword
   appended to the registry) produces the same `layout_hash`, the same token tensors for every
   decision of the corpus dumps that does not mention the new card or keyword, and the same ability
   row numbers for every existing (card, index).
+
+**Done** (one commit on `refactor/open-vocab`). The registry, `src/featurize/registry.{h,cpp,json}`
+(`docs/featurizer.md` §6.1 has the design; the file is compiled in with `#embed`), and everything
+above, plus what it implied:
+
+- **The registry.** Sections `dims`, `enums`, `token_types`, `numeric`, `categorical`, `cards`,
+  `abilities`, `relations`, `tables`, `columns`, `ab_keys`; every entry by name with an explicit
+  position; validated at parse (no overlap, within capacity), written canonically one entry per line.
+  Capacities: open enums max(8, the power of two ≥ 2n) (`keyword` 50 → 128, `effect_kind` 74 → 256,
+  `action_category` 48 → 128, `cast_variant` 12 → 32, `zone` 7 → 16, …); closed enums their size
+  (`face`, `seat`, `step`, `color`, `layer`, `day_night`, `lib_anchor`, `subtype` 518 and, deviating
+  from the "card types … open" reading, `card_type` 27 and `supertype` 6: they are Forge's whole
+  lists, like `subtype`). A type's numeric capacity: its slots (enum blocks at the enum's capacity)
+  rounded up to 8 with a quarter more, at least 8 (object 74 → 96, stack 53 → 72, player 46 → 64, menu
+  35 → 48, lki 39 → 56, the rest 8-24); `F` = 96 (the largest), `G` = 1408 (856 used, 1.5× rounded to
+  128); categorical ids 6144 (3902 used); `C` 12 (`hist_event` uses 8, `turn` 6), `K` 6 (object 4),
+  `Q` 2 (1); 64 type ids (35 used), 64 relation ids (38); tables card 960 (720 used), ability 448
+  (340), part 448 (320); `abilities_per_card` A = 16 (the vocab's most on one card is 5: ids 100,
+  262, 288, 298), key band 256 (73 used; 128 keyword keys alone could fill 2× 73).
+  `layout_version` 1, `layout_hash` `733819ee9e505abc`; FEATURE_SPEC version 3 → 4, spec hash
+  `94149a6fc75cbc8d` → `a56ad74e27244a25`. The bootstrap appended in S1's build order, so every name
+  keeps its order: today's file is S1's layout re-addressed.
+- **Tooling.** `make registry` (`rmfeat --registry-update`), `rmfeat --registry-check [--base]`
+  (the gate's `vocab` tier, `tools/robomage_check/registry_check.cpp`, against `git show HEAD:`),
+  `rmfeat --registry FILE` (any mode over another registry). The `featurize` tier's
+  `featurize_layout.cpp` is the synthetic acceptance test, kept in the gate: card 353 appended (a copy
+  of card 262's rows, 5 abilities) and `FakeKeyword` appended to the registry give the same
+  `layout_hash` and dims, every slot / range / relation / key / column in place (only the reserved
+  `card_keyword.kw#50` column renamed `card_keyword.kw=FakeKeyword`), every existing card, ability
+  and part row unchanged, card 353's abilities at rows 5648-5652, and every corpus decision (17262,
+  seat and omniscient) the same tensors; the keyword enum reordered (`FakeKeyword` inserted first, the
+  frames' keyword columns shifted) the same positions, card table and tensors (every third
+  decision); a full enum, a card past A and a value the registry lacks refused with messages naming
+  the cause. A deliberately moved keyword makes it fail (tried, reverted).
+- **Formats beside the spec.** Ability rows `card × 16 + index`, the key band at 16384-16639: the
+  ability table is `[16640, 448]` (29.8 MB f32; 533 × 114 before), its file carries attrs
+  `abilities_per_card` and `key_base`; part rows keep their order and point at the new rows. Episode
+  version 2 → 3 (attr `layout_hash` after `episode_version`; version-2 episodes are of the old
+  layout and refused; `src/featurize/episode.h`, `learn/rmlearn/episodes.py`, `python/rmtraj.py`).
+  The spec gains `layout_version`, `layout_hash`, `G`, `type_capacity`, `relation_capacity`, `enums`
+  (the registry's values per enum a slot reads), per type `num_at` / `num_capacity`, per slot `at` /
+  `col`, `ab_key_rows`, and the ability table's `abilities_per_card` / `key_base`; `token_types` lists
+  the types the spec uses by id (an unused id is ABSENT, `TypeKind::ABSENT`).
+- **Learner.** `rmlearn/spec.py` (`n_types` = `type_capacity`, `n_rel` = `relation_capacity`, `G`,
+  `numeric_layout()` per type id, `type_by_id`, `enum_values`, `layout_hash`), `model.py`'s
+  `TokenEmbed` scatters each type's slots into its registry block; `bc.Categories` reads the slot's
+  column and the names from the spec's `enums` (registry order) — `bc.category_names` and `bc.py
+  --cards` are gone; `tools/nn/make_reference_policy.py` and `learn/check_rnad.py`'s fabricated spec
+  follow; `python/pycheck.py` checks type and relation ids as sets and the key rows. `learn/check.py`,
+  `check_rnad.py`, `check_rmtrain.py` ok (`runs/open_vocab_s2/learn_check*.log`).
+- **Deviation:** the export's folded `token_table` is `(K × 1025 + Q × 16640 + 1) × d` f32 (≈ 30 MB at
+  d 192, 3.6 MB before) because each ability slot copies every ability row; a later change could keep
+  the slot vectors as separate bag rows. The GPU's ability projection is 16640 × 448 per step.
+- **Evidence.** `make check` green with every tier, the opt-in `actor` tier included (`make actor
+  PYTHON=learn/.venv/bin/python`, `ROBOMAGE_TORCH_PYTHON` the venv's python by an **absolute** path:
+  a relative one fails the tier's Python-server part, which execs it from another directory;
+  `runs/open_vocab_s2/make_check.log`). No game decision changed: no `.replay` baseline or CLI golden
+  changed, and agent games before / after on the same seeds (`runs/open_vocab_s1/agent_runs.sh`, the
+  pre-change binary in `runs/open_vocab_s2/before_bin/`): 158 decision logs byte-identical, the same
+  results. **Fixtures:** `runs/open_vocab_s2/fixture_check.py` featurizes all 8831 S0 fixture
+  decisions (seat and omniscient) with the S2 engine and finds them equal, every array, to S0's
+  `*_nolists` decisions mapped by name onto the registry (the map below, composed with S1's) — so S2
+  re-addressed the inputs and changed nothing else. **A real expansion:**
+  `runs/open_vocab_s2/vocab_append_check.py` against an engine built from a scratch copy of the tree
+  with Prodigal Sorcerer appended at id 353 (its script fetched into the copy only;
+  `runs/open_vocab_s2/vocab_append/`): the same `layout_hash` and spec document, the registry current
+  (no entry needed), only card row 353 and ability row 5648 new, every corpus game's dump byte-identical
+  and its 17262 decisions featurized to identical tensors. Past a capacity: `rmfeat --registry` with
+  `abilities_per_card` 4 refuses card 100, with `keyword` capacity 49 the registry is refused at parse.
+- **For S5: the S1 → S2 map** (all by name; both specs name every slot, S1's from a run's
+  `tables/spec.json`, S2's from `rmfeat --spec`; `fixture_check.py`'s `Mapping` is the template).
+  Token type ids unchanged (0-32; `hist_event` / `hist_card` 33 / 34). Relation type ids unchanged
+  (0-33, history 34-37), but `relation_capacity` is 64, so a layer's `rel_bias` `[2 n_rel, H]` maps
+  forward row r → r and reverse row `n_rel + r` → `64 + r` (`n_rel` 34, 38 with history). `tok_num`:
+  each type's slots keep their S1 index as their column except `stack` (from `copy`, S1 slot 19, +20:
+  `variant` is a 32-wide block, was 12) and `menu` (from `card_public`, slot 14, +20, the same); in
+  `G` (305 → 1408) a type's block starts at its `num_at` (header 0, turn 16, player 32, player_counter
+  96, object 112, …, ledger 784; per type in the spec), so `num_proj` column `S1 offset(t) + j` →
+  `num_at(t) + at(t, slot j)`. `tok_cat`: every slot keeps its S1 column; its id range moves to the
+  registry's offset (`header.knowledge` 1 → 1, `turn.step` 4 → 10, …, `ledger.player_rel` 3454 →
+  3797) and grows to its enum's capacity + 1, every value keeping its index (`cat_emb` row
+  `old_offset + 1 + i` → `new_offset + 1 + i`, the none row likewise, the pad 0 → 0; 3458 → 6144
+  rows). `type_emb` 33 → 64 rows by id. `tok_card` K 4 → 6 and `tok_ability` Q 1 → 2: columns
+  unchanged (`card_slot` / `ability_slot` gain zero rows). Card / ability / part table columns by
+  name (634 → 960, 114 → 448, 102 → 448: `card_proj` / `ability_proj` / `part_proj` input columns by
+  name, the rest zero). Ability rows: S1 row of `(c, i)` → `16 c + i`, S1 key row `533 - 73 + k` (k in
+  sorted key order, unchanged) → `16384 + k`; episodes' `tok_ability` (not migrated) likewise. Part
+  rows unchanged. For S0-layout checkpoints compose with S1's map (S1's Done); the fixture check does
+  exactly that, and found it exact.
+- **For S3.** Check `layout_hash` (layout_version + capacities) **and** that the model's registry
+  entries are where the current registry has them: S2's `registry_moves(base, now)`
+  (`src/featurize/registry.h`) is that check in C++; a model or export can carry the registry's text
+  (45 KB) or the spec document as its manifest of positions, beside the vocab manifest. Episodes
+  already carry `layout_hash`. The table drift report can diff `card.rmtb` rows by id directly (rows
+  are stable), ability rows by address. A new keyword or effect category is an append (`make
+  registry`), not a bump; a card with more than 16 abilities, an enum past its capacity or a new
+  type past `F` is a bump (`layout_version` + 1, migration by name).
+- **For S4.** `card_seen` indexes card ids, which S2 did not touch; new id rows of `card_id` stay
+  1025. The export's `token_table` is the place to fold `card_seen` (and see the deviation above).
 
 ### S3. Compatibility instead of identity; exports per vocab (2 days)
 

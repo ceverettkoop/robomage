@@ -265,6 +265,20 @@ text-table: program
 	step="the check after regeneration"; \
 	($(TEXT_TABLE_CHECK)) || { $(TEXT_TABLE_FAIL); }
 
+# The layout registry (docs/featurizer.md §6.1): appends to src/featurize/registry.json every entry
+# the engine's schema and whole-vocab card tables need that it lacks (new enum values, columns,
+# slots, token and relation types, ability keys; never moving one; past a capacity it fails), then
+# rebuilds so the binaries compile the new file in. Run it after a change that adds a mechanic,
+# keyword or column; the gate's vocab tier fails while the file is stale. Commit the file.
+REGISTRY := src/featurize/registry.json
+REGISTRY_CARDS := .cache/registry/cards.rmst
+
+registry: program rmfeat
+	@mkdir -p $(dir $(REGISTRY_CARDS))
+	cd bin && ./$(CONFIG)/$(BINNAME) --cards-frame ../$(REGISTRY_CARDS)
+	$(BINDIR)/rmfeat --registry-update $(REGISTRY) --cards $(REGISTRY_CARDS) --text-table $(TEXT_TABLE)
+	$(MAKE) --no-print-directory all
+
 # ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
 # tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only
 # objects it may see: the RMSTATE decoder and schema and src/knowledge/ (step-1 handoff §3). Part
@@ -312,7 +326,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmserve rmembed text-table rmknow rmfeat robomage_check pgo
+.PHONY: all check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules

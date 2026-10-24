@@ -30,7 +30,13 @@ def fnv1a64(data):
 
 
 class Spec:
-    """The FEATURE_SPEC document: its JSON, its hash and the sizes a model is built from."""
+    """The FEATURE_SPEC document: its JSON, its hash and the sizes a model is built from.
+
+    Every size a model's parameters have is a capacity of the layout registry
+    (``src/featurize/registry.json``, docs/featurizer.md §6.1), so cards, enum values, slots and types
+    appended within it change no shape: ``n_types`` (token type ids), ``n_rel`` (relation type ids),
+    ``categorical_size`` (categorical ids), ``G`` (every type's numeric block side by side) and the
+    tables' widths. ``token_types`` lists the types the spec uses, each with its registry ``id``."""
 
     def __init__(self, doc_bytes):
         doc_bytes = doc_bytes.rstrip(b"\n")
@@ -38,12 +44,14 @@ class Spec:
         self.hash = "%016x" % fnv1a64(doc_bytes)
         d = self.doc
         self.vocab_hash = d["vocab_hash"]
-        self.F, self.C, self.K, self.Q = d["F"], d["C"], d["K"], d["Q"]
+        self.layout_hash = d["layout_hash"]
+        self.F, self.C, self.K, self.Q, self.G = d["F"], d["C"], d["K"], d["Q"], d["G"]
         self.categorical_size = d["categorical_size"]
         self.token_types = d["token_types"]
-        self.n_types = len(self.token_types)
-        self.n_rel = len(d["relation_types"])
+        self.n_types = d["type_capacity"]
+        self.n_rel = d["relation_capacity"]
         self.type_ids = {t["name"]: t["id"] for t in self.token_types}
+        self.type_by_id = {t["id"]: t for t in self.token_types}
         self.menu_type = self.type_ids[d["menu"]]
         self.library_depth = d["library_depth"]
         self.card_rows = d["card_tables"]["card"]["rows"]
@@ -53,17 +61,25 @@ class Spec:
         self.hist_event_type = self.hist_card_rel = None
         if self.history:
             self.hist_event_type = self.type_ids[self.history["event_type"]]
-            for i, r in enumerate(d["relation_types"]):
+            for r in d["relation_types"]:
                 if r["table"] == self.history["card_type"] and r["column"] == "event":
-                    self.hist_card_rel = i
+                    self.hist_card_rel = r["id"]
 
     def dims(self):
         """The handshake's `dims` (docs/inference_protocol.md §3)."""
         return {"F": self.F, "C": self.C, "K": self.K, "Q": self.Q}
 
-    def numeric_counts(self):
-        """Per token type the number of numeric slots it uses (slots past it are always 0)."""
-        return [len(t["numeric"]) for t in self.token_types]
+    def enum_values(self, name):
+        """The registry's values of enum `name` (a categorical slot's value i is the i-th), or None."""
+        return self.doc.get("enums", {}).get(name)
+
+    def numeric_layout(self):
+        """Per token type id (``n_types`` of them) its numeric block's first column in G and its
+        capacity (a token's slots past it are always 0; an unused id has capacity 0)."""
+        offsets, counts = [0] * self.n_types, [0] * self.n_types
+        for t in self.token_types:
+            offsets[t["id"]], counts[t["id"]] = t["num_at"], t["num_capacity"]
+        return offsets, counts
 
 
 def load_spec(path):

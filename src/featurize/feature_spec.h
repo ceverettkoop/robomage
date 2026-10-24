@@ -8,18 +8,21 @@
 #include "../state_format/decode.h"
 #include "card_tables.h"
 #include "columns.h"
+#include "registry.h"
 
 // ── FEATURE_SPEC: what the per-decision tensors hold (docs/featurizer.md §3, §6) ───────────────
 //
 // Standard library and the decoder only. Built from a SCHEMA frame (every table, column, tag and
-// enum) and the card tables (their widths, column names and fixed key list), so it is the same for
-// every match. Every STATE table with id 20-48 or 90-95 that no fold takes whole is a token type, in
-// ascending id, then the folds' synthetic type; each column becomes slots by its tag (columns.h,
-// §3.2):
+// enum), the card tables (their widths, column names and fixed key list) and the layout registry
+// (registry.h: every position below is the registry's, by name), so it is the same for every
+// match. Every STATE table with id 20-48 or 90-95 that no fold takes whole is a token type, as are
+// the folds' synthetic type and the history types; a type's id (its tok_type) is its registry id,
+// and tokens come in id order. Each column becomes slots by its tag (columns.h, §3.2):
 //
 //   bool, count, signed         one numeric slot (x, log1p, sign·log1p|x|)
 //   index                       one numeric slot (log1p, 0 at none) and its none flag
-//   mask:<e>                    one numeric slot per value of e
+//   mask:<e>                    a numeric block of e's capacity: value v at the block's start
+//                               plus v's registry index
 //   enum:<e>, player-rel        one categorical slot of e's values (an absolute enum:seat column
 //                               beside its <name>_rel partner is dropped: the tensors are
 //                               seat-symmetric)
@@ -34,11 +37,16 @@
 //                               type
 //   text                        dropped
 //
-// A categorical slot of n values takes ids offset … offset + n of one global id space: offset + 0
-// is the cell's none (all ones, or a value out of range), offset + 1 + v value v; id 0 is the pad.
-// The overrides (§3.4, the only per-column rules) are listed in the spec: object.card's second card
-// slot (the current face), the hashed text columns (FNV-1a 64 modulo HASH_BUCKETS, + 1; empty text
-// is the none id) and menu.description dropped.
+// Positions: a type's numeric slots are columns of its own block (num_at … num_at + num_capacity
+// of the G columns every type has side by side; within a token's tok_num row, column `at` of F);
+// a categorical slot is a tok_cat column with a fixed id range offset … offset + size - 1 of one
+// global id space: offset + 0 is the cell's none (all ones, or a value out of range), offset + 1 +
+// i the value of registry index i; id 0 is the pad. Card and ability slots are tok_card /
+// tok_ability columns; relation types have registry ids. Every position past what the schema uses
+// is reserved and reads 0 (-1 for card and ability slots). The overrides (§3.4, the only
+// per-column rules) are listed in the spec: object.card's second card slot (the current face), the
+// hashed text columns (FNV-1a 64 modulo HASH_BUCKETS, + 1; empty text is the none id) and
+// menu.description dropped.
 //
 // The folds (§3.6) are listed in the spec too; they make tokens otherwise than one per row:
 //
@@ -51,13 +59,14 @@
 //   LEDGER     `ledger`: one token per (player, card) folding own_deck, k_seen, k_known_hand and the
 //              folded k_pool_card rows (LedgerSlot)
 //
-// The synthetic type (LEDGER) follows the table types; the folded tables have no type of their own.
+// The folded tables have no type of their own; a registry type the schema does not make (or a
+// history type without the option) is ABSENT: it has no tokens and is not in the document.
 // Token order is canonical: the ledger by (player_rel, card), a delta type by object row, then
 // removed, then value (folds.h).
 //
 // Recent-event history (FeatureOptions::history_events > 0; off by default, and then the spec and
-// every tensor are those of a spec built without it): two HISTORY types after the synthetic one,
-// `hist_event` (the `event` table's columns) and `hist_card` (`event_card`'s), whose tokens come
+// every tensor are those of a spec built without it): two HISTORY types, `hist_event` (the `event`
+// table's columns) and `hist_card` (`event_card`'s), whose tokens come
 // from the seat's EventHistory (history.h) rather than the frame: the events of the frame's turn
 // and the previous one, newest first, at most history_events, each with at most
 // history_cards_per_event of its cards. The columns that identify the game rather than describe
@@ -68,11 +77,12 @@
 // hist_card.event to its event's token. The spec document gains a `history` key.
 //
 // spec_json() writes the document with its keys in a fixed order; spec_hash is FNV-1a 64 of its
-// bytes.
+// bytes, layout_hash the registry's (registry.h): equal for every spec of one layout, whatever was
+// appended to it.
 
 namespace featurize {
 
-const int SPEC_VERSION = 3;
+const int SPEC_VERSION = 4;
 // Buckets of a hashed text column.
 const uint32_t HASH_BUCKETS = 256;
 // The library depth of the learner targets (targets.h).
@@ -82,6 +92,7 @@ struct NumSlot {
         std::string name, column;
         Transform transform = Transform::BOOL;
         uint32_t bit = 0;  // MASK_BIT's bit
+        uint32_t at = 0;   // the slot's column in the type's block (and the token's tok_num row)
 };
 
 struct CatSlot {
@@ -89,15 +100,23 @@ struct CatSlot {
         std::string source;  // enum:<e>, player-rel, hashed
         int64_t offset = 0;  // the slot's global id of none; values follow
         uint32_t size = 0;   // ids, none included
+        uint32_t col = 0;    // its tok_cat column
 };
 
 struct CardSlot {
         std::string name, column;
         bool current_face = false;  // the face as it is now (object.card's second slot)
+        uint32_t col = 0;           // its tok_card column
+};
+
+struct AbilitySlot {
+        std::string name;
+        uint32_t col = 0;  // its tok_ability column
 };
 
 // How a token type's tokens are made (header comment).
 enum class TypeKind : uint8_t {
+    ABSENT,  // a registry id the spec does not use
     TABLE,
     FILTERED,
     DELTA,
@@ -170,6 +189,7 @@ struct ColumnOp {
         int32_t flag = -1;       // INDEX, CARD: the none flag's numeric slot
         uint32_t width = 0;      // MASK: bits; CATEGORICAL: values
         int64_t offset = 0;      // CATEGORICAL, HASHED
+        int32_t enum_map = -1;   // MASK, CATEGORICAL of an enum: FeatureSpec::enum_maps' entry
         int32_t face_slot = -1;  // CARD: the current face's card slot (-1 none)
         uint16_t aux1 = 0;       // CARD with a face slot: the `transformed` column; ABILITY: ab_index
         uint16_t aux2 = 0;       // ABILITY: ab_key
@@ -179,16 +199,20 @@ struct ColumnOp {
 };
 
 struct TokenType {
-        TypeKind kind = TypeKind::TABLE;
+        TypeKind kind = TypeKind::ABSENT;
         uint16_t table = 0;    // TABLE, FILTERED, DELTA: its table
         uint16_t columns = 0;  // and its column count
         std::string name;
         bool owns_handles = false;  // first column a handle named `handle`
         uint16_t handle_col = 0;
-        std::vector<NumSlot> numeric;
+        // The type's numeric block in G and its capacity (≤ F); per kind of slot the tok_cat /
+        // tok_card / tok_ability columns it uses (the highest used + 1).
+        uint32_t num_at = 0, num_capacity = 0;
+        uint32_t cat_width = 0, card_width = 0, ability_width = 0;
+        std::vector<NumSlot> numeric;  // the slots the schema makes (not the reserved positions)
         std::vector<CatSlot> categorical;
         std::vector<CardSlot> cards;
-        std::vector<std::string> abilities;
+        std::vector<AbilitySlot> abilities;
         std::vector<int32_t> relations;
         std::vector<ColumnOp> ops;  // column order
         // DELTA: the printed table compared with, the obj column, per printed column its column here,
@@ -197,10 +221,11 @@ struct TokenType {
         uint16_t obj_col = 0;
         std::vector<uint16_t> value_cols;
         std::vector<uint8_t> value_text;  // per printed column: a text column (compared by its text)
-        int32_t removed_slot = -1;
-        // LEDGER: the player_rel categorical's id offset and values.
+        int32_t removed_slot = -1;        // its column
+        // LEDGER: the player_rel categorical's id offset, values and tok_cat column, the card's
+        // tok_card column.
         int64_t rel_offset = 0;
-        uint32_t rel_values = 0;
+        uint32_t rel_values = 0, rel_col = 0, card_col = 0;
         bool synthetic() const { return kind == TypeKind::LEDGER; }
 };
 
@@ -223,7 +248,7 @@ struct HistoryPlan {
         int card_event = -1, card_before = -1, card_after = -1;   // event_card's `event` and handles
         int turn_turn = -1;                                       // the turn table's `turn`
         uint64_t game_start_kind = UINT64_MAX;
-        // Numeric slots of hist_event: the turn offset, the age, the cards past the cap.
+        // Numeric slots (columns) of hist_event: the turn offset, the age, the cards past the cap.
         uint32_t offset_slot = 0, age_slot = 0, more_slot = 0;
         std::vector<std::string> dropped;  // "<table>.<column>"
         bool on() const { return events > 0; }
@@ -232,12 +257,23 @@ struct HistoryPlan {
 struct FeatureSpec {
         uint64_t schema_hash = 0;
         uint64_t vocab_hash = 0;
+        uint64_t layout_hash = 0;
+        int layout_version = 0;
         uint32_t hash_buckets = HASH_BUCKETS;
         uint32_t library_depth = LIBRARY_DEPTH;
-        size_t F = 0, C = 0, K = 0, Q = 0;
-        int64_t categorical_size = 0;  // ids 0 … categorical_size - 1
-        std::vector<TokenType> types;
-        std::vector<RelationType> relations;
+        // The registry's dims: per token F numeric, C categorical, K card, Q ability slots; G the
+        // numeric columns of every type's block; the capacities of the token types (tok_type ids),
+        // the categorical ids (ids 0 … categorical_size - 1) and the relation types.
+        size_t F = 0, C = 0, K = 0, Q = 0, G = 0;
+        int64_t categorical_size = 0;
+        uint32_t type_capacity = 0, relation_capacity = 0;
+        std::vector<TokenType> types;         // indexed by type id (ABSENT for an unused id)
+        std::vector<RelationType> relations;  // indexed by relation id ("" table: unused)
+        // Per enum a MASK or CATEGORICAL column reads, the engine value → registry index map and
+        // the registry's values (index order).
+        std::vector<std::string> enum_names;
+        std::vector<std::vector<int32_t>> enum_maps;
+        std::vector<std::vector<std::string>> enum_values;
         std::vector<Override> overrides;
         std::vector<Fold> folds;
         LedgerPlan ledger;
@@ -248,7 +284,10 @@ struct FeatureSpec {
         rmstate::Storage object_card_storage = rmstate::Storage::U16;
         // The card tables' shapes and column names (card_tables.h).
         uint64_t card_rows = 0, text_rows = 0, text_width = 0, ability_rows = 0, part_rows = 0;
+        uint32_t abilities_per_card = 0;
+        uint64_t key_base = 0;
         std::vector<std::string> card_columns, ability_columns, part_columns, ab_keys;
+        std::vector<int64_t> key_rows;
         // Lookups: per table id its token type (-1 none: not a token table, or folded); the menu's
         // token type; the header's.
         std::vector<int32_t> type_of_table;
@@ -258,8 +297,12 @@ struct FeatureSpec {
         uint64_t hash = 0;
 };
 
-// Builds the spec. False with `err` when the schema lacks the menu or header table (or, with history,
-// the event tables).
+// Builds the spec at the positions of `registry` (with `append`, adding what it lacks). False with
+// `err` when the schema lacks the menu or header table (or, with history, the event tables), or the
+// registry lacks an entry or a capacity (Registry::problems).
+bool build_spec(const rmstate::Schema &schema, const CardTables &tables, const FeatureOptions &options,
+    Registry *registry, FeatureSpec *out, std::string *err);
+// The same at the compiled-in registry's positions.
 bool build_spec(const rmstate::Schema &schema, const CardTables &tables, const FeatureOptions &options,
     FeatureSpec *out, std::string *err);
 

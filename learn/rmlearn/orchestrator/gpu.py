@@ -197,8 +197,7 @@ class Worker:
         win = RP.ReplayWindow(self._window_cfg(dirs, False), log=lambda m: log("bc window: " + m))
         skipped = restore_recent(win, dirs, win.cfg.max_bytes)
         win.start()
-        names = BC.category_names(self.rd.cards) if os.path.exists(self.rd.cards) else None
-        cats = BC.Categories(self.tables.spec, names)
+        cats = BC.Categories(self.tables.spec)
         trainer = BC.BCTrainer(model, win, BC.BCConfig.from_dict(c["bc"]), device=self.device, categories=cats)
         if resume:
             trainer.restore(resume)

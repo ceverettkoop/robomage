@@ -134,6 +134,19 @@ bool write_file(const std::string &path, const std::string &data) {
     return std::fclose(f) == 0 && ok;
 }
 
+std::string find_program(const char *name) {
+    std::vector<std::string> dirs;
+    if (const char *path = std::getenv("PATH"))
+        for (const std::string &d : split(path, ':'))
+            if (!d.empty()) dirs.push_back(d);
+    for (const char *d : {"/usr/bin", "/usr/local/bin", "/bin"}) dirs.push_back(d);
+    for (const std::string &dir : dirs) {
+        const std::string p = dir + "/" + name;
+        if (access(p.c_str(), X_OK) == 0) return p;
+    }
+    return "";
+}
+
 bool file_exists(const std::string &path) {
     struct stat st;
     return stat(path.c_str(), &st) == 0;

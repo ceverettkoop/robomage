@@ -101,6 +101,11 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   `tools/embed/MODEL_PIN` (`robomage --text-table-check`); when rows are stale, fetch the pinned
   model (`tools/embed/fetch_model.py`, network) and regenerate only those rows with `rmembed`
   (`docs/featurizer.md` §5). Part of `all`: a current committed table needs no network or libtorch
+- `make registry` — append to the layout registry `src/featurize/registry.json` every entry the
+  engine's schema and whole-vocab card tables need that it lacks (new enum values, columns, slots,
+  token / relation types, ability keys; never moving one; past a capacity it fails: a layout bump),
+  then rebuild (`docs/featurizer.md` §6.1). Run it after adding a mechanic, keyword or column (the
+  `vocab` tier fails while the file is stale) and commit the file
 - `make actor` — `bin/<config>/robomage_nn`: the engine plus the libtorch TUs of `src/actor/`
   (exceptions on, C++20), which add the `nn:<model>` and `nn:remote:<socket>` agents
   (`docs/featurizer.md` §6), and `bin/<config>/rmserve`, the reference inference server
@@ -139,13 +144,13 @@ background** and make the live output inspectable by the user:
 
   | Tier | Checks |
   |---|---|
-  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached) |
+  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached); the layout registry `src/featurize/registry.json` current, compiled in and append-only against HEAD (`rmfeat --registry-check`) |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
-  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
+  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); the layout registry's append-only property (a card and a keyword appended, an enum reordered: the same layout and tensors; capacities refused); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
   | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
   | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode; sideboard exploration (`sb_explore` for every agent at p 1): μ = `q` recomputed from replayed frames, the results lines' `sb`, swap counts covering 0–10, card weights moving the frequencies, replays and reruns identical, p 0 changing nothing, the schedule's refusals |
   | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π) |
@@ -449,7 +454,10 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
    `N_CARD_TYPES` (`src/card_vocab.h`) must exceed the highest index. Tokens are a separate band
    (`token_vocab_entries`, from index 900).
 2. Provision the script, then `make`. `bin/debug/robomage_check --tier vocab` (the engine's
-   `--check-decks`) lists any deck card that does not load or is missing from the vocab.
+   `--check-decks`) lists any deck card that does not load or is missing from the vocab, and the
+   layout registry's check names any entry the new card needs (a new keyword or effect category):
+   `make registry` appends it. An appended card moves no existing card's, ability's or slot's
+   position (`docs/featurizer.md` §6.1); a card with more than 16 abilities is a layout bump.
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
@@ -601,9 +609,13 @@ sections above are not repeated here.
   reader), `rmtb` (RMTB named-array files, `docs/featurizer.md` §4.4), `oracle_text` (text
   normalisation, text / vocab hashes, the model pin, staleness, the inputs file), `wordpiece`
   (the BERT WordPiece tokenizer); the featurizer (`docs/featurizer.md`): `columns` (the tag rules),
-  `card_tables` (the card, ability and part tables from a whole-vocab CARDS frame, their RMTB
-  files and the ability index), `feature_spec` (FEATURE_SPEC: token types, slots, relations,
-  per-table column plans, `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
+  `registry` (+ the committed `registry.json`, compiled in with `#embed`: the layout registry, every
+  slot's, column's, enum value's, type's, relation's and key's permanent position and capacity,
+  `layout_hash`; `docs/featurizer.md` §6.1), `card_tables` (the card, ability and part tables from a
+  whole-vocab CARDS frame at the registry's positions, their RMTB files and the ability index: card
+  `c`'s ability `i` at row `c × abilities_per_card + i`, then the key band), `feature_spec`
+  (FEATURE_SPEC: token types, slots, relations, per-table column plans at the registry's positions,
+  `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
   entry point, refusing a non-seat frame; `featurize_viewer`, learner-side; the tensors file),
   `targets` (learner targets from the omniscient frame), `frame_stream` (a recorded stream frame by
   frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported),
@@ -659,7 +671,8 @@ handshake JSON, the shared region, request / response layouts.
   the gate, engine subprocesses only (links the std-only decoder and frame reader, no engine TU);
   one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
   `traj.*` (episode reading and comparisons, the `traj`, `actorloop` and `actor` tiers),
-  `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
+  `featurize_layout.*` (the layout registry's append-only property, `featurize` tier),
+  `registry_check.*` (the registry's check, `vocab` tier), `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
   `--out-dir` (default `ci_out/`), `--fuzz-games`, `--smoke-games`, `--matchups`, `--mode`,
   `--scenario GLOB --show output|narrative|dump`, `--record`
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
@@ -669,7 +682,8 @@ handshake JSON, the shared region, request / response layouts.
 - `tools/rmfeat/` — `bin/<config>/rmfeat` (part of `make`; std + the decoder + `src/featurize/`, no
   engine TU): `--spec --cards CARDS`, `--export-tables CARDS OUTDIR`, `--featurize DUMP --viewer
   A|B|omniscient --out FILE`, `--targets DUMP --seat A|B --out FILE`, `--stats` (token counts,
-  timing); `--tables DIR`, `--text-table FILE`
+  timing); `--registry-update FILE` (`make registry`) and `--registry-check FILE [--base FILE]` (the
+  `vocab` tier); `--tables DIR`, `--text-table FILE`, `--registry FILE`
 - `tools/rmembed/` — `bin/<config>/rmembed` (`make rmembed`, libtorch): the BERT encoder in the
   libtorch C++ API and its safetensors reader; writes the oracle-text table
 - `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`
