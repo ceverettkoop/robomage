@@ -599,6 +599,12 @@ class RNaDLearner:
         critic = self.model.critic is not None
         if critic and not getattr(batch, "omniscient", False):
             raise ValueError("R-NaD step: the omniscient critic needs a batch with the omniscient inputs")
+        # The batch's cards are seen from now on, in the current network and in the target network
+        # that follows it (each copies its own unknown-card vector into a newly seen card's id row, so
+        # neither's outputs move); the regularisation policies keep the mask they were frozen with.
+        ids = batch.card_ids(critic)
+        self.model.cards.mark_seen(ids)
+        self.target.cards.mark_seen(ids)
         carry = [None, None]
         sums = {k: torch.zeros((), device=dev) for k in ("loss_v", "loss_nerd", "loss_value_head", "kl_reg",
                                                          "entropy", "adv_abs", "v_target", "ratio",

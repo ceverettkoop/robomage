@@ -17,7 +17,9 @@
   categorical id space, id 0 the pad);
 - per card slot the card's row (frozen card-table and text-table rows projected, plus a learned
   card-id embedding; during training the id part is replaced, with probability ``id_dropout`` per
-  slot, by a learned unknown-card vector) plus a per-slot vector;
+  slot, by a learned unknown-card vector; a card no training batch has held, ``card_seen``, reads
+  that vector in place of its id row everywhere, so an unseen card plays the path id-dropout
+  trains) plus a per-slot vector;
 - per ability slot the ability row (frozen ability-table row projected, its parts' projections
   averaged in) plus a per-slot vector.
 An entity transformer (pre-LayerNorm, ``layers`` blocks) whose attention adds, per head and layer,
@@ -30,7 +32,8 @@ tokens (an MLP of the row's token, ``g`` and their product; padded rows -1e9) an
 **Auxiliary heads** (training only, never exported) predict the learner targets from ``g``: the
 opponent's hand as a distribution over card ids and each seat's library tops (``library_depth``
 positions) as card ids. The card-id heads score
-the same card rows the tokens read (a dot product), so they shape the card representation.
+the same card rows the tokens read (a dot product), so they shape the card representation (all but
+the unknown-card vector, which they read detached).
 
 **Omniscient critic** (``omniscient_critic``; the plan's open issue 1): a second encoder of the
 same design over the omniscient featurization of the same decision, with the deciding seat's
@@ -74,6 +77,7 @@ class ModelConfig:
     layers: int = 4
     ff_mult: int = 4          # feed-forward width = ff_mult * d
     id_dropout: float = 0.1   # probability a card slot's id embedding is replaced by the unknown-card vector
+    #                           (the path unseen cards read; docs/open_vocab_plan.md S4, a training lever)
     aux_heads: bool = True    # hidden-information heads (training only)
     omniscient_critic: bool = False
     critic_layers: int = 2    # the omniscient critic's encoder depth
@@ -330,7 +334,18 @@ def gather_tokens(card_idx, tok_card, tok_ability, table, card_rows: int, n_abil
 # ── the learner's model ──────────────────────────────────────────────────────────────────────
 
 class CardRows(nn.Module):
-    """The frozen card / text / ability / part tables and their learned projections."""
+    """The frozen card / text / ability / part tables and their learned projections.
+
+    **Seen cards** (docs/open_vocab_plan.md S4). ``card_seen`` [n_cards] (bool, saved in the
+    state_dict) marks the card ids some training batch has held (``mark_seen``, called by the
+    training loops on each batch before its forward). A seen card's id part is its ``card_id`` row;
+    an unseen card's is ``unknown_id``, the vector id-dropout trains, in the training rows, the aux
+    heads' rows and the exports' folded rows alike. A card's first marking copies ``unknown_id`` into
+    its id row, so it goes on from the path it played unseen; until then its row is zero (never
+    read). A state_dict without ``card_seen`` (a network made before the mask) is refused: such a
+    network read every id row as a card's, and its rows do not tell which cards it trained on (the aux
+    heads' softmax moved all of them), so neither "all seen" nor "none seen" is its function;
+    ``set_seen`` (S5's migration) or ``load_checkpoint(seen=...)`` states its seen set."""
 
     def __init__(self, tables, d: int):
         super().__init__()
@@ -350,8 +365,9 @@ class CardRows(nn.Module):
         self.card_proj = nn.Linear(t.card.shape[1], d)
         self.text_proj = nn.Linear(t.text.shape[1], d)
         self.card_id = nn.Embedding(self.n_cards, d)
-        nn.init.normal_(self.card_id.weight, std=0.1)
+        nn.init.zeros_(self.card_id.weight)
         self.unknown_id = nn.Parameter(torch.zeros(d))
+        self.register_buffer("card_seen", torch.zeros(self.n_cards, dtype=torch.bool))
         self.ability_proj = nn.Linear(t.ability.shape[1], d)
         self.part_proj = nn.Linear(t.part.shape[1], d)
         self.card_slot = nn.Parameter(torch.randn(max(t.spec.K, 1), d) * 0.1)
@@ -361,12 +377,61 @@ class CardRows(nn.Module):
         """[n_cards, d]: the tables' projection per card id (the none row 0), no id embedding."""
         return (self.card_proj(self.card_table) + self.text_proj(self.text_table)) * self.card_real
 
-    def card_id_rows(self):
-        return self.card_id.weight * self.card_real
+    def card_id_rows(self, train_unknown: bool = True):
+        """[n_cards, d]: per card id its id part — its ``card_id`` row when seen, else ``unknown_id``
+        (detached unless `train_unknown`) — the none row 0. (A blend by a fresh float copy of the mask,
+        not a ``where`` on the buffer, so marking after a forward never invalidates that forward's
+        backward.)"""
+        seen = self.card_seen.unsqueeze(1).to(self.card_id.weight.dtype)
+        unknown = self.unknown_id if train_unknown else self.unknown_id.detach()
+        return (self.card_id.weight * seen + unknown * (1.0 - seen)) * self.card_real
 
-    def card_rows(self):
-        """[n_cards, d]: the full per-card row (features + id embedding), the none row 0."""
-        return self.card_feature_rows() + self.card_id_rows()
+    def card_rows(self, train_unknown: bool = True):
+        """[n_cards, d]: the full per-card row (features + id part, ``card_id_rows``), the none row 0."""
+        return self.card_feature_rows() + self.card_id_rows(train_unknown)
+
+    @torch.no_grad()
+    def mark_seen(self, card_ids):
+        """Marks every card id in `card_ids` (a tensor or array of any shape; negative entries, the
+        absent slots, skipped) seen. A newly seen card's id row is set to ``unknown_id``, so its row is
+        unchanged at the marking and trains from there. No host synchronisation."""
+        ids = torch.as_tensor(card_ids, device=self.card_seen.device).reshape(-1).long()
+        ids = torch.where(ids >= 0, ids, torch.full_like(ids, self.n_cards - 1))
+        hit = torch.zeros_like(self.card_seen).index_fill_(0, ids, True)
+        hit[-1] = False                                         # the none row is never a card
+        w = self.card_id.weight
+        new = (hit & ~self.card_seen).unsqueeze(1)
+        w.copy_(torch.where(new, self.unknown_id.to(w.dtype).expand_as(w), w))
+        self.card_seen.logical_or_(hit)
+
+    @torch.no_grad()
+    def set_seen(self, card_ids):
+        """Sets the seen mask to exactly the ids in `card_ids` (any iterable or array of ids) and zeroes
+        every other card's id row (never read; a later first marking sets it). For a network trained
+        before the mask existed: the ids its training actually saw (S5's migration)."""
+        ids = torch.as_tensor(list(card_ids) if not torch.is_tensor(card_ids) else card_ids,
+                              dtype=torch.int64).reshape(-1)
+        if ids.numel() and (int(ids.min()) < 0 or int(ids.max()) >= self.n_cards - 1):
+            raise ValueError("set_seen: card ids lie in [0, %d)" % (self.n_cards - 1))
+        mask = torch.zeros(self.n_cards, dtype=torch.bool)
+        mask[ids] = True
+        self.card_seen.copy_(mask.to(self.card_seen.device))
+        w = self.card_id.weight
+        w.mul_(self.card_seen.unsqueeze(1).to(w.dtype))
+
+    def seen_ids(self):
+        """The seen card ids, ascending (a list)."""
+        return torch.nonzero(self.card_seen).squeeze(1).cpu().tolist()
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys,
+                              error_msgs):
+        if prefix + "card_seen" not in state_dict:
+            error_msgs.append("%scard_seen is missing: the network predates the seen-card mask "
+                              "(docs/open_vocab_plan.md S4), and its card_id rows do not tell which cards it saw; "
+                              "migrate it (S5) or state the ids its training saw (load_checkpoint(seen=...), "
+                              "CardRows.set_seen)" % prefix)
+        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys,
+                                      error_msgs)
 
     def ability_rows(self):
         """[n_abilities + 1, d]: per ability row its projection plus its parts' mean; a zero row last."""
@@ -378,9 +443,10 @@ class CardRows(nn.Module):
         return torch.cat([rows, torch.zeros(1, d, dtype=rows.dtype, device=rows.device)], 0)
 
     def token_table(self, dropout_rows: bool = False):
-        """[rows, d] f32, ``gather_tokens``' table: per card slot the card rows plus the slot's vector
-        (with `dropout_rows` followed by the same with the unknown-card vector in place of the id
-        embedding), per ability slot the ability rows plus the slot's vector, and a zero row."""
+        """[rows, d] f32, ``gather_tokens``' table: per card slot the card rows (``card_rows``: an
+        unseen card's with the unknown-card vector) plus the slot's vector (with `dropout_rows` followed
+        by the same with the unknown-card vector in place of every id part), per ability slot the
+        ability rows plus the slot's vector, and a zero row."""
         feat = self.card_feature_rows().float()
         cards = feat + self.card_id_rows()
         if dropout_rows:
@@ -463,7 +529,10 @@ class RMNet(nn.Module):
         return out
 
     def aux(self, g):
-        rows = self.cards.card_rows()                               # [n_cards, d]
+        # Every id is a candidate, so the unseen ones' rows (unknown_id each) would train the unknown-card
+        # vector toward "unlikely" from hundreds of unseen and empty ids: it enters detached here, and
+        # only the tokens' path (id-dropout) shapes it.
+        rows = self.cards.card_rows(train_unknown=False)            # [n_cards, d]
         none = torch.zeros(rows.shape[0], dtype=torch.float32, device=g.device)   # f32: -1e9 is -inf in f16
         none[-1] = NEG
         b, d = g.shape
@@ -578,8 +647,8 @@ class InferencePolicy(nn.Module):
 
 def _fold_rows(cards):
     """(``folded_rows`` [n_cards + distinct ability rows + K + Q + 1, d] f32 on the CPU: the card
-    rows, the distinct ability rows, the card slots' and the ability slots' vectors, a zero row;
-    ``ability_index`` [n_abilities] i64: per ability row its row in ``folded_rows``)."""
+    rows (``card_rows``: an unseen card's features plus ``unknown_id``), the distinct ability rows,
+    the card slots' and the ability slots' vectors, a zero row; ``ability_index`` [n_abilities] i64: per ability row its row in ``folded_rows``)."""
     card_rows = cards.card_rows().detach().float().cpu()
     ability_rows = cards.ability_rows()[:-1].detach().float().cpu()
     has_parts = torch.zeros(cards.n_abilities, dtype=torch.bool)
@@ -631,12 +700,22 @@ def save_checkpoint(model, path, extra=None):
     os.replace(tmp, path)
 
 
-def load_checkpoint(path, tables):
+def load_checkpoint(path, tables, seen=None):
     """The RMNet a save_checkpoint file holds, built over `tables` (the checkpoint's manifest must be
     compatible with theirs, spec.check_compatible: the vocab may have grown). The model carries the
-    tables' manifest from then on."""
+    tables' manifest from then on. A file without ``cards.card_seen`` (made before the seen-card mask)
+    is refused unless `seen` gives the card ids its training saw (``CardRows.set_seen``); `seen` is
+    refused for a file that has the mask."""
     data = torch.load(path, map_location="cpu", weights_only=True)
     S.require_compatible(data["hashes"], tables, path)
     model = RMNet(ModelConfig.from_dict(data["config"]), tables)
-    model.load_state_dict(data["state_dict"])
+    sd = data["state_dict"]
+    if seen is not None:
+        if "cards.card_seen" in sd:
+            raise ValueError("%s carries its seen-card mask; seen= is for a checkpoint without one" % path)
+        sd = dict(sd)
+        sd["cards.card_seen"] = model.cards.card_seen
+    model.load_state_dict(sd)
+    if seen is not None:
+        model.cards.set_seen(seen)
     return model

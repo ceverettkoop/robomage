@@ -276,6 +276,7 @@ class BCTrainer:
             for g in self.opt.param_groups:
                 g["lr"] = lr
             inputs = event_dropout(b.inputs, self.cfg.event_dropout, self.model.spec)
+            self.model.cards.mark_seen(inputs[3])
             with self._autocast():
                 out = self.model(*inputs)
             loss = self.losses(b, out)

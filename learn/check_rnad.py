@@ -1049,6 +1049,66 @@ def check_bookkeeping(tables, work):
     info("the omniscient critic (tanh and linear values) trains on the omniscient inputs; a bf16 autocast step runs")
 
 
+def check_seen_cards(tables):
+    print("seen cards: a step marks its batch's cards in the network and the target, no output moves", flush=True)
+    torch.manual_seed(11)
+    net = tiny_model(tables, seed=5, omniscient_critic=True, critic_layers=1)
+    with torch.no_grad():
+        net.cards.unknown_id.add_(torch.randn_like(net.cards.unknown_id))
+    learner = RL.RNaDLearner(net, RL.RNaDConfig(chunk_len=4, entropy_schedule_sizes=(2,), learning_rate=1e-3))
+    with torch.no_grad():
+        learner.target.cards.unknown_id.add_(torch.randn_like(learner.target.cards.unknown_id))
+    eps = random_episodes(tables, np.random.RandomState(12), 6, omni=True)
+    batch = RP.TrajectoryBatch(eps, chunk_len=4, omniscient=True)
+    want = sorted(set(int(c) for ep in eps for f in (ep.seat_feat, ep.omni_feat) for c in f.card if c >= 0))
+    ok(batch.card_ids(True).tolist() == want and batch.card_ids().tolist() ==
+       sorted(set(int(c) for ep in eps for c in ep.seat_feat.card if c >= 0)), "seen cards: the batch's card ids")
+    x, _ = batch.chunk_inputs(0)
+    xo, _ = batch.chunk_inputs(0, viewer="omni")
+    seat = torch.from_numpy(batch.seat.reshape(-1)[batch.chunk_items(0)[1]])
+
+    def outputs(m):
+        was = m.training
+        m.eval()
+        with torch.no_grad():
+            o = m(*learner._inputs(x), omni=learner._inputs(xo)[:8], seat=seat)
+        m.train(was)
+        return [o["logits"], o["value"], o["critic_value"]]
+    before = [outputs(learner.model), outputs(learner.target)]
+    ok(learner.model.cards.seen_ids() == [] and learner.target.cards.seen_ids() == [], "seen cards: a fresh network "
+       "has seen no card")
+    learner.accumulate_gradients(batch, 0.5)
+    after = [outputs(learner.model), outputs(learner.target)]
+    ok(learner.model.cards.seen_ids() == want and learner.target.cards.seen_ids() == want and
+       learner.regs[0].model.cards.seen_ids() == [], "seen cards: marked %s / %s, regularisation %s, want %s"
+       % (learner.model.cards.seen_ids(), learner.target.cards.seen_ids(), learner.regs[0].model.cards.seen_ids(),
+          want))
+    moved = max(float((a - b).abs().max()) for pa, pb in zip(before, after) for a, b in zip(pa, pb))
+    ok(moved == 0.0, "seen cards: marking moved the outputs by %.3g" % moved)
+    for m in (learner.model, learner.target):
+        ok(torch.equal(m.cards.card_id.weight[want], m.cards.unknown_id.detach().expand(len(want), -1)),
+           "seen cards: a newly seen card's id row is not its network's unknown_id")
+    g_id = learner.model.cards.card_id.weight.grad
+    g_unk = learner.model.cards.unknown_id.grad
+    rows = torch.nonzero(g_id.abs().sum(1) > 0).squeeze(1).tolist() if g_id is not None else []
+    ok(set(rows) <= set(want) and rows and (g_unk is None or not bool(g_unk.any())),
+       "seen cards: gradient rows %s (want within %s), unknown_id gradient %s" % (rows, want, g_unk))
+    for p in learner.params:
+        p.grad = None
+    for _ in range(2):
+        learner.step(batch)
+    ok(learner.reg_updates == 1 and learner.regs[0].model.cards.seen_ids() == want and
+       learner.regs[1].model.cards.seen_ids() == [], "seen cards: the new regularisation policy's mask")
+    buf = io.BytesIO()
+    torch.save(learner.state_dict(), buf)
+    back = RL.RNaDLearner.from_state_dict(torch.load(io.BytesIO(buf.getvalue()), weights_only=False), tables)
+    ok(back.model.cards.seen_ids() == want and back.target.cards.seen_ids() == want and
+       [r.model.cards.seen_ids() for r in back.regs] == [want, []], "seen cards: the learner state's masks")
+    info("cards %s (seat and omniscient) marked in the network and the target, each id row its own unknown_id, no "
+         "output moved; gradient on those id rows only, none on unknown_id; the regularisation policies keep the "
+         "mask they were frozen with; the masks through the learner state" % want)
+
+
 def check_value_diagnostic(tables):
     print("value diagnostic: first-sight and after-update value MSE", flush=True)
     eps = random_episodes(tables, np.random.RandomState(21), 6)
@@ -1153,6 +1213,7 @@ def main():
             check_composition(tables)
         if "bookkeeping" in parts:
             check_bookkeeping(tables, work)
+            check_seen_cards(tables)
             check_value_diagnostic(tables)
         if "games" in parts:
             check_games(tables, args.quick)

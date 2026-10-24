@@ -108,6 +108,14 @@ class Featurization:
     def tokens(self, d):
         return int(self.tok_off[d + 1] - self.tok_off[d])
 
+    def card_ids(self):
+        """The distinct card ids of the episode's card slots (ascending, i64), computed once."""
+        ids = getattr(self, "_card_ids", None)
+        if ids is None:
+            card = np.asarray(self.card, np.int64)
+            ids = self._card_ids = np.unique(card[card >= 0])
+        return ids
+
 
 class Episode:
     """One episode file in memory: ``meta``, ``attrs``, the per-step arrays (``seat``, ``game``,

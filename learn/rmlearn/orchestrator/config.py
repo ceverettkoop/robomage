@@ -81,7 +81,10 @@ SPEC = {
         ("heads", 4, "attention heads"),
         ("layers", 4, "transformer layers"),
         ("ff_mult", 4, "feed-forward width multiple"),
-        ("id_dropout", 0.1, "card id-dropout"),
+        ("id_dropout", 0.1, "card id-dropout: the probability a card slot reads the unknown-card vector, the path "
+         "a card no training batch has held plays (docs/open_vocab_plan.md S4); 0.2-0.25 for runs meant to "
+         "generalise to unseen decks, to be decided by the held-out benchmark (S8). The run's value applies to "
+         "a resumed BC or R-NaD model and to a start_from checkpoint"),
         ("aux_heads", True, "hidden-information heads"),
         ("omniscient_critic", False, "the omniscient critic (an A/B experiment, plan §4 L4)"),
         ("critic_layers", 2, "the omniscient critic's depth"),

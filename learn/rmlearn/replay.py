@@ -514,6 +514,14 @@ class TrajectoryBatch:
             return None, flat
         return EP.expand(items, viewer, min_dims or {"A": self.A}), flat
 
+    def card_ids(self, omniscient=False):
+        """The distinct card ids the batch's inputs hold (the seat featurizations', and with
+        `omniscient` the omniscient ones'), ascending: what the learner marks seen."""
+        parts = [ep.seat_feat.card_ids() for ep in self.eps]
+        if omniscient:
+            parts += [ep.omni_feat.card_ids() for ep in self.eps if ep.omni_feat is not None]
+        return np.unique(np.concatenate(parts)) if parts else np.zeros(0, np.int64)
+
     def chunk_targets(self, c, n_cards, depth):
         items, _ = self.chunk_items(c)
         return EP.targets(items, n_cards, depth) if items else None

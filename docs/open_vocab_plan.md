@@ -590,12 +590,104 @@ above, plus what it implied:
 - `CardRows` gains a persistent buffer `card_seen [N_CARD_TYPES + 1]` (bool), set for every id in a
   training batch's `tok_card` (an `index_fill_` per batch), saved in the checkpoint.
 - `token_table()` uses `feat + (card_seen ? card_id : unknown_id)` per row; exports fold the same
-  rule, so an unseen card plays exactly the path id-dropout trains. New id rows start at zero (a
-  residual on `unknown_id` once seen).
+  rule, so an unseen card plays exactly the path id-dropout trains. New id rows start at zero (never
+  read while unseen); a card's first marking copies `unknown_id` into its row, so it goes on from the
+  path it played unseen (no jump when a new deck's cards enter training).
 - Training lever (config, not contract): raise `model.id_dropout` from 0.1 to 0.2–0.25 for runs
   meant to generalise; decided by the held-out benchmark (S8), not assumed.
 - **Acceptance:** a unit check that a never-seen id's export row equals its features plus
   `unknown_id`, and that marking it seen changes only that row.
+
+**Done** (one commit on `refactor/open-vocab`; learner only, no engine or format change).
+
+- **The mask** (`learn/rmlearn/model.py` `CardRows`). `card_seen [1025]` bool, a persistent buffer
+  (in every `state_dict`: checkpoints, learner states' model / target / regs, the server's pushed
+  states). `card_id_rows()` = `card_id · seen + unknown_id · (1 − seen)` (× `card_real`), so a seen
+  row is bit for bit what it was before S4 and an unseen one is `unknown_id`; `card_rows()`, the
+  training `token_table()` and the export's `_fold_rows` all read it (the id-dropout copy stays
+  `feat + unknown_id`). `card_id` initialises to zero (no RNG draw: a fresh model's later
+  initialisations draw differently than before; nothing pinned them).
+- **Marking.** `CardRows.mark_seen(ids)` (no host sync; negative entries and the none row skipped)
+  is called by every training loop on each batch before its forward: `BCTrainer.train` (the batch's
+  `tok_card`), the exploiter's PPO minibatch, and `RNaDLearner.accumulate_gradients` (the batch's ids,
+  seat and, with the critic, omniscient: `TrajectoryBatch.card_ids`, cached per episode by
+  `Featurization.card_ids`) on the current network **and** the target network. The regularisation
+  policies keep the mask they were frozen with (a fixed point is a frozen function). Marking is
+  explicit, not inside `forward`: R-NaD's chunked, checkpointed forwards would otherwise mark
+  between a forward and its recomputation.
+- **Deviation: a newly seen card's id row is set to `unknown_id`** (each network its own) at its
+  first marking, rather than starting from zero. The row it reads is then unchanged at the marking
+  and trains on from the unseen path — so when S8 adds a deck to a running run, the learner, the
+  target and the actors' μ (recorded with the unseen path) agree at first sight, and v-trace sees no
+  jump. The plan's "a residual on `unknown_id`" read literally (`feat + unknown_id + card_id`) would
+  have made every seen slot train `unknown_id` and needed every migrated row reparametrised.
+- **Deviation: the aux heads read `unknown_id` detached.** They score every id (a softmax over all
+  1025), so with the mask the hundreds of unseen and empty ids would each train the shared unknown
+  vector toward "unlikely"; detached, only the tokens' path (id-dropout) shapes it, and an unseen
+  card's own row gets no aux gradient either (it stays zero).
+- **Old checkpoints** (no `card_seen`): refused by every load (`CardRows._load_from_state_dict`
+  appends the error, so `strict=False` loads — `_load_with_config` — refuse too): "card_seen is
+  missing: … migrate it (S5) or state the ids its training saw". The explicit hooks:
+  `CardRows.set_seen(ids)` (the mask exactly `ids`, every other `card_id` row zeroed) and
+  `load_checkpoint(path, tables, seen=ids)` (only for a file without the mask; refused for one with
+  it). Neither default is safe: "all seen" gives never-trained ids their stale rows, "none seen"
+  moves every known card onto `unknown_id`.
+- **What an old network's rows say: nothing.** `runs/open_vocab_s4/seen_analysis*.py` rebuilds
+  league24h-sb's initial `card_id` (seed 2, the pre-S1 construction order) and compares: in `bc-b1`,
+  `bc-final`, `m1`, `m11` and `rnad-final` (model, target, both regs) **every** row but the none row
+  differs from its initialisation, and none is a scaled copy of it — the aux heads' softmax over all
+  ids moved even the 547 ids with no card. So S5's "the ids whose `card_id` row differs from its
+  initialisation" was wrong (fixed above). **The sets from the data:**
+  `runs/open_vocab_s4/episode_card_ids.py` (the union of `tok_card` / `omni_tok_card` over a run's
+  episode files, any episode version) gives, in `runs/open_vocab_s4/card_ids_<run>.json`:
+  league24h-sb 216 ids (203 cards, 13 tokens: 900-902, 906, 908, 909, 911-916, 1023), the same in
+  each of its b0 / dagger / selfplay directories (every decision's ledger holds both registered lists,
+  so the first batches already hold every deck card); league12h, pilotA, pilot-p1, pilot-p2 the same
+  216; val1 103, a subset. (`bc1` has no `ckpt/` and was not scanned.)
+- **The lever.** `model.id_dropout` (default 0.1, unchanged) is documented as the generalisation
+  lever (`docs/rmtrain.md`, the config's help, `ModelConfig`). It did not reach R-NaD runs seeded
+  from a checkpoint (`rnad_init` took the checkpoint's value) nor resumed models: the run's value now
+  applies to a `run.start_from` / BC-final seed, a resumed R-NaD learner and a resumed BC model
+  (every existing run has 0.1 in both, so no run's behaviour changes).
+- **Acceptance** (`learn/check.py` "seen cards", run by the learner checks; `check_rnad.py` "seen
+  cards", `check.py` BC): on a model with every card seen but one card `u` of the batch, `u`'s
+  folded export row equals `card_feature_rows()[u] + unknown_id` exactly, every other folded row its
+  features plus its id row, the training token table's and id-dropout copy's rows likewise; marking
+  `u` seen (`set_seen`) changes folded row `u` alone (and the batch's outputs); training's marking
+  (`mark_seen`) marks exactly the batch's cards, sets `u`'s id row to `unknown_id`, moves no other
+  row and no output (0.0); the aux heads give `unknown_id` and `u`'s row no gradient; the mask through
+  `save_checkpoint` / `load_checkpoint`; a checkpoint with the buffer removed refused with the message,
+  loaded with `seen=`, `seen=` refused on a file with the mask; the TorchScript and `.pt2` exports of
+  the network with `u` unseen against eager 0 and 1.2e-7, the TorchScript buffer's row `u` the eager
+  one. R-NaD: an omniscient-critic learner's accumulate step marks the batch's 11 seat and omniscient
+  ids in the network and the target (each id row its own `unknown_id`), no output of either moves,
+  gradient reaches those id rows only and `unknown_id` none, the boundary's new regularisation policy
+  carries the target's mask and the older one its own, and the masks survive the learner state. BC:
+  30 steps mark the episode's 67 cards, the checkpoint round trip includes the mask.
+- **For S5.** (1) Set each migrated network's mask with `CardRows.set_seen(ids)` (it zeroes the
+  other `card_id` rows) to its run's set above — the run whose training produced it, plus, for a run
+  warm-started from another run's checkpoint (pilotA from `m11`), the seed's set (all 216 anyway);
+  the critic fixture `m11-critic.pt` takes league24h-sb's. Every network of a run takes the run's set
+  (per-network differences would only be tokens first created after an early checkpoint;
+  checkpoints are all past thousands of BC steps). For a run whose episodes are gone, its league
+  decks' cards and the tokens they make (the episode scan's way is exact; prefer it). (2) Migrate the
+  target and both regularisation policies of a learner state the same way. (3) `card_seen` is not in
+  the old state dicts: build the new model, copy by name, `set_seen`, save — never `load_state_dict`
+  an old state into a new model (refused). (4) **The mask moves S5 acceptance (a).** A seen card's row is the
+  old one bit for bit, but the fixture decisions hold 17 card ids outside league24h-sb's 216 (8, 16,
+  17, 38, 49, 59, 69, 70, 75, 78, 79, 83, 85, 86, 87, 88, 89: corpus games of non-league decks), in
+  2047 of the 8831 decisions; with the true mask those cards read `unknown_id` where S0's outputs
+  read their (aux-trained, never input-trained) rows. So run (a) twice: with the mask widened to the
+  fixtures' ids (a test-only copy: the old function, 1e-5 everywhere), and with the true mask (equal
+  on the 6784 decisions without such a card; the 2047 report the mask's effect, the intended
+  change). The cut-over's step-0 benchmark plays league decks only, all seen. (5) Adam state (`m`, `v`) of `card_id` carries over unchanged; unseen rows' `m` / `v`
+  may be zeroed with the rows (they are never read until a first marking resets the row).
+- **Evidence.** `learn/check.py` (`runs/open_vocab_s4/learn_check2.log`), `check_rnad.py`
+  (`learn_check_rnad.log`), `check_rmtrain.py` (`learn_check_rmtrain.log`) ok; `check_rmtrain.py
+  --smoke` ok (`smoke.log`, 197 s, the `phase next (B5 -> done)` race of S3 not hit; its BC
+  checkpoints carry 88 seen ids, its last fixed point 89: self-play met one more token);
+  `make check` green with every tier, the opt-in `actor` tier included (`make_check.log`; `make actor`
+  rebuilt, `ROBOMAGE_TORCH_PYTHON` absolute). No engine, format, decision or export layout changed.
 
 ### S5. Migration, acceptance test and the one-time cut-over (2–3 days)
 
@@ -604,9 +696,11 @@ above, plus what it implied:
   model, copy each old parameter slot to its new position **by name** (`cat_emb` rows by slot and
   value name, `num_proj` columns by type and slot name, `type_emb` rows by type name, table
   projection columns by column name), drop slots S1 removed (`lists`, `b_lists` columns, the two aux
-  heads, the `EXPERT_BELIEF` value of `knowledge_level`: S1's Done lists every id that moved), zero reserved positions, set `card_seen` from the ids whose `card_id` row differs from its
-  initialisation (or from the run's episodes when available), zero never-seen rows. The migration
-  needs the old tables (each run's `tables/`) and the old spec to read names from. **The omniscient
+  heads, the `EXPERT_BELIEF` value of `knowledge_level`: S1's Done lists every id that moved), zero
+  reserved positions, and set `card_seen` with `CardRows.set_seen(ids)` (it also zeroes every other
+  `card_id` row) to the card ids the run's training inputs held — **not** from the `card_id` rows,
+  which do not tell (S4's Done: every row of an old network moved); S4's Done gives the sets per
+  run. The migration needs the old tables (each run's `tables/`) and the old spec to read names from. **The omniscient
   critic** (`model.critic`; in no run's checkpoint, in S0's fixture `runs/open_vocab_s0/ckpt/m11-critic.pt`)
   has its own `Encoder` and so its own `num_proj` / `type_emb` / `cat_emb`: remap those the same
   way, and include critic values (on the decisions' omniscient frames) in S0's fixtures and the
@@ -615,7 +709,8 @@ above, plus what it implied:
   fixtures: each migrated checkpoint on the new layout gives the fixture outputs, except for the
   effect of S1's removed inputs — so the comparison is against the old checkpoint run with the
   `lists` / `b_lists` tokens removed (S0's `*_nolists` arrays); logits and values within
-  1e-5 (fp32, CPU); (b) the synthetic one-card expansion: identical outputs on every decision not
+  1e-5 (fp32, CPU), with the seen mask widened to the fixtures' card ids (with the true mask only
+  the decisions holding no card outside the run's set match: S4's Done, For S5 (4)); (b) the synthetic one-card expansion: identical outputs on every decision not
   mentioning the new card.
 - **Cut-over:** migrate every checkpoint listed in §0.3 into `runs/<run>/ckpt-v2/` (originals kept);
   regenerate exports; then a verification run: `rmtrain start` from the best migrated checkpoint

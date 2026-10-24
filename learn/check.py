@@ -14,7 +14,9 @@ Checks: the numpy RMTB reader against ``python/rmtb.py`` and its writer's round 
 hashes; the model's forward (shapes, finite outputs, padded rows), padding invariance (a decision's
 outputs do not depend on its batch or its padding), the training model against its folded
 inference module, auxiliary losses and a backward pass, the omniscient critic on paired decisions,
-the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; model
+the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; the seen-card mask
+(an unseen card's folded row is its features plus ``unknown_id``, marking it seen changes that row
+alone, training's marking moves no output, the mask through a checkpoint and the exports); model
 compatibility (``spec.check_compatible``: a checkpoint loads on tables with a card appended and
 carries their manifest, a removed or renamed card, another layout, text model or a moved registry
 entry refused; an export of the old tables refused on the new ones with the rebuild message; the same
@@ -31,6 +33,7 @@ os.environ["HIP_VISIBLE_DEVICES"] = ""
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import argparse  # noqa: E402
+import copy  # noqa: E402
 import json  # noqa: E402
 import subprocess  # noqa: E402
 import sys  # noqa: E402
@@ -149,6 +152,7 @@ def check_model(args, tables, decs):
     torch.manual_seed(3)
     cfg = M.ModelConfig(d=64, heads=4, layers=2, omniscient_critic=True, critic_layers=1)
     model = M.RMNet(cfg, tables)
+    model.cards.set_seen(range(model.cards.n_cards - 1))     # a trained network's: every card seen
     with torch.no_grad():
         for p in model.parameters():
             p.add_(torch.randn_like(p) * 0.02)
@@ -265,6 +269,112 @@ def check_exports(args, model, pol, x):
         d = max(maxdiff(r[0], ref[0]), maxdiff(r[1], ref[1]))
         ok(d <= 1e-4, "%s export differs from eager: %.3g" % (f, d))
         info("%s: metadata %s; outputs vs eager %.3g" % (f, meta, d))
+
+
+def check_seen(args, tables, model, x):
+    """The seen-card mask (docs/open_vocab_plan.md S4): a never-seen card's folded export row is its
+    features plus ``unknown_id`` and marking it seen changes that row only; training's marking moves
+    no output; the mask round-trips through a checkpoint, and a checkpoint without it is refused unless
+    given a seen set; the TorchScript and ``.pt2`` exports of a network with an unseen card agree with
+    eager."""
+    print("seen cards", flush=True)
+    cards_in = sorted(set(int(c) for c in x[3].flatten().tolist() if c >= 0))
+    u = cards_in[len(cards_in) // 2]
+    every = list(range(model.cards.n_cards - 1))
+    m = copy.deepcopy(model).eval()
+    m.cards.set_seen([i for i in every if i != u])
+    c = m.cards
+    ok(not bool(c.card_seen[u]) and int(c.card_seen.sum()) == len(every) - 1 and not bool(c.card_id.weight[u].any()),
+       "set_seen: card %d unseen with a zero id row, every other card seen" % u)
+    with torch.no_grad():
+        feat = c.card_feature_rows().float()
+        folded = m.inference_module(0).folded_rows
+        n = c.n_cards
+        ok(torch.equal(folded[u], feat[u] + c.unknown_id), "the unseen card's folded row is not its features plus "
+           "unknown_id")
+        seen_rows = feat + c.card_id.weight * c.card_real
+        others = [i for i in range(n) if i != u]
+        ok(torch.equal(folded[others], seen_rows[others]), "a seen card's folded row is not its features plus its id "
+           "row")
+        table = c.token_table()
+        K = max(model.spec.K, 1)
+        ok(all(torch.equal(table[k * n + u], feat[u] + c.unknown_id + c.card_slot[k]) for k in range(K)),
+           "the training token table's unseen row")
+        drop = c.token_table(True)
+        ok(all(torch.equal(drop[k * 2 * n + n + u], feat[u] + c.unknown_id + c.card_slot[k]) for k in range(K)),
+           "the id-dropout copy of the unseen row")
+        ref_lg, ref_v = m.inference_module(0)(*x)
+        # Marking it seen (its id row zero) changes its row and nothing else.
+        m2 = copy.deepcopy(m)
+        m2.cards.set_seen(every)
+        f2 = m2.inference_module(0).folded_rows
+        changed = torch.nonzero((f2 != folded).any(1)).squeeze(1).tolist()
+        ok(changed == [u], "marking card %d seen changed folded rows %s" % (u, changed[:8]))
+        lg2, _ = m2.inference_module(0)(*x)
+        ok(maxdiff(lg2, ref_lg) > 0, "marking a card of the batch seen moved no output")
+    # The aux heads score every id: the unseen one reads unknown_id there too, but trains neither it nor
+    # its own id row.
+    if model.cfg.aux_heads:
+        ma = copy.deepcopy(m).train()
+        lse = ma.aux(torch.randn(3, ma.cfg.d))["aux_hand"].logsumexp(-1).sum()
+        lse.backward()
+        g_unk, g_id = ma.cards.unknown_id.grad, ma.cards.card_id.weight.grad
+        ok((g_unk is None or not bool(g_unk.any())) and not bool(g_id[u].any()) and bool(g_id[others[0]].any()),
+           "the aux heads' gradient reaches unknown_id or the unseen card's id row")
+    # Training's marking: the batch's cards seen, the newly seen card's id row unknown_id, no output moved.
+    m3 = copy.deepcopy(m).train()
+    m3.cards.mark_seen(x[3])
+    ok(set(m3.cards.seen_ids()) == set(every), "mark_seen left cards of the batch unseen or marked others")
+    ok(torch.equal(m3.cards.card_id.weight[u], m3.cards.unknown_id.detach()),
+       "a newly seen card's id row is not unknown_id")
+    other = [i for i in range(n) if i != u]
+    ok(torch.equal(m3.cards.card_id.weight[other], m.cards.card_id.weight[other]), "mark_seen moved another id row")
+    with torch.no_grad():
+        lg3, v3 = m3.eval().inference_module(0)(*x)
+    d = max(maxdiff(lg3, ref_lg), maxdiff(v3, ref_v))
+    ok(d == 0.0, "training's first marking moved the outputs: %.3g" % d)
+    # The checkpoint round trip, and a checkpoint made before the mask.
+    path = os.path.join(args.work, "seen_check.pt")
+    M.save_checkpoint(m, path)
+    back = M.load_checkpoint(path, tables)
+    ok(torch.equal(back.cards.card_seen, m.cards.card_seen) and
+       all(torch.equal(a, b) for a, b in zip(back.state_dict().values(), m.state_dict().values())),
+       "the seen mask's checkpoint round trip")
+    data = torch.load(path, map_location="cpu", weights_only=True)
+    del data["state_dict"]["cards.card_seen"]
+    old = os.path.join(args.work, "seen_check_old.pt")
+    torch.save(data, old)
+    try:
+        M.load_checkpoint(old, tables)
+        ok(False, "a checkpoint without card_seen loaded")
+    except RuntimeError as e:
+        ok("card_seen is missing" in str(e) and "S4" in str(e), "the refusal of a checkpoint without the mask: %s" % e)
+    given = [i for i in every if i != u]
+    m4 = M.load_checkpoint(old, tables, seen=given)
+    ok(m4.cards.seen_ids() == given and not bool(m4.cards.card_id.weight[u].any()),
+       "load_checkpoint(seen=...) on a checkpoint without the mask")
+    try:
+        M.load_checkpoint(path, tables, seen=given)
+        ok(False, "seen= accepted for a checkpoint that has the mask")
+    except ValueError:
+        pass
+    # The exports of the network with an unseen card.
+    formats = ("ts",) if args.no_pt2 else ("ts", "pt2")
+    paths = E.export_policy(m.inference_module(5), os.path.join(args.work, "seen_policy"), 5, formats=formats)
+    worst = {}
+    for f, p in paths.items():
+        loaded = E.load(p)
+        with torch.no_grad():
+            r = loaded(*x)
+        worst[f] = max(maxdiff(r[0], ref_lg), maxdiff(r[1], ref_v))
+        ok(worst[f] <= 1e-4, "%s export with an unseen card differs from eager: %.3g" % (f, worst[f]))
+        if f == "ts":
+            ok(torch.equal(loaded.folded_rows[u], folded[u]), "the TorchScript export's row of the unseen card")
+    info("card %d unseen of %d in the batch: its folded row = features + unknown_id (training table and id-dropout "
+         "copy too); marking it seen changes that row alone; training's marking sets its id row to unknown_id and "
+         "moves no output; the aux heads train neither unknown_id nor its row; checkpoint round trip; a checkpoint "
+         "without the mask refused, loaded with seen=; exports vs eager %s"
+         % (u, len(cards_in), ", ".join("%s %.3g" % kv for kv in sorted(worst.items()))))
 
 
 def manifest_variants(m):
@@ -836,6 +946,9 @@ def check_bc(args, tables, win):
             ok(all(np.isfinite(v) for k, v in m.items() if k.startswith("train_")), "a non-finite BC loss %r" % m)
         first, last = float(np.mean(losses[:5])), float(np.mean(losses[-5:]))
         ok(last < first, "the BC policy loss did not decrease: %.3f -> %.3f" % (first, last))
+        seen = set(model.cards.seen_ids())
+        held = set(EP.read_episode(ep.path).seat_feat.card_ids().tolist())
+        ok(seen and seen <= held, "BC marked cards %s seen; the episode holds %s" % (sorted(seen - held), len(held)))
         e = tr.evaluate("train", 200)
         ok(e.get("eval_decisions", 0) > 0 and 0 <= e["eval_agree_all"] <= 1 and np.isfinite(e["eval_value_mse"]),
            "BC evaluation %r" % e)
@@ -848,8 +961,9 @@ def check_bc(args, tables, win):
         ok(tr.step == 30, "BC optimizer state restored")
     finally:
         tr.close()
-    info("30 steps on one episode (%d labelled decisions): policy loss %.3f -> %.3f, finite; evaluation, checkpoint "
-         "and optimizer state round trip" % (int((ep.labels >= 0).sum()), first, last))
+    info("30 steps on one episode (%d labelled decisions): policy loss %.3f -> %.3f, finite; %d of the episode's %d "
+         "cards marked seen; evaluation, checkpoint and optimizer state round trip"
+         % (int((ep.labels >= 0).sum()), first, last, len(seen), len(held)))
 
 
 def main():
@@ -877,6 +991,7 @@ def main():
     model, pol, x = check_model(args, tables, decs)
     check_event_dropout()
     check_exports(args, model, pol, x)
+    check_seen(args, tables, model, x)
     check_compat(args, tables, model)
     check_server(args, tables, model, decs)
     if args.engine_dir and not args.episodes:

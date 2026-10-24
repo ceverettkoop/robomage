@@ -192,6 +192,7 @@ class Worker:
         torch.manual_seed(c["run"]["seed"])
         if resume:
             model = M.load_checkpoint(resume, self.tables)
+            model.cfg.id_dropout = float(c["model"]["id_dropout"])
         else:
             model = M.RMNet(M.ModelConfig.from_dict(c["model"]), self.tables)
         win = RP.ReplayWindow(self._window_cfg(dirs, False), log=lambda m: log("bc window: " + m))
@@ -263,11 +264,13 @@ class Worker:
                                           "finetune_discretization", "stale_reg", "forward_tokens", "attention_budget",
                                           "checkpoint_tokens", "value_after_every")})
             saved_window = data.get("window")
+            learner.model.cfg.id_dropout = float(c["model"]["id_dropout"])
         else:
-            # The run's critic settings: a start_from checkpoint's config would otherwise decide them.
-            critic_cfg = {k: c["model"][k] for k in ("omniscient_critic", "critic_layers")}
+            # The run's critic settings and id-dropout: a start_from checkpoint's config would otherwise
+            # decide them.
+            run_cfg = {k: c["model"][k] for k in ("omniscient_critic", "critic_layers", "id_dropout")}
             learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device,
-                                                     model_cfg=critic_cfg)
+                                                     model_cfg=run_cfg)
         self.link = ServerLink(self.server, push_every=int(c["rnad"]["push_every"]))
         learner.add_hook(self.link)
         learner.add_hook(self._on_learner_event)
