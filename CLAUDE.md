@@ -128,8 +128,10 @@ background** and make the live output inspectable by the user:
 ## Testing guidelines
 
 - **The standard gate is `make check`**: the build, then every tier of the C++ gate
-  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). It
-  must pass before pushing, and CI runs exactly it. Tiers, in order (`--tier a,b` runs a subset;
+  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). CI
+  on GitHub runs exactly it on every push, so Claude does not run the full `make check` before
+  committing or pushing unless the user asks; run the tiers a change touches instead (`--tier`,
+  `--scenario`). Tiers, in order (`--tier a,b` runs a subset;
   details, runtimes and reproducing a CI failure in [`docs/ci.md`](docs/ci.md)):
 
   | Tier | Checks |

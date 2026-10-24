@@ -43,8 +43,10 @@ This plan is written to be executed in a session with no context beyond the repo
    their chain log `runs/pilot-chain.log`. Every checkpoint under `runs/*/ckpt/` (fixed points, `*-final.pt`,
    `bc-*.pt`) plus `runs/pilotB-prep/m11-critic.pt` is migrated in S5 — none is to be lost.
 4. **Workflow** (CLAUDE.md): a branch `refactor/open-vocab` off the starting branch; one stage at a
-   time, each by one subagent told not to spawn agents; every stage ends with `make check` green
-   and the stage's own acceptance checks; one commit per stage (or per coherent sub-step). Long
+   time, each by one subagent told not to spawn agents; every stage ends with the stage's own
+   acceptance checks and the gate tiers it touches run locally, then `make check` green in GitHub
+   CI after the push (the full gate runs locally only when the user asks); one commit per stage
+   (or per coherent sub-step). Long
    commands run in the background with their output path stated. `DO NOT MODIFY CARD SCRIPTS`; no
    retagging of script parameters.
 5. **Vocabulary of this plan.** *Layout*: the position of every input slot, table column and
