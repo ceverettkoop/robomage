@@ -25,7 +25,7 @@
 {"name":"link_kind","capacity":8,"values":["EXILED_WITH","RETURNABLE"]},
 {"name":"attack_target_kind","capacity":8,"values":["PLAYER","PLANESWALKER"]},
 {"name":"stack_kind","capacity":8,"values":["SPELL","ACTIVATED","TRIGGERED","COPY"]},
-{"name":"cast_variant","capacity":32,"values":["FLASHBACK","EVOKE","ESCAPE","OFFSPRING","IMPENDING","WARP","BACK_FACE","ALT_COST","IMPULSE","COMPANION","SUSPEND","CANCEL"]},
+{"name":"cast_variant","capacity":32,"values":["FLASHBACK","EVOKE","ESCAPE","OFFSPRING","IMPENDING","WARP","BACK_FACE","ALT_COST","IMPULSE","COMPANION","SUSPEND","CANCEL","WITHOUT_MANA_COST"]},
 {"name":"target_kind","capacity":8,"values":["OBJECT","PLAYER"]},
 {"name":"delayed_state","capacity":8,"values":["WAITING","ON_STACK"]},
 {"name":"fire_kind","capacity":8,"values":["FIRE_UPKEEP","FIRE_END_STEP","FIRE_END_OF_COMBAT","FIRE_LEAVES_BATTLEFIELD"]},

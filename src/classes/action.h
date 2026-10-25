@@ -87,6 +87,9 @@ struct LegalAction {
         bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
         bool use_escape = false;     // cast from graveyard paying the Escape cost (CR 702.139)
         bool impulse_cast = false;   // cast from exile under a cur_game.resolved_effects.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
+        // Cast without paying its mana cost under a free-cast static (Omniscience, Aluren): the
+        // alternative cost of CR 118.9, its additional costs still paid (rules_mod::free_cast_grant).
+        bool without_mana_cost = false;
         // PLAY_LAND of a modal DFC's BACK face: the source entity is the combined card (whose
         // CardData is the front face), but it is being played as its back face (a land). The
         // processor marks it EntryInfo::enters_transformed so it enters showing the back face.

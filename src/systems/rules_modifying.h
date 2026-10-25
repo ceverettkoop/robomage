@@ -59,6 +59,20 @@ bool opponent_sorcery_speed_locked(Zone::Ownership caster);
 // this (the lock is applied after in the gate).
 bool cast_with_flash_active(Zone::Ownership caster, const CardData &card);
 
+// Free-cast statics (Omniscience: "You may cast spells from your hand without paying their mana
+// costs"; Aluren: any player, creature spells with mana value 3 or less, as though they had flash;
+// MayPlay$ True with MayPlayWithoutManaCost$ True): may `caster` cast `card`, from the zone it is
+// in now and as `face` (the card's own CardData, or the back face / second half being cast),
+// without paying its mana cost — the alternative cost of CR 118.9? `with_flash` reports whether
+// such a cast may be made as though the spell had flash (MayPlayWithFlash$; CR 601.3c: the flash
+// comes with that cost only). The statics open no zone: callers ask only where the card may be
+// cast from already (the hand, a graveyard or exile permission).
+struct FreeCastGrant {
+        bool granted = false;
+        bool with_flash = false;
+};
+FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership caster);
+
 // CantAttack (Ensnaring Bridge): may the creature `creature` NOT be declared as an attacker
 // right now (CR 509.1a)? True when any active CantAttack static's ValidCard$ filter matches it.
 // A dynamic power/toughness-vs-X qualifier (Ensnaring Bridge's Creature.powerGTX, "power greater

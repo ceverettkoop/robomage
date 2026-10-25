@@ -381,6 +381,10 @@ struct Game {
             bool use_offspring = false;
             bool impulse_cast = false;
             bool cast_back_face = false;
+            // Cast without paying its mana cost under a free-cast static (CR 118.9): the regular
+            // branch with a {0} mana cost — additional costs, cost increases and the SetCost floor
+            // still apply, X is 0 (CR 107.3b), the mana cost's hybrid and Phyrexian pips unpaid.
+            bool without_mana_cost = false;
             // The card's Zone before the cast moved it to the stack (CR 601.2a):
             // where a reversed proposal returns it (Orderer::rewind_cast_move) and
             // the origin of the zone change reported once it becomes cast.

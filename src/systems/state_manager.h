@@ -96,6 +96,11 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
 // increase/reduction (CR 601.2f — Trinisphere checks the spell's already-adjusted cost).
 int active_cost_floor_for(const CardData &card_data);
 
+// Does a continuous static's AffectedZone$ `az` reach a card currently in `zone`? "All" = every
+// zone; empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone
+// list. `has_zone` false (an object with no Zone) matches "All" only.
+bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
+
 // The mana portion of an alternative casting cost (alt cost / flashback / escape) with the
 // active cost-increase surcharge (Thalia) and SetCost floor (Trinisphere) folded in. CR 601.2f
 // applies both AFTER the alternative cost is substituted for the mana cost: first the additive

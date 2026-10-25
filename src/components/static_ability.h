@@ -87,7 +87,26 @@ struct StaticAbility {
     bool match_named_card = false;
     // Icetill Explorer statics (category = "Continuous"):
     int adjust_land_plays = 0;            // AdjustLandPlays$ N — additional land plays per turn
-    bool may_play_from_graveyard = false; // MayPlay$ True with AffectedZone$ Graveyard
+    // MayPlay$ True over Land cards with AffectedZone$ Graveyard ("you may play lands from your
+    // graveyard": Icetill Explorer, Mole Man, Crucible of Worlds).
+    bool may_play_from_graveyard = false;
+    // MayPlay$ True with MayPlayWithoutManaCost$ True (Omniscience: "You may cast spells from your
+    // hand without paying their mana costs"; Aluren): the cards Affected$ designates in its
+    // AffectedZone$ zones may be cast for the alternative cost "without paying its mana cost"
+    // (CR 118.9) by the players may_play_player names; with MayPlayWithFlash$ True that cast may
+    // be made as though the spell had flash (CR 601.3c). The static grants no permission to cast
+    // from a zone other than the hand, so it applies only to a card in one of those zones some
+    // other rule or effect lets the player cast (MayPlayDontGrantZonePermissions$ True says so;
+    // parse_one_static_ability reports a free-cast static over another zone without it).
+    // Read by rules_mod::free_cast_grant.
+    enum class MayPlayPlayer : uint8_t {
+        YOU,
+        OPPONENT,
+        ANY
+    };
+    bool may_play_without_mana_cost = false;
+    bool may_play_with_flash = false;
+    MayPlayPlayer may_play_player = MayPlayPlayer::YOU;  // MayPlayPlayer$ (default the controller)
     // SVar-based condition (Keen-Eyed Curator)
     std::string check_svar_expr = "";   // resolved CheckSVar$ expression (e.g. "Count$ValidExile Card.ExiledWithSource$CardTypes")
     std::string svar_compare = "";      // SVarCompare$ value (e.g. "GE4")

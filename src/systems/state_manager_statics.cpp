@@ -370,9 +370,8 @@ static std::set<Colors> parse_setcolor_spec(const std::string &spec) {
     return out;
 }
 
-// Does a SetColor$ static's AffectedZone$ reach a card currently in `zone`? "All" = every zone;
-// empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone list.
-static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
+// See declaration in state_manager.h.
+bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
     if (az == "All") return true;
     if (az.empty()) return has_zone && zone == Zone::BATTLEFIELD;  // Forge default for a continuous static
     if (!has_zone) return false;
@@ -466,7 +465,7 @@ bool setcolor_override_for(Entity e, std::set<Colors> &out) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed || !as.condition_met) continue;
         if (as.sa()->category != "Continuous" || as.sa()->set_color.empty()) continue;
-        if (!setcolor_zone_matches(as.sa()->affected_zone, zone, has_zone)) continue;
+        if (!affected_zone_matches(as.sa()->affected_zone, zone, has_zone)) continue;
         if (has_card) {
             MatchCtx ctx;
             ctx.controller = as.controller;

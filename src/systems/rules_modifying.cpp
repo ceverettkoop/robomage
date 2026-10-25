@@ -3,20 +3,22 @@
 #include <algorithm>
 #include <climits>
 
-#include "state_manager.h"  // g_active_statics, ActiveStatic
 #include "../classes/game.h"  // cur_game, CastWithFlashPermission
-#include "../ecs/coordinator.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/static_ability.h"
 #include "../components/types.h"
+#include "../components/zone.h"
+#include "../ecs/coordinator.h"
+#include "../mana_system.h"  // get_player_entity
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
-#include "../mana_system.h"  // get_player_entity
-#include "../svar_eval.h"  // evaluate_svar (CantAttack dynamic-X hand count)
+#include "../svar_eval.h"   // evaluate_svar (CantAttack dynamic-X hand count)
+#include "state_manager.h"  // g_active_statics, ActiveStatic
 
 namespace rules_mod {
 
@@ -24,6 +26,8 @@ static bool cant_activate_filter_matches(Entity permanent_entity, const std::str
                                          Zone::Ownership source_controller);
 static std::string activation_source_name(Entity source);
 static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const CardData &card);
+static bool may_play_player_covers(
+    StaticAbility::MayPlayPlayer who, Zone::Ownership controller, Zone::Ownership caster);
 
 // Does `permanent_entity` satisfy a CantBeActivated ValidCard$ filter (a comma-OR list of
 // Forge clauses, e.g. "Artifact" for Null Rod, "Artifact,Creature,Planeswalker" for Clarion
@@ -200,6 +204,47 @@ bool cast_with_flash_active(Zone::Ownership caster, const CardData &card) {
         if (card_matches_filter(card, perm.filter, ctx)) return true;
     }
     return false;
+}
+
+// Does a MayPlayPlayer$ scope, read from the static's `controller`, include `caster`?
+static bool may_play_player_covers(
+    StaticAbility::MayPlayPlayer who, Zone::Ownership controller, Zone::Ownership caster) {
+    switch (who) {
+        case StaticAbility::MayPlayPlayer::ANY:
+            return true;
+        case StaticAbility::MayPlayPlayer::OPPONENT:
+            return caster == opponent_of(controller);
+        case StaticAbility::MayPlayPlayer::YOU:
+            break;
+    }
+    return caster == controller;
+}
+
+FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership caster) {
+    FreeCastGrant grant;
+    if (!global_coordinator.entity_has_component<Zone>(card) ||
+        !global_coordinator.entity_has_component<CardData>(card))
+        return grant;
+    const Zone::ZoneValue zone = global_coordinator.GetComponent<Zone>(card).location;
+    // The card's own face is matched as the object (its owner for YouOwn); a back face or second
+    // half by that face's characteristics, in its owner's hand.
+    const bool own_face = &face == &global_coordinator.GetComponent<CardData>(card);
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;  // 613.1f: source lost all abilities (Humility)
+        const StaticAbility &sa = *as.sa();
+        if (sa.category != "Continuous" || !sa.may_play_without_mana_cost) continue;
+        if (!may_play_player_covers(sa.may_play_player, as.controller, caster)) continue;
+        if (!affected_zone_matches(sa.affected_zone, zone, /*has_zone=*/true)) continue;
+        MatchCtx ctx;
+        ctx.controller = as.controller;  // "you" of YouOwn: the static's controller
+        ctx.source = as.entity;
+        extract_static_cmc_bound(sa.affected, ctx);  // Aluren's cmcLE3
+        if (!(own_face ? card_matches_filter(card, sa.affected, ctx) : card_matches_filter(face, sa.affected, ctx)))
+            continue;
+        grant.granted = true;
+        grant.with_flash = grant.with_flash || sa.may_play_with_flash;
+    }
+    return grant;
 }
 
 bool attack_prohibited(Entity creature_entity) {

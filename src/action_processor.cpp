@@ -79,6 +79,7 @@ static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Order
 static void fail_activation_payment(Game::PendingActivation &pa,
                                     std::shared_ptr<Orderer> orderer);
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster);
+static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data);
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
 static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
                                      std::vector<LegalAction> &&menu, bool chooser_is_a,
@@ -450,6 +451,13 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     }
     if (card_data.alt_cost.life_cost != 0)
         game.pending.cast.deferred_life_cost += card_data.alt_cost.life_cost;
+}
+
+// The hybrid pips of the mana cost this cast pays: none when it is cast without paying its mana
+// cost (CR 118.9), the card's otherwise.
+static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data) {
+    static const std::vector<HybridPip> kNone;
+    return pc.without_mana_cost ? kNone : card_data.hybrid_mana;
 }
 
 // Park a combat target sub-prompt (attack target / block target) as a loop-top
@@ -1955,7 +1963,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             } else {  // REGULAR COST + DELVE (also a NORMAL play-from-exile grant)
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
                 // caster passed so Affinity for artifacts reduces the generic cost (702.41).
-                pc.cost_to_pay = effective_base_cost(card_data, caster);
+                // Without paying its mana cost (a free-cast static, CR 118.9) the mana cost is
+                // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
+                // additional costs below are offered and paid as on any cast.
+                pc.cost_to_pay = pc.without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
+                                                      : effective_base_cost(card_data, caster);
+                if (pc.without_mana_cost)
+                    game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(),
+                        card_data.name.c_str());
 
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
                 if (pc.use_offspring)
@@ -2084,9 +2099,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 size_t ki = pc.kicker_idx;
                 ManaValue with_kicker = pc.cost_to_pay;
                 for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
-                if (!resolve_hybrid_cost(caster, with_kicker, card_data.hybrid_mana,
-                                         spell_entity, orderer, card_data.has_delve,
-                                         card_data.has_improvise)) {
+                if (!resolve_hybrid_cost(caster, with_kicker, mana_cost_hybrid_pips(pc, card_data), spell_entity,
+                        orderer, card_data.has_delve, card_data.has_improvise)) {
                     pc.kicker_idx++;
                     continue;
                 }
@@ -2123,9 +2137,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 while (true) {
                     ManaValue with_replicate = pc.cost_to_pay;
                     for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
-                    if (!resolve_hybrid_cost(caster, with_replicate, card_data.hybrid_mana,
-                                             spell_entity, orderer, card_data.has_delve,
-                                             card_data.has_improvise))
+                    if (!resolve_hybrid_cost(caster, with_replicate, mana_cost_hybrid_pips(pc, card_data), spell_entity,
+                            orderer, card_data.has_delve, card_data.has_improvise))
                         break;
                     if (resume_choice >= 0) {
                         bool accepted = (resume_choice == 1);
@@ -2149,8 +2162,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::CHOOSE_X: {
-            // X-COST: prompt player to choose X value, add X generic to cost
-            if (card_data.has_x_cost) {
+            // X-COST: prompt player to choose X value, add X generic to cost. Cast without
+            // paying its mana cost, the only legal X is 0 (CR 107.3b).
+            if (card_data.has_x_cost && pc.without_mana_cost) {
+                pc.x_paid = 0;
+            } else if (card_data.has_x_cost) {
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
@@ -2197,7 +2213,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // auto-mana off the player is prompted per pip, like the Phyrexian block below.
             // (Auto-mana resolves with ZERO decisions; the per-pip menu is a deliberate blocking
             // non-conversion, not a loop-safe snapshot point.)
-            if (!card_data.hybrid_mana.empty()) {
+            if (!mana_cost_hybrid_pips(pc, card_data).empty()) {
                 if (auto_mana) {
                     ManaValue resolved;
                     if (resolve_hybrid_cost(caster, pc.cost_to_pay, card_data.hybrid_mana,
@@ -2248,8 +2264,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::PHYREXIAN_PIP: {
-            // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life
-            if (!card_data.phyrexian_mana.empty()) {
+            // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life (none when the
+            // mana cost is not paid)
+            if (!card_data.phyrexian_mana.empty() && !pc.without_mana_cost) {
                 Entity caster_entity = get_player_entity(caster);
                 auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
                 while (pc.phyrexian_idx < card_data.phyrexian_mana.size()) {
@@ -3156,6 +3173,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             pc.use_offspring = action.use_offspring;
             pc.impulse_cast = action.impulse_cast;
             pc.cast_back_face = action.cast_back_face;
+            pc.without_mana_cost = action.without_mana_cost;
             begin_cast(pc, caster, orderer);
             run_cast_flow(pc, game, orderer, -1);
             break;

@@ -70,6 +70,7 @@
       "findings": [
        "ability_param:PermanentCreature.ManaRestriction",
        "category:PermanentCreature",
+       "static_form:MayPlay.Graveyard",
        "static_param:EffectZone"
       ],
       "size": "L"
@@ -137,15 +138,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "88972b4a7069bcdc22c657d19934a2c1c75837e6fc5bf1a75f635ccdfb6a618c",
+    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
     "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
-    "sizes": "9a987cce4364e0eced9fde1a622cd828ff25024abddc5d0e66fcde61f6fee03d",
+    "sizes": "eb957631a0d38963cd283297d2a35380d5c40e730b5afbcb4a0a00544b72374b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
    "summary": "9 new card(s): 4 clean, 5 need 8 mechanic(s) (30 points)",
-   "time": "2026-10-25T00:02:31"
+   "time": "2026-10-25T00:23:33"
   },
   "diff": {
    "detail": {
@@ -189,15 +190,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "88972b4a7069bcdc22c657d19934a2c1c75837e6fc5bf1a75f635ccdfb6a618c",
+    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
     "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
-    "sizes": "9a987cce4364e0eced9fde1a622cd828ff25024abddc5d0e66fcde61f6fee03d",
+    "sizes": "eb957631a0d38963cd283297d2a35380d5c40e730b5afbcb4a0a00544b72374b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), FORGE_PIN bump, Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), without<Keyword> filter qualifier",
-   "time": "2026-10-25T00:02:31"
+   "time": "2026-10-25T00:23:33"
   },
   "parse": {
    "detail": {
@@ -293,6 +294,12 @@
         "name": "EffectZone"
        },
        {
+        "detail": "a permission to play Card.Self from Graveyard",
+        "kind": "static_form",
+        "line": "S:Mode$ Continuous | Affected$ Card.Self | MayPlay$ True | AffectedZone$ Graveyard | EffectZone$ Graveyard | Description$ You may cast CARDNAME from your graveyard.",
+        "name": "MayPlay.Graveyard"
+       },
+       {
         "detail": "Convoke",
         "kind": "keyword",
         "line": "K:Convoke",
@@ -385,14 +392,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "88972b4a7069bcdc22c657d19934a2c1c75837e6fc5bf1a75f635ccdfb6a618c",
+    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
     "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
-   "summary": "8 new card(s), 4 with findings (11 findings), 1 without a script",
-   "time": "2026-10-25T00:02:31"
+   "summary": "8 new card(s), 4 with findings (12 findings), 1 without a script",
+   "time": "2026-10-25T00:23:32"
   },
   "provision": {
    "detail": {

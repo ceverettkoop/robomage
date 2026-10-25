@@ -1359,6 +1359,7 @@ static uint16_t cast_variant_mask(const LegalAction &la) {
     bit(la.play_back_face || la.cast_back_face, CastVariant::BACK_FACE);
     bit(la.use_alt_cost, CastVariant::ALT_COST);
     bit(la.impulse_cast, CastVariant::IMPULSE);
+    bit(la.without_mana_cost, CastVariant::WITHOUT_MANA_COST);
     bit(la.companion_to_hand, CastVariant::COMPANION);
     bit(la.suspend_action, CastVariant::SUSPEND);
     bit(la.cancel_proposal, CastVariant::CANCEL);

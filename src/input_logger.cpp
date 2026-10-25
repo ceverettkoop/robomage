@@ -366,12 +366,11 @@ static bool interchangeable_choices(const LegalAction &a, const LegalAction &b) 
     return a.type == b.type && a.category == b.category && a.description == b.description &&
            a.option_ordinal == b.option_ordinal && a.target_entity == b.target_entity &&
            a.use_alt_cost == b.use_alt_cost && a.use_flashback == b.use_flashback &&
-           a.use_offspring == b.use_offspring && a.use_escape == b.use_escape &&
-           a.impulse_cast == b.impulse_cast && a.play_back_face == b.play_back_face &&
+           a.use_offspring == b.use_offspring && a.use_escape == b.use_escape && a.impulse_cast == b.impulse_cast &&
+           a.without_mana_cost == b.without_mana_cost && a.play_back_face == b.play_back_face &&
            a.cast_back_face == b.cast_back_face && a.companion_to_hand == b.companion_to_hand &&
            a.suspend_action == b.suspend_action && a.card_is_public == b.card_is_public &&
-           a.source_entity != b.source_entity &&
-           interchangeable_cards(a.source_entity, b.source_entity);
+           a.source_entity != b.source_entity && interchangeable_cards(a.source_entity, b.source_entity);
 }
 
 // Indices of the menu entries kept when every entry interchangeable with an earlier one is left

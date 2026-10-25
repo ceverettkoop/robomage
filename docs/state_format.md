@@ -934,7 +934,7 @@ computes neither outside its legal-action enumeration.
 | | `source_player`, `target_player` | seat | | when the source / target is a player |
 | | ability | abref | | an ACTIVATE_ABILITY action's ability |
 | | `ordinal` | i16 | `signed` | `option_ordinal`; −1 = n/a |
-| | `variant` | u16 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel |
+| | `variant` | u16 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static) |
 | | `card_public` | u8 | `bool` | |
 | | `description` | text | `text` | covered by the leak checks (register 12). For a seat, an entry whose source or target's identity the viewer cannot see (and that is not `card_public`) gets `(hidden card)` instead |
 | `match` (47) | `game` | u8 | `count` | as `header.game` |
@@ -1035,7 +1035,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT (the `CardPlayPermission::Source` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
-| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL |
+| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST |
 | `knowledge_level` | OFF, EXPERT |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
 | `amount_kind` | NONE, FIXED, VARIABLE |

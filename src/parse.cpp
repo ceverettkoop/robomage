@@ -87,6 +87,7 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string& scri
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
 static StaticAbility parse_one_static_ability(const std::string& line, const std::map<std::string, std::string>& svars);
+static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permission);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 static bool take_direct_amount_expr(AbilityDef& ability);
@@ -3558,6 +3559,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     if (line.find("Mode$") == std::string::npos) return sa;
 
     bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
+    bool may_play = false;              // MayPlay$ True (resolve_may_play_form)
+    bool may_play_no_zone_grant = false;  // MayPlayDontGrantZonePermissions$ True
     size_t param_pos = 0;
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
@@ -3754,7 +3757,18 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                     sa.adjust_land_plays = std::stoi(value);
             } else if (key == "MayPlay") {
-                if (value == "True") sa.may_play_from_graveyard = true;
+                may_play = (value == "True");
+            } else if (key == "MayPlayWithoutManaCost") {
+                sa.may_play_without_mana_cost = (value == "True");
+            } else if (key == "MayPlayWithFlash") {
+                sa.may_play_with_flash = (value == "True");
+            } else if (key == "MayPlayDontGrantZonePermissions") {
+                may_play_no_zone_grant = (value == "True");
+            } else if (key == "MayPlayPlayer" && (value == "You" || value == "Opponent" || value == "Player")) {
+                // Who may use the permission (Aluren: Player, any player); default its controller.
+                sa.may_play_player = value == "Player"     ? StaticAbility::MayPlayPlayer::ANY
+                                     : value == "Opponent" ? StaticAbility::MayPlayPlayer::OPPONENT
+                                                           : StaticAbility::MayPlayPlayer::YOU;
             } else if (key == "CheckSVar") {
                 sa.check_svar_expr = svar_or_literal(svars, value);
             } else if (key == "SVarCompare") {
@@ -3779,6 +3793,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             }
         }
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
+    if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
 
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
     // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
@@ -3788,6 +3803,37 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     }
 
     return sa;
+}
+
+// A Continuous MayPlay$ True static, read as the permission it is: a free cast (MayPlayWithout-
+// ManaCost$, over the hand and the zones another permission opens), or lands played from the
+// graveyard. The engine has no rule for any other play permission (a zone the static would open
+// itself, a cast for normal costs): the finding static_form MayPlay.<zone> for each such zone.
+static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permission) {
+    std::vector<std::string> zones;
+    for (size_t b = 0; b <= sa.affected_zone.size();) {
+        size_t e = sa.affected_zone.find(',', b);
+        if (e == std::string::npos) e = sa.affected_zone.size();
+        if (e > b) zones.push_back(sa.affected_zone.substr(b, e - b));
+        b = e + 1;
+    }
+    if (zones.empty()) zones.push_back("Battlefield");  // a Continuous static's default zone
+    if (sa.may_play_without_mana_cost) {
+        // The hand needs no permission to cast from; another zone does, which the static gives
+        // unless it says it grants none (Aluren).
+        for (const std::string &z : zones)
+            if (z != "Hand" && !grants_no_zone_permission)
+                parse_finding(
+                    "static_form", "MayPlay." + z, "a permission to cast from " + z + " without paying the mana cost");
+        return;
+    }
+    const bool lands = filter_has_head(sa.affected, "Land") && sa.affected.find(',') == std::string::npos;
+    if (lands && zones.size() == 1 && zones[0] == "Graveyard" && !sa.may_play_with_flash) {
+        sa.may_play_from_graveyard = true;
+        return;
+    }
+    for (const std::string &z : zones)
+        parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected + " from " + z);
 }
 
 static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
