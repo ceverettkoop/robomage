@@ -1,0 +1,17 @@
+{
+  "name": "cr603_4_moonshadow_while_condition_not_rechecked",
+  "why": "CR 603.4 / 603.2: Moonshadow's 'while this creature has a -1/-1 counter on it' is part of the trigger event, not an intervening if (603.4 applies only to an 'if' that immediately follows the trigger condition; the script's NoResolvingCheck$ True), so it is checked only as the trigger fires: seven fetchlands sacrificed with all seven triggers on the stack each trigger at six counters, and the last to resolve, after the other six have removed every counter, still resolves rather than being removed from the stack (Moonshadow's NoResolvingCheck$)",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills", "Misty Rainforest",
+                    "Bloodstained Mire", "Verdant Catacombs", "Moonshadow"],
+  "play": ["A:keep", "B:keep", "A:activate:Scalding Tarn", "A:activate:Flooded Strand", "A:activate:Polluted Delta",
+           "A:activate:Wooded Foothills", "A:activate:Misty Rainforest", "A:activate:Bloodstained Mire",
+           "A:activate:Verdant Catacombs"],
+  "max_decisions": 12,
+  "expect_count": {"^Moonshadow triggered": 7, "^Resolving ability \\(category: RemoveCounter": 7},
+  "expect": ["Removed 1 M1M1 counter\\(s\\) \\(now 7/7\\)"],
+  "expect_order": ["Removed 1 M1M1 counter\\(s\\) \\(now 7/7\\)", "Resolving ability \\(category: RemoveCounter",
+                   "Player A fails to find"],
+  "expect_not": ["intervening-if condition is no longer true"]
+}

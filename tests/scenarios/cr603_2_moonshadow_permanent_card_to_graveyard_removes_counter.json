@@ -1,0 +1,12 @@
+{
+  "name": "cr603_2_moonshadow_permanent_card_to_graveyard_removes_counter",
+  "why": "CR 603.2: a permanent card put into its controller's graveyard (a sacrificed fetchland) while Moonshadow has a -1/-1 counter on it triggers Moonshadow, which removes one of its six counters (Moonshadow's NoResolvingCheck$)",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Scalding Tarn", "Moonshadow"],
+  "play": ["A:keep", "B:keep", "A:activate:Scalding Tarn"],
+  "max_decisions": 6,
+  "expect_count": {"^Moonshadow triggered": 1},
+  "expect": ["Removed 1 M1M1 counter\\(s\\) \\(now 2/2\\)"],
+  "expect_not": ["intervening-if condition is no longer true"]
+}

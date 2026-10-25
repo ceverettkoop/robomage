@@ -135,6 +135,7 @@ struct TriggerLine {
     bool exclude_first_draw_step = false;
     bool optional = false;            // OptionalDecider$
     int resolved_limit = 0;           // ResolvedLimit$ N
+    bool no_resolving_check = false;  // NoResolvingCheck$ True
     bool combat_damage_only = false;  // CombatDamage$ True
     bool from_graveyard = false;      // TriggerZones$ Graveyard
     size_t draw_number_eq = 0;        // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
@@ -3222,6 +3223,14 @@ static TriggerLine read_trigger_line(const std::string &line,
                 t.resolved_limit = std::stoi(value);
             else
                 parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+        } else if (key == "NoResolvingCheck") {
+            // NoResolvingCheck$ True: the trigger's condition is checked when the trigger event
+            // occurs and not again at resolution (Moonshadow's "while" condition, part of the
+            // trigger event rather than an intervening "if").
+            if (value == "True")
+                t.no_resolving_check = true;
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         } else if (key == "FirstCardInDrawStep") {
             if (value == "False") t.exclude_first_draw_step = true;
         } else if (key == "Number") {
@@ -3386,6 +3395,8 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     // ResolvedLimit$ N — an intervening-if (CR 603.4) on how often the ability has resolved this
     // turn, checked as the trigger is collected and again as it resolves.
     ability.trigger_resolved_limit = t.resolved_limit;
+    // NoResolvingCheck$ True — the trigger's condition is not rechecked as the ability resolves.
+    ability.trigger_no_resolving_check = t.no_resolving_check;
     // Static$ True on a phase or zone-change trigger (Carpet of Flowers' cleanup / leave-battlefield
     // resets) is a bookkeeping trigger that resolves immediately off the stack — it never uses the
     // stack like a normal triggered ability (CR 605.1a-style). The TapsForMana static path has its

@@ -354,8 +354,12 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // evaluated by the state-trigger scan when it fires — it is NOT an intervening-if to be
             // re-checked at resolution. Dark Depths' "sacrifice it, if you do create Marit Lage" must
             // still create the token even though the sacrifice it just performed makes the "no ice
-            // counters" condition read false (the source has left the battlefield).
-            if (ab.def->intervening_if && !ab.def->trigger_state_condition &&
+            // counters" condition read false (the source has left the battlefield). Neither this
+            // check nor the stored-SVar gate below applies to a NoResolvingCheck$ trigger, whose
+            // condition is part of the trigger event (Moonshadow's "while this creature has a
+            // -1/-1 counter on it").
+            const bool recheck_condition = !ab.def->trigger_no_resolving_check;
+            if (recheck_condition && ab.def->intervening_if && !ab.def->trigger_state_condition &&
                 !evaluate_present_condition(ab, ab.controller, orderer)) {
                 game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
                 return ResolveStatus::DONE;
@@ -365,8 +369,9 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
             // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
             // the mana resolves, so the gate still reads 0 here for a legitimate fire).
-            if (!ab.def->stored_svar_gate_name.empty() &&
-                !stored_svar_gate_passes(ab.source.get(), ab.def->stored_svar_gate_name, ab.def->stored_svar_gate_compare)) {
+            if (recheck_condition && !ab.def->stored_svar_gate_name.empty() &&
+                !stored_svar_gate_passes(
+                    ab.source.get(), ab.def->stored_svar_gate_name, ab.def->stored_svar_gate_compare)) {
                 game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
                 return ResolveStatus::DONE;
             }

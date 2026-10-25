@@ -455,6 +455,13 @@ struct AbilityDef {
     // resolution counts once its optional "you may" is accepted and its targets and
     // intervening-if have held (Game::limited_resolution_counts). 0 = no limit.
     int trigger_resolved_limit = 0;
+    // NoResolvingCheck$ True on a trigger line — the trigger's condition (its IsPresent$ /
+    // CheckSVar$ gate) is checked only when the trigger event occurs, not again as the ability
+    // resolves. Moonshadow's "whenever ... while this creature has a -1/-1 counter on it" is part
+    // of the trigger event, not an intervening "if" clause (CR 603.4 applies only to an "if" that
+    // immediately follows the trigger condition), so a counter removed in response leaves the
+    // ability to resolve. ResolvedLimit$ is still checked at resolution.
+    bool trigger_no_resolving_check = false;
 
     // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
     bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller
