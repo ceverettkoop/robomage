@@ -909,14 +909,14 @@ by `git mv` in stage 10.
 | # | Stage | What | Tool | Where |
 |---|---|---|---|---|
 | 1 | scrape | top-N Legacy decks → `.dk` in `decks/candidates/` | `tools/meta_scraper/scrape_meta.py --out bin/resources/decks/candidates` (network, polite delay) | manual |
-| 2 | diff | each card against `src/card_vocab.h` (accent-insensitive, DFC-aware): in vocab / script present, not in vocab / no script | `robomage --check-decks --check-decks-dir candidates` | CI-able |
-| 3 | provision | fetch missing scripts and the tokens they make (engine-synthesised kinds: add stems to `tools/forge_fetch/provision_decks.py` `keyword_tokens`) at the pinned Forge commit | `tools/forge_fetch/fetch_script.py` | manual (network) |
+| 2 | diff | each card against `src/card_vocab.h` (accent-insensitive, DFC-aware): in vocab / script present, not in vocab / no script | `robomage --check-decks --check-decks-dir candidates/<stem>.dk` (one deck) | CI-able |
+| 3 | provision | fetch missing scripts and the tokens they make (engine-synthesised kinds: add stems to `tools/forge_fetch/provision_decks.py` `keyword_tokens`) at the pinned Forge commit; a card Forge lacks at the pin becomes the capability item `script:<card>` (a `FORGE_PIN` bump) | `tools/forge_fetch/fetch_script.py` | manual (network) |
 | 4 | parse report | load each new script with parser findings captured: unknown ability categories (would resolve as no-ops), unmodelled params, unknown keywords, SVars | new engine mode `--parse-report CARD…` (JSON per card; plays no game) | CI-able |
 | 5 | capability | per card clean / needs mechanic X; per deck missing cards and mechanics; mechanics shared across candidates ranked by how many decks they unlock | `onboard.py capability` | CI-able |
 | 6 | implement | engine work per missing mechanic, honouring the scripts' tags (no script edits, no retagging), a rules scenario each, `docs/rules_deviations.md` for gaps | developer, one mechanic per commit | manual |
-| 7 | vocab append | append the deck's cards at the next free ids (< 900), `make registry` for new enum values (new keywords / effect categories land in reserved capacity) | `onboard.py vocab` edits only `card_vocab_entries`; reviewed diff | manual |
+| 7 | vocab append | append the deck's cards at the next free ids (< 900), `make registry` for new enum values (new keywords / effect categories land in reserved capacity) | `onboard.py vocab` edits only `src/card_vocab.h` (`card_vocab_entries`, and `token_vocab_entries` for the tokens the new cards make); reviewed diff | manual |
 | 8 | text rows | encode the new cards' oracle text: `make text-table` (fetches the pinned model with `tools/embed/fetch_model.py`, regenerates only stale rows with `rmembed`; needs network and libtorch, `make rmembed`) | existing | manual |
-| 9 | checks + fuzz | `make check`; `robomage_check --tier fuzz --matchups <new>:* --fuzz-games 100` bo1, bo3 `explore:patient` and `--no-auto-mana` against every league deck: any draw, cap, `FATAL`, `ERROR` or non-fatal error line is a finding that blocks the deck | the gate | manual campaign; 10-game smoke per onboarded deck in CI |
+| 9 | checks + fuzz | `make check`; `robomage_check --tier fuzz --matchups <dir>/<new>:* --fuzz-games 100` bo1, bo3 `explore:patient` and `--no-auto-mana` against every playable (league and held-out) deck: any draw, cap, `FATAL`, `ERROR` or non-fatal error line is a finding that blocks the deck | the gate | manual campaign; in CI an onboarded deck joins the `fuzz` / `smoke` presets' mirrors and ring |
 | 10 | designate | `git mv` the deck to `decks/league/` (train) or `decks/heldout/`; at least one fair and, when available, one combo deck stay held out permanently | `onboard.py designate` | manual decision |
 | 11 | baseline | how well `scripted:hard` pilots the deck (does it play it at all) and the current policy's zero-shot benchmark on it (S8) | `rm_driver.py`, `rmtrain bench --decks` | manual |
 
@@ -925,6 +925,117 @@ missing mechanics; `designate` needs a clean fuzz campaign; status files are com
 trail). `--check-decks` and the gate's `vocab` tier cover `decks/league/` and `decks/heldout/`.
 Stages 1–5 need nothing from S1–S5 and may run early, read-only, to choose which decks and mechanics
 come first; stage 7 onwards waits for S5.
+
+**Done (tooling)** (two commits on `refactor/open-vocab`: the tooling, then stages 1–5 run for real).
+Stages 6–11 were not run for any deck.
+
+- **`tools/onboard/onboard.py`** (its README has the details) — the eleven stages of the table, `all`
+  (stages 2–6, the automatic ones: read-only but for provision's fetches), `report` and `check`.
+  Status files `decks/candidates/<stem>.status.json`: the deck's source (MTGTop8 name, rank, share,
+  section, ids, scrape date and window) and per stage result (`ok` / `fail` / `pending`), time, input
+  hashes (deck, `src/card_vocab.h`, the scripts the deck's cards resolve to, the engine binary, the
+  token scripts, `mechanic_sizes.json`, the text table), summary and detail. A stage is skipped while
+  its inputs are unchanged; stages 2–6 rerun themselves when a later stage needs them, 7–10 need a
+  recorded `ok`; `vocab` needs stage 6 `ok` (no finding, no mechanic), `designate` stage 9. The
+  status file stays in `candidates/` after stage 10's `git mv`. Stage 9 is `make check` plus
+  `robomage_check --tier fuzz --matchups <dir>/<stem>:* --fuzz-games 100 --manual-mana-games 10`;
+  stage 11 runs `rm_driver.py` `scripted:hard` with the deck against every league deck, then `rmtrain
+  bench <run> --decks`, and fails naming S8 until that flag exists (left to S8, as planned).
+- **`robomage --parse-report <card | @vocab | @FILE>`** (`src/parse_report.{h,cpp}`, plays no game):
+  each script parsed afresh (`parse_card_findings`, `src/parse.h`) with the parser's findings
+  collected — games record nothing — plus a script scan: kinds `category` (no handler: a no-op),
+  `ability_param` (`<category>.<key>`), `amount_svar`, `svar_missing` (SubAbility$ / Execute$ /
+  Choices$ / … naming no SVar), `trigger_mode` / `trigger_form` (no event binding: the trigger is
+  dropped), `trigger_param`, `trigger_phase`, `trigger_zone` (zones the binding reads as "any"),
+  `static_mode` (a mode the engine applies nowhere), `static_param`, `static_form`, `replacement`
+  (an R: line yielding nothing), `keyword` (a plain keyword no rule reads: the list is the
+  keywords the engine's rules read by name — Defender, though in the state format's keyword enum,
+  is not one), `cost`, `layout` (AlternateMode Adventure / Meld / …), `filter` (a filter token the
+  shared matcher has no reading for: `filter_unknown_qualifiers`, `queries/filters.h`, probing
+  `eval_qualifier` without an object; PascalCase tokens that are no type name included, which today
+  silently match nothing), `svar_expr` (a count expression `evaluate_svar` would report
+  unrecognized: `svar_expr_recognized`, `svar_eval.h`), `token_script`. Tokens named in filters or
+  expressions that the engine reads where the filter is used (EquippedBy, YouDontCtrl, sameName,
+  ExiledWithSource, …) and the parse-time SVar forms (SVar$ sums, Count$Compare, …) are listed in
+  `parse_report.cpp` as read elsewhere. A clean report is not proof (a modelled param may be read
+  only in its first cards' forms); a finding names something the engine does not do.
+- **Over the current vocab** (308 scripts): three cards, four findings, all real gaps, now
+  `docs/rules_deviations.md` §2.8 and the gate's baseline `tests/parse_report/vocab.json`:
+  Mystical Dispute's conditional {2} reduction is never applied (`ReduceCost` with `EffectZone$ All`
+  and `ValidTarget$ Spell.Blue`: cost statics apply from the battlefield only; checked in the harness
+  — one Island cannot cast it against a blue spell), Carpet of Flowers' `ResolvedLimit$ 1` is unread
+  (it can add mana in both main phases), Moonshadow's `NoResolvingCheck$ True` is unread (its
+  intervening-if is checked at resolution too). Calibration removed the report's false positives
+  without changing the parser's behaviour: the static params whose value is what the engine assumes
+  (`Type$ Spell` on cost statics, `ValidSA$ Activated[.!ManaAbility]` on CantBeActivated, MustAttack's
+  `ValidCreature$ Card.Self`, DisableTriggers' `ValidMode$` / `Destination$`, Damping Sphere's
+  `Relative$`), trigger zone `Command` (an Effect's floating trigger), `LockTokenScript$` not read as a
+  token, and two AI / prose params (`AIManaPref$`, `DiscardValidDesc$`) added to the parser's
+  ignored keys.
+- **Scrape** (2026-10-24, MTGTop8 Legacy, window "Last 2 Months" = `meta=39`): N = 25, every
+  archetype with at least 1% share — dimir_tempo 10%, uwx_control 8, boros_aggro 6, eldrazi_aggro 5,
+  cloudpost_tron_ramp 5, lands_top8 5, show_and_tell 5, ur_tempo 4, doomsday 4, aluren 4,
+  death_and_taxes 3, storm 3, reanimator_top8 3, artifacts_blue 2, artifacts_prison 2, bant_control 2,
+  welder_cam 2, hogaak 2, mystic_forge 2, elves 2, maverick 1, dragon_stompy 1, cradle_control 1,
+  stoneblade 1, painter 1 (MTGTop8's sections: 7 aggro, 7 control, 11 combo). The scraper had three
+  bugs: its `.dk` lines were tab-separated, which `classes/deck.cpp` splits wrongly (every card read
+  as missing); it took the page's first N links, but the page lists its AGGRO, CONTROL and COMBO
+  sections one after another, so `--top 25` was every aggro deck first (now merged by share); the
+  window was the site's default two weeks. It gained `--meta` and `--manifest`. Stems that name a
+  league deck got `_top8` (lands, reanimator).
+- **Diff and provision:** 349 distinct cards, 122 not in the vocab; 116 scripts fetched at the pin (plus
+  10 token scripts), 6 cards are newer than `FORGE_PIN` (2026-07-19): Archive Arbiter, Dark Matter
+  Manipulator, Giant's Boulder, The Echoverse Fulcrum, Theorist's Proxy (on Forge's master) and
+  Carnivorous Cultivator (not under its own name there). They are the capability item
+  `script:<card>` (grouped as one mechanic, the pin bump), not a stage failure, so their decks'
+  other needs are still measured. `fetch_script.py`'s DFC discovery listed Forge directories with
+  the contents API, which stops at 1000 entries — four double-faced cards (Brazen Borrower, Shatterskull
+  Smashing, Sink into Stupor, Sundering Eruption) were reported "not on Forge"; it now lists with the
+  git trees API (`<pin>:<path>`), the contents API as the fallback.
+- **Capability** (`bin/resources/decks/candidates/REPORT.md`, generated): of the 122 new cards 51 parse
+  clean, 65 need a mechanic, 6 need the pin bump. `tools/onboard/mechanic_sizes.json` groups the
+  findings into mechanics with a size each (61 of them needed by the candidates) (S ≤ ½ day … XL a week+; my estimates from the
+  scripts). Decks needing nothing: death_and_taxes and uwx_control (every card already in the vocab),
+  bant_control (5 new cards, all clean); then lands_top8 (2 S filter qualifiers for Drop of Honey),
+  boros_aggro (Lazotep Quarry's copy-with-exceptions M, Sand Scout S), eldrazi_aggro (LandPlayed
+  trigger M, repeated modes M), reanimator_top8 (8 points), show_and_tell (9) … painter (54). Mechanics
+  by the decks that need them: the pin bump 8; `without<Keyword>` filter qualifier (S) 7; can't-block
+  restrictions (M) 5; LandPlayed trigger (City of Traitors, M) 5; repeated modes (the Confluences, M)
+  5; discard-a-card costs (M) 4; Sunburst (M) 4; Adventure (L) 4; exile-the-card-itself costs (S) 3;
+  DB$ Repeat (M) 3; the rest 1–2 decks each. No mechanic is any deck's sole blocker.
+- **Recommended first onboarding set:** held out, fair — **bant_control** (no engine work; five unseen
+  cards: Celestial Purge, Hedge Maze, Snow-Covered Plains, Terminus, Up the Beanstalk; a control
+  shell the league's uw_control resembles only partly); held out, combo — **show_and_tell** (an
+  archetype the league lacks; three M mechanics: free-cast statics for Omniscience, MinCharmNum for
+  Avengers Disassembled, the LandPlayed trigger for City of Traitors, ≈ 3 days); added to training —
+  **eldrazi_aggro** (5% share, an archetype the league lacks; the LandPlayed trigger it shares with
+  Show and Tell plus repeated modes, which four more candidates' Confluences need) or, if no engine work
+  may precede S8, **lands_top8** (two S filter qualifiers; three new cards). death_and_taxes and
+  uwx_control add no card and test only new lists of known cards.
+- **Gate.** `vocab`: `--check-decks` covers the top-level, `league/` and `heldout/` decks
+  (`heldout/` may be empty; `--check-decks-dir` also takes one `.dk`); the parse report over the vocab
+  against `tests/parse_report/vocab.json` (a new or vanished finding fails; `--record` rewrites it);
+  `onboard.py check` (stages 2, 4, 5 of every candidate in memory, no network: a tool failure
+  fails, a stale status file warns), ~1 s together. `fuzz` / `smoke`: the presets run over the
+  playable decks, `league/` then `heldout/` (`playable_decks`), so a deck designated into either
+  directory gets 8 bo1 mirror games, a bo3 and two `--no-auto-mana` ring games and four scripted
+  smoke games per gate run — the "10-game smoke per onboarded deck" with no further wiring;
+  `--matchups a:*` is `a` against every playable deck, and an explicit `--matchups` list also drives
+  the bo3 and manual-mana legs (a deck's whole campaign). `tools/forge_fetch/provision_decks.py`
+  provisions the `heldout/` and `candidates/` decks' cards (`meta/` is gone), so CI has the
+  candidates' scripts.
+- **Evidence.** `make check` green with every tier, the opt-in `actor` tier included (`make actor
+  PYTHON=learn/.venv/bin/python`, `ROBOMAGE_TORCH_PYTHON` absolute; `runs/open_vocab_s7/make_check.log`;
+  its two `STALE` warnings were status files regenerated while it ran — the `vocab` tier rerun on the
+  committed files is clean). No game decision changed (no corpus `.replay`, CLI golden or scenario
+  changed): the parser's findings are recorded only under `--parse-report`, and the filter probe and
+  the SVar recogniser read no game state. `onboard.py vocab --dry-run` on bant_control and
+  `append_vocab` on a copy of `src/card_vocab.h` (a card, a transforming DFC, a split card, a token;
+  idempotent) checked by hand; stages 8–11 were not exercised.
+- **Deviations.** Stage 7 also appends the new cards' token scripts to `token_vocab_entries` (the
+  table said only `card_vocab_entries`; a token outside it reads the sentinel). A card missing at the
+  Forge pin is a capability item rather than a provision failure (above). `all` runs stages 2–6, not
+  every stage: 1 and 3's fetches need the network, 7–11 change the tree or need a decision.
 
 ### S8. First expansion and the generalisation measurement (1 day tooling + runs)
 

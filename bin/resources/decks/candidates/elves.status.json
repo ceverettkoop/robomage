@@ -1,0 +1,400 @@
+{
+ "deck": "elves",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 38,
+  "deck_id": 903814,
+  "deck_url": "https://mtgtop8.com/event?d=903814&f=LE",
+  "format": "LE",
+  "meta_share": 2.0,
+  "name": "Elves",
+  "rank": 20,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Elvish Mystic",
+     "Elvish Visionary",
+     "Fyndhorn Elves",
+     "Llanowar Elves",
+     "Quirion Ranger",
+     "Temur Sabertooth",
+     "Vibrance",
+     "Wirewood Symbiote"
+    ],
+    "mechanics": {
+     "AnimateAll power, toughness and types": {
+      "cards": [
+       "Allosaurus Shepherd"
+      ],
+      "findings": [
+       "ability_param:AnimateAll.Power",
+       "ability_param:AnimateAll.Toughness",
+       "ability_param:AnimateAll.Types"
+      ],
+      "size": "S"
+     },
+     "Convoke (CR 702.51)": {
+      "cards": [
+       "Hogaak, Arisen Necropolis"
+      ],
+      "findings": [
+       "keyword:Convoke"
+      ],
+      "size": "M"
+     },
+     "Discard-a-card activation cost": {
+      "cards": [
+       "Formidable Speaker"
+      ],
+      "findings": [
+       "cost:Discard"
+      ],
+      "size": "M"
+     },
+     "Hogaak casting": {
+      "cards": [
+       "Hogaak, Arisen Necropolis"
+      ],
+      "findings": [
+       "ability_param:PermanentCreature.ManaRestriction",
+       "category:PermanentCreature",
+       "static_param:EffectZone"
+      ],
+      "size": "L"
+     }
+    },
+    "needs": {
+     "Allosaurus Shepherd": [
+      "AnimateAll power, toughness and types"
+     ],
+     "Formidable Speaker": [
+      "Discard-a-card activation cost"
+     ],
+     "Hogaak, Arisen Necropolis": [
+      "Convoke (CR 702.51)",
+      "Hogaak casting"
+     ]
+    },
+    "new_cards": [
+     "Allosaurus Shepherd",
+     "Elvish Mystic",
+     "Elvish Visionary",
+     "Formidable Speaker",
+     "Fyndhorn Elves",
+     "Hogaak, Arisen Necropolis",
+     "Llanowar Elves",
+     "Quirion Ranger",
+     "Temur Sabertooth",
+     "Vibrance",
+     "Wirewood Symbiote"
+    ],
+    "size_points": 15
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "11 new card(s): 8 clean, 3 need 4 mechanic(s) (15 points)",
+   "time": "2026-10-24T21:27:50"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 32,
+    "in_vocab": 21,
+    "no_script": [],
+    "not_in_vocab": [
+     "Allosaurus Shepherd",
+     "Elvish Mystic",
+     "Elvish Visionary",
+     "Formidable Speaker",
+     "Fyndhorn Elves",
+     "Hogaak, Arisen Necropolis",
+     "Llanowar Elves",
+     "Quirion Ranger",
+     "Temur Sabertooth",
+     "Vibrance",
+     "Wirewood Symbiote"
+    ]
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
+    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "32 cards: 21 in vocab, 11 new (0 without a script)",
+   "time": "2026-10-24T21:09:02"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "AnimateAll power, toughness and types",
+     "Convoke (CR 702.51)",
+     "Discard-a-card activation cost",
+     "Hogaak casting"
+    ]
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "4 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting",
+   "time": "2026-10-24T21:27:50"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Allosaurus Shepherd": {
+      "card": "Allosaurus Shepherd",
+      "faces": [
+       "Allosaurus Shepherd"
+      ],
+      "findings": [
+       {
+        "detail": "AnimateAll Power$ 5",
+        "kind": "ability_param",
+        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
+        "name": "AnimateAll.Power"
+       },
+       {
+        "detail": "AnimateAll Toughness$ 5",
+        "kind": "ability_param",
+        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
+        "name": "AnimateAll.Toughness"
+       },
+       {
+        "detail": "AnimateAll Types$ Dinosaur",
+        "kind": "ability_param",
+        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
+        "name": "AnimateAll.Types"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/allosaurus_shepherd.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Elvish Mystic": {
+      "card": "Elvish Mystic",
+      "faces": [
+       "Elvish Mystic"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/e/elvish_mystic.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Elvish Visionary": {
+      "card": "Elvish Visionary",
+      "faces": [
+       "Elvish Visionary"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/e/elvish_visionary.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Formidable Speaker": {
+      "card": "Formidable Speaker",
+      "faces": [
+       "Formidable Speaker"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ Discard<1/Card>",
+        "kind": "cost",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigSearch | TriggerDescription$ When this creature enters, you may discard a card. If you do, search your library for a creature card, reveal it, put it into your hand, then shuffle.",
+        "name": "Discard"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/f/formidable_speaker.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Fyndhorn Elves": {
+      "card": "Fyndhorn Elves",
+      "faces": [
+       "Fyndhorn Elves"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/f/fyndhorn_elves.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Hogaak, Arisen Necropolis": {
+      "card": "Hogaak, Arisen Necropolis",
+      "faces": [
+       "Hogaak, Arisen Necropolis"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:SP$ PermanentCreature | Cost$ 5 BG BG | ManaRestriction$ None",
+        "name": "PermanentCreature"
+       },
+       {
+        "detail": "PermanentCreature ManaRestriction$ None",
+        "kind": "ability_param",
+        "line": "A:SP$ PermanentCreature | Cost$ 5 BG BG | ManaRestriction$ None",
+        "name": "PermanentCreature.ManaRestriction"
+       },
+       {
+        "detail": "Continuous EffectZone$ Graveyard",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Card.Self | MayPlay$ True | AffectedZone$ Graveyard | EffectZone$ Graveyard | Description$ You may cast CARDNAME from your graveyard.",
+        "name": "EffectZone"
+       },
+       {
+        "detail": "Convoke",
+        "kind": "keyword",
+        "line": "K:Convoke",
+        "name": "Convoke"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/h/hogaak_arisen_necropolis.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Llanowar Elves": {
+      "card": "Llanowar Elves",
+      "faces": [
+       "Llanowar Elves"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/l/llanowar_elves.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Quirion Ranger": {
+      "card": "Quirion Ranger",
+      "faces": [
+       "Quirion Ranger"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/q/quirion_ranger.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Temur Sabertooth": {
+      "card": "Temur Sabertooth",
+      "faces": [
+       "Temur Sabertooth"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/t/temur_sabertooth.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Vibrance": {
+      "card": "Vibrance",
+      "faces": [
+       "Vibrance"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/v/vibrance.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Wirewood Symbiote": {
+      "card": "Wirewood Symbiote",
+      "faces": [
+       "Wirewood Symbiote"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/w/wirewood_symbiote.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "11 new card(s), 3 with findings (8 findings), 0 without a script",
+   "time": "2026-10-24T21:27:50"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
+    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:44"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Elves, 2.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

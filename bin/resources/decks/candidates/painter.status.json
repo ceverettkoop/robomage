@@ -1,0 +1,909 @@
+{
+ "deck": "painter",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 87,
+  "deck_id": 903784,
+  "deck_url": "https://mtgtop8.com/event?d=903784&f=LE",
+  "format": "LE",
+  "meta_share": 1.0,
+  "name": "Painter",
+  "rank": 25,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Blood Moon",
+     "Chromatic Star",
+     "Goblin Engineer",
+     "Great Furnace",
+     "Legion Extruder",
+     "Soul-Guide Lantern"
+    ],
+    "mechanics": {
+     "Agatha's Soul Cauldron": {
+      "cards": [
+       "Agatha's Soul Cauldron"
+      ],
+      "findings": [
+       "static_param:GainsAbilitiesOf",
+       "static_param:GainsAbilitiesOfZones",
+       "static_param:ValidPlayer",
+       "static_param:ValidSA"
+      ],
+      "size": "L"
+     },
+     "Branch effect (DB$ Branch)": {
+      "cards": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       "ability_param:Branch.BranchConditionSVar",
+       "ability_param:Branch.BranchConditionSVarCompare",
+       "ability_param:Branch.FalseSubAbility",
+       "ability_param:Branch.TrueSubAbility",
+       "category:Branch"
+      ],
+      "size": "M"
+     },
+     "Change targets (CR 115.7)": {
+      "cards": [
+       "Untimely Malfunction"
+      ],
+      "findings": [
+       "category:ChangeTargets"
+      ],
+      "size": "M"
+     },
+     "Colour-adding static everywhere (Painter's Servant)": {
+      "cards": [
+       "Painter's Servant"
+      ],
+      "findings": [
+       "static_param:AddColor"
+      ],
+      "size": "L"
+     },
+     "Crew and vehicles (CR 702.122)": {
+      "cards": [
+       "Unlicensed Hearse"
+      ],
+      "findings": [
+       "ability_param:ChangeZone.TargetsWithSameController",
+       "keyword:Crew",
+       "svar_expr:Count$ValidExile"
+      ],
+      "size": "M"
+     },
+     "Discard-a-card activation cost": {
+      "cards": [
+       "Melded Moxite",
+       "Phyrexian Dragon Engine"
+      ],
+      "findings": [
+       "cost:Discard"
+      ],
+      "size": "M"
+     },
+     "Divided damage (CR 601.2d)": {
+      "cards": [
+       "Fury"
+      ],
+      "findings": [
+       "ability_param:DealDamage.DividedAsYouChoose"
+      ],
+      "size": "M"
+     },
+     "Fable of the Mirror-Breaker": {
+      "cards": [
+       "Fable of the Mirror-Breaker"
+      ],
+      "findings": [
+       "ability_param:CopyPermanent.AddKeywords",
+       "ability_param:Discard.RememberDiscarded"
+      ],
+      "size": "M"
+     },
+     "Goblin Welder swap": {
+      "cards": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       "ability_param:Pump.ImprintCards",
+       "ability_param:Pump.PumpZone",
+       "ability_param:Pump.TargetsWithDefinedController",
+       "filter:sharesControllerWith",
+       "svar_expr:Imprinted$Valid"
+      ],
+      "size": "M"
+     },
+     "Mana with riders and Exert (Arena of Glory)": {
+      "cards": [
+       "Arena of Glory"
+      ],
+      "findings": [
+       "ability_param:AddMana.AddsKeywords",
+       "ability_param:AddMana.AddsKeywordsUntil",
+       "ability_param:AddMana.AddsKeywordsValid",
+       "cost:Exert"
+      ],
+      "size": "M"
+     },
+     "Meld (CR 712)": {
+      "cards": [
+       "Phyrexian Dragon Engine"
+      ],
+      "findings": [
+       "layout:Meld"
+      ],
+      "size": "L"
+     },
+     "Random choice (AtRandom)": {
+      "cards": [
+       "Chaos Defiler"
+      ],
+      "findings": [
+       "ability_param:ChooseCard.AtRandom",
+       "filter:ControlledBy Remembered"
+      ],
+      "size": "S"
+     },
+     "Repeat effect (DB$ Repeat)": {
+      "cards": [
+       "Grindstone"
+      ],
+      "findings": [
+       "ability_param:Repeat.MaxRepeat",
+       "ability_param:Repeat.RepeatCheckSVar",
+       "ability_param:Repeat.RepeatSVarCompare",
+       "category:Repeat",
+       "filter:SharesColorWithOther",
+       "svar_expr:TargetedPlayer$CardsInLibrary"
+      ],
+      "size": "M"
+     },
+     "TapOrUntap effect": {
+      "cards": [
+       "Sewer-veillance Cam"
+      ],
+      "findings": [
+       "category:TapOrUntap"
+      ],
+      "size": "S"
+     },
+     "without<Keyword> filter qualifier": {
+      "cards": [
+       "Chaos Defiler"
+      ],
+      "findings": [
+       "filter:withoutIndestructible"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Agatha's Soul Cauldron": [
+      "Agatha's Soul Cauldron"
+     ],
+     "Arena of Glory": [
+      "Mana with riders and Exert (Arena of Glory)"
+     ],
+     "Chaos Defiler": [
+      "Random choice (AtRandom)",
+      "without<Keyword> filter qualifier"
+     ],
+     "Fable of the Mirror-Breaker": [
+      "Fable of the Mirror-Breaker"
+     ],
+     "Fury": [
+      "Divided damage (CR 601.2d)"
+     ],
+     "Goblin Welder": [
+      "Branch effect (DB$ Branch)",
+      "Goblin Welder swap"
+     ],
+     "Grindstone": [
+      "Repeat effect (DB$ Repeat)"
+     ],
+     "Melded Moxite": [
+      "Discard-a-card activation cost"
+     ],
+     "Painter's Servant": [
+      "Colour-adding static everywhere (Painter's Servant)"
+     ],
+     "Phyrexian Dragon Engine": [
+      "Discard-a-card activation cost",
+      "Meld (CR 712)"
+     ],
+     "Sewer-veillance Cam": [
+      "TapOrUntap effect"
+     ],
+     "Unlicensed Hearse": [
+      "Crew and vehicles (CR 702.122)"
+     ],
+     "Untimely Malfunction": [
+      "Change targets (CR 115.7)"
+     ]
+    },
+    "new_cards": [
+     "Agatha's Soul Cauldron",
+     "Arena of Glory",
+     "Blood Moon",
+     "Chaos Defiler",
+     "Chromatic Star",
+     "Fable of the Mirror-Breaker",
+     "Fury",
+     "Goblin Engineer",
+     "Goblin Welder",
+     "Great Furnace",
+     "Grindstone",
+     "Legion Extruder",
+     "Melded Moxite",
+     "Painter's Servant",
+     "Phyrexian Dragon Engine",
+     "Sewer-veillance Cam",
+     "Soul-Guide Lantern",
+     "Unlicensed Hearse",
+     "Untimely Malfunction"
+    ],
+    "size_points": 54
+   },
+   "inputs": {
+    "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "19 new card(s): 6 clean, 13 need 15 mechanic(s) (54 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 41,
+    "in_vocab": 22,
+    "no_script": [],
+    "not_in_vocab": [
+     "Agatha's Soul Cauldron",
+     "Arena of Glory",
+     "Blood Moon",
+     "Chaos Defiler",
+     "Chromatic Star",
+     "Fable of the Mirror-Breaker",
+     "Fury",
+     "Goblin Engineer",
+     "Goblin Welder",
+     "Great Furnace",
+     "Grindstone",
+     "Legion Extruder",
+     "Melded Moxite",
+     "Painter's Servant",
+     "Phyrexian Dragon Engine",
+     "Sewer-veillance Cam",
+     "Soul-Guide Lantern",
+     "Unlicensed Hearse",
+     "Untimely Malfunction"
+    ]
+   },
+   "inputs": {
+    "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
+    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "41 cards: 22 in vocab, 19 new (0 without a script)",
+   "time": "2026-10-24T21:09:12"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Agatha's Soul Cauldron",
+     "Branch effect (DB$ Branch)",
+     "Change targets (CR 115.7)",
+     "Colour-adding static everywhere (Painter's Servant)",
+     "Crew and vehicles (CR 702.122)",
+     "Discard-a-card activation cost",
+     "Divided damage (CR 601.2d)",
+     "Fable of the Mirror-Breaker",
+     "Goblin Welder swap",
+     "Mana with riders and Exert (Arena of Glory)",
+     "Meld (CR 712)",
+     "Random choice (AtRandom)",
+     "Repeat effect (DB$ Repeat)",
+     "TapOrUntap effect",
+     "without<Keyword> filter qualifier"
+    ]
+   },
+   "inputs": {
+    "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin Welder swap, Mana with riders and Exert ",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Agatha's Soul Cauldron": {
+      "card": "Agatha's Soul Cauldron",
+      "faces": [
+       "Agatha's Soul Cauldron"
+      ],
+      "findings": [
+       {
+        "detail": "ManaConvert ValidPlayer$ You",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaConvert | ValidPlayer$ You | ValidCard$ Creature.YouCtrl+inZoneBattlefield | ValidSA$ Activated | ManaConversion$ AnyType->AnyColor | Description$ You may spend mana as though it were mana of any color to activate abilities of creatures you control.",
+        "name": "ValidPlayer"
+       },
+       {
+        "detail": "ManaConvert ValidSA$ Activated",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaConvert | ValidPlayer$ You | ValidCard$ Creature.YouCtrl+inZoneBattlefield | ValidSA$ Activated | ManaConversion$ AnyType->AnyColor | Description$ You may spend mana as though it were mana of any color to activate abilities of creatures you control.",
+        "name": "ValidSA"
+       },
+       {
+        "detail": "Continuous GainsAbilitiesOf$ Creature.ExiledWithSource",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
+        "name": "GainsAbilitiesOf"
+       },
+       {
+        "detail": "Continuous GainsAbilitiesOfZones$ Exile",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
+        "name": "GainsAbilitiesOfZones"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/agathas_soul_cauldron.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Arena of Glory": {
+      "card": "Arena of Glory",
+      "faces": [
+       "Arena of Glory"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ R T Exert<1/CARDNAME>",
+        "kind": "cost",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "name": "Exert"
+       },
+       {
+        "detail": "AddMana AddsKeywords$ Haste",
+        "kind": "ability_param",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "name": "AddMana.AddsKeywords"
+       },
+       {
+        "detail": "AddMana AddsKeywordsValid$ Spell.Creature",
+        "kind": "ability_param",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "name": "AddMana.AddsKeywordsValid"
+       },
+       {
+        "detail": "AddMana AddsKeywordsUntil$ UntilEOT",
+        "kind": "ability_param",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "name": "AddMana.AddsKeywordsUntil"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/arena_of_glory.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Blood Moon": {
+      "card": "Blood Moon",
+      "faces": [
+       "Blood Moon"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/b/blood_moon.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Chaos Defiler": {
+      "card": "Chaos Defiler",
+      "faces": [
+       "Chaos Defiler"
+      ],
+      "findings": [
+       {
+        "detail": "ChooseCard AtRandom$ True",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigRepeat | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
+        "name": "ChooseCard.AtRandom"
+       },
+       {
+        "detail": "ChooseCard AtRandom$ True",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Graveyard | ValidCard$ Card.Self | Execute$ TrigRepeat | Secondary$ True | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
+        "name": "ChooseCard.AtRandom"
+       },
+       {
+        "detail": "Choices$ Permanent.nonLand+ControlledBy Remembered",
+        "kind": "filter",
+        "line": "SVar:DBChooseCard:DB$ ChooseCard | Choices$ Permanent.nonLand+ControlledBy Remembered | Mandatory$ True | RememberChosen$ True",
+        "name": "ControlledBy Remembered"
+       },
+       {
+        "detail": "Choices$ Card.IsRemembered+withoutIndestructible",
+        "kind": "filter",
+        "line": "SVar:DBChooseRandom:DB$ ChooseCard | AtRandom$ True | Choices$ Card.IsRemembered+withoutIndestructible | Reveal$ True | SubAbility$ DBDestroy",
+        "name": "withoutIndestructible"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/chaos_defiler.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Chromatic Star": {
+      "card": "Chromatic Star",
+      "faces": [
+       "Chromatic Star"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/c/chromatic_star.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Fable of the Mirror-Breaker": {
+      "card": "Fable of the Mirror-Breaker",
+      "faces": [
+       "Fable of the Mirror-Breaker",
+       "Reflection of Kiki-Jiki"
+      ],
+      "findings": [
+       {
+        "detail": "Discard RememberDiscarded$ True",
+        "kind": "ability_param",
+        "line": "K:Chapter:3:DBToken,DBDiscard,DBTransform",
+        "name": "Discard.RememberDiscarded"
+       },
+       {
+        "detail": "CopyPermanent AddKeywords$ Haste",
+        "kind": "ability_param",
+        "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
+        "name": "CopyPermanent.AddKeywords"
+       }
+      ],
+      "layout": "transform",
+      "script": "cardsfolder/f/fable_of_the_mirror_breaker_reflection_of_kiki_jiki.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "r_2_2_goblin_shaman_treasure"
+       }
+      ],
+      "vocab": [
+       -1,
+       -1
+      ]
+     },
+     "Fury": {
+      "card": "Fury",
+      "faces": [
+       "Fury"
+      ],
+      "findings": [
+       {
+        "detail": "DealDamage DividedAsYouChoose$ 4",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigDamage | TriggerDescription$ When CARDNAME enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers.",
+        "name": "DealDamage.DividedAsYouChoose"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/f/fury.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Goblin Engineer": {
+      "card": "Goblin Engineer",
+      "faces": [
+       "Goblin Engineer"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/g/goblin_engineer.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Goblin Welder": {
+      "card": "Goblin Welder",
+      "faces": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       {
+        "detail": "Pump TargetsWithDefinedController$ ParentTargetedController",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Pump.TargetsWithDefinedController"
+       },
+       {
+        "detail": "Pump PumpZone$ Graveyard",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Pump.PumpZone"
+       },
+       {
+        "detail": "Pump ImprintCards$ ThisTargetedCard",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Pump.ImprintCards"
+       },
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch"
+       },
+       {
+        "detail": "Branch BranchConditionSVar$ TargetCheck",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.BranchConditionSVar"
+       },
+       {
+        "detail": "Branch BranchConditionSVarCompare$ GE2",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.BranchConditionSVarCompare"
+       },
+       {
+        "detail": "Branch TrueSubAbility$ DBSacrifice",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.TrueSubAbility"
+       },
+       {
+        "detail": "Branch FalseSubAbility$ DBCleanup",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.FalseSubAbility"
+       },
+       {
+        "detail": "Remembered$Valid Artifact.sharesControllerWith",
+        "kind": "filter",
+        "line": "SVar:CheckRemem:Remembered$Valid Artifact.sharesControllerWith Imprinted",
+        "name": "sharesControllerWith"
+       },
+       {
+        "detail": "CheckImprint = Imprinted$Valid Artifact.sharesControllerWith Remembered",
+        "kind": "svar_expr",
+        "line": "SVar:CheckImprint:Imprinted$Valid Artifact.sharesControllerWith Remembered",
+        "name": "Imprinted$Valid"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/goblin_welder.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Great Furnace": {
+      "card": "Great Furnace",
+      "faces": [
+       "Great Furnace"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/g/great_furnace.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Grindstone": {
+      "card": "Grindstone",
+      "faces": [
+       "Grindstone"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat"
+       },
+       {
+        "detail": "Repeat MaxRepeat$ MaxRepeats",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.MaxRepeat"
+       },
+       {
+        "detail": "Repeat RepeatCheckSVar$ MilledSharesColor",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.RepeatCheckSVar"
+       },
+       {
+        "detail": "Repeat RepeatSVarCompare$ GE2",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.RepeatSVarCompare"
+       },
+       {
+        "detail": "Remembered$Valid Card.SharesColorWithOther",
+        "kind": "filter",
+        "line": "SVar:MilledSharesColor:Remembered$Valid Card.SharesColorWithOther Remembered",
+        "name": "SharesColorWithOther"
+       },
+       {
+        "detail": "MaxRepeats = TargetedPlayer$CardsInLibrary",
+        "kind": "svar_expr",
+        "line": "SVar:MaxRepeats:TargetedPlayer$CardsInLibrary",
+        "name": "TargetedPlayer$CardsInLibrary"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/grindstone.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Legion Extruder": {
+      "card": "Legion Extruder",
+      "faces": [
+       "Legion Extruder"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/l/legion_extruder.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "c_3_3_a_golem"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Melded Moxite": {
+      "card": "Melded Moxite",
+      "faces": [
+       "Melded Moxite"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ Discard<1/Card>",
+        "kind": "cost",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigDiscard | TriggerDescription$ When this artifact enters, you may discard a card. If you do, draw two cards.",
+        "name": "Discard"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/m/melded_moxite.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "c_2_2_a_robot"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Painter's Servant": {
+      "card": "Painter's Servant",
+      "faces": [
+       "Painter's Servant"
+      ],
+      "findings": [
+       {
+        "detail": "Continuous AddColor$ ChosenColor",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Card | AddColor$ ChosenColor | AffectedZone$ All | Description$ All cards that aren't on the battlefield, spells, and permanents are the chosen color in addition to their other colors.",
+        "name": "AddColor"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/p/painters_servant.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Phyrexian Dragon Engine": {
+      "card": "Phyrexian Dragon Engine",
+      "faces": [
+       "Phyrexian Dragon Engine"
+      ],
+      "findings": [
+       {
+        "detail": "AlternateMode:Meld is read as a transforming card",
+        "kind": "layout",
+        "line": "",
+        "name": "Meld"
+       },
+       {
+        "detail": "Cost$ Discard<1/Hand>",
+        "kind": "cost",
+        "line": "T:Mode$ ChangesZone | Origin$ Graveyard | Destination$ Battlefield | TriggerZones$ Battlefield | ValidCard$ Card.Self+YouOwn | Execute$ TrigDraw | TriggerDescription$ When CARDNAME enters from your graveyard, you may discard your hand. If you do, draw three cards.",
+        "name": "Discard"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/p/phyrexian_dragon_engine.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Sewer-veillance Cam": {
+      "card": "Sewer-veillance Cam",
+      "faces": [
+       "Sewer-veillance Cam"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
+        "name": "TapOrUntap"
+       },
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Any | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | Secondary$ True | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
+        "name": "TapOrUntap"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/sewer_veillance_cam.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Soul-Guide Lantern": {
+      "card": "Soul-Guide Lantern",
+      "faces": [
+       "Soul-Guide Lantern"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/s/soul_guide_lantern.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Unlicensed Hearse": {
+      "card": "Unlicensed Hearse",
+      "faces": [
+       "Unlicensed Hearse"
+      ],
+      "findings": [
+       {
+        "detail": "ChangeZone TargetsWithSameController$ True",
+        "kind": "ability_param",
+        "line": "A:AB$ ChangeZone | Cost$ T | TargetMin$ 0 | TargetMax$ 2 | TargetsWithSameController$ True | Origin$ Graveyard | Destination$ Exile | TgtPrompt$ Select up to two target cards in a graveyard | ValidTgts$ Card | SpellDescription$ Exile up to two target cards from a single graveyard.",
+        "name": "ChangeZone.TargetsWithSameController"
+       },
+       {
+        "detail": "Crew:2",
+        "kind": "keyword",
+        "line": "K:Crew:2",
+        "name": "Crew"
+       },
+       {
+        "detail": "X = Count$ValidExile Card.ExiledWithSource",
+        "kind": "svar_expr",
+        "line": "SVar:X:Count$ValidExile Card.ExiledWithSource",
+        "name": "Count$ValidExile"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/u/unlicensed_hearse.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Untimely Malfunction": {
+      "card": "Untimely Malfunction",
+      "faces": [
+       "Untimely Malfunction"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:SP$ Charm | Choices$ DBDestroy,DBChangeTargets,DBCantBlock",
+        "name": "ChangeTargets"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/u/untimely_malfunction.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "19 new card(s), 13 with findings (41 findings), 0 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [
+     "c_2_2_a_robot",
+     "c_3_3_a_golem",
+     "r_2_2_goblin_shaman_treasure"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
+    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 3 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:46"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Painter, 1.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

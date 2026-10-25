@@ -1,0 +1,548 @@
+{
+ "deck": "dragon_stompy",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 78,
+  "deck_id": 903816,
+  "deck_url": "https://mtgtop8.com/event?d=903816&f=LE",
+  "format": "LE",
+  "meta_share": 1.0,
+  "name": "Dragon Stompy",
+  "rank": 22,
+  "scraped": "2026-10-24",
+  "section": "aggro",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Blood Moon"
+    ],
+    "mechanics": {
+     "Boast (CR 702.142)": {
+      "cards": [
+       "Broadside Bombardiers"
+      ],
+      "findings": [
+       "ability_param:DealDamage.Boast",
+       "svar_expr:Sacrificed$CardManaCost/Plus.2"
+      ],
+      "size": "M"
+     },
+     "Chrome Mox imprint": {
+      "cards": [
+       "Chrome Mox"
+      ],
+      "findings": [
+       "ability_param:Pump.ForgetImprinted",
+       "filter:Defined",
+       "filter:ExiledWithSourceLKI",
+       "filter:Imprinted",
+       "trigger_zone:ChangesZone:Exile"
+      ],
+      "size": "M"
+     },
+     "Damage dealt by another object (DamageSource$)": {
+      "cards": [
+       "Pyrogoyf"
+      ],
+      "findings": [
+       "ability_param:DealDamage.DamageSource",
+       "svar_expr:TriggeredCard$CardPower"
+      ],
+      "size": "S"
+     },
+     "Divided damage (CR 601.2d)": {
+      "cards": [
+       "Fury",
+       "Shatterskull Smashing"
+      ],
+      "findings": [
+       "ability_param:DealDamage.DividedAsYouChoose",
+       "svar_expr:Count$xPaid/Twice"
+      ],
+      "size": "M"
+     },
+     "Exile-the-card-itself costs": {
+      "cards": [
+       "Simian Spirit Guide"
+      ],
+      "findings": [
+       "cost:ExileFromHand"
+      ],
+      "size": "S"
+     },
+     "Fable of the Mirror-Breaker": {
+      "cards": [
+       "Fable of the Mirror-Breaker"
+      ],
+      "findings": [
+       "ability_param:CopyPermanent.AddKeywords",
+       "ability_param:Discard.RememberDiscarded"
+      ],
+      "size": "M"
+     },
+     "LandPlayed trigger": {
+      "cards": [
+       "City of Traitors"
+      ],
+      "findings": [
+       "trigger_mode:LandPlayed"
+      ],
+      "size": "M"
+     },
+     "Repeated modes (CanRepeatModes)": {
+      "cards": [
+       "Fiery Confluence"
+      ],
+      "findings": [
+       "ability_param:Charm.CanRepeatModes"
+      ],
+      "size": "M"
+     },
+     "without<Keyword> filter qualifier": {
+      "cards": [
+       "Sundering Eruption"
+      ],
+      "findings": [
+       "filter:withoutFlying"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Broadside Bombardiers": [
+      "Boast (CR 702.142)"
+     ],
+     "Chrome Mox": [
+      "Chrome Mox imprint"
+     ],
+     "City of Traitors": [
+      "LandPlayed trigger"
+     ],
+     "Fable of the Mirror-Breaker": [
+      "Fable of the Mirror-Breaker"
+     ],
+     "Fiery Confluence": [
+      "Repeated modes (CanRepeatModes)"
+     ],
+     "Fury": [
+      "Divided damage (CR 601.2d)"
+     ],
+     "Pyrogoyf": [
+      "Damage dealt by another object (DamageSource$)"
+     ],
+     "Shatterskull Smashing": [
+      "Divided damage (CR 601.2d)"
+     ],
+     "Simian Spirit Guide": [
+      "Exile-the-card-itself costs"
+     ],
+     "Sundering Eruption": [
+      "without<Keyword> filter qualifier"
+     ]
+    },
+    "new_cards": [
+     "Blood Moon",
+     "Broadside Bombardiers",
+     "Chrome Mox",
+     "City of Traitors",
+     "Fable of the Mirror-Breaker",
+     "Fiery Confluence",
+     "Fury",
+     "Pyrogoyf",
+     "Shatterskull Smashing",
+     "Simian Spirit Guide",
+     "Sundering Eruption"
+    ],
+    "size_points": 21
+   },
+   "inputs": {
+    "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "11 new card(s): 1 clean, 10 need 9 mechanic(s) (21 points)",
+   "time": "2026-10-24T21:27:50"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 22,
+    "in_vocab": 11,
+    "no_script": [],
+    "not_in_vocab": [
+     "Blood Moon",
+     "Broadside Bombardiers",
+     "Chrome Mox",
+     "City of Traitors",
+     "Fable of the Mirror-Breaker",
+     "Fiery Confluence",
+     "Fury",
+     "Pyrogoyf",
+     "Shatterskull Smashing",
+     "Simian Spirit Guide",
+     "Sundering Eruption"
+    ]
+   },
+   "inputs": {
+    "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
+    "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "22 cards: 11 in vocab, 11 new (0 without a script)",
+   "time": "2026-10-24T21:10:54"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Boast (CR 702.142)",
+     "Chrome Mox imprint",
+     "Damage dealt by another object (DamageSource$)",
+     "Divided damage (CR 601.2d)",
+     "Exile-the-card-itself costs",
+     "Fable of the Mirror-Breaker",
+     "LandPlayed trigger",
+     "Repeated modes (CanRepeatModes)",
+     "without<Keyword> filter qualifier"
+    ]
+   },
+   "inputs": {
+    "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "9 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Exile-the-card-itself costs, Fable of the Mirror-Breaker, LandPlayed trigger, Repeated modes (CanRepeatModes), without<Keyword> filter qualifier",
+   "time": "2026-10-24T21:27:50"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Blood Moon": {
+      "card": "Blood Moon",
+      "faces": [
+       "Blood Moon"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/b/blood_moon.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Broadside Bombardiers": {
+      "card": "Broadside Bombardiers",
+      "faces": [
+       "Broadside Bombardiers"
+      ],
+      "findings": [
+       {
+        "detail": "DealDamage Boast$ True",
+        "kind": "ability_param",
+        "line": "A:AB$ DealDamage | Cost$ Sac<1/Artifact.Other;Creature.Other/another creature or artifact> | ValidTgts$ Any | NumDmg$ X | Boast$ True | SpellDescription$ CARDNAME deals damage equal to 2 plus the sacrificed permanent's mana value to any target.",
+        "name": "DealDamage.Boast"
+       },
+       {
+        "detail": "X = Sacrificed$CardManaCost/Plus.2",
+        "kind": "svar_expr",
+        "line": "SVar:X:Sacrificed$CardManaCost/Plus.2",
+        "name": "Sacrificed$CardManaCost/Plus.2"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/b/broadside_bombardiers.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Chrome Mox": {
+      "card": "Chrome Mox",
+      "faces": [
+       "Chrome Mox"
+      ],
+      "findings": [
+       {
+        "detail": "Pump ForgetImprinted$ TriggeredCard",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
+        "name": "Pump.ForgetImprinted"
+       },
+       {
+        "detail": "read as any zone",
+        "kind": "trigger_zone",
+        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
+        "name": "ChangesZone:Exile"
+       },
+       {
+        "detail": "Valid$ Defined.Imprinted",
+        "kind": "filter",
+        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
+        "name": "Defined"
+       },
+       {
+        "detail": "Valid$ Defined.Imprinted",
+        "kind": "filter",
+        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
+        "name": "Imprinted"
+       },
+       {
+        "detail": "ValidCard$ Card.IsImprinted+ExiledWithSourceLKI",
+        "kind": "filter",
+        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
+        "name": "ExiledWithSourceLKI"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/chrome_mox.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "City of Traitors": {
+      "card": "City of Traitors",
+      "faces": [
+       "City of Traitors"
+      ],
+      "findings": [
+       {
+        "detail": "no event binding: the trigger is dropped",
+        "kind": "trigger_mode",
+        "line": "T:Mode$ LandPlayed | ValidCard$ Land.Other+YouCtrl | TriggerZones$ Battlefield | Execute$ TrigSac | TriggerDescription$ When you play another land, sacrifice CARDNAME.",
+        "name": "LandPlayed"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/city_of_traitors.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Fable of the Mirror-Breaker": {
+      "card": "Fable of the Mirror-Breaker",
+      "faces": [
+       "Fable of the Mirror-Breaker",
+       "Reflection of Kiki-Jiki"
+      ],
+      "findings": [
+       {
+        "detail": "Discard RememberDiscarded$ True",
+        "kind": "ability_param",
+        "line": "K:Chapter:3:DBToken,DBDiscard,DBTransform",
+        "name": "Discard.RememberDiscarded"
+       },
+       {
+        "detail": "CopyPermanent AddKeywords$ Haste",
+        "kind": "ability_param",
+        "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
+        "name": "CopyPermanent.AddKeywords"
+       }
+      ],
+      "layout": "transform",
+      "script": "cardsfolder/f/fable_of_the_mirror_breaker_reflection_of_kiki_jiki.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "r_2_2_goblin_shaman_treasure"
+       }
+      ],
+      "vocab": [
+       -1,
+       -1
+      ]
+     },
+     "Fiery Confluence": {
+      "card": "Fiery Confluence",
+      "faces": [
+       "Fiery Confluence"
+      ],
+      "findings": [
+       {
+        "detail": "Charm CanRepeatModes$ True",
+        "kind": "ability_param",
+        "line": "A:SP$ Charm | Choices$ DBDamageCreatures,DBDamageOpponents,DBDestroy | CharmNum$ 3 | CanRepeatModes$ True",
+        "name": "Charm.CanRepeatModes"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/f/fiery_confluence.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Fury": {
+      "card": "Fury",
+      "faces": [
+       "Fury"
+      ],
+      "findings": [
+       {
+        "detail": "DealDamage DividedAsYouChoose$ 4",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigDamage | TriggerDescription$ When CARDNAME enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers.",
+        "name": "DealDamage.DividedAsYouChoose"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/f/fury.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Pyrogoyf": {
+      "card": "Pyrogoyf",
+      "faces": [
+       "Pyrogoyf"
+      ],
+      "findings": [
+       {
+        "detail": "DealDamage DamageSource$ TriggeredCard",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self,Creature.Lhurgoyf+YouCtrl | Origin$ Any | Destination$ Battlefield | Execute$ TrigDealDamage | TriggerZones$ Battlefield | TriggerDescription$ Whenever CARDNAME or another Lhurgoyf creature you control enters, that creature deals damage equal to its power to any target.",
+        "name": "DealDamage.DamageSource"
+       },
+       {
+        "detail": "Z = TriggeredCard$CardPower",
+        "kind": "svar_expr",
+        "line": "SVar:Z:TriggeredCard$CardPower",
+        "name": "TriggeredCard$CardPower"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/p/pyrogoyf.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Shatterskull Smashing": {
+      "card": "Shatterskull Smashing",
+      "faces": [
+       "Shatterskull Smashing",
+       "Shatterskull, the Hammer Pass"
+      ],
+      "findings": [
+       {
+        "detail": "DealDamage DividedAsYouChoose$ Y",
+        "kind": "ability_param",
+        "line": "A:SP$ DealDamage | NumDmg$ Y | ValidTgts$ Creature,Planeswalker | TargetMin$ 0 | TargetMax$ 2 | DividedAsYouChoose$ Y | TgtPrompt$ Select up to two target creatures and/or planeswalkers | SpellDescription$ CARDNAME deals X damage divided as you choose among up to two target creatures and/or planeswalkers. If X is 6 or more, CARDNAME deals twice X damage divided as you choose among them instead.",
+        "name": "DealDamage.DividedAsYouChoose"
+       },
+       {
+        "detail": "Z = Count$xPaid/Twice",
+        "kind": "svar_expr",
+        "line": "SVar:Z:Count$xPaid/Twice",
+        "name": "Count$xPaid/Twice"
+       }
+      ],
+      "layout": "modal",
+      "script": "cardsfolder/s/shatterskull_smashing_shatterskull_the_hammer_pass.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
+       -1
+      ]
+     },
+     "Simian Spirit Guide": {
+      "card": "Simian Spirit Guide",
+      "faces": [
+       "Simian Spirit Guide"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ ExileFromHand<1/CARDNAME>",
+        "kind": "cost",
+        "line": "A:AB$ Mana | Cost$ ExileFromHand<1/CARDNAME> | Produced$ R | ActivationZone$ Hand | SpellDescription$ Add {R}.",
+        "name": "ExileFromHand"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/simian_spirit_guide.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Sundering Eruption": {
+      "card": "Sundering Eruption",
+      "faces": [
+       "Sundering Eruption",
+       "Volcanic Fissure"
+      ],
+      "findings": [
+       {
+        "detail": "Affected$ Creature.withoutFlying",
+        "kind": "filter",
+        "line": "SVar:KWPump:Mode$ Continuous | AffectedZone$ Battlefield | Affected$ Creature.withoutFlying | AddHiddenKeyword$ CARDNAME can't block. | Description$ Creatures without flying can't block this turn.",
+        "name": "withoutFlying"
+       }
+      ],
+      "layout": "modal",
+      "script": "cardsfolder/s/sundering_eruption_volcanic_fissure.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
+       -1
+      ]
+     }
+    },
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "11 new card(s), 10 with findings (18 findings), 0 without a script",
+   "time": "2026-10-24T21:27:50"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [
+     "r_2_2_goblin_shaman_treasure"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
+    "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:44"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Dragon Stompy, 1.0% (aggro), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

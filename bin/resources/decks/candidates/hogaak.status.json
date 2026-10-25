@@ -1,0 +1,429 @@
+{
+ "deck": "hogaak",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 851,
+  "deck_id": 904240,
+  "deck_url": "https://mtgtop8.com/event?d=904240&f=LE",
+  "format": "LE",
+  "meta_share": 2.0,
+  "name": "Hogaak",
+  "rank": 18,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Massacre",
+     "Powder Keg",
+     "Stitcher's Supplier",
+     "Watery Grave"
+    ],
+    "mechanics": {
+     "Adventure (CR 715)": {
+      "cards": [
+       "Brazen Borrower"
+      ],
+      "findings": [
+       "layout:Adventure"
+      ],
+      "size": "L"
+     },
+     "Can't-block restrictions (CantBlockBy)": {
+      "cards": [
+       "Brazen Borrower"
+      ],
+      "findings": [
+       "static_mode:CantBlockBy",
+       "static_param:ValidAttacker",
+       "static_param:ValidBlocker"
+      ],
+      "size": "M"
+     },
+     "Convoke (CR 702.51)": {
+      "cards": [
+       "Hogaak, Arisen Necropolis"
+      ],
+      "findings": [
+       "keyword:Convoke"
+      ],
+      "size": "M"
+     },
+     "FORGE_PIN bump": {
+      "cards": [
+       "Dark Matter Manipulator"
+      ],
+      "findings": [
+       "script:Dark Matter Manipulator"
+      ],
+      "size": "M"
+     },
+     "Hogaak casting": {
+      "cards": [
+       "Hogaak, Arisen Necropolis"
+      ],
+      "findings": [
+       "ability_param:PermanentCreature.ManaRestriction",
+       "category:PermanentCreature",
+       "static_param:EffectZone"
+      ],
+      "size": "L"
+     },
+     "Mana spent on casting (Count$CastTotalManaSpent)": {
+      "cards": [
+       "Mockingbird"
+      ],
+      "findings": [
+       "svar_expr:Count$CastTotalManaSpent"
+      ],
+      "size": "S"
+     },
+     "Sunburst (CR 702.44)": {
+      "cards": [
+       "Engineered Explosives"
+      ],
+      "findings": [
+       "keyword:Sunburst"
+      ],
+      "size": "M"
+     },
+     "without<Keyword> filter qualifier": {
+      "cards": [
+       "Brazen Borrower"
+      ],
+      "findings": [
+       "filter:withoutFlying"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Brazen Borrower": [
+      "Adventure (CR 715)",
+      "Can't-block restrictions (CantBlockBy)",
+      "without<Keyword> filter qualifier"
+     ],
+     "Dark Matter Manipulator": [
+      "FORGE_PIN bump"
+     ],
+     "Engineered Explosives": [
+      "Sunburst (CR 702.44)"
+     ],
+     "Hogaak, Arisen Necropolis": [
+      "Convoke (CR 702.51)",
+      "Hogaak casting"
+     ],
+     "Mockingbird": [
+      "Mana spent on casting (Count$CastTotalManaSpent)"
+     ]
+    },
+    "new_cards": [
+     "Brazen Borrower",
+     "Dark Matter Manipulator",
+     "Engineered Explosives",
+     "Hogaak, Arisen Necropolis",
+     "Massacre",
+     "Mockingbird",
+     "Powder Keg",
+     "Stitcher's Supplier",
+     "Watery Grave"
+    ],
+    "size_points": 30
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "9 new card(s): 4 clean, 5 need 8 mechanic(s) (30 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 28,
+    "in_vocab": 19,
+    "no_script": [
+     "Dark Matter Manipulator"
+    ],
+    "not_in_vocab": [
+     "Brazen Borrower",
+     "Engineered Explosives",
+     "Hogaak, Arisen Necropolis",
+     "Massacre",
+     "Mockingbird",
+     "Powder Keg",
+     "Stitcher's Supplier",
+     "Watery Grave"
+    ]
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "28 cards: 19 in vocab, 9 new (1 without a script)",
+   "time": "2026-10-24T21:10:54"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Adventure (CR 715)",
+     "Can't-block restrictions (CantBlockBy)",
+     "Convoke (CR 702.51)",
+     "FORGE_PIN bump",
+     "Hogaak casting",
+     "Mana spent on casting (Count$CastTotalManaSpent)",
+     "Sunburst (CR 702.44)",
+     "without<Keyword> filter qualifier"
+    ]
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "8 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), FORGE_PIN bump, Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), without<Keyword> filter qualifier",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Brazen Borrower": {
+      "card": "Brazen Borrower",
+      "faces": [
+       "Brazen Borrower",
+       "Petty Theft"
+      ],
+      "findings": [
+       {
+        "detail": "AlternateMode:Adventure is read as a transforming card",
+        "kind": "layout",
+        "line": "",
+        "name": "Adventure"
+       },
+       {
+        "detail": "CantBlockBy ValidAttacker$ Creature.withoutFlying",
+        "kind": "static_param",
+        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
+        "name": "ValidAttacker"
+       },
+       {
+        "detail": "CantBlockBy ValidBlocker$ Creature.Self",
+        "kind": "static_param",
+        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
+        "name": "ValidBlocker"
+       },
+       {
+        "detail": "the engine applies no such static",
+        "kind": "static_mode",
+        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
+        "name": "CantBlockBy"
+       },
+       {
+        "detail": "ValidAttacker$ Creature.withoutFlying",
+        "kind": "filter",
+        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
+        "name": "withoutFlying"
+       }
+      ],
+      "layout": "transform",
+      "script": "cardsfolder/b/brazen_borrower_petty_theft.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
+       -1
+      ]
+     },
+     "Engineered Explosives": {
+      "card": "Engineered Explosives",
+      "faces": [
+       "Engineered Explosives"
+      ],
+      "findings": [
+       {
+        "detail": "Sunburst",
+        "kind": "keyword",
+        "line": "K:Sunburst",
+        "name": "Sunburst"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/e/engineered_explosives.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Hogaak, Arisen Necropolis": {
+      "card": "Hogaak, Arisen Necropolis",
+      "faces": [
+       "Hogaak, Arisen Necropolis"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:SP$ PermanentCreature | Cost$ 5 BG BG | ManaRestriction$ None",
+        "name": "PermanentCreature"
+       },
+       {
+        "detail": "PermanentCreature ManaRestriction$ None",
+        "kind": "ability_param",
+        "line": "A:SP$ PermanentCreature | Cost$ 5 BG BG | ManaRestriction$ None",
+        "name": "PermanentCreature.ManaRestriction"
+       },
+       {
+        "detail": "Continuous EffectZone$ Graveyard",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Card.Self | MayPlay$ True | AffectedZone$ Graveyard | EffectZone$ Graveyard | Description$ You may cast CARDNAME from your graveyard.",
+        "name": "EffectZone"
+       },
+       {
+        "detail": "Convoke",
+        "kind": "keyword",
+        "line": "K:Convoke",
+        "name": "Convoke"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/h/hogaak_arisen_necropolis.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Massacre": {
+      "card": "Massacre",
+      "faces": [
+       "Massacre"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/m/massacre.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Mockingbird": {
+      "card": "Mockingbird",
+      "faces": [
+       "Mockingbird"
+      ],
+      "findings": [
+       {
+        "detail": "Y = Count$CastTotalManaSpent",
+        "kind": "svar_expr",
+        "line": "SVar:Y:Count$CastTotalManaSpent",
+        "name": "Count$CastTotalManaSpent"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/m/mockingbird.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Powder Keg": {
+      "card": "Powder Keg",
+      "faces": [
+       "Powder Keg"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/p/powder_keg.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Stitcher's Supplier": {
+      "card": "Stitcher's Supplier",
+      "faces": [
+       "Stitcher's Supplier"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/s/stitchers_supplier.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Watery Grave": {
+      "card": "Watery Grave",
+      "faces": [
+       "Watery Grave"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/w/watery_grave.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": [
+     "Dark Matter Manipulator"
+    ]
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "8 new card(s), 4 with findings (11 findings), 1 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [
+     "Dark Matter Manipulator"
+    ],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": [
+     "Dark Matter Manipulator"
+    ]
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "scripts": "4801cae8f7471293b9c89f866b765a97ae44920d27ce98a17669022ee6bf2f21",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:45"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Hogaak, 2.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

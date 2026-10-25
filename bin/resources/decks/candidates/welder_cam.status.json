@@ -1,0 +1,563 @@
+{
+ "deck": "welder_cam",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 3100,
+  "deck_id": 904160,
+  "deck_url": "https://mtgtop8.com/event?d=904160&f=LE",
+  "format": "LE",
+  "meta_share": 2.0,
+  "name": "Welder Cam",
+  "rank": 17,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Goblin Engineer",
+     "Legion Extruder",
+     "Mishra's Research Desk",
+     "Soul-Guide Lantern"
+    ],
+    "mechanics": {
+     "Agatha's Soul Cauldron": {
+      "cards": [
+       "Agatha's Soul Cauldron"
+      ],
+      "findings": [
+       "static_param:GainsAbilitiesOf",
+       "static_param:GainsAbilitiesOfZones",
+       "static_param:ValidPlayer",
+       "static_param:ValidSA"
+      ],
+      "size": "L"
+     },
+     "Branch effect (DB$ Branch)": {
+      "cards": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       "ability_param:Branch.BranchConditionSVar",
+       "ability_param:Branch.BranchConditionSVarCompare",
+       "ability_param:Branch.FalseSubAbility",
+       "ability_param:Branch.TrueSubAbility",
+       "category:Branch"
+      ],
+      "size": "M"
+     },
+     "Damage dealt by another object (DamageSource$)": {
+      "cards": [
+       "Hawkeye's Bow"
+      ],
+      "findings": [
+       "ability_param:DealDamage.DamageSource"
+      ],
+      "size": "S"
+     },
+     "Discard-a-card activation cost": {
+      "cards": [
+       "Melded Moxite"
+      ],
+      "findings": [
+       "cost:Discard"
+      ],
+      "size": "M"
+     },
+     "Face-down permanents (Morph, Cloak; CR 708)": {
+      "cards": [
+       "Aphetto Alchemist"
+      ],
+      "findings": [
+       "keyword:Morph"
+      ],
+      "size": "XL"
+     },
+     "Fuse (CR 702.102)": {
+      "cards": [
+       "Wear/Tear"
+      ],
+      "findings": [
+       "keyword:Fuse"
+      ],
+      "size": "M"
+     },
+     "Goblin Welder swap": {
+      "cards": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       "ability_param:Pump.ImprintCards",
+       "ability_param:Pump.PumpZone",
+       "ability_param:Pump.TargetsWithDefinedController",
+       "filter:sharesControllerWith",
+       "svar_expr:Imprinted$Valid"
+      ],
+      "size": "M"
+     },
+     "TapOrUntap effect": {
+      "cards": [
+       "Sewer-veillance Cam"
+      ],
+      "findings": [
+       "category:TapOrUntap"
+      ],
+      "size": "S"
+     },
+     "Taps trigger": {
+      "cards": [
+       "Hawkeye's Bow"
+      ],
+      "findings": [
+       "trigger_mode:Taps"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Agatha's Soul Cauldron": [
+      "Agatha's Soul Cauldron"
+     ],
+     "Aphetto Alchemist": [
+      "Face-down permanents (Morph, Cloak; CR 708)"
+     ],
+     "Goblin Welder": [
+      "Branch effect (DB$ Branch)",
+      "Goblin Welder swap"
+     ],
+     "Hawkeye's Bow": [
+      "Damage dealt by another object (DamageSource$)",
+      "Taps trigger"
+     ],
+     "Melded Moxite": [
+      "Discard-a-card activation cost"
+     ],
+     "Sewer-veillance Cam": [
+      "TapOrUntap effect"
+     ],
+     "Wear/Tear": [
+      "Fuse (CR 702.102)"
+     ]
+    },
+    "new_cards": [
+     "Agatha's Soul Cauldron",
+     "Aphetto Alchemist",
+     "Goblin Engineer",
+     "Goblin Welder",
+     "Hawkeye's Bow",
+     "Legion Extruder",
+     "Melded Moxite",
+     "Mishra's Research Desk",
+     "Sewer-veillance Cam",
+     "Soul-Guide Lantern",
+     "Wear/Tear"
+    ],
+    "size_points": 43
+   },
+   "inputs": {
+    "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "11 new card(s): 4 clean, 7 need 9 mechanic(s) (43 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 33,
+    "in_vocab": 22,
+    "no_script": [],
+    "not_in_vocab": [
+     "Agatha's Soul Cauldron",
+     "Aphetto Alchemist",
+     "Goblin Engineer",
+     "Goblin Welder",
+     "Hawkeye's Bow",
+     "Legion Extruder",
+     "Melded Moxite",
+     "Mishra's Research Desk",
+     "Sewer-veillance Cam",
+     "Soul-Guide Lantern",
+     "Wear/Tear"
+    ]
+   },
+   "inputs": {
+    "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
+    "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "33 cards: 22 in vocab, 11 new (0 without a script)",
+   "time": "2026-10-24T21:09:18"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Agatha's Soul Cauldron",
+     "Branch effect (DB$ Branch)",
+     "Damage dealt by another object (DamageSource$)",
+     "Discard-a-card activation cost",
+     "Face-down permanents (Morph, Cloak; CR 708)",
+     "Fuse (CR 702.102)",
+     "Goblin Welder swap",
+     "TapOrUntap effect",
+     "Taps trigger"
+    ]
+   },
+   "inputs": {
+    "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Discard-a-card activation cost, Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, TapOrUntap effect, Taps trigger",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Agatha's Soul Cauldron": {
+      "card": "Agatha's Soul Cauldron",
+      "faces": [
+       "Agatha's Soul Cauldron"
+      ],
+      "findings": [
+       {
+        "detail": "ManaConvert ValidPlayer$ You",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaConvert | ValidPlayer$ You | ValidCard$ Creature.YouCtrl+inZoneBattlefield | ValidSA$ Activated | ManaConversion$ AnyType->AnyColor | Description$ You may spend mana as though it were mana of any color to activate abilities of creatures you control.",
+        "name": "ValidPlayer"
+       },
+       {
+        "detail": "ManaConvert ValidSA$ Activated",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaConvert | ValidPlayer$ You | ValidCard$ Creature.YouCtrl+inZoneBattlefield | ValidSA$ Activated | ManaConversion$ AnyType->AnyColor | Description$ You may spend mana as though it were mana of any color to activate abilities of creatures you control.",
+        "name": "ValidSA"
+       },
+       {
+        "detail": "Continuous GainsAbilitiesOf$ Creature.ExiledWithSource",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
+        "name": "GainsAbilitiesOf"
+       },
+       {
+        "detail": "Continuous GainsAbilitiesOfZones$ Exile",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
+        "name": "GainsAbilitiesOfZones"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/agathas_soul_cauldron.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Aphetto Alchemist": {
+      "card": "Aphetto Alchemist",
+      "faces": [
+       "Aphetto Alchemist"
+      ],
+      "findings": [
+       {
+        "detail": "Morph:U",
+        "kind": "keyword",
+        "line": "K:Morph:U",
+        "name": "Morph"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/aphetto_alchemist.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Goblin Engineer": {
+      "card": "Goblin Engineer",
+      "faces": [
+       "Goblin Engineer"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/g/goblin_engineer.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Goblin Welder": {
+      "card": "Goblin Welder",
+      "faces": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       {
+        "detail": "Pump TargetsWithDefinedController$ ParentTargetedController",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Pump.TargetsWithDefinedController"
+       },
+       {
+        "detail": "Pump PumpZone$ Graveyard",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Pump.PumpZone"
+       },
+       {
+        "detail": "Pump ImprintCards$ ThisTargetedCard",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Pump.ImprintCards"
+       },
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch"
+       },
+       {
+        "detail": "Branch BranchConditionSVar$ TargetCheck",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.BranchConditionSVar"
+       },
+       {
+        "detail": "Branch BranchConditionSVarCompare$ GE2",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.BranchConditionSVarCompare"
+       },
+       {
+        "detail": "Branch TrueSubAbility$ DBSacrifice",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.TrueSubAbility"
+       },
+       {
+        "detail": "Branch FalseSubAbility$ DBCleanup",
+        "kind": "ability_param",
+        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+        "name": "Branch.FalseSubAbility"
+       },
+       {
+        "detail": "Remembered$Valid Artifact.sharesControllerWith",
+        "kind": "filter",
+        "line": "SVar:CheckRemem:Remembered$Valid Artifact.sharesControllerWith Imprinted",
+        "name": "sharesControllerWith"
+       },
+       {
+        "detail": "CheckImprint = Imprinted$Valid Artifact.sharesControllerWith Remembered",
+        "kind": "svar_expr",
+        "line": "SVar:CheckImprint:Imprinted$Valid Artifact.sharesControllerWith Remembered",
+        "name": "Imprinted$Valid"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/goblin_welder.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Hawkeye's Bow": {
+      "card": "Hawkeye's Bow",
+      "faces": [
+       "Hawkeye's Bow"
+      ],
+      "findings": [
+       {
+        "detail": "DealDamage DamageSource$ TriggeredCardLKICopy",
+        "kind": "ability_param",
+        "line": "T:Mode$ Taps | ValidCard$ Creature.EquippedBy | TriggerZones$ Battlefield | Execute$ TrigDamage | TriggerDescription$ Whenever equipped creature becomes tapped, it deals 1 damage to each opponent.",
+        "name": "DealDamage.DamageSource"
+       },
+       {
+        "detail": "no event binding: the trigger is dropped",
+        "kind": "trigger_mode",
+        "line": "T:Mode$ Taps | ValidCard$ Creature.EquippedBy | TriggerZones$ Battlefield | Execute$ TrigDamage | TriggerDescription$ Whenever equipped creature becomes tapped, it deals 1 damage to each opponent.",
+        "name": "Taps"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/h/hawkeyes_bow.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Legion Extruder": {
+      "card": "Legion Extruder",
+      "faces": [
+       "Legion Extruder"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/l/legion_extruder.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "c_3_3_a_golem"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Melded Moxite": {
+      "card": "Melded Moxite",
+      "faces": [
+       "Melded Moxite"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ Discard<1/Card>",
+        "kind": "cost",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigDiscard | TriggerDescription$ When this artifact enters, you may discard a card. If you do, draw two cards.",
+        "name": "Discard"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/m/melded_moxite.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "c_2_2_a_robot"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Mishra's Research Desk": {
+      "card": "Mishra's Research Desk",
+      "faces": [
+       "Mishra's Research Desk"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/m/mishras_research_desk.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Sewer-veillance Cam": {
+      "card": "Sewer-veillance Cam",
+      "faces": [
+       "Sewer-veillance Cam"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
+        "name": "TapOrUntap"
+       },
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Any | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | Secondary$ True | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
+        "name": "TapOrUntap"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/sewer_veillance_cam.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Soul-Guide Lantern": {
+      "card": "Soul-Guide Lantern",
+      "faces": [
+       "Soul-Guide Lantern"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/s/soul_guide_lantern.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Wear/Tear": {
+      "card": "Wear",
+      "faces": [
+       "Wear",
+       "Tear"
+      ],
+      "findings": [
+       {
+        "detail": "Fuse",
+        "kind": "keyword",
+        "line": "K:Fuse",
+        "name": "Fuse"
+       }
+      ],
+      "layout": "split",
+      "script": "cardsfolder/w/wear_tear.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
+       -1
+      ]
+     }
+    },
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "11 new card(s), 7 with findings (21 findings), 0 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [
+     "c_2_2_a_robot",
+     "c_3_3_a_golem"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
+    "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:47"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Welder Cam, 2.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

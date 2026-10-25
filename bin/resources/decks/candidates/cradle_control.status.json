@@ -1,0 +1,335 @@
+{
+ "deck": "cradle_control",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 79,
+  "deck_id": 904045,
+  "deck_url": "https://mtgtop8.com/event?d=904045&f=LE",
+  "format": "LE",
+  "meta_share": 1.0,
+  "name": "Cradle Control",
+  "rank": 23,
+  "scraped": "2026-10-24",
+  "section": "control",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Fiend Artisan"
+    ],
+    "mechanics": {
+     "A creature card in every other zone (Grist)": {
+      "cards": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       "static_param:ExcludeZone"
+      ],
+      "size": "M"
+     },
+     "AnimateAll power, toughness and types": {
+      "cards": [
+       "Allosaurus Shepherd"
+      ],
+      "findings": [
+       "ability_param:AnimateAll.Power",
+       "ability_param:AnimateAll.Toughness",
+       "ability_param:AnimateAll.Types"
+      ],
+      "size": "S"
+     },
+     "Bestow (CR 702.103)": {
+      "cards": [
+       "Springheart Nantuko"
+      ],
+      "findings": [
+       "ability_param:CopyPermanent.UnlessResolveSubs",
+       "filter:AttachedTo Creature",
+       "keyword:Bestow"
+      ],
+      "size": "L"
+     },
+     "FORGE_PIN bump": {
+      "cards": [
+       "Carnivorous Cultivator"
+      ],
+      "findings": [
+       "script:Carnivorous Cultivator"
+      ],
+      "size": "M"
+     },
+     "Repeat effect (DB$ Repeat)": {
+      "cards": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       "ability_param:Repeat.RepeatCheckSVar",
+       "ability_param:Repeat.RepeatSVarCompare",
+       "category:Repeat"
+      ],
+      "size": "M"
+     }
+    },
+    "needs": {
+     "Allosaurus Shepherd": [
+      "AnimateAll power, toughness and types"
+     ],
+     "Carnivorous Cultivator": [
+      "FORGE_PIN bump"
+     ],
+     "Grist, the Hunger Tide": [
+      "A creature card in every other zone (Grist)",
+      "Repeat effect (DB$ Repeat)"
+     ],
+     "Springheart Nantuko": [
+      "Bestow (CR 702.103)"
+     ]
+    },
+    "new_cards": [
+     "Allosaurus Shepherd",
+     "Carnivorous Cultivator",
+     "Fiend Artisan",
+     "Grist, the Hunger Tide",
+     "Springheart Nantuko"
+    ],
+    "size_points": 18
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "5 new card(s): 1 clean, 4 need 5 mechanic(s) (18 points)",
+   "time": "2026-10-24T21:27:50"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 34,
+    "in_vocab": 29,
+    "no_script": [
+     "Carnivorous Cultivator"
+    ],
+    "not_in_vocab": [
+     "Allosaurus Shepherd",
+     "Fiend Artisan",
+     "Grist, the Hunger Tide",
+     "Springheart Nantuko"
+    ]
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "34 cards: 29 in vocab, 5 new (1 without a script)",
+   "time": "2026-10-24T21:10:53"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "A creature card in every other zone (Grist)",
+     "AnimateAll power, toughness and types",
+     "Bestow (CR 702.103)",
+     "FORGE_PIN bump",
+     "Repeat effect (DB$ Repeat)"
+    ]
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), FORGE_PIN bump, Repeat effect (DB$ Repeat)",
+   "time": "2026-10-24T21:27:50"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Allosaurus Shepherd": {
+      "card": "Allosaurus Shepherd",
+      "faces": [
+       "Allosaurus Shepherd"
+      ],
+      "findings": [
+       {
+        "detail": "AnimateAll Power$ 5",
+        "kind": "ability_param",
+        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
+        "name": "AnimateAll.Power"
+       },
+       {
+        "detail": "AnimateAll Toughness$ 5",
+        "kind": "ability_param",
+        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
+        "name": "AnimateAll.Toughness"
+       },
+       {
+        "detail": "AnimateAll Types$ Dinosaur",
+        "kind": "ability_param",
+        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
+        "name": "AnimateAll.Types"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/allosaurus_shepherd.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Fiend Artisan": {
+      "card": "Fiend Artisan",
+      "faces": [
+       "Fiend Artisan"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/f/fiend_artisan.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Grist, the Hunger Tide": {
+      "card": "Grist, the Hunger Tide",
+      "faces": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat"
+       },
+       {
+        "detail": "Repeat RepeatCheckSVar$ MilledInsect",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.RepeatCheckSVar"
+       },
+       {
+        "detail": "Repeat RepeatSVarCompare$ EQ1",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.RepeatSVarCompare"
+       },
+       {
+        "detail": "Continuous ExcludeZone$ Battlefield",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Card.Self | ExcludeZone$ Battlefield | SetPower$ 1 | SetToughness$ 1 | AddType$ Creature & Insect | CharacteristicDefining$ True | Description$ As long as CARDNAME isn't on the battlefield, it's a 1/1 Insect creature in addition to its other types.",
+        "name": "ExcludeZone"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/grist_the_hunger_tide.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "bg_1_1_insect"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Springheart Nantuko": {
+      "card": "Springheart Nantuko",
+      "faces": [
+       "Springheart Nantuko"
+      ],
+      "findings": [
+       {
+        "detail": "CopyPermanent UnlessResolveSubs$ WhenNotPaid",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Land.YouCtrl | TriggerZones$ Battlefield | Execute$ TrigCopy | TriggerDescription$ Landfall — Whenever a land you control enters, you may pay {1}{G} if CARDNAME is attached to a creature you control. If you do, create a token that's a copy of that creature. If you didn't create a token this way, create a 1/1 green Insect creature token.",
+        "name": "CopyPermanent.UnlessResolveSubs"
+       },
+       {
+        "detail": "Bestow:1 G",
+        "kind": "keyword",
+        "line": "K:Bestow:1 G",
+        "name": "Bestow"
+       },
+       {
+        "detail": "ConditionPresent$ Card.Self+AttachedTo Creature.YouCtrl",
+        "kind": "filter",
+        "line": "SVar:TrigCopy:DB$ CopyPermanent | ConditionPresent$ Card.Self+AttachedTo Creature.YouCtrl | ConditionCompare$ GE1 | UnlessCost$ 1 G | UnlessPayer$ You | UnlessSwitched$ True | UnlessResolveSubs$ WhenNotPaid | SubAbility$ DBToken | Defined$ Enchanted",
+        "name": "AttachedTo Creature"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/springheart_nantuko.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "g_1_1_insect"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": [
+     "Carnivorous Cultivator"
+    ]
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "4 new card(s), 3 with findings (10 findings), 1 without a script",
+   "time": "2026-10-24T21:27:50"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [
+     "bg_1_1_insect",
+     "g_1_1_insect"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": [
+     "Carnivorous Cultivator"
+    ]
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 1 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:43"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Cradle Control, 1.0% (control), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

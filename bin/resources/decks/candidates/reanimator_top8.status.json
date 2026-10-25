@@ -1,0 +1,331 @@
+{
+ "deck": "reanimator_top8",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 32,
+  "deck_id": 903809,
+  "deck_url": "https://mtgtop8.com/event?d=903809&f=LE",
+  "format": "LE",
+  "meta_share": 3.0,
+  "name": "Reanimator",
+  "rank": 13,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Faithless Looting",
+     "Raucous Theater",
+     "Unmask"
+    ],
+    "mechanics": {
+     "AlternateAdditionalCost keyword": {
+      "cards": [
+       "Bitter Triumph"
+      ],
+      "findings": [
+       "keyword:AlternateAdditionalCost"
+      ],
+      "size": "S"
+     },
+     "Choose one or more (MinCharmNum) and Escalate": {
+      "cards": [
+       "Collective Brutality"
+      ],
+      "findings": [
+       "ability_param:Charm.MinCharmNum",
+       "keyword:Escalate"
+      ],
+      "size": "M"
+     },
+     "Stronghold Gambit": {
+      "cards": [
+       "Stronghold Gambit"
+      ],
+      "findings": [
+       "ability_param:Pump.ForgetObjects",
+       "ability_param:Reveal.RevealDefined",
+       "filter:lowestRememberedCMC"
+      ],
+      "size": "M"
+     },
+     "Top creature of a graveyard (Shallow Grave)": {
+      "cards": [
+       "Shallow Grave"
+      ],
+      "findings": [
+       "filter:TopGraveyardCreature"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Bitter Triumph": [
+      "AlternateAdditionalCost keyword"
+     ],
+     "Collective Brutality": [
+      "Choose one or more (MinCharmNum) and Escalate"
+     ],
+     "Shallow Grave": [
+      "Top creature of a graveyard (Shallow Grave)"
+     ],
+     "Stronghold Gambit": [
+      "Stronghold Gambit"
+     ]
+    },
+    "new_cards": [
+     "Bitter Triumph",
+     "Collective Brutality",
+     "Faithless Looting",
+     "Raucous Theater",
+     "Shallow Grave",
+     "Stronghold Gambit",
+     "Unmask"
+    ],
+    "size_points": 8
+   },
+   "inputs": {
+    "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "7 new card(s): 3 clean, 4 need 4 mechanic(s) (8 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 28,
+    "in_vocab": 21,
+    "no_script": [],
+    "not_in_vocab": [
+     "Bitter Triumph",
+     "Collective Brutality",
+     "Faithless Looting",
+     "Raucous Theater",
+     "Shallow Grave",
+     "Stronghold Gambit",
+     "Unmask"
+    ]
+   },
+   "inputs": {
+    "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
+    "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "28 cards: 21 in vocab, 7 new (0 without a script)",
+   "time": "2026-10-24T21:09:13"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "AlternateAdditionalCost keyword",
+     "Choose one or more (MinCharmNum) and Escalate",
+     "Stronghold Gambit",
+     "Top creature of a graveyard (Shallow Grave)"
+    ]
+   },
+   "inputs": {
+    "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "4 mechanic(s) to implement: AlternateAdditionalCost keyword, Choose one or more (MinCharmNum) and Escalate, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Bitter Triumph": {
+      "card": "Bitter Triumph",
+      "faces": [
+       "Bitter Triumph"
+      ],
+      "findings": [
+       {
+        "detail": "AlternateAdditionalCost:PayLife<3>:Discard<1/Card>",
+        "kind": "keyword",
+        "line": "K:AlternateAdditionalCost:PayLife<3>:Discard<1/Card>",
+        "name": "AlternateAdditionalCost"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/b/bitter_triumph.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Collective Brutality": {
+      "card": "Collective Brutality",
+      "faces": [
+       "Collective Brutality"
+      ],
+      "findings": [
+       {
+        "detail": "Charm MinCharmNum$ 1",
+        "kind": "ability_param",
+        "line": "A:SP$ Charm | MinCharmNum$ 1 | CharmNum$ 3 | Choices$ DBDiscard,DBPump,DBDrain",
+        "name": "Charm.MinCharmNum"
+       },
+       {
+        "detail": "Escalate:Discard<1/Card>",
+        "kind": "keyword",
+        "line": "K:Escalate:Discard<1/Card>",
+        "name": "Escalate"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/collective_brutality.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Faithless Looting": {
+      "card": "Faithless Looting",
+      "faces": [
+       "Faithless Looting"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/f/faithless_looting.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Raucous Theater": {
+      "card": "Raucous Theater",
+      "faces": [
+       "Raucous Theater"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/r/raucous_theater.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Shallow Grave": {
+      "card": "Shallow Grave",
+      "faces": [
+       "Shallow Grave"
+      ],
+      "findings": [
+       {
+        "detail": "ChangeType$ Creature.TopGraveyardCreature+YouCtrl",
+        "kind": "filter",
+        "line": "A:SP$ ChangeZone | Origin$ Graveyard | Destination$ Battlefield | ChangeType$ Creature.TopGraveyardCreature+YouCtrl | Hidden$ True | Mandatory$ True | RememberChanged$ True | SubAbility$ DBPump | SpellDescription$ Return the top creature card of your graveyard to the battlefield. That creature gains haste until end of turn. Exile it at the beginning of the next end step.",
+        "name": "TopGraveyardCreature"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/shallow_grave.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Stronghold Gambit": {
+      "card": "Stronghold Gambit",
+      "faces": [
+       "Stronghold Gambit"
+      ],
+      "findings": [
+       {
+        "detail": "Reveal RevealDefined$ ValidHand Card.IsRemembered+RememberedPlayerCtrl",
+        "kind": "ability_param",
+        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
+        "name": "Reveal.RevealDefined"
+       },
+       {
+        "detail": "Pump ForgetObjects$ ValidHand Card.nonCreature+IsRemembered",
+        "kind": "ability_param",
+        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
+        "name": "Pump.ForgetObjects"
+       },
+       {
+        "detail": "ChangeType$ Card.lowestRememberedCMC",
+        "kind": "filter",
+        "line": "SVar:MoveToPlay:DB$ ChangeZoneAll | ChangeType$ Card.lowestRememberedCMC | Origin$ Hand | Destination$ Battlefield | SubAbility$ DBCleanup",
+        "name": "lowestRememberedCMC"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/stronghold_gambit.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Unmask": {
+      "card": "Unmask",
+      "faces": [
+       "Unmask"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/u/unmask.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "7 new card(s), 4 with findings (7 findings), 0 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
+    "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:46"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Reanimator, 3.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

@@ -1,0 +1,605 @@
+{
+ "deck": "storm",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 35,
+  "deck_id": 902683,
+  "deck_url": "https://mtgtop8.com/event?d=902683&f=LE",
+  "format": "LE",
+  "meta_share": 3.0,
+  "name": "Storm",
+  "rank": 12,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Burning Wish",
+     "Empty the Warrens",
+     "Haywire Mite",
+     "Raucous Theater",
+     "Taiga",
+     "Tendrils of Agony"
+    ],
+    "mechanics": {
+     "Bargain and free casting (Beseech the Mirror)": {
+      "cards": [
+       "Beseech the Mirror"
+      ],
+      "findings": [
+       "ability_param:Play.Condition",
+       "ability_param:Play.ImprintPlayed",
+       "ability_param:Play.WithoutManaCost",
+       "amount_svar:All",
+       "keyword:Bargain"
+      ],
+      "size": "M"
+     },
+     "Chrome Mox imprint": {
+      "cards": [
+       "Chrome Mox"
+      ],
+      "findings": [
+       "ability_param:Pump.ForgetImprinted",
+       "filter:Defined",
+       "filter:ExiledWithSourceLKI",
+       "filter:Imprinted",
+       "trigger_zone:ChangesZone:Exile"
+      ],
+      "size": "M"
+     },
+     "Discard the whole hand (Discard Mode$ Hand)": {
+      "cards": [
+       "Runehorn Hellkite",
+       "Song of Creation"
+      ],
+      "findings": [
+       "ability_param:Discard.Mode"
+      ],
+      "size": "S"
+     },
+     "Exile-the-card-itself costs": {
+      "cards": [
+       "Runehorn Hellkite"
+      ],
+      "findings": [
+       "cost:ExileFromGrave"
+      ],
+      "size": "S"
+     },
+     "FORGE_PIN bump": {
+      "cards": [
+       "Giant's Boulder"
+      ],
+      "findings": [
+       "script:Giant's Boulder"
+      ],
+      "size": "M"
+     },
+     "Gaea's Will": {
+      "cards": [
+       "Gaea's Will"
+      ],
+      "findings": [
+       "replacement:Effect:Moved"
+      ],
+      "size": "M"
+     },
+     "Shuffle effect": {
+      "cards": [
+       "Gamble"
+      ],
+      "findings": [
+       "ability_param:ChangeZone.NoShuffle",
+       "category:Shuffle"
+      ],
+      "size": "S"
+     },
+     "Targeted player's counts (TargetedPlayer$...)": {
+      "cards": [
+       "Peer into the Abyss"
+      ],
+      "findings": [
+       "svar_expr:TargetedPlayer$CardsInLibrary/HalfUp",
+       "svar_expr:TargetedPlayer$LifeTotal/HalfUp"
+      ],
+      "size": "S"
+     },
+     "UseAllOriginZones": {
+      "cards": [
+       "Echo of Eons"
+      ],
+      "findings": [
+       "ability_param:ChangeZoneAll.UseAllOriginZones"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Beseech the Mirror": [
+      "Bargain and free casting (Beseech the Mirror)"
+     ],
+     "Chrome Mox": [
+      "Chrome Mox imprint"
+     ],
+     "Echo of Eons": [
+      "UseAllOriginZones"
+     ],
+     "Gaea's Will": [
+      "Gaea's Will"
+     ],
+     "Gamble": [
+      "Shuffle effect"
+     ],
+     "Giant's Boulder": [
+      "FORGE_PIN bump"
+     ],
+     "Peer into the Abyss": [
+      "Targeted player's counts (TargetedPlayer$...)"
+     ],
+     "Runehorn Hellkite": [
+      "Discard the whole hand (Discard Mode$ Hand)",
+      "Exile-the-card-itself costs"
+     ],
+     "Song of Creation": [
+      "Discard the whole hand (Discard Mode$ Hand)"
+     ]
+    },
+    "new_cards": [
+     "Beseech the Mirror",
+     "Burning Wish",
+     "Chrome Mox",
+     "Echo of Eons",
+     "Empty the Warrens",
+     "Gaea's Will",
+     "Gamble",
+     "Giant's Boulder",
+     "Haywire Mite",
+     "Peer into the Abyss",
+     "Raucous Theater",
+     "Runehorn Hellkite",
+     "Song of Creation",
+     "Taiga",
+     "Tendrils of Agony"
+    ],
+    "size_points": 17
+   },
+   "inputs": {
+    "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "15 new card(s): 6 clean, 9 need 9 mechanic(s) (17 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 30,
+    "in_vocab": 15,
+    "no_script": [
+     "Giant's Boulder"
+    ],
+    "not_in_vocab": [
+     "Beseech the Mirror",
+     "Burning Wish",
+     "Chrome Mox",
+     "Echo of Eons",
+     "Empty the Warrens",
+     "Gaea's Will",
+     "Gamble",
+     "Haywire Mite",
+     "Peer into the Abyss",
+     "Raucous Theater",
+     "Runehorn Hellkite",
+     "Song of Creation",
+     "Taiga",
+     "Tendrils of Agony"
+    ]
+   },
+   "inputs": {
+    "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
+    "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "30 cards: 15 in vocab, 15 new (1 without a script)",
+   "time": "2026-10-24T21:10:57"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Bargain and free casting (Beseech the Mirror)",
+     "Chrome Mox imprint",
+     "Discard the whole hand (Discard Mode$ Hand)",
+     "Exile-the-card-itself costs",
+     "FORGE_PIN bump",
+     "Gaea's Will",
+     "Shuffle effect",
+     "Targeted player's counts (TargetedPlayer$...)",
+     "UseAllOriginZones"
+    ]
+   },
+   "inputs": {
+    "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "9 mechanic(s) to implement: Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, FORGE_PIN bump, Gaea's Will, Shuffle effect, Targeted player's counts (TargetedPlayer$...), UseAllOriginZones",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Beseech the Mirror": {
+      "card": "Beseech the Mirror",
+      "faces": [
+       "Beseech the Mirror"
+      ],
+      "findings": [
+       {
+        "detail": "Play Condition$ Bargain",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
+        "name": "Play.Condition"
+       },
+       {
+        "detail": "Play ImprintPlayed$ True",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
+        "name": "Play.ImprintPlayed"
+       },
+       {
+        "detail": "Play WithoutManaCost$ True",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
+        "name": "Play.WithoutManaCost"
+       },
+       {
+        "detail": "Play: the amount names no SVar",
+        "kind": "amount_svar",
+        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
+        "name": "All"
+       },
+       {
+        "detail": "Bargain",
+        "kind": "keyword",
+        "line": "K:Bargain",
+        "name": "Bargain"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/b/beseech_the_mirror.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Burning Wish": {
+      "card": "Burning Wish",
+      "faces": [
+       "Burning Wish"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/b/burning_wish.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Chrome Mox": {
+      "card": "Chrome Mox",
+      "faces": [
+       "Chrome Mox"
+      ],
+      "findings": [
+       {
+        "detail": "Pump ForgetImprinted$ TriggeredCard",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
+        "name": "Pump.ForgetImprinted"
+       },
+       {
+        "detail": "read as any zone",
+        "kind": "trigger_zone",
+        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
+        "name": "ChangesZone:Exile"
+       },
+       {
+        "detail": "Valid$ Defined.Imprinted",
+        "kind": "filter",
+        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
+        "name": "Defined"
+       },
+       {
+        "detail": "Valid$ Defined.Imprinted",
+        "kind": "filter",
+        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
+        "name": "Imprinted"
+       },
+       {
+        "detail": "ValidCard$ Card.IsImprinted+ExiledWithSourceLKI",
+        "kind": "filter",
+        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
+        "name": "ExiledWithSourceLKI"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/chrome_mox.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Echo of Eons": {
+      "card": "Echo of Eons",
+      "faces": [
+       "Echo of Eons"
+      ],
+      "findings": [
+       {
+        "detail": "ChangeZoneAll UseAllOriginZones$ True",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZoneAll | ChangeType$ Card | Origin$ Hand,Graveyard | Destination$ Library | Shuffle$ True | SubAbility$ DBDraw | UseAllOriginZones$ True | AILogic$ Timetwister | SpellDescription$ Each player shuffles their graveyard and hand into their library, then draws seven cards.",
+        "name": "ChangeZoneAll.UseAllOriginZones"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/e/echo_of_eons.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Empty the Warrens": {
+      "card": "Empty the Warrens",
+      "faces": [
+       "Empty the Warrens"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/e/empty_the_warrens.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "r_1_1_goblin"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Gaea's Will": {
+      "card": "Gaea's Will",
+      "faces": [
+       "Gaea's Will"
+      ],
+      "findings": [
+       {
+        "detail": "Event$ Moved | ActiveZones$ Command | Destination$ Graveyard | ValidCard$ Card.!token+YouOwn | ReplaceWith$ Exile | Description$ If a card would be put into your graveyard from anywhere this turn, exile it instead.",
+        "kind": "replacement",
+        "line": "A:SP$ Effect | ReplacementEffects$ GraveToExile | StaticAbilities$ STPlay | AILogic$ YawgmothsWill | AINoRecursiveCheck$ True | SpellDescription$ Until end of turn, you may play lands and cast spells from your graveyard. If a card would be put into your graveyard from anywhere this turn, exile that card instead.",
+        "name": "Effect:Moved"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/gaeas_will.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Gamble": {
+      "card": "Gamble",
+      "faces": [
+       "Gamble"
+      ],
+      "findings": [
+       {
+        "detail": "ChangeZone NoShuffle$ True",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZone | Origin$ Library | NoShuffle$ True | Destination$ Hand | ChangeType$ Card | ChangeNum$ 1 | SubAbility$ DBDiscard | Mandatory$ True | SpellDescription$ Search your library for a card, put that card into your hand, discard a card at random, then shuffle.",
+        "name": "ChangeZone.NoShuffle"
+       },
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:SP$ ChangeZone | Origin$ Library | NoShuffle$ True | Destination$ Hand | ChangeType$ Card | ChangeNum$ 1 | SubAbility$ DBDiscard | Mandatory$ True | SpellDescription$ Search your library for a card, put that card into your hand, discard a card at random, then shuffle.",
+        "name": "Shuffle"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/gamble.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Haywire Mite": {
+      "card": "Haywire Mite",
+      "faces": [
+       "Haywire Mite"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/h/haywire_mite.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Peer into the Abyss": {
+      "card": "Peer into the Abyss",
+      "faces": [
+       "Peer into the Abyss"
+      ],
+      "findings": [
+       {
+        "detail": "X = TargetedPlayer$CardsInLibrary/HalfUp",
+        "kind": "svar_expr",
+        "line": "SVar:X:TargetedPlayer$CardsInLibrary/HalfUp",
+        "name": "TargetedPlayer$CardsInLibrary/HalfUp"
+       },
+       {
+        "detail": "Y = TargetedPlayer$LifeTotal/HalfUp",
+        "kind": "svar_expr",
+        "line": "SVar:Y:TargetedPlayer$LifeTotal/HalfUp",
+        "name": "TargetedPlayer$LifeTotal/HalfUp"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/p/peer_into_the_abyss.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Raucous Theater": {
+      "card": "Raucous Theater",
+      "faces": [
+       "Raucous Theater"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/r/raucous_theater.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Runehorn Hellkite": {
+      "card": "Runehorn Hellkite",
+      "faces": [
+       "Runehorn Hellkite"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ 5 R ExileFromGrave<1/CARDNAME>",
+        "kind": "cost",
+        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
+        "name": "ExileFromGrave"
+       },
+       {
+        "detail": "Discard Mode$ Hand",
+        "kind": "ability_param",
+        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
+        "name": "Discard.Mode"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/r/runehorn_hellkite.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Song of Creation": {
+      "card": "Song of Creation",
+      "faces": [
+       "Song of Creation"
+      ],
+      "findings": [
+       {
+        "detail": "Discard Mode$ Hand",
+        "kind": "ability_param",
+        "line": "T:Mode$ Phase | Phase$ End of Turn | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigDiscard | TriggerDescription$ At the beginning of your end step, discard your hand.",
+        "name": "Discard.Mode"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/s/song_of_creation.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Taiga": {
+      "card": "Taiga",
+      "faces": [
+       "Taiga"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/t/taiga.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Tendrils of Agony": {
+      "card": "Tendrils of Agony",
+      "faces": [
+       "Tendrils of Agony"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/t/tendrils_of_agony.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": [
+     "Giant's Boulder"
+    ]
+   },
+   "inputs": {
+    "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "14 new card(s), 8 with findings (19 findings), 1 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [
+     "Giant's Boulder"
+    ],
+    "tokens": [
+     "r_1_1_goblin"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": [
+     "Giant's Boulder"
+    ]
+   },
+   "inputs": {
+    "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
+    "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:47"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Storm, 3.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

@@ -1,0 +1,389 @@
+{
+ "deck": "cloudpost_tron_ramp",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 376,
+  "deck_id": 904211,
+  "deck_url": "https://mtgtop8.com/event?d=904211&f=LE",
+  "format": "LE",
+  "meta_share": 5.0,
+  "name": "Cloudpost / Tron Ramp",
+  "rank": 5,
+  "scraped": "2026-10-24",
+  "section": "control",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Sink into Stupor",
+     "Stock Up",
+     "Thundertrap Trainer"
+    ],
+    "mechanics": {
+     "Exhaust and Waterbend (Avatar)": {
+      "cards": [
+       "Invasion Submersible"
+      ],
+      "findings": [
+       "ability_param:Animate.Exhaust",
+       "cost:Waterbend"
+      ],
+      "size": "M"
+     },
+     "FORGE_PIN bump": {
+      "cards": [
+       "Giant's Boulder"
+      ],
+      "findings": [
+       "script:Giant's Boulder"
+      ],
+      "size": "M"
+     },
+     "Opponent's-draw replacement (Hullbreacher)": {
+      "cards": [
+       "Hullbreacher"
+      ],
+      "findings": [
+       "replacement:Draw"
+      ],
+      "size": "M"
+     },
+     "Overload (CR 702.96)": {
+      "cards": [
+       "Cyclonic Rift"
+      ],
+      "findings": [
+       "keyword:Overload"
+      ],
+      "size": "M"
+     },
+     "Repeated modes (CanRepeatModes)": {
+      "cards": [
+       "Eldrazi Confluence"
+      ],
+      "findings": [
+       "ability_param:Charm.CanRepeatModes"
+      ],
+      "size": "M"
+     },
+     "Sunburst (CR 702.44)": {
+      "cards": [
+       "Engineered Explosives"
+      ],
+      "findings": [
+       "keyword:Sunburst"
+      ],
+      "size": "M"
+     }
+    },
+    "needs": {
+     "Cyclonic Rift": [
+      "Overload (CR 702.96)"
+     ],
+     "Eldrazi Confluence": [
+      "Repeated modes (CanRepeatModes)"
+     ],
+     "Engineered Explosives": [
+      "Sunburst (CR 702.44)"
+     ],
+     "Giant's Boulder": [
+      "FORGE_PIN bump"
+     ],
+     "Hullbreacher": [
+      "Opponent's-draw replacement (Hullbreacher)"
+     ],
+     "Invasion Submersible": [
+      "Exhaust and Waterbend (Avatar)"
+     ]
+    },
+    "new_cards": [
+     "Cyclonic Rift",
+     "Eldrazi Confluence",
+     "Engineered Explosives",
+     "Giant's Boulder",
+     "Hullbreacher",
+     "Invasion Submersible",
+     "Sink into Stupor",
+     "Stock Up",
+     "Thundertrap Trainer"
+    ],
+    "size_points": 18
+   },
+   "inputs": {
+    "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "9 new card(s): 3 clean, 6 need 6 mechanic(s) (18 points)",
+   "time": "2026-10-24T21:27:50"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 29,
+    "in_vocab": 20,
+    "no_script": [
+     "Giant's Boulder"
+    ],
+    "not_in_vocab": [
+     "Cyclonic Rift",
+     "Eldrazi Confluence",
+     "Engineered Explosives",
+     "Hullbreacher",
+     "Invasion Submersible",
+     "Sink into Stupor",
+     "Stock Up",
+     "Thundertrap Trainer"
+    ]
+   },
+   "inputs": {
+    "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
+    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "29 cards: 20 in vocab, 9 new (1 without a script)",
+   "time": "2026-10-24T21:10:52"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Exhaust and Waterbend (Avatar)",
+     "FORGE_PIN bump",
+     "Opponent's-draw replacement (Hullbreacher)",
+     "Overload (CR 702.96)",
+     "Repeated modes (CanRepeatModes)",
+     "Sunburst (CR 702.44)"
+    ]
+   },
+   "inputs": {
+    "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "6 mechanic(s) to implement: Exhaust and Waterbend (Avatar), FORGE_PIN bump, Opponent's-draw replacement (Hullbreacher), Overload (CR 702.96), Repeated modes (CanRepeatModes), Sunburst (CR 702.44)",
+   "time": "2026-10-24T21:27:50"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Cyclonic Rift": {
+      "card": "Cyclonic Rift",
+      "faces": [
+       "Cyclonic Rift"
+      ],
+      "findings": [
+       {
+        "detail": "Overload:6 U",
+        "kind": "keyword",
+        "line": "K:Overload:6 U",
+        "name": "Overload"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/cyclonic_rift.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Eldrazi Confluence": {
+      "card": "Eldrazi Confluence",
+      "faces": [
+       "Eldrazi Confluence"
+      ],
+      "findings": [
+       {
+        "detail": "Charm CanRepeatModes$ True",
+        "kind": "ability_param",
+        "line": "A:SP$ Charm | Choices$ DBSpatialContortion,DBEldraziDisplacer,DBEldraziScion | CharmNum$ 3 | CanRepeatModes$ True",
+        "name": "Charm.CanRepeatModes"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/e/eldrazi_confluence.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "c_1_1_eldrazi_scion_sac"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Engineered Explosives": {
+      "card": "Engineered Explosives",
+      "faces": [
+       "Engineered Explosives"
+      ],
+      "findings": [
+       {
+        "detail": "Sunburst",
+        "kind": "keyword",
+        "line": "K:Sunburst",
+        "name": "Sunburst"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/e/engineered_explosives.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Hullbreacher": {
+      "card": "Hullbreacher",
+      "faces": [
+       "Hullbreacher"
+      ],
+      "findings": [
+       {
+        "detail": "yields no replacement",
+        "kind": "replacement",
+        "line": "R:Event$ Draw | ActiveZones$ Battlefield | ValidPlayer$ Opponent | ReplaceWith$ RepTreasure | NotFirstCardInDrawStep$ True | Description$ If an opponent would draw a card except the first one they draw in each of their draw steps, instead you create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+        "name": "Draw"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/h/hullbreacher.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "c_a_treasure_sac"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Invasion Submersible": {
+      "card": "Invasion Submersible",
+      "faces": [
+       "Invasion Submersible"
+      ],
+      "findings": [
+       {
+        "detail": "Cost$ Waterbend<3>",
+        "kind": "cost",
+        "line": "A:AB$ Animate | Cost$ Waterbend<3> | Defined$ Self | Types$ Artifact,Creature | Exhaust$ True | Duration$ Permanent | SubAbility$ DBPutCounter | SpellDescription$ This Vehicle becomes an artifact creature. Put three +1/+1 counters on it.",
+        "name": "Waterbend"
+       },
+       {
+        "detail": "Animate Exhaust$ True",
+        "kind": "ability_param",
+        "line": "A:AB$ Animate | Cost$ Waterbend<3> | Defined$ Self | Types$ Artifact,Creature | Exhaust$ True | Duration$ Permanent | SubAbility$ DBPutCounter | SpellDescription$ This Vehicle becomes an artifact creature. Put three +1/+1 counters on it.",
+        "name": "Animate.Exhaust"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/i/invasion_submersible.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Sink into Stupor": {
+      "card": "Sink into Stupor",
+      "faces": [
+       "Sink into Stupor",
+       "Soporific Springs"
+      ],
+      "findings": [],
+      "layout": "modal",
+      "script": "cardsfolder/s/sink_into_stupor_soporific_springs.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
+       -1
+      ]
+     },
+     "Stock Up": {
+      "card": "Stock Up",
+      "faces": [
+       "Stock Up"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/s/stock_up.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Thundertrap Trainer": {
+      "card": "Thundertrap Trainer",
+      "faces": [
+       "Thundertrap Trainer"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/t/thundertrap_trainer.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": [
+     "Giant's Boulder"
+    ]
+   },
+   "inputs": {
+    "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "8 new card(s), 5 with findings (6 findings), 1 without a script",
+   "time": "2026-10-24T21:27:50"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [
+     "Giant's Boulder"
+    ],
+    "tokens": [
+     "c_1_1_eldrazi_scion_sac",
+     "c_a_treasure_sac"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": [
+     "Giant's Boulder"
+    ]
+   },
+   "inputs": {
+    "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
+    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 2 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:42"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Cloudpost / Tron Ramp, 5.0% (control), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

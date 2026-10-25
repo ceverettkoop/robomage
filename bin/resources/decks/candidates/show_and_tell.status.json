@@ -1,0 +1,291 @@
+{
+ "deck": "show_and_tell",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 33,
+  "deck_id": 904052,
+  "deck_url": "https://mtgtop8.com/event?d=904052&f=LE",
+  "format": "LE",
+  "meta_share": 5.0,
+  "name": "Show and Tell",
+  "rank": 7,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Blood Moon",
+     "Brotherhood's End",
+     "Sneak Attack",
+     "Stock Up"
+    ],
+    "mechanics": {
+     "Choose one or more (MinCharmNum) and Escalate": {
+      "cards": [
+       "Avengers Disassembled"
+      ],
+      "findings": [
+       "ability_param:Charm.MinCharmNum"
+      ],
+      "size": "M"
+     },
+     "Free-cast statics (Omniscience, Aluren)": {
+      "cards": [
+       "Omniscience"
+      ],
+      "findings": [
+       "static_param:MayPlayWithoutManaCost"
+      ],
+      "size": "M"
+     },
+     "LandPlayed trigger": {
+      "cards": [
+       "City of Traitors"
+      ],
+      "findings": [
+       "trigger_mode:LandPlayed"
+      ],
+      "size": "M"
+     }
+    },
+    "needs": {
+     "Avengers Disassembled": [
+      "Choose one or more (MinCharmNum) and Escalate"
+     ],
+     "City of Traitors": [
+      "LandPlayed trigger"
+     ],
+     "Omniscience": [
+      "Free-cast statics (Omniscience, Aluren)"
+     ]
+    },
+    "new_cards": [
+     "Avengers Disassembled",
+     "Blood Moon",
+     "Brotherhood's End",
+     "City of Traitors",
+     "Omniscience",
+     "Sneak Attack",
+     "Stock Up"
+    ],
+    "size_points": 9
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "7 new card(s): 4 clean, 3 need 3 mechanic(s) (9 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 33,
+    "in_vocab": 26,
+    "no_script": [],
+    "not_in_vocab": [
+     "Avengers Disassembled",
+     "Blood Moon",
+     "Brotherhood's End",
+     "City of Traitors",
+     "Omniscience",
+     "Sneak Attack",
+     "Stock Up"
+    ]
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "33 cards: 26 in vocab, 7 new (0 without a script)",
+   "time": "2026-10-24T21:09:14"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "Choose one or more (MinCharmNum) and Escalate",
+     "Free-cast statics (Omniscience, Aluren)",
+     "LandPlayed trigger"
+    ]
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "3 mechanic(s) to implement: Choose one or more (MinCharmNum) and Escalate, Free-cast statics (Omniscience, Aluren), LandPlayed trigger",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Avengers Disassembled": {
+      "card": "Avengers Disassembled",
+      "faces": [
+       "Avengers Disassembled"
+      ],
+      "findings": [
+       {
+        "detail": "Charm MinCharmNum$ 1",
+        "kind": "ability_param",
+        "line": "A:SP$ Charm | MinCharmNum$ 1 | CharmNum$ 2 | Choices$ DBDamageAll,DBDestroy",
+        "name": "Charm.MinCharmNum"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/a/avengers_disassembled.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Blood Moon": {
+      "card": "Blood Moon",
+      "faces": [
+       "Blood Moon"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/b/blood_moon.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Brotherhood's End": {
+      "card": "Brotherhood's End",
+      "faces": [
+       "Brotherhood's End"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/b/brotherhoods_end.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "City of Traitors": {
+      "card": "City of Traitors",
+      "faces": [
+       "City of Traitors"
+      ],
+      "findings": [
+       {
+        "detail": "no event binding: the trigger is dropped",
+        "kind": "trigger_mode",
+        "line": "T:Mode$ LandPlayed | ValidCard$ Land.Other+YouCtrl | TriggerZones$ Battlefield | Execute$ TrigSac | TriggerDescription$ When you play another land, sacrifice CARDNAME.",
+        "name": "LandPlayed"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/c/city_of_traitors.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Omniscience": {
+      "card": "Omniscience",
+      "faces": [
+       "Omniscience"
+      ],
+      "findings": [
+       {
+        "detail": "Continuous MayPlayWithoutManaCost$ True",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Card.nonLand+YouOwn | MayPlay$ True | MayPlayWithoutManaCost$ True | AffectedZone$ Hand | Description$ You may cast spells from your hand without paying their mana costs.",
+        "name": "MayPlayWithoutManaCost"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/o/omniscience.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Sneak Attack": {
+      "card": "Sneak Attack",
+      "faces": [
+       "Sneak Attack"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/s/sneak_attack.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Stock Up": {
+      "card": "Stock Up",
+      "faces": [
+       "Stock Up"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/s/stock_up.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "7 new card(s), 3 with findings (3 findings), 0 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:46"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Show and Tell, 5.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}

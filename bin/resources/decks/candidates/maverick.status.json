@@ -1,0 +1,324 @@
+{
+ "deck": "maverick",
+ "location": "candidates",
+ "source": {
+  "archetype_id": 128,
+  "deck_id": 902701,
+  "deck_url": "https://mtgtop8.com/event?d=902701&f=LE",
+  "format": "LE",
+  "meta_share": 1.0,
+  "name": "Maverick",
+  "rank": 21,
+  "scraped": "2026-10-24",
+  "section": "aggro",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [
+     "Lush Portico",
+     "Nurturing Peatland"
+    ],
+    "mechanics": {
+     "A creature card in every other zone (Grist)": {
+      "cards": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       "static_param:ExcludeZone"
+      ],
+      "size": "M"
+     },
+     "CantPreventDamage static": {
+      "cards": [
+       "Frenzied Baloth"
+      ],
+      "findings": [
+       "static_mode:CantPreventDamage",
+       "static_param:IsCombat"
+      ],
+      "size": "S"
+     },
+     "FORGE_PIN bump": {
+      "cards": [
+       "Carnivorous Cultivator"
+      ],
+      "findings": [
+       "script:Carnivorous Cultivator"
+      ],
+      "size": "M"
+     },
+     "Repeat effect (DB$ Repeat)": {
+      "cards": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       "ability_param:Repeat.RepeatCheckSVar",
+       "ability_param:Repeat.RepeatSVarCompare",
+       "category:Repeat"
+      ],
+      "size": "M"
+     },
+     "Revolt trigger condition": {
+      "cards": [
+       "Renegade Rallier"
+      ],
+      "findings": [
+       "trigger_param:Revolt"
+      ],
+      "size": "S"
+     }
+    },
+    "needs": {
+     "Carnivorous Cultivator": [
+      "FORGE_PIN bump"
+     ],
+     "Frenzied Baloth": [
+      "CantPreventDamage static"
+     ],
+     "Grist, the Hunger Tide": [
+      "A creature card in every other zone (Grist)",
+      "Repeat effect (DB$ Repeat)"
+     ],
+     "Renegade Rallier": [
+      "Revolt trigger condition"
+     ]
+    },
+    "new_cards": [
+     "Carnivorous Cultivator",
+     "Frenzied Baloth",
+     "Grist, the Hunger Tide",
+     "Lush Portico",
+     "Nurturing Peatland",
+     "Renegade Rallier"
+    ],
+    "size_points": 11
+   },
+   "inputs": {
+    "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "6 new card(s): 2 clean, 4 need 5 mechanic(s) (11 points)",
+   "time": "2026-10-24T21:27:51"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 38,
+    "in_vocab": 32,
+    "no_script": [
+     "Carnivorous Cultivator"
+    ],
+    "not_in_vocab": [
+     "Frenzied Baloth",
+     "Grist, the Hunger Tide",
+     "Lush Portico",
+     "Nurturing Peatland",
+     "Renegade Rallier"
+    ]
+   },
+   "inputs": {
+    "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
+    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "38 cards: 32 in vocab, 6 new (1 without a script)",
+   "time": "2026-10-24T21:10:55"
+  },
+  "implement": {
+   "detail": {
+    "mechanics": [
+     "A creature card in every other zone (Grist)",
+     "CantPreventDamage static",
+     "FORGE_PIN bump",
+     "Repeat effect (DB$ Repeat)",
+     "Revolt trigger condition"
+    ]
+   },
+   "inputs": {
+    "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "pending",
+   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, FORGE_PIN bump, Repeat effect (DB$ Repeat), Revolt trigger condition",
+   "time": "2026-10-24T21:27:51"
+  },
+  "parse": {
+   "detail": {
+    "cards": {
+     "Frenzied Baloth": {
+      "card": "Frenzied Baloth",
+      "faces": [
+       "Frenzied Baloth"
+      ],
+      "findings": [
+       {
+        "detail": "CantPreventDamage IsCombat$ True",
+        "kind": "static_param",
+        "line": "S:Mode$ CantPreventDamage | IsCombat$ True | Description$ Combat damage can't be prevented.",
+        "name": "IsCombat"
+       },
+       {
+        "detail": "the engine applies no such static",
+        "kind": "static_mode",
+        "line": "S:Mode$ CantPreventDamage | IsCombat$ True | Description$ Combat damage can't be prevented.",
+        "name": "CantPreventDamage"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/f/frenzied_baloth.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Grist, the Hunger Tide": {
+      "card": "Grist, the Hunger Tide",
+      "faces": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat"
+       },
+       {
+        "detail": "Repeat RepeatCheckSVar$ MilledInsect",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.RepeatCheckSVar"
+       },
+       {
+        "detail": "Repeat RepeatSVarCompare$ EQ1",
+        "kind": "ability_param",
+        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
+        "name": "Repeat.RepeatSVarCompare"
+       },
+       {
+        "detail": "Continuous ExcludeZone$ Battlefield",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | Affected$ Card.Self | ExcludeZone$ Battlefield | SetPower$ 1 | SetToughness$ 1 | AddType$ Creature & Insect | CharacteristicDefining$ True | Description$ As long as CARDNAME isn't on the battlefield, it's a 1/1 Insect creature in addition to its other types.",
+        "name": "ExcludeZone"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/g/grist_the_hunger_tide.txt",
+      "tokens": [
+       {
+        "present": true,
+        "script": "bg_1_1_insect"
+       }
+      ],
+      "vocab": [
+       -1
+      ]
+     },
+     "Lush Portico": {
+      "card": "Lush Portico",
+      "faces": [
+       "Lush Portico"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/l/lush_portico.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Nurturing Peatland": {
+      "card": "Nurturing Peatland",
+      "faces": [
+       "Nurturing Peatland"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/n/nurturing_peatland.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Renegade Rallier": {
+      "card": "Renegade Rallier",
+      "faces": [
+       "Renegade Rallier"
+      ],
+      "findings": [
+       {
+        "detail": "ChangesZone Revolt$ True",
+        "kind": "trigger_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigChange | Revolt$ True | TriggerDescription$ Revolt — When CARDNAME enters, if a permanent you controlled left the battlefield this turn, return target permanent card with mana value 2 or less from your graveyard to the battlefield.",
+        "name": "Revolt"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/r/renegade_rallier.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     }
+    },
+    "no_script": [
+     "Carnivorous Cultivator"
+    ]
+   },
+   "inputs": {
+    "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
+    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "5 new card(s), 3 with findings (7 findings), 1 without a script",
+   "time": "2026-10-24T21:27:51"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [
+     "bg_1_1_insect"
+    ],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": [
+     "Carnivorous Cultivator"
+    ]
+   },
+   "inputs": {
+    "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
+    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 1 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-24T21:25:45"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Maverick, 1.0% (aggro), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  }
+ }
+}
