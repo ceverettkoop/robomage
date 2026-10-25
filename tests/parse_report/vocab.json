@@ -1,6 +1,5 @@
 {"_doc": "robomage --parse-report @vocab: the vocab cards' known parser gaps (kind:name; src/parse_report.h), checked by the vocab tier (tools/robomage_check/parse_report_check.h); robomage_check --tier vocab --record rewrites it. Each is listed in docs/rules_deviations.md.",
  "cards": {
-  "Carpet of Flowers": ["trigger_param:ResolvedLimit"],
   "Moonshadow": ["trigger_param:NoResolvingCheck"]
  }
 }

@@ -30,6 +30,7 @@
 #include "../cli_output.h"
 #include "../error.h"
 #include "../game_driver.h"
+#include "../queries/activation.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/counters.h"
@@ -855,7 +856,10 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         }
     }
 
-    for (PendingTrigger &pt : pending) game.waiting_triggers.push_back(std::move(pt));
+    // ResolvedLimit$ (CR 603.4 intervening-if): an ability that has already resolved its limit's
+    // number of times this turn doesn't trigger.
+    for (PendingTrigger &pt : pending)
+        if (!trigger_resolved_limit_reached(pt.ab)) game.waiting_triggers.push_back(std::move(pt));
 }
 
 void StateManager::place_waiting_triggers(Game &game, std::shared_ptr<Orderer> orderer) {

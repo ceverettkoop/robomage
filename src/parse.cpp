@@ -134,6 +134,7 @@ struct TriggerLine {
     bool attacking_player_is_you = false;
     bool exclude_first_draw_step = false;
     bool optional = false;            // OptionalDecider$
+    int resolved_limit = 0;           // ResolvedLimit$ N
     bool combat_damage_only = false;  // CombatDamage$ True
     bool from_graveyard = false;      // TriggerZones$ Graveyard
     size_t draw_number_eq = 0;        // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
@@ -3214,6 +3215,13 @@ static TriggerLine read_trigger_line(const std::string &line,
             if (value.find("You") != std::string::npos ||
                 value.find("Controller") != std::string::npos)
                 t.optional = true;
+        } else if (key == "ResolvedLimit") {
+            // ResolvedLimit$ N: the ability resolves at most N times each turn for this source
+            // (Carpet of Flowers' "if you haven't added mana with this ability this turn").
+            if (!value.empty() && value.find_first_not_of("0123456789") == std::string::npos)
+                t.resolved_limit = std::stoi(value);
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         } else if (key == "FirstCardInDrawStep") {
             if (value == "False") t.exclude_first_draw_step = true;
         } else if (key == "Number") {
@@ -3375,6 +3383,9 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     // triggered ability optional at resolution, independent of the trigger mode (Aether
     // Vial's upkeep charge-counter trigger is a Phase trigger, not a zone-change trigger).
     ability.trigger_optional = t.optional;
+    // ResolvedLimit$ N — an intervening-if (CR 603.4) on how often the ability has resolved this
+    // turn, checked as the trigger is collected and again as it resolves.
+    ability.trigger_resolved_limit = t.resolved_limit;
     // Static$ True on a phase or zone-change trigger (Carpet of Flowers' cleanup / leave-battlefield
     // resets) is a bookkeeping trigger that resolves immediately off the stack — it never uses the
     // stack like a normal triggered ability (CR 605.1a-style). The TapsForMana static path has its

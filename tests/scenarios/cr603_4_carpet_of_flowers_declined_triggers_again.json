@@ -1,0 +1,14 @@
+{
+  "name": "cr603_4_carpet_of_flowers_declined_triggers_again",
+  "why": "CR 603.4: declining Carpet of Flowers' optional 'you may add X mana' in the first main phase adds no mana with the ability, so its intervening if (the trigger's ResolvedLimit$ 1, which counts only a resolution whose 'you may' is accepted) still holds and it triggers again in the second main phase (Carpet of Flowers' ResolvedLimit$)",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "hand_b": ["Island"],
+  "library_b": ["Island"],
+  "battlefield_a": ["Carpet of Flowers"],
+  "battlefield_b": ["Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:choice:Decline", "A:pass", "A:choice:Accept", "A:desc:Add 2{G}"],
+  "max_decisions": 8,
+  "expect_order": ["TURN 1 \\(Player A\\)", "Carpet of Flowers triggered", "Player A declines the optional triggered ability", "No creatures eligible to attack", "Carpet of Flowers triggered", "Player A adds 2\\{G\\}", "TURN 2 \\(Player B\\)"],
+  "expect_count": {"Carpet of Flowers triggered": 2, "Player A adds 2\\{G\\}": 1}
+}

@@ -12,6 +12,28 @@ int ability_resolutions_this_turn(Entity source) {
     return n ? *n : 0;
 }
 
+bool trigger_resolved_limit_reached(const Ability &ab) {
+    if (ab.def->trigger_resolved_limit <= 0) return false;
+    const auto *counts = cur_game.limited_resolution_counts.find(ab.source.get());
+    if (!counts) return false;
+    for (const Game::LimitedResolution &lr : *counts)
+        if (lr.def == ab.def && lr.controller == ab.controller) return lr.count >= ab.def->trigger_resolved_limit;
+    return false;
+}
+
+void count_limited_resolution(const Ability &ab) {
+    if (ab.def->trigger_resolved_limit <= 0) return;
+    const Entity source = ab.source.get();
+    if (source == 0) return;
+    std::vector<Game::LimitedResolution> &counts = cur_game.limited_resolution_counts[source];
+    for (Game::LimitedResolution &lr : counts)
+        if (lr.def == ab.def && lr.controller == ab.controller) {
+            ++lr.count;
+            return;
+        }
+    counts.push_back(Game::LimitedResolution{ab.def, ab.controller, 1});
+}
+
 bool controller_has_metalcraft(Zone::Ownership controller, const EntitySet &entities) {
     int artifacts = 0;
     for (auto e : battlefield_permanents(entities, controller))

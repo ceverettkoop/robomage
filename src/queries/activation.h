@@ -32,6 +32,15 @@ inline void reset_permanent_activations_this_turn(Permanent &perm) {
 // Defined in activation.cpp (needs cur_game).
 int ability_resolutions_this_turn(Entity source);
 
+// ResolvedLimit$ (CR 603.4): true when `ab` is a limited triggered ability that has already
+// resolved its limit's number of times this turn for its source object (ab.source as it is now)
+// and controller (Game::limited_resolution_counts). A trigger in that state doesn't trigger, and
+// one already on the stack does nothing.
+bool trigger_resolved_limit_reached(const Ability &ab);
+// Counts one resolution of `ab` toward its ResolvedLimit$ (no-op for an unlimited ability, or
+// once its source is no longer the object that triggered).
+void count_limited_resolution(const Ability &ab);
+
 // ── Activation conditions (CR 602.5 "activate only if …") ───────────────────
 // Named gates that make an activated ability illegal to activate unless the named
 // condition holds for its controller. Parsed from Activation$ <name>; evaluated at

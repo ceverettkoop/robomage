@@ -448,6 +448,13 @@ struct AbilityDef {
     // OptionalDecider$ You — a "you may ..." triggered ability; its controller is prompted
     // to accept or decline as it resolves (Mode$ ChangesZoneAll on Ajani).
     bool trigger_optional = false;
+    // ResolvedLimit$ N on a trigger line — the triggered ability may resolve at most N times
+    // each turn for its source object and controller (Carpet of Flowers: "if you haven't added
+    // mana with this ability this turn"). An intervening "if" (CR 603.4): once the count is
+    // reached the ability doesn't trigger, and one already on the stack does nothing. A
+    // resolution counts once its optional "you may" is accepted and its targets and
+    // intervening-if have held (Game::limited_resolution_counts). 0 = no limit.
+    int trigger_resolved_limit = 0;
 
     // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
     bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller

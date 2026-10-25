@@ -601,6 +601,7 @@ void Game::reset_turn_counters(Entity active_player_entity) {
     global_coordinator.GetComponent<Player>(player_a_entity).reset_turn_counters();
     global_coordinator.GetComponent<Player>(player_b_entity).reset_turn_counters();
     ability_resolution_counts.clear();
+    limited_resolution_counts.clear();
     // Miracle (CR 702.94) is a "first card drawn this turn" concept — the reveal opportunity
     // lapses at end of turn, so a never-answered pending reveal decision (e.g. the game ended
     // first) lapses each cleanup.

@@ -286,6 +286,15 @@ struct Game {
                                             // object (see lki_for); an entry is unread once its
                                             // entity id is issued again (LastKnownInfo::issue)
         ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
+        // ResolvedLimit$ (AbilityDef::trigger_resolved_limit): how many times one limited
+        // triggered ability of an object resolved this turn under one controller.
+        struct LimitedResolution {
+                const AbilityDef *def = nullptr;
+                Zone::Ownership controller = Zone::UNKNOWN;
+                int count = 0;
+        };
+        // Per source object; a new object (CR 400.7) starts with none. Cleared each turn.
+        ObjectMap<std::vector<LimitedResolution>> limited_resolution_counts;
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         // The persisted resolve() continuation of the resolving spell or ability
         // (resolution_frame.h): a resolution that parked a decision resumes from it.

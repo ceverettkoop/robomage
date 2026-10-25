@@ -270,6 +270,12 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             cur_game.resolution.memory.remembered = ab.restore_remembered_exiled_with;
         }
 
+        // ResolvedLimit$ (CR 603.4 intervening-if, re-checked on resolution): an ability that
+        // has already resolved its limit's number of times this turn does nothing.
+        if (trigger_resolved_limit_reached(ab)) {
+            game_log("Triggered ability has already resolved its limit this turn; it does nothing.\n");
+            return ResolveStatus::DONE;
+        }
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
         // triggered ability as it resolves (Ajani's exile-and-return-transformed).
         if (ab.def->trigger_optional) {
@@ -390,6 +396,9 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                     ab.target = ab.targets.empty() ? ObjectRef{} : ab.targets[0];
                 }
             }
+            // The ability resolves: count it toward its ResolvedLimit$ (a declined optional
+            // ability, an unmet intervening-if or illegal targets returned above uncounted).
+            count_limited_resolution(ab);
             // RememberTargets/RememberObjects: stash the target(s) so chained
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
             if (ab.def->remember_targeted) {
