@@ -1062,7 +1062,10 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
         r.u8(sp ? u8_count(sp->mana_spent) : 0).u8(sp ? color_mask(sp->colors_spent) : 0);
         r.u32(ab ? ab->delayed_link.seq : 0);
         if (!ab) continue;
-        for (int mode : ab->charm_chosen) c.w.row(TableId::STACK_MODE).u32(h).u8(u8_count(mode));
+        for (int mode : ab->charm_chosen) {
+            const size_t printed = ab->charm_printed_mode(static_cast<size_t>(mode));
+            c.w.row(TableId::STACK_MODE).u32(h).u8(u8_count(static_cast<int64_t>(printed)));
+        }
         write_stack_targets(c, e, h, *ab);
     }
 }

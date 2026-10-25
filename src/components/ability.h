@@ -816,6 +816,9 @@ struct AbilityDef {
 
     std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
     int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
+    // CanRepeatModes$ True — "You may choose the same mode more than once" (CR 700.2d): each
+    // pick may name any mode again, and every pick is its own instance with its own targets.
+    bool charm_repeat_modes = false;
 
     // SubAbility$ chain: the DB$ abilities resolved, in order, after this one (CR 608.2c).
     std::vector<AbilityDef> subabilities;
@@ -978,11 +981,23 @@ struct Ability {
     // Charm/modal spell choices — each entry is a fully-parsed sub-ability
     std::vector<Ability> charm_choices;
 
-    // Mode indices (into charm_choices) announced as the modal object was put on the stack
-    // (CR 601.2b, 602.2b, 603.3c; run_announce), in printed order once the announcement is
+    // Mode instances (indices into charm_choices) announced as the modal object was put on the
+    // stack (CR 601.2b, 602.2b, 603.3c; run_announce), in printed order once the announcement is
     // complete. Each chosen mode's targets were selected at the same time (CR 601.2c) and live
-    // on the charm_choices entry itself. effects::charm resolves exactly these modes.
+    // on the charm_choices entry itself. effects::charm resolves exactly these modes. The first
+    // def->charm_choices.size() entries of charm_choices are the printed modes; under
+    // CanRepeatModes$ (CR 700.2d) every pick appends a copy of its printed mode to
+    // charm_choices and is that copy, so a mode chosen twice is two instances, each with its
+    // own targets, and the printed entries stay unannounced (charm_printed_mode maps back).
     std::vector<int> charm_chosen;
+
+    // How many printed modes this modal ability has (its definition's charm_choices).
+    size_t charm_printed_count() const;
+
+    // The printed mode (an index below charm_printed_count) that mode instance `instance` (an
+    // index into charm_choices) is: itself for a printed entry, else the printed entry it was
+    // copied from by a CanRepeatModes$ pick (CR 700.2d).
+    size_t charm_printed_mode(size_t instance) const;
 
     // The PLAYER target a chained sub-ability of this ability inherits as its targeted_player:
     // this ability's own target when it is a player, else the one it inherited.

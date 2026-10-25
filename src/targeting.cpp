@@ -510,9 +510,11 @@ bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> o
 
 bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
                          Zone::Ownership chooser, bool x_announced) {
-    const int needed = modal.def->charm_num < 1 ? 1 : modal.def->charm_num;
+    // Under CanRepeatModes$ (CR 700.2d) one choosable mode can fill every pick.
+    const int needed =
+        modal.def->charm_repeat_modes ? 1 : (modal.def->charm_num < 1 ? 1 : modal.def->charm_num);
     int choosable = 0;
-    for (size_t i = 0; i < modal.charm_choices.size(); i++)
+    for (size_t i = 0; i < modal.charm_printed_count(); i++)
         if (mode_choosable(modal, i, orderer, chooser, x_announced) && ++choosable >= needed)
             return true;
     return false;

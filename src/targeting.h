@@ -42,13 +42,14 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
 // charm_choices, and the ones announced as it was put on the stack in charm_chosen.
 bool is_modal(const Ability &ab);
 
-// Can mode `idx` of `modal` be chosen by `chooser` now (CR 700.2a/b, 603.3c)? A mode can't be
-// chosen only when it requires a target and none is legal. The required minimum is
+// Can printed mode `idx` of `modal` be chosen by `chooser` now (CR 700.2a/b, 603.3c)? A mode
+// can't be chosen only when it requires a target and none is legal. The required minimum is
 // effective_target_min's, reading the announced X when `x_announced`.
 bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> orderer,
                     Zone::Ownership chooser, bool x_announced);
 
-// Can `modal`'s required number of different modes (CharmNum$, default one) be chosen now?
+// Can `modal`'s required number of different modes (CharmNum$, default one; any one mode when
+// it may choose the same mode more than once, CanRepeatModes$) be chosen now?
 // The legality gate for casting a modal spell or activating a modal ability (CR 601.2b, 602.2b).
 bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
                          Zone::Ownership chooser, bool x_announced);

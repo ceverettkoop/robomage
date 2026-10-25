@@ -999,12 +999,12 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
 // reachable promise state and the spell is castable if any one is fully satisfiable.
 bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift) {
-    // Modal spell (CR 601.2b/601.2c): castable iff CharmNum$ DIFFERENT modes can be legally
-    // chosen. The modes live in charm_choices (not subabilities), so the ordinary targeting walk
-    // below never sees them; without this a Charm whose every mode lacked a target (Red
-    // Elemental Blast with nothing blue anywhere) would be offered and then hit an empty mode
-    // menu at cast. X isn't chosen yet at gate time, so an xPaid-driven target minimum counts as
-    // 0 here — X may legally be 0.
+    // Modal spell (CR 601.2b/601.2c): castable iff CharmNum$ DIFFERENT modes (any one mode
+    // under CanRepeatModes$, CR 700.2d) can be legally chosen. The modes live in charm_choices
+    // (not subabilities), so the ordinary targeting walk below never sees them; without this a
+    // Charm whose every mode lacked a target (Red Elemental Blast with nothing blue anywhere)
+    // would be offered and then hit an empty mode menu at cast. X isn't chosen yet at gate
+    // time, so an xPaid-driven target minimum counts as 0 here — X may legally be 0.
     if (is_modal(primary)) return has_choosable_modes(primary, orderer, caster, false);
 
     std::vector<const Ability *> targeting = spell_targeting_abilities(primary);

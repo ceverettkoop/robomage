@@ -2562,6 +2562,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         ability.charm_num = std::stoi(value);
         return true;
     }
+    if (key == "CanRepeatModes") {
+        ability.charm_repeat_modes = value == "True";
+        return true;
+    }
     if (key == "Abilities" && ability.category == "Animate") {
         // DB$ Animate | Abilities$ <svar>[,<svar>...] — the activated ability(ies) the Animate
         // grants to the target permanent (Urza's Saga: ABMana "{T}: Add {C}." / ABToken

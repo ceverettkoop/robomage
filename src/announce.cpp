@@ -13,10 +13,20 @@
 // The display label for mode `idx` of `modal`: its script description, else a positional fallback.
 static std::string mode_desc(const Ability &modal, size_t idx);
 
-// One mode pick's menu (CR 700.2a/b): the not-yet-chosen modes that can be chosen now (a mode
-// is chosen at most once, CR 700.2d), with `mode_indices` mapping action index -> charm_choices
-// index. Pure ECS reads, so a resumed pick re-derives the identical menu. Stamps each mode with
-// the modal object's source and the chooser, which its target pick then reads.
+// Record the pick of printed mode `idx` in modal.charm_chosen and return the mode instance its
+// targets are chosen on: the printed entry itself, or under CanRepeatModes$ a fresh copy of it
+// appended to charm_choices, so each pick of a repeated mode is its own instance (CR 700.2d).
+static Ability &record_mode_pick(Ability &modal, size_t idx);
+
+// Put modal.charm_chosen in the order the modes resolve: printed order, the instances of a mode
+// chosen more than once in sequence in the order picked (CR 608.2c, 700.2d).
+static void order_chosen_modes(Ability &modal);
+
+// One mode pick's menu (CR 700.2a/b): the printed modes that can be chosen now, less those
+// already chosen (a mode is chosen at most once, CR 700.2d, unless the ability may choose the
+// same mode more than once, CanRepeatModes$), with `mode_indices` mapping action index ->
+// printed mode index. Pure ECS reads, so a resumed pick re-derives the identical menu. Stamps
+// each mode with the modal object's source and the chooser, which its target pick then reads.
 static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<Orderer> orderer,
                                                 Zone::Ownership chooser,
                                                 std::vector<size_t> &mode_indices);
@@ -38,14 +48,33 @@ static std::string mode_desc(const Ability &modal, size_t idx) {
                : ("Mode " + std::to_string(idx + 1));
 }
 
+static Ability &record_mode_pick(Ability &modal, size_t idx) {
+    if (!modal.def->charm_repeat_modes) {
+        modal.charm_chosen.push_back(static_cast<int>(idx));
+        return modal.charm_choices[idx];
+    }
+    Ability instance = modal.charm_choices[idx];
+    modal.charm_choices.push_back(std::move(instance));
+    modal.charm_chosen.push_back(static_cast<int>(modal.charm_choices.size() - 1));
+    return modal.charm_choices.back();
+}
+
+static void order_chosen_modes(Ability &modal) {
+    std::stable_sort(modal.charm_chosen.begin(), modal.charm_chosen.end(), [&modal](int a, int b) {
+        return modal.charm_printed_mode(static_cast<size_t>(a)) <
+               modal.charm_printed_mode(static_cast<size_t>(b));
+    });
+}
+
 static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<Orderer> orderer,
                                                 Zone::Ownership chooser,
                                                 std::vector<size_t> &mode_indices) {
     std::vector<LegalAction> mode_actions;
     mode_indices.clear();
-    for (size_t i = 0; i < modal.charm_choices.size(); i++) {
-        if (std::find(modal.charm_chosen.begin(), modal.charm_chosen.end(), static_cast<int>(i)) !=
-            modal.charm_chosen.end())
+    for (size_t i = 0; i < modal.charm_printed_count(); i++) {
+        if (!modal.def->charm_repeat_modes &&
+            std::find(modal.charm_chosen.begin(), modal.charm_chosen.end(), static_cast<int>(i)) !=
+                modal.charm_chosen.end())
             continue;
         Ability &candidate = modal.charm_choices[i];
         candidate.source = modal.source;
@@ -116,17 +145,17 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
             }
             if (menu.empty()) {
                 // The modes resolve in the order they are printed (CR 608.2c, 700.2d).
-                std::sort(ab.charm_chosen.begin(), ab.charm_chosen.end());
+                order_chosen_modes(ab);
                 rt.stage = AnnounceRT::PRIMARY;
                 break;
             }
             int choice = asker.ask(menu, ab.source.lki_entity());
             if (choice < 0 && decision_suspended()) return AnnounceStatus::SUSPENDED;
             const size_t idx = mode_indices[static_cast<size_t>(choice)];
-            ab.charm_chosen.push_back(static_cast<int>(idx));
+            const Ability &picked = record_mode_pick(ab, idx);
             game_log("%s chooses mode — %s\n", player_name(controller).c_str(),
                      mode_desc(ab, idx).c_str());
-            if (ab.charm_choices[idx].def->valid_tgts != "N_A")
+            if (picked.def->valid_tgts != "N_A")
                 rt.stage = AnnounceRT::MODE_TARGETS;
             else
                 rt.mode_picks++;

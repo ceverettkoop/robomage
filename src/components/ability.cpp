@@ -1,5 +1,6 @@
 #include "ability.h"
 
+#include <algorithm>
 #include <deque>
 #include <map>
 #include <string>
@@ -129,6 +130,18 @@ const AbilityDef *draw_one_trigger_def() {
 const AbilityDef *blank_ability_def() {
     static const AbilityDef *blank = intern_ability_def(AbilityDef{});
     return blank;
+}
+
+size_t Ability::charm_printed_count() const {
+    return std::min(def->charm_choices.size(), charm_choices.size());
+}
+
+size_t Ability::charm_printed_mode(size_t instance) const {
+    const size_t printed = charm_printed_count();
+    if (instance < printed || instance >= charm_choices.size()) return instance;
+    for (size_t k = 0; k < printed; k++)
+        if (charm_choices[k].def == charm_choices[instance].def) return k;
+    return instance;
 }
 
 Entity Ability::player_target_for_subs() const {
