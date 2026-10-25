@@ -115,7 +115,7 @@ class Orchestrator:
         self.actors_waiting = None      # what the actors wait for before they start (the status says)
         self.sb_cov = SBX.Coverage()    # structured sideboard exploration's counts (state.json's sb_explore)
         self.sb_snap = None             # what the B4 schedule's entries carry (sb_tick)
-        self.sb_decks = None            # the league deck files' card keys (the coverage cells)
+        self.sb_decks = None            # (league stems, their deck files' card keys): the coverage cells
 
     # ── state ────────────────────────────────────────────────────────────────────────────────
 
@@ -341,9 +341,10 @@ class Orchestrator:
         """The coverage summary (``sb_explore.summary``) over the league's matchups and deck files."""
         pairs = [(SCH.deck(a), SCH.deck(b), w) for a, b, w in SCH.league_pairs(self.cfg)]
         mups = SBX.matchups(pairs)
-        if self.sb_decks is None:
-            self.sb_decks = SBX.read_decks(self.bin_dir, sorted({d for m in mups for d in m}))
-        return SBX.summary(self.sb_cov, mups, self.sb_decks)
+        stems = sorted({d for m in mups for d in m})
+        if self.sb_decks is None or sorted(self.sb_decks[0]) != stems:     # a league change re-reads them
+            self.sb_decks = (stems, SBX.read_decks(self.bin_dir, stems))
+        return SBX.summary(self.sb_cov, mups, self.sb_decks[1])
 
     def sb_status(self):
         """status.json's ``sb_explore``: p now, the p the schedule carries, the coverage summary."""
@@ -1244,16 +1245,26 @@ class Orchestrator:
             self.request_stop("rmtrain stop")
             return {"stopping": True}
         if cmd == "set":
-            key, value = C.parse_live(req["key"], str(req["value"]))
-            old = C.get_key(self.cfg, key)
-            self.cfg = C.set_key(self.cfg, key, value)
-            if key in C.GPU_LIVE and self.gpu is not None:
-                self.gpu.call("set", key=key, value=value)
+            # One key ({"key", "value": text}) or several set together ({"changes": {key: value}}),
+            # validated as one config (league.decks with league.pairs: rmtrain add-decks).
+            if "changes" in req:
+                changes = dict(C.parse_live(k, json.dumps(v)) for k, v in req["changes"].items())
+            else:
+                changes = dict([C.parse_live(req["key"], str(req["value"]))])
+            olds = {k: C.get_key(self.cfg, k) for k in changes}
+            self.cfg = C.set_keys(self.cfg, changes)
+            for key, value in changes.items():
+                if key in C.GPU_LIVE and self.gpu is not None:
+                    self.gpu.call("set", key=key, value=value)
             self.pool.settings = self.cfg["actors"]
             write_json(self.run.config, self.cfg)
-            self.log("set %s = %s (was %s)" % (key, json.dumps(value), json.dumps(old)))
-            self.emit("set", key=key, value=value, old=old)
-            return {"key": key, "value": value, "old": old}
+            for key, value in changes.items():
+                self.log("set %s = %s (was %s)" % (key, json.dumps(value), json.dumps(olds[key])))
+                self.emit("set", key=key, value=value, old=olds[key])
+            if "changes" in req:
+                return {"changes": changes, "old": olds}
+            key = next(iter(changes))
+            return {"key": key, "value": changes[key], "old": olds[key]}
         if cmd == "eval":
             if self.gpu is None or not self.gpu_model:
                 raise ValueError("no policy to evaluate yet (phase %s)" % st["phase"])

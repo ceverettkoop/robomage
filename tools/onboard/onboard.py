@@ -16,7 +16,7 @@ Stages, in order (a stage never runs past an earlier one that is not ok):
      8 text        make text-table (the new cards' oracle-text rows; network, libtorch)
      9 checks      make check, then the fuzz campaign robomage_check --tier fuzz --matchups <deck>:*
     10 designate   git mv the deck to decks/league/ (--to league) or decks/heldout/ (--to heldout)
-    11 baseline    scripted:hard piloting the deck (rm_driver.py) and rmtrain bench --decks (S8)
+    11 baseline    scripted:hard piloting the deck (rm_driver.py), the run's zero-shot rmtrain bench --decks
 
 `all` runs stages 2-6 (the automatic ones: read-only but for provision's fetches) for every deck;
 the others run by name. Every stage records its result in the deck's status file
@@ -515,16 +515,41 @@ class Pipeline:
         wins = sum(v["w"] for v in pilot.values())
         games = sum(v["w"] + v["l"] + v["d"] for v in pilot.values())
         summary = "scripted:hard %d/%d with the deck" % (wins, games)
-        bench_help = subprocess.run([RMTRAIN, "bench", "--help"], cwd=REPO, capture_output=True, text=True)
-        if "--decks" not in bench_help.stdout:
-            detail["bench"] = "rmtrain bench has no --decks (docs/open_vocab_plan.md S8 adds it)"
-            return "fail", summary + "; rmtrain bench --decks is not available yet (S8)", detail
         if not self.args.run:
             return "fail", summary + "; the benchmark needs --run <run>", detail
-        r = subprocess.run([RMTRAIN, "bench", self.args.run, "--decks", spec, "--label", "onboard-" + status["deck"]],
-                           cwd=REPO)
+        label = "onboard-" + status["deck"]
+        argv = [RMTRAIN, "bench", self.args.run, "--decks", "league," + spec, "--focus", spec, "--label", label,
+                "--matches", str(self.args.bench_matches)]
+        if self.args.bench_policies:
+            argv += ["--policies", self.args.bench_policies]
+        r = subprocess.run(argv, cwd=REPO)
         detail["bench_exit"] = r.returncode
-        return ("ok" if r.returncode == 0 else "fail"), summary + "; rmtrain bench exited %d" % r.returncode, detail
+        if r.returncode != 0:
+            return "fail", summary + "; rmtrain bench exited %d" % r.returncode, detail
+        detail["bench"] = bench_digest(self.args.run, label, spec)
+        rates = "; ".join("%s plays %s, faces %s" % (lab, _rate(v["plays"]), _rate(v["faces"]))
+                          for lab, v in detail["bench"]["policies"].items())
+        return "ok", summary + "; zero-shot " + rates, detail
+
+
+def bench_digest(run, label, spec):
+    """The deck's lines of a benchmark's summary.json (``rmtrain bench --decks``): per policy its
+    overall rate and the deck played and faced (wins, decisive games, rate)."""
+    run_dir = run if os.path.isabs(run) else os.path.join(REPO, run) if os.sep in run else os.path.join(REPO, "runs", run)
+    path = os.path.join(run_dir, "bench", label, "summary.json")
+    with open(path, encoding="utf-8") as f:
+        s = json.load(f)
+    deck = spec[len("league/"):] if spec.startswith("league/") else spec
+    out = {"summary": os.path.relpath(path, REPO), "matches": s.get("matches"), "policies": {}}
+    for lab, p in s["policies"].items():
+        out["policies"][lab] = {k: {f: (p[src].get(deck) or {}).get(f) for f in ("wins", "decisive", "win_rate")}
+                                for k, src in (("plays", "plays"), ("faces", "faces"))}
+        out["policies"][lab]["all"] = {f: p["all"].get(f) for f in ("wins", "decisive", "win_rate")}
+    return out
+
+
+def _rate(t):
+    return "-" if t.get("win_rate") is None else "%.3f (%d games)" % (t["win_rate"], t["decisive"])
 
 
 # ── Mechanics and their sizes ───────────────────────────────────────────────────────────────────
@@ -894,6 +919,8 @@ def main(argv=None):
     ap.add_argument("--baseline-games", type=int, default=10,
                     help="baseline: scripted:hard games per league opponent (default 10)")
     ap.add_argument("--run", help="baseline: the run whose policies rmtrain bench plays")
+    ap.add_argument("--bench-policies", help="baseline: rmtrain bench --policies (default: the run's default set)")
+    ap.add_argument("--bench-matches", type=int, default=480, help="baseline: rmtrain bench --matches (default 480)")
     args = ap.parse_args(argv)
 
     if args.command == "scrape":

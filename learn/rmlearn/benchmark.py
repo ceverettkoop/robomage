@@ -1,8 +1,10 @@
 """The end-of-run benchmark (docs/rmtrain.md §7.1): a run's policies against scripted:hard (or another
-``--opponent``) over every league pair, the same matches for each, scored per game and per deck.
+``--opponent``) over every league pair (or the pairs of ``--decks``), the same matches for each, scored
+per game and per deck.
 
     learn/rmtrain bench <run> [--wait] [--policies bc-final,m3,final,final@thresh=0.03:disc=16]
     learn/rmtrain bench <run> --opponent scripted:hard+sb      # under bench/end-vs-hard_sb/
+    learn/rmtrain bench <run> --decks league,heldout --label heldout   # held-out decks too (open_vocab_plan S8)
     python -m rmlearn.benchmark --run runs/league12h [--matches 480] [--actors 12] [--label end]
 
 A policy is an export name of the run (``exports/<name>.ts.pt``: ``bc-final``, ``m<k>``, ``final``) or
@@ -16,6 +18,14 @@ plays `matches` matches (side a, both decks of each pair and both seats: ``match
 on `actors` actors with the same run seed, actor ids and match counts, so every policy meets the
 same deck pairs, seats and game seeds (common random numbers): differences between policies are
 the policies'. ``--wait`` waits for the run to stop first (its shutdown finishes the final export).
+
+**Decks** (``--decks``, ``matches.resolve_decks``): the schedule is every pair of the listed decks —
+``league`` (every deck of ``decks/league/``), ``heldout`` (``decks/heldout/``) or single decks, comma
+separated — and ``--focus`` keeps the pairs holding one of its decks. The default is the ten league decks
+(``LEAGUE``), as before. Per deck the summary has the policy **playing** it and **facing** it, each
+policy's paired difference from the baseline for both, and the deck **groups** (``deck_groups``:
+the training decks, the original ten when the training directory holds more, the held-out decks)
+played, faced and played among themselves. A report played over other pairs is not reused.
 
 Writes ``<run>/bench/<label>/`` (``<label>-vs-<opponent>`` for an opponent other than scripted:hard,
 ``bench_dir``): per policy a directory (the actors' files, ``report.json`` — the
@@ -161,22 +171,31 @@ def sideboarding(out_dir, opponent=OPPONENT):
     return out
 
 
+def pairs_key(pairs):
+    """A deck pair list as a report records it (sorted "a:b" items)."""
+    return sorted("%s:%s" % tuple(p) for p in pairs)
+
+
 def play_policy(label, path, opts, out_dir, matches, actors, seed, engine=None, extra_args=(), log=print,
-                opponent=OPPONENT):
-    """The policy's report (``matches.report``) against `opponent` over every league pair; reuses an
-    existing ``report.json`` played against the same opponent (one without the key was played
-    against scripted:hard) and refuses one played against another."""
+                opponent=OPPONENT, pairs=None):
+    """The policy's report (``matches.report``) against `opponent` over the deck `pairs` (default every
+    league pair); reuses an existing ``report.json`` played against the same opponent over the same
+    pairs (one without the keys was played against scripted:hard over the league pairs) and refuses
+    one played otherwise."""
     opponent = normal_opponent(opponent)
+    pairs = list(pairs or MT.league_pairs())
     done = os.path.join(out_dir, "report.json")
     rep = read_json(done)
     if rep is not None:
-        had = normal_opponent((rep.get("policy") or {}).get("opponent"))
+        pol = rep.get("policy") or {}
+        had = normal_opponent(pol.get("opponent"))
         if had != opponent:
             raise SystemExit("benchmark: %s was played against %s, not %s (use another --label)" % (done, had, opponent))
+        if pol.get("pairs", pairs_key(MT.league_pairs())) != pairs_key(pairs):
+            raise SystemExit("benchmark: %s was played over other deck pairs (use another --label)" % done)
         log("%s: already played (%s)" % (label, done))
         return rep
-    sched = MT.eval_schedule(path, opponent, out_dir, pairs=MT.league_pairs(), policy_options=opts,
-                             version="bench")
+    sched = MT.eval_schedule(path, opponent, out_dir, pairs=pairs, policy_options=opts, version="bench")
     per = int(math.ceil(matches / float(actors)))
     pool = MT.ActorPool(sched, out_dir, actors=actors, engine=engine, seed=seed, matches_per_actor=per,
                         extra_args=extra_args)
@@ -190,7 +209,7 @@ def play_policy(label, path, opts, out_dir, matches, actors, seed, engine=None, 
         log("%s: %d actors failed: %s" % (label, len(failed), json.dumps(failed)[:2000]))
     rep = MT.report([MT.game_record(ln) for ln in lines])
     rep["policy"] = {"label": label, "export": path, "options": opts, "seconds": round(time.time() - t0, 1),
-                     "failed_actors": len(failed), "opponent": opponent}
+                     "failed_actors": len(failed), "opponent": opponent, "pairs": pairs_key(pairs)}
     with open(os.path.join(out_dir, "report.txt"), "w") as fp:
         fp.write(MT.format_report(rep, "%s vs %s" % (label, opponent)) + "\n")
     MT.write_json(done, rep)
@@ -228,13 +247,14 @@ def _cell(t):
 
 
 def match_records(out_dir):
-    """{(actor, match): {"wins", "decisive", "deck", "decisions"}} of a policy's results files: its
-    decisive games per match and the decisions of each game (equal across policies when the policies
-    chose alike)."""
+    """{(actor, match): {"wins", "decisive", "deck", "opp_deck", "decisions"}} of a policy's results
+    files: its decisive games per match and the decisions of each game (equal across policies when the
+    policies chose alike)."""
     out = {}
     for line in MT.ResultsReader(out_dir).poll():
         r = MT.game_record(line)
-        m = out.setdefault(r["key"], {"wins": 0, "decisive": 0, "deck": r["deck"], "decisions": []})
+        m = out.setdefault(r["key"], {"wins": 0, "decisive": 0, "deck": r["deck"], "opp_deck": r["opp_deck"],
+                                      "decisions": []})
         if r["end"] != "cap" and r["result"] != 0:
             m["wins"] += r["result"] > 0
             m["decisive"] += 1
@@ -242,13 +262,14 @@ def match_records(out_dir):
     return out
 
 
-def paired_delta(base, other, deck=None):
+def paired_delta(base, other, deck=None, keep=None):
     """The win rate difference of `other` from `base` over the matches both played (``match_records``),
     paired by match (the same seeds, decks and seats: common random numbers), with two SEs of the
-    ratio estimators' linearisation over matches; the share of matches played identically. None
-    with fewer than two matches."""
+    ratio estimators' linearisation over matches; the share of matches played identically. Only the
+    matches of the policy's `deck`, and those whose record `keep` accepts. None with fewer than two
+    matches."""
     keys = [k for k in base if k in other and base[k]["decisive"] and other[k]["decisive"]
-            and (deck is None or base[k]["deck"] == deck)]
+            and (deck is None or base[k]["deck"] == deck) and (keep is None or keep(base[k]))]
     if len(keys) < 2:
         return None
     nb = sum(base[k]["decisive"] for k in keys)
@@ -269,29 +290,87 @@ def _delta(d):
     return s + (" (same %.0f%%)" % (100 * d["identical"]) if "identical" in d else "")
 
 
-def summarize(reports, baseline=None, matches=None, sideboards=None):
+def deck_groups(decks):
+    """{group: [decks]} of a benchmark's decks when they fall into more than one: ``league`` (the
+    training directory's decks), ``league:original`` (the ten original ones, ``LEAGUE``, when
+    ``league`` holds others too), ``heldout`` (``decks/heldout/``); {} otherwise."""
+    league = [d for d in decks if not d.startswith("heldout/")]
+    held = [d for d in decks if d.startswith("heldout/")]
+    orig = [d for d in league if d in LEAGUE]
+    out = {}
+    if league:
+        out["league"] = league
+    if orig and len(orig) != len(league):
+        out["league:original"] = orig
+    if held:
+        out["heldout"] = held
+    return out if len(out) > 1 else {}
+
+
+GROUP_KINDS = (("plays", "the policy plays a deck of the group"),
+               ("faces", "the opponent plays a deck of the group"),
+               ("within", "both decks are of the group"))
+
+
+def _group_keep(kind, members):
+    members = set(members)
+    if kind == "plays":
+        return lambda r: r["deck"] in members
+    if kind == "faces":
+        return lambda r: r.get("opp_deck") in members
+    return lambda r: r["deck"] in members and r.get("opp_deck") in members
+
+
+def group_tally(rep, kind, members):
+    """{"wins", "losses", "decisive", "win_rate"} of a report's matchups in a deck group."""
+    keep = _group_keep(kind, members)
+    w = n = 0
+    for key, t in rep["by_matchup"].items():
+        d, o = key.split(" vs ", 1)
+        if keep({"deck": d, "opp_deck": o}):
+            w += t["wins"]
+            n += t["wins"] + t["losses"]
+    return {"wins": w, "losses": n - w, "decisive": n, "win_rate": w / n if n else None}
+
+
+def summarize(reports, baseline=None, matches=None, sideboards=None, decks=None):
     """The summary dict of {label: report} (in order; the first is the baseline unless named). With
     `matches` ({label: match_records}) the differences from the baseline are paired by match, else
-    the two policies' samples are taken as independent; `sideboards` ({label: ``sideboarding``})
-    goes into each policy's ``sideboarding``."""
+    the two policies' samples are taken as independent (playing a deck only); `sideboards` ({label:
+    ``sideboarding``}) goes into each policy's ``sideboarding``. `decks`: the benchmark's decks in
+    order (default the league decks and any other deck played)."""
     labels = list(reports)
     base = baseline or labels[0]
-    seen = {d for r in reports.values() for k in r["by_matchup"] for d in k.split(" vs ", 1)}
-    decks = sorted(seen | set(LEAGUE), key=lambda d: LEAGUE.index(d) if d in LEAGUE else len(LEAGUE))
-    out = {"baseline": base, "policies": {}, "decks": decks}
+    if decks is None:
+        seen = {d for r in reports.values() for k in r["by_matchup"] for d in k.split(" vs ", 1)}
+        decks = sorted(seen | set(LEAGUE), key=lambda d: (LEAGUE.index(d) if d in LEAGUE else len(LEAGUE),
+                                                          d.startswith("heldout/"), d))
+    groups = deck_groups(decks)
+    out = {"baseline": base, "policies": {}, "decks": list(decks), "groups": groups}
     for lab, rep in reports.items():
         p = {"all": rep["all"], "game1": rep["game1"], "games23": rep["games23"], "plays": rep["by_deck"],
              "faces": by_opponent_deck(rep), "matchups": rep["by_matchup"], "findings": rep["findings"],
-             "delta_plays": {}}
+             "groups": {"%s:%s" % (kind, g): group_tally(rep, kind, ms) for g, ms in groups.items()
+                        for kind, _ in GROUP_KINDS},
+             "delta_plays": {}, "delta_faces": {}, "delta_groups": {}}
         if sideboards and lab in sideboards:
             p["sideboarding"] = sideboards[lab]
         if lab != base and matches and lab in matches and base in matches:
             p["paired"] = True
+            mb, mo = matches[base], matches[lab]
             for d in decks:
-                pd = paired_delta(matches[base], matches[lab], d)
+                pd = paired_delta(mb, mo, d)
                 if pd:
                     p["delta_plays"][d] = pd
-            pd = paired_delta(matches[base], matches[lab])
+                pd = paired_delta(mb, mo, keep=lambda r, d=d: r.get("opp_deck") == d)
+                if pd:
+                    p["delta_faces"][d] = pd
+            for g, ms in groups.items():
+                for kind, _ in GROUP_KINDS:
+                    pd = paired_delta(mb, mo, keep=_group_keep(kind, ms))
+                    if pd:
+                        p["delta_groups"]["%s:%s" % (kind, g)] = pd
+            pd = paired_delta(mb, mo)
             if pd:
                 p["delta_all"] = pd
         elif lab != base:
@@ -308,18 +387,37 @@ def summarize(reports, baseline=None, matches=None, sideboards=None):
     return out
 
 
+def short_deck(deck):
+    """A deck's name without its directory (``heldout/bant_control`` → ``bant_control``)."""
+    return deck.rsplit("/", 1)[-1]
+
+
+def _delta_table(s, others, key, rows):
+    L = ["| %s | " % ("group" if key == "delta_groups" else "deck") + " | ".join(others) + " |",
+         "|---|" + "---|" * len(others)]
+    for row in rows:
+        cells = []
+        for lab in others:
+            d = s["policies"][lab][key].get(row)
+            cells.append(_delta(d) if d else "-")
+        L.append("| %s | " % row + " | ".join(cells) + " |")
+    return L
+
+
 def format_summary(s, title):
     """summary.md: the tables of ``summarize``."""
     labs = list(s["policies"])
     base = s["baseline"]
     opp = s.get("opponent", OPPONENT)
+    npairs = len(s.get("pairs") or MT.league_pairs())
     L = ["# %s" % title, "",
-         "Every policy against %s over all %d league pairs, both decks and seats, the same "
+         "Every policy against %s over %d deck pairs (%d decks: %s), both decks and seats, the same "
          "matches for each (common random numbers). Win rates are per decisive game; draws and caps "
          "are excluded and listed under findings. ± is two standard errors (match-clustered). A "
          "difference from the baseline is paired by match: the policies played the same matches, so "
          "the shared luck of the deal cancels and its ± is smaller than the win rates' (`same` is the "
-         "share of matches a policy played exactly as the baseline did)." % (opp, len(MT.league_pairs())), "",
+         "share of matches a policy played exactly as the baseline did)."
+         % (opp, npairs, len(s["decks"]), ", ".join(s["decks"])), "",
          "## Overall", "",
          "| policy | games | win rate | 95%% (Wilson) | ± 2 SE | game 1 | games 2–3 | Δ vs %s | draws | caps |" % base,
          "|---|---|---|---|---|---|---|---|---|---|"]
@@ -331,24 +429,33 @@ def format_summary(s, title):
         L.append("| %s | %d | %s | %.3f–%.3f | %s | %s | %s | %s | %d | %d |" % (
             lab, a["decisive"], _pct(a), lo, hi, "%.3f" % (2 * _se(a)) if _se(a) else "-", _pct(p["game1"]),
             _pct(p["games23"]), _delta(d) if d else "baseline", a["draws"], a["caps"]))
+    others = [lab for lab in labs if lab != base]
+    groups = s.get("groups") or {}
+    if groups:
+        rows = ["%s:%s" % (kind, g) for g in groups for kind, _ in GROUP_KINDS]
+        L += ["", "## Deck groups", "",
+              "Groups: %s. `plays:G` the policy plays a deck of G, `faces:G` the opponent does, `within:G` "
+              "both; win rate (decisive games), then Δ from %s ± two SEs, paired by match."
+              % ("; ".join("%s = %s" % (g, ", ".join(short_deck(d) for d in ms)) for g, ms in groups.items()), base),
+              "", "| group | " + " | ".join(labs) + " |", "|---|" + "---|" * len(labs)]
+        for row in rows:
+            L.append("| %s | " % row + " | ".join(_cell(s["policies"][lab]["groups"].get(row)) for lab in labs) + " |")
+        if others:
+            L += [""] + _delta_table(s, others, "delta_groups", rows)
     for head, key, note in (("The policy playing each deck", "plays", "win rate (decisive games)"),
                             ("The policy facing each deck", "faces", "win rate (decisive games)")):
         L += ["", "## %s" % head, "", "%s; rows are decks, columns policies." % note, "",
               "| deck | " + " | ".join(labs) + " |", "|---|" + "---|" * len(labs)]
         for dk in s["decks"]:
             L.append("| %s | " % dk + " | ".join(_cell(s["policies"][lab][key].get(dk)) for lab in labs) + " |")
-    others = [lab for lab in labs if lab != base]
     if others:
-        L += ["", "## Difference from %s, playing each deck" % base, "",
-              "Δ win rate ± two SEs; a difference larger than its ± is unlikely to be noise.", "",
-              "| deck | " + " | ".join(others) + " |", "|---|" + "---|" * len(others)]
-        for dk in s["decks"]:
-            cells = []
-            for lab in others:
-                d = s["policies"][lab]["delta_plays"].get(dk)
-                cells.append(_delta(d) if d else "-")
-            L.append("| %s | " % dk + " | ".join(cells) + " |")
-    ab = {d: d[:6] for d in s["decks"]}
+        for head, key in (("playing", "delta_plays"), ("facing", "delta_faces")):
+            if not any(s["policies"][lab].get(key) for lab in others):
+                continue
+            L += ["", "## Difference from %s, %s each deck" % (base, head), "",
+                  "Δ win rate ± two SEs; a difference larger than its ± is unlikely to be noise.", ""]
+            L += _delta_table(s, others, key, s["decks"])
+    ab = {d: short_deck(d)[:6] for d in s["decks"]}
     for lab in labs:
         p = s["policies"][lab]
         L += ["", "## Matchups: %s" % lab, "", "Rows: the policy's deck; columns: %s's deck." % opp, "",
@@ -390,10 +497,20 @@ def wait_for_run(run, poll=60, settle=600, log=print):
 
 
 def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, actors=DEFAULT_ACTORS, seed=11,
-                  engine=None, extra_args=(), wait=False, log=print, opponent=OPPONENT):
-    """Plays every policy (``play_policy``) against `opponent` and writes the summary under
-    ``bench/<bench_dir(label, opponent)>``; the summary dict."""
+                  engine=None, extra_args=(), wait=False, log=print, opponent=OPPONENT, decks=None, focus=None):
+    """Plays every policy (``play_policy``) against `opponent` over the pairs of `decks` (a ``--decks``
+    spec, ``matches.resolve_decks``; default the league decks), with `focus` (deck names) only the pairs
+    holding one of them, and writes the summary under ``bench/<bench_dir(label, opponent)>``; the
+    summary dict."""
     opponent = normal_opponent(opponent)
+    try:
+        deck_list = MT.resolve_decks(decks)
+        pairs = MT.deck_pairs(deck_list, focus)
+    except ValueError as err:
+        raise SystemExit("benchmark: %s" % err)
+    if focus:
+        keep = {d for p in pairs for d in p}
+        deck_list = [d for d in deck_list if d in keep]
     if wait:
         wait_for_run(run, log=log)
     elif alive(run.control_sock):
@@ -409,16 +526,17 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
             log("%s: no export %s; skipped" % (lab, path))
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,
-                                   engine=engine, extra_args=extra_args, log=log, opponent=opponent)
+                                   engine=engine, extra_args=extra_args, log=log, opponent=opponent, pairs=pairs)
         records[lab] = match_records(os.path.join(root, slug(lab)))
         sbs[lab] = sideboarding(os.path.join(root, slug(lab)), opponent)
         if sbs[lab]["policy"]["explored"]:
             log("%s: %d explored sideboarding phases (left out of the report)" % (lab, sbs[lab]["policy"]["explored"]))
     if not reports:
         raise SystemExit("benchmark: no policy to play (%s)" % ", ".join(items))
-    s = summarize(reports, matches=records, sideboards=sbs)
+    s = summarize(reports, matches=records, sideboards=sbs, decks=deck_list if decks else None)
     s.update({"run": run.path, "label": label, "dir": bench_dir(label, opponent), "matches": matches,
-              "actors": actors, "seed": seed, "opponent": opponent, "at": time.time()})
+              "actors": actors, "seed": seed, "opponent": opponent, "decks_spec": decks or "",
+              "focus": list(focus or []), "pairs": [list(p) for p in pairs], "at": time.time()})
     MT.write_json(os.path.join(root, "summary.json"), s)
     with open(os.path.join(root, "summary.md"), "w") as fp:
         fp.write(format_summary(s, "Benchmark %s of %s" % (bench_dir(label, opponent), run.name)))
@@ -433,6 +551,10 @@ def add_args(ap):
                                                    "appended for an opponent other than scripted:hard)")
     ap.add_argument("--opponent", default=OPPONENT, help="the opponent: scripted:<tier> (default scripted:hard; "
                                                          "scripted:hard+sb sideboards per the guides)")
+    ap.add_argument("--decks", help="the decks whose every pair is played: comma-separated league (every deck of "
+                                    "decks/league/), heldout (decks/heldout/) or deck stems (x = league/x, heldout/x); "
+                                    "default: the ten league decks")
+    ap.add_argument("--focus", help="comma-separated decks of --decks: only the pairs holding one of them")
     ap.add_argument("--matches", type=int, default=DEFAULT_MATCHES, help="matches per policy")
     ap.add_argument("--actors", type=int, default=DEFAULT_ACTORS)
     ap.add_argument("--seed", type=int, default=11, help="the actors' run seed (the same for every policy)")
@@ -444,8 +566,10 @@ def add_args(ap):
 def run_from_args(run, a):
     extra = ["--feature-history", str(a.feature_history)] if a.feature_history > 0 else []
     pol = [p for p in a.policies.split(",") if p] if a.policies else None
+    focus = [f for f in a.focus.split(",") if f] if a.focus else None
     run_benchmark(run, pol, a.label, a.matches, a.actors, a.seed, a.engine, extra, a.wait,
-                  log=lambda m: print(time.strftime("%Y-%m-%d %H:%M:%S ") + m, flush=True), opponent=a.opponent)
+                  log=lambda m: print(time.strftime("%Y-%m-%d %H:%M:%S ") + m, flush=True), opponent=a.opponent,
+                  decks=a.decks, focus=focus)
     return 0
 
 

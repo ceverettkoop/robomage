@@ -9,6 +9,7 @@
     learn/rmtrain bench <run> [--wait] [--policies ...]   # the end-of-run benchmark (rmlearn/benchmark.py)
     learn/rmtrain phase <run> hold|release|next|status
     learn/rmtrain retable <run>         # a stopped run onto the engine's tables after a vocab expansion
+    learn/rmtrain add-decks <run> STEM ... [--weight W]   # decks into the run's league (live or stopped)
     learn/rmtrain config <run>          # the resolved config (TOML)
     learn/rmtrain defaults              # every key with its default and documentation (TOML)
 
@@ -283,6 +284,47 @@ def cmd_retable(args):
     return 0
 
 
+def cmd_add_decks(args):
+    """Decks added to the run's league.decks (and league.pairs: orchestrator/league.py): set live on a
+    running run, written to a stopped run's config.json for its next start."""
+    from .orchestrator import league as LG
+    from .orchestrator.rundir import JsonLines
+    run = existing(args.run)
+    cfg, _ = C.fill_defaults(read_json(run.config))
+    try:
+        changes, weight, new_cfg = LG.plan_add(cfg, args.stems, args.weight)
+    except ValueError as err:
+        die(str(err))
+    added = [d for d in new_cfg["league"]["decks"] if d not in cfg["league"]["decks"]]
+    for stem in added:
+        why = LG.check_deck(cfg, stem)
+        if why:
+            die(why)
+    pairs = [p for p in LG.pair_weights(new_cfg) if p[0] in added or p[1] in added]
+    print("rmtrain: adding %s: %d new pairs at weight %g (the league's mean pair weight: %g)"
+          % (", ".join(added), len(pairs), weight, LG.default_weight(cfg)))
+    if alive(run.control_sock):
+        why = LG.check_engine_current(run, cfg)
+        if why:
+            die(why)
+        call(run, {"cmd": "set", "changes": changes})
+        print("rmtrain: set live; the actors' schedule is rewritten at the orchestrator's next tick and each "
+              "actor plays it from its next match")
+        return 0
+    if _unit_active(unit_name(run)):
+        die("run %s's unit %s is active (systemd is restarting it?); retry when it is up or stopped"
+            % (run.name, unit_name(run)))
+    write_json(run.config, new_cfg)
+    state = read_json(run.state) or {}
+    metrics = JsonLines(run.metrics)
+    metrics.write({"time": time.time(), "phase": state.get("phase"), "stage": state.get("stage"),
+                   "step": (state.get("rnad") or {}).get("learner_steps"), "event": "add_decks", "decks": added,
+                   "weight": weight, "changes": changes})
+    metrics.close()
+    print("rmtrain: %s written; `rmtrain start %s` resumes the run with them" % (run.config, run.name))
+    return 0
+
+
 def cmd_phase(args):
     run = existing(args.run)
     if args.what == "status" and not alive(run.control_sock):
@@ -519,6 +561,11 @@ def main(argv=None):
     p.add_argument("what", choices=("hold", "release", "next", "status"))
     p = sub.add_parser("retable", help="a stopped run onto the engine's tables after a vocab expansion")
     p.add_argument("run")
+    p = sub.add_parser("add-decks", help="add league decks to the run (live, or for its next start)")
+    p.add_argument("run")
+    p.add_argument("stems", nargs="+", metavar="STEM", help="deck stems under bin/resources/decks/league/")
+    p.add_argument("--weight", type=float, help="the new pairs' weight (default: the mean of the league's pair "
+                                                "weights, 1 when league.pairs is empty)")
     p = sub.add_parser("config", help="print the run's resolved config")
     p.add_argument("run")
     sub.add_parser("defaults", help="print the default config")
@@ -539,6 +586,8 @@ def main(argv=None):
         return cmd_phase(args)
     if args.cmd == "retable":
         return cmd_retable(args)
+    if args.cmd == "add-decks":
+        return cmd_add_decks(args)
     if args.cmd == "tail":
         return cmd_tail(args)
     if args.cmd == "config":

@@ -47,7 +47,7 @@ while its inputs are unchanged and its result `ok`; `--force` reruns it.
 | 8 | `text` | `make text-table`: the new cards' oracle-text rows (fetches the pinned model, needs `make rmembed`) | no |
 | 9 | `checks` | `make check` (unless `--skip-make-check`), then the campaign `robomage_check --tier fuzz --matchups <dir>/<stem>:* --fuzz-games 100 --manual-mana-games 10 --out-dir ci_out/onboard_<stem>`: bo1 explore, bo3 `explore:patient` and `--no-auto-mana` games against every playable deck. Any error or drawn game fails it | no |
 | 10 | `designate` | `--to league` or `--to heldout`: `git mv` the deck there | no |
-| 11 | `baseline` | `rm_driver.py` `scripted:hard` with the deck against every league deck (`--baseline-games` bo1 each), then `learn/rmtrain bench <run> --decks <dir>/<stem>` (`--run`). Fails with a message until `rmtrain bench` has `--decks` (plan S8) | no |
+| 11 | `baseline` | `rm_driver.py` `scripted:hard` with the deck against every league deck (`--baseline-games` bo1 each), then the zero-shot benchmark of the run's policies (`--run`; `--bench-policies`, default the run's set; `--bench-matches`, default 480): `learn/rmtrain bench <run> --decks league,<dir>/<stem> --focus <dir>/<stem> --label onboard-<stem>` — the deck against every league deck, the policy playing it and facing it (`docs/rmtrain.md` §7.1). The status records the scripted record per opponent and, per policy, the deck played and faced from the benchmark's `summary.json` | no |
 
 Rules (plan S7): a stage never runs past an earlier one that is not `ok` (stages 2-6 rerun
 themselves first when their inputs changed; 7-10 need only a recorded `ok`); `vocab` needs zero

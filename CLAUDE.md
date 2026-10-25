@@ -456,7 +456,9 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 
 A whole deck goes through the onboarding pipeline (`python3 tools/onboard/onboard.py`,
 `tools/onboard/README.md`): scrape, diff, provision, parse report, capability, the engine work, the
-vocab append below (its stage 7), text rows, checks and fuzz, designation to `league/` or `heldout/`.
+vocab append below (its stage 7), text rows, checks and fuzz, designation to `league/` or `heldout/`,
+and the baseline (`rmtrain bench --decks`, the current policy's zero-shot benchmark on it). A
+`league/` deck joins a training run with `rmtrain add-decks` (`docs/rmtrain.md` §1.1).
 `robomage --parse-report <card>` (`src/parse_report.h`) lists what the parser does not model in a
 card's script; a new card should report clean before it enters the vocab.
 
@@ -733,8 +735,11 @@ handshake JSON, the shared region, request / response layouts.
 
 **Learner (`learn/`, torch, its own venv; `learn/README.md`)**
 - `learn/rmtrain` — the training program (`rmlearn/rmtrain.py`, `rmlearn/orchestrator/`): `start` /
-  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` / `retable` (a stopped
-  run onto the engine's tables after a vocab expansion, `orchestrator/retable.py`) over a run directory
+  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` (`--decks
+  league,heldout`: held-out decks too, playing and facing them paired) / `retable` (a stopped run onto
+  the engine's tables after a vocab expansion, `orchestrator/retable.py`) / `add-decks` (a deck into a
+  run's league, live or for its next start, `orchestrator/league.py`; the expansion procedure is
+  `docs/rmtrain.md` §1.1) over a run directory
   (`runs/<name>`), the phases B0–B5, one GPU process (learner + inference server) and the actors
   ([`docs/rmtrain.md`](docs/rmtrain.md)); checks `learn/check_rmtrain.py` (`--smoke`: a tiny run)
 - `learn/rmlearn/migrate.py` — checkpoints of an earlier layout onto the current one, by name (`--run`: a

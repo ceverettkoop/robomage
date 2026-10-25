@@ -1510,6 +1510,16 @@ def smoke(args):
     s = wait(lambda s: (s.get("progress") or {}).get("iterations", 0) >= 2 and (s.get("checkpoint") or {}).get(
         "kind") == "rnad" and (s["checkpoint"].get("learner_steps") or 0) >= 60, "two R-NaD iterations", 1200)
     ck_steps = s["checkpoint"]["learner_steps"]
+    # The expansion procedure, live (open_vocab_plan S8): a league deck whose cards the tables hold.
+    r = sh([rmtrain, "add-decks", run.path, "lands"])
+    check(r.returncode == 0 and "set live" in r.stdout, "add-decks on the running run")
+    check(sh([rmtrain, "add-decks", run.path, "heldout/bant_control"], check_ok=False).returncode != 0,
+          "add-decks refuses a held-out deck")
+    end = time.time() + 60
+    while time.time() < end and "league/lands" not in open(run.schedule).read():
+        time.sleep(1)
+    check("league/lands" in open(run.schedule).read(), "the live league change rewrote the schedule")
+    ck_steps = (status().get("checkpoint") or {}).get("learner_steps") or ck_steps
     # kill -9 everything, then resume.
     t_kill = time.time()
     killed = kill9(run, daemon)
@@ -1542,6 +1552,13 @@ def smoke(args):
     check(r.returncode == 0 and "stopped" in r.stdout and not CT.alive(run.control_sock), "stop")
     ck = (RD.read_json(run.state) or {}).get("checkpoint") or {}
     check(ck.get("kind") == "rnad" and ck.get("learner_steps", 0) >= steps, "stop checkpoints the learner")
+    # The expansion procedure on the stopped run: retable (nothing to do: no vocab change), add-decks
+    # into config.json, then start.
+    r = sh([rmtrain, "retable", run.path])
+    check(r.returncode == 0 and "nothing to do" in r.stdout, "retable of the stopped run (no vocab change)")
+    r = sh([rmtrain, "add-decks", run.path, "eldrazi_aggro"])
+    check(r.returncode == 0 and "written" in r.stdout and "eldrazi_aggro" in RD.read_json(run.config)["league"]["decks"],
+          "add-decks on the stopped run")
     r = sh([rmtrain, "start", run.path])
     check(r.returncode == 0 and "resuming" in r.stdout, "start resumes the stopped run")
     s = wait(lambda s: s.get("running") and (s.get("gpu") or {}).get("learner_steps") is not None, "the resume", 300)
@@ -1583,6 +1600,7 @@ def smoke(args):
           "the resumes' restore lines (%s)" % [(m["learner_steps"], m["previous_learner_steps"]) for m in rest])
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
     smoke_sideboarding_checks(run, mets)
+    smoke_expansion_checks(run)
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
     if local:
@@ -1592,6 +1610,24 @@ def smoke(args):
     if not args.keep and not FAILURES:
         stop_unit(run)
         shutil.rmtree(run.path)
+
+
+def smoke_expansion_checks(run):
+    """The decks added live (lands) and to the stopped run (eldrazi_aggro) were played in self-play, and
+    the final learner's networks marked the added deck's cards seen (the first batches holding them)."""
+    import torch
+    results = []
+    for path in glob.glob(os.path.join(run.actors, "a*.results.jsonl")):
+        results += RD.read_jsonl(path)
+    sp = [r for r in results if r.get("schedule") in ("b4", "b5")]
+    for deck in ("league/lands", "league/eldrazi_aggro"):
+        check(any(deck in (r.get("deck_a"), r.get("deck_b")) for r in sp), "self-play played the added %s" % deck)
+    vocab = {name: i for i, name in RD.read_json(os.path.join(run.tables, "manifest.json"))["vocab"]}
+    ids = [vocab[n] for n in ("Eldrazi Confluence", "Secluded Courtyard") if n in vocab]
+    data = torch.load(os.path.join(run.ckpt, "rnad-final.pt"), map_location="cpu", weights_only=True)["learner"]
+    seen = [data[k]["cards.card_seen"] for k in ("model", "target")]
+    check(len(ids) == 2 and all(bool(m[i]) for m in seen for i in ids),
+          "the added deck's cards are seen by the learner and its target (ids %s)" % ids)
 
 
 def stop_unit(run):
@@ -1856,6 +1892,189 @@ def check_benchmark(tmp):
           "an export the run's tables cannot vouch for (no manifest.json) is stale")
     check(calls == [("bc-final", 7), ("final", 7)] and sr["matches"] == 7 and sr["policies"]["final"].get("paired")
           and os.path.exists(os.path.join(run.path, "bench", "t", "summary.md")), "run_benchmark: %s %s" % (calls, sr.get("matches")))
+
+
+def _fake_decks(root, league=(), heldout=()):
+    """A fake bin directory's resources/decks/league/ and heldout/ deck files (one card each)."""
+    for sub, names in (("league", league), ("heldout", heldout)):
+        d = os.path.join(root, "resources", "decks", sub)
+        os.makedirs(d, exist_ok=True)
+        for n in names:
+            with open(os.path.join(d, n + ".dk"), "w") as fp:
+                fp.write("4 Card %s\nSIDEBOARD:\n1 Side %s\n" % (n, n))
+    return root
+
+
+def check_benchmark_decks(tmp):
+    """``rmtrain bench --decks`` (open_vocab_plan S8): the deck sets (league/ with the ten first, heldout/,
+    single stems), --focus, the default unchanged, a report over other pairs not reused, the summary's
+    per-deck facing deltas and deck groups (paired), the tables."""
+    from rmlearn import benchmark as BM
+    from rmlearn import matches as MT
+    from rmlearn.corpus import LEAGUE
+    bin_dir = _fake_decks(os.path.join(tmp, "bench-decks-bin"), league=list(LEAGUE) + ["eldrazi_aggro"],
+                          heldout=["bant_control", "show_and_tell"])
+    check(MT.resolve_decks(None, bin_dir) == list(LEAGUE) and MT.resolve_decks("", bin_dir) == list(LEAGUE),
+          "--decks: the default is the ten league decks")
+    ld = MT.resolve_decks("league,heldout", bin_dir)
+    check(ld == list(LEAGUE) + ["eldrazi_aggro", "heldout/bant_control", "heldout/show_and_tell"],
+          "--decks league,heldout: %s" % ld)
+    check(MT.resolve_decks("heldout/bant_control,league/burn,burn,eldrazi_aggro", bin_dir)
+          == ["heldout/bant_control", "burn", "eldrazi_aggro"], "--decks: single stems, each once")
+    check(raises(lambda: MT.resolve_decks("heldout/nope,burn", bin_dir), "no deck heldout/nope")
+          and raises(lambda: MT.resolve_decks("burn", bin_dir), "two decks"), "--decks: refusals")
+    check(len(MT.deck_pairs(ld)) == 78 and MT.deck_pairs(MT.resolve_decks(None, bin_dir)) == MT.league_pairs(),
+          "--decks: every pair of the listed decks (78 for 13), the league's 45 by default")
+    fp = MT.deck_pairs(ld, ["heldout/bant_control"])
+    check(len(fp) == 12 and all("heldout/bant_control" in p for p in fp)
+          and raises(lambda: MT.deck_pairs(ld, ["heldout/x"]), "--focus"), "--focus: the pairs holding the deck")
+    sched = MT.eval_schedule("/x/p.ts.pt", "scripted", tmp, pairs=fp)
+    check(len(sched["entries"]) == 24 and {e["deck_a"] for e in sched["entries"]} >= {"heldout/bant_control", "league/burn"},
+          "--focus: both orders, the held-out deck by its directory")
+    # A report played over other pairs is not reused.
+    out = os.path.join(tmp, "bench-decks-run", "p")
+    os.makedirs(out)
+    MT.write_json(os.path.join(out, "report.json"), {"policy": {"opponent": "scripted:hard"}})
+    check(BM.play_policy("p", "/x", "argmax", out, 4, 1, 1, log=lambda m: None)["policy"]["opponent"]
+          == "scripted:hard", "a report without pairs is the league pairs' (reused)")
+    try:
+        BM.play_policy("p", "/x", "argmax", out, 4, 1, 1, log=lambda m: None, pairs=fp)
+        check(False, "a report over other pairs is refused")
+    except SystemExit as err:
+        check("other deck pairs" in str(err), "a report over other pairs is refused: %s" % err)
+
+    # The summary: the policy plays a held-out deck, faces one, and plays among league decks. Paired:
+    # `other` flips two matches (one playing bant_control, one facing it).
+    def line(k, deck, opp, res):
+        return {"actor": 0, "match": k, "game": 1, "entry": "x", "side_a_seat": "A", "deck_a": MT.deck_stem(deck),
+                "deck_b": MT.deck_stem(opp), "result_a": res, "result_b": -res, "end_reason": "win", "first": "A",
+                "decisions": 10}
+    games = [("heldout/bant_control", "burn"), ("heldout/bant_control", "burn"), ("burn", "heldout/bant_control"),
+             ("burn", "heldout/bant_control"), ("burn", "bug"), ("bug", "burn"), ("eldrazi_aggro", "bug"),
+             ("bug", "eldrazi_aggro")]
+    rb = [line(k, d, o, -1 if k % 2 else 1) for k, (d, o) in enumerate(games)]
+    ro = [line(k, d, o, (1 if k in (1, 3) else -1 if k % 2 else 1)) for k, (d, o) in enumerate(games)]
+    for x in ro:
+        if x["match"] in (1, 3):
+            x["decisions"] = 11
+    reps = {"base": MT.report([MT.game_record(x) for x in rb]), "new": MT.report([MT.game_record(x) for x in ro])}
+    recs = {}
+    for lab, lines in (("base", rb), ("new", ro)):
+        recs[lab] = {}
+        for x in lines:
+            r = MT.game_record(x)
+            recs[lab][r["key"]] = {"wins": int(r["result"] > 0), "decisive": 1, "deck": r["deck"], "opp_deck": r["opp_deck"],
+                                   "decisions": [x["decisions"]]}
+    decks = ["bug", "burn", "eldrazi_aggro", "heldout/bant_control"]
+    sm = BM.summarize(reps, matches=recs, decks=decks)
+    n = sm["policies"]["new"]
+    check(sm["decks"] == decks and set(sm["groups"]) == {"league", "league:original", "heldout"}
+          and sm["groups"]["league:original"] == ["bug", "burn"], "groups: %s" % sm["groups"])
+    check(abs(n["delta_plays"]["heldout/bant_control"]["delta"] - 0.5) < 1e-9
+          and abs(n["delta_plays"]["burn"]["delta"] - 1 / 3) < 1e-9, "paired deltas playing a deck")
+    check(abs(n["delta_faces"]["heldout/bant_control"]["delta"] - 0.5) < 1e-9
+          and abs(n["delta_faces"]["burn"]["delta"] - 1 / 3) < 1e-9 and abs(n["delta_faces"]["bug"]["delta"]) < 1e-9,
+          "facing deltas per deck: %s" % json.dumps(n["delta_faces"])[:400])
+    g = n["delta_groups"]
+    check(abs(g["plays:heldout"]["delta"] - 0.5) < 1e-9 and abs(g["faces:heldout"]["delta"] - 0.5) < 1e-9
+          and abs(g["within:league:original"]["delta"]) < 1e-9 and "within:heldout" not in g
+          and n["groups"]["plays:heldout"]["decisive"] == 2 and n["groups"]["within:league"]["decisive"] == 4,
+          "group deltas: %s" % json.dumps(g)[:600])
+    md = BM.format_summary(sm, "t")
+    check("## Deck groups" in md and "| plays:heldout |" in md and "## Difference from base, facing each deck" in md
+          and "| heldout/bant_control | +0.500 ±" in md and "| deck | bug | burn | eldraz | bant_c |" in md,
+          "the --decks tables:\n" + md)
+    one = BM.summarize(reps, matches=recs)
+    check(one["decks"][:10] == list(LEAGUE) and one["decks"][10:] == ["eldrazi_aggro", "heldout/bant_control"]
+          and set(one["groups"]) == {"league", "league:original", "heldout"}, "the default decks: the league and any played")
+    check(BM.deck_groups(list(LEAGUE)) == {}, "no groups over the league decks alone")
+
+
+def check_league_expansion(tmp):
+    """The expansion procedure (open_vocab_plan S8, docs/rmtrain.md §1.1): league.decks / league.pairs
+    live and validated together (a held-out deck, a deck in no pair, a pair outside the decks refused),
+    ``plan_add``'s new pairs at the mean weight, the orchestrator's set of both keys rewriting the
+    self-play schedule with the new deck's entries and re-reading the coverage cells, ``check_deck``
+    against a fake engine, and ``rmtrain add-decks`` on a stopped run (config.json, a metrics line)."""
+    from rmlearn.orchestrator import league as LG
+    check({"league.decks", "league.pairs"} <= C.LIVE and not ({"league.decks", "league.pairs"} & C.GPU_LIVE),
+          "league.decks and league.pairs are live (the orchestrator's)")
+    base = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]"])
+    check(raises(lambda: C.set_key(base, "league.decks", ["a", "heldout/h"]), "held out"),
+          "a held-out deck in league.decks is refused")
+    wp = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]",
+                          "league.pairs=[[\"a\", \"b\", 2], [\"a\", \"c\", 1], [\"b\", \"c\", 0.5]]"])
+    check(raises(lambda: C.set_key(wp, "league.decks", ["a", "b", "c", "d"]), "in no league.pairs entry", "add-decks")
+          and raises(lambda: C.set_key(wp, "league.pairs", wp["league"]["pairs"] + [["a", "d", 1]]), "not in league.decks"),
+          "league.decks and league.pairs must name the same decks")
+    ch, w, out = LG.plan_add(base, ["league/d"])
+    check(ch == {"league.decks": ["a", "b", "c", "d"]} and w == 1.0 and out["league"]["pairs"] == []
+          and len(SCH.league_pairs(out)) == 6, "plan_add on a uniform league: the deck alone, every pair at 1")
+    ch, w, out = LG.plan_add(wp, ["d", "e"])
+    newp = [p for p in out["league"]["pairs"] if "d" in p[:2] or "e" in p[:2]]
+    check(abs(w - 3.5 / 3) < 1e-9 and list(ch) == ["league.pairs", "league.decks"] and len(newp) == 7
+          and all(abs(p[2] - w) < 1e-9 for p in newp) and out["league"]["pairs"][:3] == [["a", "b", 2.0], ["a", "c", 1.0],
+                                                                                       ["b", "c", 0.5]],
+          "plan_add with explicit pairs: the new pairs at the mean weight, the old ones kept: %s" % out["league"]["pairs"])
+    ch, w, out = LG.plan_add(base, ["d"], weight=2)
+    check(w == 2 and sorted(map(tuple, out["league"]["pairs"])) == sorted(
+        [("a", "b", 1.0), ("a", "c", 1.0), ("b", "c", 1.0), ("a", "d", 2.0), ("b", "d", 2.0), ("c", "d", 2.0)]),
+        "plan_add --weight on a uniform league writes the pairs out")
+    check(raises(lambda: LG.plan_add(base, ["a"]), "already") and raises(lambda: LG.plan_add(base, ["heldout/x"]), "held out")
+          and raises(lambda: LG.plan_add(base, ["d"], weight=0), "weight"), "plan_add refusals")
+
+    # The orchestrator: both keys set together, the schedule and the coverage cells follow.
+    o, run, logs = _b4_orchestrator(tmp, "lg-orch")
+    _fake_decks(o.bin_dir, league=["a", "b", "c"])
+    o.sb_summary()
+    check(o.sb_decks[0] == ["league/a", "league/b"], "coverage cells of the league's decks")
+    ch, w, _ = LG.plan_add(o.cfg, ["c"], weight=3)
+    r = o.command({"cmd": "set", "changes": ch})
+    sched, _ = o.wanted()
+    ids = sorted(e["id"] for e in sched["entries"])
+    check(r["changes"]["league.decks"] == ["a", "b", "c"] and ids == ["sp-a-b", "sp-a-c", "sp-b-c"]
+          and [e["weight"] for e in sched["entries"] if e["id"] == "sp-a-c"] == [3.0]
+          and RD.read_json(run.config)["league"]["decks"] == ["a", "b", "c"],
+          "a live league change: the self-play schedule's entries and config.json (%s)" % ids)
+    o.sb_summary()
+    check(o.sb_decks[0] == ["league/a", "league/b", "league/c"], "the coverage cells re-read after a league change")
+    check(sum(1 for m in RD.read_jsonl(run.metrics) if m["event"] == "set" and m["key"].startswith("league.")) == 2,
+          "a set metrics line per key")
+    try:
+        o.command({"cmd": "set", "changes": {"league.decks": ["a", "b", "c", "z"]}})
+        check(False, "an unpaired deck set live is refused")
+    except ValueError as err:
+        check("no league.pairs entry" in str(err) and RD.read_json(run.config)["league"]["decks"] == ["a", "b", "c"],
+              "an unpaired deck set live is refused, the config unchanged")
+
+    # check_deck against a fake engine: a deck with a card it lacks is refused.
+    fb = _fake_decks(os.path.join(tmp, "lg-bin"), league=["a", "b", "new", "bad"])
+    with open(os.path.join(fb, "resources", "decks", "league", "bad.dk"), "w") as f:
+        f.write("4 Unknown Card\n")
+    os.makedirs(os.path.join(fb, "release"))
+    eng = os.path.join(fb, "release", "robomage_nn")
+    with open(eng, "w") as f:
+        f.write("#!/bin/sh\nif grep -q Unknown \"resources/decks/$3\"; then echo 'check-decks: MISSING Unknown Card'; "
+                "exit 1; fi\necho 'check-decks: 1 deck(s), 0 missing'\n")
+    os.chmod(eng, 0o755)
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\"]", "run.bin_dir=" + fb])
+    check(LG.check_deck(cfg, "new") == "" and "MISSING Unknown Card" in LG.check_deck(cfg, "bad")
+          and "no deck" in LG.check_deck(cfg, "nope"), "check_deck: %r" % LG.check_deck(cfg, "bad"))
+    # rmtrain add-decks on a stopped run: config.json written, a metrics line, then start reads it.
+    srun = RD.RunDir(os.path.join(tmp, "lg-stopped"))
+    srun.make()
+    RD.write_json(srun.config, cfg)
+    RD.write_json(srun.state, {"phase": "B4", "stage": "selfplay", "rnad": {"learner_steps": 7}})
+    rc = RT.main(["add-decks", srun.path, "new"])
+    m = [x for x in RD.read_jsonl(srun.metrics) if x["event"] == "add_decks"]
+    check(rc == 0 and RD.read_json(srun.config)["league"]["decks"] == ["a", "b", "new"] and m and m[0]["decks"] == ["new"]
+          and m[0]["step"] == 7, "rmtrain add-decks on a stopped run")
+    try:
+        RT.main(["add-decks", srun.path, "bad"])
+        check(False, "add-decks refuses a deck the engine does not load")
+    except SystemExit as err:
+        check(err.code == 1 and RD.read_json(srun.config)["league"]["decks"] == ["a", "b", "new"],
+              "add-decks refuses a deck the engine does not load")
 
 
 def _bench_line(match, game, seat_a, deck_a, deck_b, result_a, sb=None, first=None, end="win"):
@@ -2271,6 +2490,8 @@ def main():
             check_eval_options_and_findings(tmp)
             check_eval_scoring(tmp)
             check_benchmark(tmp)
+            check_benchmark_decks(tmp)
+            check_league_expansion(tmp)
             check_retable(tmp)
             check_benchmark_sideboarding(tmp)
             check_local(tmp)

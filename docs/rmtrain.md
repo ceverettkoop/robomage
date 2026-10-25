@@ -15,6 +15,8 @@ learn/rmtrain set r1 rnad.eta 0.15                       # a live parameter
 learn/rmtrain stop r1                                    # checkpoint, stop; `start r1` resumes
 learn/rmtrain bench r1 --wait                            # after the run: its policies vs scripted:hard (§7.1)
 learn/rmtrain retable r1                                 # a stopped run onto the engine's tables (§1.1)
+learn/rmtrain add-decks r1 eldrazi_aggro                 # a deck into the run's league, live or stopped (§1.1)
+learn/rmtrain bench r1 --decks league,heldout --label heldout   # the benchmark over held-out decks too (§7.1)
 ```
 
 (A layout change, not a vocab expansion, migrates the checkpoints first: §1.2.)
@@ -55,12 +57,56 @@ learn/rmtrain retable r1                                 # a stopped run onto th
   and the live exports removed (made again on demand), and a `tables_changed` metrics line written.
   An external `run.tables` directory is the user's: neither check applies.
 
-### 1.1 After a vocab expansion: `rmtrain retable <run>`
+### 1.1 Adding decks: `rmtrain retable <run>` and `rmtrain add-decks <run>`
 
-The vocab is compiled into the engine, so appending cards (or changing how the engine parses a known
-card) needs a rebuild (`make BUILD=RELEASE && make BUILD=RELEASE actor`) and a stopped run:
-`rmtrain stop <run>`, rebuild, `rmtrain retable <run>`, `rmtrain start <run>`. `retable` (refused while
-the run runs; `orchestrator/retable.py`):
+**The expansion procedure** (`docs/open_vocab_plan.md` S8). A deck onboarded into `decks/league/`
+(`tools/onboard/README.md`) joins a run through its `league.decks`; it enters training through
+self-play from the current policy (no teacher, no behaviour cloning), its cards on the unknown-card
+path until a training batch holds them (`CardRows.card_seen`: every batch's ledger holds both
+registered lists, so the first batch with one of its games marks all its cards, each id row starting
+from the unknown-card vector, so the policy plays on from where it played unseen):
+
+```sh
+learn/rmtrain stop r1                                    # the vocab is compiled into the engine
+make BUILD=RELEASE && make BUILD=RELEASE actor PYTHON=learn/.venv/bin/python
+learn/rmtrain retable r1                                 # the new cards' tables, every export rebuilt
+learn/rmtrain add-decks r1 eldrazi_aggro                 # league.decks (and league.pairs) in config.json
+learn/rmtrain start r1                                   # resumes: the learner, its window, the actors
+```
+
+When the deck's cards are already in the run's tables (onboarded, and the run retabled, before the
+deck was added), `add-decks` on the **running** run does the same live, with no stop: `league.decks`
+and `league.pairs` are live keys, set together and validated as one config; the orchestrator writes
+the new self-play schedule at its next tick and each actor plays it from its next match (a match in
+progress finishes on the old one). `rmtrain add-decks <run> STEM … [--weight W]`
+(`orchestrator/league.py`):
+
+- refuses a deck already in the league, a held-out deck (`heldout/`: never trained on; the config
+  refuses one in `league.decks` or `league.pairs` too), a deck file that is not under `decks/league/`,
+  and a deck any of whose cards the run's engine does not load (`--check-decks`: the vocab lacks
+  them — append them, rebuild, retable first); on a running run, an engine whose cards frame is no
+  longer the run's (rebuilt since the run started);
+- **the new pairs' weight**: with `league.pairs` empty every pair of `league.decks` weighs 1, so the
+  new deck plays as often as any other (with 11 decks each is in 10 of the 55 pairs, ~18% of the
+  matches' seats); with explicit pairs the new deck's pairs (against every league deck, and the new
+  decks among themselves) get the **mean weight of the run's pairs**, so it plays as often as an
+  average deck. `--weight W` overrides (on a league without explicit pairs it writes them out, every
+  old pair at 1). With explicit pairs `league.decks` and `league.pairs` must name the same decks (a
+  deck in no pair would never be played), which `add-decks` keeps;
+- a running run: one `set` of both keys (two `set` metrics lines); a stopped one: `config.json`
+  rewritten and an `add_decks` metrics line, for the next `start`.
+
+What the run carries over unchanged: the replay window (the episodes' card and ability ids are stable,
+the retable's lineage accepts their spec hashes), the learner and its regularisation policies (a fixed
+point keeps the seen-card mask it was frozen with, so π_m,reg reads the new cards on the unknown-card
+path until the next boundary; the learner and target mark them at their first batch), the exports
+(retable rebuilt them; the live export follows the learner), the sideboard exploration counts (the
+coverage cells re-read from the new league's deck files), the evaluations (`eval.sprt_pairs` empty: the
+league's pairs, the new ones included).
+
+**Retable.** The vocab is compiled into the engine, so appending cards (or changing how the engine
+parses a known card) needs a rebuild and a stopped run. `retable` (refused while the run runs;
+`orchestrator/retable.py`):
 
 1. writes the engine's cards frame and exports its tables into `<run>/tables.new/`; when the frame
    and the spec hash are the run's, nothing changed (it says so, exit 0);
@@ -82,7 +128,7 @@ the run runs; `orchestrator/retable.py`):
 6. records the change in `state.json` (`tables`; `retables`: from, to, the kept directory, the
    checkpoints checked, the drift, the exports rebuilt) and a `retable` metrics line.
 
-Then add the new decks to `league.decks` and `start` the run (`docs/open_vocab_plan.md` S8).
+Then `add-decks` and `start` the run (above).
 
 ### 1.2 After a layout change: `python -m rmlearn.migrate`
 
@@ -132,8 +178,9 @@ stay under 108 bytes). One JSON request per connection, one JSON reply (`orchest
 | `set <run> <section.key> <value>` | a live parameter (below), validated, applied at once and written to `config.json` (a resume keeps it); a `set` metrics line |
 | `eval <run> [--evaluators a,b]` | queue an evaluation of the current policy (the network when the evaluation starts) |
 | `phase <run> hold\|release\|next\|status` | `hold` blocks the next transition (the exit test still runs; the run stays in the phase and says why in `status`); `release` lifts it; `next` forces the current phase's (or stage's) exit, also when held |
-| `bench <run> [--wait] [--policies …]` | the end-of-run benchmark (§7.1): the run's policies against scripted:hard over every league pair, per deck; runs in the terminal, not through the socket |
+| `bench <run> [--wait] [--policies …] [--decks …] [--focus …]` | the end-of-run benchmark (§7.1): the run's policies against scripted:hard over every league pair (or the pairs of `--decks`, held-out decks too), per deck; runs in the terminal, not through the socket |
 | `retable <run>` | a stopped run onto the engine's tables after a vocab expansion (§1.1); runs in the terminal |
+| `add-decks <run> STEM … [--weight W]` | league decks into the run (§1.1): live on a running run (`league.decks` and `league.pairs` set together), else into `config.json` for the next `start` |
 | `config <run>` | the resolved config as TOML |
 | `defaults` | the default config as TOML, documented |
 
@@ -144,7 +191,8 @@ smoothed π_0,reg while it is still a regularisation policy), `rnad.push_every`,
 `rnad.report_every`, `rnad.games_per_step`, `rnad.value_after_every`; `replay.max_decision_tokens`; `actors.count`; the phase limits (`b0.decisions`,
 `b1.*` but `play_eval`, `b2.rounds_*`, `b2.decisions_per_round`, `b2.min_steps_per_round`,
 `b2.min_improvement`, `b4.iterations`, `b4.max_learner_steps`, `b4.nn_options`,
-`b5.max_learner_steps`); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
+`b5.max_learner_steps`); `league.decks`, `league.pairs` (the next self-play schedule; set them
+together with `add-decks`, §1.1); `eval.matches`, `eval.ladder`, `eval.ladder_matches`, `eval.actors`,
 `eval.every_minutes`, `eval.per_iteration`, `eval.also_sampled`, `eval.sprt_max_games`, `eval.exploiter_every_minutes`,
 `eval.exploiter_minutes`; `checkpoint.every_minutes`; every `sb_explore.*` key (§6.1: the next
 self-play schedule carries the change). The schedule's Δm is the
@@ -166,7 +214,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
 | `run.crash_loop_fatals` | 3 | fatal stops in a row without progress after which the daemon exits with status 4, which systemd does not restart (0: never; §5) |
 | `run.start_from` | `""` | a BC checkpoint (another run's `ckpt/bc-final.pt`): the run starts at B3, R-NaD seeded from it (B0–B2 skipped; the model is the checkpoint's) |
-| `league.decks` / `league.pairs` | the ten original league decks (named in `config.py`'s `LEAGUE`, not read from `decks/league/`: a deck onboarded there later, eldrazi_aggro first, joins a run only by being added here) / every pair | matchups and weights (`[[a, b, w], …]`) |
+| `league.decks` / `league.pairs` | the ten original league decks (named in `config.py`'s `LEAGUE`, not read from `decks/league/`: a deck onboarded there later, eldrazi_aggro first, joins a run only by being added here, `rmtrain add-decks`, §1.1) / every pair | matchups and weights (`[[a, b, w], …]`, naming exactly `league.decks`); never a `heldout/` deck; live |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
 | `league.omniscient` | true | B0/B2 episodes carry the omniscient part (aux targets) |
 | `actors.count` | 26 | training actors |
@@ -560,6 +608,21 @@ learn/rmtrain bench r1 --opponent scripted:hard+sb       # the same against the 
   (common random numbers): the policies' differences are not the draw of the matches. At 480
   matches each deck is the policy's in ~48 matches (~110 games) and the opponent's in as many:
   about ±0.09 (two match-clustered SEs) per deck, ±0.03 overall.
+- **Decks** (`--decks`, `--focus`; `docs/open_vocab_plan.md` S8). The schedule is every pair of the
+  listed decks: comma-separated `league` (every deck of `decks/league/`, the ten original ones first,
+  then onboarded ones such as eldrazi_aggro), `heldout` (every deck of `decks/heldout/`, never trained
+  on) or single decks (`x` = `league/x`, `heldout/x`); `--focus D[,…]` keeps only the pairs holding one
+  of them (`tools/onboard/onboard.py baseline`: the new deck against every league deck). Without
+  `--decks` it is the ten league decks' 45 pairs, as always. A `report.json` records its pairs and one
+  played over other pairs is refused rather than reused (give such a benchmark its own `--label`). The
+  summary then also has, per deck, the policy **facing** it with each policy's paired difference from
+  the baseline (beside playing it), and the **deck groups** — `league`, `league:original` (the ten,
+  when `league/` holds more) and `heldout` — each `plays:G` (the policy plays a deck of G), `faces:G`
+  (the opponent does) and `within:G` (both), as win rates and paired differences. `scripted:hard`
+  pilots an unseen deck with generic heuristics only, so its rates playing or facing a new deck are
+  not comparable with the league decks': compare policies with each other on the same matches (the
+  paired differences). At `--decks league,heldout` (13 decks, 78 pairs) and 480 matches a deck is the
+  policy's in ~37 matches: use more matches (S8 used 1920 on 24 actors, ~6 min a policy).
 - **When.** After the run: `--wait` returns once the run is finished (phase `done`, its shutdown
   having finished the queued exports, `final` included), or has stayed down for 10 minutes (a failed
   run is restarted by systemd after `run.restart_delay_s`, so a short outage is not an end). On a running run it warns and plays anyway, competing with
@@ -681,7 +744,7 @@ and its summary (per-deck playing and facing rates, the difference from the base
 sideboarding report (from synthetic results lines: the swap rate and histogram, the top cards, the
 next game after swaps vs Done, guide agreement on the play and on the draw with a game-3 flip carried
 from game 2's maindeck, held-in vs held-out, explored and missing phases left out, the opponent's side
-apart) and `--opponent` (its directory, report reuse against the same opponent only). The smoke runs a tiny run
+apart), `--opponent` (its directory, report reuse against the same opponent only) and `--decks` (the deck sets, `--focus`, the default unchanged, no reuse over other pairs, the facing differences and deck groups paired by match); the expansion procedure (`league.decks` / `league.pairs` live and validated together — a held-out deck, an unpaired deck refused —, `add-decks`' new pairs at the league's mean weight, a live set rewriting the self-play schedule and re-reading the coverage cells, the deck check against a fake engine, `add-decks` on a stopped run). The smoke runs a tiny run
 (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`, one DAgger round of
 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises every command, kills
 the whole unit with SIGKILL in B4 (systemd restarts it; it resumes at the checkpoint), stops and

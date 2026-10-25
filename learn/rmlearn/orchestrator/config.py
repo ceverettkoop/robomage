@@ -50,8 +50,9 @@ SPEC = {
          "starts at B3, R-NaD seeded from it (B0–B2 skipped; the model's config is the checkpoint's)"),
     ],
     "league": [
-        ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/"),
-        ("pairs", [], "[[deck_a, deck_b, weight], ...]; empty: every pair of decks, weight 1"),
+        ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/ (never heldout/); a deck is added to a "
+         "run with `rmtrain add-decks` (docs/rmtrain.md §1.1)"),
+        ("pairs", [], "[[deck_a, deck_b, weight], ...] over exactly league.decks; empty: every pair of decks, weight 1"),
         ("format", "bo3", "bo3 or bo1"),
         ("knowledge", "expert", "both seats' knowledge level (off, expert)"),
         ("max_game_decisions", 5000, "the per-game decision cap"),
@@ -288,7 +289,7 @@ LIVE = {
     "eval.per_iteration", "eval.also_sampled", "eval.sprt_max_games", "eval.exploiter_every_minutes",
     "eval.exploiter_minutes", "checkpoint.every_minutes", "sb_explore.p_start", "sb_explore.p_end",
     "sb_explore.hold_frac", "sb_explore.count_weights", "sb_explore.coverage", "sb_explore.coverage_power",
-    "sb_explore.rewrite_every_s", "replay.max_decision_tokens",
+    "sb_explore.rewrite_every_s", "replay.max_decision_tokens", "league.decks", "league.pairs",
 }
 
 # Live keys the GPU process applies (the others are the orchestrator's).
@@ -443,6 +444,14 @@ def validate(cfg):
              "league.pairs entries are [deck_a, deck_b] or [deck_a, deck_b, weight], not %r" % (p,))
     need(not lg["pairs"] or len(lg["decks"]) >= 1, "league.pairs needs decks")
     need(lg["pairs"] or len(lg["decks"]) >= 2, "league.decks needs two decks (or league.pairs)")
+    held = [d for d in lg["decks"] + [x for p in lg["pairs"] for x in p[:2]] if d.startswith("heldout/")]
+    need(not held, "league: %s is held out (decks/heldout/: never trained on)" % (held[0] if held else ""))
+    if lg["pairs"]:
+        paired = {x for p in lg["pairs"] for x in p[:2]}
+        need(not paired - set(lg["decks"]), "league.pairs names %s, not in league.decks"
+             % ", ".join(sorted(paired - set(lg["decks"]))))
+        need(not set(lg["decks"]) - paired, "league.decks' %s is in no league.pairs entry, so it would never be "
+             "played (`rmtrain add-decks` adds a deck with its pairs)" % ", ".join(sorted(set(lg["decks"]) - paired)))
     need(lg["max_game_decisions"] >= 0, "league.max_game_decisions >= 0")
     need(cfg["run"]["crash_loop_fatals"] >= 0, "run.crash_loop_fatals >= 0")
     need(cfg["actors"]["count"] >= 0 and cfg["actors"]["local_count"] >= 0, "actors.count, local_count >= 0")
@@ -525,9 +534,15 @@ def parse_live(key, text):
 
 
 def set_key(cfg, key, value):
-    sec, _, k = key.partition(".")
+    return set_keys(cfg, {key: value})
+
+
+def set_keys(cfg, changes):
+    """`cfg` with every ``section.key`` of `changes` set (coerced), validated as one config."""
     out = copy.deepcopy(cfg)
-    out[sec][k] = value
+    for key, value in changes.items():
+        sec, _, k = key.partition(".")
+        out[sec][k] = coerce(key, value)
     validate(out)
     return out
 

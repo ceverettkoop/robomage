@@ -59,6 +59,60 @@ def league_pairs(decks=LEAGUE):
     return [tuple(p) for p in itertools.combinations(decks, 2)]
 
 
+DECK_SETS = ("league", "heldout")      # the deck directories a deck spec may name whole
+
+
+def deck_name(stem):
+    """A deck as results lines and reports name it: ``league/x`` (or ``x``) is ``x``, any other
+    directory's deck keeps its directory (``heldout/bant_control``)."""
+    return _short(stem.strip().strip("/"))
+
+
+def directory_decks(sub, bin_dir=BIN_DIR):
+    """The decks of ``bin/resources/decks/<sub>/`` (``deck_name``s): ``league/`` the ten original decks
+    (``LEAGUE``) first, in their order, then the others sorted."""
+    root = os.path.join(bin_dir, "resources", "decks", sub)
+    stems = sorted(fn[:-3] for fn in os.listdir(root) if fn.endswith(".dk")) if os.path.isdir(root) else []
+    names = [deck_name("%s/%s" % (sub, s)) for s in stems]
+    return [d for d in LEAGUE if d in names] + [d for d in names if d not in LEAGUE]
+
+
+def resolve_decks(spec, bin_dir=BIN_DIR):
+    """The deck list of a ``--decks`` spec: comma-separated items, each ``league`` / ``heldout`` (every
+    deck of that directory, ``directory_decks``) or one deck (``x`` = ``league/x``, ``heldout/x``), in
+    order, each deck once. Empty or None: the ten league decks (``LEAGUE``). A named deck must exist."""
+    if not spec:
+        return list(LEAGUE)
+    out = []
+    for item in (s.strip() for s in spec.split(",")):
+        if not item:
+            continue
+        if item in DECK_SETS:
+            names = directory_decks(item, bin_dir)
+            if not names:
+                raise ValueError("--decks %s: no deck in %s" % (item, os.path.join(bin_dir, "resources", "decks", item)))
+        else:
+            name = deck_name(item)
+            path = os.path.join(bin_dir, "resources", "decks", deck_stem(name) + ".dk")
+            if not os.path.exists(path):
+                raise ValueError("--decks: no deck %s (%s)" % (item, path))
+            names = [name]
+        out += [d for d in names if d not in out]
+    if len(out) < 2:
+        raise ValueError("--decks %s: a benchmark needs two decks" % spec)
+    return out
+
+
+def deck_pairs(decks, focus=None):
+    """Every unordered pair of `decks`; with `focus` (deck names) only the pairs holding one of them."""
+    focus = {deck_name(f) for f in focus or ()}
+    unknown = focus - set(decks)
+    if unknown:
+        raise ValueError("--focus %s: not among the benchmark's decks" % ", ".join(sorted(unknown)))
+    pairs = league_pairs(decks)
+    return [p for p in pairs if not focus or focus & set(p)]
+
+
 def parse_pairs(text):
     """Deck pairs from "a-b,c-d" or "a:b,c:d" (deck names), or "all" (every league pair)."""
     if not text or text == "all":
