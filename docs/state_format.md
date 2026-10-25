@@ -812,7 +812,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `attached_to` | u32 | `handle` | |
 | | `timestamp` | u32 | `index` | entered-battlefield order; none off the battlefield |
 | | `entered_turn`, `cant_be_blocked`, `damage_shielded`, `delayed_subject` | u8 | `bool` | per-turn statuses: entered this turn, can't be blocked this turn, damage shielded, the subject of a pending delayed trigger |
-| | `activations_turn`, `resolutions_turn` | u8 | `count` | |
+| | `activations_turn`, `resolutions_turn` | u8 | `count` | this turn's activations of its activated abilities; this turn's resolutions from the stack of its triggered abilities (one that did nothing — declined, its intervening if false, its targets all illegal, CR 603.4 / 608.2b — did not resolve) |
 | | `chosen_name` | u16 | `card` | |
 | | `chosen_type` | u16 | `enum:subtype` | 0xFFFF none |
 | | `entered_x` | u16 | `count` | |

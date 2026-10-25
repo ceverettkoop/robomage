@@ -143,6 +143,17 @@ def featurize(work, engine, rmfeat, names, jobs):
     return seat, omni, rows, p.tables
 
 
+def recorded_only(seat, omni, rows):
+    """The decisions ``tests/open_vocab/inputs.json`` records (a decision whose inputs moved intentionally is
+    dropped from it, ``inputs --drop-moved``); (seat, omniscient, rows, how many were left out)."""
+    if not os.path.exists(INPUTS):
+        return seat, omni, rows, 0
+    with open(INPUTS) as fp:
+        kept = json.load(fp)["decisions"]
+    pick = np.array([i for i, r in enumerate(rows.tolist()) if str(r) in kept], np.int64)
+    return seat.select(pick), omni.select(pick), rows[pick], len(rows) - len(pick)
+
+
 def decision_ids(decs):
     """[D] sets of the card ids each decision's tokens hold."""
     st = np.concatenate([[0], np.cumsum(decs.sizes["n"])])
@@ -453,6 +464,7 @@ def acceptance(args, names, checkpoints, roles, expansion_every):
         log("skipped: no original of S0's fixture checkpoints on disk (%s)" % ", ".join(missing[:3]))
         return 0
     seat, omni, rows, tables_dir = featurize(os.path.join(work, "feat"), args.engine, args.rmfeat, names, args.jobs)
+    seat, omni, rows, moved = recorded_only(seat, omni, rows)
     OVB.save_decisions(os.path.join(work, "seat.rmtb"), seat)
     OVB.save_decisions(os.path.join(work, "omni.rmtb"), omni)
     seat_ids, omni_ids = decision_ids(seat), decision_ids(omni)
@@ -465,9 +477,9 @@ def acceptance(args, names, checkpoints, roles, expansion_every):
            "fixture_ids": fixture_ids, "work": work}
     with open(os.path.join(work, "jobs.json"), "w") as fp:
         json.dump(ctx, fp)
-    log("open_vocab_acceptance: %d decisions (%d sources), %d networks (%d more cut-over files), %d card ids in the "
-        "fixtures; %d fixture checkpoints without an original on disk%s"
-        % (len(seat), len(set(idx["source"][rows].tolist())), len(ev), len(jobs) - len(ev),
+    log("open_vocab_acceptance: %d decisions (%d sources; %d whose inputs moved left out), %d networks (%d more "
+        "cut-over files), %d card ids in the fixtures; %d fixture checkpoints without an original on disk%s"
+        % (len(seat), len(set(idx["source"][rows].tolist())), moved, len(ev), len(jobs) - len(ev),
                                                       len(fixture_ids), len(missing),
                                                       (" (%s)" % ", ".join(missing)) if missing else ""))
     fails, results = [], []

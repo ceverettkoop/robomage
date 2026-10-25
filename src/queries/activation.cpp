@@ -21,7 +21,8 @@ bool trigger_resolved_limit_reached(const Ability &ab) {
     return false;
 }
 
-void count_limited_resolution(const Ability &ab) {
+void count_resolution(const Ability &ab, bool from_stack) {
+    if (from_stack && ab.def->ability_type == AbilityDef::TRIGGERED) cur_game.ability_resolution_counts[ab.source]++;
     if (ab.def->trigger_resolved_limit <= 0) return;
     const Entity source = ab.source.get();
     if (source == 0) return;

@@ -35,12 +35,10 @@ extern Game cur_game;
 // Arm (first entry) or re-enter (resume after suspension) the persisted
 // resolution frame for the stack object about to resolve; returns the ability to
 // resolve. Forward-declared per CLAUDE.md; see definitions below.
-static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_triggered);
+static Ability &frame_enter(Entity top_entity, const Ability &ab);
 static void frame_finish();
 
-// First entry: save the incoming priority, count a triggered ability's
-// resolution once (Count$ResolvedThisTurn — guarded by counted_resolution so a
-// resume never recounts), save-and-clear the remembered set (each top-level
+// First entry: save the incoming priority, save-and-clear the remembered set (each top-level
 // resolution gets its own clean Remembered$ scope, CR 608.2 — formerly the
 // RememberedResolutionScope RAII in ability.cpp, moved here so a suspension
 // keeps the mid-resolution accumulations instead of unwinding them), push the
@@ -54,7 +52,7 @@ static void frame_finish();
 // swap-remove would move the resolving component under a reference to it. The
 // levels deque only ever pushes and pops deeper levels, so the ROOT copy stays
 // put until frame_finish.
-static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_triggered) {
+static Ability &frame_enter(Entity top_entity, const Ability &ab) {
     ResolutionFrame &fr = cur_game.resolution;
     if (fr.active) {
         if (fr.stack_entity != top_entity)
@@ -81,10 +79,6 @@ static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_tri
         fr.converge = static_cast<int>(spell.colors_spent.size());
     } else {
         fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
-    }
-    if (count_triggered && ab.def->ability_type == AbilityDef::TRIGGERED) {
-        cur_game.ability_resolution_counts[ab.source]++;
-        fr.counted_resolution = true;
     }
     FrameLevel root;
     root.kind = FrameLevel::ROOT;
@@ -224,8 +218,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             bool was_flashback = spell_cast_with_flashback(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-                Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity),
-                                          /*count_triggered=*/false);
+                Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity));
                 // On suspension leave EVERYTHING in place (frame armed, spell on
                 // the stack, priority at the chooser) — the next advance_step
                 // re-enters here as the resume path.
@@ -259,10 +252,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     }
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-        // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
-        // frame_enter's first-entry block so a resume never recounts.
-        Ability &ability = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity),
-                                       /*count_triggered=*/true);
+        Ability &ability = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity));
         if (resolve_ability(ability, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
         const Ability resolved = ability;  // frame_finish clears the frame holding it
         frame_finish();

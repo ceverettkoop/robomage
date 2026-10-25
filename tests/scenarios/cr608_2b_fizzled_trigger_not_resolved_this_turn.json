@@ -1,0 +1,17 @@
+{
+  "name": "cr608_2b_fizzled_trigger_not_resolved_this_turn",
+  "why": "CR 608.2b: a triggered ability whose only target became illegal doesn't resolve, so it isn't one of Scythecat Cub's resolutions this turn (Count$ResolvedThisTurn): the first landfall trigger fizzles, the second resolves as the first (one +1/+1 counter, no doubling) and the third as the second (the counters doubled) (Count$ResolvedThisTurn counts only resolutions)",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Scythecat Cub", "Grizzly Bears", "Wooded Foothills", "Wooded Foothills", "Wooded Foothills"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:activate:Wooded Foothills", "A:search:Forest", "A:target:Grizzly Bears",
+           "B:cast:Lightning Bolt", "B:target:Grizzly Bears", "A:pass", "A:pass",
+           "A:activate:Wooded Foothills", "A:search:Forest", "A:pass",
+           "A:activate:Wooded Foothills", "A:search:Forest"],
+  "max_decisions": 18,
+  "expect_order": ["Grizzly Bears is destroyed", "Pump fizzles", "Put 1 \\+1/\\+1 counter\\(s\\) on creature \\(now 3/3\\)", "MultiplyCounter: doubled \\+1/\\+1 counters on creature \\(now 4/4\\)"],
+  "expect_count": {"Scythecat Cub triggered": 3, "Put 1 \\+1/\\+1 counter\\(s\\)": 1, "MultiplyCounter: doubled": 1}
+}

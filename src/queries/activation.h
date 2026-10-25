@@ -37,9 +37,13 @@ int ability_resolutions_this_turn(Entity source);
 // and controller (Game::limited_resolution_counts). A trigger in that state doesn't trigger, and
 // one already on the stack does nothing.
 bool trigger_resolved_limit_reached(const Ability &ab);
-// Counts one resolution of `ab` toward its ResolvedLimit$ (no-op for an unlimited ability, or
-// once its source is no longer the object that triggered).
-void count_limited_resolution(const Ability &ab);
+// Records that `ab` resolves (CR 608.2: its optional "you may" accepted, its intervening-if and
+// targets held, before its effects run; an ability that does nothing is not recorded): one
+// resolution toward its ResolvedLimit$ (no-op for an unlimited ability, or once its source is no
+// longer the object that triggered) and, for a triggered ability resolving from the stack
+// (`from_stack`), one toward its source's Count$ResolvedThisTurn
+// (Game::ability_resolution_counts).
+void count_resolution(const Ability &ab, bool from_stack);
 
 // ── Activation conditions (CR 602.5 "activate only if …") ───────────────────
 // Named gates that make an activated ability illegal to activate unless the named

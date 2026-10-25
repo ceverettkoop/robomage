@@ -370,7 +370,6 @@ struct ResolutionFrame {
     bool active = false;
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
     bool prev_priority = false;      // priority.player_a_has_priority to restore on completion
-    bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
     // The resolving object's own X (CR 107.3a: the spell's Spell::x_paid, an ability's
     // Ability::x_paid) and, for a spell, its Converge count (CR 702.90: distinct colors of mana
     // spent to cast it); captured once as it starts resolving, read by Count$xPaid / cmcLEX /
@@ -395,6 +394,9 @@ class FrameCtx {
         static FrameCtx root();
         static FrameCtx blocking();
         bool is_root() const { return root_mode; }
+        // The resolving stack object's own level (the ROOT at depth 0), not a sub-ability, gift
+        // or other child level beneath it.
+        bool is_stack_object() const { return root_mode && depth_ == 0; }
         bool can_suspend() const;
         // True when re-entering suspended code with a latched answer pending —
         // the next ask() reached will consume it. Pre-ask side effects

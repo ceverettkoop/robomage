@@ -401,9 +401,11 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                     ab.target = ab.targets.empty() ? ObjectRef{} : ab.targets[0];
                 }
             }
-            // The ability resolves: count it toward its ResolvedLimit$ (a declined optional
-            // ability, an unmet intervening-if or illegal targets returned above uncounted).
-            count_limited_resolution(ab);
+            // The ability resolves: count it toward its ResolvedLimit$ and, as the stack object,
+            // its source's Count$ResolvedThisTurn, before its effects read the count (a declined
+            // optional ability, an unmet intervening-if or illegal targets returned above
+            // uncounted, CR 603.4 / 608.2b).
+            count_resolution(ab, ctx.is_stack_object());
             // RememberTargets/RememberObjects: stash the target(s) so chained
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
             if (ab.def->remember_targeted) {
