@@ -7,6 +7,7 @@
 //   rmfeat --stats DUMP --cards CARDS
 //   rmfeat --registry-update FILE --cards CARDS
 //   rmfeat --registry-check FILE --cards CARDS [--base FILE]
+//   rmfeat --registry-raise FILE ENUM=CAPACITY[,ENUM=CAPACITY…]
 //   rmfeat --digest-update FILE --cards CARDS
 //   rmfeat --digest-check FILE --cards CARDS
 //   rmfeat --table-drift OLD_TABLES NEW_TABLES
@@ -27,7 +28,10 @@
 // capacity. --registry-check (the gate's vocab tier) requires FILE to parse and be in its canonical
 // form, to be the registry this binary was built with, to need no entry the cards file's schema and
 // tables make, and, with --base (the committed registry), to move no entry of the base unless
-// layout_version was raised.
+// layout_version was raised. --registry-raise is a layout bump: each named enum's capacity raised
+// (and the enum made open; Registry::raise_capacities: the positions after a widened block move, the
+// spaces grow as needed), layout_version raised by one, FILE rewritten; then `make registry` appends
+// the new values and every checkpoint is migrated by name (rmlearn.migrate, docs/rmtrain.md §1.2).
 //
 // --digest-update (`make registry`) writes the card digest FILE (src/featurize/card_digest.json,
 // drift.h): per card the cards file describes a hash of its card, ability and part rows.
@@ -55,6 +59,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -76,7 +81,7 @@ struct Options {
         int viewer = -1;  // rmstate::Viewer
         std::string out, cards, text_table, tables;
         uint32_t history = 0;
-        std::string registry, registry_update, registry_check, base;
+        std::string registry, registry_update, registry_check, registry_raise, raises, base;
         std::string digest_update, digest_check, drift_old, drift_new, compat_model, compat_now;
         bool exact = false;
 };
@@ -111,6 +116,7 @@ static bool load_registry(const std::string &path, featurize::Registry *out);
 static bool append_pass(const Options &opt, featurize::Registry *reg);
 static int run_registry_update(const Options &opt);
 static int run_registry_check(const Options &opt);
+static int run_registry_raise(const Options &opt);
 static bool manifest_of_dir(const std::string &dir, featurize::Manifest *out);
 static int run_digest(const Options &opt, const featurize::Featurization &f);
 static int run_table_drift(const Options &opt);
@@ -126,6 +132,7 @@ static int usage() {
         "       rmfeat --stats DUMP --cards CARDS\n"
         "       rmfeat --registry-update FILE --cards CARDS\n"
         "       rmfeat --registry-check FILE --cards CARDS [--base FILE]\n"
+        "       rmfeat --registry-raise FILE ENUM=CAPACITY[,ENUM=CAPACITY...]\n"
         "       rmfeat --digest-update FILE --cards CARDS\n"
         "       rmfeat --digest-check FILE --cards CARDS\n"
         "       rmfeat --table-drift OLD_TABLES NEW_TABLES\n"
@@ -176,6 +183,9 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             opt->registry_update = argv[++i];
         } else if (a == "--registry-check" && has1) {
             opt->registry_check = argv[++i];
+        } else if (a == "--registry-raise" && has2) {
+            opt->registry_raise = argv[++i];
+            opt->raises = argv[++i];
         } else if (a == "--base" && has1) {
             opt->base = argv[++i];
         } else if (a == "--digest-update" && has1) {
@@ -198,9 +208,10 @@ static bool parse_args(int argc, char **argv, Options *opt) {
     const int modes = (opt->spec ? 1 : 0) + (opt->export_cards.empty() ? 0 : 1) + (opt->featurize.empty() ? 0 : 1) +
                       (opt->targets.empty() ? 0 : 1) + (opt->stats_dump.empty() ? 0 : 1) +
                       (opt->registry_update.empty() ? 0 : 1) + (opt->registry_check.empty() ? 0 : 1) +
-                      (opt->digest_update.empty() ? 0 : 1) + (opt->digest_check.empty() ? 0 : 1) +
-                      (opt->drift_old.empty() ? 0 : 1) + (opt->compat_model.empty() ? 0 : 1);
-    const bool no_cards = !opt->drift_old.empty() || !opt->compat_model.empty();
+                      (opt->registry_raise.empty() ? 0 : 1) + (opt->digest_update.empty() ? 0 : 1) +
+                      (opt->digest_check.empty() ? 0 : 1) + (opt->drift_old.empty() ? 0 : 1) +
+                      (opt->compat_model.empty() ? 0 : 1);
+    const bool no_cards = !opt->drift_old.empty() || !opt->compat_model.empty() || !opt->registry_raise.empty();
     if (modes != 1 || opt->cards.empty() != no_cards) return false;
     if (!opt->featurize.empty() && (opt->viewer < 0 || (opt->out.empty() && !opt->stats))) return false;
     if (!opt->targets.empty() && (opt->viewer < 0 || opt->viewer > 1 || opt->out.empty())) return false;
@@ -460,6 +471,54 @@ static int run_registry_check(const Options &opt) {
 
 // A tables directory's manifest.json and registry.json (each optional: a directory exported before
 // manifests has neither).
+static int run_registry_raise(const Options &opt) {
+    featurize::Registry reg;
+    if (!load_registry(opt.registry_raise, &reg)) return 2;
+    std::map<std::string, uint32_t> caps;
+    std::string list = opt.raises;
+    while (!list.empty()) {
+        const size_t comma = list.find(',');
+        const std::string item = list.substr(0, comma);
+        list = comma == std::string::npos ? "" : list.substr(comma + 1);
+        const size_t eq = item.find('=');
+        char *end = nullptr;
+        const unsigned long cap = eq == std::string::npos ? 0 : std::strtoul(item.c_str() + eq + 1, &end, 10);
+        if (eq == std::string::npos || !end || *end || cap == 0 || cap > 0xFFFFFFFFul) {
+            std::fprintf(stderr, "rmfeat: --registry-raise: %s is not ENUM=CAPACITY\n", item.c_str());
+            return 2;
+        }
+        caps[item.substr(0, eq)] = static_cast<uint32_t>(cap);
+    }
+    std::map<std::string, uint32_t> before;
+    for (const auto &kv : caps) {
+        const featurize::RegEnum *e = reg.find_enum(kv.first);
+        before[kv.first] = e ? e->capacity : 0;
+    }
+    std::string err;
+    if (!reg.raise_capacities(caps, &err)) {
+        std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
+        return 1;
+    }
+    for (const auto &kv : caps)
+        std::printf("REGISTRY: enum %s capacity %u -> %u (open)\n", kv.first.c_str(), before[kv.first], kv.second);
+    ++reg.layout_version;
+    const std::string text = reg.json();
+    featurize::Registry back;
+    if (!featurize::Registry::parse(text, &back, &err)) {
+        std::fprintf(stderr, "rmfeat: the raised registry does not parse: %s\n", err.c_str());
+        return 1;
+    }
+    if (!write_text(opt.registry_raise, text)) {
+        std::fprintf(stderr, "rmfeat: cannot write %s\n", opt.registry_raise.c_str());
+        return 2;
+    }
+    std::printf("REGISTRY: wrote %s: layout_version %d, G %u, categorical %u", opt.registry_raise.c_str(),
+        reg.layout_version, reg.dims.G, reg.dims.categorical);
+    for (const featurize::RegTable &t : reg.tables) std::printf(", %s %u", t.name.c_str(), t.capacity);
+    std::printf("; run `make registry`, then migrate the checkpoints\n");
+    return 0;
+}
+
 static bool manifest_of_dir(const std::string &dir, featurize::Manifest *out) {
     std::string text, err;
     *out = featurize::Manifest();
@@ -560,6 +619,7 @@ int main(int argc, char **argv) {
     if (!parse_args(argc, argv, &opt)) return usage();
     if (!opt.registry_update.empty()) return run_registry_update(opt);
     if (!opt.registry_check.empty()) return run_registry_check(opt);
+    if (!opt.registry_raise.empty()) return run_registry_raise(opt);
     if (!opt.drift_old.empty()) return run_table_drift(opt);
     if (!opt.compat_model.empty()) return run_compat(opt);
     featurize::Featurization f;

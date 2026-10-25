@@ -86,27 +86,34 @@ Then add the new decks to `league.decks` and `start` the run (`docs/open_vocab_p
 
 ### 1.2 After a layout change: `python -m rmlearn.migrate`
 
-A change of the layout itself (a capacity exceeded, a `layout_version` bump, or a checkpoint from
-before the layout registry: every run before `docs/open_vocab_plan.md` S5) is not a retable: the
-checkpoints' parameters are indexed by the old positions. `learn/rmlearn/migrate.py` moves them by
-name (token types, numeric and categorical slots, enum values, relations, table columns, card and
-ability slots), refusing any old name the current layout lacks but the archetype inputs S1 removed;
-it sets the seen-card mask from the ids the run's training inputs held (`--seen`; S4's episode scan,
-`runs/open_vocab_s4/card_ids_<run>.json`) and empties an R-NaD learner state's replay window (the old
-episodes are of the old layout; self-play refills it):
+A change of the layout itself (a capacity exceeded, a `layout_version` bump — `rmfeat
+--registry-raise`, `docs/featurizer.md` §6.1 —, or a checkpoint from before the layout registry:
+every run before `docs/open_vocab_plan.md` S5) is not a retable: the checkpoints' parameters are
+indexed by the old positions. `learn/rmlearn/migrate.py` moves them by name (token types, numeric
+and categorical slots, enum values, relations, table columns, card and ability slots), refusing any
+old name the current layout lacks but the archetype inputs S1 removed (an old reserved position has
+no name and reads zero: it is not carried); a network carrying the seen-card mask keeps it exactly,
+one made before it gets the ids the run's training inputs held (`--seen`; S4's episode scan,
+`runs/open_vocab_s4/card_ids_<run>.json`); an R-NaD learner state's replay window is emptied (the old
+episodes are of the old layout; self-play refills it). A file whose manifest names another layout
+than the old tables' is refused. The old tables are the run's (or `--old-tables` / `--old-cards`,
+their cards frame), exported before the engine was rebuilt:
 
 ```sh
-cd learn && .venv/bin/python -m rmlearn.migrate --run ../runs/r1 --seen IDS.json --tables NEW_TABLES
+cd learn && .venv/bin/python -m rmlearn.migrate --run ../runs/r1 --tables NEW_TABLES --keep layout1 \
+    [--seen IDS.json] [--old-tables OLD_TABLES --old-cards OLD_CARDS]
 learn/rmtrain retable r1                                  # the current tables, exports rebuilt
 ```
 
 `--run` migrates every `ckpt/**/*.pt` (BC `.opt` optimizer files too) into the run's `ckpt/` and keeps
-the originals in `ckpt.v1/` and the old exports in `exports.v1/` (nothing is deleted;
-`ckpt/migration.json` records each file's source, both sha256s and the seen set), so `state.json`'s
-paths name the migrated files; `retable` then accepts the run (its old tables, exported before model
-manifests, are kept as `tables.<old spec_hash>/`, in no lineage: the window takes no episode of
-the old layout). A single file: `python -m rmlearn.migrate OLD.pt
---tables DIR --seen IDS --out NEW.pt`. The migration's acceptance against S0's fixtures is
+the originals in `ckpt.<keep>/` and the old exports in `exports.<keep>/` (`v1` for S5's cut-over,
+`layout1` for layout version 2; nothing is deleted; `ckpt/migration.json` records each file's
+source, both sha256s and the seen set, and the migration before as `previous`), so `state.json`'s
+paths name the migrated files; `retable` then accepts the run across the bump (the old tables'
+vocab and text model still checked, the layout not: only migrated checkpoints pass) and keeps the
+old tables as `tables.<old spec_hash>/`, in no lineage, with their own lineage dropped: the window
+takes no episode of the old layout. A single file: `python -m rmlearn.migrate OLD.pt --tables DIR
+[--seen IDS] --out NEW.pt`. The migration's acceptance against S0's fixtures is
 `learn/open_vocab_acceptance.py` (the gate's `actor` tier runs its subset).
 
 ## 2. Inspecting and steering

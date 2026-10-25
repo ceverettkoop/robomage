@@ -21,7 +21,8 @@ compatibility (``spec.check_compatible``: a checkpoint loads on tables with a ca
 carries their manifest, a removed or renamed card, another layout, text model or a moved registry
 entry refused; an export of the old tables refused on the new ones with the rebuild message; the same
 verdicts as the C++ check, ``rmfeat --compat``, case by case, when the engine is given); the checkpoint
-migration (``rmlearn.migrate``) from a synthetic old layout, exact; the inference server on the CPU
+migration (``rmlearn.migrate``) from a synthetic old layout and from a synthetic earlier registry
+layout (a layout bump, the seen mask carried), exact; the inference server on the CPU
 through the Python client (results against the model, several policies and versions, a swap, batching
 across concurrent clients, handshake and request refusals, shutdown); BC's event dropout; the replay
 window's splits by game and by match and its probe sample.
@@ -510,14 +511,52 @@ def synthetic_old_layout(doc, rng):
              "card_tables": tables, "categorical_size": cat + 4, "K": doc["K"], "Q": doc["Q"]}, enums)
 
 
-def old_state_of(lm, sd, rng):
+def synthetic_registry_layout(doc, rng):
+    """A layout of the registry form (positions, capacities, reserved columns) holding the same names as
+    the spec document `doc` elsewhere, as a layout bump moves them: type ids and numeric blocks, each
+    type's slot columns, categorical ranges, relation ids and table columns permuted within larger
+    capacities, reserved table columns (``#<i>``) between them, and every enum's values in another
+    order (the registry's, which a categorical id follows); the spec document."""
+    enums = {k: list(v)[::-1] for k, v in doc["enums"].items()}
+    n = len(doc["token_types"])
+    ids = rng.permutation(doc["type_capacity"] + 8)[:n]
+    types, at, cat = [], 0, 1
+    for j, ti in enumerate(rng.permutation(n)):
+        t = doc["token_types"][int(ti)]
+        cap = len(t["numeric"]) + 8
+        cols = rng.permutation(cap)[:len(t["numeric"])]
+        cats = []
+        for c in t["categorical"]:
+            size = c["size"] + 3 if c["source"].startswith("enum:") else c["size"]
+            cats.append(dict(c, offset=cat, size=size))
+            cat += size + 2
+        types.append(dict(t, id=int(ids[j]), num_at=at, num_capacity=cap, categorical=cats,
+                          numeric=[dict(sl, at=int(cols[i])) for i, sl in enumerate(t["numeric"])]))
+        at += cap
+    rel_ids = rng.permutation(doc["relation_capacity"] + 8)[:len(doc["relation_types"])]
+    tables = {}
+    for k in ("card", "ability", "part"):
+        cols = [c for c in doc["card_tables"][k]["columns"] if not c.startswith("#")]
+        cols = [cols[int(i)] for i in rng.permutation(len(cols))]
+        for r in range(0, len(cols), 7):
+            cols.insert(r, "#%d" % r)
+        tables[k] = {"columns": cols}
+    return dict(doc, layout_hash="synthetic", token_types=types, enums=enums, G=at, categorical_size=cat + 4,
+                type_capacity=doc["type_capacity"] + 8, relation_capacity=doc["relation_capacity"] + 8,
+                relation_types=[dict(r, id=int(rel_ids[j])) for j, r in enumerate(doc["relation_types"])],
+                card_tables=tables)
+
+
+def old_state_of(lm, sd, rng, keep_seen=False):
     """`sd` (a state_dict of the current layout) laid out in `lm`'s old layout: each layout-indexed
     tensor at its old positions (random where the current one has none), the aux heads S1 removed
-    added, no seen mask."""
+    added (unless `keep_seen`: a network of a later layout, which keeps its seen mask)."""
     g = torch.Generator().manual_seed(int(rng.integers(1 << 30)))
     out = {}
     for k, v in sd.items():
         if k == "cards.card_seen":
+            if keep_seen:
+                out[k] = v.clone()
             continue
         p = lm.pairs(k)
         if p is None:
@@ -532,10 +571,66 @@ def old_state_of(lm, sd, rng):
         else:
             o[:, ij[:, 0]] = v[:, ij[:, 1]]
         out[k] = o
+    if keep_seen:
+        return out
     d = sd["cards.card_proj.weight"].shape[0]
     out["aux_list.weight"], out["aux_list.bias"] = torch.randn(13, d, generator=g), torch.zeros(13)
     out["aux_archetype.weight"], out["aux_archetype.bias"] = torch.randn(8, d, generator=g), torch.zeros(8)
     return out
+
+
+def zero_unmapped(lm, sd):
+    """`sd` with every layout-indexed position the old layout of `lm` lacks set to zero (what a migration
+    gives there)."""
+    want = {k: v.clone() for k, v in sd.items()}
+    for k, v in want.items():
+        p = lm.pairs(k)
+        if p is not None:
+            kind, pairs, _ = p
+            keep = torch.zeros(v.shape[0] if kind == "rows" else v.shape[1], dtype=torch.bool)
+            keep[torch.tensor([b for _, b in pairs], dtype=torch.int64)] = True
+            v.mul_((keep.view(-1, *([1] * (v.dim() - 1))) if kind == "rows" else keep.view(1, -1)).to(v.dtype))
+    return want
+
+
+def check_migration_bump(doc, tables, model, x, rng):
+    """A layout bump's migration (registry layout to registry layout): a network of a synthetic earlier
+    registry layout, carrying its seen mask, migrates back exactly, mask, ``card_id`` rows and Adam's
+    moments untouched; a --seen set that differs from the mask refused."""
+    old_doc = synthetic_registry_layout(doc, rng)
+    lm = MG.LayoutMap(MG.Layout(old_doc, old_doc["enums"]), MG.Layout(doc, doc["enums"]))
+    ok(lm.dropped == [], "migration (bump): dropped %s" % lm.dropped)
+    ref = copy.deepcopy(model).cpu().eval()
+    seen = sorted(set(range(1, 900, 5)) | {901})
+    ref.cards.set_seen(seen)
+    with torch.no_grad():
+        ref.cards.card_id.weight[2] = 0.25           # an unseen row that is not zero stays as it is
+    ref.load_state_dict(zero_unmapped(lm, ref.state_dict()))
+    want = ref.state_dict()
+    old = old_state_of(lm, want, rng, keep_seen=True)
+    got = MG.build_network(lm, ref.cfg.to_dict(), old, tables, None)
+    gsd = got.state_dict()
+    bad = [k for k in want if not torch.equal(gsd[k], want[k])]
+    ok(not bad and set(gsd) == set(want), "migration (bump): the migrated network differs at %s" % bad[:4])
+    ok(got.cards.seen_ids() == seen, "migration (bump): the carried seen mask was not kept")
+    with torch.no_grad():
+        a, b = ref(*x), got(*x)
+    ok(maxdiff(a["logits"], b["logits"]) == 0 and maxdiff(a["value"], b["value"]) == 0,
+       "migration (bump): the migrated network's outputs differ")
+    names = [k for k in old if k != "cards.card_seen"]
+    adam = {"t": 3, "m": [old[k] for k in names], "v": [old[k] * 2 for k in names]}
+    mig = MG.migrate_adam(lm, adam, old, got)
+    params = dict(got.named_parameters())
+    bad = [k for (k, _), m, v in zip(got.named_parameters(), mig["m"], mig["v"])
+           if not (torch.equal(m, params[k].detach()) and torch.equal(v, params[k].detach() * 2))]
+    ok(not bad, "migration (bump): Adam's moments do not follow their parameters at %s" % bad[:4])
+    try:
+        MG.build_network(lm, ref.cfg.to_dict(), old, tables, seen[1:])
+        ok(False, "migration (bump): a --seen set other than the carried mask was not refused")
+    except MG.MigrationError as err:
+        ok("seen mask" in str(err), "migration (bump): the refusal does not name the mask: %s" % err)
+    info("migration: a synthetic earlier registry layout (ids, blocks, slots, ranges and columns permuted, "
+         "reserved columns, enums reordered) carrying its seen mask migrates back exactly")
 
 
 def check_migration(args, tables, model, x):
@@ -554,14 +649,7 @@ def check_migration(args, tables, model, x):
     ref = copy.deepcopy(model).cpu().eval()
     seen = sorted(set(range(0, 900, 3)) | {900, 1023})
     ref.cards.set_seen(seen)
-    want = {k: v.clone() for k, v in ref.state_dict().items()}
-    for k, v in want.items():          # the positions the old layout lacks read zero after a migration
-        p = lm.pairs(k)
-        if p is not None:
-            kind, pairs, _ = p
-            keep = torch.zeros(v.shape[0] if kind == "rows" else v.shape[1], dtype=torch.bool)
-            keep[torch.tensor([b for _, b in pairs], dtype=torch.int64)] = True
-            v.mul_((keep.view(-1, *([1] * (v.dim() - 1))) if kind == "rows" else keep.view(1, -1)).to(v.dtype))
+    want = zero_unmapped(lm, ref.state_dict())       # the positions the old layout lacks read zero
     ref.load_state_dict(want)
     old = old_state_of(lm, ref.state_dict(), rng)
     got = MG.build_network(lm, ref.cfg.to_dict(), old, tables, seen)
@@ -589,6 +677,7 @@ def check_migration(args, tables, model, x):
         ok("no_such_slot" in str(err), "migration: the refusal does not name the slot: %s" % err)
     info("migration: a synthetic old layout (%d types, every order permuted, S1's removals) migrates back exactly, "
          "outputs equal, Adam's moments like their parameters, an unknown name refused" % len(old_doc["token_types"]))
+    check_migration_bump(doc, tables, model, x, rng)
 
 
 def check_server(args, tables, model, decs):

@@ -1,7 +1,7 @@
 """Checkpoints of an earlier layout onto the current one, by name (docs/open_vocab_plan.md S5).
 
-    python -m rmlearn.migrate OLD.pt --tables NEW_TABLES --seen IDS --out NEW.pt [--old-tables DIR]
-    python -m rmlearn.migrate --run runs/league24h-sb --seen IDS [--tables NEW_TABLES]
+    python -m rmlearn.migrate OLD.pt --tables NEW_TABLES [--seen IDS] --out NEW.pt [--old-tables DIR]
+    python -m rmlearn.migrate --run runs/league24h-sb [--seen IDS] --tables NEW_TABLES [--keep v1]
 
 **What moves.** A network's parameters are indexed by the layout (docs/featurizer.md §6.1): the
 token type rows of ``type_emb``, the categorical ids of ``cat_emb``, the numeric columns of
@@ -9,11 +9,14 @@ token type rows of ``type_emb``, the categorical ids of ``cat_emb``, the numeric
 of ``card_proj`` / ``ability_proj`` / ``part_proj`` and the card / ability slot rows. Each is copied
 from its old position to its new one **by name**: a type by its name, a numeric slot by (type, slot
 name), a categorical id by (type, slot name) and the value's name (an enum value through the old
-format's SCHEMA enum strings, read from the old run's cards frame; a player-relative or hashed id by
-its index), a relation by (table, column, target), a table column by its name, a card / ability slot
-by (type, slot name). Every position the old layout lacks reads zero (reserved capacity, and the
-none / pad rows' places). The omniscient critic's own encoder is remapped the same way. Everything
-else must keep its name and shape.
+format's SCHEMA enum strings, read from the old run's cards frame, or for an old spec of the registry
+layout its own ``enums``, the registry's order its ids follow; a player-relative or hashed id by its
+index), a relation by (table, column, target), a table column by its name, a card / ability slot by
+(type, slot name). Every position the old layout lacks reads zero (reserved capacity, and the none /
+pad rows' places); an old reserved position (a table column named ``#<i>`` or ``<entry>#<i>``, an id
+past an enum's values) reads zero in every input and has no counterpart. The omniscient critic's own
+encoder is remapped the same way. Everything else must keep its name and shape. The same tool
+migrates across a later layout bump (a registry ``layout_version`` raised: docs/rmtrain.md §1.2).
 
 **What is dropped:** only what S1 removed (``REMOVED_TYPES``, ``REMOVED_VALUES``,
 ``REMOVED_PARAMS``: the ``lists`` / ``b_lists`` token types and their slots, the ``EXPERT_BELIEF``
@@ -24,7 +27,9 @@ the network reads is not one.
 **Seen cards.** A network made before the seen-card mask (S4) gets ``card_seen`` from ``--seen``
 (``CardRows.set_seen``: the mask exactly those ids, every other ``card_id`` row zeroed): the card ids
 the run's training inputs held, a JSON list or an object with ``all`` (``runs/open_vocab_s4/
-card_ids_<run>.json``). Its ``card_id`` rows do not tell (S4's Done).
+card_ids_<run>.json``). Its ``card_id`` rows do not tell (S4's Done). A network that carries the mask
+keeps it, its ``card_id`` rows and their Adam moments exactly (``--seen`` is then not needed, and
+refused when it differs from a carried mask).
 
 **Kinds of file.** A ``model.save_checkpoint`` file (``config``, ``hashes``, ``state_dict``; its
 ``extra`` kept, ``extra["migrated"]`` added); beside a BC checkpoint its optimizer state
@@ -37,10 +42,10 @@ carries the current tables' model manifest (``hashes``), not the old one, and is
 the ordinary loaders before it is written.
 
 **A run** (``--run DIR``): every ``DIR/ckpt/**/*.pt`` but TorchScript exports (and BC ``.opt`` files) migrated into
-``DIR/ckpt.migrating/``, then the originals moved aside to ``DIR/ckpt.v1/`` and the migrated set to
-``DIR/ckpt/`` (with ``migration.json``: per file its source, both sha256s, the old spec hash, the seen
-ids), and ``DIR/exports/`` (exports of the old tables) moved to ``DIR/exports.v1/``; nothing is
-deleted. The old tables are the run's (``run.tables`` of its ``config.json``, else ``DIR/tables``)
+``DIR/ckpt.migrating/``, then the originals moved aside to ``DIR/ckpt.<keep>/`` (``--keep``: ``v1`` for
+S5's cut-over, ``layout1`` for the layout-version-2 bump) and the migrated set to ``DIR/ckpt/`` (with
+``migration.json``: per file its source, both sha256s, the old spec hash, the seen ids), and
+``DIR/exports/`` (exports of the old tables) moved to ``DIR/exports.<keep>/``; nothing is deleted. The old tables are the run's (``run.tables`` of its ``config.json``, else ``DIR/tables``)
 and its cards frame ``DIR/cards.rmstate``. A run's checkpoints then sit where ``state.json`` names
 them: ``learn/rmtrain retable DIR`` (docs/rmtrain.md §1.1) exports the current tables into
 ``DIR/tables/`` (keeping the old ones), checks every migrated checkpoint and rebuilds the exports.
@@ -141,6 +146,12 @@ class Layout:
         return [None] + list(vals)
 
 
+def reserved_column(name):
+    """A registry layout's reserved table column (``#<position>``, or ``<entry>#<i>`` past an enum
+    block's values: docs/featurizer.md §4.1): zero in every table."""
+    return "#" in name
+
+
 class LayoutMap:
     """The old → new position maps of every layout-indexed parameter, by name; ``dropped`` lists what
     the old layout had and the new lacks (all of it S1's removals, else MigrationError)."""
@@ -188,9 +199,11 @@ class LayoutMap:
             self.rel_rows += [(r, nr), (old.n_rel + r, new.n_rel + nr)]
         self.table_cols = {}
         for k in ("card", "ability", "part"):
-            ncol = {c: j for j, c in enumerate(new.columns[k])}
+            ncol = {c: j for j, c in enumerate(new.columns[k]) if not reserved_column(c)}
             pairs = []
             for j, c in enumerate(old.columns[k]):
+                if reserved_column(c):
+                    continue                                    # reads 0 in every old input
                 if c not in ncol:
                     bad.append("%s table column %s" % (k, c))
                 else:
@@ -268,10 +281,12 @@ class LayoutMap:
 
 def layout_map(old_tables, old_cards, tables_dir):
     """(LayoutMap, old spec hash) from the old tables directory and cards frame to the tables at
-    `tables_dir`."""
+    `tables_dir`. An old spec of the registry layout names its enums' values itself, in the registry's
+    order its categorical ids follow (the engine's order may differ); an older one by its cards frame."""
     old_doc, old_hash = read_spec_doc(old_tables)
     new_doc, _ = read_spec_doc(tables_dir)
-    return LayoutMap(Layout(old_doc, old_enums(old_cards)), Layout(new_doc, new_doc.get("enums", {}))), old_hash
+    enums = old_doc["enums"] if "enums" in old_doc else old_enums(old_cards)
+    return LayoutMap(Layout(old_doc, enums), Layout(new_doc, new_doc.get("enums", {}))), old_hash
 
 
 # ── networks ──────────────────────────────────────────────────────────────────────────────────
@@ -289,12 +304,13 @@ def read_seen(path_or_ids):
 
 def migrate_state(lm, old_sd, model):
     """`old_sd` (an old network's state_dict) in `model`'s layout (a fresh RMNet over the current
-    tables): every new key from its old one, remapped or copied; ``card_seen`` left to the caller."""
+    tables): every new key from its old one, remapped or copied; ``card_seen`` copied when the old
+    network carries it, else left to the caller."""
     tmpl = model.state_dict()
     out = {}
     for k, t in tmpl.items():
         if k == "cards.card_seen":
-            out[k] = t.clone()
+            out[k] = old_sd[k].clone().to(t.dtype) if k in old_sd else t.clone()
             continue
         if k not in old_sd:
             raise MigrationError("the current model's %s has no old counterpart" % k)
@@ -313,24 +329,32 @@ def migrate_state(lm, old_sd, model):
 
 
 def build_network(lm, cfg, old_sd, tables, seen):
-    """The migrated RMNet (eval mode, CPU) of one old network."""
+    """The migrated RMNet (eval mode, CPU) of one old network: its own seen mask when it carries one
+    (`seen`, when given, must equal it), else `seen` set."""
     model = M.RMNet(M.ModelConfig.from_dict(cfg), tables)
     model.load_state_dict(migrate_state(lm, old_sd, model))
-    model.cards.set_seen(seen)
+    if "cards.card_seen" in old_sd:
+        if seen is not None and model.cards.seen_ids() != list(seen):
+            raise MigrationError("the network carries a seen mask of %d ids, --seen gives %d other ones"
+                                 % (len(model.cards.seen_ids()), len(seen)))
+    elif seen is None:
+        raise MigrationError("a network without the seen-card mask needs --seen (S4)")
+    else:
+        model.cards.set_seen(seen)
     model.eval()
     return model
 
 
 def migrate_moment(lm, name, old, new_param, seen_mask):
     """One optimizer moment of parameter `name` in the new layout (``card_id``'s unseen rows zeroed,
-    as ``set_seen`` zeroes the rows)."""
+    as ``set_seen`` zeroes the rows, when `seen_mask` is given: a network migrated onto the mask)."""
     r = lm.remap(name, old, new_param.shape)
     if r is None:
         if tuple(old.shape) != tuple(new_param.shape):
             raise MigrationError("the moment of %s has shape %s, the parameter %s" % (name, tuple(old.shape),
                                                                                     tuple(new_param.shape)))
         r = old.clone()
-    if name == "cards.card_id.weight":
+    if name == "cards.card_id.weight" and seen_mask is not None:
         r = r * seen_mask.unsqueeze(1).to(r.dtype)
     return r
 
@@ -351,7 +375,7 @@ def migrate_adam(lm, adam, old_sd, model):
         if tuple(adam["m"][i].shape) != tuple(old_sd[k].shape):
             raise MigrationError("Adam's moment %d does not have the shape of %s" % (i, k))
     at = {k: i for i, k in enumerate(names)}
-    mask = model.cards.card_seen.cpu()
+    mask = None if "cards.card_seen" in old_sd else model.cards.card_seen.cpu()
     out = {"t": adam["t"], "m": [], "v": []}
     for k, p in model.named_parameters():
         if k not in at:
@@ -369,7 +393,7 @@ def migrate_bc_opt(lm, opt_state, old_sd, model):
         raise MigrationError("a BC optimizer state with %d parameter groups" % len(o["param_groups"]))
     names = old_param_names(old_sd, len(o["param_groups"][0]["params"]))
     at = {k: i for i, k in enumerate(names)}
-    mask = model.cards.card_seen.cpu()
+    mask = None if "cards.card_seen" in old_sd else model.cards.card_seen.cpu()
     state = {}
     params = [(k, p) for k, p in model.named_parameters() if p.requires_grad]
     for j, (k, p) in enumerate(params):
@@ -407,10 +431,11 @@ def migrate_file(src, out, tables, lm, seen, info):
     """Migrates one checkpoint (and a BC ``.opt`` beside it) to `out`; the record of it."""
     data = torch.load(src, map_location="cpu", weights_only=False)
     rec = dict(info, source=os.path.abspath(src), source_sha256=sha256_file(src), out=os.path.abspath(out))
+    held = ((data["learner"] if "learner" in data else data).get("hashes") or {}).get("layout_hash")
+    if held and lm.old.registry and held != lm.old.doc["layout_hash"]:
+        raise MigrationError("%s is of layout %s, the old tables of %s" % (src, held, lm.old.doc["layout_hash"]))
     if "learner" in data:
         L = data["learner"]
-        if "cards.card_seen" in L["model"]:
-            raise MigrationError("%s already carries the seen-card mask" % src)
         cfg = L["model_config"]
         model = build_network(lm, cfg, L["model"], tables, seen)
         target = build_network(lm, cfg, L["target"], tables, seen)
@@ -423,26 +448,26 @@ def migrate_file(src, out, tables, lm, seen, info):
             regs.append(dict(r, state=_sd(reg)))
         new = dict(L, hashes=dict(tables.hashes), model=_sd(model), target=_sd(target), regs=regs,
                    adam=migrate_adam(lm, L["adam"], L["model"], model))
-        rec.update(kind="learner_state", networks=2 + sum(1 for r in regs if "state" in r),
+        rec.update(kind="learner_state", networks=2 + sum(1 for r in regs if "state" in r), seen=model.cards.seen_ids(),
                    window_dropped={"files": len((data.get("window") or {}).get("files", [])),
                                    "fresh": len((data.get("window") or {}).get("fresh", []))})
         doc = {"learner": new, "window": dict(EMPTY_WINDOW), "migrated": rec}
         _save(doc, out)
         from .rnad_learner import RNaDLearner
         back = RNaDLearner.from_state_dict(torch.load(out, map_location="cpu", weights_only=False)["learner"], tables)
-        if back.model.cards.seen_ids() != list(seen):
+        if back.model.cards.seen_ids() != rec["seen"]:
             raise MigrationError("%s: the reloaded learner's seen set is not the one set" % out)
     else:
-        if "cards.card_seen" in data["state_dict"]:
-            raise MigrationError("%s already carries the seen-card mask" % src)
         model = build_network(lm, data["config"], data["state_dict"], tables, seen)
         extra = dict(data.get("extra") or {})
-        rec.update(kind="save_checkpoint")
+        if "migrated" in extra:
+            rec["previous"] = extra["migrated"]                 # an earlier migration's record
+        rec.update(kind="save_checkpoint", seen=model.cards.seen_ids())
         extra["migrated"] = rec
         os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
         M.save_checkpoint(model, out + ".part", extra)
         os.replace(out + ".part", out)
-        if M.load_checkpoint(out, tables).cards.seen_ids() != list(seen):
+        if M.load_checkpoint(out, tables).cards.seen_ids() != rec["seen"]:
             raise MigrationError("%s: the reloaded model's seen set is not the one set" % out)
         if os.path.exists(src + ".opt"):
             st = torch.load(src + ".opt", map_location="cpu", weights_only=False)
@@ -472,16 +497,17 @@ def run_paths(run_dir):
 def run_of(checkpoint):
     """The run directory of a checkpoint (the directory holding the ckpt/ it is in)."""
     d = os.path.dirname(os.path.abspath(checkpoint))
-    while os.path.basename(d) not in ("ckpt", "ckpt.v1") and d != os.path.dirname(d):
+    while not (os.path.basename(d) == "ckpt" or os.path.basename(d).startswith("ckpt.")) and d != os.path.dirname(d):
         d = os.path.dirname(d)
     return os.path.dirname(d)
 
 
-def migrate_run(run_dir, tables_dir, seen, log=print, old_tables=None, old_cards=None):
-    """Migrates every checkpoint of `run_dir`'s ckpt/ and swaps the directories (module docstring);
-    the migration record."""
+def migrate_run(run_dir, tables_dir, seen, log=print, old_tables=None, old_cards=None, keep_name="v1"):
+    """Migrates every checkpoint of `run_dir`'s ckpt/ and swaps the directories (module docstring:
+    the originals to ckpt.<keep_name>/, the old exports to exports.<keep_name>/); the migration
+    record."""
     ckpt = os.path.join(run_dir, "ckpt")
-    keep, stage = os.path.join(run_dir, "ckpt.v1"), os.path.join(run_dir, "ckpt.migrating")
+    keep, stage = os.path.join(run_dir, "ckpt." + keep_name), os.path.join(run_dir, "ckpt.migrating")
     if os.path.exists(keep):
         raise MigrationError("%s exists: the run was migrated already" % keep)
     files = sorted(p for p in glob.glob(os.path.join(ckpt, "**", "*.pt"), recursive=True)
@@ -496,7 +522,8 @@ def migrate_run(run_dir, tables_dir, seen, log=print, old_tables=None, old_cards
     shutil.rmtree(stage, ignore_errors=True)
     info = {"tool": "rmlearn.migrate", "format": FORMAT, "old_tables": os.path.abspath(old_tables),
             "old_spec_hash": old_hash, "spec_hash": tables.hashes["spec_hash"],
-            "layout_hash": tables.hashes["layout_hash"], "seen": list(seen), "dropped": lm.dropped}
+            "layout_hash": tables.hashes["layout_hash"], "seen": None if seen is None else list(seen),
+            "dropped": lm.dropped}
     records = []
     for src in files:
         out = os.path.join(stage, os.path.relpath(src, ckpt))
@@ -506,28 +533,33 @@ def migrate_run(run_dir, tables_dir, seen, log=print, old_tables=None, old_cards
     for p in glob.glob(os.path.join(ckpt, "**", "*"), recursive=True):
         if os.path.isfile(p) and not p.endswith((".pt", ".pt.opt", ".pt2")):
             shutil.copy2(p, os.path.join(stage, os.path.relpath(p, ckpt)))     # e.g. a keep marker
-    doc = {"format": FORMAT, "at": time.time(), "run": os.path.abspath(run_dir), "originals": "ckpt.v1",
+    doc = {"format": FORMAT, "at": time.time(), "run": os.path.abspath(run_dir), "originals": "ckpt." + keep_name,
            "exports_kept": None, "old_tables": os.path.abspath(old_tables), "old_spec_hash": old_hash,
            "tables": os.path.abspath(tables_dir), "manifest": {k: tables.hashes[k] for k in
                                                               ("spec_hash", "vocab_hash", "layout_hash",
                                                                "tables_digest", "text_model")},
-           "seen": list(seen), "dropped": lm.dropped,
-           "files": [{k: r[k] for k in ("source", "source_sha256", "out", "sha256", "kind")} for r in records]}
+           "seen": records[0]["seen"] if seen is None else list(seen), "dropped": lm.dropped,
+           "files": [{k: r[k] for k in ("source", "source_sha256", "out", "sha256", "kind", "seen")}
+                     for r in records]}
+    previous = os.path.join(ckpt, "migration.json")
+    if os.path.exists(previous):
+        with open(previous) as fp:
+            doc["previous"] = json.load(fp)                     # the record of the migration before
     os.rename(ckpt, keep)
     os.rename(stage, ckpt)
     exports = os.path.join(run_dir, "exports")
     if os.path.isdir(exports):
-        os.rename(exports, os.path.join(run_dir, "exports.v1"))
+        os.rename(exports, os.path.join(run_dir, "exports." + keep_name))
         os.makedirs(exports)
-        doc["exports_kept"] = "exports.v1"
+        doc["exports_kept"] = "exports." + keep_name
     for r in doc["files"]:
         r["out"] = os.path.join(os.path.abspath(ckpt), os.path.relpath(r["out"], os.path.abspath(stage)))
         r["source"] = os.path.join(os.path.abspath(keep), os.path.relpath(r["source"], os.path.abspath(ckpt)))
     with open(os.path.join(ckpt, "migration.json"), "w") as fp:
         json.dump(doc, fp, indent=1)
         fp.write("\n")
-    log("%s: %d checkpoints migrated into ckpt/ (originals in ckpt.v1/%s)"
-        % (run_dir, len(records), ", old exports in exports.v1/" if doc["exports_kept"] else ""))
+    log("%s: %d checkpoints migrated into ckpt/ (originals in ckpt.%s/%s)"
+        % (run_dir, len(records), keep_name, ", old exports in %s/" % doc["exports_kept"] if doc["exports_kept"] else ""))
     return doc
 
 
@@ -539,15 +571,18 @@ def main(argv=None):
                                                     "--cards-frame)")
     ap.add_argument("--old-tables", help="the checkpoint's tables (default: those of the run whose ckpt/ holds it)")
     ap.add_argument("--old-cards", help="the old tables' cards frame (default: beside the run or tables)")
-    ap.add_argument("--seen", required=True, help="the card ids the training inputs held (JSON list or {all})")
+    ap.add_argument("--seen", help="the card ids the training inputs held (JSON list or {all}); needed for "
+                                   "networks made before the seen-card mask, which a migrated network carries")
+    ap.add_argument("--keep", default="v1", help="--run: the originals go to ckpt.<KEEP>/, the old exports to "
+                                                 "exports.<KEEP>/ (default v1)")
     ap.add_argument("--out", help="the migrated checkpoint (one checkpoint)")
     a = ap.parse_args(argv)
     if bool(a.checkpoint) == bool(a.run):
         ap.error("give one checkpoint or --run")
-    seen = read_seen(a.seen)
+    seen = read_seen(a.seen) if a.seen else None
     try:
         if a.run:
-            migrate_run(a.run, a.tables, seen, old_tables=a.old_tables, old_cards=a.old_cards)
+            migrate_run(a.run, a.tables, seen, old_tables=a.old_tables, old_cards=a.old_cards, keep_name=a.keep)
             return 0
         if not a.out:
             ap.error("--out")

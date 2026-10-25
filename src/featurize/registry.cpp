@@ -1,6 +1,8 @@
 #include "registry.h"
 
 #include <algorithm>
+#include <array>
+#include <numeric>
 #include <set>
 
 #include "../state_format/schema.h"
@@ -29,11 +31,10 @@ extern "C" const char rm_featurize_registry_json[];
 
 namespace {
 
-// Enums whose values the rules fix (a face, a seat, a step, a colour, a layer of CR 613, …) or the
-// schema lists whole (every subtype, card type and supertype the parser knows): their capacity is
-// their size. Every other enum is open (registry.h).
-const char *const CLOSED_ENUMS[] = {
-    "face", "seat", "step", "color", "layer", "day_night", "lib_anchor", "subtype", "card_type", "supertype"};
+// Enums whose values the rules fix (a face, a seat, a step, a colour, a layer of CR 613, …): their
+// capacity is their size. Every other enum is open (registry.h), the type lists included: new sets
+// add subtypes (CR 205.3), and the engine's lists grow toward the rules' (layout version 2).
+const char *const CLOSED_ENUMS[] = {"face", "seat", "step", "color", "layer", "day_night", "lib_anchor"};
 
 const char *const FORMAT_NAME = "FEATURE_REGISTRY";
 
@@ -54,6 +55,8 @@ static std::string check_ranges(
 static std::string slot_json(const featurize::RegSlot &s, const char *owner_key);
 static std::string strings_json(const std::vector<std::string> &items);
 static const featurize::Registry &parse_builtin();
+static std::vector<uint32_t> shifted_positions(const std::vector<std::array<uint32_t, 3>> &entries);
+static uint32_t grown_capacity(uint32_t capacity, uint32_t old_end, uint32_t new_end, uint32_t granule);
 
 static uint32_t round_up(uint32_t x, uint32_t m) {
     return (x + m - 1) / m * m;
@@ -329,6 +332,28 @@ static const featurize::Registry &parse_builtin() {
         return out;
     }();
     return r;
+}
+
+// One space's entries (position, old width, new width) after some widen: each entry's new position,
+// moved by the growth of the entries before it (the entries do not overlap).
+static std::vector<uint32_t> shifted_positions(const std::vector<std::array<uint32_t, 3>> &entries) {
+    std::vector<size_t> order(entries.size());
+    std::iota(order.begin(), order.end(), 0);
+    std::sort(order.begin(), order.end(), [&entries](size_t a, size_t b) { return entries[a][0] < entries[b][0]; });
+    std::vector<uint32_t> out(entries.size());
+    uint32_t growth = 0;
+    for (size_t i : order) {
+        out[i] = entries[i][0] + growth;
+        growth += entries[i][2] - entries[i][1];
+    }
+    return out;
+}
+
+// A space's capacity once its entries end at `new_end` (at `old_end` before): unchanged while they
+// fit, else their end plus the spare room it had, rounded up to `granule`.
+static uint32_t grown_capacity(uint32_t capacity, uint32_t old_end, uint32_t new_end, uint32_t granule) {
+    if (new_end <= capacity) return capacity;
+    return round_up(new_end + (capacity > old_end ? capacity - old_end : 0), granule);
 }
 
 namespace featurize {
@@ -853,6 +878,93 @@ void Registry::finish() {
     new_types_.clear();
     new_tables_.clear();
     fresh_ = false;
+}
+
+bool Registry::raise_capacities(const std::map<std::string, uint32_t> &capacities, std::string *err) {
+    for (const auto &kv : capacities) {
+        auto found = enum_of_.find(kv.first);
+        if (found == enum_of_.end()) {
+            *err = "FEATURE_REGISTRY has no enum " + kv.first;
+            return false;
+        }
+        RegEnum &e = enums[found->second];
+        if (kv.second < e.capacity) {
+            *err = "enum " + kv.first + ": capacity " + std::to_string(kv.second) + " is below its " +
+                   std::to_string(e.capacity);
+            return false;
+        }
+        e.capacity = kv.second;
+        e.closed = false;
+    }
+    const auto raised = [&capacities](const std::string &enum_name, uint32_t width) {
+        auto it = capacities.find(enum_name);
+        return it == capacities.end() ? width : it->second;
+    };
+    // The numeric slots of each type, then the columns of each table: a block of a raised enum widens.
+    const auto widen = [&](std::vector<RegSlot> &list, const std::string &owner, uint32_t *old_end, uint32_t *new_end) {
+        std::vector<size_t> idx;
+        std::vector<std::array<uint32_t, 3>> entries;
+        for (size_t i = 0; i < list.size(); ++i) {
+            if (list[i].owner != owner) continue;
+            idx.push_back(i);
+            entries.push_back({list[i].at, list[i].width,
+                list[i].kind == "scalar" ? list[i].width : raised(list[i].enum_name, list[i].width)});
+        }
+        const std::vector<uint32_t> at = shifted_positions(entries);
+        *old_end = *new_end = 0;
+        for (size_t j = 0; j < idx.size(); ++j) {
+            RegSlot &s = list[idx[j]];
+            *old_end = std::max(*old_end, s.at + s.width);
+            s.at = at[j];
+            s.width = entries[j][2];
+            *new_end = std::max(*new_end, s.at + s.width);
+        }
+    };
+    std::vector<std::array<uint32_t, 3>> blocks;
+    uint32_t g_old = 0, g_new = 0;
+    for (RegType &t : types) {
+        uint32_t old_end = 0, new_end = 0;
+        widen(numeric, t.name, &old_end, &new_end);
+        const uint32_t cap = grown_capacity(t.num_capacity, old_end, new_end, 8);
+        if (cap > dims.F) {
+            *err = "token type " + t.name + "'s numeric block would pass F " + std::to_string(dims.F);
+            return false;
+        }
+        blocks.push_back({t.num_at, t.num_capacity, cap});
+        t.num_capacity = cap;
+    }
+    const std::vector<uint32_t> num_at = shifted_positions(blocks);
+    for (size_t i = 0; i < types.size(); ++i) {
+        g_old = std::max(g_old, blocks[i][0] + blocks[i][1]);
+        types[i].num_at = num_at[i];
+        g_new = std::max(g_new, types[i].num_at + types[i].num_capacity);
+    }
+    dims.G = grown_capacity(dims.G, g_old, g_new, 128);
+    std::vector<std::array<uint32_t, 3>> ranges;
+    uint32_t c_old = 1, c_new = 1;
+    for (const RegCat &c : categorical)
+        ranges.push_back({c.offset, c.size,
+            c.source.compare(0, 5, "enum:") == 0 ? raised(c.source.substr(5), c.size - 1) + 1 : c.size});
+    const std::vector<uint32_t> offsets = shifted_positions(ranges);
+    for (size_t i = 0; i < categorical.size(); ++i) {
+        c_old = std::max(c_old, categorical[i].offset + categorical[i].size);
+        categorical[i].offset = offsets[i];
+        categorical[i].size = ranges[i][2];
+        c_new = std::max(c_new, categorical[i].offset + categorical[i].size);
+    }
+    dims.categorical = grown_capacity(dims.categorical, c_old, c_new, 512);
+    for (RegTable &t : tables) {
+        uint32_t old_end = 0, new_end = 0;
+        widen(columns, t.name, &old_end, &new_end);
+        t.capacity = grown_capacity(t.capacity, old_end, new_end, 64);
+    }
+    index();
+    const std::string bad = validate(*this);
+    if (!bad.empty()) {
+        *err = "registry after the raise: " + bad;
+        return false;
+    }
+    return true;
 }
 
 const Registry &builtin_registry() {

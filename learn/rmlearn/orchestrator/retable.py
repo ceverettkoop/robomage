@@ -10,8 +10,9 @@ orchestrator, at every start) stops it with the command to run, and ``retable`` 
 1. writes the engine's cards frame and exports its tables (``rmfeat --export-tables``) into
    ``<run>/tables.new/``; when the frame is the run's and the tables' spec hash too, nothing changed;
 2. checks the new tables against the old ones (the old tables' manifest compatible with the new:
-   the same layout and text model, every old card id present under its name) and every checkpoint of
-   the run (``ckpt/**/*.pt``) against the new tables (``spec.check_compatible``); any refusal changes
+   the same layout and text model, every old card id present under its name; across a layout bump the
+   same but for the layout) and every checkpoint of the run (``ckpt/**/*.pt``) against the new tables
+   (``spec.check_compatible``: after a bump only migrated checkpoints pass); any refusal changes
    nothing and is printed;
 3. reports the table drift (``rmfeat --table-drift``): the known cards whose card, ability or part
    rows changed, the new and the removed ones;
@@ -209,7 +210,15 @@ def retable(run, cfg, log=print):
             return None
         tables = S.load_tables(new_dir)
         if old is not None:
-            r = S.check_compatible(S.read_manifest(run.tables), tables.hashes)
+            om = S.read_manifest(run.tables)
+            if om.get("layout_hash") != tables.hashes.get("layout_hash"):
+                # A layout bump (docs/rmtrain.md §1.2): the positions moved, which only the migrated
+                # checkpoints (checked below) can follow; the vocab and the text model must still extend.
+                log("layout bump: the run's tables are of layout %s, the engine's of %s (every checkpoint must be "
+                    "migrated)" % (om.get("layout_hash"), tables.hashes.get("layout_hash")))
+                om = dict(om, layout_hash=tables.hashes.get("layout_hash"))
+                om.pop("registry", None)
+            r = S.check_compatible(om, tables.hashes)
             if r is not None:
                 raise RetableError("the new tables do not extend the run's (%s): %s" % (r[0], r[1]))
         refused = []
@@ -220,9 +229,10 @@ def retable(run, cfg, log=print):
                 refused.append("%s: %s" % (os.path.relpath(ck, run.path), r[1]))
         if refused:
             hint = ""
-            if any("no layout_hash" in r for r in refused):
+            if any("no layout_hash" in r or "a layout bump" in r for r in refused):
                 hint = ("\n(checkpoints of an earlier layout: migrate the run first, `cd learn && .venv/bin/python -m "
-                        "rmlearn.migrate --run %s --seen IDS --tables DIR`, docs/rmtrain.md §1.2)" % run.path)
+                        "rmlearn.migrate --run %s [--seen IDS] --tables DIR --keep NAME`, docs/rmtrain.md §1.2)"
+                        % run.path)
             raise RetableError("%d of %d checkpoints do not load on the new tables:\n  %s%s"
                                % (len(refused), len(ckpts), "\n  ".join(refused), hint))
         log("%d checkpoints load on the new tables (spec %s, %d cards)" % (len(ckpts), new["spec_hash"], new["cards"]))
@@ -242,7 +252,6 @@ def retable(run, cfg, log=print):
     keep = os.path.join(run.path, old_name)
     if os.path.exists(keep):
         keep = "%s.%d" % (keep, int(time.time()))
-    lineage = S.read_lineage(run.tables)
     earlier = old
     if earlier is None and os.path.exists(os.path.join(run.tables, "spec.json")):    # tables before manifests
         with open(os.path.join(run.tables, "spec.json"), "rb") as fp:
@@ -250,9 +259,11 @@ def retable(run, cfg, log=print):
         doc = json.loads(raw)                    # a spec of any version (one before the registry has no layout)
         earlier = {"spec_hash": "%016x" % S.fnv1a64(raw), "vocab_hash": doc.get("vocab_hash"),
                    "layout_hash": doc.get("layout_hash"), "tables_digest": None, "text_model": None}
+    lineage = []
     if earlier is not None and earlier.get("layout_hash") == new["layout_hash"]:
-        # Earlier tables of another layout (a migration's, docs/rmtrain.md §1.2) join no lineage: their
-        # episodes are of the old layout, which the window must not accept.
+        # Earlier tables of another layout (a migration's, docs/rmtrain.md §1.2) join no lineage, nor do
+        # theirs: their episodes are of the old layout, which the window must not accept.
+        lineage = S.read_lineage(run.tables)
         lineage.append(dict({k: earlier[k] for k in SUMMARY_KEYS}, dir=os.path.basename(keep), until=time.time()))
     os.rename(run.tables, keep)
     if os.path.exists(run.cards):

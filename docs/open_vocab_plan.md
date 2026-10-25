@@ -85,7 +85,8 @@ This plan is written to be executed in a session with no context beyond the repo
 - **Unseen cards have a trained fallback:** the oracle text is encoded by the pinned frozen model
   (`tools/embed/MODEL_PIN`) into `text_table`, `text_proj` is shared, and `id_dropout` (0.1) trains
   the `unknown_id` path (a card's features plus `unknown_id` in place of its id row).
-- **`card_subtype` is closed:** its 518 columns are the schema's whole subtype enum.
+- **`card_subtype` is closed:** its 518 columns are the schema's whole subtype enum (opened, 1024,
+  by layout version 2: S7's Done).
 
 ### 1.2 What breaks
 
@@ -301,7 +302,7 @@ permanent position with reserved capacity:
 - **Categorical slots:** name → fixed offset and capacity; no running offset. Hashed slots
   (`hash_buckets`) keep their bucket count.
 - **Card / ability / part table columns:** column name → permanent column with the enums'
-  capacities (`card_subtype` stays 518, closed).
+  capacities (`card_subtype` stays 518, closed; layout version 2 opened it at 1024: S7's Done).
 - **Ability rows (fixes B8):** a stable row per (card id, ability index): row =
   `card_id × A_MAX + index`, then the fixed key rows in a band at the end (key name → permanent row,
   capacity ~2× today's 73). Measure the vocab's most abilities on one face, set `A_MAX` to at least
@@ -337,8 +338,8 @@ above, plus what it implied:
   `action_category` 48 → 128, `cast_variant` 12 → 32, `zone` 7 → 16, …); closed enums their size
   (`face`, `seat`, `step`, `color`, `layer`, `day_night`, `lib_anchor`, `subtype` 518 and, deviating
   from the "card types … open" reading, `card_type` 27 and `supertype` 6: they are Forge's whole
-  lists, like `subtype`). A type's numeric capacity: its slots (enum blocks at the enum's capacity)
-  rounded up to 8 with a quarter more, at least 8 (object 74 → 96, stack 53 → 72, player 46 → 64, menu
+  lists, like `subtype`; layout version 2 opened all three, S7's Done). A type's numeric capacity:
+  its slots (enum blocks at the enum's capacity) rounded up to 8 with a quarter more, at least 8 (object 74 → 96, stack 53 → 72, player 46 → 64, menu
   35 → 48, lki 39 → 56, the rest 8-24); `F` = 96 (the largest), `G` = 1408 (856 used, 1.5× rounded to
   128); categorical ids 6144 (3902 used); `C` 12 (`hist_event` uses 8, `turn` 6), `K` 6 (object 4),
   `Q` 2 (1); 64 type ids (35 used), 64 relation ids (38); tables card 960 (720 used), ability 448
@@ -871,8 +872,8 @@ cut-over's results).
   `ckpt.v1/`), not `ckpt-v2/`. bc1/v1 not migrated (reason above). BC `.opt` files migrated too (the
   plan named only checkpoints and learner states). The step-0 baseline reused league24h-sb's own
   benchmark rather than an old-engine replay (the instructions' second option; conditions above).
-- **For S7 / S8.** (1) A layout change past the registry's capacities (a `layout_version` bump) is a
-  migration by the same tool: give the old run's tables and cards frame (`--old-tables`,
+- **For S7 / S8.** (1) A layout change past the registry's capacities (a `layout_version` bump; done
+  once since, layout version 2: S7's Done) is a migration by the same tool: give the old run's tables and cards frame (`--old-tables`,
   `--old-cards`); for a registry-layout old spec the positions come from its `num_at` / `at` / `col`
   / offsets, already supported. (2) The S0 fixtures' acceptance now holds on recorded inputs
   (`tests/open_vocab/inputs.json`): an engine change that moves a fixture decision's inputs fails the
@@ -1036,6 +1037,50 @@ Stages 6–11 were not run for any deck.
   table said only `card_vocab_entries`; a token outside it reads the sentinel). A card missing at the
   Forge pin is a capability item rather than a provision failure (above). `all` runs stages 2–6, not
   every stage: 1 and 3's fetches need the network, 7–11 change the tree or need a decision.
+
+**Done (layout version 2: the type enums' capacities)** (one commit on `refactor/open-vocab`, before
+the engine's subtype list; `runs/open_vocab_s7/subtypes/`). Onboarding met token types the engine's
+subtype list lacks (Eldrazi Scion, Sand); the list was Forge's, not CR 205.3's, and the registry had
+`subtype` closed at its 518 values, so no subtype could be appended. One bump, so that the next one is
+far off:
+
+- **Capacities** (`rmfeat --registry-raise`, `Registry::raise_capacities`: the raised enums' blocks
+  widen in place, every later position in their space moves by the growth, a space that no longer
+  fits grows keeping its spare room): `subtype` 518 → **1024**, open (CR 205.3 lists 535 today; new
+  sets add a few creature types a year: decades of room; the 2n rule's 2048 would double three
+  blocks for nothing); `card_type` 27 → **32** and `supertype` 6 → **8**, open (their masks' widths,
+  `u32` / `u8`, so no larger capacity is possible without a format change; CR 205.2a has a card type
+  the engine lists as a subtype, Dungeon, and 205.4a five supertypes); `layout` 8 → **16** (4 used, and
+  the candidates already need Adventure and Meld; Flip, Omen and others follow). The other closed
+  enums stay closed: `face`, `seat`, `step`, `color`, `layer` (CR 613's layers and sublayers),
+  `day_night`, `lib_anchor` are fixed by the rules; every open enum has at least twice its use.
+  Result: the card table 960 → **1536** columns (1241 used), the two `enum:subtype` categorical ranges
+  519 → 1025 ids (4914 of the 6144 ids used, the capacity unchanged), `object` / `lki` numeric slots
+  moved within their blocks (G, F and every type's capacity unchanged). `layout_version` 2,
+  `layout_hash` `733819ee9e505abc` → **`e3a65b1f5306272f`**, spec `a56ad74e27244a25` →
+  `17a6f15fabca2aaa`; the cards frame, the vocab and the tables' digest (`8a70d95cb6314af9`, by
+  column name) unchanged, no decision changed (the registry is featurizer-only).
+- **Migration** (`bump.sh`, `bump.log`): `rmlearn.migrate --run … --keep layout1` (new: `--keep`; a
+  network carrying the seen mask keeps it, its `card_id` rows and their Adam moments exactly;
+  registry-layout old specs read their own `enums`; old reserved columns are not carried; a file of
+  another layout than the old tables' refused) over league24h-sb (24 files), pilotA (5),
+  open_vocab_s0 (1), pilot-p1 (8), pilot-p2 (8), league12h (20), val1 (12), bc1/bc (1) and ov-verify
+  (7): 86 files, the layout-1 originals in each run's **`ckpt.layout1/`** and their exports in
+  `exports.layout1/` (S5's `ckpt.v1/` untouched). `rmtrain retable` of league24h-sb, pilotA,
+  league12h, val1 and ov-verify (`retable.log`; retable now accepts a layout bump when every
+  checkpoint is migrated, and drops the old lineage): 41 exports rebuilt (17 / 1 / 12 / 8 / 3), drift
+  none, lineage empty; the layout-1 tables kept as `tables.a56ad74e27244a25/`.
+- **Outputs unchanged.** `bump_check.py --fp64` (`bump_check_fp64.log`): every network of the 86 files
+  (105 distinct, 179 file-network pairs; the critic fixture's critic too), the layout-1 original over
+  the layout-1 tables and featurization (the pre-bump `rmfeat`) against the migrated file over today's,
+  on 1018 seat decisions of 10 corpus games, in float64: **0.0** everywhere (fp32: up to 1e-5, the
+  summation order). Acceptance (a) (`learn/open_vocab_acceptance.py full`, `acceptance_full.log`): 35
+  networks from S0's originals on all 8831 fixture decisions, widened mask max |Δ value| 1.2e-5,
+  |Δ logit| 3.1e-5, the critic 6.3e-8, the true mask's 2047 unseen-card decisions as in S5, all 53
+  cut-over file-network pairs equal to their in-memory migration; (b) the synthetic expansion 0.0.
+  `runs/open_vocab_s2/fixture_check.py` on the new featurization: equal to S0's decisions mapped by
+  name (`fixture_check_s2_rerun.log`), so `tests/open_vocab/inputs.json` was rewritten (every digest
+  moves with the positions; `inputs.layout1.json` keeps the old one).
 
 ### S8. First expansion and the generalisation measurement (1 day tooling + runs)
 

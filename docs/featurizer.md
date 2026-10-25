@@ -488,19 +488,20 @@ sections, every entry matched by name:
 | Section | Gives | Capacity |
 |---|---|---|
 | `dims` | `F` 96 (numeric columns per token), `C` 12, `K` 6, `Q` 2 (categorical, card, ability columns per token), `G` 1408 (every type's numeric block side by side), `types` 64, `categorical` 6144 ids, `relations` 64, `ab_keys` 256, `abilities_per_card` 16, `hash_buckets` 256 | fixed |
-| `enums` | per enum a slot or column reads: its values (index = position) | closed enums (`face`, `seat`, `step`, `color`, `layer`, `day_night`, `lib_anchor`, `subtype` 518, `card_type`, `supertype`) their size; open ones max(8, the power of two ≥ 2n): `keyword` 128, `effect_kind` 256, `action_category` 128, … |
+| `enums` | per enum a slot or column reads: its values (index = position) | closed enums (`face`, `seat`, `step`, `color`, `layer`, `day_night`, `lib_anchor`: the rules fix them) their size; open ones max(8, the power of two ≥ 2n): `keyword` 128, `effect_kind` 256, `action_category` 128, …; raised by layout version 2: `subtype` 1024, `card_type` 32 and `supertype` 8 (their masks' widths, `u32` / `u8`), `layout` 16 |
 | `token_types` | name → id, the type's numeric block (`num_at`, `num_capacity` ≤ F) | `types` |
 | `numeric` | per (type, slot) its column in the block; a mask an enum-capacity block | the type's `num_capacity`: the slots used rounded up to 8 with room for a quarter more (at least 8) |
 | `categorical` | per (type, slot) its `tok_cat` column and its id range (`offset`, `size`: an enum's capacity + 1, a player-rel's values + 1, a hashed column's buckets + 1) | `C` columns, `categorical` ids |
 | `cards`, `abilities` | per (type, slot) its `tok_card` / `tok_ability` column | `K`, `Q` |
 | `relations` | per (table, column, target) its relation type id | `relations` |
-| `tables`, `columns` | per card / ability / part table its width; per column its position (an enum's one-hot, mask or counts an enum-capacity block) | card 960, ability 448, part 448 |
+| `tables`, `columns` | per card / ability / part table its width; per column its position (an enum's one-hot, mask or counts an enum-capacity block) | card 1536, ability 448, part 448 |
 | `ab_keys` | per fixed ability key its row in the key band | `ab_keys` |
 
-Today's file was generated from the S1 layout in its order (so every slot keeps its order within its
+The file was generated from the S1 layout in its order (so every slot keeps its order within its
 type, every relation type and key row its index, every enum value its index; only offsets and widths
-moved) and uses 856 of G's 1408 columns, 3902 of 6144 categorical ids, 38 of 64 relation types, 35
-of 64 type ids, 73 of 256 key rows, and the card, ability and part tables' 720, 340 and 320 columns.
+moved); layout version 2 widened the type enums' blocks in place (`docs/open_vocab_plan.md` S7's
+Done). It uses 856 of G's 1408 columns, 4914 of 6144 categorical ids, 38 of 64 relation types, 35 of
+64 type ids, 73 of 256 key rows, and the card, ability and part tables' 1241, 340 and 320 columns.
 `build_spec` and `build_card_tables` place every slot, column and row at its registry position,
 leave reserved positions 0 (-1 for card and ability slots) and **fail**, naming the entry and `make
 registry`, on a value, column, slot, type, relation or key the registry lacks; past a capacity (an
@@ -519,8 +520,16 @@ naming the capacity: that is a layout bump. An entry the schema no longer makes 
 - **`layout_hash`** (FNV-1a 64 over `layout_version`, the dims, the tables' capacities, the card rows
   and the targets' library depth; in the spec and every episode's attrs) is the same for every spec of
   one layout whatever was appended to it; `spec_hash` stays the exact identity. A deliberate change
-  that is not an append (a capacity, a moved entry) raises `layout_version` by hand and is migrated
-  by name like the S5 cut-over (`docs/open_vocab_plan.md`).
+  that is not an append (a capacity, a moved entry) raises `layout_version` and is migrated by name
+  like the S5 cut-over (`docs/open_vocab_plan.md`; `docs/rmtrain.md` §1.2).
+- **A capacity bump** (`rmfeat --registry-raise FILE ENUM=CAPACITY[,…]`, `Registry::raise_capacities`):
+  each named enum's capacity raised and the enum made open; every block of it (numeric masks, table
+  columns, categorical ranges) widens, every position after a widened block in the same space moves by
+  the growth before it, and a space whose entries no longer fit (a type's block, G, a table, the
+  categorical ids) grows to them plus the spare room it had (rounded up to 8, 128, 64, 512); every
+  entry keeps its name, order and value indices, `layout_version` goes up by one. Then `make
+  registry` appends the new values and `python -m rmlearn.migrate --run DIR --keep layout<N>` moves
+  every checkpoint.
 
 The gate's `featurize` tier tests the property (`tools/robomage_check/featurize_layout.h`): a card
 appended at the next free id and a fake keyword appended to the registry keep the `layout_hash`,

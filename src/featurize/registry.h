@@ -33,9 +33,9 @@
 //
 // Entries are matched by name, never by an engine index, so an engine enum may be reordered without
 // moving a column; an entry whose value or column the schema no longer has is a hole (reads 0).
-// layout_version is bumped by hand for a deliberate change that is not an append (a capacity, a
-// moved entry); layout_hash (FNV-1a 64 over layout_version, the dims, the tables' capacities and
-// the card rows) is then different, and only then.
+// layout_version is raised for a deliberate change that is not an append (a capacity, a moved
+// entry: raise_capacities, rmfeat --registry-raise); layout_hash (FNV-1a 64 over layout_version, the
+// dims, the tables' capacities and the card rows) is then different, and only then.
 //
 // Lookups (the featurizer's build_spec and build_card_tables) find an entry or record a problem:
 // strict (the default) a missing entry is a problem naming `make registry`; with `append` set a
@@ -163,6 +163,16 @@ class Registry {
 
         // Places what an append added (header comment); a problem past a capacity.
         void finish();
+
+        // A layout bump's widening (rmfeat --registry-raise): each enum of `capacities` raised to
+        // its capacity and made open. Every block of a raised enum (numeric masks, table columns,
+        // categorical ranges) widens to it, every position after a widened block in the same space
+        // (a type's numeric block, G, a table, the categorical ids) moves by the growth before it,
+        // and a space whose entries no longer fit grows to them plus the spare room it had (rounded
+        // up: a type's block to 8, G to 128, a table to 64, the categorical ids to 512). Every
+        // entry keeps its name, order and value indices; layout_version is the caller's to raise
+        // once per bump. False with `err` (an unknown enum, a smaller capacity, a type past F).
+        bool raise_capacities(const std::map<std::string, uint32_t> &capacities, std::string *err);
         bool ok() const { return problems.empty(); }
 
     private:
