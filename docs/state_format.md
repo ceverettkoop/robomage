@@ -923,7 +923,7 @@ computes neither outside its legal-action enumeration.
 | | `part` | u8 | `enum:cost_part` | mana, alternative, additional, unless, X, activation |
 | | `rem_w`, `rem_u`, `rem_b`, `rem_r`, `rem_g`, `rem_c`, `rem_generic`, `rem_x` | 8 × u8 | `count` | remaining plain pips; `rem_x` = {X} pips still to announce |
 | | `rem_life` | u16 | `count` | |
-| | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers) |
+| | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers, a spell's escalate) |
 | | `paid` | u8 | `count` | mana already paid (interactive payment; the pool's mana that applies to the cost counts as paid, and the `rem_*` columns leave it out) |
 | `pending_cost_pip` (45) | `cost` | u16 | `row:pending_cost` | remaining non-plain pips |
 | | `kind`, `colors`, `generic_alt` | u8 | `enum:pip_kind`, `mask:color`, `count` | as `card_pip` (plus snow) |

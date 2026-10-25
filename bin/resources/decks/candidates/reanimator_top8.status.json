@@ -19,6 +19,7 @@
   "capability": {
    "detail": {
     "clean": [
+     "Collective Brutality",
      "Faithless Looting",
      "Raucous Theater",
      "Unmask"
@@ -32,16 +33,6 @@
        "keyword:AlternateAdditionalCost"
       ],
       "size": "S"
-     },
-     "Choose one or more (MinCharmNum) and Escalate": {
-      "cards": [
-       "Collective Brutality"
-      ],
-      "findings": [
-       "ability_param:Charm.MinCharmNum",
-       "keyword:Escalate"
-      ],
-      "size": "M"
      },
      "Stronghold Gambit": {
       "cards": [
@@ -68,9 +59,6 @@
      "Bitter Triumph": [
       "AlternateAdditionalCost keyword"
      ],
-     "Collective Brutality": [
-      "Choose one or more (MinCharmNum) and Escalate"
-     ],
      "Shallow Grave": [
       "Top creature of a graveyard (Shallow Grave)"
      ],
@@ -87,19 +75,19 @@
      "Stronghold Gambit",
      "Unmask"
     ],
-    "size_points": 8
+    "size_points": 5
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
+    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
     "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
-    "sizes": "eb957631a0d38963cd283297d2a35380d5c40e730b5afbcb4a0a00544b72374b",
+    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
-   "summary": "7 new card(s): 3 clean, 4 need 4 mechanic(s) (8 points)",
-   "time": "2026-10-25T00:23:33"
+   "summary": "7 new card(s): 4 clean, 3 need 3 mechanic(s) (5 points)",
+   "time": "2026-10-25T00:50:41"
   },
   "diff": {
    "detail": {
@@ -129,22 +117,21 @@
    "detail": {
     "mechanics": [
      "AlternateAdditionalCost keyword",
-     "Choose one or more (MinCharmNum) and Escalate",
      "Stronghold Gambit",
      "Top creature of a graveyard (Shallow Grave)"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
+    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
     "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
-    "sizes": "eb957631a0d38963cd283297d2a35380d5c40e730b5afbcb4a0a00544b72374b",
+    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: AlternateAdditionalCost keyword, Choose one or more (MinCharmNum) and Escalate, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-10-25T00:23:33"
+   "summary": "3 mechanic(s) to implement: AlternateAdditionalCost keyword, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
+   "time": "2026-10-25T00:50:41"
   },
   "parse": {
    "detail": {
@@ -174,20 +161,7 @@
       "faces": [
        "Collective Brutality"
       ],
-      "findings": [
-       {
-        "detail": "Charm MinCharmNum$ 1",
-        "kind": "ability_param",
-        "line": "A:SP$ Charm | MinCharmNum$ 1 | CharmNum$ 3 | Choices$ DBDiscard,DBPump,DBDrain",
-        "name": "Charm.MinCharmNum"
-       },
-       {
-        "detail": "Escalate:Discard<1/Card>",
-        "kind": "keyword",
-        "line": "K:Escalate:Discard<1/Card>",
-        "name": "Escalate"
-       }
-      ],
+      "findings": [],
       "layout": "normal",
       "script": "cardsfolder/c/collective_brutality.txt",
       "tokens": [],
@@ -291,14 +265,14 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
+    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
     "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
-   "summary": "7 new card(s), 4 with findings (7 findings), 0 without a script",
-   "time": "2026-10-25T00:23:33"
+   "summary": "7 new card(s), 3 with findings (5 findings), 0 without a script",
+   "time": "2026-10-25T00:50:29"
   },
   "provision": {
    "detail": {

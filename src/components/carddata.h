@@ -179,6 +179,14 @@ struct CardData{
     // per-Spell (Spell::replicate_count) so the on-cast copy effect knows how many copies to make.
     bool has_replicate = false;
     ManaValue replicate_cost;
+    // K:Escalate:<cost> — "for each mode you choose beyond the first as you cast this spell, you
+    // pay an additional [cost]" (CR 702.120a): its mana, and its discard of escalate_discard cards
+    // matching escalate_discard_valid from the hand (Discard<N/Filter>), each paid once per extra
+    // mode with the spell's other costs (CR 601.2f-h).
+    bool has_escalate = false;
+    ManaValue escalate_mana;
+    int escalate_discard = 0;
+    std::string escalate_discard_valid;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
     // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). A card
     // with this keyword may begin the game in the sideboard ("outside the game"); if the chosen

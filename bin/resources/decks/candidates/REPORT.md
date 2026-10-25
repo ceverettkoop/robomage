@@ -12,10 +12,10 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 3 | 0 | 0 | implement |
 | bant_control | Bant Control | 2.0 | control | 29 | 5 | 0 | 0 | implement |
+| show_and_tell | Show and Tell | 5.0 | combo | 33 | 7 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 3 | 2 | 2 | capability |
-| show_and_tell | Show and Tell | 5.0 | combo | 33 | 7 | 1 | 3 | capability |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 3 | 2 | 4 | capability |
-| reanimator_top8 | Reanimator | 3.0 | combo | 28 | 7 | 4 | 8 | capability |
+| reanimator_top8 | Reanimator | 3.0 | combo | 28 | 7 | 3 | 5 | capability |
 | artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 8 | 4 | 8 | capability |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 5 | 3 | 9 | capability |
 | maverick | Maverick | 1.0 | aggro | 38 | 6 | 5 | 11 | capability |
@@ -43,7 +43,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | FORGE_PIN bump | M | 8 | - | Archive Arbiter, Carnivorous Cultivator, Dark Matter Manipulator, Giant's Boulder, The Echoverse Fulcrum, Theorist's Proxy | `script:Archive Arbiter`, `script:Carnivorous Cultivator`, `script:Dark Matter Manipulator`, `script:Giant's Boulder`, `script:The Echoverse Fulcrum`, `script:Theorist's Proxy` | cards newer than tools/forge_fetch/FORGE_PIN (2026-07-19): one deliberate pin bump (its header's recipe, make check) fetches them; their own mechanics are unknown until then |
 | without<Keyword> filter qualifier | S | 7 | - | Brazen Borrower, Chaos Defiler, Drop of Honey, Rough/Tumble, Sundering Eruption | `filter:withoutFlying`, `filter:withoutIndestructible` | the matcher has with<Keyword> only; withoutFlying / withoutIndestructible fail closed today |
 | Can't-block restrictions (CantBlockBy) | M | 5 | - | Brazen Borrower, Cryptic Coat | `static_mode:CantBlockBy`, `static_param:ValidAttacker`, `static_param:ValidBlocker` | Brazen Borrower (can block only fliers), Cryptic Coat (equipped creature can't be blocked); a blocking legality hook beside CantAttack |
-| Discard-a-card activation cost | M | 4 | - | Formidable Speaker, Melded Moxite, Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as a cost needs a suspendable choice during cost payment (only whole hand / the card itself today) |
+| Discard-a-card activation cost | M | 4 | - | Formidable Speaker, Melded Moxite, Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Sunburst (CR 702.44) | M | 4 | - | Engineered Explosives | `keyword:Sunburst` | Engineered Explosives: counters by colours spent (converge is tracked) |
 | Adventure (CR 715) | L | 4 | - | Brazen Borrower | `layout:Adventure` | Brazen Borrower: cast the Adventure half, exile, cast the creature later; a layout like split / MDFC plus the exile permission |
 | Exile-the-card-itself costs | S | 3 | - | Runehorn Hellkite, Simian Spirit Guide, The Stone Brain | `cost:Exile`, `cost:ExileFromGrave`, `cost:ExileFromHand` | Simian Spirit Guide (a mana ability from the hand), Runehorn Hellkite, The Stone Brain |
@@ -53,7 +53,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | TapOrUntap effect | S | 2 | - | Sewer-veillance Cam | `category:TapOrUntap` | Sewer-veillance Cam |
 | A creature card in every other zone (Grist) | M | 2 | - | Grist, the Hunger Tide | `static_param:ExcludeZone` | Grist is a 1/1 Insect creature card outside the battlefield |
 | Branch effect (DB$ Branch) | M | 2 | - | Goblin Welder | `ability_param:Branch.BranchConditionSVar`, `ability_param:Branch.BranchConditionSVarCompare`, `ability_param:Branch.FalseSubAbility`, `ability_param:Branch.TrueSubAbility`, `category:Branch` | a conditional sub-ability chain; Goblin Welder |
-| Choose one or more (MinCharmNum) and Escalate | M | 2 | show_and_tell | Avengers Disassembled, Collective Brutality | `ability_param:Charm.MinCharmNum`, `keyword:Escalate` | Collective Brutality, Avengers Disassembled: a variable mode count; Escalate's per-extra-mode cost (CR 702.120) |
 | Chrome Mox imprint | M | 2 | - | Chrome Mox | `ability_param:Pump.ForgetImprinted`, `filter:Defined`, `filter:ExiledWithSourceLKI`, `filter:Imprinted`, `trigger_zone:ChangesZone:Exile` | imprint a card exiled with it and read its colours; a ChangesZone trigger with Origin$ Exile |
 | Convoke (CR 702.51) | M | 2 | - | Hogaak, Arisen Necropolis | `keyword:Convoke` | tap creatures to pay; like Improvise for artifacts (implemented) |
 | Divided damage (CR 601.2d) | M | 2 | - | Fury, Shatterskull Smashing | `ability_param:DealDamage.DividedAsYouChoose`, `svar_expr:Count$xPaid/Twice` | Fury, Shatterskull Smashing: divide damage among targets at cast |
@@ -106,28 +105,28 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 1 | bant_control | - | 0 | 0 | 1 |
 | 2 | death_and_taxes | - | 0 | 0 | 2 |
 | 3 | eldrazi_aggro | - | 0 | 0 | 3 |
-| 4 | uwx_control | - | 0 | 0 | 4 |
-| 5 | lands_top8 | Least power (Drop of Honey); without<Keyword> filter qualifier | 2 | 2 | 5 |
-| 6 | show_and_tell | Choose one or more (MinCharmNum) and Escalate | 3 | 5 | 6 |
-| 7 | boros_aggro | Copy with exceptions (CopyPermanent Set*); Sand Scout | 4 | 9 | 7 |
-| 8 | reanimator_top8 | AlternateAdditionalCost keyword; Stronghold Gambit; Top creature of a graveyard (Shallow Grave) | 5 | 14 | 8 |
-| 9 | artifacts_blue | Clone a target (CloneTarget); Exile-the-card-itself costs; Ghost Vacuum return; The Stone Brain | 8 | 22 | 9 |
-| 10 | artifacts_prison | FORGE_PIN bump; Start your engines! (speed); Sunburst (CR 702.44) | 9 | 31 | 10 |
-| 11 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Repeat effect (DB$ Repeat); Revolt trigger condition | 8 | 39 | 11 |
-| 12 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 47 | 12 |
-| 13 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher); Overload (CR 702.96) | 9 | 56 | 13 |
-| 14 | cradle_control | AnimateAll power, toughness and types; Bestow (CR 702.103) | 9 | 65 | 14 |
-| 15 | doomsday | Adventure (CR 715); Can't-block restrictions (CantBlockBy) | 11 | 76 | 15 |
-| 16 | ur_tempo | Play from a zone with replacement (Bilbo) | 3 | 79 | 16 |
-| 17 | dimir_tempo | Targeted player's cards filter (TargetedPlayerOwn) | 1 | 80 | 17 |
-| 18 | hogaak | Convoke (CR 702.51); Hogaak casting; Mana spent on casting (Count$CastTotalManaSpent) | 12 | 92 | 18 |
-| 19 | elves | Discard-a-card activation cost | 3 | 95 | 19 |
-| 20 | dragon_stompy | Boast (CR 702.142); Chrome Mox imprint; Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Fable of the Mirror-Breaker | 13 | 108 | 20 |
-| 21 | storm | Bargain and free casting (Beseech the Mirror); Discard the whole hand (Discard Mode$ Hand); Gaea's Will; Shuffle effect; Targeted player's counts (TargetedPlayer$...); UseAllOriginZones | 10 | 118 | 21 |
-| 22 | aluren | Dungeons and venture (CR 309, 701.49) | 20 | 138 | 22 |
-| 23 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 158 | 23 |
-| 24 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 177 | 24 |
-| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 203 | 25 |
+| 4 | show_and_tell | - | 0 | 0 | 4 |
+| 5 | uwx_control | - | 0 | 0 | 5 |
+| 6 | lands_top8 | Least power (Drop of Honey); without<Keyword> filter qualifier | 2 | 2 | 6 |
+| 7 | boros_aggro | Copy with exceptions (CopyPermanent Set*); Sand Scout | 4 | 6 | 7 |
+| 8 | reanimator_top8 | AlternateAdditionalCost keyword; Stronghold Gambit; Top creature of a graveyard (Shallow Grave) | 5 | 11 | 8 |
+| 9 | artifacts_blue | Clone a target (CloneTarget); Exile-the-card-itself costs; Ghost Vacuum return; The Stone Brain | 8 | 19 | 9 |
+| 10 | artifacts_prison | FORGE_PIN bump; Start your engines! (speed); Sunburst (CR 702.44) | 9 | 28 | 10 |
+| 11 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Repeat effect (DB$ Repeat); Revolt trigger condition | 8 | 36 | 11 |
+| 12 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 44 | 12 |
+| 13 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher); Overload (CR 702.96) | 9 | 53 | 13 |
+| 14 | cradle_control | AnimateAll power, toughness and types; Bestow (CR 702.103) | 9 | 62 | 14 |
+| 15 | doomsday | Adventure (CR 715); Can't-block restrictions (CantBlockBy) | 11 | 73 | 15 |
+| 16 | ur_tempo | Play from a zone with replacement (Bilbo) | 3 | 76 | 16 |
+| 17 | dimir_tempo | Targeted player's cards filter (TargetedPlayerOwn) | 1 | 77 | 17 |
+| 18 | hogaak | Convoke (CR 702.51); Hogaak casting; Mana spent on casting (Count$CastTotalManaSpent) | 12 | 89 | 18 |
+| 19 | elves | Discard-a-card activation cost | 3 | 92 | 19 |
+| 20 | dragon_stompy | Boast (CR 702.142); Chrome Mox imprint; Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Fable of the Mirror-Breaker | 13 | 105 | 20 |
+| 21 | storm | Bargain and free casting (Beseech the Mirror); Discard the whole hand (Discard Mode$ Hand); Gaea's Will; Shuffle effect; Targeted player's counts (TargetedPlayer$...); UseAllOriginZones | 10 | 115 | 21 |
+| 22 | aluren | Dungeons and venture (CR 309, 701.49) | 20 | 135 | 22 |
+| 23 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 155 | 23 |
+| 24 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 174 | 24 |
+| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 200 | 25 |
 
 ## Per deck
 
@@ -151,17 +150,16 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 29 cards, 5 new; clean: Celestial Purge, Hedge Maze, Snow-Covered Plains, Terminus, Up the Beanstalk
 
 
+### show_and_tell — Show and Tell (5.0%, combo)
+
+33 cards, 7 new; clean: Avengers Disassembled, Blood Moon, Brotherhood's End, City of Traitors, Omniscience, Sneak Attack, Stock Up
+
+
 ### lands_top8 — Lands (5.0%, control)
 
 35 cards, 3 new; clean: Crucible of Worlds, Soul-Guide Lantern
 
 - Drop of Honey: Least power (Drop of Honey); without<Keyword> filter qualifier
-
-### show_and_tell — Show and Tell (5.0%, combo)
-
-33 cards, 7 new; clean: Blood Moon, Brotherhood's End, City of Traitors, Omniscience, Sneak Attack, Stock Up
-
-- Avengers Disassembled: Choose one or more (MinCharmNum) and Escalate
 
 ### boros_aggro — Boros Aggro (6.0%, aggro)
 
@@ -172,10 +170,9 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### reanimator_top8 — Reanimator (3.0%, combo)
 
-28 cards, 7 new; clean: Faithless Looting, Raucous Theater, Unmask
+28 cards, 7 new; clean: Collective Brutality, Faithless Looting, Raucous Theater, Unmask
 
 - Bitter Triumph: AlternateAdditionalCost keyword
-- Collective Brutality: Choose one or more (MinCharmNum) and Escalate
 - Shallow Grave: Top creature of a graveyard (Shallow Grave)
 - Stronghold Gambit: Stronghold Gambit
 

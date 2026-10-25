@@ -48,8 +48,13 @@ bool is_modal(const Ability &ab);
 bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> orderer,
                     Zone::Ownership chooser, bool x_announced);
 
-// Can `modal`'s required number of different modes (CharmNum$, default one; any one mode when
-// it may choose the same mode more than once, CanRepeatModes$) be chosen now?
+// The most modes `def` picks (CharmNum$, default one) and the fewest: MinCharmNum$ for "choose
+// one or more" (CR 700.2), at least one, else the most.
+int charm_max_picks(const AbilityDef &def);
+int charm_min_picks(const AbilityDef &def);
+
+// Can `modal`'s required number of different modes (charm_min_picks; any one mode when it may
+// choose the same mode more than once, CanRepeatModes$) be chosen now?
 // The legality gate for casting a modal spell or activating a modal ability (CR 601.2b, 602.2b).
 bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
                          Zone::Ownership chooser, bool x_announced);

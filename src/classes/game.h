@@ -359,6 +359,7 @@ struct Game {
                 ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
                 ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
                 SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
+                ESCALATE_DISCARD,  // escalate's discards, one per pick (CR 702.120a: Collective Brutality)
                 DELVE_COUNT,      // delve exile count menu (CR 702.66)
                 DELVE_PICK,       // delve exile picks, one card at a time
                 DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
@@ -518,6 +519,11 @@ struct Game {
             // live graveyard at each arm, exactly like the blocking loops.
             std::set<std::string> escape_exiled_types;
             int escape_exiled_count = 0;
+            // Escalate (CR 702.120a): the modes chosen beyond the first, each paying the escalate
+            // cost (its mana folded into deferred_mana_cost as the modes are announced), and the
+            // escalate discards picked so far.
+            int escalate_extra = 0;
+            int escalate_discards_done = 0;
         };
         // Activated-ability suspension state (pending.query tag ACTIVATION):
         // the persisted state machine of process_action's ACTIVATE_ABILITY

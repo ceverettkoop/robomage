@@ -31,6 +31,9 @@ static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<
                                                 Zone::Ownership chooser,
                                                 std::vector<size_t> &mode_indices);
 
+// The row that ends a "choose one or more" mode choice (CR 700.2) once the fewest modes are chosen.
+static LegalAction confirm_modes_action(const Ability &modal, int chosen);
+
 // Does `ab` still have its own targets to choose — it targets, and none was bound to it (a
 // trigger's target can come from its event)?
 static bool targets_unchosen(const Ability &ab);
@@ -95,6 +98,14 @@ static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<
     return mode_actions;
 }
 
+static LegalAction confirm_modes_action(const Ability &modal, int chosen) {
+    LegalAction la(
+        PASS_PRIORITY, modal.source.lki_entity(), "Done choosing modes (" + std::to_string(chosen) + " chosen)");
+    la.category = ActionCategory::CONFIRM_MODES;
+    la.option_ordinal = chosen;  // how many modes are chosen
+    return la;
+}
+
 static bool targets_unchosen(const Ability &ab) {
     return ab.def->valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty();
 }
@@ -113,9 +124,8 @@ static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker 
     return AnnounceStatus::DONE;
 }
 
-AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
-                            std::shared_ptr<Orderer> orderer, Zone::Ownership controller,
-                            bool remove_unchoosable) {
+AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std::shared_ptr<Orderer> orderer,
+    Zone::Ownership controller, bool remove_unchoosable, const ModePickGate *mode_gate) {
     if (!rt.active) {
         rt = AnnounceRT{};
         rt.active = true;
@@ -125,10 +135,12 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
         case AnnounceRT::MODES: {
             // CR 700.2a/b: one mode pick per pass; the just-picked mode's targets are chosen
             // (MODE_TARGETS, CR 601.2c) before the next pick.
-            const int to_pick = ab.def->charm_num < 1 ? 1 : ab.def->charm_num;
+            // "Choose one or more" (MinCharmNum$): past its fewest modes the choice may end.
+            const int to_pick = charm_max_picks(*ab.def);
+            const int min_picks = charm_min_picks(*ab.def);
             std::vector<LegalAction> menu;
             std::vector<size_t> mode_indices;
-            if (rt.mode_picks < to_pick) {
+            if (rt.mode_picks < to_pick && (rt.mode_picks == 0 || !mode_gate || (*mode_gate)(rt.mode_picks))) {
                 menu = build_mode_menu(ab, orderer, controller, mode_indices);
                 if (!menu.empty() && !asker.resuming()) game_log("Choose mode:\n");
                 if (menu.empty()) {
@@ -143,14 +155,24 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
                     game_log("No further legal mode — %d chosen\n", rt.mode_picks);
                 }
             }
+            const bool may_stop = !menu.empty() && rt.mode_picks >= min_picks;
+            if (may_stop) menu.push_back(confirm_modes_action(ab, rt.mode_picks));
+            int choice = -1;
+            if (!menu.empty()) {
+                choice = asker.ask(menu, ab.source.lki_entity());
+                if (choice < 0 && decision_suspended()) return AnnounceStatus::SUSPENDED;
+                if (may_stop && static_cast<size_t>(choice) == mode_indices.size()) {
+                    game_log(
+                        "%s chooses no further mode — %d chosen\n", player_name(controller).c_str(), rt.mode_picks);
+                    menu.clear();
+                }
+            }
             if (menu.empty()) {
                 // The modes resolve in the order they are printed (CR 608.2c, 700.2d).
                 order_chosen_modes(ab);
                 rt.stage = AnnounceRT::PRIMARY;
                 break;
             }
-            int choice = asker.ask(menu, ab.source.lki_entity());
-            if (choice < 0 && decision_suspended()) return AnnounceStatus::SUSPENDED;
             const size_t idx = mode_indices[static_cast<size_t>(choice)];
             const Ability &picked = record_mode_pick(ab, idx);
             game_log("%s chooses mode — %s\n", player_name(controller).c_str(),

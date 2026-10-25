@@ -131,7 +131,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
     static const std::set<std::string> other = {"OTHER_CHOICE", "SACRIFICE_PERMANENT", "RETURN_PERMANENT", "CHOOSE_X",
         "DISCARD", "CHOOSE_MODE", "CHOOSE_MANA_COLOR", "PAY_UNLESS", "NAME_CARD", "CHOOSE_TYPE", "KEEP_LEGEND",
         "ORDER_TRIGGERS", "CHOOSE_REPLACEMENT", "ATTACK_TARGET", "BLOCK_TARGET", "OPTIONAL_YESNO", "SYLVAN_CHOICE",
-        "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD"};
+        "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD", "CONFIRM_MODES"};
     static const std::set<std::string> mana = {"MANA_W", "MANA_U", "MANA_B", "MANA_R", "MANA_G", "MANA_C"};
     // tap:<card> also picks a source in the mana payment loop (--no-auto-mana), whose rows are
     // PAYING_COSTS.
@@ -166,7 +166,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"return", {"RETURN_PERMANENT"}},
         {"x", {"CHOOSE_X"}},
         {"discard", {"DISCARD"}},
-        {"mode", {"CHOOSE_MODE"}},
+        {"mode", {"CHOOSE_MODE", "CONFIRM_MODES"}},
         {"color", {"CHOOSE_MANA_COLOR"}},
         {"name", {"NAME_CARD"}},
         {"exile", {"EXILE_FROM_YARD"}},
@@ -233,7 +233,8 @@ static bool parse_spec(const std::string &token, Intent *out, std::string *err) 
         out->sentinel = s->second;
     } else if (verb == "mulligan" || verb == "keep") {
         out->keyword = verb;
-    } else if ((verb == "attack" || verb == "block") && (low == "done" || low == "confirm" || low.empty())) {
+    } else if ((verb == "attack" || verb == "block" || verb == "mode") &&
+               (low == "done" || low == "confirm" || low.empty())) {
         out->keyword = "done";
     } else if (verb == "search" && (low == "fail" || low == "none" || low.empty())) {
         out->keyword = "fail";
@@ -261,7 +262,8 @@ static bool matches(const Intent &intent, const MenuAction &a, bool exact) {
     if (!intent.cats.empty() && !intent.cats.count(a.category)) return false;
     if (!intent.side.empty() && intent.side != controller_word(a.controller)) return false;
     if (!intent.color.empty() && a.category != intent.color) return false;
-    if (intent.keyword == "done") return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS";
+    if (intent.keyword == "done")
+        return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS" || a.category == "CONFIRM_MODES";
     if (intent.keyword == "fail") return !a.card.has_value();
     if (intent.keyword == "keep" || intent.keyword == "mulligan")
         return norm(a.description).find(intent.keyword) != std::string::npos;

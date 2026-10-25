@@ -200,6 +200,7 @@ static void kw_evoke(const std::string& kw_line, KeywordContext& ctx);
 static void kw_offspring(const std::string& kw_line, KeywordContext& ctx);
 static void kw_kicker(const std::string& kw_line, KeywordContext& ctx);
 static void kw_replicate(const std::string& kw_line, KeywordContext& ctx);
+static void kw_escalate(const std::string& kw_line, KeywordContext& ctx);
 static void kw_devoid(const std::string& kw_line, KeywordContext& ctx);
 static void kw_gift(const std::string& kw_line, KeywordContext& ctx);
 static void kw_opening_hand(const std::string& kw_line, KeywordContext& ctx);
@@ -280,6 +281,7 @@ static const KeywordEntry kKeywordTable[] = {
     {"Storm", KeywordEntry::EXACT, kw_storm},
     {"Annihilator", KeywordEntry::PREFIX, kw_annihilator},
     {"Protection:", KeywordEntry::PREFIX, kw_protection},
+    {"Escalate:", KeywordEntry::PREFIX, kw_escalate},
 };
 static void parse_card_face_body(const std::string& front_script, CardData& card,
                                  FaceAbilityDefs& face_defs);
@@ -1345,6 +1347,36 @@ static void kw_replicate(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.replicate_cost = parse_mana_cost(kw_line.substr(strlen("Replicate:")));
     ctx.card.has_replicate = true;
     ctx.card.keywords.push_back("Replicate");
+}
+
+// K:Escalate:<cost> — an ADDITIONAL cost of a modal spell paid for each mode chosen beyond the
+// first (CR 702.120a). Its mana tokens are a mana cost; Discard<N/Filter> discards N cards matching
+// Filter from the hand. Any other cost token is a parse finding (paid as nothing).
+static void kw_escalate(const std::string &kw_line, KeywordContext &ctx) {
+    const std::string cost = keyword_arg(kw_line);
+    std::string mana;
+    for (const std::string &tok : cost_tokens(cost)) {
+        if (is_mana_cost_token(tok)) {
+            mana += (mana.empty() ? "" : " ") + tok;
+        } else if (tok.rfind("Discard<", 0) == 0 && tok.back() == '>') {
+            const std::string arg = tok.substr(strlen("Discard<"), tok.size() - strlen("Discard<") - 1);
+            const std::vector<std::string> parts = split(arg, '/');
+            const bool numeric = !parts.empty() && !parts[0].empty() &&
+                                 std::all_of(parts[0].begin(), parts[0].end(),
+                                     [](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
+            if (parts.size() < 2 || !numeric || parts[1] == "Hand" || parts[1] == "CARDNAME") {
+                parse_finding("cost", "Discard", "Escalate:" + cost);
+                continue;
+            }
+            ctx.card.escalate_discard += std::stoi(parts[0]);
+            ctx.card.escalate_discard_valid = parts[1];
+        } else {
+            parse_finding("cost", tok.substr(0, tok.find('<')), "Escalate:" + cost);
+        }
+    }
+    if (!mana.empty()) ctx.card.escalate_mana = parse_mana_cost(mana);
+    ctx.card.has_escalate = true;
+    ctx.card.keywords.push_back("Escalate");
 }
 
 // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
@@ -2586,6 +2618,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
     }
     if (key == "CharmNum") {
         ability.charm_num = std::stoi(value);
+        return true;
+    }
+    if (key == "MinCharmNum") {
+        ability.charm_min_num = std::stoi(value);
         return true;
     }
     if (key == "CanRepeatModes") {

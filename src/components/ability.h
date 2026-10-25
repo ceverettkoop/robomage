@@ -816,6 +816,9 @@ struct AbilityDef {
 
     std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
     int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
+    // MinCharmNum$ — "choose one or more" (CR 700.2): the fewest modes to pick, CharmNum$ then
+    // the most; -1 when absent (exactly CharmNum$ modes).
+    int charm_min_num = -1;
     // CanRepeatModes$ True — "You may choose the same mode more than once" (CR 700.2d): each
     // pick may name any mode again, and every pick is its own instance with its own targets.
     bool charm_repeat_modes = false;

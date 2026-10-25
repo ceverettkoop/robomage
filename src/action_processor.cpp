@@ -149,6 +149,18 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
+// The cards in `caster`'s hand the escalate discard of the spell `pc` is casting may discard
+// (escalate_discard_valid), less those already chosen as a cost.
+static std::vector<Entity> escalate_discard_candidates(
+    const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+// Can `caster` pay the escalate cost (CR 702.120a) of the spell `pc` is casting `extra` times, on
+// top of the cost determined so far: its mana with the deferred mana cost, its discards from the
+// hand the alternative cost's pitch leaves?
+static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, int extra,
+    std::shared_ptr<Orderer> orderer);
+// The modes are announced: the escalate cost is owed once per mode beyond the first; its mana
+// joins the deferred mana cost (CR 601.2f), its discards are picked at ESCALATE_DISCARD.
+static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
@@ -262,6 +274,55 @@ static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> or
     rewind_cast(pc, orderer);
     // Counted against the card as the object it is again at its origin.
     cur_game.priority.payment_fail_counts[spell_entity]++;
+}
+
+// See forward declaration at top of file.
+static std::vector<Entity> escalate_discard_candidates(
+    const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> out;
+    for (Entity e : orderer->get_hand(caster)) {
+        if (e == pc.spell_entity || already_chosen_as_cost(pc, e)) continue;
+        if (!card_matches_filter(e, card_data.escalate_discard_valid)) continue;
+        out.push_back(e);
+    }
+    return out;
+}
+
+// See forward declaration at top of file.
+static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, int extra,
+    std::shared_ptr<Orderer> orderer) {
+    if (card_data.escalate_discard > 0) {
+        const int need = card_data.escalate_discard * extra;
+        const int pitch = pc.use_alt_cost ? card_data.alt_cost.exile_from_hand_count : 0;
+        int hand = 0;
+        for (Entity e : orderer->get_hand(caster))
+            if (e != pc.spell_entity) hand++;
+        if (hand - pitch < need ||
+            static_cast<int>(escalate_discard_candidates(pc, card_data, caster, orderer).size()) < need)
+            return false;
+    }
+    if (card_data.escalate_mana.empty()) return true;
+    ManaValue total = pc.deferred_mana_pending ? pc.deferred_mana_cost : ManaValue{};
+    for (int i = 0; i < extra; i++)
+        for (Colors c : card_data.escalate_mana) total.insert(c);
+    return can_pay_mana(caster, total, pc.spell_entity, orderer, card_data.has_delve, card_data.has_improvise,
+        /*exclude_entity=*/0, /*life_reserve=*/pc.deferred_life_cost + std::max(0, pc.life_x_announced));
+}
+
+// See forward declaration at top of file.
+static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    pc.escalate_extra = std::max(0, static_cast<int>(pc.ability.charm_chosen.size()) - 1);
+    if (pc.escalate_extra == 0) return;
+    if (!card_data.escalate_mana.empty()) {
+        if (!pc.deferred_mana_pending) {
+            pc.deferred_mana_cost.clear();
+            pc.deferred_mana_pending = true;
+        }
+        for (int i = 0; i < pc.escalate_extra; i++)
+            for (Colors c : card_data.escalate_mana) pc.deferred_mana_cost.insert(c);
+    }
+    game_log("%s pays the escalate cost for %s (%d)\n", player_name(caster).c_str(), card_data.name.c_str(),
+        pc.escalate_extra);
 }
 
 // Drop already-chosen entities from a re-derived cost menu (see already_chosen_as_cost).
@@ -1007,8 +1068,9 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
 // reachable promise state and the spell is castable if any one is fully satisfiable.
 bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift) {
-    // Modal spell (CR 601.2b/601.2c): castable iff CharmNum$ DIFFERENT modes (any one mode
-    // under CanRepeatModes$, CR 700.2d) can be legally chosen. The modes live in charm_choices
+    // Modal spell (CR 601.2b/601.2c): castable iff CharmNum$ DIFFERENT modes (MinCharmNum$ for
+    // "choose one or more"; any one mode under CanRepeatModes$, CR 700.2d) can be legally
+    // chosen. The modes live in charm_choices
     // (not subabilities), so the ordinary targeting walk below never sees them; without this a
     // Charm whose every mode lacked a target (Red Elemental Blast with nothing blue anywhere)
     // would be offered and then hit an empty mode menu at cast. X isn't chosen yet at gate
@@ -2419,6 +2481,41 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     }
                 }
             }
+            pc.step = Game::PendingCast::ESCALATE_DISCARD;
+            break;
+        }
+
+        case Game::PendingCast::ESCALATE_DISCARD: {
+            // ESCALATE's discards (CR 702.120a / 601.2h): escalate_discard cards for each mode
+            // beyond the first, chosen one pick at a time from the live hand (less the picks so
+            // far) and discarded at PAY_APPLY. The mode menu offered each extra mode only while
+            // enough cards were left, so the candidates suffice. When every candidate left must
+            // be discarded there is no choice, and they are taken without a prompt.
+            const int owed = card_data.escalate_discard * pc.escalate_extra;
+            while (pc.escalate_discards_done < owed) {
+                std::vector<Entity> cands = escalate_discard_candidates(pc, card_data, caster, orderer);
+                if (cands.empty()) break;  // defensive: the mode menu checked the hand
+                size_t pick = 0;
+                if (cands.size() > static_cast<size_t>(owed - pc.escalate_discards_done)) {
+                    if (resume_choice < 0) {
+                        std::vector<LegalAction> menu;
+                        for (Entity e : cands) {
+                            LegalAction la(
+                                PASS_PRIORITY, e, "Discard " + global_coordinator.GetComponent<CardData>(e).name);
+                            la.category = ActionCategory::DISCARD;
+                            menu.push_back(la);
+                        }
+                        arm_cast_query(game, std::move(menu), caster, spell_entity);
+                        return;
+                    }
+                    pick = static_cast<size_t>(resume_choice);
+                    resume_choice = -1;
+                }
+                choose_cost_item(pc, cands[pick], Zone::GRAVEYARD,
+                    player_name(caster) + " discards " + global_coordinator.GetComponent<CardData>(cands[pick]).name +
+                        " (escalate)");
+                pc.escalate_discards_done++;
+            }
             pc.step = Game::PendingCast::DELVE_COUNT;
             break;
         }
@@ -2522,9 +2619,15 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
         case Game::PendingCast::MODES_TARGETS: {
             FlowTargetAsker asker(game, caster, resume_choice);
-            if (run_announce(pc.ability, pc.announce, asker, orderer, caster, false) ==
-                AnnounceStatus::SUSPENDED)
+            // Escalate (CR 702.120a): a mode past the first is offered only when its escalate
+            // cost can be paid on top of the rest of the cost.
+            const ModePickGate escalate_gate = [&pc, &card_data, caster, orderer](int picks) {
+                return escalate_payable(pc, card_data, caster, picks, orderer);
+            };
+            if (run_announce(pc.ability, pc.announce, asker, orderer, caster, false,
+                    card_data.has_escalate ? &escalate_gate : nullptr) == AnnounceStatus::SUSPENDED)
                 return;
+            if (card_data.has_escalate) apply_escalate(pc, card_data, caster);
             // Announcement complete: add the fully-targeted Ability to the entity.
             global_coordinator.AddComponent(spell_entity, pc.ability);
             pc.step = Game::PendingCast::AURA_TARGET;

@@ -71,9 +71,11 @@ enum class ActionCategory {
     KEEP_HAND = 46,            // opening mulligan: keep the current hand (paired with MULLIGAN's take-a-mulligan)
     EXILE_FROM_YARD = 47,      // exile a card from the graveyard to pay a cost (Escape); distinct from
                                // SACRIFICE_PERMANENT (a permanent leaving the battlefield)
+    CONFIRM_MODES = 48,        // choose no further mode: "choose one or more" once the fewest modes
+                               // are chosen (MinCharmNum$, CR 700.2); paired with CHOOSE_MODE
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 47;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 48;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;

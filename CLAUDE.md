@@ -232,6 +232,7 @@ reordering; an unmatched or ambiguous spec **fails loudly with the legal menu** 
 | `search:<card>` / `search:fail` · `top:` · `bottom:` · `dig:<card>` | library search / top / bottom / dig pick |
 | `pay:<text>` · `choice:<text>` · `sb-in:` / `sb-out:<card>` / `sb-done` | optional cost · generic/modal choice · sideboarding |
 | `sacrifice:` `return:` `x:` `discard:` `mode:` `color:` `name:` `exile:` `shuffle:` `companion:` … | the matching choice category, by text / card |
+| `mode:done` | choose no further mode ("choose one or more", `CONFIRM_MODES`) |
 | `concede` / `concede:game` / `concede:match` | the `-2` / `-3` sentinels |
 | `desc:<text>` · `#<n>` or bare integer | any action by description substring · literal index |
 

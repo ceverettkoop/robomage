@@ -771,6 +771,7 @@ static std::string category_task(const std::string &category) {
         {"CHOOSE_X", "choose X"},
         {"DISCARD", "choose a card to discard"},
         {"CHOOSE_MODE", "choose a mode"},
+        {"CONFIRM_MODES", "choose a mode"},
         {"CHOOSE_MANA_COLOR", "choose a mana color"},
         {"PAY_UNLESS", "pay or decline"},
         {"NAME_CARD", "name a card"},

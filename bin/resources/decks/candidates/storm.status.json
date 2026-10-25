@@ -171,15 +171,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
+    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
-    "sizes": "eb957631a0d38963cd283297d2a35380d5c40e730b5afbcb4a0a00544b72374b",
+    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
    "summary": "15 new card(s): 6 clean, 9 need 9 mechanic(s) (17 points)",
-   "time": "2026-10-25T00:23:33"
+   "time": "2026-10-25T00:50:41"
   },
   "diff": {
    "detail": {
@@ -230,15 +230,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
+    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
-    "sizes": "eb957631a0d38963cd283297d2a35380d5c40e730b5afbcb4a0a00544b72374b",
+    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "pending",
    "summary": "9 mechanic(s) to implement: Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, FORGE_PIN bump, Gaea's Will, Shuffle effect, Targeted player's counts (TargetedPlayer$...), UseAllOriginZones",
-   "time": "2026-10-25T00:23:33"
+   "time": "2026-10-25T00:50:41"
   },
   "parse": {
    "detail": {
@@ -559,14 +559,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "e51fb502097f3651db916b20d4365c267428e9dca6715b593dfec43e48ee71d3",
+    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
    "summary": "14 new card(s), 8 with findings (19 findings), 1 without a script",
-   "time": "2026-10-25T00:23:33"
+   "time": "2026-10-25T00:50:29"
   },
   "provision": {
    "detail": {

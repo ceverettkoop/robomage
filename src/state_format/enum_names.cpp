@@ -117,6 +117,7 @@ static const char *action_category_name(ActionCategory v) {
         C(DONT_SHUFFLE)
         C(KEEP_HAND)
         C(EXILE_FROM_YARD)
+        C(CONFIRM_MODES)
     }
 #undef C
     return nullptr;

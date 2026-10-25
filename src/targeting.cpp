@@ -1,5 +1,6 @@
 #include "targeting.h"
 
+#include <algorithm>
 #include <cctype>
 #include <set>
 #include <string>
@@ -508,11 +509,19 @@ bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> o
     return !build_valid_targets(probe, orderer, chooser).empty();
 }
 
+int charm_max_picks(const AbilityDef &def) {
+    return def.charm_num < 1 ? 1 : def.charm_num;
+}
+
+int charm_min_picks(const AbilityDef &def) {
+    if (def.charm_min_num < 0) return charm_max_picks(def);
+    return std::max(1, std::min(def.charm_min_num, charm_max_picks(def)));
+}
+
 bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
                          Zone::Ownership chooser, bool x_announced) {
     // Under CanRepeatModes$ (CR 700.2d) one choosable mode can fill every pick.
-    const int needed =
-        modal.def->charm_repeat_modes ? 1 : (modal.def->charm_num < 1 ? 1 : modal.def->charm_num);
+    const int needed = modal.def->charm_repeat_modes ? 1 : charm_min_picks(*modal.def);
     int choosable = 0;
     for (size_t i = 0; i < modal.charm_printed_count(); i++)
         if (mode_choosable(modal, i, orderer, chooser, x_announced) && ++choosable >= needed)
