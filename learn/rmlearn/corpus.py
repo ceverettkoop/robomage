@@ -19,7 +19,8 @@ Two routes, both writing ``<out>/episodes/*.rmtraj`` and keeping every decision 
   matchup (bo3), then ``robomage --replay LOG --trajectory-out`` per log; μ and the teacher label
   are absent and the label is the reply (``LabelConfig.chosen_without_mu``).
 
-The league is the 10 ``league/`` decks: every pair (45) with the decks' seats drawn per match
+The league is the ten original ``league/`` decks (``LEAGUE``, named: a deck onboarded into ``league/``
+later is not in it): every pair (45) with the decks' seats drawn per match
 (``swap: decks``); the explore entries every ordered pair. ``make_schedule`` is the schedule the
 actor route writes, for the orchestrator to reuse. ``run_actor_corpus`` / ``run_driver_corpus``
 return a summary dict (games, decisions, seconds, decisions/s, bytes per decision).

@@ -166,7 +166,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
 | `run.crash_loop_fatals` | 3 | fatal stops in a row without progress after which the daemon exits with status 4, which systemd does not restart (0: never; §5) |
 | `run.start_from` | `""` | a BC checkpoint (another run's `ckpt/bc-final.pt`): the run starts at B3, R-NaD seeded from it (B0–B2 skipped; the model is the checkpoint's) |
-| `league.decks` / `league.pairs` | the 10 league decks / every pair | matchups and weights (`[[a, b, w], …]`) |
+| `league.decks` / `league.pairs` | the ten original league decks (named in `config.py`'s `LEAGUE`, not read from `decks/league/`: a deck onboarded there later, eldrazi_aggro first, joins a run only by being added here) / every pair | matchups and weights (`[[a, b, w], …]`) |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
 | `league.omniscient` | true | B0/B2 episodes carry the omniscient part (aux targets) |
 | `actors.count` | 26 | training actors |

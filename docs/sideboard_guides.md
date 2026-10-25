@@ -19,6 +19,9 @@ agrees with the tables here and with the deck files.
 - The opponent's deck is known from its registered list (open decklists). An opponent list that is
   not a league deck, a matchup a guide leaves out, or a held-out matchup (below) gets Done (no
   swaps).
+- **The guided decks** are the ten below. A deck onboarded into `decks/league/` later
+  (`docs/open_vocab_plan.md` S7, first eldrazi_aggro) has no guide: it keeps its maindeck, and its
+  opponents keep theirs against it. New decks are learned through self-play, with no teacher (S8).
 - **On the play:** the matchup's *In* and *Out*.
 - **On the draw:** the same, plus one more swap: the deck's draw land out and the matchup's *Draw +1*
   card in. gw_maverick, lands and wubg_doomsday cut no land on the draw: their guides are the same

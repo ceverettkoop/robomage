@@ -8,10 +8,10 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 
 | deck | MTGTop8 name | share % | section | cards | new cards | mechanics | size points | reached |
 |---|---|---|---|---|---|---|---|---|
-| bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | checks |
+| bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | designate |
 | death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | implement |
-| eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | checks |
-| show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | checks |
+| eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | designate |
+| show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 3 | 2 | 2 | capability |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 3 | 2 | 4 | capability |

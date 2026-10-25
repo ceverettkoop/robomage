@@ -1,6 +1,6 @@
 {
  "deck": "bant_control",
- "location": "candidates",
+ "location": "heldout",
  "source": {
   "archetype_id": 883,
   "deck_id": 904241,
@@ -45,12 +45,22 @@
    },
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "make check and 100 fuzz games per matchup clean",
-   "time": "2026-10-25T01:23:50"
+   "time": "2026-10-25T02:11:44"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "heldout"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to heldout/",
+   "time": "2026-10-25T02:29:57"
   },
   "diff": {
    "detail": {

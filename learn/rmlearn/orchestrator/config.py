@@ -20,6 +20,9 @@ import os
 import re
 import tomllib
 
+# The default league.decks: the ten decks the existing runs train on, named, not read from
+# decks/league/, so a deck onboarded there later (docs/open_vocab_plan.md S7: eldrazi_aggro) joins a run
+# only through its league.decks (S8).
 LEAGUE = ["bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator", "ur_delver", "uw_control", "wrb_energy",
           "wubg_doomsday"]
 EVAL_PAIRS = [["ur_delver", "burn"], ["bug", "bw_dnt"], ["uw_control", "wrb_energy"], ["gw_maverick", "lands"]]

@@ -3,8 +3,11 @@
 ``docs/sideboard_guides.md`` is the guides' text; ``sideboard_guides.json`` beside this module is
 its machine-readable copy (``pycheck.py``'s ``guides`` part checks that the two agree):
 
-- ``draw_land``: per league deck (its stem under ``bin/resources/decks/league/``) the land it cuts
-  on the draw, null for a deck that cuts none;
+- ``draw_land``: per guided league deck (its stem under ``bin/resources/decks/league/``) the land
+  it cuts on the draw, null for a deck that cuts none. The guided decks are the ten league decks
+  the guides were written for; a deck onboarded into ``league/`` later (``docs/open_vocab_plan.md``
+  S7) has no entry and no rows, so the tier keeps its maindeck and its opponents keep theirs
+  against it;
 - ``guides``: per (deck, opponent) the ``in`` and ``out`` lists (card name -> copies) and the
   ``draw`` card (the "Draw +1" card coming in for the draw land; null when the deck has no draw
   land);
@@ -18,7 +21,7 @@ Entwined``); ``card_key`` compares names across spellings (a frame's front face 
 **The tier** (``choose``): at a sideboarding decision the seat identifies its own deck and the
 opponent's by matching the registered lists (the DECKLISTS frame; main and sideboard separately)
 against the league deck files; an unknown deck on either side, a held-out pair or a pair with no
-guide row answers Done. Otherwise the target maindeck for the coming game is the registered main
+guide row (an unguided league deck on either side) answers Done. Otherwise the target maindeck for the coming game is the registered main
 minus *Out* plus *In*, and on the draw (the seat does not play first in the coming game, the
 ``match`` table's ``plays_first``) also minus one draw land plus the *Draw +1* card. The seat moves
 from its current maindeck (the ``own_deck`` table: game 2's boarded deck when game 3's phase

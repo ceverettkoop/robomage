@@ -1104,6 +1104,86 @@ before and after (`runs/open_vocab_s7/subtypes/agents_{before,after}/`) byte-ide
 retabled again (`retable2.log`; the SCHEMA frame's subtype table changed): an append, 41 exports rebuilt, the layout-2 tables in each lineage, so the migrated checkpoints load
 as they are.
 
+**Done (the first onboarding: stages 7–10 for bant_control, show_and_tell, eldrazi_aggro)** (four
+commits after the mechanics of stage 6: LandPlayed `e2e61829`, repeated modes `a9a0aa9d`, free-cast
+statics `379b102c`, MinCharmNum / Escalate `200a38ee`; logs `runs/open_vocab_s7/onboard/`).
+
+- **Stage 7, vocab** (`onboard.py vocab`, in that order): bant_control's Celestial Purge 353, Hedge Maze
+  354, Snow-Covered Plains 355, Terminus 356, Up the Beanstalk 357; show_and_tell's Avengers
+  Disassembled 358, Blood Moon 359, Brotherhood's End 360, City of Traitors 361, Omniscience 362,
+  Sneak Attack 363, Stock Up 364; eldrazi_aggro's Eldrazi Confluence 365, Secluded Courtyard 366 and
+  the token `c_1_1_eldrazi_scion_sac` (Eldrazi Scion) 917. `make registry`: the registry was already
+  current (the free-cast `cast_variant`, `CONFIRM_MODES` and Escalate were appended with their
+  mechanics); the card digest gained the 15 ids, no known card's digest moved.
+- **Stage 8, text rows**: `make text-table` encoded the 15 new rows and kept the other 323 byte for
+  byte. It used to re-encode the whole table after any vocab append (another `vocab_hash` made every
+  entry stale), and today's libtorch moved the old rows by up to 2.4e-7; a row depends on its text
+  alone, so a `vocab_hash` difference is now a header difference that makes no entry stale
+  (`text_table_status`, rmembed's `keeps_rows`; `docs/featurizer.md` §5). `onboard.py vocab` needs
+  `PYTHON=learn/.venv/bin/python` in the environment (its `make registry` runs `make text-table`).
+- **Scenarios**: the 13 pending ones whose cards are all in the vocab are in `tests/scenarios/`
+  (City of Traitors ×3, Eldrazi Confluence ×3, Omniscience's free casts ×5, choose one or more ×2),
+  each passing. Still pending (`runs/open_vocab_s7/mech_*/pending_scenarios/`): the two Aluren and the
+  seven escalate ones (Collective Brutality, Collective Defiance), until those cards' decks are onboarded.
+- **Stage 9, the campaign**: `onboard.py checks` (`make check`, then `--matchups <deck>:*
+  --fuzz-games 100 --manual-mana-games 10`: 1110 games / matches per deck), and an extended one
+  (`runs/open_vocab_s7/onboard/campaign.sh`): each deck against the ten league decks, itself and the
+  other two new decks (13 matchups), 100 bo1 games each under `explore` and `explore:patient`, 100
+  `--no-auto-mana` games under each, and 21 bo3 `explore:patient` matches (5473 per deck). After the
+  fixes below, 19 749 games and matches (3.9 M decisions): no draw, cap, `FATAL`, `ERROR` or
+  non-fatal error line; 72 explore games of the new decks under `--selfcheck-knowledge`, 5379
+  decisions, no error. The first campaign was clean too: **the two findings came from reading the
+  scripted games**, not from the fuzzer — an effect that silently does nothing raises no error.
+  1. Terminus moved nothing: ChangeZoneAll read no `Origin$ Battlefield` (only the Echoing Truth
+     path). Fixed (`08c26662`): every battlefield permanent matched by its battlefield
+     characteristics, each owner's into their library as one order-hidden batch, a token outside the
+     batch; the token SBA now closes the gap a token leaves in a library (`--selfcheck-knowledge`
+     caught positions not 0..n-1 on a Terminus over tokens and cards). Scenario
+     `cr400_3_terminus_all_creatures_to_owners_libraries`; the owner not ordering the cards (CR 401.4)
+     is in `docs/rules_deviations.md`.
+  2. Sneak Attack's creature got no haste and was never sacrificed: Animate read neither `Defined$
+     Remembered`, `Keywords$` (an ignored key) nor `AtEOT$` (swallowed by the token parse hook, so the
+     parse report was clean). Fixed (`18c79de3`): `Defined$ Remembered`, `Keywords$` for `Duration$
+     Permanent`, `AtEOT$ Sacrifice` as a delayed end-step trigger; an Animate on a creature whose
+     Permanent the SBA pass has not built yet waits on its entry (`EntryInfo::animates`). Scenario
+     `cr603_7_sneak_attack_haste_and_end_step_sacrifice`. The parse report now names Shallow Grave's
+     `AtEOT$ Exile` (reanimator_top8 gains the finding).
+  Both were the only vocab users of their forms: no replay corpus, CLI golden or scenario output
+  changed by either fix.
+- **Scripted piloting** (`rm_driver.py` scripted:hard vs scripted:hard, 10 bo3 matches per pair,
+  `runs/open_vocab_s7/onboard/scripted/`; the new deck's record): bant_control 0–10 vs burn, 4–6 vs
+  ur_delver, 0–10 vs wrb_energy (plays its cantrips, Up the Beanstalk, Phelia, Riddler, Murktide,
+  Stifle and Force; miracles Terminus); show_and_tell
+  5–5 vs bug, 1–9 vs burn, 8–2 vs uw_control (casts Show and Tell and Sneak Attack and puts in Emrakul
+  / Atraxa, which now attack with haste; misplays: Sneak Attack activated with no creature in hand,
+  Show and Tell cast with no fatty, putting a land in); eldrazi_aggro 10–0 vs bug, 10–0 vs
+  uw_control, 4–6 vs wrb_energy (curves its threats and Kozilek's Command; gross misplay: Chalice of
+  the Void cast for X = 0 on turn 1, then its own Lotus Petal and Chalices countered by it). The
+  scripted agent has no line for these decks (plan: scripted changes minimal); S8 compares policies
+  with each other, not with these numbers.
+- **Stage 10, designate**: bant_control (fair) and show_and_tell (combo) to `decks/heldout/`,
+  eldrazi_aggro to `decks/league/`. The gate covers them with no wiring (`--check-decks`: 16 decks;
+  the `fuzz` / `smoke` presets' mirrors and ring, `playable_decks`); `provision_decks.py` provisions
+  `league/` and `heldout/`. **No run's league changed**: `league.decks`' default is `config.py`'s named
+  `LEAGUE` (the ten decks), never the directory, and every run's `config.json` names its decks;
+  `docs/rmtrain.md` and `config.py` say so. **Sideboard guides**: they cover the ten decks they were
+  written for; an onboarded league deck has none (`scripted:hard+sb` keeps its maindeck and its
+  opponents keep theirs against it, as for any unguided list), so pycheck's guide checks run over the
+  guided decks (`draw_land`'s keys) rather than every league deck; `docs/sideboard_guides.md` says so.
+  The tokenizer golden lacks the 15 new texts (`make_goldens.py tokens` needs transformers, which
+  `learn/.venv` lacks): informational, as before.
+- **Retable** (`make BUILD=RELEASE` + `actor`, `rmtrain retable` of league24h-sb, pilotA, league12h,
+  val1, ov-verify; `retable.log`): every checkpoint loads, drift **0 known cards changed, 15 new, 0
+  removed**, spec `cd12b7e39b500e60` → `05c5af382759d677` (the 15 cards and the stage-6 enum
+  appends), 41 exports rebuilt (17 / 1 / 12 / 8 / 3), the old tables kept as
+  `tables.cd12b7e39b500e60/` in each lineage; pilot-p1 / pilot-p2 read league12h's tables. The
+  `actor` tier (the open-vocab acceptance subset) passes after it.
+- **For S8**: the held-out decks are `heldout/bant_control` and `heldout/show_and_tell`; eldrazi_aggro is
+  in `league/` but in no run's `league.decks` yet (S8's expansion procedure adds it, with pair
+  weights re-chosen). `onboard.py baseline` (stage 11) iterates `decks/league/` and fails until
+  `rmtrain bench --decks` exists. Onboarding a deck should include reading its scripted games for
+  cards that do nothing; the fuzzer cannot see a silent no-op.
+
 ### S8. First expansion and the generalisation measurement (1 day tooling + runs)
 
 - **Benchmark on held-out decks:** `rmtrain bench` gains `--decks league,heldout` (the schedule over

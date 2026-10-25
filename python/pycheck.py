@@ -411,7 +411,9 @@ def _guides_data_fails(g, doc_text):
 
     def keyed(cards):
         return {key(n): c for n, c in cards.items()}
-    if set(g.draw_land) != set(g.decks) or set(doc_land) != set(g.decks):
+    # The guided decks: the league decks the guides cover (a deck onboarded later has none).
+    guided = set(g.draw_land)
+    if set(doc_land) != guided or not guided <= set(g.decks):
         fails.append(f"guides: draw lands for {sorted(g.draw_land)} (doc {sorted(doc_land)}), "
                      f"league decks {sorted(g.decks)}")
     for deck, land in g.draw_land.items():
@@ -425,8 +427,8 @@ def _guides_data_fails(g, doc_text):
                      f"{sorted(set(doc_rows) - set(json_rows))}")
     for (deck, opp), r in sorted(json_rows.items()):
         where = f"guides: {deck} vs {opp}"
-        if deck not in g.decks or opp not in g.decks or deck == opp:
-            fails.append(f"{where}: not a pair of league decks")
+        if deck not in guided or opp not in guided or deck not in g.decks or opp not in g.decks or deck == opp:
+            fails.append(f"{where}: not a pair of guided league decks")
             continue
         doc = doc_rows.get((deck, opp))
         if doc is not None and (keyed(r["in"]), keyed(r["out"]), r["draw"] and key(r["draw"])) != \
@@ -456,7 +458,7 @@ def _guides_data_fails(g, doc_text):
         if (deck, opp) not in json_rows:
             fails.append(f"guides: held-out {deck} vs {opp} has no guide row")
     held = sorted(g.holdout)
-    if len(held) != len(g.decks) or {d for d, _ in held} != set(g.decks) or {o for _, o in held} != set(g.decks):
+    if len(held) != len(guided) or {d for d, _ in held} != guided or {o for _, o in held} != guided:
         fails.append(f"guides: the holdout {held} does not hold each deck out once as each side")
     return fails
 
