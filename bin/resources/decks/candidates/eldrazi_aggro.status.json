@@ -16,6 +16,100 @@
   "window": "Last 2 Months"
  },
  "stages": {
+  "baseline": {
+   "detail": {
+    "bench": {
+     "matches": 480,
+     "policies": {
+      "final": {
+       "all": {
+        "decisive": 1155,
+        "win_rate": 0.48917748917748916,
+        "wins": 565
+       },
+       "faces": {
+        "decisive": 594,
+        "win_rate": 0.32323232323232326,
+        "wins": 192
+       },
+       "plays": {
+        "decisive": 561,
+        "win_rate": 0.6648841354723708,
+        "wins": 373
+       }
+      }
+     },
+     "summary": "runs/ov-verify/bench/onboard-eldrazi_aggro/summary.json"
+    },
+    "bench_exit": 0,
+    "scripted_hard": {
+     "league/bug": {
+      "d": 0,
+      "exit": 0,
+      "l": 9,
+      "w": 1
+     },
+     "league/burn": {
+      "d": 0,
+      "exit": 0,
+      "l": 4,
+      "w": 6
+     },
+     "league/bw_dnt": {
+      "d": 0,
+      "exit": 0,
+      "l": 6,
+      "w": 4
+     },
+     "league/gw_maverick": {
+      "d": 0,
+      "exit": 0,
+      "l": 6,
+      "w": 4
+     },
+     "league/lands": {
+      "d": 0,
+      "exit": 0,
+      "l": 6,
+      "w": 4
+     },
+     "league/reanimator": {
+      "d": 0,
+      "exit": 0,
+      "l": 8,
+      "w": 2
+     },
+     "league/ur_delver": {
+      "d": 0,
+      "exit": 0,
+      "l": 5,
+      "w": 5
+     },
+     "league/uw_control": {
+      "d": 0,
+      "exit": 0,
+      "l": 9,
+      "w": 1
+     },
+     "league/wrb_energy": {
+      "d": 0,
+      "exit": 0,
+      "l": 5,
+      "w": 5
+     },
+     "league/wubg_doomsday": {
+      "d": 0,
+      "exit": 0,
+      "l": 9,
+      "w": 1
+     }
+    }
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "scripted:hard 33/100 with the deck; zero-shot final plays 0.665 (561 games), faces 0.323 (594 games)",
+   "time": "2026-10-25T03:25:12"
+  },
   "capability": {
    "detail": {
     "clean": [],
