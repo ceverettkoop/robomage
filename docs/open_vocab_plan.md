@@ -1082,6 +1082,26 @@ far off:
   name (`fixture_check_s2_rerun.log`), so `tests/open_vocab/inputs.json` was rewritten (every digest
   moves with the positions; `inputs.layout1.json` keeps the old one).
 
+**Done (the rules' subtype list)** (one commit after layout version 2). `all_subtypes`
+(`src/constants.cpp`) was Forge's list: 74 of CR 205.3g–q's 535 subtypes were missing (among them
+Blood, Book, Germ, Gold, Incubator, Infinity, Junk, Map, Omen, Planet, Role, Room, Sand, Saproling,
+Scion, Servo, Shard, Stone, Town, Undercity; creature types such as Bison, Hamster, Inkling, Llama,
+Survivor, Symbiote; planeswalker types Dellian, Wrenn, Xenagos, Zariel …; planes Avishkar, Zendikar,
+Zhalfir …), so token scripts with them (Eldrazi Scion, Sand Warrior) printed `ERROR: UNRECOGNIZED
+TYPE TOKEN … registering as subtype`. They are added (592 values); the 57 entries no longer in the
+CR (Un-set and retired types: `Baddest,`, `and/or`, `The`, `Elemental?`, …) are kept and listed in a
+comment, since the registry's positions are by name. Type lines now match multi-word subtypes
+longest first (Time Lord, the planar types; `subtype_entry`, `subtype_max_words`), and an apostrophe
+straight or curly alike (the entries use Forge's straight one but in `Serra’s Realm`; the CR spells
+C’tan, Urza’s … curly). No local script (466 type lines) parses differently but for the tokens that
+were unknown. `make registry` appended the 74 values in reserved capacity: `layout_hash`
+`e3a65b1f5306272f` unchanged, spec `17a6f15fabca2aaa` → `cd12b7e39b500e60`, the card digest unchanged, every
+fixture decision's input digest unchanged (`tests/open_vocab/inputs.json` as committed), no corpus
+`.replay`, CLI golden or scenario changed, and the agent games of `runs/open_vocab_s1/agent_runs.sh`
+before and after (`runs/open_vocab_s7/subtypes/agents_{before,after}/`) byte-identical. The runs were
+retabled again (`retable2.log`; the SCHEMA frame's subtype table changed): an append, 41 exports rebuilt, the layout-2 tables in each lineage, so the migrated checkpoints load
+as they are.
+
 ### S8. First expansion and the generalisation measurement (1 day tooling + runs)
 
 - **Benchmark on held-out decks:** `rmtrain bench` gains `--decks league,heldout` (the schedule over

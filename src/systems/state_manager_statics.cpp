@@ -1304,10 +1304,16 @@ static std::vector<Type> parse_self_added_types(const std::string &spec) {
         if (!name.empty()) {
             Type t;
             t.name = name;
-            if      (all_subtypes.find(name) != all_subtypes.end())   t.kind = SUBTYPE;
-            else if (all_types.find(name) != all_types.end())         t.kind = TYPE;
-            else if (all_supertypes.find(name) != all_supertypes.end()) t.kind = SUPERTYPE;
-            else t.kind = SUBTYPE;
+            if (const std::string *entry = subtype_entry(name)) {
+                t.name = *entry;
+                t.kind = SUBTYPE;
+            } else if (all_types.find(name) != all_types.end()) {
+                t.kind = TYPE;
+            } else if (all_supertypes.find(name) != all_supertypes.end()) {
+                t.kind = SUPERTYPE;
+            } else {
+                t.kind = SUBTYPE;
+            }
             out.push_back(t);
         }
         p = (sep < spec.size()) ? sep + 3 : sep;

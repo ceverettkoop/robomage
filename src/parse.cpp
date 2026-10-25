@@ -55,6 +55,7 @@ static std::vector<std::string> multi_values_from_script(const std::string &scri
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
                                              std::vector<HybridPip> *hybrid_out = nullptr);
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
+static const std::string *type_line_subtype(const std::vector<std::string> &tokens, size_t at, size_t &taken);
 static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
 // A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
@@ -1701,14 +1702,33 @@ static std::set<Colors> parse_colors_field(const std::string &colors_field) {
     return ret;
 }
 
+// The subtype a type line's tokens spell from `at` on, longest first (a multi-word subtype such as
+// Time Lord or a planar type, CR 205.3m-n), with the number of tokens it takes; nullptr when none.
+static const std::string *type_line_subtype(const std::vector<std::string> &tokens, size_t at, size_t &taken) {
+    for (size_t n = std::min(subtype_max_words(), tokens.size() - at); n >= 1; --n) {
+        std::string name = tokens[at];
+        for (size_t k = 1; k < n; ++k) name += " " + tokens[at + k];
+        if (const std::string *entry = subtype_entry(name)) {
+            taken = n;
+            return entry;
+        }
+    }
+    return nullptr;
+}
+
 static std::set<Type> parse_types(const std::string &value) {
     std::set<Type> ret_val;
-    for (const std::string &name : split(value, ' ', /*skip_empty=*/true)) {
+    const std::vector<std::string> tokens = split(value, ' ', /*skip_empty=*/true);
+    for (size_t i = 0; i < tokens.size(); ++i) {
+        const std::string &name = tokens[i];
         Type found;
         found.name = name;
+        size_t taken = 1;
         // subtypes before types as bandaid for weird types in my list due to... unset cards?
-        if (all_subtypes.find(name) != all_subtypes.end()) {
+        if (const std::string *entry = type_line_subtype(tokens, i, taken)) {
+            found.name = *entry;
             found.kind = SUBTYPE;
+            i += taken - 1;
         } else if (all_types.find(name) != all_types.end()) {
             found.kind = TYPE;
         } else if (all_supertypes.find(name) != all_supertypes.end()) {
