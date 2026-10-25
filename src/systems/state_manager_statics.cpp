@@ -1135,6 +1135,8 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         Zone::ZoneValue dest = global_coordinator.GetComponent<Zone>(e).location;
         game_log("%s (token) is put into %s and ceases to exist.\n",
                  tok_name, zone_display_name(dest));
+        // A library's cards keep the depths 0..n-1 (Terminus puts a token there among cards).
+        if (dest == Zone::LIBRARY) orderer->close_zone_gap(e);
         obs_object_ceased(e, false);
         global_coordinator.DestroyEntity(e);
     }

@@ -116,6 +116,10 @@ public:
     std::vector<Entity> place_in_zone(const std::vector<std::string> &card_names,
                                       Zone::Ownership owner, Zone::ZoneValue zone);
 
+    // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
+    // leaves, shifting the objects beneath it up one.
+    void close_zone_gap(Entity target);
+
 private:
     // How move_object reports and finishes a move: `library_depth` sinks a card put on top of a
     // library below that many cards (put_in_library_at_depth); `draw` reports it as a draw, an
@@ -129,9 +133,6 @@ private:
     // add_to_zone), reported as an observation event (state_format/events.h).
     void move_object(
         bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down, const MoveOptions &opts);
-    // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
-    // leaves, shifting the objects beneath it up one.
-    void close_zone_gap(Entity target);
     // Draw a single card for `player`, first offering any available dredge
     // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out
     // loss if the library is empty.
