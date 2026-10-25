@@ -60,6 +60,8 @@ STAGES = ["scrape", "diff", "provision", "parse", "capability", "implement", "vo
           "designate", "baseline"]
 AUTOMATIC = ["diff", "provision", "parse", "capability", "implement"]
 TOKEN_BASE, TOKEN_LAST = 900, 1022
+# The column token_vocab_entries' trailing comments (the card that makes the token) start at.
+TOKEN_COMMENT_COLUMN = 69
 
 sys.path.insert(0, os.path.join(REPO, "tools", "forge_fetch"))
 import provision_decks  # noqa: E402  (collect_tokens: the token scripts a set of cards makes)
@@ -636,7 +638,8 @@ def append_vocab(cards, dry_run=False):
             if next_token > TOKEN_LAST:
                 raise RuntimeError("the token band is full")
             added_tokens[stem] = next_token
-            token_lines.append('    {"%s", "%s", %d},  // %s' % (stem, token_display_name(stem), next_token, c["card"]))
+            entry = '    {"%s", "%s", %d},' % (stem, token_display_name(stem), next_token)
+            token_lines.append("%s // %s" % (entry.ljust(TOKEN_COMMENT_COLUMN - 1), c["card"]))
             known_tokens.add(stem)
             next_token += 1
     if dry_run or (not card_lines and not token_lines):

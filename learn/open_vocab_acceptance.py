@@ -19,7 +19,7 @@ migrated by the cut-over (the file at the manifest's path, with ``migrated`` in 
 in-memory migration with its true mask parameter for parameter.
 
 **(b) An expansion.** The migrated networks over a copy of today's tables with one card appended
-(``expanded_tables``: id ``APPENDED`` with card 262's rows, its abilities at their stable rows, its
+(``expanded_tables``: the next free card id, ``appended_id``, with card 262's rows, its abilities at their stable rows, its
 parts; the manifest's vocab grown) load (``spec.check_compatible``) and give identical outputs on
 every decision (none mentions the new card); their exports' folded rows differ in the new card's row
 only. ``full --expanded DIR`` also loads every migrated checkpoint on another expanded tables
@@ -84,8 +84,8 @@ GATE_SOURCES = ["delver_vs_doomsday", "mav_vs_delver", "lg_bug__burn", "lg_burn_
 GATE_CHECKPOINTS = ["runs/league24h-sb/ckpt/fixed/m11.pt", "runs/open_vocab_s0/ckpt/m11-critic.pt",
                     "runs/league24h-sb/ckpt/rnad-final.pt"]
 GATE_ROLES = {"runs/league24h-sb/ckpt/rnad-final.pt": ("model", "target")}
-APPENDED = 353          # the synthetic expansion's new id (the next free one)
-APPENDED_FROM = 262     # whose rows it copies (5 abilities)
+APPENDED_FROM = 262     # whose rows the synthetic expansion's new card copies (5 abilities)
+TOKEN_BAND = 900        # the first token id (src/card_vocab.h): the new card is the next free id below it
 BATCH_ROWS = 32
 
 
@@ -332,23 +332,31 @@ def cutover_equal(path, role, model):
 
 # ── (b) the expansion ─────────────────────────────────────────────────────────────────────────
 
+def appended_id(tables):
+    """The synthetic expansion's new card id: the next free one, past the last card id the vocab
+    uses below the token band."""
+    used = [i for i, _ in tables.hashes["vocab"] if i < TOKEN_BAND]
+    return max(used) + 1
+
+
 def expanded_tables(tables):
-    """A copy of `tables` with card APPENDED appended (APPENDED_FROM's card, text, ability and part rows
-    at its own stable addresses) and the manifest's vocab grown by it."""
+    """A copy of `tables` with card ``appended_id`` appended (APPENDED_FROM's card, text, ability and
+    part rows at its own stable addresses) and the manifest's vocab grown by it."""
     spec = tables.spec
     per = spec.doc["card_tables"]["ability"]["abilities_per_card"]
     card, text, ability = tables.card.copy(), tables.text.copy(), tables.ability.copy()
-    if card[APPENDED].any() or text[APPENDED].any():
-        raise SystemExit("open_vocab_acceptance: card %d is not free" % APPENDED)
-    card[APPENDED], text[APPENDED] = card[APPENDED_FROM], text[APPENDED_FROM]
-    src, dst = APPENDED_FROM * per, APPENDED * per
+    new_id = appended_id(tables)
+    if card[new_id].any() or text[new_id].any():
+        raise SystemExit("open_vocab_acceptance: card %d is not free" % new_id)
+    card[new_id], text[new_id] = card[APPENDED_FROM], text[APPENDED_FROM]
+    src, dst = APPENDED_FROM * per, new_id * per
     ability[dst:dst + per] = ability[src:src + per]
     pa = tables.part_ability
     take = np.nonzero((pa >= src) & (pa < src + per))[0]
     part = np.concatenate([tables.part, tables.part[take]])
     part_ability = np.concatenate([pa, pa[take] - src + dst])
     hashes = dict(tables.hashes)
-    hashes["vocab"] = list(hashes["vocab"]) + [[APPENDED, "Synthetic Appended Card"]]
+    hashes["vocab"] = list(hashes["vocab"]) + [[new_id, "Synthetic Appended Card"]]
     hashes["tables_digest"] = "synthetic-%s" % hashes.get("tables_digest")
     return S.Tables(spec, card, text, ability, part, part_ability, hashes, tables.lineage)
 
@@ -381,12 +389,13 @@ def expansion_check(model, seat, v, lg, job, fails):
     if dv or dl:
         fails.append("%s %s: outputs moved over the expanded tables (%.2e, %.2e)" % (job["path"], job["role"], dv, dl))
     per = tables.spec.doc["card_tables"]["ability"]["abilities_per_card"]
+    new_id = appended_id(tables)
     src = APPENDED_FROM * per
     used = [i for i in range(per) if tables.ability[src + i].any() or (tables.part_ability == src + i).any()]
-    want = {"cards": [APPENDED], "abilities": [APPENDED * per + i for i in used], "slots": False}
+    want = {"cards": [new_id], "abilities": [new_id * per + i for i in used], "slots": False}
     if moved != want:
         fails.append("%s %s: the expanded export's folded rows changed otherwise than card %d's: %s"
-                     % (job["path"], job["role"], APPENDED, moved))
+                     % (job["path"], job["role"], new_id, moved))
     os.unlink(path)
     return out
 

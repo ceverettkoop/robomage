@@ -1,0 +1,66 @@
+{
+  "name": "cr700_2_choose_one_or_more_stop_after_one",
+  "why": "CR 700.2 / 601.2b: Avengers Disassembled (MinCharmNum$ 1, CharmNum$ 2: 'choose one or both') offers, once one mode is chosen, a row that ends the choice; choosing it casts the spell with the damage mode alone, so no land is destroyed (choose one or more, onboarding stage 6)",
+  "hand_a": [
+    "Avengers Disassembled"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Air Elemental",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Avengers Disassembled",
+    "A:desc:3 damage",
+    "A:mode:done"
+  ],
+  "seed": 1,
+  "max_decisions": 6,
+  "expect_menu": [
+    "^Done choosing modes \\(1 chosen\\)$"
+  ],
+  "expect_order": [
+    "chooses mode \u2014 CARDNAME deals 3 damage",
+    "Player A chooses no further mode \u2014 1 chosen",
+    "Player A casts Avengers Disassembled",
+    "Avengers Disassembled deals 3 damage to Air Elemental"
+  ],
+  "expect_count": {
+    "chooses mode \u2014": 1
+  },
+  "expect_not": [
+    "Resolving ability \\(category: Destroy\\)",
+    "Forest is destroyed"
+  ]
+}

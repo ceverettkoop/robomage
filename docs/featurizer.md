@@ -402,8 +402,11 @@ Readers: `src/featurize/rmtb.{h,cpp}` (C++, std only; also the writer and the f1
   FNV-1a 64 of the text's UTF-8 bytes (`featurize::text_hash`).
 - **The pin**, `tools/embed/MODEL_PIN`: `key value` lines `repo`, `commit` (full SHA), `pooling`
   (`cls` or `mean`, as the model was trained) and `prefix` (a JSON string). The table's `model`
-  (`<repo>@<commit>`), `pooling`, `norm_version` and `vocab_hash` must equal the pin's and the
-  vocab's, else every row is stale: a pin change regenerates the whole table.
+  (`<repo>@<commit>`), `pooling` and `norm_version` must equal the pin's, else every row is
+  stale: a pin change regenerates the whole table. Its `vocab_hash` must equal the vocab's too,
+  but another one (a vocab append) makes only the entries without a row of their hash stale: a
+  row's vector depends on its text alone, so the other rows are kept byte for byte and the header
+  rewritten.
 - **Committed** at `bin/resources/embeddings/oracle_text.rmtb` (§4.4: kind `text`, array
   `vectors` `[1025, 384]` f32, ~1.5 MB dense).
 - **Check**: `robomage --text-table-check FILE --model-pin PIN` (std only, no network) exits 0 when

@@ -100,15 +100,15 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s): 1 clean, 4 need 5 mechanic(s) (18 points)",
-   "time": "2026-10-25T00:50:40"
+   "time": "2026-10-25T01:08:30"
   },
   "diff": {
    "detail": {
@@ -127,11 +127,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "34 cards: 29 in vocab, 5 new (1 without a script)",
-   "time": "2026-10-24T21:10:53"
+   "time": "2026-10-25T01:08:29"
   },
   "implement": {
    "detail": {
@@ -145,15 +145,15 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), FORGE_PIN bump, Repeat effect (DB$ Repeat)",
-   "time": "2026-10-25T00:50:40"
+   "time": "2026-10-25T01:08:30"
   },
   "parse": {
    "detail": {
@@ -290,14 +290,14 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "4 new card(s), 3 with findings (10 findings), 1 without a script",
-   "time": "2026-10-25T00:50:28"
+   "time": "2026-10-25T01:08:30"
   },
   "provision": {
    "detail": {
@@ -316,11 +316,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 1 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:43"
+   "time": "2026-10-25T01:08:30"
   },
   "scrape": {
    "detail": {

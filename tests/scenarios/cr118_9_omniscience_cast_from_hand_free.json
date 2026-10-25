@@ -1,0 +1,18 @@
+{
+  "name": "cr118_9_omniscience_cast_from_hand_free",
+  "why": "CR 118.9: Omniscience (MayPlay$ True | MayPlayWithoutManaCost$ True | AffectedZone$ Hand) lets its controller cast Emrakul, the Aeons Torn ({15}) from hand for the alternative cost 'without paying its mana cost' off one Island; the free cast is its own menu row beside the card's other casts, and the opponent gets no such cast from it (free-cast statics, onboarding stage 6)",
+  "hand_a": ["Emrakul the Aeons Torn", "Island"],
+  "battlefield_a": ["Omniscience", "Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Lightning Bolt", "Forest"],
+  "battlefield_b": ["Mountain"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Emrakul the Aeons Torn without paying its mana cost", "B:pass", "B:pass"],
+  "seed": 1,
+  "max_decisions": 8,
+  "expect_menu": ["^Cast Emrakul, the Aeons Torn without paying its mana cost$", "^Cast Lightning Bolt$"],
+  "expect_menu_not": ["^Cast Emrakul, the Aeons Torn$", "^Cast Lightning Bolt without paying"],
+  "expect_order": ["Player A casts Emrakul, the Aeons Torn without paying its mana cost",
+                   "Emrakul, the Aeons Torn enters the battlefield"],
+  "expect_not": ["Player A activated Island"]
+}

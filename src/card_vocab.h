@@ -271,6 +271,20 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Triumph of Saint Katherine", 350},
     {"Monastery Swiftspear", 351},
     {"Raph & Mikey, Troublemakers", 352},
+    {"Celestial Purge", 353},
+    {"Hedge Maze", 354},
+    {"Snow-Covered Plains", 355},
+    {"Terminus", 356},
+    {"Up the Beanstalk", 357},
+    {"Avengers Disassembled", 358},
+    {"Blood Moon", 359},
+    {"Brotherhood's End", 360},
+    {"City of Traitors", 361},
+    {"Omniscience", 362},
+    {"Sneak Attack", 363},
+    {"Stock Up", 364},
+    {"Eldrazi Confluence", 365},
+    {"Secluded Courtyard", 366},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -311,6 +325,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"w_2_1_cat_warrior", "Cat Warrior", 914},                       // Ajani, Nacatl Pariah
     {"w_1_1_monk_prowess", "Monk", 915},                             // Cori-Steel Cutter
     {"w_4_4_angel_flying", "Angel", 916},                            // Geist of Saint Traft
+    {"c_1_1_eldrazi_scion_sac", "Eldrazi Scion", 917},               // Eldrazi Confluence
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

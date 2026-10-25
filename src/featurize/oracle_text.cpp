@@ -211,8 +211,8 @@ TextTableStatus text_table_status(const RmtbFile *table, const TextTableSpec &sp
             st.mismatches.push_back(
                 "norm_version " + std::to_string(m.norm_version) + ", expected " + std::to_string(spec.norm_version));
         if (!m.has_vocab_hash || m.vocab_hash != spec.vocab_hash)
-            st.mismatches.push_back("vocab_hash " + (m.has_vocab_hash ? hex16(m.vocab_hash) : std::string("absent")) +
-                                    ", vocab " + hex16(spec.vocab_hash));
+            st.vocab = "vocab_hash " + (m.has_vocab_hash ? hex16(m.vocab_hash) : std::string("absent")) + ", vocab " +
+                       hex16(spec.vocab_hash);
     }
     if (!st.mismatches.empty()) {
         for (size_t i = 0; i < spec.entries.size(); ++i) st.stale.push_back(i);

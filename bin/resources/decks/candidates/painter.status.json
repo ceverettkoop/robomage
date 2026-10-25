@@ -19,7 +19,6 @@
   "capability": {
    "detail": {
     "clean": [
-     "Blood Moon",
      "Chromatic Star",
      "Goblin Engineer",
      "Great Furnace",
@@ -234,7 +233,6 @@
     "new_cards": [
      "Agatha's Soul Cauldron",
      "Arena of Glory",
-     "Blood Moon",
      "Chaos Defiler",
      "Chromatic Star",
      "Fable of the Mirror-Breaker",
@@ -256,25 +254,24 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "19 new card(s): 6 clean, 13 need 15 mechanic(s) (54 points)",
-   "time": "2026-10-25T00:50:41"
+   "summary": "18 new card(s): 5 clean, 13 need 15 mechanic(s) (54 points)",
+   "time": "2026-10-25T01:08:35"
   },
   "diff": {
    "detail": {
     "distinct": 41,
-    "in_vocab": 22,
+    "in_vocab": 23,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
      "Arena of Glory",
-     "Blood Moon",
      "Chaos Defiler",
      "Chromatic Star",
      "Fable of the Mirror-Breaker",
@@ -296,11 +293,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "41 cards: 22 in vocab, 19 new (0 without a script)",
-   "time": "2026-10-24T21:09:12"
+   "summary": "41 cards: 23 in vocab, 18 new (0 without a script)",
+   "time": "2026-10-25T01:08:35"
   },
   "implement": {
    "detail": {
@@ -324,15 +321,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin Welder swap, Mana with riders and Exert ",
-   "time": "2026-10-25T00:50:41"
+   "time": "2026-10-25T01:08:35"
   },
   "parse": {
    "detail": {
@@ -408,19 +405,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/a/arena_of_glory.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Blood Moon": {
-      "card": "Blood Moon",
-      "faces": [
-       "Blood Moon"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/b/blood_moon.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -865,14 +849,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "19 new card(s), 13 with findings (41 findings), 0 without a script",
-   "time": "2026-10-25T00:50:29"
+   "summary": "18 new card(s), 13 with findings (41 findings), 0 without a script",
+   "time": "2026-10-25T01:08:35"
   },
   "provision": {
    "detail": {
@@ -890,11 +874,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 3 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:46"
+   "time": "2026-10-25T01:08:35"
   },
   "scrape": {
    "detail": {

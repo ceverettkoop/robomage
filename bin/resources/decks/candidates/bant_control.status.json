@@ -18,153 +18,69 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Celestial Purge",
-     "Hedge Maze",
-     "Snow-Covered Plains",
-     "Terminus",
-     "Up the Beanstalk"
-    ],
+    "clean": [],
     "mechanics": {},
     "needs": {},
-    "new_cards": [
-     "Celestial Purge",
-     "Hedge Maze",
-     "Snow-Covered Plains",
-     "Terminus",
-     "Up the Beanstalk"
-    ],
+    "new_cards": [],
     "size_points": 0
    },
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s): 5 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-10-25T00:50:40"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-10-25T01:08:01"
   },
   "diff": {
    "detail": {
     "distinct": 29,
-    "in_vocab": 24,
+    "in_vocab": 29,
     "no_script": [],
-    "not_in_vocab": [
-     "Celestial Purge",
-     "Hedge Maze",
-     "Snow-Covered Plains",
-     "Terminus",
-     "Up the Beanstalk"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "29 cards: 24 in vocab, 5 new (0 without a script)",
-   "time": "2026-10-24T21:08:49"
+   "summary": "29 cards: 29 in vocab, 0 new (0 without a script)",
+   "time": "2026-10-25T01:08:01"
   },
   "implement": {
    "detail": {},
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-10-25T00:50:40"
+   "time": "2026-10-25T01:08:01"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Celestial Purge": {
-      "card": "Celestial Purge",
-      "faces": [
-       "Celestial Purge"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/c/celestial_purge.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Hedge Maze": {
-      "card": "Hedge Maze",
-      "faces": [
-       "Hedge Maze"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/h/hedge_maze.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Snow-Covered Plains": {
-      "card": "Snow-Covered Plains",
-      "faces": [
-       "Snow-Covered Plains"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/s/snow_covered_plains.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Terminus": {
-      "card": "Terminus",
-      "faces": [
-       "Terminus"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/terminus.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Up the Beanstalk": {
-      "card": "Up the Beanstalk",
-      "faces": [
-       "Up the Beanstalk"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/u/up_the_beanstalk.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-10-25T00:50:28"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-10-25T01:08:01"
   },
   "provision": {
    "detail": {
@@ -178,11 +94,11 @@
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:42"
+   "time": "2026-10-25T01:08:01"
   },
   "scrape": {
    "detail": {
@@ -192,6 +108,35 @@
    "result": "ok",
    "summary": "Bant Control, 2.0% (control), 60 main + 15 side",
    "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "4f7ad4c8557b41ac62233510a0840123c5eb3197177ee8b50beb7f146fc42038",
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-10-25T01:08:02"
+  },
+  "vocab": {
+   "detail": {
+    "added": {
+     "Celestial Purge": 353,
+     "Hedge Maze": 354,
+     "Snow-Covered Plains": 355,
+     "Terminus": 356,
+     "Up the Beanstalk": 357
+    },
+    "make_registry": 0,
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c"
+   },
+   "result": "ok",
+   "summary": "5 entries and 0 token(s) appended",
+   "time": "2026-10-25T01:06:44"
   }
  }
 }

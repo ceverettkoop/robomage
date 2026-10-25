@@ -19,8 +19,6 @@
   "capability": {
    "detail": {
     "clean": [
-     "Blood Moon",
-     "City of Traitors",
      "Fiery Confluence"
     ],
     "mechanics": {
@@ -124,10 +122,8 @@
      ]
     },
     "new_cards": [
-     "Blood Moon",
      "Broadside Bombardiers",
      "Chrome Mox",
-     "City of Traitors",
      "Fable of the Mirror-Breaker",
      "Fiery Confluence",
      "Fury",
@@ -140,26 +136,24 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "11 new card(s): 3 clean, 8 need 7 mechanic(s) (15 points)",
-   "time": "2026-10-25T00:50:40"
+   "summary": "9 new card(s): 1 clean, 8 need 7 mechanic(s) (15 points)",
+   "time": "2026-10-25T01:08:31"
   },
   "diff": {
    "detail": {
     "distinct": 22,
-    "in_vocab": 11,
+    "in_vocab": 13,
     "no_script": [],
     "not_in_vocab": [
-     "Blood Moon",
      "Broadside Bombardiers",
      "Chrome Mox",
-     "City of Traitors",
      "Fable of the Mirror-Breaker",
      "Fiery Confluence",
      "Fury",
@@ -172,11 +166,11 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "22 cards: 11 in vocab, 11 new (0 without a script)",
-   "time": "2026-10-24T21:10:54"
+   "summary": "22 cards: 13 in vocab, 9 new (0 without a script)",
+   "time": "2026-10-25T01:08:31"
   },
   "implement": {
    "detail": {
@@ -192,32 +186,19 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "7 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Exile-the-card-itself costs, Fable of the Mirror-Breaker, without<Keyword> filter qualifier",
-   "time": "2026-10-25T00:50:40"
+   "time": "2026-10-25T01:08:31"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Blood Moon": {
-      "card": "Blood Moon",
-      "faces": [
-       "Blood Moon"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/b/blood_moon.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Broadside Bombardiers": {
       "card": "Broadside Bombardiers",
       "faces": [
@@ -283,19 +264,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/c/chrome_mox.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "City of Traitors": {
-      "card": "City of Traitors",
-      "faces": [
-       "City of Traitors"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/c/city_of_traitors.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -468,14 +436,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "11 new card(s), 8 with findings (16 findings), 0 without a script",
-   "time": "2026-10-25T00:50:29"
+   "summary": "9 new card(s), 8 with findings (16 findings), 0 without a script",
+   "time": "2026-10-25T01:08:31"
   },
   "provision": {
    "detail": {
@@ -491,11 +459,11 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "c878a0b8b3217d3ca6688393ea7d9b527406fe6b0c72d0ad5e4b7fdaf2c8c62b",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:44"
+   "time": "2026-10-25T01:08:31"
   },
   "scrape": {
    "detail": {

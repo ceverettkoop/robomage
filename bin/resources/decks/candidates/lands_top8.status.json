@@ -57,15 +57,15 @@
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "fbaba6e265db11af6449c6985d65dbd5b24981350d1b5eeb1632d268a2df5825",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s): 2 clean, 1 need 2 mechanic(s) (2 points)",
-   "time": "2026-10-25T00:50:41"
+   "time": "2026-10-25T01:08:32"
   },
   "diff": {
    "detail": {
@@ -81,11 +81,11 @@
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
     "scripts": "fbaba6e265db11af6449c6985d65dbd5b24981350d1b5eeb1632d268a2df5825",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "35 cards: 32 in vocab, 3 new (0 without a script)",
-   "time": "2026-10-24T21:09:05"
+   "time": "2026-10-25T01:08:32"
   },
   "implement": {
    "detail": {
@@ -96,15 +96,15 @@
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "fbaba6e265db11af6449c6985d65dbd5b24981350d1b5eeb1632d268a2df5825",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Least power (Drop of Honey), without<Keyword> filter qualifier",
-   "time": "2026-10-25T00:50:41"
+   "time": "2026-10-25T01:08:32"
   },
   "parse": {
    "detail": {
@@ -166,14 +166,14 @@
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "fbaba6e265db11af6449c6985d65dbd5b24981350d1b5eeb1632d268a2df5825",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-10-25T00:50:29"
+   "time": "2026-10-25T01:08:32"
   },
   "provision": {
    "detail": {
@@ -187,11 +187,11 @@
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
     "scripts": "fbaba6e265db11af6449c6985d65dbd5b24981350d1b5eeb1632d268a2df5825",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:45"
+   "time": "2026-10-25T01:08:32"
   },
   "scrape": {
    "detail": {

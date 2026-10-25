@@ -1,0 +1,63 @@
+{
+  "name": "cr107_3b_free_cast_x_is_zero",
+  "why": "CR 107.3b: cast without paying its mana cost (Omniscience), a spell with {X} in its mana cost has X = 0: Chalice of the Void is cast with no X announcement although three Islands could pay X = 1, and its zero charge counters then counter the Lotus Petal cast after it (free-cast statics, onboarding stage 6)",
+  "hand_a": [
+    "Chalice of the Void",
+    "Lotus Petal",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Omniscience",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Chalice of the Void without paying its mana cost",
+    "A:desc:Cast Lotus Petal without paying its mana cost"
+  ],
+  "seed": 1,
+  "max_decisions": 8,
+  "expect_menu": [
+    "^Cast Chalice of the Void$"
+  ],
+  "expect_menu_not": [
+    "^X = "
+  ],
+  "expect_not": [
+    "chooses X",
+    "Player A activated Island"
+  ],
+  "expect_order": [
+    "Player A casts Chalice of the Void without paying its mana cost",
+    "Chalice of the Void enters the battlefield",
+    "Player A casts Lotus Petal",
+    "Chalice of the Void triggered",
+    "Lotus Petal is countered"
+  ]
+}

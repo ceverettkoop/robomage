@@ -171,15 +171,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "15 new card(s): 6 clean, 9 need 9 mechanic(s) (17 points)",
-   "time": "2026-10-25T00:50:41"
+   "time": "2026-10-25T01:08:35"
   },
   "diff": {
    "detail": {
@@ -208,11 +208,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "30 cards: 15 in vocab, 15 new (1 without a script)",
-   "time": "2026-10-24T21:10:57"
+   "time": "2026-10-25T01:08:35"
   },
   "implement": {
    "detail": {
@@ -230,15 +230,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "9 mechanic(s) to implement: Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, FORGE_PIN bump, Gaea's Will, Shuffle effect, Targeted player's counts (TargetedPlayer$...), UseAllOriginZones",
-   "time": "2026-10-25T00:50:41"
+   "time": "2026-10-25T01:08:35"
   },
   "parse": {
    "detail": {
@@ -559,14 +559,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "14 new card(s), 8 with findings (19 findings), 1 without a script",
-   "time": "2026-10-25T00:50:29"
+   "time": "2026-10-25T01:08:35"
   },
   "provision": {
    "detail": {
@@ -586,11 +586,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "94ced0723d0d4152209dff15f171afa92a5fc6c3b6205ac172dc4909342f1e9a",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 1 not at the Forge pin (1 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:47"
+   "time": "2026-10-25T01:08:35"
   },
   "scrape": {
    "detail": {

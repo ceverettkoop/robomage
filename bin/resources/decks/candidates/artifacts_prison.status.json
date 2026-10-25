@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Eldrazi Confluence",
-     "Stock Up"
-    ],
+    "clean": [],
     "mechanics": {
      "FORGE_PIN bump": {
       "cards": [
@@ -63,48 +60,44 @@
      ]
     },
     "new_cards": [
-     "Eldrazi Confluence",
      "Engineered Explosives",
      "Giant's Boulder",
-     "Perilous Snare",
-     "Stock Up"
+     "Perilous Snare"
     ],
     "size_points": 9
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s): 2 clean, 3 need 3 mechanic(s) (9 points)",
-   "time": "2026-10-25T00:50:40"
+   "summary": "3 new card(s): 0 clean, 3 need 3 mechanic(s) (9 points)",
+   "time": "2026-10-25T01:08:29"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 25,
+    "in_vocab": 27,
     "no_script": [
      "Giant's Boulder"
     ],
     "not_in_vocab": [
-     "Eldrazi Confluence",
      "Engineered Explosives",
-     "Perilous Snare",
-     "Stock Up"
+     "Perilous Snare"
     ]
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "30 cards: 25 in vocab, 5 new (1 without a script)",
-   "time": "2026-10-24T21:10:51"
+   "summary": "30 cards: 27 in vocab, 3 new (1 without a script)",
+   "time": "2026-10-25T01:08:28"
   },
   "implement": {
    "detail": {
@@ -116,37 +109,19 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
     "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "3 mechanic(s) to implement: FORGE_PIN bump, Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-10-25T00:50:40"
+   "time": "2026-10-25T01:08:29"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Eldrazi Confluence": {
-      "card": "Eldrazi Confluence",
-      "faces": [
-       "Eldrazi Confluence"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/e/eldrazi_confluence.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "c_1_1_eldrazi_scion_sac"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     },
      "Engineered Explosives": {
       "card": "Engineered Explosives",
       "faces": [
@@ -186,19 +161,6 @@
       "vocab": [
        -1
       ]
-     },
-     "Stock Up": {
-      "card": "Stock Up",
-      "faces": [
-       "Stock Up"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/s/stock_up.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": [
@@ -207,14 +169,14 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "644623c21711b20591158237220813e11d580156e5f0f2189416b6df2cdee15d",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "4 new card(s), 2 with findings (2 findings), 1 without a script",
-   "time": "2026-10-25T00:50:28"
+   "summary": "2 new card(s), 2 with findings (2 findings), 1 without a script",
+   "time": "2026-10-25T01:08:29"
   },
   "provision": {
    "detail": {
@@ -222,9 +184,7 @@
     "on_forge_master": [
      "Giant's Boulder"
     ],
-    "tokens": [
-     "c_1_1_eldrazi_scion_sac"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": [
@@ -234,11 +194,11 @@
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
-    "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-24T21:25:42"
+   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-10-25T01:08:29"
   },
   "scrape": {
    "detail": {

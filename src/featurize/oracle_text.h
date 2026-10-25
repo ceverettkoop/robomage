@@ -18,7 +18,9 @@
 // and that text's hash. The table (an RMTB file of kind "text" whose one array `vectors` is f32
 // [N_CARD_TYPES + 1, hidden], a row per vocab id) is complete when its model, pooling,
 // norm_version and vocab_hash are the pin's and the vocab's, and its rows_meta lists every
-// entry's id with the entry's hash and no other id.
+// entry's id with the entry's hash and no other id. A row's vector depends on its text alone, so
+// another vocab_hash (a vocab append) makes only the entries whose row is missing or of another
+// hash stale; the other rows are kept and the header rewritten.
 //
 // The inputs file (--text-table-inputs, read by rmembed) is JSON lines: first a header
 //   {"rows":<n>,"vocab_hash":"<16 hex>","model":"<repo>@<commit>","pooling":"<p>","norm_version":<v>,
@@ -93,9 +95,10 @@ struct TextTableSpec {
 // How a table stands against a spec.
 struct TextTableStatus {
         std::vector<std::string> mismatches;  // header differences (each makes every entry stale)
+        std::string vocab;                    // the vocab_hash difference, when any (no entry stale by it)
         std::vector<size_t> stale;            // indices into spec.entries: missing or another hash
         std::vector<int64_t> extra;           // rows_meta ids that are no entry
-        bool ok() const { return mismatches.empty() && stale.empty() && extra.empty(); }
+        bool ok() const { return mismatches.empty() && vocab.empty() && stale.empty() && extra.empty(); }
 };
 
 // The text table's array of vectors.

@@ -149,6 +149,7 @@ static int check_table(const featurize::TextTableSpec &spec) {
     }
     for (const std::string &m : st.mismatches)
         if (loaded) std::printf("TEXT-TABLE: header mismatch: %s\n", m.c_str());
+    if (!st.vocab.empty()) std::printf("TEXT-TABLE: header: %s (rows kept by their text hash)\n", st.vocab.c_str());
     for (const size_t i : st.stale)
         std::printf(
             "TEXT-TABLE: stale %lld %s\n", static_cast<long long>(spec.entries[i].id), spec.entries[i].name.c_str());

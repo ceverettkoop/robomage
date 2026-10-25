@@ -313,6 +313,20 @@
 {"id":350,"name":"Triumph of Saint Katherine","digest":"45c8f56735646fae"},
 {"id":351,"name":"Monastery Swiftspear","digest":"6c0752d497200b2a"},
 {"id":352,"name":"Raph & Mikey, Troublemakers","digest":"23a518bde6332d00"},
+{"id":353,"name":"Celestial Purge","digest":"91a9b58496908d6b"},
+{"id":354,"name":"Hedge Maze","digest":"346bfabc27488553"},
+{"id":355,"name":"Snow-Covered Plains","digest":"534dff468d6912ea"},
+{"id":356,"name":"Terminus","digest":"c5f09b0fffd857cc"},
+{"id":357,"name":"Up the Beanstalk","digest":"2ded3f40a14f8476"},
+{"id":358,"name":"Avengers Disassembled","digest":"0c77ee00175cb3b4"},
+{"id":359,"name":"Blood Moon","digest":"a4a23babdddc9b4a"},
+{"id":360,"name":"Brotherhood's End","digest":"6aae347b0ba1d9c4"},
+{"id":361,"name":"City of Traitors","digest":"f1e1b78804d974f5"},
+{"id":362,"name":"Omniscience","digest":"efbb9215658e7a7d"},
+{"id":363,"name":"Sneak Attack","digest":"08ba4f721f9798a4"},
+{"id":364,"name":"Stock Up","digest":"f7c5c0eca8a1bd32"},
+{"id":365,"name":"Eldrazi Confluence","digest":"55854f7bfda094cf"},
+{"id":366,"name":"Secluded Courtyard","digest":"fb653b3480967616"},
 {"id":900,"name":"Orc Army","digest":"92bd63e23c33bf12"},
 {"id":901,"name":"Construct","digest":"4a82576f764923f0"},
 {"id":902,"name":"Eldrazi Spawn","digest":"a63ca3e8a2ffb670"},
@@ -329,5 +343,6 @@
 {"id":913,"name":"Cat","digest":"76252c809ebb76e7"},
 {"id":914,"name":"Cat Warrior","digest":"449fe14b8c93cb33"},
 {"id":915,"name":"Monk","digest":"fe02668a191742a1"},
-{"id":916,"name":"Angel","digest":"d4afbceddfa1799d"}
+{"id":916,"name":"Angel","digest":"d4afbceddfa1799d"},
+{"id":917,"name":"Eldrazi Scion","digest":"91e857ca5a275386"}
 ]}

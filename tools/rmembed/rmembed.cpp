@@ -11,9 +11,9 @@
 // model's WordPiece tokenizer (a text longer than the model's position table is fatal), encodes,
 // pools and normalises it (bert.h), and rewrites TABLE: an RMTB file of kind `text` whose array
 // `vectors` is f32 [rows, hidden], a row per vocab id, the encoded rows replaced, every other present row's bytes kept,
-// the rows of ids no longer present and the none row zero; rows_meta and the meta updated. A TABLE that is missing or
-// was made for another model, pooling, normalisation, vocab or size is rebuilt from the inputs alone, which must then
-// hold every present entry. Each text is encoded alone (batch 1) on one thread, so a row's value depends on its text
+// the rows of ids no longer present and the none row zero; rows_meta and the meta updated (a TABLE of another vocab
+// keeps its rows the same way). A TABLE that is missing or was made for another model, pooling, normalisation or size
+// is rebuilt from the inputs alone, which must then hold every present entry. Each text is encoded alone (batch 1) on one thread, so a row's value depends on its text
 // only. Then a nearest-neighbour line per encoded row (its three most similar rows) for review.
 //
 // --tokenize prints, per stdin line, the line's token ids space-separated. --embed-test writes the
@@ -151,12 +151,13 @@ static bool tokenize_all(const featurize::WordPiece &wp, const BertEncoder &enc,
     return true;
 }
 
-// True when `old`'s rows were made for `spec` (model, pooling, normalisation, vocab, size).
+// True when `old`'s rows were made for `spec` (model, pooling, normalisation, size). Its vocab
+// may be another: a row's vector depends on its text alone, and a kept row keeps its text hash.
 static bool keeps_rows(const featurize::RmtbFile &old, const featurize::TextTableSpec &spec, int64_t hidden) {
     const featurize::RmtbArray *v = featurize::text_vectors(old);
     return old.kind == "text" && v && old.has_rows_meta && v->shape[0] == spec.rows &&
            v->shape[1] == static_cast<uint64_t>(hidden) && old.model == spec.model && old.pooling == spec.pooling &&
-           old.norm_version == spec.norm_version && old.has_vocab_hash && old.vocab_hash == spec.vocab_hash;
+           old.norm_version == spec.norm_version;
 }
 
 static void print_neighbours(const std::vector<float> &vectors, int64_t cols,
