@@ -51,6 +51,14 @@ playing does not:
             μ, policy version, teacher label and evaluations as the C++ reader read them, and
             tensors files holding the C++ reader's expansion of every step's tensors, and of the
             omniscient tensors and the targets of an omniscient episode) to exactly those values.
+  open_vocab  (not in the default set: the ``featurize`` tier runs it) the S5 acceptance's inputs: the
+            gate's sources of the open-vocabulary fixtures (``tests/open_vocab/inputs.json``'s
+            ``gate_sources``, decision logs under ``tests/open_vocab/sources/``) replayed by the engine
+            (``--machine --rmstate-dump``) and featurized by ``rmfeat`` beside it (seats A and B, the
+            omniscient viewer, over its own ``--cards-frame`` tables): every fixture decision of them
+            still listed in ``inputs.json`` has the digest recorded there (sha256 of its seat and its
+            omniscient decision's arrays as written), the inputs on which the migrated checkpoints were
+            shown to reproduce S0's outputs (``learn/open_vocab_acceptance.py``).
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -65,6 +73,7 @@ exit 1 on any finding::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -86,6 +95,13 @@ import rmtb  # noqa: E402
 import rmtraj  # noqa: E402
 
 PARTS = ("decode", "refusals", "selfkill", "driver", "guides", "sideboard", "rmtb", "featurize", "traj")
+OPTIONAL_PARTS = ("open_vocab",)   # run only when named
+# The open-vocabulary fixtures (docs/open_vocab_plan.md S0 / S5).
+OPEN_VOCAB = os.path.join(os.path.dirname(_HERE), "tests", "open_vocab")
+# The decision arrays of a tensors file a digest covers, in order, with the count naming their rows.
+OPEN_VOCAB_TENSORS = (("tok_type", "tok_type"), ("tok_num", "tok_type"), ("tok_cat", "tok_type"),
+                      ("tok_card", "tok_type"), ("tok_ability", "tok_type"), ("tok_mask", "tok_type"),
+                      ("rel", "rel"), ("act_tok", "act_tok"), ("act_mask", "act_tok"))
 # The committed oracle-text table (docs/featurizer.md §5).
 TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
@@ -939,6 +955,119 @@ def check_traj(expected_path):
     return fails
 
 
+# ── The open-vocabulary acceptance's inputs ─────────────────────────────────────────────────
+
+def _rmtb_raw(path):
+    """(meta, {name: (dtype, shape, the array's bytes)}) of an RMTB file, nothing decoded."""
+    with open(path, "rb") as fp:
+        data = fp.read()
+    _, _, meta_len = rmtb._HEADER.unpack_from(data, 0)
+    meta = json.loads(data[rmtb._HEADER.size:rmtb._HEADER.size + meta_len].decode("utf-8"))
+    body = memoryview(data)[rmtb._HEADER.size + meta_len:]
+    out = {}
+    for a in meta.get("arrays", ()):
+        n = 1
+        for d in a["shape"]:
+            n *= d
+        width = rmtb.DTYPES[a["dtype"]][1]
+        out[a["name"]] = (a["dtype"], a["shape"], body[a["offset"]:a["offset"] + n * width])
+    return meta, out
+
+
+def _ints(raw):
+    dtype, shape, b = raw
+    code, width = rmtb.DTYPES[dtype]
+    return list(struct.unpack("<%d%s" % (len(b) // width, code), b))
+
+
+def _decision_digests(path):
+    """{(viewer, game, sideboarding, decision): sha256 hex[:16]} of a tensors file's decisions."""
+    _, arr = _rmtb_raw(path)
+    offs = {k: _ints(arr[k + "_offsets"]) for k in ("tok_type", "rel", "act_tok")}
+    fields = {k: _ints(arr[k]) for k in ("viewer", "game", "sideboarding", "decision")}
+    out = {}
+    for d in range(len(fields["game"])):
+        h = hashlib.sha256()
+        for name, count in OPEN_VOCAB_TENSORS:
+            dtype, shape, b = arr[name]
+            row = rmtb.DTYPES[dtype][1]
+            for x in shape[1:]:
+                row *= x
+            h.update(b[offs[count][d] * row:offs[count][d + 1] * row])
+        out[(fields["viewer"][d], fields["game"][d], fields["sideboarding"][d], fields["decision"][d])] = \
+            h.hexdigest()[:16]
+    return out
+
+
+def check_open_vocab(binary, work):
+    """The open_vocab part; returns failures."""
+    path = os.path.join(OPEN_VOCAB, "inputs.json")
+    if not os.path.exists(path):
+        return [f"open_vocab: no {path}"]
+    with open(path, encoding="utf-8") as f:
+        inputs = json.load(f)
+    with open(os.path.join(OPEN_VOCAB, "manifest.json"), encoding="utf-8") as f:
+        man = json.load(f)
+    _, index = _rmtb_raw(os.path.join(OPEN_VOCAB, "baseline", "decisions.rmtb"))
+    idx = {k: _ints(index[k]) for k in ("source", "viewer", "game", "sideboarding", "decision")}
+    bin_dir = os.path.join(os.path.dirname(_HERE), "bin")
+    rmfeat = os.path.join(os.path.dirname(binary), "rmfeat")
+    cards, tables = os.path.join(work, "cards.rmstate"), os.path.join(work, "tables")
+    os.makedirs(tables, exist_ok=True)
+    fails = []
+
+    def run_(argv):
+        r = subprocess.run(argv, cwd=bin_dir, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True,
+                           timeout=_TIMEOUT_S)
+        if r.returncode != 0:
+            fails.append(f"open_vocab: {' '.join(argv)} exited {r.returncode}: {r.stderr[-300:]}")
+        return r.returncode == 0
+
+    if not (run_([binary, "--cards-frame", cards]) and run_([rmfeat, "--export-tables", cards, tables])):
+        return fails
+    sources = {s["name"]: s for s in man["sources"]}
+    checked = moved = 0
+    for name in inputs["gate_sources"]:
+        src = sources[name]
+        dump = os.path.join(work, name + ".rms")
+        if not run_([binary, "--replay", os.path.join(OPEN_VOCAB, src["log"]), "--machine", "--rmstate-dump", dump]):
+            continue
+        dig = {}
+        for viewer in ("A", "B", "omniscient"):
+            out = os.path.join(work, f"{name}.{viewer}.rmtb")
+            if not run_([rmfeat, "--featurize", dump, "--viewer", viewer, "--out", out, "--cards", cards,
+                         "--tables", tables]):
+                break
+            dig[viewer] = _decision_digests(out)
+            os.unlink(out)
+        os.unlink(dump)
+        if len(dig) != 3:
+            continue
+        seat = {**dig["A"], **dig["B"]}
+        omni = {k[1:]: v for k, v in dig["omniscient"].items()}
+        for r in range(len(idx["source"])):
+            want = inputs["decisions"].get(str(r))
+            if idx["source"][r] != src["index"] or want is None:
+                continue
+            key = (idx["viewer"][r], idx["game"][r], idx["sideboarding"][r], idx["decision"][r])
+            got = [seat.get(key), omni.get(key[1:])]
+            checked += 1
+            if got != want:
+                moved += 1
+                if moved <= 5:
+                    fails.append(f"open_vocab: {name}: fixture decision {r} {key}: inputs {got}, recorded {want}")
+    if moved > 5:
+        fails.append(f"open_vocab: {moved - 5} more fixture decisions' inputs moved")
+    if moved:
+        fails.append("open_vocab: the featurization of the open-vocabulary fixtures moved: the migration's acceptance "
+                     "holds on the recorded inputs only (docs/open_vocab_plan.md S5); if intended, drop the moved "
+                     "decisions: learn/open_vocab_acceptance.py inputs --drop-moved")
+    if not fails:
+        print(f"  OK   open_vocab: {checked} fixture decisions of {len(inputs['gate_sources'])} sources featurize to "
+              "their recorded inputs", flush=True)
+    return fails
+
+
 def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected=None, traj_expected=None):
     """The requested parts; returns the failure messages (empty = pass)."""
     binary = os.path.abspath(binary)
@@ -972,6 +1101,8 @@ def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected
             fails += check_featurize(featurize_expected)
         if "traj" in parts:
             fails += check_traj(traj_expected)
+        if "open_vocab" in parts:
+            fails += check_open_vocab(binary, work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return fails
@@ -982,7 +1113,8 @@ def main(argv=None) -> int:
                                  "smoke tier runs them).")
     ap.add_argument("--binary", default=rm_driver.DEFAULT_BINARY, help="the engine (default %(default)s)")
     ap.add_argument("--out-dir", default=None, help="the scratch directory's parent (default the system's)")
-    ap.add_argument("--part", default=",".join(PARTS), help=f"comma list of {', '.join(PARTS)} (default all)")
+    ap.add_argument("--part", default=",".join(PARTS), help=f"comma list of {', '.join(PARTS + OPTIONAL_PARTS)} "
+                                                           f"(default all but {', '.join(OPTIONAL_PARTS)})")
     ap.add_argument("--rmtb-samples", default=None, help="the rmtb part's samples (robomage_check's smoke tier "
                     "writes them)")
     ap.add_argument("--featurize-expected", default=None, help="the featurize part's file list (robomage_check's "
@@ -991,7 +1123,7 @@ def main(argv=None) -> int:
                     "traj tier writes it)")
     args = ap.parse_args(argv)
     parts = [p for p in args.part.split(",") if p]
-    unknown = [p for p in parts if p not in PARTS]
+    unknown = [p for p in parts if p not in PARTS + OPTIONAL_PARTS]
     if unknown:
         ap.error(f"unknown part(s) {', '.join(unknown)}")
     fails = run(args.binary, args.out_dir, parts, args.rmtb_samples, args.featurize_expected, args.traj_expected)

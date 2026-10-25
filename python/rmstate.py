@@ -16,7 +16,8 @@ tables exactly that way, and its hash must match its table blocks; the storage n
 API (stdlib only):
 
 - ``records(fp)``: the payloads of a binary file object (a file or a pipe);
-- ``Schema.from_frame(payload)``: the schema a SCHEMA frame describes; ``schema.decode(payload)``
+- ``Schema.from_frame(payload)``: the schema a SCHEMA frame describes (``versions=`` admits an older
+  format's SCHEMA frame, for its enum names); ``schema.decode(payload)``
   → ``Frame`` (``frame.tables``: table name → list of row dicts, text resolved to ``str``; ``only=``
   limits the rows decoded to some tables);
 - ``StreamDecoder``: follows a stream's SCHEMA frames, ``feed(payload)`` → ``Frame``;
@@ -196,7 +197,7 @@ class Schema:
     # ── building from a SCHEMA frame ──────────────────────────────────────────────────────────
 
     @classmethod
-    def _bootstrap(cls, hash_: int) -> "Schema":
+    def _bootstrap(cls, hash_: int, version: int = _BOOTSTRAP_VERSION) -> "Schema":
         tables = {}
         for tid, (name, cols) in _BOOT_TABLES.items():
             t = Table(tid, name, "", 0)
@@ -207,18 +208,21 @@ class Schema:
                 off += c.width
             t.row_width = off
             tables[tid] = t.finish()
-        return cls(_BOOTSTRAP_VERSION, hash_, tables, {})
+        return cls(version, hash_, tables, {})
 
     @classmethod
-    def from_frame(cls, payload: bytes) -> "Schema":
+    def from_frame(cls, payload: bytes, versions=(_BOOTSTRAP_VERSION,)) -> "Schema":
         """The schema a SCHEMA frame payload describes (the frame checked against its own hash
-        and the bootstrap)."""
+        and the bootstrap). `versions` are the format versions accepted: the SCHEMA frame's own
+        tables are the same in every version, so a reader of an older stream's schema alone (its
+        enum names: the checkpoint migration, learn/rmlearn/migrate.py) may accept earlier ones;
+        decoding other frames with such a schema is not supported."""
         (version, kind, viewer, h), _ = _blocks(payload)
-        if version != _BOOTSTRAP_VERSION:
+        if version not in versions:
             raise RMStateError(f"format version {version}, expected {_BOOTSTRAP_VERSION}")
         if _fnv1a64(payload[_FRAME_HEADER.size:]) != h:
             raise RMStateError("SCHEMA frame hash does not match its table blocks")
-        boot = cls._bootstrap(h)
+        boot = cls._bootstrap(h, version)
         rows = boot._rows(payload, check_kind=False)
         if set(rows) - {"schema_table", "schema_column", "schema_enum"}:
             raise RMStateError("SCHEMA frame with tables other than 1-4")

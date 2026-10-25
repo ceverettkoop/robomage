@@ -24,7 +24,9 @@ per-game win rate (Wilson 95%, match-clustered SE), game 1 apart from games 2–
 policy's win rate playing it and facing it, each policy's difference from the baseline with its
 two-SE half-width; per policy the deck-vs-deck matrix; the sideboarding report (``sb_report``: the
 policy's phases, and the opponent's when it is not scripted:hard). A policy whose ``report.json``
-exists (against the same opponent) is not played again (an interrupted benchmark resumes).
+exists (against the same opponent) is not played again (an interrupted benchmark resumes), and its
+export is not needed: a policy played on an earlier engine or tables (its export no longer loads, its
+directory copied in) is compared like the others.
 """
 
 import argparse
@@ -402,7 +404,8 @@ def run_benchmark(run, policies=None, label="end", matches=DEFAULT_MATCHES, acto
     reports, records, sbs = {}, {}, {}
     for item in items:
         lab, path, opts = resolve_policy(run, item)
-        if not export_missing(run, path, log):
+        played = read_json(os.path.join(root, slug(lab), "report.json")) is not None
+        if not played and not export_missing(run, path, log):
             log("%s: no export %s; skipped" % (lab, path))
             continue
         reports[lab] = play_policy(lab, path, opts, os.path.join(root, slug(lab)), matches, actors, seed,

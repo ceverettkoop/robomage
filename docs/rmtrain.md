@@ -17,6 +17,8 @@ learn/rmtrain bench r1 --wait                            # after the run: its po
 learn/rmtrain retable r1                                 # a stopped run onto the engine's tables (§1.1)
 ```
 
+(A layout change, not a vocab expansion, migrates the checkpoints first: §1.2.)
+
 ## 1. Starting and resuming
 
 `rmtrain start <run> [--config FILE] [--set section.key=value …] [--foreground]`
@@ -81,6 +83,31 @@ the run runs; `orchestrator/retable.py`):
    checkpoints checked, the drift, the exports rebuilt) and a `retable` metrics line.
 
 Then add the new decks to `league.decks` and `start` the run (`docs/open_vocab_plan.md` S8).
+
+### 1.2 After a layout change: `python -m rmlearn.migrate`
+
+A change of the layout itself (a capacity exceeded, a `layout_version` bump, or a checkpoint from
+before the layout registry: every run before `docs/open_vocab_plan.md` S5) is not a retable: the
+checkpoints' parameters are indexed by the old positions. `learn/rmlearn/migrate.py` moves them by
+name (token types, numeric and categorical slots, enum values, relations, table columns, card and
+ability slots), refusing any old name the current layout lacks but the archetype inputs S1 removed;
+it sets the seen-card mask from the ids the run's training inputs held (`--seen`; S4's episode scan,
+`runs/open_vocab_s4/card_ids_<run>.json`) and empties an R-NaD learner state's replay window (the old
+episodes are of the old layout; self-play refills it):
+
+```sh
+cd learn && .venv/bin/python -m rmlearn.migrate --run ../runs/r1 --seen IDS.json --tables NEW_TABLES
+learn/rmtrain retable r1                                  # the current tables, exports rebuilt
+```
+
+`--run` migrates every `ckpt/**/*.pt` (BC `.opt` optimizer files too) into the run's `ckpt/` and keeps
+the originals in `ckpt.v1/` and the old exports in `exports.v1/` (nothing is deleted;
+`ckpt/migration.json` records each file's source, both sha256s and the seen set), so `state.json`'s
+paths name the migrated files; `retable` then accepts the run (its old tables, exported before model
+manifests, are kept as `tables.<old spec_hash>/`, in no lineage: the window takes no episode of
+the old layout). A single file: `python -m rmlearn.migrate OLD.pt
+--tables DIR --seen IDS --out NEW.pt`. The migration's acceptance against S0's fixtures is
+`learn/open_vocab_acceptance.py` (the gate's `actor` tier runs its subset).
 
 ## 2. Inspecting and steering
 

@@ -20,10 +20,11 @@ alone, training's marking moves no output, the mask through a checkpoint and the
 compatibility (``spec.check_compatible``: a checkpoint loads on tables with a card appended and
 carries their manifest, a removed or renamed card, another layout, text model or a moved registry
 entry refused; an export of the old tables refused on the new ones with the rebuild message; the same
-verdicts as the C++ check, ``rmfeat --compat``, case by case, when the engine is given); the inference
-server on the CPU through the Python client (results against the model, several policies and
-versions, a swap, batching across concurrent clients, handshake and request refusals, shutdown);
-BC's event dropout; the replay window's splits by game and by match and its probe sample.
+verdicts as the C++ check, ``rmfeat --compat``, case by case, when the engine is given); the checkpoint
+migration (``rmlearn.migrate``) from a synthetic old layout, exact; the inference server on the CPU
+through the Python client (results against the model, several policies and versions, a swap, batching
+across concurrent clients, handshake and request refusals, shutdown); BC's event dropout; the replay
+window's splits by game and by match and its probe sample.
 Prints ``RMLEARN-CHECK: ok`` and exits 0, or the failures and exits 1.
 """
 
@@ -54,6 +55,7 @@ from rmlearn import bc as BC  # noqa: E402
 from rmlearn import client as CL  # noqa: E402
 from rmlearn import episodes as EP  # noqa: E402
 from rmlearn import export as E  # noqa: E402
+from rmlearn import migrate as MG  # noqa: E402
 from rmlearn import model as M  # noqa: E402
 from rmlearn import replay as RP  # noqa: E402
 from rmlearn import rmtb  # noqa: E402
@@ -473,6 +475,120 @@ def check_compat(args, tables, model):
          "card, another layout, text model or a moved registry entry; its export runs on its own tables only (the "
          "rebuild message)%s" % (len(want), ", ".join(sorted(var)),
                                  "; rmfeat --compat agrees on all %d" % parity if parity else ""))
+
+
+# ── the checkpoint migration ─────────────────────────────────────────────────────────────────
+
+def synthetic_old_layout(doc, rng):
+    """A layout before the registry (ids in order, running offsets, no reserved positions) holding the
+    same names as the spec document `doc` in other orders: token types, numeric slots, enum values,
+    relations and table columns permuted, plus what S1 removed (a ``lists`` type, the knowledge level
+    ``EXPERT_BELIEF``); (the spec document, its enums)."""
+    enums = {k: list(v)[::-1] for k, v in doc["enums"].items()}
+    enums["knowledge_level"] = enums["knowledge_level"] + ["EXPERT_BELIEF"]
+    types, cat = [], 1
+    for i, ti in enumerate(rng.permutation(len(doc["token_types"]))):
+        t = doc["token_types"][int(ti)]
+        cats = []
+        for c in t["categorical"]:
+            size = len(enums[c["source"][5:]]) + 1 if c["source"].startswith("enum:") else c["size"]
+            cats.append({"name": c["name"], "source": c["source"], "offset": cat, "size": size})
+            cat += size
+        types.append({"id": i, "name": t["name"], "numeric": [{"name": n["name"]} for n in t["numeric"]][::-1],
+                      "categorical": cats,
+                      "cards": [{"name": c["name"]} for c in sorted(t["cards"], key=lambda c: c["col"])],
+                      "abilities": [{"name": c["name"]} for c in sorted(t["abilities"], key=lambda c: c["col"])]})
+    types.append({"id": len(types), "name": "lists", "numeric": [{"name": "a"}, {"name": "b"}],
+                  "categorical": [{"name": "player_rel", "source": "player-rel", "offset": cat, "size": 4}],
+                  "cards": [], "abilities": []})
+    rels = [doc["relation_types"][int(i)] for i in rng.permutation(len(doc["relation_types"]))]
+    tables = {}
+    for k in ("card", "ability", "part"):
+        cols = [c for c in doc["card_tables"][k]["columns"] if not c.startswith("#")]
+        tables[k] = {"columns": [cols[int(i)] for i in rng.permutation(len(cols))]}
+    return ({"token_types": types, "relation_types": [dict(r, id=j) for j, r in enumerate(rels)],
+             "card_tables": tables, "categorical_size": cat + 4, "K": doc["K"], "Q": doc["Q"]}, enums)
+
+
+def old_state_of(lm, sd, rng):
+    """`sd` (a state_dict of the current layout) laid out in `lm`'s old layout: each layout-indexed
+    tensor at its old positions (random where the current one has none), the aux heads S1 removed
+    added, no seen mask."""
+    g = torch.Generator().manual_seed(int(rng.integers(1 << 30)))
+    out = {}
+    for k, v in sd.items():
+        if k == "cards.card_seen":
+            continue
+        p = lm.pairs(k)
+        if p is None:
+            out[k] = v.clone()
+            continue
+        kind, pairs, n_old = p
+        shape = (n_old,) + tuple(v.shape[1:]) if kind == "rows" else (v.shape[0], n_old)
+        o = torch.randn(shape, generator=g)
+        ij = torch.tensor(pairs, dtype=torch.int64).reshape(-1, 2)
+        if kind == "rows":
+            o[ij[:, 0]] = v[ij[:, 1]]
+        else:
+            o[:, ij[:, 0]] = v[:, ij[:, 1]]
+        out[k] = o
+    d = sd["cards.card_proj.weight"].shape[0]
+    out["aux_list.weight"], out["aux_list.bias"] = torch.randn(13, d, generator=g), torch.zeros(13)
+    out["aux_archetype.weight"], out["aux_archetype.bias"] = torch.randn(8, d, generator=g), torch.zeros(8)
+    return out
+
+
+def check_migration(args, tables, model, x):
+    """rmlearn.migrate on a synthetic old layout (the module's mapping by name, independent of any run):
+    a network laid out in it migrates back to the original exactly, but the positions the old layout
+    lacks (zero), with the given seen set (set_seen) and the same outputs; Adam's moments like their
+    parameters; an old name the current layout lacks refused, naming it."""
+    print("migration", flush=True)
+    rng = np.random.default_rng(5)
+    with open(os.path.join(args.tables, "spec.json")) as fp:
+        doc = json.load(fp)
+    old_doc, enums = synthetic_old_layout(doc, rng)
+    lm = MG.LayoutMap(MG.Layout(old_doc, enums), MG.Layout(doc, doc["enums"]))
+    ok(sorted(lm.dropped) == ["token type lists", "value EXPERT_BELIEF of header.knowledge",
+                              "value EXPERT_BELIEF of k_meta.level"], "migration: dropped %s" % lm.dropped)
+    ref = copy.deepcopy(model).cpu().eval()
+    seen = sorted(set(range(0, 900, 3)) | {900, 1023})
+    ref.cards.set_seen(seen)
+    want = {k: v.clone() for k, v in ref.state_dict().items()}
+    for k, v in want.items():          # the positions the old layout lacks read zero after a migration
+        p = lm.pairs(k)
+        if p is not None:
+            kind, pairs, _ = p
+            keep = torch.zeros(v.shape[0] if kind == "rows" else v.shape[1], dtype=torch.bool)
+            keep[torch.tensor([b for _, b in pairs], dtype=torch.int64)] = True
+            v.mul_((keep.view(-1, *([1] * (v.dim() - 1))) if kind == "rows" else keep.view(1, -1)).to(v.dtype))
+    ref.load_state_dict(want)
+    old = old_state_of(lm, ref.state_dict(), rng)
+    got = MG.build_network(lm, ref.cfg.to_dict(), old, tables, seen)
+    gsd = got.state_dict()
+    bad = [k for k in want if not torch.equal(gsd[k], want[k])]
+    ok(not bad and set(gsd) == set(want), "migration: the migrated network differs from the original at %s" % bad[:4])
+    ok(got.cards.seen_ids() == seen, "migration: the seen set is not the one given")
+    with torch.no_grad():
+        a, b = ref(*x), got(*x)
+    ok(maxdiff(a["logits"], b["logits"]) == 0 and maxdiff(a["value"], b["value"]) == 0,
+       "migration: the migrated network's outputs differ")
+    names = list(old)
+    adam = {"t": 7, "m": [old[k] for k in names], "v": [old[k] * 2 for k in names]}
+    mig = MG.migrate_adam(lm, adam, old, got)
+    params = dict(got.named_parameters())
+    bad = [k for (k, _), m, v in zip(got.named_parameters(), mig["m"], mig["v"])
+           if not (torch.equal(m, params[k].detach()) and torch.equal(v, params[k].detach() * 2))]
+    ok(not bad and mig["t"] == 7, "migration: Adam's moments do not follow their parameters at %s" % bad[:4])
+    broken = copy.deepcopy(old_doc)
+    broken["token_types"][0]["numeric"].append({"name": "no_such_slot"})
+    try:
+        MG.LayoutMap(MG.Layout(broken, enums), MG.Layout(doc, doc["enums"]))
+        ok(False, "migration: an old numeric slot the current layout lacks was not refused")
+    except MG.MigrationError as err:
+        ok("no_such_slot" in str(err), "migration: the refusal does not name the slot: %s" % err)
+    info("migration: a synthetic old layout (%d types, every order permuted, S1's removals) migrates back exactly, "
+         "outputs equal, Adam's moments like their parameters, an unknown name refused" % len(old_doc["token_types"]))
 
 
 def check_server(args, tables, model, decs):
@@ -993,6 +1109,7 @@ def main():
     check_exports(args, model, pol, x)
     check_seen(args, tables, model, x)
     check_compat(args, tables, model)
+    check_migration(args, tables, model, x)
     check_server(args, tables, model, decs)
     if args.engine_dir and not args.episodes:
         args.episodes = make_episodes(args)

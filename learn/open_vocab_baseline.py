@@ -5,6 +5,11 @@ acceptance test): every runnable checkpoint's outputs on a fixed decision set, u
     learn/.venv/bin/python learn/open_vocab_baseline.py generate [--out tests/open_vocab] [--work runs/open_vocab_s0]
     learn/.venv/bin/python learn/open_vocab_baseline.py select   # once: copy the decision sources in
 
+``generate`` reproduces the fixtures only on the pre-S1 tree (13ffb640) with the original checkpoints
+in each run's ``ckpt/``: since S5's cut-over they are in ``ckpt.v1/`` (``rmlearn.migrate``) and the
+runs' old tables in ``tables.<spec_hash>/``. Its helpers (featurizing the sources, the decision set,
+the decisions files) serve S5's acceptance (``learn/open_vocab_acceptance.py``) on today's layout.
+
 **Decision sources** (committed under ``OUT/sources/``, so the fixture does not depend on a later
 corpus re-recording or on a run directory): the replay corpus's decision logs
 (``tests/corpus/*.rmlog``, copied to ``sources/corpus/``) and the decision logs of five complete

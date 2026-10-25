@@ -45,6 +45,7 @@ static void check_trajectories(const rmcheck::Options &opt, rmcheck::Report &rep
     const std::string &live, const std::string &projected);
 static bool build_variant(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
     const rmcheck::ActorSetup &a, const std::string &out_ts, void (*mutate)(featurize::Manifest *));
+static void check_open_vocab(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a);
 
 // The FNV-1a 64 of a file's bytes (16 hex digits), "" when it cannot be read.
 static std::string file_stamp(const std::string &path) {
@@ -254,6 +255,37 @@ static bool build_variant(const rmcheck::Options &opt, rmcheck::Report &rep, con
     return false;
 }
 
+// The checkpoint migration's acceptance (docs/open_vocab_plan.md S5, learn/open_vocab_acceptance.py
+// gate): the gate's subset of S0's fixture checkpoints (originals under runs/, git-ignored) migrated in
+// memory and run on the fixture decisions of the gate's sources as this build featurizes them, against
+// S0's outputs; the cut-over's files against their migration; a synthetic one-card expansion. A
+// clone without the original checkpoints prints its skipped: line.
+static void check_open_vocab(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a) {
+    rmcheck::ProcSpec spec;
+    spec.argv = {a.python, rmcheck::path_join(opt.repo, "learn/open_vocab_acceptance.py"), "gate", "--out-dir",
+        rmcheck::path_join(a.dir, "open_vocab"), "--engine", opt.binary, "--rmfeat", opt.rmfeat};
+    spec.cwd = opt.repo;
+    spec.timeout_s = 1800;
+    spec.merge_stderr = true;
+    spec.env = {"HIP_VISIBLE_DEVICES=-1", "CUDA_VISIBLE_DEVICES=-1"};
+    const rmcheck::ProcResult r = rmcheck::run_process(spec);
+    const std::string log = rmcheck::path_join(a.dir, "open_vocab.txt");
+    rmcheck::write_file(log, r.out);
+    std::string last;
+    for (const std::string &line : rmcheck::split_lines(r.out))
+        if (!line.empty()) last = line;
+    if (r.ok() && rmcheck::starts_with(last, "skipped: ")) {
+        rep.info("open_vocab: " + last);
+        return;
+    }
+    if (!r.ok() || !rmcheck::starts_with(last, "OPEN-VOCAB-ACCEPTANCE: ok")) {
+        rep.error(
+            "actor", "learn/open_vocab_acceptance.py gate " + r.status_text() + ": " + last + " (see " + log + ")");
+        return;
+    }
+    rep.info("open_vocab: " + last.substr(std::string("OPEN-VOCAB-ACCEPTANCE: ").size()) + " -> " + log);
+}
+
 namespace rmcheck {
 
 const char *const TORCH_PYTHON_ENV = "ROBOMAGE_TORCH_PYTHON";
@@ -330,7 +362,8 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
 // same argmax bo3 match as the TorchScript one, the refusals, the three exports' agreement on the
 // match's decisions, then the remote evaluation checks (actor_remote_checks), the actor's hot
 // reload of an in-process model (actor_reload_check), the continuous smoke run (actor_smoke_check)
-// and the actor's sideboard exploration (actor_sb_explore_check).
+// and the actor's sideboard exploration (actor_sb_explore_check); first the checkpoint migration's
+// acceptance (check_open_vocab).
 void tier_actor(const Options &opt, Report &rep) {
     projection_checks(rep);
     ActorSetup a;
@@ -339,6 +372,7 @@ void tier_actor(const Options &opt, Report &rep) {
         if (!skip.empty()) rep.info("actor: skipped: " + skip);
         return;
     }
+    check_open_vocab(opt, rep, a);
     const std::string live = path_join(a.dir, "match_live.rmtb");
     const std::string projected = path_join(a.dir, "projected_evals.rmtb");
     const std::string seed = std::to_string(opt.seed + 7);

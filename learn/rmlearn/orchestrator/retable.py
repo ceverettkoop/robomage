@@ -17,7 +17,8 @@ orchestrator, at every start) stops it with the command to run, and ``retable`` 
    rows changed, the new and the removed ones;
 4. keeps the old tables as ``tables.<old spec_hash>/`` (with the old cards frame), moves the new ones
    to ``tables/`` and the new frame to ``cards.rmstate``, and writes ``tables/lineage.json`` (the
-   earlier tables, oldest first: the replay window keeps their episodes, spec.Tables.accepted_spec_hashes);
+   earlier tables of the same layout, oldest first: the replay window keeps their episodes,
+   spec.Tables.accepted_spec_hashes; tables of an earlier layout, a migrated run's, join none);
 5. rebuilds the exports (every ``state.json`` export, latest per name, from its checkpoint into
    ``exports/<name>``, in the run's ``checkpoint.export_formats``; the evaluations' and the live
    exports are removed, the orchestrator makes them again);
@@ -58,6 +59,15 @@ def tables_summary(tables_dir):
     out = {k: m.get(k) for k in SUMMARY_KEYS}
     out["cards"] = len(m.get("vocab", []))
     return out
+
+
+def _spec_hash_of(tables_dir):
+    """The spec hash of a tables directory's spec.json (any spec version), or None."""
+    raw = _read_bytes(os.path.join(tables_dir, "spec.json"))
+    if raw is None:
+        return None
+    from .. import spec as S
+    return "%016x" % S.fnv1a64(raw.rstrip(b"\n"))
 
 
 def engine_paths(cfg):
@@ -209,8 +219,12 @@ def retable(run, cfg, log=print):
             if r is not None:
                 refused.append("%s: %s" % (os.path.relpath(ck, run.path), r[1]))
         if refused:
-            raise RetableError("%d of %d checkpoints do not load on the new tables:\n  %s"
-                               % (len(refused), len(ckpts), "\n  ".join(refused)))
+            hint = ""
+            if any("no layout_hash" in r for r in refused):
+                hint = ("\n(checkpoints of an earlier layout: migrate the run first, `cd learn && .venv/bin/python -m "
+                        "rmlearn.migrate --run %s --seen IDS --tables DIR`, docs/rmtrain.md §1.2)" % run.path)
+            raise RetableError("%d of %d checkpoints do not load on the new tables:\n  %s%s"
+                               % (len(refused), len(ckpts), "\n  ".join(refused), hint))
         log("%d checkpoints load on the new tables (spec %s, %d cards)" % (len(ckpts), new["spec_hash"], new["cards"]))
         drift = table_drift(rmfeat, bin_dir, run.tables, new_dir) if old is not None else \
             {"summary": "no earlier manifest", "changed": [], "new": [], "removed": []}
@@ -224,17 +238,21 @@ def retable(run, cfg, log=print):
             raise
         raise RetableError("%s: %s" % (type(err).__name__, err))
     # The swap: the old tables (and their cards frame) kept, the new ones in place.
-    old_name = "tables.%s" % (old["spec_hash"] if old else "pre-manifest")
+    old_name = "tables.%s" % (old["spec_hash"] if old else _spec_hash_of(run.tables) or "pre-manifest")
     keep = os.path.join(run.path, old_name)
     if os.path.exists(keep):
         keep = "%s.%d" % (keep, int(time.time()))
     lineage = S.read_lineage(run.tables)
     earlier = old
     if earlier is None and os.path.exists(os.path.join(run.tables, "spec.json")):    # tables before manifests
-        sp = S.load_spec(os.path.join(run.tables, "spec.json"))
-        earlier = {"spec_hash": sp.hash, "vocab_hash": sp.vocab_hash, "layout_hash": sp.layout_hash,
-                   "tables_digest": None, "text_model": None}
-    if earlier is not None:
+        with open(os.path.join(run.tables, "spec.json"), "rb") as fp:
+            raw = fp.read().rstrip(b"\n")
+        doc = json.loads(raw)                    # a spec of any version (one before the registry has no layout)
+        earlier = {"spec_hash": "%016x" % S.fnv1a64(raw), "vocab_hash": doc.get("vocab_hash"),
+                   "layout_hash": doc.get("layout_hash"), "tables_digest": None, "text_model": None}
+    if earlier is not None and earlier.get("layout_hash") == new["layout_hash"]:
+        # Earlier tables of another layout (a migration's, docs/rmtrain.md §1.2) join no lineage: their
+        # episodes are of the old layout, which the window must not accept.
         lineage.append(dict({k: earlier[k] for k in SUMMARY_KEYS}, dir=os.path.basename(keep), until=time.time()))
     os.rename(run.tables, keep)
     if os.path.exists(run.cards):
@@ -257,14 +275,14 @@ def retable(run, cfg, log=print):
                               cfg["checkpoint"]["export_formats"], log_fp)
             rebuilt.append(e["name"])
             log("re-exported %s from %s" % (e["name"], os.path.relpath(e["checkpoint"], run.path)))
-    record = {"at": time.time(), "from": old, "to": new, "kept": os.path.basename(keep), "checkpoints": len(ckpts),
+    record = {"at": time.time(), "from": old or earlier, "to": new, "kept": os.path.basename(keep), "checkpoints": len(ckpts),
               "drift": drift, "exports": rebuilt, "removed_exports": len(removed)}
     state["tables"] = new
     state.setdefault("retables", []).append(record)
     write_json(run.state, state)
     metrics = JsonLines(run.metrics)
     metrics.write({"time": time.time(), "phase": state.get("phase"), "stage": state.get("stage"), "event": "retable",
-                   "from": (old or {}).get("spec_hash"), "to": new["spec_hash"], "cards": new["cards"],
+                   "from": (old or earlier or {}).get("spec_hash"), "to": new["spec_hash"], "cards": new["cards"],
                    "drift": drift["summary"], "changed": len(drift["changed"]), "exports": len(rebuilt)})
     metrics.close()
     return record

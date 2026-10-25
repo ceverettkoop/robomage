@@ -709,11 +709,13 @@ above, plus what it implied:
   fixtures: each migrated checkpoint on the new layout gives the fixture outputs, except for the
   effect of S1's removed inputs — so the comparison is against the old checkpoint run with the
   `lists` / `b_lists` tokens removed (S0's `*_nolists` arrays); logits and values within
-  1e-5 (fp32, CPU), with the seen mask widened to the fixtures' card ids (with the true mask only
+  1e-4 (fp32, CPU; 1e-5 is below the fixtures' own fp32 rounding, S5's Done), with the seen mask widened to the fixtures' card ids (with the true mask only
   the decisions holding no card outside the run's set match: S4's Done, For S5 (4)); (b) the synthetic one-card expansion: identical outputs on every decision not
   mentioning the new card.
-- **Cut-over:** migrate every checkpoint listed in §0.3 into `runs/<run>/ckpt-v2/` (originals kept);
-  regenerate exports; then a verification run: `rmtrain start` from the best migrated checkpoint
+- **Cut-over:** migrate every checkpoint listed in §0.3 (`python -m rmlearn.migrate --run`: the migrated
+  set in `runs/<run>/ckpt/`, where `state.json` and `rmtrain retable` look, the originals moved to
+  `runs/<run>/ckpt.v1/` and the old exports to `exports.v1/`; nothing deleted); regenerate exports
+  (`rmtrain retable` per run); then a verification run: `rmtrain start` from the best migrated checkpoint
   with its original config (`run.start_from`), 2–3 h of R-NaD, benchmarked (`rmtrain bench`) paired
   against the pre-cut-over export of the same checkpoint: the overall Δ and every deck's Δ must be
   within two SEs of 0 at step 0 (bench the migrated export itself) and not negative beyond two SEs

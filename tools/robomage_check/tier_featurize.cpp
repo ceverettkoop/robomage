@@ -94,6 +94,7 @@ static void cli_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Fe
 static std::string digests_json(const std::string &path, const featurize::RmtbFile &file);
 static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
     const std::string &tables_dir, const DumpResult &kept);
+static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep);
 
 // Explore games under --selfcheck-featurize, with dumps: bo1 and bo3, a closed decklist, and seat A at
 // knowledge level off (no k_* tables but k_meta).
@@ -861,6 +862,27 @@ static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
     if (!r.ok()) rep.error("featurize", "python/pycheck.py --part featurize " + r.status_text() + ": " + r.err);
 }
 
+// python/pycheck.py --part open_vocab: the open-vocabulary fixtures' gate sources replayed and
+// featurized by this build to the inputs tests/open_vocab/inputs.json records, those on which the
+// migrated checkpoints reproduce S0's outputs (docs/open_vocab_plan.md S5; the networks themselves run
+// in the actor tier, learn/open_vocab_acceptance.py gate).
+static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
+    if (opt.python.empty()) {
+        rep.info("featurize: open_vocab skipped (no python3 on PATH)");
+        return;
+    }
+    rmcheck::ProcSpec spec;
+    spec.argv = {opt.python, rmcheck::path_join(opt.repo, "python/pycheck.py"), "--part", "open_vocab", "--binary",
+        opt.binary, "--out-dir", opt.out("featurize")};
+    spec.cwd = opt.repo;
+    const rmcheck::ProcResult r = rmcheck::run_process(spec);
+    for (const std::string &line : rmcheck::split_lines(r.out)) {
+        if (rmcheck::starts_with(line, "FAIL: ")) rep.error("featurize", "pycheck: " + line.substr(6));
+        if (rmcheck::starts_with(line, "  OK   ")) rep.info("OK   pycheck: " + line.substr(7));
+    }
+    if (!r.ok()) rep.error("featurize", "python/pycheck.py --part open_vocab " + r.status_text() + ": " + r.err);
+}
+
 namespace rmcheck {
 
 // The featurize tier (docs/featurizer.md §7): the card tables and the spec from the whole-vocab
@@ -869,7 +891,7 @@ namespace rmcheck {
 // append-only property (featurize_layout.h); the corpus's and four explore games' dumps featurized
 // with the checks of check_dump (the corpus's also with the layout variants); the engine's
 // --selfcheck-featurize on the explore games; rmfeat's tensors and targets against the in-process
-// ones.
+// ones; the open-vocabulary fixtures' recorded inputs (open_vocab_part).
 void tier_featurize(const Options &opt, Report &rep) {
     const double t0 = now_seconds();
     Featurization f;
@@ -897,6 +919,7 @@ void tier_featurize(const Options &opt, Report &rep) {
         python_part(opt, rep, f, tables_dir, kept);
         remove_tree(dump);
     }
+    open_vocab_part(opt, rep);
     const double d = static_cast<double>(std::max<size_t>(total.decisions, 1));
     rep.info("featurize: " + std::to_string(total.decisions) + " decisions, " +
              fmt1(static_cast<double>(total.tokens) / d) + " tokens and " +
@@ -904,7 +927,7 @@ void tier_featurize(const Options &opt, Report &rep) {
              std::to_string(static_cast<long>(d / std::max(total.featurize_s, 1e-9))) +
              " decisions/s featurized (this build, one thread)");
     rep.info("featurize: tables " + fmt1(t1 - t0) + "s, corpus " + fmt1(t2 - t1) + "s, games " + fmt1(t3 - t2) +
-             "s, rmfeat + pycheck " + fmt1(now_seconds() - t3) + "s");
+             "s, rmfeat + pycheck (open_vocab too) " + fmt1(now_seconds() - t3) + "s");
 }
 
 }  // namespace rmcheck
