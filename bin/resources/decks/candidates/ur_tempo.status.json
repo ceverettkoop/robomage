@@ -86,15 +86,15 @@
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "c623d24dfc6859a56df2425c4cfca6bfdc79056ffc089731ba873a12d8a57273",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (15 points)",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-10-25T02:09:22"
   },
   "diff": {
    "detail": {
@@ -127,15 +127,15 @@
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "c623d24dfc6859a56df2425c4cfca6bfdc79056ffc089731ba873a12d8a57273",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Play from a zone with replacement (Bilbo), without<Keyword> filter qualifier",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-10-25T02:09:22"
   },
   "parse": {
    "detail": {
@@ -257,14 +257,14 @@
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "c623d24dfc6859a56df2425c4cfca6bfdc79056ffc089731ba873a12d8a57273",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s), 3 with findings (11 findings), 0 without a script",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-10-25T02:09:22"
   },
   "provision": {
    "detail": {

@@ -843,9 +843,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 perm.entered_on_turn = game.turn_state.turn;
                 // Attachments chosen before it entered (EntryInfo): an Equipment a DB$ Attach
                 // attached to it, an Aura's enchant object.
-                if (EntryInfo *entry = find_entry_info(entity)) attach_on_entry(entity, *entry, perm);
+                std::vector<Ability> entry_animates;
+                if (EntryInfo *entry = find_entry_info(entity)) {
+                    attach_on_entry(entity, *entry, perm);
+                    entry_animates.swap(entry->animates);
+                }
                 drop_entry_info_if_consumed(entity);
                 global_coordinator.AddComponent(entity, perm);
+                // Animate effects that resolved on it before its Permanent existed (EntryInfo).
+                for (const Ability &a : entry_animates) effects::animate_permanent(a, entity);
                 game.entering_together.insert(entity);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters

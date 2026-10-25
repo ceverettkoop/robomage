@@ -74,7 +74,7 @@
   "Exile-the-card-itself costs": {"size": "S", "keys": ["cost:ExileFromGrave", "cost:ExileFromHand", "cost:Exile"], "note": "Simian Spirit Guide (a mana ability from the hand), Runehorn Hellkite, The Stone Brain"},
   "Sand Scout": {"size": "S", "keys": ["svar_expr:PlayerCountOpponents$HighestValid", "trigger_param:ActivationLimit"], "note": "compare land counts; once each turn"},
   "TapOrUntap effect": {"size": "S", "keys": ["category:TapOrUntap"], "note": "Sewer-veillance Cam"},
-  "Top creature of a graveyard (Shallow Grave)": {"size": "S", "keys": ["filter:TopGraveyardCreature"], "note": "graveyard order is tracked"},
+  "Top creature of a graveyard (Shallow Grave)": {"size": "S", "keys": ["filter:TopGraveyardCreature", "ability_param:Animate.AtEOT"], "note": "graveyard order is tracked; Animate AtEOT$ Exile (only Sacrifice is read) and its until-end-of-turn Keywords$ Haste (only Duration$ Permanent keywords are granted)"},
   "Bestow (CR 702.103)": {"size": "L", "keys": ["keyword:Bestow", "ability_param:CopyPermanent.UnlessResolveSubs", "filter:AttachedTo Creature"], "note": "Springheart Nantuko: an Aura while cast bestowed, a creature once unattached"},
   "Targeted player's cards filter (TargetedPlayerOwn)": {"size": "S", "keys": ["filter:TargetedPlayerOwn"], "note": "Strategic Betrayal"},
   "Stronghold Gambit": {"size": "M", "keys": ["ability_param:Pump.ForgetObjects", "ability_param:Reveal.RevealDefined", "filter:lowestRememberedCMC"], "note": "simultaneous hidden choice, reveal, lowest mana value"},

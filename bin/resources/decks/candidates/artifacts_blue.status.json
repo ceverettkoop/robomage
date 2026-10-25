@@ -87,15 +87,15 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "eb78879e916dd8b2f6fc3a2d43df61abd2dcef51bb973a1061922352d1ceea8c",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "6 new card(s): 3 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-10-25T01:08:28"
+   "time": "2026-10-25T02:09:20"
   },
   "diff": {
    "detail": {
@@ -131,15 +131,15 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "eb78879e916dd8b2f6fc3a2d43df61abd2dcef51bb973a1061922352d1ceea8c",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Clone a target (CloneTarget), Exile-the-card-itself costs, Ghost Vacuum return, The Stone Brain",
-   "time": "2026-10-25T01:08:28"
+   "time": "2026-10-25T02:09:21"
   },
   "parse": {
    "detail": {
@@ -270,14 +270,14 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "eb78879e916dd8b2f6fc3a2d43df61abd2dcef51bb973a1061922352d1ceea8c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "6 new card(s), 3 with findings (6 findings), 0 without a script",
-   "time": "2026-10-25T01:08:28"
+   "time": "2026-10-25T02:09:20"
   },
   "provision": {
    "detail": {

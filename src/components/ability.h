@@ -381,6 +381,14 @@ struct AbilityDef {
     // animate_toughness_expr — a runtime dynamic_amount expr evaluated against the animate TARGET
     // (a snapshot of its mana value taken at resolution). animate_has_pt gates the whole path.
     bool animate_has_pt = false;
+    // DB$ Animate | Keywords$ <kw> & <kw> (Sneak Attack: Haste): the keywords the animated
+    // creature gains (layer 6), granted for a Duration$ Permanent animate. An Enchant keyword
+    // (Animate Dead's Enchant swap, with RemoveKeywords$) is not listed: the reanimation and
+    // Attach chain anchor the aura, so the swap is cosmetic.
+    std::vector<std::string> animate_keywords;
+    // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack): sacrifice the animated permanent at the
+    // beginning of the next end step (a delayed trigger, CR 603.7).
+    bool animate_sacrifice_at_eot = false;
     int animate_base_power = 0;
     int animate_base_toughness = 0;
     std::string animate_power_expr;        // resolved runtime expr (empty when numeric)

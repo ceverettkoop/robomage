@@ -50,6 +50,7 @@
        "Shallow Grave"
       ],
       "findings": [
+       "ability_param:Animate.AtEOT",
        "filter:TopGraveyardCreature"
       ],
       "size": "S"
@@ -79,15 +80,15 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "7 new card(s): 4 clean, 3 need 3 mechanic(s) (5 points)",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-10-25T02:09:21"
   },
   "diff": {
    "detail": {
@@ -123,15 +124,15 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "3 mechanic(s) to implement: AlternateAdditionalCost keyword, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-10-25T02:09:21"
   },
   "parse": {
    "detail": {
@@ -202,6 +203,12 @@
       ],
       "findings": [
        {
+        "detail": "Animate AtEOT$ Exile",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZone | Origin$ Graveyard | Destination$ Battlefield | ChangeType$ Creature.TopGraveyardCreature+YouCtrl | Hidden$ True | Mandatory$ True | RememberChanged$ True | SubAbility$ DBPump | SpellDescription$ Return the top creature card of your graveyard to the battlefield. That creature gains haste until end of turn. Exile it at the beginning of the next end step.",
+        "name": "Animate.AtEOT"
+       },
+       {
         "detail": "ChangeType$ Creature.TopGraveyardCreature+YouCtrl",
         "kind": "filter",
         "line": "A:SP$ ChangeZone | Origin$ Graveyard | Destination$ Battlefield | ChangeType$ Creature.TopGraveyardCreature+YouCtrl | Hidden$ True | Mandatory$ True | RememberChanged$ True | SubAbility$ DBPump | SpellDescription$ Return the top creature card of your graveyard to the battlefield. That creature gains haste until end of turn. Exile it at the beginning of the next end step.",
@@ -265,14 +272,14 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "1357d75ad666a01dcdf5bfaf01d15d47b0b89483af96e25455580cfba315a87f",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "7 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-10-25T01:08:35"
+   "summary": "7 new card(s), 3 with findings (6 findings), 0 without a script",
+   "time": "2026-10-25T02:09:06"
   },
   "provision": {
    "detail": {

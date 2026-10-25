@@ -2,22 +2,31 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
+#include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
 #include "../queries/battlefield.h"
 #include "../queries/counters.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/entry.h"
+#include "../queries/players.h"
 #include "../queries/types.h"
 #include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 
 namespace effects {
+
+static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<ObjectRef> &animated);
 
 // Bootstrap a Creature (and Damage) component on a permanent that the Animate extension points
 // have turned into a creature (animate_make_creature). The base P/T come from animate_*; the
@@ -87,9 +96,38 @@ void apply_animate_creature_bootstrap(Entity e) {
 // populates them.
 HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
-    // ability's own source; otherwise animate the chosen/inherited target (Guide of Souls).
-    Entity tgt = ab.def->defined_self ? ab.source.get() : ab.target.get();
-    if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
+    // ability's own source; Defined$ Remembered (Sneak Attack: the creature it just put onto the
+    // battlefield) every remembered permanent; otherwise the chosen/inherited target (Guide of
+    // Souls).
+    std::vector<Entity> objects;
+    if (ab.def->defined_self) {
+        objects.push_back(ab.source.get());
+    } else if (ab.def->defined_remembered) {
+        for (const ObjectRef &r : cur_game.resolution.memory.remembered) objects.push_back(r.get());
+    } else {
+        objects.push_back(ab.target.get());
+    }
+    std::vector<ObjectRef> animated;
+    for (Entity tgt : objects) {
+        if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) continue;
+        if (is_battlefield_permanent(tgt)) {
+            animate_permanent(ab, tgt);
+        } else if (global_coordinator.GetComponent<Zone>(tgt).location == Zone::BATTLEFIELD &&
+                   !global_coordinator.entity_has_component<Permanent>(tgt)) {
+            // Put onto the battlefield by this resolution, its Permanent not built yet: the grant
+            // waits on its entry.
+            entry_info(tgt).animates.push_back(ab);
+        } else {
+            continue;
+        }
+        animated.push_back(ObjectRef::of(tgt));
+    }
+    if (ab.def->animate_sacrifice_at_eot && !animated.empty()) register_sacrifice_at_end_step(ab, animated);
+    return HandlerResult::DONE_RUN_SUBS;
+}
+
+// See declaration in effects.h.
+void animate_permanent(const Ability &ab, Entity tgt) {
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
     // Duration (CR 613.7 + 514.2). Three variants:
@@ -163,6 +201,17 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         else perm.animate_make_creature = true;
     }
 
+    // Keywords$ (layer 6): a Duration$ Permanent grant joins the rest-of-game keywords the
+    // layer-6 rebuild merges every pass (Sneak Attack's Haste). No vocab card grants keywords for
+    // a shorter duration.
+    if (permanent_dur)
+        for (const std::string &kw : ab.def->animate_keywords)
+            if (std::find(perm.animate_added_keywords.begin(), perm.animate_added_keywords.end(), kw) ==
+                perm.animate_added_keywords.end()) {
+                perm.animate_added_keywords.push_back(kw);
+                game_log("%s gains %s.\n", perm.name.c_str(), kw.c_str());
+            }
+
     // Record the until-your-next-turn marker so the animating player's untap step reverts exactly
     // this grant (types + creature + base P/T) on their next turn — see revert_until_turn_animates.
     if (until_turn) {
@@ -207,7 +256,31 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             game_log("%s gains an activated ability.\n", perm.name.c_str());
         }
     }
-    return HandlerResult::DONE_RUN_SUBS;
+}
+
+// AtEOT$ Sacrifice (Sneak Attack): a delayed trigger at the beginning of the next end step, whoever
+// is active (CR 603.7), that sacrifices exactly the permanents `animated` still on the battlefield
+// as the objects they were (CR 400.7: one that left and returned is a new object and stays).
+static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<ObjectRef> &animated) {
+    Ability fire_ab(keyed_ability_def("animate_sacrifice_at_eot", [] {
+        AbilityDef d;
+        d.ability_type = AbilityDef::TRIGGERED;
+        d.category = "ChangeZone";
+        d.defined_remembered = true;
+        d.origin = Zone::BATTLEFIELD;
+        d.origins = {Zone::BATTLEFIELD};
+        d.destination = Zone::GRAVEYARD;
+        return d;
+    }));
+    fire_ab.restore_remembered_exiled_with = animated;  // resolve() seeds the remembered set to them
+    fire_ab.source = ab.source;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::END_STEP_BEGAN;
+    dt.owner_entity = get_player_entity(ab.controller);
+    dt.fire_on_turn = cur_game.turn_state.turn;
+    register_delayed_trigger(dt, ab.source);
 }
 
 // Lapse the "until your next turn" Animate (Karn, the Great Creator +1) on permanent `e` if

@@ -97,6 +97,7 @@ static uint32_t parse_toughness(std::string value);
 static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name);
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
+static std::vector<std::string> split_keyword_list(const std::string& value);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
 static std::string svar_key_param(const std::string& line, const std::string& want_key);
@@ -332,6 +333,20 @@ static void split_keywords(const std::string& kw_line, std::vector<std::string>&
         std::string trimmed = trim(kw);
         if (!trimmed.empty()) out.push_back(trimmed);
     }
+}
+
+// Split an ability param's " & "-separated keyword list (Animate's Keywords$) into trimmed keywords.
+static std::vector<std::string> split_keyword_list(const std::string& value) {
+    std::vector<std::string> out;
+    size_t pos = 0;
+    while (pos <= value.size()) {
+        size_t amp = value.find(" & ", pos);
+        if (amp == std::string::npos) amp = value.size();
+        std::string kw = trim(value.substr(pos, amp - pos));
+        if (!kw.empty()) out.push_back(kw);
+        pos = amp + 3;
+    }
+    return out;
 }
 
 // Walk a '|'-delimited Forge parameter line ("Key$Value | Key$Value | ...").
@@ -2235,6 +2250,20 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // Duration$ UntilYourNextTurn (Karn +1): a longer-than-EOT continuous effect that
         // reverts at the start of the animating player's next turn (see effect_animate.cpp).
         ability.animate_duration_until_your_next_turn = (value == "UntilYourNextTurn");
+    } else if (key == "Keywords" && ability.category == "Animate") {
+        // DB$ Animate | Keywords$ Haste [& …] — the keywords the animated creature gains; an
+        // Enchant keyword is Animate Dead's cosmetic swap (see AbilityDef::animate_keywords).
+        for (const std::string &kw : split_keyword_list(value))
+            if (kw.rfind("Enchant", 0) != 0) ability.animate_keywords.push_back(kw);
+    } else if (key == "AtEOT" && ability.category == "Animate") {
+        // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack): sacrifice it at the next end step. Any
+        // other value is an unmodelled param.
+        if (value == "Sacrifice") {
+            ability.animate_sacrifice_at_eot = true;
+        } else {
+            warning("Unrecognized ability param: AtEOT$ " + value + (card_name.empty() ? "" : " (card: " + card_name + ")"));
+            parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
+        }
     } else if ((key == "Power" || key == "Toughness") && ability.category == "Animate") {
         // AB$ Animate | Power$/Toughness$ — the animated creature's base P/T. A bare integer is
         // the literal base; any other token is an SVar key resolved post-parse (Karn: Power$ X,

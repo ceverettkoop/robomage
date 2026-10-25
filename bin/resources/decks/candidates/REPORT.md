@@ -8,10 +8,10 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 
 | deck | MTGTop8 name | share % | section | cards | new cards | mechanics | size points | reached |
 |---|---|---|---|---|---|---|---|---|
-| bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | text |
+| bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | checks |
 | death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | implement |
-| eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | text |
-| show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | text |
+| eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | checks |
+| show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | checks |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 3 | 2 | 2 | capability |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 3 | 2 | 4 | capability |
@@ -76,7 +76,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Taps trigger | S | 1 | - | Hawkeye's Bow | `trigger_mode:Taps` | Hawkeye's Bow: whenever equipped creature becomes tapped |
 | Targeted player's cards filter (TargetedPlayerOwn) | S | 1 | - | Strategic Betrayal | `filter:TargetedPlayerOwn` | Strategic Betrayal |
 | Targeted player's counts (TargetedPlayer$...) | S | 1 | - | Peer into the Abyss | `svar_expr:TargetedPlayer$CardsInLibrary/HalfUp`, `svar_expr:TargetedPlayer$LifeTotal/HalfUp` | Peer into the Abyss |
-| Top creature of a graveyard (Shallow Grave) | S | 1 | - | Shallow Grave | `filter:TopGraveyardCreature` | graveyard order is tracked |
+| Top creature of a graveyard (Shallow Grave) | S | 1 | - | Shallow Grave | `ability_param:Animate.AtEOT`, `filter:TopGraveyardCreature` | graveyard order is tracked; Animate AtEOT$ Exile (only Sacrifice is read) and its until-end-of-turn Keywords$ Haste (only Duration$ Permanent keywords are granted) |
 | UseAllOriginZones | S | 1 | - | Echo of Eons | `ability_param:ChangeZoneAll.UseAllOriginZones` | Echo of Eons: shuffle hand and graveyard together |
 | Bargain and free casting (Beseech the Mirror) | M | 1 | - | Beseech the Mirror | `ability_param:Play.Condition`, `ability_param:Play.ImprintPlayed`, `ability_param:Play.WithoutManaCost`, `amount_svar:All`, `keyword:Bargain` | Bargain's optional sacrifice (CR 702.166) and Play WithoutManaCost of a searched card |
 | Boast (CR 702.142) | M | 1 | - | Broadside Bombardiers | `ability_param:DealDamage.Boast`, `svar_expr:Sacrificed$CardManaCost/Plus.2` | Broadside Bombardiers: activate only if it attacked this turn, once |

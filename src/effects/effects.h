@@ -113,6 +113,10 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
 // creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
 // effect_animate.cpp.
 void apply_animate_creature_bootstrap(Entity e);
+// The grants of Animate ability `ab` (types, base P/T, keywords, abilities) on battlefield
+// permanent `e`: DB$ Animate's per-object step, also run for an Animate recorded on a card's
+// entry once its Permanent exists (EntryInfo::animates). Defined in effect_animate.cpp.
+void animate_permanent(const Ability &ab, Entity e);
 // Lapse the Duration$ UntilYourNextTurn Animate (Karn, the Great Creator +1) on permanent `e` if
 // `active_player` created it; call from that player's untap step for each permanent. Defined in
 // effect_animate.cpp.

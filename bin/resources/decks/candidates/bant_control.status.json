@@ -26,15 +26,31 @@
    },
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-10-25T01:08:01"
+   "time": "2026-10-25T02:09:21"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/bant_control:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_bant_control",
+    "out_dir": "ci_out/onboard_bant_control"
+   },
+   "inputs": {
+    "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
+    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-10-25T01:23:50"
   },
   "diff": {
    "detail": {
@@ -56,15 +72,15 @@
    "detail": {},
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
-    "sizes": "2ab39c891af8bd5607d30987ae4c45a885489658974795162cb98b808b0a1571",
+    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-10-25T01:08:01"
+   "time": "2026-10-25T02:09:21"
   },
   "parse": {
    "detail": {
@@ -73,14 +89,14 @@
    },
    "inputs": {
     "deck": "ad71630bac894abbcd3f5b170607c793bb54e0edb0d555944f96f02bab712e8c",
-    "engine": "0d54db5a610cbf7bdd4e9be1c4d280a91d247fb32d81885826286df1d2f0b085",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
     "scripts": "924007ad53f44be5b56aba057cad4029dc51748bf78c6a92501d202166dd4b9c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-10-25T01:08:01"
+   "time": "2026-10-25T02:09:21"
   },
   "provision": {
    "detail": {

@@ -1,7 +1,10 @@
 #ifndef ENTRY_INFO_H
 #define ENTRY_INFO_H
 
+#include <vector>
+
 #include "../object_ref.h"
+#include "ability.h"
 
 // How a card will enter the battlefield: what a cast or an effect records about the card's next
 // battlefield entry before its Permanent exists. These facts shape the entry itself (CR 614.1c-d,
@@ -47,11 +50,15 @@ struct EntryInfo {
     // that object is a graveyard card (Animate Dead) until its reanimation attaches the Aura.
     // Empty = none chosen.
     ObjectRef aura_target;
+    // DB$ Animate effects that resolved on it after it was put onto the battlefield but before its
+    // Permanent existed (Sneak Attack's haste for the creature it just put there): applied as the
+    // Permanent is created (effects::animate_permanent).
+    std::vector<Ability> animates;
 
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
                !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp &&
-               x_paid == 0 && !unearthed && attach_equipment.empty() && aura_target.empty();
+               x_paid == 0 && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
     }
 };
 
