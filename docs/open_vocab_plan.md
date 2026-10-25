@@ -727,6 +727,163 @@ above, plus what it implied:
   a resumed or new run starts with an empty window (self-play refills it in minutes). Keep the
   old corpora on disk until no experiment needs them.
 
+**Done** (two commits on `refactor/open-vocab`: the tooling and gate checks, then this block with the
+cut-over's results).
+
+- **`python -m rmlearn.migrate`** (`learn/rmlearn/migrate.py`, `docs/rmtrain.md` §1.2). A `LayoutMap`
+  from the old spec document (any version: running offsets before the registry, registry positions
+  after it) to the current one, all by name: token types, numeric slots (type, slot), categorical
+  ids (type, slot, and an enum value by its name — the old enums' names come from the old run's
+  cards frame, whose SCHEMA frame `python/rmstate.py` now reads at an older format version,
+  `Schema.from_frame(versions=)`; player-relative and hashed ids by index), relations (table, column,
+  target; reverse rows at `n_rel + r` → `64 + r'`), card / ability table columns, card / ability slot
+  rows. Every position the old layout lacks is zero. Only S1's removals are dropped (`lists` /
+  `b_lists`, `EXPERT_BELIEF`, `aux_list` / `aux_archetype`); any other old name the current layout
+  lacks refuses, naming it. The policy encoder and the critic's own (`critic.encoder.*`) take the same
+  map. `card_seen` from `--seen` (`set_seen`). Kinds: `save_checkpoint` files (`extra["migrated"]`
+  records source, sha256s, seen set, dropped names), BC `.opt` optimizer files (Adam / AdamW moments by
+  parameter name), R-NaD learner states (model, target, each distinct reg; Adam `m` / `v` by
+  parameter name, `card_id`'s unseen rows zeroed; counters, RNG and configs kept; the window emptied,
+  the dropped window's size recorded). Every output carries the current tables' manifest and is
+  reloaded through `load_checkpoint` / `RNaDLearner.from_state_dict` before it counts. ~1 s a file.
+- **Where migrated checkpoints live** (the plan's `ckpt-v2/` replaced, text above fixed): `--run DIR`
+  migrates `DIR/ckpt/**/*.pt` (not TorchScript exports) into `ckpt.migrating/`, then moves the
+  originals to `DIR/ckpt.v1/`, the migrated set to `DIR/ckpt/` (`ckpt/migration.json`: per file
+  source, both sha256s, kind; the seen set, the old spec hash, the dropped names) and `DIR/exports/`
+  to `DIR/exports.v1/`. So `state.json`'s paths, `rmtrain retable` (which scans `ckpt/**/*.pt`) and a
+  resume see only migrated files; nothing was deleted. `rmtrain retable` needed three fixes for
+  pre-manifest tables: it read the old `spec.json` through `Spec` (a pre-registry spec has no
+  `layout_hash`: KeyError), kept them as `tables.pre-manifest/` (now `tables.<spec_hash>/`), and put
+  them in `tables/lineage.json` — the window would then have accepted episodes of the old layout's
+  spec hash; tables of another layout now join no lineage. A refusal of an unmigrated checkpoint names
+  `rmlearn.migrate`. `benchmark.run_benchmark` reuses a policy's `report.json` without its export
+  (the step-0 comparison's pre-cut-over policy, whose export the new engine refuses).
+- **The cut-over** (`runs/open_vocab_s5/cutover.sh`, `cutover.log`; current tables
+  `a56ad74e27244a25`, layout `733819ee9e505abc`, exported by the release engine, byte-identical to the
+  debug engine's): 79 of 80 checkpoints migrated, then `rmtrain retable` of league24h-sb, pilotA,
+  league12h and val1 (38 exports rebuilt: 17 / 1 / 12 / 8; drift none; lineage empty).
+
+  | run | old spec | files (save_checkpoint + learner state) | seen ids (source) | retable |
+  |---|---|---|---|---|
+  | league24h-sb | 9430d9f42d4559c0 | 24 (19 + 5) | 216 (S4 scan) | yes, 17 exports |
+  | pilotA | 9430d9f42d4559c0 | 5 (1 + 4) | 216 (S4; ⊇ m11's) | yes, 1 export |
+  | open_vocab_s0 (critic fixture) | 9430d9f42d4559c0 | 1 (1 + 0) | 216 (league24h-sb's) | not a run |
+  | league12h | 9dd29020dd612c00 | 20 (15 + 5) | 216 (S4) | yes, 12 exports |
+  | val1 | 9dd29020dd612c00 | 12 (7 + 5) | 103 (S4) | yes, 8 exports |
+  | pilot-p1, pilot-p2 | 9dd29020dd612c00 (league12h's tables) | 8 (3 + 5) each | 216 (S4) | no: `run.tables` is league12h's (now the current tables); exports rebuilt on demand (`benchmark.export_missing`) |
+  | bc1/bc | 9dd29020dd612c00 | 1 (1 + 0, with its `.opt`) | 216 (`runs/open_vocab_s5/card_ids_bc1.json`, the corpus's episodes) | not a run |
+  | bc1/v1/bc | c557af8b9dea864a | **not migrated** | — | — |
+
+  bc1/v1 (FEATURE_SPEC version 1) is refused by name: its token types `own_deck`, `k_seen`,
+  `k_known_hand`, `k_template`, `k_archetype`, `b_list`, `b_archetype` have no place in today's layout
+  (removed before or in S1; migrating would silently drop inputs it reads); it stays in its `ckpt/`.
+  `runs/t8/*.pt` and `exports/live/src-*.pt` are not in a `ckpt/` and were not migrated (as S0).
+- **Acceptance (a)** (`learn/open_vocab_acceptance.py full`, `runs/open_vocab_s5/acceptance_full.log`,
+  `acceptance/results.json`; 28 min on 8 × 4 threads): all 35 distinct networks of S0's 30 runnable
+  checkpoints, migrated in memory from their originals in `ckpt.v1/`, on all 8831 fixture decisions
+  as today's engine featurizes them (`runs/open_vocab_s2/fixture_check.py` rerun on this tree: equal
+  to S0's mapped decisions, `fixture_check_s2_rerun.log`). Widened mask (the 229 fixture ids):
+  max |Δ value| 1.07e-5, |Δ logit| 4.7e-5 on every decision. True mask: the same on the 6784 decisions
+  holding only seen cards; on the 2047 others (cards of non-league decks reading `unknown_id`) |Δ value|
+  up to 0.10–1.41 and the argmax moved on 28–47 decisions per network (m11: 0.14, 35) — the mask's
+  intended effect. The critic fixture's critic values: 6.0e-8 both ways. Every network of the 30 cut-over files
+  (53 file-network pairs: the 35 evaluated, 18 more holding the same networks) equals its in-memory
+  migration parameter for parameter. **Tolerance 1e-4, not 1e-5** (plan text fixed): the fixtures are
+  fp32 and the migrated layout sums its zero-padded columns in another order; the fixtures themselves
+  are up to 1.8e-5 (logits) from the float64 function (m1, bc-final), and in **float64 every migrated
+  network equals its original exactly** (`runs/open_vocab_s5/fp64_check.py`, `fp64_all.log`: the
+  pre-S1 learner code, 13ffb640's `learn/rmlearn` extracted under `old_learn/`, on S0's `seat_nolists`
+  decisions over the old tables vs the migration on today's featurization: |Δ| = 0.0 for all 35
+  networks, 1104 decisions each). **The pre-Lorien-Revealed checkpoints** (no fixture):
+  `runs/open_vocab_s5/check_9dd2.py` (`check_9dd2_new.log`): 60 distinct networks of the 49 `9dd2`
+  checkpoints, the original under old code over its own tables on S0's decisions renumbered to the
+  9dd2 ability rows (6002 decisions without card 273 or the TypeCycling key; every 4th, 1501) vs the
+  migration (widened mask): max |Δ value| 1.0e-5, |Δ logit| 2.2e-5, within 1e-4.
+- **Acceptance (b)**: on a copy of today's tables with card 353 appended (`expanded_tables`: card 262's
+  rows at 353's addresses, the manifest's vocab grown), 4 networks of the full run (and the gate's 3
+  policy networks) load, give identical outputs (0.0) on all 8831 decisions, and their export's folded
+  rows differ in card row 353 and ability rows 5648–5652 only. S3's open item: all 79 migrated files
+  load over S3's scratch tables (`runs/open_vocab_s3/expansion_work/appended/tables`: Prodigal
+  Sorcerer appended, Grizzly Bears drifted), 5 of the distinct networks compared there: 0.0 on the
+  decisions holding neither card (all 8831).
+- **In the gate.** `actor` tier (opt-in): `open_vocab_acceptance.py gate`, 4 networks (league24h-sb
+  `m11`, `rnad-final` model and target, the critic fixture) on the 620 fixture decisions of 8 sources
+  (league and non-league decks, one self-play match), both masks, the cut-over files, the synthetic
+  expansion: ~25 s, `skipped:` on a clone without `runs/`. `featurize` tier (no torch): `python/pycheck.py
+  --part open_vocab` replays and featurizes the same 8 sources and checks each of their fixture
+  decisions against `tests/open_vocab/inputs.json` (per fixture decision the sha256 of its seat and
+  omniscient arrays, recorded on this tree after the S2 fixture check): ~30 s. `learn/check.py`
+  "migration": a synthetic old layout (every order permuted, S1's removals added) migrates back
+  exactly, Adam's moments follow their parameters, an unknown slot is refused by name.
+- **Verification run `runs/ov-verify`** (league24h-sb's `config.json`, `run.start_from` the migrated
+  `m11`, `b4.max_learner_steps` 1200 and `b5` 1400 — set live from 900 / 1100 when the step rate was
+  known; `runs/open_vocab_s5/ov-verify.json`): B3 → B4 at once, 1400 learner steps (B4 to 1200, B5 to 1400)
+  in 2 h 51 min (17:35–20:27, about 0.15 steps/s with 16 local actors), 55,799 self-play games, 7.59 M
+  decisions, fixed points `m1` (step 500) and `m2` (1000), `rnad-final`; no fatal, no actor restart,
+  no cap. The window started empty and refilled by self-play (first learner step within a minute).
+  Its evaluations: `m1` sprt vs scripted 0.59 over 83 games, `m2` 0.546 over 174. One drawn game
+  (a6 m593 game 3, burn vs bw_dnt): burn's own Eidolon of the Great Revel and Price of Progress take
+  both players below 0 at once — CR 104.4a, the engine right, the policy's line a self-kill.
+- **Benchmarks** (`rmtrain bench`, 480 bo3 matches, 12 actors, seed 11, every league pair both ways).
+  The pre-cut-over `m11` was not replayed on a pre-S1 engine: league24h-sb's own `bench/end/m11` and
+  `bench/end-vs-hard_sb/m11` were played with exactly the benchmark's defaults (480, 12, seed 11, the
+  same opponents) on the engine of `6545ca7c`, decision-identical to 13ffb640's, and S1–S4 kept every
+  scripted decision byte-identical, so the same (actor, match) keys are the same deals, decks and
+  seats; their directories were copied in as `pre-m11` (the report-reuse rule above), and the
+  migrated `m11` (`runs/league24h-sb/exports/m11.ts.pt`, retable's) played. Half the matches came out
+  move for move identical (`same` 49% / 51%), which only identical setups allow. Step 0
+  (`runs/ov-verify/bench/step0/`, `step0-vs-hard_sb/`): vs scripted:hard pre 0.499, migrated 0.499,
+  **Δ −0.000 ± 0.014**; vs hard+sb pre 0.505, migrated 0.507, **Δ +0.002 ± 0.014**. Per deck (vs hard;
+  vs hard+sb): bug +0.002 ± 0.067; −0.006 ± 0.040 · burn +0.014 ± 0.020; +0.011 ± 0.047 · bw_dnt
+  −0.005 ± 0.044; +0.000 ± 0.017 · gw_maverick +0.019 ± 0.045; +0.005 ± 0.047 · lands +0.013 ± 0.045;
+  −0.008 ± 0.027 · reanimator −0.016 ± 0.043; −0.009 ± 0.022 · ur_delver −0.012 ± 0.023; +0.019 ± 0.045
+  · uw_control −0.012 ± 0.035; +0.003 ± 0.053 · wrb_energy −0.005 ± 0.049; +0.040 ± 0.061 ·
+  wubg_doomsday −0.009 ± 0.076; −0.041 ± 0.073. Every Δ within two SEs of 0: S1's removal of the
+  archetype inputs (2.9% of the fixture decisions' argmax) costs nothing measurable against the
+  scripted opponents, and acceptance (a) passed, so there is no migration error to separate out.
+  After the continuation (`runs/ov-verify/bench/end/`, `end-vs-hard_sb/`; Δ vs `pre-m11`, paired):
+
+  | policy | vs scripted:hard | vs scripted:hard+sb |
+  |---|---|---|
+  | m11 migrated (step 0) | 0.499, −0.000 ± 0.014 | 0.507, +0.002 ± 0.014 |
+  | ov-verify m1 (step 500) | 0.499, −0.000 ± 0.014 | 0.512, +0.007 ± 0.015 |
+  | ov-verify m2 (step 1000) | 0.500, +0.001 ± 0.015 | 0.516, +0.010 ± 0.016 |
+  | ov-verify final (step 1400) | 0.505, +0.006 ± 0.018 | 0.512, +0.006 ± 0.018 |
+  | final@thresh=0.03:disc=16 | 0.521, +0.022 ± 0.027 | 0.536, +0.031 ± 0.027 |
+
+  Per deck `final` vs `pre-m11` (hard; hard+sb): bug +0.007 ± 0.059; −0.039 ± 0.058 · burn +0.006 ±
+  0.035; +0.029 ± 0.038 · bw_dnt −0.037 ± 0.057; −0.019 ± 0.034 · gw_maverick −0.004 ± 0.065; +0.019 ±
+  0.068 · lands +0.020 ± 0.051; −0.025 ± 0.051 · reanimator −0.023 ± 0.061; +0.005 ± 0.024 · ur_delver
+  +0.019 ± 0.051; +0.035 ± 0.059 · uw_control +0.053 ± 0.077; +0.043 ± 0.081 · wrb_energy +0.042 ±
+  0.052; +0.023 ± 0.057 · wubg_doomsday −0.028 ± 0.077; −0.007 ± 0.070 (the other policies' rows are
+  in the summaries; none is negative beyond two SEs). Nothing is negative beyond two SEs, overall or
+  for any deck or policy: the cut-over keeps the policy's strength and training continues from it.
+  (The projected `final` plays another option set than the argmax baseline; its +0.03 is the
+  fine-tuning projection's, as in league24h-sb, not a gain of the continuation.)
+- **Evidence.** `make check` green with every tier, the opt-in `actor` tier included (before the
+  cut-over, the acceptance then on the originals in place: `runs/open_vocab_s5/make_check.log`), and the
+  `featurize` and `actor` tiers again after it (originals in `ckpt.v1/`, cut-over files compared:
+  `gate_after_cutover.log`); `learn/check.py`, `check_rnad.py`, `check_rmtrain.py` and `check_rmtrain.py
+  --smoke` ok (`learn_check*.log`, `smoke.log`). A rehearsal on a copy of pilotA
+  (`runs/open_vocab_s5/rehearsal/`): retable refuses the unmigrated run naming the migration; migrate,
+  then retable, succeed. No engine, format or decision change in S5.
+- **Deviations.** Tolerance 1e-4 (above). Migrated checkpoints replace `ckpt/` (originals in
+  `ckpt.v1/`), not `ckpt-v2/`. bc1/v1 not migrated (reason above). BC `.opt` files migrated too (the
+  plan named only checkpoints and learner states). The step-0 baseline reused league24h-sb's own
+  benchmark rather than an old-engine replay (the instructions' second option; conditions above).
+- **For S7 / S8.** (1) A layout change past the registry's capacities (a `layout_version` bump) is a
+  migration by the same tool: give the old run's tables and cards frame (`--old-tables`,
+  `--old-cards`); for a registry-layout old spec the positions come from its `num_at` / `at` / `col`
+  / offsets, already supported. (2) The S0 fixtures' acceptance now holds on recorded inputs
+  (`tests/open_vocab/inputs.json`): an engine change that moves a fixture decision's inputs fails the
+  `featurize` tier; if intended, `learn/open_vocab_acceptance.py inputs --drop-moved` drops those
+  decisions (the gate's acceptance then checks the rest) — expect this when S7 changes parsing of a
+  known card. (3) Seen sets: every migrated network's mask is its run's 216 ids (val1 103); a new deck's
+  cards play `unknown_id` until a training batch holds them. (4) league24h-sb's migrated `m11` (and
+  `ov-verify`'s networks) are the starting points; old episodes are not in any window (league24h-sb's
+  `episodes/` stay on disk, refused by episode version, and are outside every lineage). (5) Systemd
+  user lingering is off on this box: an `rmtrain` unit dies at logout.
+
 ### S6. Optional: an in-model deck summary (1–2 days, measured)
 
 The ledger already carries the composition (§1.3); attention can pool it. If the held-out benchmark
