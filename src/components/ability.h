@@ -411,7 +411,8 @@ struct AbilityDef {
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
                  DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams> params;
 
-    // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
+    // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers); the
+    // origin also filters LAND_PLAYED (Mode$ LandPlayed's Origin$: the zone the land was played from)
     int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
     int trigger_zone_destination = -1;  // Zone::ZoneValue destination filter; -1 = any
     // The raw ValidCard$ / ValidCards$ filter. A zone-change trigger matches the moving object

@@ -142,6 +142,13 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                                  const std::vector<Event> &events, bool departed,
                                  std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
+// A zone-change trigger's filters against one move of object `moved` (0 = none named) from
+// `origin` to `destination`: its Origin$ / Destination$ zones and its ValidCard$, matched with
+// `source`'s controller as "you" (zone_change_object_matches: the object as it exists after the
+// move, or as it last existed on the battlefield for a departure — CR 603.6a / 603.10a).
+static bool zone_move_matches_trigger(const AbilityDef &ab, Entity source, Zone::Ownership controller,
+                                      Entity moved, Zone::ZoneValue origin,
+                                      Zone::ZoneValue destination);
 
 // Leaves-the-battlefield abilities of the cards that left the battlefield in this batch of events
 // (CR 603.10a): each looks back to just before the event, so a watcher that left along with the
@@ -889,6 +896,21 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
     }
 }
 
+static bool zone_move_matches_trigger(const AbilityDef &ab, Entity source, Zone::Ownership controller,
+                                      Entity moved, Zone::ZoneValue origin,
+                                      Zone::ZoneValue destination) {
+    if (ab.trigger_zone_origin >= 0 && origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin))
+        return false;
+    if (ab.trigger_zone_destination >= 0 &&
+        destination != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination))
+        return false;
+    if (ab.trigger_valid_card.empty() || moved == 0) return true;
+    MatchCtx vctx;
+    vctx.controller = controller;
+    vctx.source = source;
+    return zone_change_object_matches(moved, origin, destination, ab.trigger_valid_card, vctx);
+}
+
 static void match_event_triggers(Entity entity, Zone::Ownership controller, const Permanent *perm,
                                  const std::string &ent_name,
                                  const std::vector<const AbilityDef *> &ab_defs,
@@ -981,31 +1003,27 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                 if (rules_mod::etb_triggers_suppressed(entering)) continue;
             }
 
-            // CARD_CHANGED_ZONE filters: origin, destination, card type
-            if (ev.GetType() == Events::CARD_CHANGED_ZONE) {
-                Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
-                Zone::ZoneValue ev_dest   = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
-                if (ab.trigger_zone_origin >= 0 &&
-                    ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
-                if (ab.trigger_zone_destination >= 0 &&
-                    ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
-                // ValidCard$ filter (Guide of Souls' Creature.Other+YouCtrl, Kappa Cannoneer's
-                // Artifact.YouCtrl, landfall's Land.YouCtrl, Ajani's Cat.Other+YouCtrl,
-                // Moonshadow's Permanent.YouOwn+!token, Murktide's Instant/Sorcery): the moving
-                // object as it exists after the event, or as it last existed on the battlefield
-                // for a departure (CR 603.6a / 603.10a) — its live types (an animated land is a
-                // creature, a Clue token isn't, an entering-transformed face is its back face)
-                // and its controller (a creature reanimated from an opponent's graveyard is
-                // YouCtrl for the reanimator).
-                if (!ab.trigger_valid_card.empty() && ev.HasParam(Params::ENTITY)) {
-                    MatchCtx vctx;
-                    vctx.controller = controller;
-                    vctx.source = entity;
-                    if (!zone_change_object_matches(ev.GetParam<Entity>(Params::ENTITY), ev_origin,
-                                                    ev_dest, ab.trigger_valid_card, vctx))
-                        continue;
-                }
-            }
+            // CARD_CHANGED_ZONE filters: origin, destination and the ValidCard$ filter (Guide of
+            // Souls' Creature.Other+YouCtrl, Kappa Cannoneer's Artifact.YouCtrl, landfall's
+            // Land.YouCtrl, Ajani's Cat.Other+YouCtrl, Moonshadow's Permanent.YouOwn+!token,
+            // Murktide's Instant/Sorcery) on the moving object — its live types (an animated land
+            // is a creature, a Clue token isn't, an entering-transformed face is its back face)
+            // and its controller (a creature reanimated from an opponent's graveyard is YouCtrl
+            // for the reanimator).
+            if (ev.GetType() == Events::CARD_CHANGED_ZONE &&
+                !zone_move_matches_trigger(
+                    ab, entity, controller,
+                    ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0,
+                    ev.GetParam<Zone::ZoneValue>(Params::ORIGIN),
+                    ev.GetParam<Zone::ZoneValue>(Params::DESTINATION)))
+                continue;
+            // LAND_PLAYED filters (City of Traitors' Land.Other+YouCtrl): the played land's move
+            // from the zone it was played from onto the battlefield.
+            if (ev.GetType() == Events::LAND_PLAYED &&
+                !zone_move_matches_trigger(ab, entity, controller, ev.GetParam<Entity>(Params::ENTITY),
+                                           ev.GetParam<Zone::ZoneValue>(Params::ORIGIN),
+                                           Zone::BATTLEFIELD))
+                continue;
             // ValidCard$ Card.nonCreature on a SpellCast trigger (The Fantasticar): the cast
             // spell must NOT be a creature spell.
             if (ab.trigger_valid_card_non_creature && ev.GetType() == Events::SPELL_CAST &&

@@ -3340,6 +3340,16 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
         // must be the source's controller. Reuse the controller-is-event-player gate (the
         // PLAYER_DREW_CARD event's PLAYER is the drawer), set by YouCtrl in the ValidCard parse.
         ability.trigger_valid_player_is_controller = t.player_is_you;
+    } else if (mode == "LandPlayed") {
+        // "When you play another land, ..." — City of Traitors (Mode$ LandPlayed | ValidCard$
+        // Land.Other+YouCtrl). Fires when a land is PLAYED (CR 305.1), not when an effect puts one
+        // onto the battlefield (CR 305.4). ValidCard$ is matched against the played land on the
+        // battlefield through trigger_valid_card (its YouCtrl: the player who played it, CR
+        // 305.2 / 110.2a); Other is the trigger_self_excluded identity gate, Self trigger_only_self.
+        // Origin$ restricts the zone the land was played from.
+        ability.trigger_on = Events::LAND_PLAYED;
+        ability.trigger_zone_origin = t.origin;
+        if (t.valid_card_self) ability.trigger_only_self = true;
     } else if (mode == "Attacks") {
         // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
         // once for this creature each time it is declared as an attacker (CR 508.2). ValidCard$

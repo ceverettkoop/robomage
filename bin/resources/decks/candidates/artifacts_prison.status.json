@@ -84,7 +84,7 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -92,7 +92,7 @@
    },
    "result": "ok",
    "summary": "5 new card(s): 1 clean, 4 need 4 mechanic(s) (12 points)",
-   "time": "2026-10-24T21:27:50"
+   "time": "2026-10-24T21:38:47"
   },
   "diff": {
    "detail": {
@@ -128,7 +128,7 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -136,7 +136,7 @@
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: FORGE_PIN bump, Repeated modes (CanRepeatModes), Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-10-24T21:27:50"
+   "time": "2026-10-24T21:38:47"
   },
   "parse": {
    "detail": {
@@ -226,14 +226,14 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "f04df0912b06d62da44ce892356f01e8137fd81eed33eb4b3e134d914c8bf144",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
    "summary": "4 new card(s), 3 with findings (3 findings), 1 without a script",
-   "time": "2026-10-24T21:27:50"
+   "time": "2026-10-24T21:38:47"
   },
   "provision": {
    "detail": {

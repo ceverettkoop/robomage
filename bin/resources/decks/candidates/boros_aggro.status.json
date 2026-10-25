@@ -62,7 +62,7 @@
    },
    "inputs": {
     "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "9a2a733248668d9d9440e6ee990ae7a8e4bd03b0e86d9e90b9159391a5780315",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -70,7 +70,7 @@
    },
    "result": "ok",
    "summary": "3 new card(s): 1 clean, 2 need 2 mechanic(s) (4 points)",
-   "time": "2026-10-24T21:27:50"
+   "time": "2026-10-24T21:38:47"
   },
   "diff": {
    "detail": {
@@ -101,7 +101,7 @@
    },
    "inputs": {
     "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "9a2a733248668d9d9440e6ee990ae7a8e4bd03b0e86d9e90b9159391a5780315",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -109,7 +109,7 @@
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Sand Scout",
-   "time": "2026-10-24T21:27:50"
+   "time": "2026-10-24T21:38:47"
   },
   "parse": {
    "detail": {
@@ -201,14 +201,14 @@
    },
    "inputs": {
     "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "9a2a733248668d9d9440e6ee990ae7a8e4bd03b0e86d9e90b9159391a5780315",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
    "summary": "3 new card(s), 2 with findings (6 findings), 0 without a script",
-   "time": "2026-10-24T21:27:50"
+   "time": "2026-10-24T21:38:47"
   },
   "provision": {
    "detail": {

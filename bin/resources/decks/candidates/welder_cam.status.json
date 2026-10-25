@@ -160,7 +160,7 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -168,7 +168,7 @@
    },
    "result": "ok",
    "summary": "11 new card(s): 4 clean, 7 need 9 mechanic(s) (43 points)",
-   "time": "2026-10-24T21:27:51"
+   "time": "2026-10-24T21:38:48"
   },
   "diff": {
    "detail": {
@@ -214,7 +214,7 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -222,7 +222,7 @@
    },
    "result": "pending",
    "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Discard-a-card activation cost, Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, TapOrUntap effect, Taps trigger",
-   "time": "2026-10-24T21:27:51"
+   "time": "2026-10-24T21:38:48"
   },
   "parse": {
    "detail": {
@@ -520,14 +520,14 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "a10fc07d0b94f4faf3992dec398feede2a966cab1a994578274f639961917bcd",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
    "summary": "11 new card(s), 7 with findings (21 findings), 0 without a script",
-   "time": "2026-10-24T21:27:51"
+   "time": "2026-10-24T21:38:48"
   },
   "provision": {
    "detail": {

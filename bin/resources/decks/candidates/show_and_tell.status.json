@@ -21,6 +21,7 @@
     "clean": [
      "Blood Moon",
      "Brotherhood's End",
+     "City of Traitors",
      "Sneak Attack",
      "Stock Up"
     ],
@@ -42,23 +43,11 @@
        "static_param:MayPlayWithoutManaCost"
       ],
       "size": "M"
-     },
-     "LandPlayed trigger": {
-      "cards": [
-       "City of Traitors"
-      ],
-      "findings": [
-       "trigger_mode:LandPlayed"
-      ],
-      "size": "M"
      }
     },
     "needs": {
      "Avengers Disassembled": [
       "Choose one or more (MinCharmNum) and Escalate"
-     ],
-     "City of Traitors": [
-      "LandPlayed trigger"
      ],
      "Omniscience": [
       "Free-cast statics (Omniscience, Aluren)"
@@ -73,19 +62,19 @@
      "Sneak Attack",
      "Stock Up"
     ],
-    "size_points": 9
+    "size_points": 6
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
-   "summary": "7 new card(s): 4 clean, 3 need 3 mechanic(s) (9 points)",
-   "time": "2026-10-24T21:27:51"
+   "summary": "7 new card(s): 5 clean, 2 need 2 mechanic(s) (6 points)",
+   "time": "2026-10-24T21:38:48"
   },
   "diff": {
    "detail": {
@@ -115,21 +104,20 @@
    "detail": {
     "mechanics": [
      "Choose one or more (MinCharmNum) and Escalate",
-     "Free-cast statics (Omniscience, Aluren)",
-     "LandPlayed trigger"
+     "Free-cast statics (Omniscience, Aluren)"
     ]
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
     "sizes": "e9fdff273fdf29d8ef706e2ab1f926d848df6a00eae71ec5e45364f5062c7dd9",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: Choose one or more (MinCharmNum) and Escalate, Free-cast statics (Omniscience, Aluren), LandPlayed trigger",
-   "time": "2026-10-24T21:27:51"
+   "summary": "2 mechanic(s) to implement: Choose one or more (MinCharmNum) and Escalate, Free-cast statics (Omniscience, Aluren)",
+   "time": "2026-10-24T21:38:48"
   },
   "parse": {
    "detail": {
@@ -185,14 +173,7 @@
       "faces": [
        "City of Traitors"
       ],
-      "findings": [
-       {
-        "detail": "no event binding: the trigger is dropped",
-        "kind": "trigger_mode",
-        "line": "T:Mode$ LandPlayed | ValidCard$ Land.Other+YouCtrl | TriggerZones$ Battlefield | Execute$ TrigSac | TriggerDescription$ When you play another land, sacrifice CARDNAME.",
-        "name": "LandPlayed"
-       }
-      ],
+      "findings": [],
       "layout": "normal",
       "script": "cardsfolder/c/city_of_traitors.txt",
       "tokens": [],
@@ -251,14 +232,14 @@
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "10afe599518c87db6ad5c59f626df96d9381aedd58c721f4d81add7425db6542",
+    "engine": "e9fc8301a43d209909864a2f185f469f0553d406680c3cb8a136a7d1d081c480",
     "scripts": "939f027b6989eedb2aa81aff9d2aafe6d795a22b1ec843fadaaeef1345dba265",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "9e54d233322aa0fe299b46037adf4c9ef4e25d7b6a9cc0301e62e59a3ddb1c1f"
    },
    "result": "ok",
-   "summary": "7 new card(s), 3 with findings (3 findings), 0 without a script",
-   "time": "2026-10-24T21:27:51"
+   "summary": "7 new card(s), 2 with findings (2 findings), 0 without a script",
+   "time": "2026-10-24T21:38:48"
   },
   "provision": {
    "detail": {

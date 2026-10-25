@@ -99,6 +99,9 @@ static void finish_pending_attacker(Game &game);
 static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer);
+// A land was played (CR 305.1): fires LAND_PLAYED for Mode$ LandPlayed triggers, after the
+// land's own zone-change event. `origin` is the zone it was played from.
+static void fire_land_played(Entity land, Zone::Ownership player, Zone::ZoneValue origin);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
 // ability countered. Collected from the printed ward (CardData::ward_cost) and from any
@@ -3083,6 +3086,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // (CR 305.2 / 110.2a) — the priority holder, who need not own it (a land played from
             // exile under a play permission).
             Zone::Ownership land_player = priority_seat();
+            const Zone::ZoneValue played_from = zone.location;
             orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
             zone.controller = land_player;
             // ForgetOnMoved$ Exile: a land played from exile under a Light Up the Stage play
@@ -3097,6 +3101,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             player.lands_played_this_turn++;
 
             game_log("%s played %s\n", player_name(land_player).c_str(), played_face->name.c_str());
+            fire_land_played(land_entity, land_player, played_from);
 
             // Playing a land uses take_action() (resets pass tracking)
             game.take_action();
@@ -3339,6 +3344,14 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
     int choice = InputLogger::instance().get_input(menu);
     snapshot_set_loop_safe(false);
     return choice;
+}
+
+static void fire_land_played(Entity land, Zone::Ownership player, Zone::ZoneValue origin) {
+    Event ev(Events::LAND_PLAYED);
+    ev.SetParam(Params::ENTITY, land);
+    ev.SetParam(Params::PLAYER, get_player_entity(player));
+    ev.SetParam(Params::ORIGIN, origin);
+    global_coordinator.SendEvent(ev);
 }
 
 // Miracle (CR 702.94a) reveal decision. A first-of-turn miracle card was drawn and its owner may
