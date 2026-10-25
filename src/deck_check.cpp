@@ -25,6 +25,7 @@ struct DeckCard {
 
 static std::vector<std::string> deck_files(const std::string &dir);
 static int highest_card_index();
+static bool optional_dir(const std::string &dir);
 
 // The .dk files directly in `dir`, sorted.
 static std::vector<std::string> deck_files(const std::string &dir) {
@@ -40,6 +41,9 @@ static std::vector<std::string> deck_files(const std::string &dir) {
     return out;
 }
 
+// A default directory that may hold no deck: heldout/ before any deck is held out.
+static bool optional_dir(const std::string &dir) { return dir == "heldout"; }
+
 static int highest_card_index() {
     int highest = -1;
     for (int i = 0; i < CARD_VOCAB_SIZE; i++) highest = std::max(highest, card_vocab_entries[i].index);
@@ -47,13 +51,15 @@ static int highest_card_index() {
 }
 
 int check_decks(const std::vector<std::string> &dirs) {
-    const std::vector<std::string> wanted = dirs.empty() ? std::vector<std::string>{"", "league"} : dirs;
+    const std::vector<std::string> wanted = dirs.empty() ? std::vector<std::string>{"", "league", "heldout"} : dirs;
     std::map<std::string, DeckCard> cards;  // uid -> card
     size_t n_decks = 0;
     size_t empty_dirs = 0;
     for (const std::string &dir : wanted) {
         const std::string path = RESOURCE_DIR + "/decks" + (dir.empty() ? "" : "/" + dir);
-        const std::vector<std::string> files = deck_files(path);
+        const bool one_deck = path.size() > 3 && path.compare(path.size() - 3, 3, ".dk") == 0;
+        const std::vector<std::string> files = one_deck ? std::vector<std::string>{path} : deck_files(path);
+        if (!one_deck && files.empty() && optional_dir(dir) && dirs.empty()) continue;
         if (files.empty()) {
             std::printf("check-decks: ERROR no .dk files in %s\n", path.c_str());
             ++empty_dirs;

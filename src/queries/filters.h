@@ -4,6 +4,7 @@
 #include <climits>
 #include <set>
 #include <string>
+#include <vector>
 #include "../classes/colors.h"
 #include "../components/types.h"
 #include "../components/zone.h"
@@ -65,6 +66,13 @@ bool object_matches_filter(Entity e, const std::string &spec, const MatchCtx &ct
 // characteristics in its new zone. The one matcher behind trigger ValidCard$ filters.
 bool zone_change_object_matches(Entity e, Zone::ZoneValue origin, Zone::ZoneValue destination,
                                 const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// The tokens of filter spec `spec` (its ','/';' alternatives) the matcher has no reading for: a
+// head that is no card type, subtype or supertype (nor Card / Permanent / Spell / Self / Other), a
+// lowercase qualifier eval_qualifier does not know (it fails closed and warns at runtime), a
+// PascalCase qualifier that is no type name (read as a type-line name no object has). Reads no game
+// state (--parse-report, parse_report.h).
+std::vector<std::string> filter_unknown_qualifiers(const std::string &spec);
 
 // Filter-spec structure (read at parse time, not for matching an object): true when `token`
 // is one whole '.'/'+'/','/';'-delimited token of the spec — "nonCreature" is a token of

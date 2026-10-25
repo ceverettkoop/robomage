@@ -30,6 +30,26 @@ extern std::string RESOURCE_DIR;
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
+// The findings of the parse_card_findings / parse_token_findings call in progress (nullptr while
+// games parse), and the script line they are met on.
+static std::vector<ParseFinding> *g_findings = nullptr;
+static std::string g_finding_line;
+// The script line findings are recorded against while it is in scope.
+struct FindingLine {
+    std::string saved;
+    explicit FindingLine(const std::string &line) : saved(g_finding_line) { g_finding_line = line; }
+    ~FindingLine() { g_finding_line = saved; }
+};
+static void parse_finding(const char *kind, const std::string &name, const std::string &detail);
+static bool is_mana_cost_token(const std::string &tok);
+static std::vector<std::string> cost_tokens(const std::string &cost_str);
+static bool activation_cost_token_modelled(const std::string &tok);
+static bool plain_keyword_modelled(const std::string &keyword);
+static std::string keyword_finding_name(const std::string &keyword);
+static bool static_mode_modelled(const std::string &mode);
+static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value);
+static bool trigger_param_assumed(const std::string &key, const std::string &value);
+
 static std::string value_from_script(const std::string &script, const std::string &key);
 static std::vector<std::string> multi_values_from_script(const std::string &script, const std::string &key);
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
@@ -127,7 +147,7 @@ static void read_mana_spent_filter(const std::string& value, AbilityDef& ability
 static void read_trigger_valid_card(const std::string& value,
                                     const std::map<std::string, std::string>& svars, TriggerLine& t,
                                     AbilityDef& ability);
-static void bind_trigger_line(const TriggerLine& t, AbilityDef& ability);
+static bool bind_trigger_line(const TriggerLine& t, AbilityDef& ability);
 static void bind_phase_trigger(const TriggerLine& t, AbilityDef& ability);
 static void bind_spell_cast_trigger(const TriggerLine& t, AbilityDef& ability);
 // The face a K: keyword line is parsed into.
@@ -419,6 +439,13 @@ std::string name_to_uid(std::string name) {
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
     ac.has_alt_cost = true;
     bool matched_special = false;
+    for (const std::string &tok : cost_tokens(cost_str)) {
+        static const char *const kAltCostTokens[] = {"PayLife<", "PayEnergy<", "ExileFromHand<", "Sac<", "Return<",
+                                                     "ExileFromGrave<"};
+        bool known = is_mana_cost_token(tok);
+        for (const char *prefix : kAltCostTokens) known = known || tok.rfind(prefix, 0) == 0;
+        if (!known) parse_finding("cost", tok.substr(0, tok.find('<')), "alternative cost " + cost_str);
+    }
     // Cost$ 0 means free
     if (cost_str == "0") {
         ac.is_free = true;
@@ -514,6 +541,8 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
 // grammar so every cost-bearing keyword honours the same tokens as Cost$ (previously
 // Cycling/Flashback open-coded partial copies that silently dropped tokens).
 static void parse_activation_cost(const std::string &cost_str, AbilityDef &ability) {
+    for (const std::string &tok : cost_tokens(cost_str))
+        if (!activation_cost_token_modelled(tok)) parse_finding("cost", tok.substr(0, tok.find('<')), "Cost$ " + cost_str);
     size_t tok_pos = 0;
     while (tok_pos < cost_str.size()) {
         size_t tok_end = cost_str.find(' ', tok_pos);
@@ -731,6 +760,11 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     // permanent. Only the front face carries this line; the back half (from the ALTERNATE block)
     // leaves it false. Distinct from a modal DFC so split cards skip MDFC permanent logic.
     card.is_split = (value_from_script(front_script, "AlternateMode") == "Split");
+    // AlternateMode:DoubleFaced is a transforming double-faced card (the ALTERNATE face is its back).
+    const std::string alternate_mode = value_from_script(front_script, "AlternateMode");
+    if (!alternate_mode.empty() && alternate_mode != "Modal" && alternate_mode != "Split" &&
+        alternate_mode != "DoubleFaced")
+        parse_finding("layout", alternate_mode, "AlternateMode:" + alternate_mode + " is read as a transforming card");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
     card.oracle_text = expand_newline_escapes(value_from_script(front_script, "Oracle"));
@@ -805,8 +839,10 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
 
     // Parse K: keyword lines
     KeywordContext kw_ctx{card, face_defs, svars};
-    for (const auto& kw_line : multi_values_from_script(front_script, "K"))
+    for (const auto& kw_line : multi_values_from_script(front_script, "K")) {
+        const FindingLine finding_line("K:" + kw_line);
         parse_keyword_line(kw_line, kw_ctx);
+    }
 }
 
 // Parses one K: keyword line through kKeywordTable: the first entry whose name matches handles it;
@@ -837,7 +873,11 @@ static void parse_keyword_line(const std::string &kw_line, KeywordContext &ctx) 
         }
         return;
     }
+    const size_t first = ctx.card.keywords.size();
     split_keywords(kw_line, ctx.card.keywords);
+    for (size_t i = first; i < ctx.card.keywords.size(); ++i)
+        if (!plain_keyword_modelled(ctx.card.keywords[i]))
+            parse_finding("keyword", keyword_finding_name(ctx.card.keywords[i]), ctx.card.keywords[i]);
 }
 
 // An Oracle: line with its literal \n escape sequences expanded to real newlines (for word-wrap
@@ -2260,6 +2300,11 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // AISearchGoal$ <filter> (Natural Order): tells Forge's AI which card to look for.
             // It repeats the load-bearing ChangeType$ filter, which drives the search here.
             "AISearchGoal",
+            // AIManaPref$ <hint> (Basalt Monolith): which mana source Forge's AI prefers to pay with.
+            "AIManaPref",
+            // DiscardValidDesc$ <text> (Collective Brutality): the prose name of the DiscardValid$
+            // filter, which is the load-bearing one.
+            "DiscardValidDesc",
             // GiftDescription$ <text> (Into the Flood Maw) and ChangeValidDesc$ <text>
             // (Once Upon a Time): prose describing the gift offered / the ChangeZone filter.
             // Purely cosmetic — the load-bearing filters are parsed from the other params.
@@ -2298,6 +2343,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
             if (!card_name.empty()) msg += " (card: " + card_name + ")";
             warning(msg);
+            parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
         }
     }
 }
@@ -2311,6 +2357,7 @@ static std::string normalize_category(std::string category, const std::string& c
         std::string msg = "Unknown ability category: " + category + " (resolves as a no-op)";
         if (!card_name.empty()) msg += " (card: " + card_name + ")";
         warning(msg);
+        parse_finding("category", category, "resolves as a no-op");
     }
     return category;
 }
@@ -2381,6 +2428,7 @@ static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::st
     std::string msg = "Unresolved amount SVar: " + ability.amount_svar;
     if (!card_name.empty()) msg += " (card: " + card_name + ")";
     warning(msg);
+    parse_finding("amount_svar", ability.amount_svar, ability.category + ": the amount names no SVar");
 }
 
 // Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
@@ -2486,7 +2534,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         // per-type RepeatEach (Atraxa) the RepeatSubAbility entries are the per-iteration body; count
         // them so repeat_each_types knows how many leading subs are the body vs. trailing links.
         auto it = svars.find(value);
-        if (it == svars.end()) return true;
+        if (it == svars.end()) {
+            parse_finding("svar_missing", value, key + "$ names no SVar");
+            return true;
+        }
         ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
         if (key == "RepeatSubAbility") ability.repeat_sub_count++;
         return true;
@@ -2497,7 +2548,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         // apply_param_to_ability, not a list of modal SVars.
         for (const std::string &svar_name : split(value, ',')) {
             auto it = svars.find(svar_name);
-            if (it == svars.end()) continue;
+            if (it == svars.end()) {
+                parse_finding("svar_missing", svar_name, "Choices$ names no SVar");
+                continue;
+            }
             ability.charm_choices.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
             // The mode's SpellDescription$, shown when the modes are offered.
             ability.charm_choice_descriptions.push_back(param_value(it->second, "SpellDescription"));
@@ -2518,6 +2572,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             if (it != svars.end())
                 ability.animate_granted_abilities.push_back(
                     parse_svar_ability(it->second, AbilityDef::ACTIVATED, svars, card_name));
+            else
+                parse_finding("svar_missing", svar_name, "Abilities$ names no SVar");
         }
         return true;
     }
@@ -2529,6 +2585,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             AbilityDef exec = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
             exec.from_delayed_execute = true;  // delayed_trigger() fires this one
             ability.subabilities.push_back(exec);
+        } else {
+            parse_finding("svar_missing", value, "Execute$ names no SVar");
         }
         return true;
     }
@@ -2544,6 +2602,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             if (it != svars.end()) {
                 AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                 if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
+            } else {
+                parse_finding("svar_missing", svar_name, "Triggers$ names no SVar");
             }
         }
         return true;
@@ -2560,7 +2620,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         //    GrantCast handler registers a turn-scoped combat-damage prevention shield.
         for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
             auto it = svars.find(svar_name);
-            if (it == svars.end()) continue;
+            if (it == svars.end()) {
+                parse_finding("svar_missing", svar_name, "ReplacementEffects$ names no SVar");
+                continue;
+            }
             const std::string &body = it->second;
             if (body.find("Event$ Counter") != std::string::npos &&
                 body.find("CantHappen") != std::string::npos &&
@@ -2574,6 +2637,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
                     ability.effect_prevent_combat_damage_by_remembered = true;
                 if (body.find("ValidTarget$") != std::string::npos)
                     ability.effect_prevent_combat_damage_to_remembered = true;
+            } else {
+                parse_finding("replacement", "Effect:" + param_value(body, "Event"), body);
             }
         }
         return true;
@@ -2946,6 +3011,7 @@ static std::vector<AbilityDef> parse_abilities(const std::vector<std::string> &l
         size_t category_end = line.find_first_of(" |", pos);
         if (category_end == std::string::npos) category_end = line.length();
         if (category_end <= pos) continue;
+        const FindingLine finding_line("A:" + line);
         ret_val.push_back(parse_ability_text(
             line, pos, is_spell ? AbilityDef::SPELL : AbilityDef::ACTIVATED, svars, card_name));
         ret_val.back().script_line = "A:" + line;
@@ -2960,7 +3026,10 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
     // The Execute$ SVar supplies the effect; the trigger metadata parsed from the T: line below is
     // written directly onto it, so no trigger field has to be carried over by hand.
     AbilityDef ability;
-    auto exec_it = svars.find(param_value(line, "Execute"));
+    const std::string execute = param_value(line, "Execute");
+    auto exec_it = svars.find(execute);
+    if (exec_it == svars.end())
+        parse_finding("svar_missing", execute, execute.empty() ? "the trigger has no Execute$" : "Execute$ names no SVar");
     if (exec_it != svars.end()) {
         // Check for Sylvan Library pattern: ChooseCard with DrawnThisTurn
         if (exec_it->second.find("ChooseCard") != std::string::npos &&
@@ -2970,7 +3039,12 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
             ability = parse_svar_ability(exec_it->second, AbilityDef::TRIGGERED, svars, card_name);
     }
     ability.ability_type = AbilityDef::TRIGGERED;
-    bind_trigger_line(read_trigger_line(line, svars, ability), ability);
+    const TriggerLine t = read_trigger_line(line, svars, ability);
+    const bool mode_bound = bind_trigger_line(t, ability);
+    if (!mode_bound)
+        parse_finding("trigger_mode", t.mode, "no event binding: the trigger is dropped");
+    else if (ability.trigger_on == 0 && !ability.trigger_state_condition)
+        parse_finding("trigger_form", t.mode, "this form of the mode binds no event: the trigger is dropped");
     return ability;
 }
 
@@ -3019,6 +3093,10 @@ static TriggerLine read_trigger_line(const std::string &line,
             // graveyard, so the trigger scan must look at graveyard cards, not just the
             // battlefield.
             if (value.find("Graveyard") != std::string::npos) t.from_graveyard = true;
+            // Command: a trigger an Effect carries (Triggers$), registered as a floating trigger.
+            for (const std::string &zone : split(value, ','))
+                if (zone != "Battlefield" && zone != "Graveyard" && zone != "Command")
+                    parse_finding("trigger_zone", "TriggerZones:" + zone, "the ability functions only on the battlefield or in a graveyard");
         } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
             if (value == "You") t.player_is_you = true;
             // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): the trigger fires only
@@ -3087,6 +3165,8 @@ static TriggerLine read_trigger_line(const std::string &line,
                 ability.stored_svar_gate_compare = value;  // per-permanent stored-SVar latch compare
             else
                 t.condition_compare = value;  // explicit compare for the CheckSVar count gate
+        } else if (!trigger_param_assumed(key, value)) {
+            parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         }
     }
     return t;
@@ -3097,6 +3177,7 @@ static TriggerLine read_trigger_line(const std::string &line,
 static int trigger_zone_filter(const std::string &value) {
     if (value == "Battlefield") return Zone::BATTLEFIELD;
     if (value == "Graveyard") return Zone::GRAVEYARD;
+    if (value != "Any") parse_finding("trigger_zone", "ChangesZone:" + value, "read as any zone");
     return -1;
 }
 
@@ -3184,8 +3265,8 @@ static void read_trigger_valid_card(const std::string &value,
 }
 
 // Binds a read trigger line onto `ability`: its intervening-if and optionality, then the event its
-// Mode$ fires on together with that mode's filters.
-static void bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
+// Mode$ fires on together with that mode's filters. False when the mode has no binding.
+static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     // 603.4 intervening-if from the trigger line (IsPresent$ / CheckSVar$). It replaces any
     // condition the Execute SVar declared; an SVar-only intervening-if (Uro's TrigSac
     // ConditionNotPresent$ Card.Self+escaped) is kept when the line declares none.
@@ -3309,7 +3390,10 @@ static void bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
         // are checked. parse_triggered_abilities keeps this ability despite trigger_on == 0.
         ability.trigger_state_condition = true;
         ability.trigger_only_self = true;
+    } else {
+        return false;
     }
+    return true;
 }
 
 // Mode$ Phase: "at the beginning of [your] <step>". The first listed phase (in the order below)
@@ -3333,6 +3417,11 @@ static void bind_phase_trigger(const TriggerLine &t, AbilityDef &ability) {
         // Static$ True reset re-arming its latch).
         {"Cleanup", Events::CLEANUP_BEGAN},
     };
+    for (const std::string &phase : t.phases) {
+        bool known = false;
+        for (const auto &pe : kPhaseEvents) known = known || phase == pe.phase;
+        if (!known) parse_finding("trigger_phase", phase, "no step event: the phase is ignored");
+    }
     for (const auto &pe : kPhaseEvents) {
         if (std::find(t.phases.begin(), t.phases.end(), pe.phase) == t.phases.end()) continue;
         if (ability.trigger_on == 0) ability.trigger_on = pe.event;
@@ -3408,6 +3497,7 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string &scri
                                                       const std::string& card_name) {
     std::vector<AbilityDef> result;
     for (const auto &line : multi_values_from_script(script, "T")) {
+        const FindingLine finding_line("T:" + line);
         AbilityDef ab = parse_one_trigger(line, svars, card_name);
         ab.script_line = "T:" + line;
         // Keep event-driven triggers (trigger_on != 0) and state-triggered abilities
@@ -3645,12 +3735,18 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // the blanket form (no Target$) is implemented; flag the targeted form so it is
                 // not mistaken for a global can't-attack below.
                 if (sa.category == "CantAttack") cant_attack_targeted = true;
+            } else if (!static_param_assumed(sa.category, key, value)) {
+                parse_finding("static_param", key, sa.category + " " + key + "$ " + value);
             }
         }
+    if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
 
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
     // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
-    if (sa.category == "CantAttack" && cant_attack_targeted) sa.cant_attack_filter.clear();
+    if (sa.category == "CantAttack" && cant_attack_targeted) {
+        sa.cant_attack_filter.clear();
+        parse_finding("static_form", "CantAttack.Target", "a can't-attack restriction naming the attacked player");
+    }
 
     return sa;
 }
@@ -3660,6 +3756,7 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
     for (const auto &line : multi_values_from_script(script, "S")) {
         // Skip alt cost lines (handled separately) and garbage matches
         if (line.find("AlternativeCost") != std::string::npos) continue;
+        const FindingLine finding_line("S:" + line);
         StaticAbility sa = parse_one_static_ability(line, svars);
         sa.script_line = intern_script_line("S:" + line);
         if (!sa.category.empty()) result.push_back(sa);
@@ -3675,6 +3772,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
     std::vector<Effect::Replacement> result;
 
     for (const auto& line : multi_values_from_script(script, "R")) {
+        const FindingLine finding_line("R:" + line);
         const size_t line_first = result.size();  // the replacements this line yields start here
         bool event_is_moved       = false;
         bool event_is_counter     = false;
@@ -4016,7 +4114,135 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             result.push_back(r);
         }
         for (size_t i = line_first; i < result.size(); ++i) result[i].script_line = intern_script_line("R:" + line);
+        if (result.size() == line_first) parse_finding("replacement", param_value(line, "Event"), "yields no replacement");
     }
 
     return result;
+}
+// ── Parser findings (parse.h) ──────────────────────────────────────────────────────────────────
+
+bool parse_card_findings(const std::string &path, CardData &card, std::vector<ParseFinding> &findings) {
+    std::vector<ParseFinding> *saved = g_findings;
+    g_findings = &findings;
+    const bool ok = parse_card_file(path, card);
+    g_findings = saved;
+    return ok;
+}
+
+bool parse_token_findings(const std::string &script_name, Token &tok, std::vector<ParseFinding> &findings) {
+    std::vector<ParseFinding> *saved = g_findings;
+    g_findings = &findings;
+    const bool ok = parse_token_file(script_name, tok);
+    g_findings = saved;
+    return ok;
+}
+
+// Records a finding against the script line in scope, while a findings parse runs.
+static void parse_finding(const char *kind, const std::string &name, const std::string &detail) {
+    if (g_findings == nullptr) return;
+    g_findings->push_back({kind, name, detail, g_finding_line});
+}
+
+// True when `tok` is a run of mana symbols parse_mana_cost reads: generic amounts, the colour and
+// colourless letters, snow, X, hybrid ("W/U", "2/W") and Phyrexian ("W/P", "WP") pips.
+static bool is_mana_cost_token(const std::string &tok) {
+    if (tok.empty()) return false;
+    for (char c : tok)
+        if (!std::isdigit(static_cast<unsigned char>(c)) && std::strchr("WUBRGCSXP/", c) == nullptr) return false;
+    return true;
+}
+
+// The space-separated tokens of a cost string, a token's "<...>" argument kept whole (its label may
+// hold spaces: "Sac<1/Creature.Other/another creature>").
+static std::vector<std::string> cost_tokens(const std::string &cost_str) {
+    std::vector<std::string> out;
+    std::string cur;
+    int depth = 0;
+    for (char c : cost_str) {
+        if (c == '<') depth++;
+        if (c == '>' && depth > 0) depth--;
+        if (c == ' ' && depth == 0) {
+            if (!cur.empty()) out.push_back(cur);
+            cur.clear();
+            continue;
+        }
+        cur += c;
+    }
+    if (!cur.empty()) out.push_back(cur);
+    return out;
+}
+
+// True when parse_activation_cost gives cost token `tok` a meaning (a Discard<> only for a whole
+// hand or the card itself, a counter only for loyalty).
+static bool activation_cost_token_modelled(const std::string &tok) {
+    if (tok == "T" || tok == "Mandatory" || tok == "X" || is_mana_cost_token(tok)) return true;
+    for (const char *prefix : {"PayLife<", "PayEnergy<", "Sac<", "Return<"})
+        if (tok.rfind(prefix, 0) == 0) return true;
+    if (tok.rfind("Discard<", 0) == 0)
+        return tok.find("0/Hand") != std::string::npos || tok.find("CARDNAME") != std::string::npos;
+    if (tok.rfind("AddCounter<", 0) == 0 || tok.rfind("SubCounter<", 0) == 0)
+        return tok.find("/LOYALTY>") != std::string::npos;
+    return false;
+}
+
+// The plain keywords (a K: line no kKeywordTable entry parses) some rule of the engine reads from
+// a keyword list: combat (action_processor.cpp), damage (components/damage.cpp), targeting,
+// keyword-triggered abilities (keyword_triggered_ability, state_manager_statics.cpp), day/night,
+// the city's blessing. A keyword missing here is a name nothing acts on.
+static bool plain_keyword_modelled(const std::string &keyword) {
+    static const char *const kExact[] = {"Flying", "Reach", "First Strike", "Double Strike", "Deathtouch",
+        "Lifelink", "Trample", "Vigilance", "Menace", "Haste", "Indestructible", "Hexproof", "Shroud", "Flash",
+        "Shadow", "Infect", "Wither", "Exalted", "Daybound", "Nightbound", "Ascend"};
+    static const char *const kPrefix[] = {"Mobilize:", "Protection from ", "Protection:"};
+    for (const char *k : kExact)
+        if (keyword == k) return true;
+    for (const char *k : kPrefix)
+        if (keyword.rfind(k, 0) == 0) return true;
+    return false;
+}
+
+// A plain keyword's name without its arguments ("Bushido:1" → "Bushido", "Protection from blue" →
+// "Protection").
+static std::string keyword_finding_name(const std::string &keyword) {
+    std::string name = keyword.substr(0, keyword.find(':'));
+    if (name.rfind("Protection from", 0) == 0) return "Protection";
+    if (name.rfind("Hexproof from", 0) == 0) return "Hexproof from";
+    return name;
+}
+
+// The S: modes the engine applies (state_manager_statics.cpp, rules_modifying.cpp; EtbCounter is the
+// etbCounter keyword's own). AlternativeCost lines are parsed apart (parse_card_face_body).
+static bool static_mode_modelled(const std::string &mode) {
+    static const char *const kModes[] = {"Continuous", "CantBeActivated", "CantBeCast", "RaiseCost", "ReduceCost",
+        "SetCost", "MustAttack", "ManaConvert", "DisableTriggers", "CantAttack", "EtbCounter"};
+    for (const char *m : kModes)
+        if (mode == m) return true;
+    return false;
+}
+
+// A static param no branch of parse_one_static_ability reads, whose value is what the engine
+// assumes anyway (a cosmetic description, the battlefield as the zone it functions from, a cost
+// change applying to spells).
+static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value) {
+    if (key == "Description" || key == "Secondary") return true;
+    if (key == "EffectZone") return value == "Battlefield";
+    if (key == "Type") return (mode == "RaiseCost" || mode == "ReduceCost" || mode == "SetCost") && value == "Spell";
+    // Damping Sphere's "for each other spell": read off its Amount$ SVar (raise_cost_per_spell_cast).
+    if (key == "Relative") return mode == "RaiseCost" && value == "True";
+    // A type-filtered CantBeActivated stops every activated ability (mana abilities too); the
+    // chosen-name form leaves mana abilities usable (rules_mod::activation_prohibited).
+    if (key == "ValidSA") return mode == "CantBeActivated" && (value == "Activated" || value == "Activated.!ManaAbility");
+    // MustAttack applies to the static's own creature (apply_rules_modifying_effects).
+    if (key == "ValidCreature") return mode == "MustAttack" && value == "Card.Self";
+    // DisableTriggers suppresses the triggers of objects entering the battlefield (etb_triggers_suppressed).
+    if (key == "ValidMode") return mode == "DisableTriggers" && (value == "ChangesZone,ChangesZoneAll" || value == "ChangesZone");
+    if (key == "Destination") return mode == "DisableTriggers" && value == "Battlefield";
+    return false;
+}
+
+// A trigger param no branch of read_trigger_line reads, that needs none: its description, the
+// Execute$ parse_one_trigger reads, the battlefield as the zone it functions from.
+static bool trigger_param_assumed(const std::string &key, const std::string &value) {
+    (void)value;
+    return key == "TriggerDescription" || key == "Execute" || key == "Secondary";
 }

@@ -374,14 +374,17 @@ static void bench_evaluation(const rmcheck::Options &opt, rmcheck::Report &rep,
 namespace rmcheck {
 
 // The fuzz tier: C++ explore vs explore in-process (--agent-a/-b <mode>, the Python explore tier's
-// games for the same seeds), bo1 over the matchups (default the league mirrors, --fuzz-games per
-// matchup; matchup k's game i has game seed seed + 1000k + i), then one bo3 explore:patient match
-// per ring matchup (seed + 500000 + k), then --manual-mana-games bo1 <mode> games per ring matchup
-// under --no-auto-mana (ring matchup k's game i: seed + 700000 + 1000k + i).
+// games for the same seeds), bo1 over the matchups (default the playable decks' mirrors,
+// --fuzz-games per matchup; matchup k's game i has game seed seed + 1000k + i), then one bo3
+// explore:patient match per ring matchup (seed + 500000 + k), then --manual-mana-games bo1 <mode>
+// games per ring matchup under --no-auto-mana (ring matchup k's game i: seed + 700000 + 1000k + i).
+// The ring is the playable decks' ring, or the matchups themselves when --matchups is an explicit
+// list ("candidates/x:*", a deck's onboarding campaign: every leg plays the deck).
 void tier_fuzz(const Options &opt, Report &rep) {
     const std::vector<std::pair<std::string, std::string>> pairs =
         matchups(opt, opt.matchups.empty() ? "mirrors" : opt.matchups);
-    const std::vector<std::pair<std::string, std::string>> ring = matchups(opt, "ring");
+    const std::vector<std::pair<std::string, std::string>> ring =
+        !opt.matchups.empty() && matchups_explicit(opt.matchups) ? pairs : matchups(opt, "ring");
     std::vector<GameJob> bo1, bo3, manual;
     for (size_t k = 0; k < pairs.size(); ++k)
         for (int i = 0; i < opt.fuzz_games; ++i) {

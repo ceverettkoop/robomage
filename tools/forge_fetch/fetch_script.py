@@ -27,7 +27,7 @@ correct combined script. To honour that, the tool:
   * treats a card as "already present" if EITHER "<uid>.txt" OR a combined
     "<uid>_<back>.txt" (whose front face normalizes back to <uid>) exists locally;
   * on a front-name miss, discovers the combined "<uid>_*.txt" Forge serves (via
-    the GitHub contents API) and fetches THAT under its combined name.
+    the GitHub git trees API, else the contents API) and fetches THAT under its combined name.
 
     python tools/forge_fetch/fetch_script.py "Brainstorm"
     python tools/forge_fetch/fetch_script.py "Lion's Eye Diamond" "Swords to Plowshares"
@@ -65,6 +65,10 @@ RES_BASE = "https://raw.githubusercontent.com/Card-Forge/forge/{branch}/forge-gu
 # any failure degrades gracefully to "NOT FOUND" (hand-authoring).
 API_DIR = ("https://api.github.com/repos/Card-Forge/forge/contents/"
            "forge-gui/res/cardsfolder/{letter}?ref={branch}")
+# The git trees API lists a whole letter directory (the contents API stops at 1000 entries, and
+# several cardsfolder letters hold more, so a combined DFC filename past the cut was never found).
+API_TREE = ("https://api.github.com/repos/Card-Forge/forge/git/trees/"
+            "{branch}:forge-gui/res/cardsfolder/{letter}")
 USER_AGENT = "robomage-forge-fetch/1.0"
 
 # Ref pinning: FORGE_PIN (next to this script) holds the Forge commit SHA every fetch
@@ -199,22 +203,32 @@ def _local_present(uid, is_token):
 
 
 def _list_forge_dir(letter, branch):
-    """Cached contents-API listing of a cardsfolder letter dir, or None if unavailable."""
+    """Cached listing of a cardsfolder letter dir (the git trees API, else the contents API),
+    or None if unavailable."""
     key = (letter, branch)
     if key in _DIR_CACHE:
         return _DIR_CACHE[key]
     names = None
+    # Authenticate the API requests when GITHUB_TOKEN is set (CI): raises the
+    # unauthenticated 60 req/hr cap to 5000. No-op locally when the var is absent —
+    # the raw-content fetches never hit this rate limit.
+    token = os.environ.get("GITHUB_TOKEN")
+    auth = {"Authorization": f"Bearer {token}"} if token else None
     try:
-        # Authenticate the contents-API request when GITHUB_TOKEN is set (CI):
-        # raises the unauthenticated 60 req/hr cap to 5000. No-op locally when the
-        # var is absent — the raw-content fetches never hit this rate limit.
-        token = os.environ.get("GITHUB_TOKEN")
-        auth = {"Authorization": f"Bearer {token}"} if token else None
-        body = fetch_text(API_DIR.format(letter=letter, branch=branch), extra_headers=auth)
+        body = fetch_text(API_TREE.format(letter=letter, branch=branch), extra_headers=auth)
         if body is not None:
-            names = [e.get("name", "") for e in json.loads(body)]
-    except (urllib.error.URLError, ValueError, OSError):
-        names = None  # rate-limited / offline / malformed: degrade gracefully
+            tree = json.loads(body)
+            if not tree.get("truncated"):
+                names = [e.get("path", "") for e in tree.get("tree", [])]
+    except (urllib.error.URLError, ValueError, OSError, AttributeError):
+        names = None
+    if names is None:
+        try:
+            body = fetch_text(API_DIR.format(letter=letter, branch=branch), extra_headers=auth)
+            if body is not None:
+                names = [e.get("name", "") for e in json.loads(body)]
+        except (urllib.error.URLError, ValueError, OSError):
+            names = None  # rate-limited / offline / malformed: degrade gracefully
     _DIR_CACHE[key] = names
     return names
 

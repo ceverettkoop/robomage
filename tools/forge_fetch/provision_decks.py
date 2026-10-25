@@ -9,9 +9,9 @@ engine asserts the moment it tries to load a card.
 
 It collects the union of (a) every card registered in src/card_vocab.h — the
 engine's full implemented-card set — and (b) every card named by the
-curated/fully-implemented decks (top-level *.dk), the scraped meta decks
-(meta/), and the PFSP league roster (league/), plus the basic lands the harness
-examples use. Fetching the whole vocab (not just deck cards) gives every
+curated/fully-implemented decks (top-level *.dk), the training decks (league/),
+the held-out decks (heldout/) and the onboarding candidates (candidates/,
+tools/onboard/onboard.py), plus the basic lands the harness examples use. Fetching the whole vocab (not just deck cards) gives every
 implemented card its script, whichever decks a run loads. Deck cards not yet in the vocab (unimplemented meta cards) are still
 fetched so those decks load for testing. It then scans the fetched card scripts
 for the token scripts those cards create and fetches those too. The underlying
@@ -54,13 +54,13 @@ def collect_vocab_names(vocab_h):
 
 
 def collect_deck_names(decks_dir):
-    """Every card name referenced by the top-level, meta/, and league/ decks
-    (plus the basic lands), as a set. not_used/ is intentionally excluded."""
+    """Every card name referenced by the top-level, league/, heldout/ and candidates/ decks
+    (plus the basic lands), as a set. Other subdirectories (tests/, temp/) are excluded."""
     deck_paths = []
     for fn in sorted(os.listdir(decks_dir)):
         if fn.endswith(".dk"):
             deck_paths.append(os.path.join(decks_dir, fn))
-    for sub in ("meta", "league"):
+    for sub in ("league", "heldout", "candidates"):
         sub_dir = os.path.join(decks_dir, sub)
         if os.path.isdir(sub_dir):
             for fn in sorted(os.listdir(sub_dir)):

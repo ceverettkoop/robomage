@@ -35,6 +35,7 @@
 #include "../queries/player_effects.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
+#include "../queries/tokens.h"
 #include "../queries/types.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
@@ -119,7 +120,6 @@ static rmstate::AbilityKind def_kind(const AbilityDef &def);
 static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_object);
 static const CardData *object_card_data(Entity e);
 static const CardData *card_definition(int card_id);
-static void collect_token_scripts(const AbilityDef &def, std::set<std::string> &out);
 static void collect_card_tokens(const CardData &cd, std::set<std::string> &out);
 static bool token_script_exists(const std::string &stem);
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer);
@@ -394,30 +394,12 @@ static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_o
 
 // ── CARDS ─────────────────────────────────────────────────────────────────────────────────────
 
-// The token scripts `def` (and its sub-abilities, modes and granted abilities) can make.
-static void collect_token_scripts(const AbilityDef &def, std::set<std::string> &out) {
-    if (const TokenParams *tp = std::get_if<TokenParams>(&def.params))
-        if (!tp->script.empty()) out.insert(tp->script);
-    if (def.kind == EffectKind::Investigate) out.insert(effects::INVESTIGATE_TOKEN_SCRIPT);
-    if (def.kind == EffectKind::Amass) out.insert(effects::amass_army_token_script(effects::amass_subtype(def)));
-    if (def.kind == EffectKind::Mobilize) out.insert(effects::MOBILIZE_TOKEN_SCRIPT);
-    for (const AbilityDef &sub : def.subabilities) collect_token_scripts(sub, out);
-    for (const AbilityDef &mode : def.charm_choices) collect_token_scripts(mode, out);
-    for (const AbilityDef &trig : def.effect_floating_triggers) collect_token_scripts(trig, out);
-    for (const AbilityDef &granted : def.animate_granted_abilities) collect_token_scripts(granted, out);
-}
-
-// The token scripts a card can make: its abilities' token effects, and the Warrior a mobilize
-// keyword makes (its trigger is built from the keyword during play, not parsed onto the card).
+// The token scripts a card can make: its abilities' token effects (queries/tokens.h), and the
+// Warrior a mobilize keyword makes.
 static void collect_card_tokens(const CardData &cd, std::set<std::string> &out) {
     for (const CardAbility &a : card_ability_list(cd))
-        if (a.def) collect_token_scripts(*a.def, out);
-    const CardData *faces[] = {&cd, cd.backside.get()};
-    for (const CardData *face : faces) {
-        if (!face) continue;
-        for (const std::string &kw : face->keywords)
-            if (kw.rfind("Mobilize", 0) == 0) out.insert(effects::MOBILIZE_TOKEN_SCRIPT);
-    }
+        if (a.def) ability_token_scripts(*a.def, out);
+    keyword_token_scripts(cd, out);
 }
 
 static bool token_script_exists(const std::string &stem) {
@@ -1492,7 +1474,7 @@ std::string encode_cards_frame(Zone::Ownership viewer) {
             if (id < 0 || !token_script_exists(stem)) continue;
             const Token tok = parse_token_script(stem);
             if (tok.name.empty()) continue;
-            for (const AbilityDef *d : tok.abilities) collect_token_scripts(*d, token_scripts);
+            for (const AbilityDef *d : tok.abilities) ability_token_scripts(*d, token_scripts);
             tokens.emplace(id, tok);
         }
     }

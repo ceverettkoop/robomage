@@ -14,6 +14,7 @@
 #include "../object_ref.h"
 #include "../str_util.h"
 #include "../svar_eval.h"
+#include "../type_constants.h"
 #include "battlefield.h"
 #include "characteristics.h"
 #include "combat.h"
@@ -24,6 +25,7 @@
 #include "types.h"
 
 static std::vector<std::pair<std::string, bool>> filter_tokens(const std::string &spec);
+static bool known_type_name(const std::string &name);
 
 // ── Unified filter matcher (declared in filters.h) ─────────────────────
 // A flattened view of the one object under test, populated either from a card's printed
@@ -31,6 +33,11 @@ static std::vector<std::pair<std::string, bool>> filter_tokens(const std::string
 // qualifier evaluator. This is the single place the "live for types & P/T, copiable-from-
 // card for color & mana value" rule (CR 105/112.7/205/208) is encoded.
 namespace {
+
+// While filter_unknown_qualifiers probes a spec: eval_qualifier reports a token it has no reading
+// for here instead of warning.
+bool g_probing = false;
+bool g_probe_unknown = false;
 
 struct CharView {
     Entity entity = 0;                       // 0 when matching a bare CardData (no identity quals)
@@ -256,6 +263,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
         if (rest_lc == "colorless") return view_has_any_color(v);
         for (const char *ct : kCardTypes)
             if (rest_lc == ascii_lower(ct)) return !view_has_typeline(v, ct);  // non<CardType>
+        if (g_probing && !known_type_name(rest)) g_probe_unknown = true;
         return !view_has_typeline(v, rest);                           // non<subtype>
     }
     // with<Keyword> — the object currently has the named keyword ability (Pick Your Poison's
@@ -301,7 +309,14 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     }
     // leftover: a PascalCase token is a type-line (type/supertype/subtype) name to require;
     // anything else is a qualifier we don't implement → fail closed and warn once.
-    if (std::isupper(static_cast<unsigned char>(q[0]))) return view_has_typeline(v, q);
+    if (std::isupper(static_cast<unsigned char>(q[0]))) {
+        if (g_probing && !known_type_name(q)) g_probe_unknown = true;
+        return view_has_typeline(v, q);
+    }
+    if (g_probing) {
+        g_probe_unknown = true;
+        return false;
+    }
     warn_unknown_qualifier(q);
     return false;
 }
@@ -580,4 +595,39 @@ bool type_set_passes_nontype(const std::string &spec, const std::set<Type> &type
             if (t.kind == TYPE && t.name == ct) return false;
     }
     return true;
+}
+
+// A card type, subtype or supertype name (Forge's lists, type_constants.h).
+static bool known_type_name(const std::string &name) {
+    return all_types.count(name) || all_subtypes.count(name) || all_supertypes.count(name);
+}
+
+std::vector<std::string> filter_unknown_qualifiers(const std::string &spec) {
+    std::vector<std::string> unknown;
+    const CharView nothing;  // no object: every qualifier is classified, none reads game state
+    const MatchCtx ctx;
+    for (const std::string &alt : split(spec, ',', /*skip_empty=*/true))
+        for (const std::string &clause : split(alt, ';', /*skip_empty=*/true)) {
+            const size_t sep = clause.find_first_of(".+");
+            const std::string head = clause.substr(0, sep);
+            if (!(head == "Card" || head == "Permanent" || head == "Spell" || head == "Self" || head == "Other" ||
+                    known_type_name(head)))
+                unknown.push_back(head);
+            if (sep == std::string::npos) continue;
+            const std::string rest = clause.substr(sep + 1);
+            size_t p = 0;
+            while (p <= rest.size()) {
+                size_t nx = rest.find_first_of(".+", p);
+                if (nx == std::string::npos) nx = rest.size();
+                const std::string q = rest.substr(p, nx - p);
+                p = nx + 1;
+                if (q.empty()) continue;
+                g_probing = true;
+                g_probe_unknown = false;
+                eval_qualifier(nothing, ctx, q);
+                g_probing = false;
+                if (g_probe_unknown) unknown.push_back(q);
+            }
+        }
+    return unknown;
 }

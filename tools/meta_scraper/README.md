@@ -16,17 +16,22 @@ label (the engine and the network see a deck as its list of cards).
 # Preview the top 10 archetypes without writing files
 python tools/meta_scraper/scrape_meta.py --top 10 --dry-run
 
-# Write them into bin/resources/decks/meta/
+# Write them into bin/resources/decks/candidates/
 python tools/meta_scraper/scrape_meta.py --top 10
 ```
+
+The deck onboarding pipeline runs it as its stage 1 (`python3 tools/onboard/onboard.py scrape`,
+`tools/onboard/README.md`), which reads the `--manifest` record.
 
 Options:
 
 | flag | default | meaning |
 |---|---|---|
 | `--top N` | 10 | number of top archetypes to fetch |
-| `--out DIR` | `bin/resources/decks/meta/` | output directory for `.dk` files |
+| `--out DIR` | `bin/resources/decks/candidates/` | output directory for `.dk` files |
 | `--format CODE` | `LE` | MTGTop8 format code (LE = Legacy) |
+| `--meta ID` | the site's (34) | MTGTop8's time window: 34 = last 2 weeks, 39 = last 2 months |
+| `--manifest FILE` | none | write a JSON record of the scrape: date, URL, window, and per deck its stem, name, rank, share, section (aggro / control / combo), archetype and deck ids, card counts |
 | `--cardsfolder DIR` | `bin/resources/cardsfolder/` | scripts used to expand double-faced names (`''` disables) |
 | `--delay SEC` | 0.6 | pause between requests (be polite) |
 | `--dry-run` | off | print the plan without writing files |
@@ -35,15 +40,17 @@ The run is idempotent: files are overwritten by sanitized archetype name.
 
 ## How it works
 
-1. **Metagame page** `https://mtgtop8.com/format?f=LE` lists archetypes in
-   descending meta-share order as `archetype?a=ID` links, each with a `… %`.
+1. **Metagame page** `https://mtgtop8.com/format?f=LE[&meta=M]` lists archetypes
+   in three sections (AGGRO, CONTROL, COMBO), each in descending meta-share order,
+   as `archetype?a=ID` links with a `… %`; the sections are merged by share (ties
+   keep page order) and the top N taken.
 2. **Archetype page** `https://mtgtop8.com/archetype?a=ID&f=LE` lists recent
    decklists as `event?e=E&d=DECKID` rows; the first row is taken as the
    representative list.
 3. **Deck export** `https://mtgtop8.com/mtgo?d=DECKID` returns plain MTGO text
    (`<qty> <name>` lines + a `Sideboard` separator), converted to the `.dk`
-   format used elsewhere in `bin/resources/decks/` (tab-separated `qty<TAB>name`,
-   a blank line, then `SIDEBOARD:`).
+   format used elsewhere in `bin/resources/decks/` (`qty name` lines, a blank
+   line, then `SIDEBOARD:`; `src/classes/deck.cpp` splits at the first space).
 
 Card names are kept verbatim (apostrophes included; the engine's `name_to_uid`
 strips punctuation), except that a front-face-only name of a multi-face card
@@ -57,8 +64,8 @@ script the name is left as-is.
 - Some archetypes are 80-card **companion** (e.g. Yorion) builds — an 80-card
   mainboard is expected for those, not a parsing error.
 - Card names that are not yet in `src/card_vocab.h` are still written to the
-  deck file; `cd bin && ./debug/robomage --check-decks --check-decks-dir meta`
+  deck file; `cd bin && ./debug/robomage --check-decks --check-decks-dir candidates`
   lists which ones need implementing (without `--check-decks-dir` it checks the
-  top-level and `league/` decks).
+  top-level, `league/` and `heldout/` decks).
 - If MTGTop8 changes its HTML and parsing returns nothing, the tool exits with a
   clear error rather than writing empty decks.

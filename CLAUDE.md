@@ -146,7 +146,7 @@ background** and make the live output inspectable by the user:
 
   | Tier | Checks |
   |---|---|
-  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached); the layout registry `src/featurize/registry.json` current, compiled in and append-only against HEAD (`rmfeat --registry-check`); the card digest `src/featurize/card_digest.json` (every card's table rows as recorded, the table drift report: `rmfeat --digest-check`) |
+  | `vocab` | `--check-decks`: every top-level / `league/` / `heldout/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached); the layout registry `src/featurize/registry.json` current, compiled in and append-only against HEAD (`rmfeat --registry-check`); the card digest `src/featurize/card_digest.json` (every card's table rows as recorded, the table drift report: `rmfeat --digest-check`); the parse report over the vocab (`--parse-report @vocab`) against `tests/parse_report/vocab.json` (`--record` rewrites it); `tools/onboard/onboard.py check` over the candidate decks (a stale status file warns) |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
@@ -157,7 +157,7 @@ background** and make the live output inspectable by the user:
   | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode; sideboard exploration (`sb_explore` for every agent at p 1): μ = `q` recomputed from replayed frames, the results lines' `sb`, swap counts covering 0–10, card weights moving the frequencies, replays and reruns identical, p 0 changing nothing, the schedule's refusals |
   | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; the checkpoint migration's acceptance (`learn/open_vocab_acceptance.py gate`: S0's fixture checkpoints migrated, against S0's outputs; skipped without the originals under `runs/`); `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π) |
   | `knowledge` | `rmknow --selftest` / `--exactness`, soundness under `--selfcheck-knowledge`, isolation and truth |
-  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
+  | `fuzz` | C++ explore vs explore over the playable decks' matchups (`league/` and `heldout/`) (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples, the sideboard guides and `scripted:hard+sb` bo3 matches at their targets) |
 
@@ -176,7 +176,8 @@ background** and make the live output inspectable by the user:
   `bin/resources/decks/`). Details: [`docs/game_running.md`](docs/game_running.md).
   - **Fuzz campaign** (any draw is a finding): `bin/debug/robomage_check --tier fuzz --matchups
     all --fuzz-games 100 [--mode explore:patient] [--seed N]` (the engine's C++ explore agents;
-    transcripts and draw logs under `ci_out/`)
+    transcripts and draw logs under `ci_out/`); one deck against every playable deck in every leg:
+    `--matchups candidates/<stem>:*` (the onboarding campaign)
   - **Engine throughput:** `bin/release/robomage_check --tier bench`
 
 ### Testing card behavior: the engine's own harness
@@ -445,12 +446,18 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 - Accented names aren't transliterated for the filename/uid (`name_to_uid` drops non-ASCII) —
   fetch those by ASCII stem by hand. Vocab matching IS accent-insensitive (`ascii_fold_card_name`).
 - `tools/forge_fetch/provision_decks.py` (run by CI and by the SessionStart hook, remote sessions
-  only) fetches every vocab card plus the top-level/`meta/`/`league/` deck cards and their tokens,
+  only) fetches every vocab card plus the top-level/`league/`/`heldout/`/`candidates/` deck cards and their tokens,
   including engine-synthesized ones (Amass → `b_0_0_<subtype>_army`, Investigate →
   `c_a_clue_draw`, Mobilize → `r_1_1_warrior`). A card that synthesizes a NEW token kind needs its
   stem added to that script's `keyword_tokens`.
 
 ### Adding a New Card
+
+A whole deck goes through the onboarding pipeline (`python3 tools/onboard/onboard.py`,
+`tools/onboard/README.md`): scrape, diff, provision, parse report, capability, the engine work, the
+vocab append below (its stage 7), text rows, checks and fuzz, designation to `league/` or `heldout/`.
+`robomage --parse-report <card>` (`src/parse_report.h`) lists what the parser does not model in a
+card's script; a new card should report clean before it enters the vocab.
 
 1. Append `{"Card Name", N}` (next free index) to `card_vocab_entries` in `src/card_vocab.h`;
    `N_CARD_TYPES` (`src/card_vocab.h`) must exceed the highest index. Tokens are a separate band
@@ -551,7 +558,7 @@ sections above are not repeated here.
   (`EntryInfo`), `delayed_triggers`, `visibility` (what a viewer sees: `identity_visible`, reveal
   windows, `individually_identifiable`, `canonical_object_order`, and `visible_card_id` /
   `card_identity`, the state format's one identity read), `pending_cost` (the cost being paid at a
-  decision, `CostPaymentScope`)
+  decision, `CostPaymentScope`), `tokens` (the token scripts a card's abilities and keywords make)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
 - `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
@@ -636,8 +643,14 @@ sections above are not repeated here.
 - `src/state_format/selfcheck_featurize.{h,cpp}` — `--selfcheck-featurize`: each seat's tensors
   from the actor entry point equal under the scramble and permutation checks' frames, the
   omniscient frame refused; `SELFCHECK-FEATURIZE:` summary
-- `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
-  card loads and is in the vocab; plays no game
+- `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`, a directory or one `.dk`): every
+  top-level / `league/` / `heldout/` deck card loads and is in the vocab; plays no game
+- `src/parse_report.{h,cpp}` — `--parse-report <card|@vocab|@file>`: each card's script parsed afresh
+  with the parser's findings (`ParseFinding`, `parse_card_findings` in `src/parse.h`: unhandled
+  categories, unread params, unbound trigger modes, unapplied statics and replacements, unknown
+  keywords and cost tokens, missing SVars and token scripts) plus the filter qualifiers
+  (`filter_unknown_qualifiers`, `queries/filters.h`) and SVar expressions (`svar_expr_recognized`,
+  `svar_eval.h`) nothing reads; one JSON line per card; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
   frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; the shared soundness check
   `truth.h`; std + `state_format/decode.h`/`schema.h` only; `docs/knowledge_store.md` §9)
@@ -710,7 +723,12 @@ handshake JSON, the shared region, request / response layouts.
   `RMSERVE-STATS:` on SIGTERM; `tools/nn/serve_check.py` — a minimal Python server of the same
   protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
-  `.dk` scraper (stdlib only, its own README)
+  `.dk` scraper (stdlib only, its own README; `--manifest` records the scrape)
+- `tools/onboard/` — the deck onboarding pipeline (`docs/open_vocab_plan.md` S7, its README):
+  `onboard.py <stage|all|report|check>` over `bin/resources/decks/candidates/` (scraped decks, every
+  deck's committed `<stem>.status.json`, the generated capability report `REPORT.md`), `league/`
+  (training) and `heldout/` (never trained on); `mechanic_sizes.json` (findings grouped into mechanics,
+  with size estimates)
 
 **Learner (`learn/`, torch, its own venv; `learn/README.md`)**
 - `learn/rmtrain` — the training program (`rmlearn/rmtrain.py`, `rmlearn/orchestrator/`): `start` /
@@ -755,6 +773,8 @@ handshake JSON, the shared region, request / response layouts.
 - `tests/cli/<name>.json` + `<name>.out` — the `cli` tier's sessions (engine flags and stdin lines)
   and their golden stdout (`robomage_check --tier cli --record` rewrites them)
 - `tests/embed/tokens_golden.jsonl` — the text tokenizer's golden ids (`make_goldens.py tokens`)
+- `tests/parse_report/vocab.json` — the vocab cards' known parse-report findings (`docs/rules_deviations.md`
+  §2.8; `robomage_check --tier vocab --record` rewrites it)
 - `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
   baseline; `docs/ci.md`)
 - `tests/open_vocab/` — the open-vocabulary refactor's fixtures (`docs/open_vocab_plan.md` S0, S5): the

@@ -1,5 +1,7 @@
 #include "svar_eval.h"
 
+#include <cstring>
+
 #include <algorithm>
 #include <cctype>
 #include <set>
@@ -100,6 +102,57 @@ int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity so
     int value = 0;
     if (apply_suffix_op(expr, controller, source, target, value)) return value;
     return evaluate_base(expr, controller, source, target);
+}
+
+bool svar_expr_recognized(const std::string &expr) {
+    int n = 0;
+    if (parse_int(expr, n)) return true;
+    const size_t slash = expr.rfind('/');
+    if (slash != std::string::npos) {
+        const std::string op = expr.substr(slash + 1);
+        const bool step = op == "HalfUp" || (starts_with(op, "Plus.") && parse_int(op.substr(5), n)) ||
+                          (starts_with(op, "Times.") && parse_int(op.substr(6), n)) ||
+                          (starts_with(op, "LimitMax.") && parse_int(op.substr(9), n));
+        return step && svar_expr_recognized(expr.substr(0, slash));
+    }
+    static const char *const kExact[] = {"Count$xPaid", "Count$Converge", "Count$ChosenNumber",
+        "Count$ResolvedThisTurn", "Count$RememberedSize", "RememberedSize", "Count$YourCountersEnergy",
+        "Count$YourLifeTotal", "Count$LifeYouGainedThisTurn", "Count$YouCastThisGame", "Count$InYourLibrary",
+        "Count$CardTypesInAllGraveyards", "Targeted$CardPower", "Targeted$CardManaCost", "ExiledWith$CardManaCost",
+        "Remembered$CardManaCost", "RememberedLKI$CardManaCost"};
+    for (const char *e : kExact)
+        if (expr == e) return true;
+    static const char *const kPrefixes[] = {"Count$CardCounters.", "Count$Devotion.", "Count$ThisTurnCast_",
+        "Count$TypeInYourYard.", "Count$ValidStack ", "Count$ValidHand", "Count$ValidLibrary", "Remembered$Valid "};
+    for (const char *p : kPrefixes)
+        if (starts_with(expr, p)) return expr.find('$', std::strlen(p)) == std::string::npos;
+    for (const char *p : {"Count$Revolt.", "Count$PromisedGift.", "Count$Threshold.", "Count$UrzaLands."}) {
+        if (!starts_with(expr, p)) continue;
+        const std::string rest = expr.substr(std::strlen(p));
+        const size_t dot = rest.find('.');
+        int a = 0, b = 0;
+        return dot != std::string::npos && parse_int(rest.substr(0, dot), a) && parse_int(rest.substr(dot + 1), b);
+    }
+    if (starts_with(expr, "Count$ValidExile")) return expr.find("$CardTypes") != std::string::npos;
+    if (starts_with(expr, "Count$ValidGraveyard"))
+        return expr.find('$', 6) == std::string::npos ||
+               (starts_with(expr, "Count$ValidGraveyard Card") && expr.find("$CardTypes") != std::string::npos);
+    if (starts_with(expr, "Count$Valid ")) {
+        const std::string spec = expr.substr(std::strlen("Count$Valid "));
+        const size_t dollar = spec.find('$');
+        return !spec.empty() && (dollar == std::string::npos || spec.substr(dollar) == "$CardManaCost");
+    }
+    if (starts_with(expr, "PlayerCount") && expr.find('$') != std::string::npos) {
+        const size_t dollar = expr.find('$');
+        const std::string players = expr.substr(std::strlen("PlayerCount"), dollar - std::strlen("PlayerCount"));
+        const std::string prop = expr.substr(dollar + 1);
+        const std::string metric = " SpellsCastThisTurn";
+        const bool spells = starts_with(prop, "Condition") && prop.size() > metric.size() &&
+                            prop.compare(prop.size() - metric.size(), metric.size(), metric) == 0;
+        return (players == "Opponents" || players == "RegisteredOpponents" || players == "Players") &&
+               (prop == "HasPropertyLostLifeThisTurn" || spells);
+    }
+    return false;
 }
 
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source,

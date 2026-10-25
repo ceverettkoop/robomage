@@ -37,16 +37,20 @@ size_t Report::error_count() const {
     return errors_.size();
 }
 
-std::vector<std::string> league_decks(const Options &opt) {
+std::vector<std::string> playable_decks(const Options &opt) {
     std::vector<std::string> out;
-    for (const std::string &name : list_dir(path_join(opt.decks_dir(), "league"), ".dk"))
-        out.push_back(name.substr(0, name.size() - 3));
+    for (const char *dir : {"league", "heldout"})
+        for (const std::string &name : list_dir(path_join(opt.decks_dir(), dir), ".dk"))
+            out.push_back(std::string(dir) + "/" + name.substr(0, name.size() - 3));
     return out;
 }
 
+bool matchups_explicit(const std::string &preset) {
+    return preset != "mirrors" && preset != "ring" && preset != "mirrors+ring" && preset != "all";
+}
+
 std::vector<std::pair<std::string, std::string>> matchups(const Options &opt, const std::string &preset) {
-    std::vector<std::string> specs;
-    for (const std::string &d : league_decks(opt)) specs.push_back("league/" + d);
+    const std::vector<std::string> specs = playable_decks(opt);
     const size_t n = specs.size();
     std::vector<std::pair<std::string, std::string>> mirrors, ring, out;
     for (size_t i = 0; i < n; ++i) {
@@ -70,8 +74,13 @@ std::vector<std::pair<std::string, std::string>> matchups(const Options &opt, co
         if (t.empty()) continue;
         const size_t colon = t.find(':');
         const std::string a = trim(t.substr(0, colon));
-        const std::string b = colon == std::string::npos ? a : trim(t.substr(colon + 1));
-        out.emplace_back(a, b.empty() ? a : b);
+        std::string b = colon == std::string::npos ? a : trim(t.substr(colon + 1));
+        if (b.empty()) b = a;
+        if (b == "*") {
+            for (const std::string &other : specs) out.emplace_back(a, other);
+            continue;
+        }
+        out.emplace_back(a, b);
     }
     return out;
 }

@@ -28,6 +28,13 @@ bool compare_svar(int value, const std::string &compare);
 int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity source = 0,
                   Entity target = 0);
 
+// True when evaluate_svar has a reading for `expr` (it would not report it unrecognized): the same
+// grammar — literals, the /Plus.N /Times.N /HalfUp /LimitMax.N steps, the Count$ / Targeted$ /
+// Remembered$ / PlayerCount… forms — checked without a game (--parse-report, parse_report.h).
+// Keep it beside evaluate_base: the gate's parse report over the vocab fails when a vocab card's
+// expression evaluates but is not recognized here.
+bool svar_expr_recognized(const std::string &expr);
+
 // evaluate_svar as an amount (a number of cards, counters, damage, ...): never below 0.
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source = 0,
                        Entity target = 0);

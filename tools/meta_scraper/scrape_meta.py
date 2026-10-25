@@ -7,13 +7,18 @@ anything from the robomage engine or python/. Run it from anywhere:
     python tools/meta_scraper/scrape_meta.py --top 10
     python tools/meta_scraper/scrape_meta.py --top 10 --dry-run
 
-It writes one `<archetype>.dk` per archetype into bin/resources/decks/meta/ (by
-default), in the same format as the hand-built decks in bin/resources/decks/.
+It writes one `<archetype>.dk` per archetype into bin/resources/decks/candidates/
+(by default), in the same format as the hand-built decks in bin/resources/decks/,
+and with --manifest a JSON record of the scrape (date, URL, each deck's rank,
+share, section and MTGTop8 ids) that tools/onboard/onboard.py reads.
 
 Source endpoints (MTGTop8):
-  - metagame page : https://mtgtop8.com/format?f=LE
-        anchors `<a href=archetype?a=ID&meta=M&f=LE>NAME</a>` listed in
-        descending meta-share order, each followed by a `... %` div.
+  - metagame page : https://mtgtop8.com/format?f=LE[&meta=M]
+        `<div class=meta_arch>SECTION N%</div>` headings (AGGRO / CONTROL /
+        COMBO), each followed by anchors `<a href=archetype?a=ID&meta=M&f=LE>NAME</a>`
+        in descending meta-share order, each followed by a `... %` div. The
+        sections are merged by share (ties keep page order). `meta` picks the
+        time window (34 = last 2 weeks, the site's default; 39 = last 2 months).
   - archetype page: https://mtgtop8.com/archetype?a=ID&f=LE
         deck rows `<a href=/event?e=E&d=DECKID&f=LE>...</a>`; the first row is
         the most recent/representative list.
@@ -23,7 +28,9 @@ Source endpoints (MTGTop8):
 """
 
 import argparse
+import datetime
 import html
+import json
 import os
 import re
 import sys
@@ -37,7 +44,7 @@ USER_AGENT = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
 
 # tools/meta_scraper/scrape_meta.py -> repo root is two levels up.
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-DEFAULT_OUT = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "meta")
+DEFAULT_OUT = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "candidates")
 DEFAULT_CARDS = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
 
 
@@ -103,12 +110,18 @@ def fetch(url, retries=3, timeout=25):
 
 
 def parse_metagame(page_html, top):
-    """Return up to `top` (archetype_id, name, pct_str) tuples in meta order."""
+    """Return up to `top` (archetype_id, name, pct_str, section) tuples, highest share first.
+
+    The page lists its sections (AGGRO, CONTROL, COMBO) one after another, each in descending
+    share; they are merged by share, ties in page order. `section` is the heading's word in
+    lower case ("" before the first heading)."""
     # Anchor immediately followed (within the same card block) by a `<n> %` div.
     pat = re.compile(
         r'archetype\?a=(\d+)[^>]*>(.*?)</a>.*?'
         r'<div[^>]*>\s*([\d.]+)\s*%\s*</div>',
         re.S)
+    headings = [(m.start(), m.group(1).lower())
+                for m in re.finditer(r'class=meta_arch[^>]*>\s*([A-Za-z]+)', page_html)]
     out, seen = [], set()
     for m in pat.finditer(page_html):
         aid = m.group(1)
@@ -116,10 +129,13 @@ def parse_metagame(page_html, top):
             continue
         seen.add(aid)
         name = html.unescape(re.sub(r"<[^>]+>", "", m.group(2))).strip()
-        out.append((aid, name, m.group(3)))
-        if len(out) >= top:
-            break
-    return out
+        section = ""
+        for pos, word in headings:
+            if pos < m.start():
+                section = word
+        out.append((aid, name, m.group(3), section))
+    out.sort(key=lambda t: -float(t[2]))  # stable: equal shares keep page order
+    return out[:top]
 
 
 def parse_archetype_decks(page_html):
@@ -153,12 +169,12 @@ def fetch_deck(deck_id):
 
 
 def to_dk(main, side):
-    """Render mainboard/sideboard entries as robomage .dk text (tab-separated)."""
-    lines = [f"{qty}\t{name}" for qty, name in main]
+    """Render mainboard/sideboard entries as robomage .dk text (`qty name` lines, as classes/deck.cpp reads them)."""
+    lines = [f"{qty} {name}" for qty, name in main]
     if side:
         lines.append("")
         lines.append("SIDEBOARD:")
-        lines += [f"{qty}\t{name}" for qty, name in side]
+        lines += [f"{qty} {name}" for qty, name in side]
     return "\n".join(lines) + "\n"
 
 
@@ -178,6 +194,12 @@ def main(argv=None):
                     help="output directory for .dk files (default bin/resources/decks/meta)")
     ap.add_argument("--format", default="LE",
                     help="MTGTop8 format code (default LE = Legacy)")
+    ap.add_argument("--meta", default=None,
+                    help="MTGTop8 time window id (34 = last 2 weeks, the site's default; "
+                         "39 = last 2 months)")
+    ap.add_argument("--manifest", default=None,
+                    help="write a JSON record of the scrape (date, URL, per deck: stem, name, "
+                         "rank, share, section, archetype and deck ids) to this file")
     ap.add_argument("--cardsfolder", default=DEFAULT_CARDS,
                     help="cardsfolder used to expand DFC names to Front Back "
                          "(default bin/resources/cardsfolder; '' to disable)")
@@ -187,9 +209,11 @@ def main(argv=None):
                     help="print what would be written without creating files")
     args = ap.parse_args(argv)
 
-    meta_url = f"{BASE}/format?f={args.format}"
+    meta_url = f"{BASE}/format?f={args.format}" + (f"&meta={args.meta}" if args.meta else "")
     print(f"Fetching metagame: {meta_url}")
-    archetypes = parse_metagame(fetch(meta_url), args.top)
+    meta_html = fetch(meta_url)
+    archetypes = parse_metagame(meta_html, args.top)
+    window = re.search(r'class="S14 chosen_tr">([^<]+)<', meta_html)
     if not archetypes:
         print("ERROR: no archetypes parsed (page structure may have changed).",
               file=sys.stderr)
@@ -198,8 +222,8 @@ def main(argv=None):
     if not args.dry_run:
         os.makedirs(args.out, exist_ok=True)
 
-    written, total_cards = [], set()
-    for rank, (aid, name, pct) in enumerate(archetypes, 1):
+    written, total_cards, records = [], set(), []
+    for rank, (aid, name, pct, section) in enumerate(archetypes, 1):
         time.sleep(args.delay)
         try:
             deck_ids = parse_archetype_decks(fetch(f"{BASE}/archetype?a={aid}&f={args.format}"))
@@ -232,12 +256,23 @@ def main(argv=None):
         n_main = sum(q for q, _ in main_b)
         n_side = sum(q for q, _ in side_b)
         print(f"  [{rank:2}] {pct:>5}%  {name:<22} -> {fname}  ({n_main} main, {n_side} side)")
+        records.append({"stem": fname[:-3], "name": name, "rank": rank, "meta_share": float(pct),
+                        "section": section, "archetype_id": int(aid), "deck_id": int(deck_ids[0]),
+                        "deck_url": f"{BASE}/event?d={deck_ids[0]}&f={args.format}",
+                        "main": n_main, "side": n_side})
         if args.dry_run:
             continue
         with open(path, "w") as f:
             f.write(dk)
         written.append(fname)
 
+    if args.manifest and not args.dry_run:
+        manifest = {"site": "mtgtop8", "format": args.format, "url": meta_url,
+                    "window": window.group(1).strip() if window else "",
+                    "date": datetime.date.today().isoformat(), "decks": records}
+        with open(args.manifest, "w") as f:
+            json.dump(manifest, f, indent=1)
+            f.write("\n")
     print(f"\n{'Would write' if args.dry_run else 'Wrote'} {len(written) or len(archetypes)} "
           f"deck(s); {len(total_cards)} unique card names"
           f"{' (dry run)' if args.dry_run else f' -> {args.out}'}")

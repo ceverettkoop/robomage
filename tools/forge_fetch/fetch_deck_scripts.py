@@ -5,16 +5,16 @@ Companion to fetch_script.py. Parses .dk deck files, collects the unique card
 names (skipping quantities and the SIDEBOARD: marker), and runs each through
 fetch_script.fetch_script (add-only; never overwrites without --force).
 
-The SessionStart hook fetches scripts for the top-level and meta/ decks but does
-NOT scan decks/league/, so after adding or altering a league deck run this over
-that folder to provision its scripts.
+provision_decks.py (the SessionStart hook, CI) fetches the scripts of the vocab and
+of the top-level, league/, heldout/ and candidates/ decks; run this over any other
+deck folder to provision its scripts.
 
 Usage:
     # default: every deck in bin/resources/decks/league/
     python tools/forge_fetch/fetch_deck_scripts.py
 
     # specific deck files or directories (each dir scanned for *.dk)
-    python tools/forge_fetch/fetch_deck_scripts.py bin/resources/decks/meta
+    python tools/forge_fetch/fetch_deck_scripts.py bin/resources/decks/candidates
     python tools/forge_fetch/fetch_deck_scripts.py path/to/a.dk path/to/b.dk
 
     # pass-through flags

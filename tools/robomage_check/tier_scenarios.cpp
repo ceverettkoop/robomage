@@ -1,5 +1,6 @@
 #include "embed.h"
 #include "gate.h"
+#include "parse_report_check.h"
 #include "proc.h"
 #include "registry_check.h"
 #include "scenarios.h"
@@ -7,9 +8,10 @@
 
 namespace rmcheck {
 
-// The vocab tier: the engine's --check-decks over the top-level and league/ decks, the text
-// generator's tokenizer against its golden ids (embed.h) and the layout registry
-// (registry_check.h).
+// The vocab tier: the engine's --check-decks over the playable decks (the top-level, league/ and
+// heldout/ decks), the text generator's tokenizer against its golden ids (embed.h), the layout
+// registry (registry_check.h), the parse report over the vocab and the candidates' onboarding
+// status (parse_report_check.h).
 void tier_vocab(const Options &opt, Report &rep) {
     ProcSpec spec;
     spec.argv = {opt.binary, "--check-decks"};
@@ -20,6 +22,8 @@ void tier_vocab(const Options &opt, Report &rep) {
     if (!r.ok()) rep.error("vocab", "robomage --check-decks failed (" + r.status_text() + "):\n" + r.out + r.err);
     embed_tokenizer_check(opt, rep);
     registry_check_part(opt, rep);
+    parse_report_part(opt, rep);
+    onboard_check_part(opt, rep);
 }
 
 // The scenarios tier: every rules-regression scenario (scenarios.h), in parallel.

@@ -11,6 +11,7 @@
 #include "components/zone.h"
 #include "error.h"
 #include "game_driver.h"
+#include "parse_report.h"
 #include "state_format/cards_file.h"
 #include "state_format/selfcheck_featurize.h"
 #include "text_table.h"
@@ -260,6 +261,8 @@ static const CliOption OPTIONS[] = {
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
     {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
+    // Report what the parser does not model in cards' scripts instead of playing (parse_report.h).
+    {"--parse-report", nullptr, true, false, [](const char *v) { parse_report_args.push_back(v); }, nullptr},
     // Check the oracle-text table against the vocab and the model pin, or write the inputs of its
     // stale rows, instead of playing (text_table.h).
     {"--text-table-check", nullptr, true, false, [](const char *v) { text_table_check_path = v; }, nullptr},

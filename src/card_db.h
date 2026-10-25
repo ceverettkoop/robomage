@@ -30,6 +30,8 @@ const CardData *vocab_front_card_data(int pos);
 // script), or "" when there is none. `RESOURCE_DIR/tokenscripts/<stem>.txt` for a token script
 // stem through token_script_text.
 std::string card_script_text(const std::string &card_name);
+// The path of the script file load_card reads for `card_name`, or "" when there is none.
+std::string card_script_path(const std::string &card_name);
 std::string token_script_text(const std::string &stem);
 
 //True when `card_name` names the back face of `cd` (a double-faced card loaded by

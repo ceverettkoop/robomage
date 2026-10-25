@@ -19,6 +19,7 @@
 #include "error.h"
 #include "game_driver.h"
 #include "input_logger.h"
+#include "parse_report.h"
 #include "state_format/cards_file.h"
 #include "state_format/recode.h"
 #include "state_format/stream.h"
@@ -99,6 +100,9 @@ int engine_main(int argc, char const *argv[]) {
 
     // --check-decks: the decks' cards against the vocabulary; no game is played.
     if (check_decks_flag) return check_decks(check_decks_dirs);
+
+    // --parse-report: what the parser does not model in cards' scripts; no game is played.
+    if (parse_report_requested()) return run_parse_report();
 
     // --text-table-check / --text-table-inputs: the oracle-text table; no game is played.
     if (text_table_requested()) return run_text_table();

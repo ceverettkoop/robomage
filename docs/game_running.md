@@ -332,3 +332,28 @@ any run (`%p` in FILE = the process id), and a terminal frame each at match end;
 re-encodes and compares a stream (`--state-dump json`: its JSON lines on stdout);
 `python3 python/rmstate.py dump FILE` prints the same JSON lines from Python;
 `bin/<config>/rmknow --viewer A --in FILE --text` runs the knowledge sidecar over a seat's frames.
+
+## Checking decks and card scripts (no game)
+
+`--check-decks` checks that every card of the playable decks (the top-level decks, `league/` and
+`heldout/`) has a script and is in the card vocab, one `check-decks: MISSING …` line per card that
+is not; `--check-decks-dir DIR` checks `resources/decks/DIR` instead (repeatable; a path ending in
+`.dk` is that one deck). `--parse-report <card | @vocab | @FILE>` (repeatable) parses each named
+card's script afresh and prints one JSON line per card with what the parser does not model:
+ability categories with no handler (they resolve as no-ops), params no branch reads, trigger modes
+and static modes the engine never applies, replacement lines that yield nothing, keywords no rule
+reads, cost tokens, filter qualifiers and SVar expressions the matcher and evaluator have no reading
+for, SVars and token scripts the card names but lacks; `@vocab` is every vocab card, `@FILE` a `.dk`
+deck's cards or one card name per line. A clean card is not proven to play correctly; a finding names
+something the engine does not do. Every kind and the JSON shape: `src/parse_report.h`.
+
+```bash
+cd bin
+./debug/robomage --check-decks --check-decks-dir candidates/aluren.dk
+./debug/robomage --parse-report "City of Traitors" --parse-report @../bin/resources/decks/candidates/storm.dk
+./debug/robomage --parse-report @vocab | python3 -c "import json,sys; [print(r['card'], f['kind'], f['name']) for r in map(json.loads, sys.stdin) for f in r.get('findings', [])]"
+```
+
+The vocab's known findings are committed in `tests/parse_report/vocab.json` (the gate's `vocab` tier
+fails on a new or vanished one); the deck onboarding pipeline (`tools/onboard/README.md`) runs both
+modes over scraped decks.

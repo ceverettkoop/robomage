@@ -7,7 +7,8 @@
 // ── --check-decks: every deck card implemented (plays no game) ───────────────────────────────
 //
 // Reads every .dk file of the given directories (relative to resources/decks/; "" is the
-// top-level directory; default: the top-level decks and league/) and checks each distinct card
+// top-level directory; a path ending in ".dk" is that one deck; default: the top-level decks,
+// league/ and heldout/, the playable decks — heldout/ may hold none) and checks each distinct card
 // it names, main deck and sideboard: the card's script loads (load_card's resolution, a
 // double-faced card by its combined name included), and the card the script defines is in the
 // card vocabulary (src/card_vocab.h) by its front-face name. Prints one line per failing card,

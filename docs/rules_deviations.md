@@ -131,11 +131,17 @@ Two cards are recognised by a fingerprint of their script and handled by special
   - **Effect:** none for Green Sun's Zenith. The proper fix is to support ChangeZone of the resolving spell itself from the stack (`Defined$ Parent`) as a step of its resolution, shuffling as the script says, then delete the flag and the strip.
   - **Code:** `src/parse.cpp`: `parse_card_face_body` (the fingerprint scan after `parse_abilities`); `src/systems/stack_manager.cpp`: the spell's final move in `resolve_top`.
 
+### 2.8 Script params of vocab cards the parser does not read
+`robomage --parse-report @vocab` (`src/parse_report.h`) lists what the parser meets in a card's script and models nowhere; for the vocab these are the only findings, recorded in `tests/parse_report/vocab.json` and checked by the gate's `vocab` tier (a fix removes the finding there and the entry here).
+- **Mystical Dispute — its cost reduction is not applied (CR 601.2f).** "This spell costs {2} less to cast if it targets a blue spell" is an `S:Mode$ ReduceCost | ValidCard$ Card.Self | EffectZone$ All | ValidTarget$ Spell.Blue` static. The engine applies cost statics only from the battlefield and has no target condition on a reduction, so the spell always costs {2}{U}. `src/systems/state_manager_statics.cpp`: `active_reduce_cost_for`; `src/parse.cpp`: `parse_one_static_ability`.
+- **Carpet of Flowers — its trigger can resolve in both main phases (CR 603.4).** "If you haven't added mana with this ability this turn" is the trigger line's `ResolvedLimit$ 1`, which nothing reads, so the trigger adds mana at the beginning of each of your main phases. `src/parse.cpp`: `read_trigger_line`.
+- **Moonshadow — its intervening-if is checked again at resolution.** `NoResolvingCheck$ True` says the -1/-1-counter condition is checked only when the trigger fires; the engine checks it at resolution too (603.4's default), so a counter removed in response stops the removal. `src/parse.cpp`: `read_trigger_line`; `src/resolution.cpp`.
+
 ---
 
 ## 3. Out of scope because no vocab card needs it
 
-These are left unimplemented, or implemented but never exercised, because no card in `src/card_vocab.h` needs them. Implement them when such a card is added.
+These are left unimplemented, or implemented but never exercised, because no card in `src/card_vocab.h` needs them. Implement them when such a card is added. A candidate deck's needs are listed by the onboarding pipeline's parse report and capability stage (`tools/onboard/README.md`, `bin/resources/decks/candidates/REPORT.md`).
 
 - **Toxic** (CR 702.164, 120.3g): not implemented. Poison counters and the 704.5c poison SBA exist.
 - **Battles** (CR 310, 120.3h): "Battle" is recognised as a permanent card type only. Battles can't be damaged, attacked or defeated.
@@ -143,7 +149,7 @@ These are left unimplemented, or implemented but never exercised, because no car
 - **Handlers limited to the forms the vocab uses:**
   - `gain_life` evaluates only the `Targeted$CardPower` dynamic amount; any other `LifeAmount$` expression reads the literal amount (`effect_gain_life.cpp`).
   - `multiply_counter` always doubles +1/+1 counters and ignores `CounterType$` (`effect_multiply_counter.cpp`).
-  - `parse_activation_cost` passes any unrecognised cost token to the mana parser (`src/parse.cpp`).
+  - `parse_activation_cost` passes any unrecognised cost token to the mana parser (`src/parse.cpp`); `--parse-report` lists such a token as a `cost` finding.
 - **Modal forms beyond "choose N different modes"** (CR 700.2d–i): choosing the same mode more than once, "choose one or more", a mode chosen by another player, per-mode additional costs and pawprint modes are not implemented (`CharmNum$` is the only mode-count tag read). Modes are announced for a modal ability at the root of a stack object only; a `DB$ Charm` chained as a sub-ability would reach resolution unannounced, which is a fatal error (`src/announce.cpp`: `run_announce`; `src/effects/effect_charm.cpp`: `charm`).
 - **Regeneration** (CR 701.19): not implemented; no vocab card creates a regeneration shield. "Can't be regenerated" (`NoRegen$ True`, Snuff Out) is accepted by the parser and has no effect (`src/parse.cpp`: `apply_param_to_ability`, the ignored keys).
 - **Mechanics with no vocab card:** mutate, banding, morph/manifest/disguise/cloak (face-down cast), splice, entwine, cumulative upkeep, dungeons/initiative. No rules machinery exists for these.
