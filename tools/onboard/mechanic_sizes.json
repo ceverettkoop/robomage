@@ -21,9 +21,11 @@
   "cost": "S",
   "layout": "L",
   "token_script": "S",
+  "type_token": "S",
   "script": "M"
  },
  "mechanics": {
+  "Type names": {"size": "S", "keys": ["type_token:*"], "note": "a type-line token the engine's type lists lack (src/constants.cpp, CR 205.2-205.4): add it, then make registry (the subtype enum has reserved capacity)"},
   "FORGE_PIN bump": {"size": "M", "keys": ["script:*"], "note": "cards newer than tools/forge_fetch/FORGE_PIN (2026-07-19): one deliberate pin bump (its header's recipe, make check) fetches them; their own mechanics are unknown until then"},
   "LandPlayed trigger": {"size": "M", "keys": ["trigger_mode:LandPlayed"], "note": "City of Traitors: an event when a land is played (CR 305.1)"},
   "Can't-block restrictions (CantBlockBy)": {"size": "M", "keys": ["static_mode:CantBlockBy", "static_param:ValidAttacker", "static_param:ValidBlocker"], "note": "Brazen Borrower (can block only fliers), Cryptic Coat (equipped creature can't be blocked); a blocking legality hook beside CantAttack"},

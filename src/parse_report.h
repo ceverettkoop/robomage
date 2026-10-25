@@ -39,6 +39,8 @@
 //   keyword         a plain keyword no rule reads
 //   cost            a cost token with no meaning
 //   layout          an AlternateMode the engine has no layout for
+//   type_token      a type-line token that is no card type, subtype or supertype the engine knows
+//                   (type_constants.h; a game reads it as a subtype with a non-fatal error)
 //   token_script    a token script the card names that is not on disk
 //
 // A clean report does not prove the card plays correctly (a modelled param can still be read only

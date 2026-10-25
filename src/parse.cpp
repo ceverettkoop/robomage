@@ -1734,7 +1734,12 @@ static std::set<Type> parse_types(const std::string &value) {
         } else if (all_supertypes.find(name) != all_supertypes.end()) {
             found.kind = SUPERTYPE;
         } else {
-            non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + name + " registering as subtype");
+            // A token no type list has (a subtype newer than all_subtypes, a misspelling): the parse
+            // report's finding while findings are collected, a game's non-fatal error otherwise.
+            if (g_findings)
+                parse_finding("type_token", name, "Types:" + value + " (read as a subtype)");
+            else
+                non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + name + " registering as subtype");
             found.kind = SUBTYPE;
         }
         ret_val.emplace(found);

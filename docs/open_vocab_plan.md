@@ -955,7 +955,9 @@ Stages 6–11 were not run for any deck.
   shared matcher has no reading for: `filter_unknown_qualifiers`, `queries/filters.h`, probing
   `eval_qualifier` without an object; PascalCase tokens that are no type name included, which today
   silently match nothing), `svar_expr` (a count expression `evaluate_svar` would report
-  unrecognized: `svar_expr_recognized`, `svar_eval.h`), `token_script`. Tokens named in filters or
+  unrecognized: `svar_expr_recognized`, `svar_eval.h`), `token_script`, `type_token` (a type-line token
+  no type list has, which a game reads as a subtype with a non-fatal error; added with the CR's subtype
+  list, S7's Done). Tokens named in filters or
   expressions that the engine reads where the filter is used (EquippedBy, YouDontCtrl, sameName,
   ExiledWithSource, …) and the parse-time SVar forms (SVar$ sums, Count$Compare, …) are listed in
   `parse_report.cpp` as read elsewhere. A clean report is not proof (a modelled param may be read
