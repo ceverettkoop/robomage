@@ -364,11 +364,11 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
-            // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
-            // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
-            // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
-            // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
-            // the mana resolves, so the gate still reads 0 here for a legitimate fire).
+            // Per-permanent stored-SVar gate (CheckSVar$ NAME | SVarCompare$ EQ0 on a Number$ scratch
+            // int). Like the intervening-if it is re-checked at resolution (CR 603.4): if the source
+            // permanent's latched scratch int no longer satisfies the comparison, the ability does
+            // nothing (a latch the ability's own effect sets is written only after this check, so the
+            // gate still reads its old value here for a legitimate fire).
             if (recheck_condition && !ab.def->stored_svar_gate_name.empty() &&
                 !stored_svar_gate_passes(
                     ab.source.get(), ab.def->stored_svar_gate_name, ab.def->stored_svar_gate_compare)) {

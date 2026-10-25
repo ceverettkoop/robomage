@@ -85,8 +85,8 @@ bool compare_svar(int value, const std::string &compare) {
     return apply_svar_op(value, compare.substr(0, 2), rhs);
 }
 
-// Per-permanent stored-SVar trigger gate (Carpet of Flowers). Read the latched scratch int off the
-// SOURCE permanent and compare it; absent reads as 0. An empty name = no gate (passes).
+// Per-permanent stored-SVar trigger gate. Read the latched scratch int off the SOURCE permanent
+// and compare it; absent reads as 0. An empty name = no gate (passes).
 bool stored_svar_gate_passes(Entity source, const std::string &name, const std::string &compare) {
     if (name.empty()) return true;
     int val = 0;

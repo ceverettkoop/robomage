@@ -149,10 +149,10 @@ EFFECT_KIND(Storm, "Storm", storm)
 // cur_game.turn_state.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
 // an extra turn" effect. See effect_add_turn.cpp.
 EFFECT_KIND(AddTurn, "AddTurn", add_turn)
-// DB$ StoreSVar (Carpet of Flowers): latch ab.stored_svar_set_value into the SOURCE permanent's
+// DB$ StoreSVar: latch ab.stored_svar_set_value into the SOURCE permanent's
 // Permanent::stored_svars[ab.stored_svar_set_name] — the per-permanent named-integer scratch store
 // read back by a CheckSVar trigger gate. No-op if the source is not a battlefield permanent (e.g.
-// the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
+// a leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
 EFFECT_KIND(StoreSVar, "StoreSVar", store_svar)
 // DB$ CopySpellAbility (Chain Lightning): after the parent spell's effect, the target-or-its-
 // controller may pay an UnlessCost$ ({R}{R}) to copy the parent spell and choose new targets for

@@ -209,16 +209,16 @@ struct AbilityDef {
     // e.g. Carpet of Flowers' Phase$ Main1,Main2 binds FIRST_MAIN_BEGAN here-plus SECOND_MAIN_BEGAN).
     // The general battlefield trigger scan matches trigger_on OR any entry here.
     std::vector<uint32_t> trigger_on_extra;
-    // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup / leave-battlefield resets):
+    // Static$ True bookkeeping trigger (Animate Dead's leave-battlefield ClearRemembered cleanup):
     // Forge's internal "static" triggers do not use the stack — they resolve immediately and
     // off-stack (CR 605.1a-style) the instant their event fires. The trigger scan resolves the
     // Execute effect inline instead of placing a PendingTrigger. Distinct from
     // trigger_taps_for_mana_static (which the mana system resolves) — this covers phase/zone-change
     // static triggers. General over any Static$ True phase/ChangesZone trigger.
     bool trigger_static_offstack = false;
-    // Per-permanent stored-SVar trigger gate (Carpet of Flowers' CheckSVar$ CarpetX | SVarCompare$
-    // EQ0 — "if you haven't added mana with this ability this turn"). When set, the trigger fires
-    // only if the SOURCE permanent's stored_svars[gate_name] (default 0) satisfies gate_compare
+    // Per-permanent stored-SVar trigger gate (CheckSVar$ NAME | SVarCompare$ EQ0 where
+    // SVar:NAME:Number$0 is a scratch int). When set, the trigger fires only if the SOURCE
+    // permanent's stored_svars[gate_name] (default 0) satisfies gate_compare
     // (e.g. "EQ0"). Like an intervening-if (CR 603.4) it is re-checked at resolution. Distinct
     // from the existing CheckSVar path (which resolves the SVar to a Count$ board expression);
     // this reads a Number$ scratch int latched by DB$ StoreSVar. General over the StoreSVar/
@@ -828,8 +828,8 @@ struct AbilityDef {
     // selection. General over any IsCurse$ targeting-only Pump.
     bool is_curse = false;
 
-    // DB$ StoreSVar (Carpet of Flowers): write `stored_svar_set_value` into the SOURCE permanent's
-    // stored_svars[stored_svar_set_name]. The general per-permanent named-integer scratch store
+    // DB$ StoreSVar: write `stored_svar_set_value` into the SOURCE permanent's
+    // stored_svars[stored_svar_set_name], the general per-permanent named-integer scratch store
     // (see Permanent::stored_svars). Parsed from SVar$ NAME / Expression$ N (Type$ Number).
     std::string stored_svar_set_name = "";
     int stored_svar_set_value = 0;

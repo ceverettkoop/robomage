@@ -3259,9 +3259,8 @@ static TriggerLine read_trigger_line(const std::string &line,
             auto it = svars.find(value);
             const std::string svdef = (it != svars.end()) ? it->second : std::string();
             if (svdef.rfind("Number$", 0) == 0) {
-                // Per-permanent stored-SVar gate (Carpet of Flowers: CheckSVar$ CarpetX, where
-                // SVar:CarpetX:Number$0 is a scratch int latched by DB$ StoreSVar — "if you
-                // haven't added mana with this ability this turn"). Read the SOURCE permanent's
+                // Per-permanent stored-SVar gate (CheckSVar$ NAME, where SVar:NAME:Number$0 is a
+                // scratch int latched by DB$ StoreSVar). Read the SOURCE permanent's
                 // stored_svars[name] at trigger time AND resolution, NOT a board-presence count.
                 ability.stored_svar_gate_name = value;
             } else {
@@ -3397,11 +3396,11 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     ability.trigger_resolved_limit = t.resolved_limit;
     // NoResolvingCheck$ True — the trigger's condition is not rechecked as the ability resolves.
     ability.trigger_no_resolving_check = t.no_resolving_check;
-    // Static$ True on a phase or zone-change trigger (Carpet of Flowers' cleanup / leave-battlefield
-    // resets) is a bookkeeping trigger that resolves immediately off the stack — it never uses the
-    // stack like a normal triggered ability (CR 605.1a-style). The TapsForMana static path has its
-    // own dedicated flag (trigger_taps_for_mana_static) and inline mana-system handling, so it is
-    // excluded here. General over any Static$ True phase/ChangesZone trigger.
+    // Static$ True on a phase or zone-change trigger (Animate Dead's leave-battlefield
+    // ClearRemembered cleanup) is a bookkeeping trigger that resolves immediately off the stack —
+    // it never uses the stack like a normal triggered ability (CR 605.1a-style). The TapsForMana
+    // static path has its own dedicated flag (trigger_taps_for_mana_static) and inline mana-system
+    // handling, so it is excluded here. General over any Static$ True phase/ChangesZone trigger.
     if (t.is_static && t.mode != "TapsForMana") ability.trigger_static_offstack = true;
     // TriggerZones$ Graveyard — the ability functions while its source is in the graveyard.
     ability.trigger_from_graveyard = t.from_graveyard;
@@ -3541,8 +3540,7 @@ static void bind_phase_trigger(const TriggerLine &t, AbilityDef &ability) {
         // Forge writes the (pre-combat) first main phase as "Main1", the post-combat one as "Main2".
         {"Main1", Events::FIRST_MAIN_BEGAN},
         {"Main2", Events::SECOND_MAIN_BEGAN},
-        // With no ValidPlayer$ You a Cleanup trigger fires at every cleanup (Carpet of Flowers'
-        // Static$ True reset re-arming its latch).
+        // With no ValidPlayer$ You a Cleanup trigger fires at every cleanup.
         {"Cleanup", Events::CLEANUP_BEGAN},
     };
     for (const std::string &phase : t.phases) {

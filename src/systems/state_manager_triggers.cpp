@@ -688,11 +688,12 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                     continue;
             }
 
-            // Static$ True leave-battlefield reset (Carpet of Flowers' ChangesZone Battlefield→Any
-            // Self): resolve off the stack. The source's Permanent has already been destroyed, so
-            // the StoreSVar latch write is a graceful no-op (the per-permanent store reset naturally
-            // when the permanent left) — but routing it here keeps Static$ True triggers off the
-            // stack as the rules require, rather than queueing a spurious StoreSVar trigger.
+            // Static$ True leave-battlefield bookkeeping trigger (Animate Dead's ChangesZone
+            // Battlefield→Any Self ClearRemembered cleanup): resolve off the stack. The source's
+            // Permanent has already been destroyed, so a StoreSVar latch write here is a graceful
+            // no-op (the per-permanent store reset naturally when the permanent left) — but routing
+            // it here keeps Static$ True triggers off the stack as the rules require, rather than
+            // queueing a spurious trigger.
             if (trigger_ab.def->trigger_static_offstack) {
                 resolve_ability(trigger_ab, orderer);
                 continue;
@@ -1200,16 +1201,17 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             if (trigger_ab.def->intervening_if &&
                 !evaluate_present_condition(trigger_ab, controller, orderer))
                 continue;
-            // Per-permanent stored-SVar gate (Carpet of Flowers' once-per-turn CheckSVar latch,
-            // "if you haven't added mana with this ability this turn"): the trigger does not go
-            // on the stack unless the source's latched scratch int satisfies the comparison.
+            // Per-permanent stored-SVar gate (a CheckSVar$ on a Number$ scratch-int latch): the
+            // trigger does not go on the stack unless the source's latched scratch int satisfies
+            // the comparison.
             if (!stored_svar_gate_passes(entity, trigger_ab.def->stored_svar_gate_name,
                                          trigger_ab.def->stored_svar_gate_compare))
                 continue;
 
-            // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup reset): resolve its
-            // effect immediately, off the stack (CR 605.1a-style), rather than queueing a
-            // PendingTrigger. A trivial StoreSVar latch write — safe to run inline mid-scan.
+            // Static$ True bookkeeping trigger (a phase or zone-change trigger such as a Cleanup
+            // or StoreSVar latch reset): resolve its effect immediately, off the stack (CR
+            // 605.1a-style), rather than queueing a PendingTrigger. Bookkeeping only — safe to run
+            // inline mid-scan.
             if (trigger_ab.def->trigger_static_offstack) {
                 resolve_ability(trigger_ab, orderer);
                 continue;

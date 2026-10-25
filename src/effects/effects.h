@@ -153,7 +153,7 @@ bool parse_dig_until(AbilityDef &ab, const std::string &key, const std::string &
 bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value);
 // AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
 bool parse_animate_all(AbilityDef &ab, const std::string &key, const std::string &value);
-// DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
+// DB$ StoreSVar SVar$/Expression$/Type$. See effect_store_svar.cpp.
 bool parse_store_svar(AbilityDef &ab, const std::string &key, const std::string &value);
 // DB$ SetState Mode$ <mode> (The Creation of Avacyn). See effect_set_state.cpp.
 bool parse_set_state(AbilityDef &ab, const std::string &key, const std::string &value);

@@ -39,7 +39,7 @@ bool svar_expr_recognized(const std::string &expr);
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source = 0,
                        Entity target = 0);
 
-// Per-permanent stored-SVar trigger gate (Carpet of Flowers' once-per-turn CheckSVar latch): read
+// Per-permanent stored-SVar trigger gate (a trigger's CheckSVar$ on a Number$ scratch SVar): read
 // `source`'s Permanent::stored_svars[name] (absent reads as 0) and test it against `compare`
 // ("EQ0", "GE2", ...). An empty name means "no gate" and passes. Used at both trigger placement
 // (state_manager_triggers) and resolution (resolution.cpp).
