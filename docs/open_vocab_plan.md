@@ -1203,6 +1203,166 @@ statics `379b102c`, MinCharmNum / Escalate `200a38ee`; logs `runs/open_vocab_s7/
   training deck added to a running run with the procedure above and its first 500 learner steps
   without errors or refusals.
 
+**Done** (three commits on `refactor/open-vocab`: the tooling `40b4eed0`, stage 11 `1a1c6b60`, this
+block; logs and scripts `runs/open_vocab_s8/`).
+
+- **`rmtrain bench --decks`** (`benchmark.py`, `matches.resolve_decks` / `deck_pairs`;
+  `docs/rmtrain.md` §7.1). `--decks` takes comma-separated `league` (every deck of `decks/league/`,
+  the ten original first, then eldrazi_aggro), `heldout` (`decks/heldout/`) or single stems; the
+  schedule is every pair of them, both orders, `swap: sides`, as before, so the common random numbers
+  hold between policies of one benchmark; `--focus` keeps the pairs holding one of its decks. The
+  default (no `--decks`) is the ten decks' 45 pairs, unchanged (every earlier benchmark stays
+  comparable). A `report.json` records its pairs and is not reused over other pairs. The summary adds
+  per deck the policy **facing** it with paired deltas (beside playing it) and the **deck groups**
+  `league`, `league:original` (the ten) and `heldout`, each played (`plays:`), faced (`faces:`) and
+  among themselves (`within:`), as rates and paired deltas. `--opponent` also takes an export path (a
+  head-to-head against a fixed policy at argmax, below). 1920 matches on 24 actors (78 pairs: a deck is
+  the policy's in ~150 matches, ~350 games) take ~7 min a policy against scripted:hard, ~11 min
+  against a policy.
+- **The expansion procedure** (`docs/rmtrain.md` §1.1, `orchestrator/league.py`): stop → `make
+  BUILD=RELEASE` (+ `actor`) → `rmtrain retable` → **`rmtrain add-decks <run> STEM…`** → `rmtrain
+  start`. `add-decks` replaces hand-editing `league.decks`: it refuses a deck already in the league, a
+  held-out one and one whose cards the run's engine does not load (`--check-decks`: append, rebuild,
+  retable first), and either writes the stopped run's `config.json` (an `add_decks` metrics line) or,
+  on a running run, sets `league.decks` and `league.pairs` live (now live keys, set together in one
+  `set`, validated as one config; the orchestrator rewrites the schedule at its next tick and each
+  actor plays it from its next match; refused when the engine's cards frame is no longer the run's).
+  **What broke and was fixed:** (1) with explicit `league.pairs`, `league.decks` is not read, so a deck
+  added to it alone was silently never played — the config now requires both to name the same decks
+  and `add-decks` writes the new pairs; (2) the orchestrator read the league decks' files for the
+  sideboard-exploration coverage cells once per process — now re-read when the league changes; (3) a
+  `heldout/` deck could be put in a league — refused by the config; (4) a benchmark report could be
+  reused across deck sets — refused. Nothing in the learner needed a change: the new deck's cards were
+  marked seen at its first batches by the learner and the target (S4), the fixed points kept their
+  masks until the next boundary, the window kept its episodes (no retable lineage needed: the vocab did
+  not change), the live export followed, the evaluations' `sprt_pairs` took the new pairs.
+  **The new pairs' weight:** the mean weight of the run's pairs (1 for a league without explicit pairs,
+  `--weight` overrides): the new deck plays as often as an average deck (11 decks: 10 of 55 pairs,
+  ~18% of the matches). No front-loading by default: the measurement below shows no deficit it would
+  repair, and a larger weight takes games from the other decks.
+- **Stage 11** (`onboard.py baseline --run ov-verify --bench-policies final`; the bench `rmtrain bench
+  ov-verify --decks league,<deck> --focus <deck>`, 480 matches, `runs/ov-verify/bench/onboard-<deck>/`):
+
+  | deck | scripted:hard with the deck (bo1, vs every league deck) | ov-verify final playing it | facing it |
+  |---|---|---|---|
+  | heldout/bant_control | 69 / 110 | 0.420 (581 games) | 0.614 (568) |
+  | heldout/show_and_tell | 72 / 110 | 0.348 (586) | 0.640 (570) |
+  | eldrazi_aggro | 33 / 100 | 0.665 (561) | 0.323 (594) |
+
+  (Rates against scripted:hard on the other side; "facing" = the policy with a league deck against
+  scripted piloting the new deck. scripted:hard pilots the new decks with generic heuristics only:
+  S7's misplays — Sneak Attack with no creature, Chalice X = 0 — stand.)
+- **Acceptance (a)**: held-out decks against two checkpoints, paired (`rmtrain bench league24h-sb
+  --policies bc-final,m11,ovv-final=runs/ov-verify/exports/final.ts.pt --decks league,heldout --label
+  s8-heldout --matches 1920 --actors 24`, seed 11; `runs/league24h-sb/bench/s8-heldout/summary.md`).
+  None of these networks has seen a card of the three new decks (but those shared with league decks).
+  Δ from bc-final ± two SEs, paired by match (rates in parentheses: bc-final / m11 / ovv-final):
+
+  | | m11 | ov-verify final |
+  |---|---|---|
+  | overall (0.457 / 0.493 / 0.500) | +0.036 ± 0.014 | +0.043 ± 0.014 |
+  | within:league:original | +0.039 ± 0.018 | +0.047 ± 0.018 |
+  | bant_control playing (0.389 / 0.451 / 0.464) | +0.062 ± 0.048 | +0.075 ± 0.047 |
+  | bant_control facing (0.551 / 0.576 / 0.591) | +0.025 ± 0.053 | +0.040 ± 0.056 |
+  | show_and_tell playing (0.342 / 0.348 / 0.353) | +0.007 ± 0.060 | +0.011 ± 0.063 |
+  | show_and_tell facing (0.616 / 0.663 / 0.661) | +0.047 ± 0.049 | +0.045 ± 0.049 |
+  | plays:heldout | +0.035 ± 0.038 | +0.044 ± 0.038 |
+  | faces:heldout | +0.035 ± 0.036 | +0.042 ± 0.037 |
+  | eldrazi_aggro playing (0.681 / 0.686 / 0.688) | +0.005 ± 0.045 | +0.006 ± 0.048 |
+  | eldrazi_aggro facing (0.245 / 0.308 / 0.298) | +0.063 ± 0.048 | +0.053 ± 0.047 |
+
+  R-NaD's gain over the behaviour-cloned policy carries to decks it never saw at about the league's
+  size (+0.035–0.044 on the held-out groups against +0.039–0.047 among the league decks), each just at
+  two SEs; it is clear on bant_control played (a fair deck, cards close to the league's) and absent on
+  show_and_tell played (a combo deck whose value is in its lines): the expected pattern (§4), and the
+  first held-out evidence that the network reads unseen cards through their features. The same
+  `ovv-final` export played again in ov-expand's benchmark (`seed` below) gave the same games (0.500
+  over 4621): the benchmark is deterministic.
+- **Acceptance (b)**: **`runs/ov-expand`** (ov-verify's `config.json` but `run.start_from` = ov-verify's
+  final network, `b4.max_learner_steps` 1450, `b5` 1650; `runs/open_vocab_s8/ov-expand.json`). The
+  start needs a `save_checkpoint` file, so the learner state's network was written as one
+  (`runs/open_vocab_s8/extract_model.py`: `ckpt/ovv-final.pt`, reloaded parameter for parameter). B3 →
+  B4 at once (03:47); 157 learner steps on the ten decks; then the procedure on the run
+  (`runs/open_vocab_s8/expand.log`, 04:03:40–04:04:30): `rmtrain stop` (checkpoint `rnad-p157.pt`, kept
+  as `runs/open_vocab_s8/ckpt/ovx-p157.pt`: the zero-shot policy), `make BUILD=RELEASE` + `actor` (a
+  relink: nothing changed), `rmtrain retable` ("the run's tables are the engine's … nothing to do": the
+  three decks' cards entered the vocab and the tables in S7), `rmtrain add-decks ov-expand
+  eldrazi_aggro` (10 new pairs at weight 1), `rmtrain start` (the learner restored at 157, its window of
+  5,682 episodes restored, 110 sideboard matchups). Then 1494 learner steps with eldrazi_aggro to `done`
+  at 1651 (06:56; 3 h 10 min in all, ~520 steps/h with the evaluations): 66,000 self-play games, 8.56 M
+  decisions, 11,005 games with eldrazi_aggro (18.2% of the games after the change), fixed points `m1`
+  (500), `m2` (1000), `rnad-final`; **no error, refusal, fatal, actor restart, cap or draw** (every log,
+  `metrics.jsonl`, `state.json`'s findings; the window left out one episode over the 640-token cap, as
+  usual). The card mask: at step 456 the network and the target carried 16 more seen ids (232: Eldrazi
+  Confluence 365, Secluded Courtyard 366, the Eldrazi Scion token 917, City of Traitors 361 and 12
+  older vocab cards of the deck that no league deck had), the frozen π_0,reg still 216; at the end all
+  four networks 232 (`runs/open_vocab_s8/seen_check.py`). Its evaluations: it1 sprt vs scripted 0.477
+  over 321 games, it2 0.531 over 239.
+- **The first measurement** (`rmtrain bench ov-expand --policies zs-p157=…/ovx-p157.ts.pt,
+  seed=…/ov-verify/exports/final.ts.pt,m1,m2,final --decks league,heldout --label s8-heldout
+  --matches 1920 --actors 24`; `runs/ov-expand/bench/s8-heldout/summary.md`). Baseline: the zero-shot
+  policy (step 157, eldrazi_aggro never trained on); Δ ± two SEs, paired; zero-shot rates first:
+
+  | vs scripted:hard | zero-shot | seed (step 0) | m1 (500) | m2 (1000) | final (1651) |
+  |---|---|---|---|---|---|
+  | overall | 0.510 | −0.010 ± 0.008 | −0.010 ± 0.008 | −0.008 ± 0.008 | −0.006 ± 0.009 |
+  | within:league:original | 0.513 | −0.016 ± 0.009 | −0.017 ± 0.008 | −0.012 ± 0.009 | −0.004 ± 0.011 |
+  | **eldrazi_aggro playing** (trained) | 0.681 | +0.007 ± 0.019 | +0.005 ± 0.020 | +0.005 ± 0.024 | −0.004 ± 0.021 |
+  | **eldrazi_aggro facing** | 0.293 | +0.005 ± 0.031 | −0.003 ± 0.026 | −0.002 ± 0.025 | −0.003 ± 0.031 |
+  | bant_control playing (unseen) | 0.474 | −0.009 ± 0.038 | −0.010 ± 0.035 | −0.009 ± 0.032 | −0.022 ± 0.045 |
+  | bant_control facing | 0.579 | +0.013 ± 0.040 | +0.014 ± 0.036 | +0.012 ± 0.036 | +0.029 ± 0.036 |
+  | show_and_tell playing (unseen) | 0.377 | −0.024 ± 0.037 | −0.006 ± 0.038 | +0.000 ± 0.039 | −0.006 ± 0.044 |
+  | show_and_tell facing | 0.659 | +0.002 ± 0.034 | +0.009 ± 0.031 | −0.007 ± 0.033 | −0.033 ± 0.031 |
+  | plays:heldout / faces:heldout | 0.429 / 0.618 | | | | −0.015 ± 0.032 / −0.001 ± 0.024 |
+
+  `seed`, `m1`, `m2` are not on the zero-shot policy's line (the seed is its start; `m1`, `m2` are
+  fixed points, π_m,reg, not the network at that step); `final` is: the network after 1494 steps with
+  eldrazi. A head-to-head is more sensitive than scripted:hard (`--opponent` the zero-shot export, the
+  33 pairs holding eldrazi_aggro or a held-out deck, `runs/ov-expand/bench/s8-h2h-vs-ovx-p157.ts.pt/`;
+  the baseline is the zero-shot policy's mirror, 0.494): `final` overall −0.003 ± 0.009, eldrazi_aggro
+  playing +0.004 ± 0.016 and facing +0.007 ± 0.021, bant_control −0.003 ± 0.025 / +0.012 ± 0.021,
+  show_and_tell −0.015 ± 0.025 / −0.019 ± 0.021, plays:heldout −0.009 ± 0.018, faces:heldout −0.004 ±
+  0.015.
+
+  **What it measures.** The gap is (trained − zero-shot on eldrazi_aggro) − (the same change on the
+  still-unseen decks), which removes what the extra steps did everywhere: playing eldrazi +0.011
+  (−0.004 against −0.015; about ±0.04 combined) against scripted:hard, +0.013 (about ±0.025) head to
+  head; facing likewise within noise. **No gap is detectable at this resolution (two SEs ≈ 0.02–0.03
+  per deck and side):** 1494 steps and 11k games of eldrazi_aggro did not move its play measurably —
+  but the run did not measurably move the policy anywhere either (league overall −0.004 ± 0.011, no
+  regression; ov-verify's continuation was the same, +0.006 ± 0.018; league24h-sb needed ~13k steps
+  for its +0.04), so this says "no deficit large enough to show in a run this short", not that
+  zero-shot play is as good as trained play. An aggro deck that the zero-shot policy already pilots at
+  0.68 against scripted:hard is also the easy case. Caveats: scripted:hard pilots the new decks with
+  generic heuristics (so "facing" rates mostly measure its misplays and are not comparable with the
+  league's); after the expansion show_and_tell is no longer wholly unseen (City of Traitors, 361, is in
+  eldrazi_aggro too: 1 of its 7 new cards).
+- **What decides S6 and `id_dropout` next.** Both are judged by paired held-out benchmarks
+  (`--decks league,heldout`, 1920 matches, plus the head-to-head) of two continuations from one seed
+  with the same steps and seed, one with the change: **S6** (the in-model deck summary) ships if
+  `faces:heldout` and the held-out decks' facing deltas (reading an unseen opponent's list is what it
+  adds) improve beyond two SEs with no `within:league:original` regression; **`id_dropout`** 0.25
+  against 0.1 if `plays:heldout` / `faces:heldout` improve beyond two SEs with no league regression,
+  and the trained-vs-zero-shot gap of a newly added deck shrinks. Today's measurement gives neither a
+  target to beat: the held-out decks already gain what the league gains (acceptance (a)) and the
+  added deck shows no deficit. To make the gap measurable first: a longer continuation (≥ 5k steps,
+  where the league itself moves by more than two SEs), a combo or control deck as the added training
+  deck (where zero-shot play should be weakest: show_and_tell's +0.007 in (a)), and head-to-head
+  ladders rather than scripted:hard.
+- **Evidence.** `make check` green with every tier, the opt-in `actor` tier included, before the
+  tooling commit (`runs/open_vocab_s8/make_check.log`) and again before this one
+  (`make_check2.log`); `learn/check.py`, `check_rnad.py`, `check_rmtrain.py` ok
+  (`learn_check*.log`), `check_rmtrain.py --smoke` ok (`smoke.log`: a deck added live in B4, one to the
+  stopped run through retable / add-decks / start, both played, the added deck's cards seen by the
+  learner and target). Engine, formats, vocab and card scripts unchanged; no decision changed.
+- **Deviations.** `add-decks` instead of editing `league.decks` by hand (both `config.json` and the
+  live path go through it, so the pairs follow); `league.decks` / `league.pairs` became live (the
+  plan: "`rmtrain set` if live"). The zero-shot policy is the run's own step-157 network, not its seed,
+  so the old-league steps are on both sides of the comparison. `run.start_from` takes a
+  `save_checkpoint` file only, so ov-verify's final network was extracted into one rather than the
+  option extended. The `systemd-run --user` units die at logout (lingering is off on this box): the run
+  and benchmarks here ran within one session.
+
 ## 3. Order, cost and what each stage invalidates
 
 | Stage | Depends on | Effort | Risk | Invalidates |

@@ -595,7 +595,8 @@ learn/rmtrain bench r1 --opponent scripted:hard+sb       # the same against the 
   **baseline**), every R-NaD fixed point `m<k>`, `final` at argmax, and `final@<eval.nn_options_finetune>`
   (the fine-tuning projection B5 trained for, sampled). A missing export is skipped with a note.
 - **Opponent.** `--opponent` (default `scripted:hard`, the opponent every run's evaluations use)
-  takes any `scripted:<tier>`; `scripted:hard+sb` sideboards per the guides
+  takes any `scripted:<tier>`, or an export path (a head-to-head against a fixed policy, played at
+  argmax: `docs/open_vocab_plan.md` S8's `s8-h2h`); `scripted:hard+sb` sideboards per the guides
   (`python/sideboard_guides.json`) except in its ten held-out matchups. Against another opponent
   than `scripted:hard` the directory is `bench/<label>-vs-<tier>/` (`end-vs-hard_sb`;
   `benchmark.bench_dir`), so results against different opponents never mix; each `report.json`
@@ -622,7 +623,7 @@ learn/rmtrain bench r1 --opponent scripted:hard+sb       # the same against the 
   pilots an unseen deck with generic heuristics only, so its rates playing or facing a new deck are
   not comparable with the league decks': compare policies with each other on the same matches (the
   paired differences). At `--decks league,heldout` (13 decks, 78 pairs) and 480 matches a deck is the
-  policy's in ~37 matches: use more matches (S8 used 1920 on 24 actors, ~6 min a policy).
+  policy's in ~37 matches: use more matches (S8 used 1920 on 24 actors, ~7 min a policy).
 - **When.** After the run: `--wait` returns once the run is finished (phase `done`, its shutdown
   having finished the queued exports, `final` included), or has stayed down for 10 minutes (a failed
   run is restarted by systemd after `run.restart_delay_s`, so a short outage is not an end). On a running run it warns and plays anyway, competing with

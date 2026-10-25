@@ -550,7 +550,8 @@ def add_args(ap):
     ap.add_argument("--label", default="end", help="the benchmark's directory under <run>/bench/ (with -vs-<opponent> "
                                                    "appended for an opponent other than scripted:hard)")
     ap.add_argument("--opponent", default=OPPONENT, help="the opponent: scripted:<tier> (default scripted:hard; "
-                                                         "scripted:hard+sb sideboards per the guides)")
+                                                         "scripted:hard+sb sideboards per the guides) or an export "
+                                                         "path (a fixed policy at argmax)")
     ap.add_argument("--decks", help="the decks whose every pair is played: comma-separated league (every deck of "
                                     "decks/league/), heldout (decks/heldout/) or deck stems (x = league/x, heldout/x); "
                                     "default: the ten league decks")
