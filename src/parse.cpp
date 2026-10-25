@@ -48,6 +48,7 @@ static bool plain_keyword_modelled(const std::string &keyword);
 static std::string keyword_finding_name(const std::string &keyword);
 static bool static_mode_modelled(const std::string &mode);
 static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value);
+static bool static_effect_zone_modelled(const StaticAbility &sa);
 static bool trigger_param_assumed(const std::string &key, const std::string &value);
 
 static std::string value_from_script(const std::string &script, const std::string &key);
@@ -3727,8 +3728,12 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                         sa.raise_cost_filter = "nonCreature";
                 } else if (sa.category == "ReduceCost") {
                     // Full ValidCard$ filter spec (e.g. "Eldrazi.Colorless"); matched against
-                    // each spell's card characteristics when computing its cast cost.
-                    sa.reduce_cost_filter = value;
+                    // each spell's card characteristics when computing its cast cost. Card.Self
+                    // (Mystical Dispute) reduces only the card's own cost as it is cast.
+                    if (value == "Card.Self")
+                        sa.reduce_cost_self = true;
+                    else
+                        sa.reduce_cost_filter = value;
                 } else if (sa.category == "CantAttack") {
                     // The creatures the can't-attack restriction applies to (Ensnaring Bridge:
                     // "Creature.powerGTX"). A dynamic 'X' in a power/toughness qualifier references
@@ -3853,11 +3858,19 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // the blanket form (no Target$) is implemented; flag the targeted form so it is
                 // not mistaken for a global can't-attack below.
                 if (sa.category == "CantAttack") cant_attack_targeted = true;
+            } else if (key == "ValidTarget" && sa.category == "ReduceCost") {
+                // ReduceCost ValidTarget$ Spell.Blue (Mystical Dispute: "if it targets a blue
+                // spell"): the reduction applies only once the spell's targets include a match.
+                sa.reduce_cost_valid_target = value;
+            } else if (key == "EffectZone") {
+                sa.effect_zone = value;
             } else if (!static_param_assumed(sa.category, key, value)) {
                 parse_finding("static_param", key, sa.category + " " + key + "$ " + value);
             }
         }
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
+    if (!static_effect_zone_modelled(sa))
+        parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
     if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
 
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
@@ -4370,12 +4383,17 @@ static bool static_mode_modelled(const std::string &mode) {
     return false;
 }
 
+// Does the engine apply static `sa` from the zones its EffectZone$ names (CR 113.6b)? The
+// battlefield (the default) for every static; a ReduceCost of the card's own cost (ValidCard$
+// Card.Self) also from the stack, where it functions as its card is cast (CR 113.6d).
+static bool static_effect_zone_modelled(const StaticAbility &sa) {
+    return sa.effect_zone.empty() || sa.effect_zone == "Battlefield" || sa.self_reduction_functions();
+}
+
 // A static param no branch of parse_one_static_ability reads, whose value is what the engine
-// assumes anyway (a cosmetic description, the battlefield as the zone it functions from, a cost
-// change applying to spells).
+// assumes anyway (a cosmetic description, a cost change applying to spells).
 static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value) {
     if (key == "Description" || key == "Secondary") return true;
-    if (key == "EffectZone") return value == "Battlefield";
     if (key == "Type") return (mode == "RaiseCost" || mode == "ReduceCost" || mode == "SetCost") && value == "Spell";
     // Damping Sphere's "for each other spell": read off its Amount$ SVar (raise_cost_per_spell_cast).
     if (key == "Relative") return mode == "RaiseCost" && value == "True";

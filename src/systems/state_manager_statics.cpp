@@ -88,6 +88,9 @@ static void sync_self_animate_creature(const ActiveStatic &a);
 static bool affected_is_attached_target(const std::string &aff);
 static void remerge_animate_granted_abilities(Entity entity);
 static const char *zone_display_name(Zone::ZoneValue loc);
+template <typename Fn>
+static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Fn &&fn);
+static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership controller, Entity target);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -257,29 +260,86 @@ static int artifacts_controlled_by(Zone::Ownership caster) {
     return count_battlefield_matching("Artifact.YouCtrl", caster, 0);
 }
 
-// Total generic mana that active ReduceCost statics remove from the cost of casting
-// `card_data` for player `caster` (the mirror of active_raise_cost_for). Each ReduceCost
-// static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f); an
-// Activator$ You static only reduces spells cast by its own controller. The caller clamps
-// the generic portion at zero and never reduces colored pips.
-int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
-    int total = 0;
+// Call fn(static, its controller) for each ReduceCost static that reduces the cost of casting
+// `card_data` for player `caster`, its ValidTarget$ condition aside: the active battlefield statics
+// whose Activator$ and ValidCard$ admit the spell (Eye of Ugin; an Activator$ You static only
+// reduces spells cast by its own controller), and the card's own Card.Self statics (Mystical
+// Dispute), controlled by its caster.
+template <typename Fn>
+static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Fn &&fn) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa()->category != "ReduceCost") continue;
-        if (as.sa()->reduce_cost_you_only && as.controller != caster) continue;
+        const StaticAbility &sa = *as.sa();
+        if (sa.category != "ReduceCost" || sa.reduce_cost_self) continue;
+        if (sa.reduce_cost_you_only && as.controller != caster) continue;
         // An empty filter means the reduction applies to every spell (no characteristic gate).
-        if (!as.sa()->reduce_cost_filter.empty()) {
+        if (!sa.reduce_cost_filter.empty()) {
             // Seed any static mana-value qualifier (It That Heralds the End's cmcGE7) into the
             // MatchCtx — the evaluator defers cmc comparators to ctx.cmc_bound, so without this
             // the bound is silently ignored and every colorless spell would be reduced.
             MatchCtx ctx;
-            extract_static_cmc_bound(as.sa()->reduce_cost_filter, ctx);
-            if (!card_matches_filter(card_data, as.sa()->reduce_cost_filter, ctx)) continue;
+            extract_static_cmc_bound(sa.reduce_cost_filter, ctx);
+            if (!card_matches_filter(card_data, sa.reduce_cost_filter, ctx)) continue;
         }
-        total += as.sa()->reduce_cost;
+        fn(sa, as.controller);
     }
+    for (const StaticAbility &sa : card_data.static_abilities)
+        if (sa.self_reduction_functions()) fn(sa, caster);
+}
+
+// Does `target` satisfy ReduceCost static `sa`'s ValidTarget$ filter, read from the static's
+// controller (`controller`) for YouCtrl / OppCtrl?
+static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership controller, Entity target) {
+    if (target == 0) return false;
+    MatchCtx ctx;
+    ctx.controller = controller;
+    extract_static_cmc_bound(sa.reduce_cost_valid_target, ctx);
+    return object_matches_filter(target, sa.reduce_cost_valid_target, ctx);
+}
+
+// Total generic mana that active ReduceCost statics remove from the cost of casting
+// `card_data` for player `caster` (the mirror of active_raise_cost_for). Each ReduceCost
+// static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f). A static
+// with a ValidTarget$ condition is left to target_cost_reduction_for. The caller clamps
+// the generic portion at zero and never reduces colored pips.
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
+    int total = 0;
+    for_each_cost_reduction(card_data, caster, [&total](const StaticAbility &sa, Zone::Ownership) {
+        if (sa.reduce_cost_valid_target.empty()) total += sa.reduce_cost;
+    });
     return total;
+}
+
+int target_cost_reduction_for(const CardData &card_data, Zone::Ownership caster, const std::vector<Entity> &targets) {
+    int total = 0;
+    for_each_cost_reduction(card_data, caster, [&](const StaticAbility &sa, Zone::Ownership controller) {
+        if (sa.reduce_cost_valid_target.empty()) return;
+        for (Entity t : targets)
+            if (reduction_target_matches(sa, controller, t)) {
+                total += sa.reduce_cost;
+                return;
+            }
+    });
+    return total;
+}
+
+bool has_target_cost_reduction(const CardData &card_data, Zone::Ownership caster) {
+    bool any = false;
+    for_each_cost_reduction(card_data, caster, [&any](const StaticAbility &sa, Zone::Ownership) {
+        if (!sa.reduce_cost_valid_target.empty()) any = true;
+    });
+    return any;
+}
+
+void reduce_generic_cost(ManaValue &cost, int amount, const CardData &card_data) {
+    if (amount <= 0) return;
+    while (amount-- > 0) {
+        auto it = cost.find(GENERIC);
+        if (it == cost.end()) break;
+        cost.erase(it);
+    }
+    const int floor = active_cost_floor_for(card_data);
+    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
 }
 
 int active_cost_floor_for(const CardData &card_data) {

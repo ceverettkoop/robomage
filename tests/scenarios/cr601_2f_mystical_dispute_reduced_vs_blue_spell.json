@@ -1,0 +1,14 @@
+{
+  "name": "cr601_2f_mystical_dispute_reduced_vs_blue_spell",
+  "why": "CR 601.2f / 113.6d: Mystical Dispute's own 'costs {2} less to cast if it targets a blue spell' (ReduceCost ValidCard$ Card.Self, ValidTarget$ Spell.Blue, EffectZone$ All) functions as it is cast; its target is chosen first (601.2c), so with one Island it is offered against Brainstorm and cast for {U} (Mystical Dispute's target-conditioned cost reduction)",
+  "hand_a": ["Brainstorm"],
+  "battlefield_a": ["Island"],
+  "library_a": ["Island"],
+  "hand_b": ["Mystical Dispute"],
+  "battlefield_b": ["Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Brainstorm", "B:cast:Mystical Dispute"],
+  "max_decisions": 5,
+  "expect_menu": ["^Cast Mystical Dispute$"],
+  "expect_order": ["Mystical Dispute costs \\{2\\} less to cast", "Player B casts Mystical Dispute targeting Brainstorm", "Brainstorm is countered"]
+}

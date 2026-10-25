@@ -146,6 +146,11 @@ struct TargetSelectRT {
     int picked = 0;          // multi-target picks completed so far
 };
 
+// Whether a legal target candidate may be offered for the pick in flight: false when choosing it
+// would leave the object's cost unpayable (a cost reduced only for some targets, CR 601.2f). A
+// pick whose every candidate it refuses offers them all.
+using TargetPickGate = std::function<bool(Entity candidate)>;
+
 // The persisted progress of announcing a stack object's modes and targets (run_announce,
 // announce.h; CR 601.2b/c, 602.2b, 603.3c/d): the stage, the completed mode picks, and the
 // in-flight target pick. Embedded BY VALUE in the cast, activation and trigger-placement state

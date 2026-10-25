@@ -121,6 +121,17 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
                                       const std::vector<Entity> &targets);
 static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static std::vector<Entity> chosen_targets_of(Entity targeting_entity);
+// Leave out of a target pick's candidate pool those `gate` refuses (run_target_select); the pool
+// is kept whole when it refuses every candidate.
+static void apply_target_gate(std::vector<Entity> &pool, const TargetPickGate *gate);
+// Could the cast `pc` pay its cost (CR 601.2f) with `candidate` added to the targets chosen so far,
+// a ValidTarget$-conditioned cost reduction applied for them? The target gate of a cast whose
+// cost such a reduction lowers.
+static bool target_cost_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster,
+    Entity candidate, std::shared_ptr<Orderer> orderer);
+// The targets are chosen: take the ValidTarget$-conditioned cost reductions they meet off the
+// deferred mana cost (CR 601.2f).
+static void apply_target_cost_reduction(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
                                                   std::shared_ptr<Orderer> orderer);
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
@@ -307,6 +318,27 @@ static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_d
         for (Colors c : card_data.escalate_mana) total.insert(c);
     return can_pay_mana(caster, total, pc.spell_entity, orderer, card_data.has_delve, card_data.has_improvise,
         /*exclude_entity=*/0, /*life_reserve=*/pc.deferred_life_cost + std::max(0, pc.life_x_announced));
+}
+
+// See forward declaration at top of file.
+static bool target_cost_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster,
+    Entity candidate, std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> targets;
+    if (pc.have_ability) append_chosen_targets(pc.ability, targets);
+    targets.push_back(candidate);
+    ManaValue cost = pc.deferred_mana_cost;
+    reduce_generic_cost(cost, target_cost_reduction_for(card_data, caster, targets), card_data);
+    return can_pay_mana(caster, cost, pc.spell_entity, orderer, pc.deferred_delve, pc.deferred_improvise,
+        /*exclude_entity=*/0, /*life_reserve=*/pc.deferred_life_cost + std::max(0, pc.life_x_announced));
+}
+
+// See forward declaration at top of file.
+static void apply_target_cost_reduction(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    const size_t before = pc.deferred_mana_cost.size();
+    reduce_generic_cost(pc.deferred_mana_cost,
+        target_cost_reduction_for(card_data, caster, chosen_targets_of(pc.spell_entity)), card_data);
+    if (pc.deferred_mana_cost.size() < before)
+        game_log("%s costs {%zu} less to cast\n", card_data.name.c_str(), before - pc.deferred_mana_cost.size());
 }
 
 // See forward declaration at top of file.
@@ -1085,6 +1117,30 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
     return false;
 }
 
+int best_target_cost_reduction(
+    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+    if (!has_target_cost_reduction(face, caster)) return 0;
+    int best = 0;
+    const auto consider = [&](const Ability &targeting) {
+        for (Entity cand : build_valid_targets(targeting, orderer, caster))
+            best = std::max(best, target_cost_reduction_for(face, caster, {cand}));
+    };
+    for (const auto &ab : face.abilities) {
+        if (ab->ability_type != AbilityDef::SPELL) continue;
+        const Ability probe = cast_gate_probe(Ability(ab), card_entity, caster);
+        for (const Ability *t : spell_targeting_abilities(probe)) consider(*t);
+        for (Ability mode : probe.charm_choices) {
+            if (mode.def->valid_tgts == "N_A") continue;
+            mode.source = probe.source;
+            mode.controller = caster;
+            consider(mode);
+        }
+        break;  // single SPELL ability (the cast flow's one-ability assumption)
+    }
+    if (!face.enchant_filter.empty()) consider(enchant_target_ability(card_entity, face, caster));
+    return best;
+}
+
 Ability cast_gate_probe(const Ability &tmpl, Entity card_entity, Zone::Ownership caster) {
     Ability probe = tmpl;
     probe.source = ObjectRef::of(card_entity);
@@ -1182,7 +1238,7 @@ static int select_single_target(Ability &ability, const std::vector<Entity> &val
 }
 
 TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
-                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player, const TargetPickGate *gate) {
     if (!rt.active) {
         // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
         // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
@@ -1216,6 +1272,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
 
     if (rt.effective_max <= 1) {
         std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+        apply_target_gate(valid_targets, gate);
         if (select_single_target(ability, valid_targets, false, asker) < 0)
             return TargetStatus::SUSPENDED;
         rt = TargetSelectRT{};
@@ -1237,6 +1294,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
             valid_targets.erase(
                 std::remove(valid_targets.begin(), valid_targets.end(), chosen.get()),
                 valid_targets.end());
+        apply_target_gate(valid_targets, gate);
         if (valid_targets.empty()) break;
         bool can_stop = (i >= rt.effective_min);
         if (select_single_target(ability, valid_targets, can_stop, asker) < 0)
@@ -1249,6 +1307,15 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
     if (!ability.targets.empty()) ability.target = ability.targets[0];
     rt = TargetSelectRT{};
     return TargetStatus::DONE;
+}
+
+// See forward declaration at top of file.
+static void apply_target_gate(std::vector<Entity> &pool, const TargetPickGate *gate) {
+    if (gate == nullptr) return;
+    std::vector<Entity> kept;
+    for (Entity e : pool)
+        if ((*gate)(e)) kept.push_back(e);
+    if (!kept.empty()) pool = std::move(kept);
 }
 
 int BlockingTargetAsker::ask(const std::vector<LegalAction> &menu, Entity decision_source) {
@@ -2030,6 +2097,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // additional costs below are offered and paid as on any cast.
                 pc.cost_to_pay = pc.without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
                                                       : effective_base_cost(card_data, caster);
+                // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
+                // once they are chosen (AURA_TARGET), the total cost being determined after them
+                // (CR 601.2c, 601.2f).
+                pc.target_cost_reduction = !pc.without_mana_cost && has_target_cost_reduction(card_data, caster);
                 if (pc.without_mana_cost)
                     game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(),
                         card_data.name.c_str());
@@ -2624,8 +2695,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             const ModePickGate escalate_gate = [&pc, &card_data, caster, orderer](int picks) {
                 return escalate_payable(pc, card_data, caster, picks, orderer);
             };
+            // A cost reduced only for some targets (Mystical Dispute): a target is offered only
+            // when the cost it leaves can be paid.
+            const TargetPickGate cost_gate = [&pc, &card_data, caster, orderer](Entity candidate) {
+                return target_cost_payable(pc, card_data, caster, candidate, orderer);
+            };
             if (run_announce(pc.ability, pc.announce, asker, orderer, caster, false,
-                    card_data.has_escalate ? &escalate_gate : nullptr) == AnnounceStatus::SUSPENDED)
+                    card_data.has_escalate ? &escalate_gate : nullptr,
+                    pc.target_cost_reduction ? &cost_gate : nullptr) == AnnounceStatus::SUSPENDED)
                 return;
             if (card_data.has_escalate) apply_escalate(pc, card_data, caster);
             // Announcement complete: add the fully-targeted Ability to the entity.
@@ -2646,8 +2723,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (!pc.tsel.active)
                     pc.enchant_ab = enchant_target_ability(spell_entity, card_data, caster);
                 FlowTargetAsker asker(game, caster, resume_choice);
-                if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster) !=
-                    TargetStatus::DONE)
+                const TargetPickGate cost_gate = [&pc, &card_data, caster, orderer](Entity candidate) {
+                    return target_cost_payable(pc, card_data, caster, candidate, orderer);
+                };
+                if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster,
+                        pc.target_cost_reduction ? &cost_gate : nullptr) != TargetStatus::DONE)
                     return;
                 if (!pc.enchant_ab.target.empty()) {
                     entry_info(spell_entity).aura_target = pc.enchant_ab.target;
@@ -2658,6 +2738,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             }
             // Targets are locked in (CR 601.2c); everything from here is cost payment
             // (601.2f-h) — first the non-mana cost PICKS, then mana, then the moves.
+            if (pc.target_cost_reduction) apply_target_cost_reduction(pc, card_data, caster);
             pc.step = Game::PendingCast::ALT_PITCH;
             break;
         }

@@ -40,9 +40,10 @@ static bool targets_unchosen(const Ability &ab);
 
 // The target pick of `ab` for the current announce stage. With `remove_unchoosable`, a required
 // target with no legal choice is checked once, before the pick begins, and reported as REMOVED.
+// `target_gate` is run_target_select's.
 static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
-                                       std::shared_ptr<Orderer> orderer,
-                                       Zone::Ownership controller, bool remove_unchoosable);
+    std::shared_ptr<Orderer> orderer, Zone::Ownership controller, bool remove_unchoosable,
+    const TargetPickGate *target_gate);
 
 static std::string mode_desc(const Ability &modal, size_t idx) {
     return (idx < modal.def->charm_choice_descriptions.size() &&
@@ -111,21 +112,22 @@ static bool targets_unchosen(const Ability &ab) {
 }
 
 static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
-                                       std::shared_ptr<Orderer> orderer,
-                                       Zone::Ownership controller, bool remove_unchoosable) {
+    std::shared_ptr<Orderer> orderer, Zone::Ownership controller, bool remove_unchoosable,
+    const TargetPickGate *target_gate) {
     if (!rt.pick_in_flight) {
         if (remove_unchoosable && !has_legal_targets(ab, orderer)) return AnnounceStatus::REMOVED;
         rt.pick_in_flight = true;
         rt.tsel = TargetSelectRT{};
     }
-    if (run_target_select(ab, rt.tsel, asker, orderer, controller) == TargetStatus::SUSPENDED)
+    if (run_target_select(ab, rt.tsel, asker, orderer, controller, target_gate) == TargetStatus::SUSPENDED)
         return AnnounceStatus::SUSPENDED;
     rt.pick_in_flight = false;
     return AnnounceStatus::DONE;
 }
 
 AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std::shared_ptr<Orderer> orderer,
-    Zone::Ownership controller, bool remove_unchoosable, const ModePickGate *mode_gate) {
+    Zone::Ownership controller, bool remove_unchoosable, const ModePickGate *mode_gate,
+    const TargetPickGate *target_gate) {
     if (!rt.active) {
         rt = AnnounceRT{};
         rt.active = true;
@@ -187,8 +189,7 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std
         case AnnounceRT::MODE_TARGETS: {
             Ability &mode = ab.charm_choices[static_cast<size_t>(ab.charm_chosen.back())];
             // Its choosability was just checked by the menu, so no removal check here.
-            if (announce_targets(mode, rt, asker, orderer, controller, false) ==
-                AnnounceStatus::SUSPENDED)
+            if (announce_targets(mode, rt, asker, orderer, controller, false, target_gate) == AnnounceStatus::SUSPENDED)
                 return AnnounceStatus::SUSPENDED;
             rt.mode_picks++;
             rt.stage = AnnounceRT::MODES;
@@ -198,7 +199,7 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std
         case AnnounceRT::PRIMARY: {
             if (rt.pick_in_flight || targets_unchosen(ab)) {
                 AnnounceStatus st =
-                    announce_targets(ab, rt, asker, orderer, controller, remove_unchoosable);
+                    announce_targets(ab, rt, asker, orderer, controller, remove_unchoosable, target_gate);
                 if (st == AnnounceStatus::SUSPENDED) return st;
                 if (st == AnnounceStatus::REMOVED) {
                     rt = AnnounceRT{};
@@ -225,7 +226,7 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std
                     sub.targeted_player = ab.player_target_for_subs();
                 }
                 AnnounceStatus st =
-                    announce_targets(sub, rt, asker, orderer, controller, remove_unchoosable);
+                    announce_targets(sub, rt, asker, orderer, controller, remove_unchoosable, target_gate);
                 if (st == AnnounceStatus::SUSPENDED) return st;
                 if (st == AnnounceStatus::REMOVED) {
                     rt = AnnounceRT{};

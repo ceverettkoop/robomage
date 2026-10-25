@@ -1,0 +1,15 @@
+{
+  "name": "cr601_2f_mystical_dispute_full_cost_vs_nonblue_spell",
+  "why": "CR 601.2f: Mystical Dispute targeting a nonblue spell (Lightning Bolt) gets no reduction and is cast for its full {2}{U}, tapping all three Islands (Mystical Dispute's target-conditioned cost reduction)",
+  "hand_a": ["Lightning Bolt"],
+  "battlefield_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "hand_b": ["Mystical Dispute"],
+  "battlefield_b": ["Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B", "B:cast:Mystical Dispute"],
+  "max_decisions": 5,
+  "expect_count": {"^Player B activated Island for 1\\(U\\)$": 3},
+  "expect_not": ["Mystical Dispute costs \\{2\\} less to cast"],
+  "expect_order": ["Player B casts Mystical Dispute targeting Lightning Bolt", "Lightning Bolt is countered"]
+}

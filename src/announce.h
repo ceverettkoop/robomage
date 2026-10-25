@@ -35,8 +35,9 @@ enum class AnnounceStatus { DONE, SUSPENDED, REMOVED };
 // keeps the modes chosen so far, and target picks are not pre-checked. A "choose one or more"
 // object (MinCharmNum$) offers, once its fewest modes are chosen, a CONFIRM_MODES row after the
 // modes that ends the choice; `mode_gate`, when set, rules out each pick past the first that it
-// refuses.
+// refuses, and `target_gate`, when set, each target candidate it refuses (run_target_select).
 AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std::shared_ptr<Orderer> orderer,
-    Zone::Ownership controller, bool remove_unchoosable, const ModePickGate *mode_gate = nullptr);
+    Zone::Ownership controller, bool remove_unchoosable, const ModePickGate *mode_gate = nullptr,
+    const TargetPickGate *target_gate = nullptr);
 
 #endif /* ANNOUNCE_H */

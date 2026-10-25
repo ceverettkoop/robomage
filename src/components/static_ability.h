@@ -58,6 +58,25 @@ struct StaticAbility {
     int reduce_cost = 0;
     std::string reduce_cost_filter = "";
     bool reduce_cost_you_only = false;
+    // ValidCard$ Card.Self (Mystical Dispute: "This spell costs {2} less to cast if ..."): the
+    // static reduces only its own card's cost, as that card is cast. It functions on the stack
+    // (CR 113.6d) — read off the card's CardData by the cost computation, never gathered from
+    // the battlefield.
+    bool reduce_cost_self = false;
+    // ValidTarget$ <filter> (Mystical Dispute: Spell.Blue): the reduction applies only to a spell
+    // that targets an object matching the filter, so it is known once the targets are chosen
+    // (CR 601.2c before 601.2f). Empty = no target condition.
+    std::string reduce_cost_valid_target = "";
+    // EffectZone$ (the zones the static functions from, CR 113.6b): "All" or a zone list; empty =
+    // the battlefield (Forge's default).
+    std::string effect_zone = "";
+    // Does this Card.Self ReduceCost static function as its card is cast? It functions on the
+    // stack (CR 113.6d), so from an EffectZone$ of All or one naming the stack, and when it names
+    // none.
+    bool self_reduction_functions() const {
+        return category == "ReduceCost" && reduce_cost_self &&
+               (effect_zone.empty() || effect_zone == "All" || effect_zone.find("Stack") != std::string::npos);
+    }
     // SetCost / cost-floor fields (category = "SetCost"; Trinisphere): a continuous static that
     // sets a MINIMUM total mana value on matching spells (RaiseTo$ True). When a spell's
     // effective total mana value — after every other increase/reduction is applied (CR 601.2f) —

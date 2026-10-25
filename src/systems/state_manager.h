@@ -85,9 +85,27 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster = Zo
 
 // Total generic mana that active ReduceCost statics remove from `card_data`'s cost for
 // player `caster` (the mirror of active_raise_cost_for). An Activator$ You static (Eye of
-// Ugin) only reduces spells cast by its own controller. The generic portion is clamped at
-// zero and colored pips are never reduced (CR 118.7 / 601.2f); applied in effective_base_cost.
+// Ugin) only reduces spells cast by its own controller; the card's own Card.Self statics reduce
+// it as it is cast (CR 113.6d); a ValidTarget$-conditioned one is target_cost_reduction_for's.
+// The generic portion is clamped at zero and colored pips are never reduced (CR 118.7 /
+// 601.2f); applied in effective_base_cost.
 int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
+
+// The generic mana the ReduceCost statics with a ValidTarget$ condition remove from the cost of
+// casting `card_data` for `caster` when the spell targets `targets` (Mystical Dispute's own "costs
+// {2} less to cast if it targets a blue spell"): each such static whose condition one of the
+// targets meets adds its Amount$. The targets are chosen before the total cost is determined
+// (CR 601.2c, 601.2f), so the cast flow applies it once they are, through reduce_generic_cost.
+int target_cost_reduction_for(const CardData &card_data, Zone::Ownership caster, const std::vector<Entity> &targets);
+
+// Is any ReduceCost static with a ValidTarget$ condition one that could reduce the cost of casting
+// `card_data` for `caster` (its spell's targets decide it)?
+bool has_target_cost_reduction(const CardData &card_data, Zone::Ownership caster);
+
+// Remove up to `amount` generic pips from `cost`, `card_data`'s total cost being determined
+// (CR 118.7a; never a colored pip, never below {0}), then raise it to the active SetCost floor,
+// which applies after every reduction (CR 601.2f).
+void reduce_generic_cost(ManaValue &cost, int amount, const CardData &card_data);
 
 // Minimum total mana value an active SetCost cost-floor static (Trinisphere) imposes on
 // `card_data` when cast — the largest set_cost_min among the active (condition-met) RaiseTo

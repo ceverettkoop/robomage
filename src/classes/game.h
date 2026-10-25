@@ -451,6 +451,11 @@ struct Game {
             // (CR 601.2b), paid at PAY_APPLY. Kept apart from deferred_life_cost only so
             // the narrative can still say "pays N life (X = N)". -1 = no such cost.
             int life_x_announced = -1;
+            // The regular cost is reduced by a ValidTarget$-conditioned ReduceCost static once
+            // the targets are chosen (Mystical Dispute; CR 601.2c before 601.2f): the target
+            // picks are limited to those whose cost is payable, and the reduction comes off
+            // deferred_mana_cost as the payment phase begins.
+            bool target_cost_reduction = false;
             std::string deferred_sac_spec;
             int deferred_exile_min_types = 0;
             int deferred_exile_count = 0;

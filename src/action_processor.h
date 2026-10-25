@@ -102,6 +102,15 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller);
 bool spell_has_castable_targets(const Ability& primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift);
 
+// The most generic mana a ValidTarget$-conditioned cost reduction (target_cost_reduction_for;
+// Mystical Dispute: {2} less if it targets a blue spell) takes off casting `face` from
+// `card_entity` for `caster`, over each single legal target of its spell ability, its targeting
+// sub-abilities and modes, and an Aura's enchant target: the cheapest the cast can be, read by the
+// cast-legality gates, whose target picks the cast then limits to payable ones. 0 without such a
+// reduction.
+int best_target_cost_reduction(
+    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+
 // Stamp the real casting source/controller onto a spell-ability TEMPLATE (from CardData::abilities,
 // whose source is 0) and its targeting sub-abilities, returning the stamped copy for the
 // cast-legality target probe. Cast-time source-dependent target restrictions — protection from the
@@ -125,9 +134,11 @@ void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // time through `asker`; SUSPENDED means an ask parked a pending query — the
 // caller returns without further mutation and re-enters with the SAME rt when
 // the answer is latched. select_target is this machine run with a blocking
-// asker; the caller must have seated priority at the choosing player.
-TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker& asker,
-                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
+// asker; the caller must have seated priority at the choosing player. `gate`,
+// when set, leaves out of each pick's pool the candidates it refuses (all of
+// them kept when it refuses every one).
+TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
+    std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player, const TargetPickGate *gate = nullptr);
 
 // General "copy a spell on the stack" machine (CR 707.10 / 707.12), resumable (Batch 10).
 // Creates `count` independent copies of the spell entity `original` on top of the stack,

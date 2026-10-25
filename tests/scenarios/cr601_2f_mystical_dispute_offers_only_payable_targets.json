@@ -1,0 +1,15 @@
+{
+  "name": "cr601_2f_mystical_dispute_offers_only_payable_targets",
+  "why": "CR 601.2f: with Brainstorm and Lightning Bolt on the stack and one Island, Mystical Dispute can be paid for only when it targets the blue Brainstorm, so the engine offers that target alone ({U}) and not the Bolt ({2}{U}) (Mystical Dispute's target-conditioned cost reduction)",
+  "hand_a": ["Brainstorm", "Lightning Bolt"],
+  "battlefield_a": ["Island", "Mountain"],
+  "library_a": ["Island"],
+  "hand_b": ["Mystical Dispute"],
+  "battlefield_b": ["Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Brainstorm", "A:cast:Lightning Bolt", "A:target:Player B", "B:cast:Mystical Dispute"],
+  "max_decisions": 6,
+  "expect_menu": ["^Brainstorm$"],
+  "expect_menu_not": ["^Lightning Bolt$"],
+  "expect_order": ["Choose target for Mystical Dispute", "Mystical Dispute costs \\{2\\} less to cast", "Player B casts Mystical Dispute targeting Brainstorm", "Brainstorm is countered", "Lightning Bolt deals 3 damage to Player B"]
+}

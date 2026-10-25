@@ -59,6 +59,8 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
 static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
+static ManaValue regular_cast_cost(
+    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction &cast, const CardData &face,
     Zone::ZoneValue from_zone, Zone::Ownership caster, bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
@@ -137,6 +139,17 @@ static LegalAction cast_action(Entity card_entity, const std::string &desc, int 
     la.category = ActionCategory::CAST_SPELL;
     la.option_ordinal = option_ordinal;
     return la;
+}
+
+// The regular cost of casting `face` from `card_entity` for `caster` that the cast-legality gates
+// check: effective_base_cost, less the most a ValidTarget$-conditioned reduction takes off for one
+// of the spell's legal targets (best_target_cost_reduction; Mystical Dispute targeting a blue
+// spell). The cast then offers only the targets whose cost can be paid.
+static ManaValue regular_cast_cost(
+    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+    ManaValue cost = effective_base_cost(face, caster);
+    reduce_generic_cost(cost, best_target_cost_reduction(face, card_entity, caster, orderer), face);
+    return cost;
 }
 
 // Free-cast statics (Omniscience, Aluren; rules_mod::free_cast_grant): beside `cast`, the card's
@@ -251,7 +264,7 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
         // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
         // the full (cost-increase-adjusted, hybrid- and Phyrexian-resolved) base cost can be
         // paid.
-        if (!can_pay_spell_mana(caster, effective_base_cost(ecd, caster), ecd, card, orderer))
+        if (!can_pay_spell_mana(caster, regular_cast_cost(ecd, card, caster, orderer), ecd, card, orderer))
             return false;
     } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
         if (player_energy(ppl) < perm_grant.amount) return false;
@@ -681,7 +694,8 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
         // Timing, targets and prohibitions are the back face's own (Gone is an instant).
         if (can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
-            can_pay_spell_mana(priority_player, effective_base_cost(back, priority_player), back, card_entity, orderer))
+            can_pay_spell_mana(priority_player, regular_cast_cost(back, card_entity, priority_player, orderer), back,
+                card_entity, orderer))
             actions.push_back(la);
         offer_free_cast(actions, la, back, Zone::HAND, priority_player, sorcery_window, orderer);
     }
@@ -785,7 +799,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                                       sorcery_window, /*ignore_timing=*/true, orderer)) {
             LegalAction la = cast_action(card_entity, "Cast " + card_data.name, 0);
 
-            ManaValue effective_cost = effective_base_cost(card_data, priority_player);
+            ManaValue effective_cost = regular_cast_cost(card_data, card_entity, priority_player, orderer);
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor. Hybrid pips ({W/U}, {2/W})
@@ -944,7 +958,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         const LegalAction gy_la = cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6);
         if (can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
-            can_pay_spell_mana(priority_player, effective_base_cost(gcd, priority_player), gcd, gy_entity, orderer))
+            can_pay_spell_mana(
+                priority_player, regular_cast_cost(gcd, gy_entity, priority_player, orderer), gcd, gy_entity, orderer))
             actions.push_back(gy_la);
         offer_free_cast(actions, gy_la, gcd, Zone::GRAVEYARD, priority_player, sorcery_window, orderer);
     }
