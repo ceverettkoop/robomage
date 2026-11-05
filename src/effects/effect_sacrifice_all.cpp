@@ -8,6 +8,7 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/filters.h"
 #include "../systems/orderer.h"
@@ -27,8 +28,8 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // trigger): sacrifice exactly the remembered object(s) — the creature the aura animated,
     // restored into cur_game.resolution.memory.remembered before this ability resolves (CR 603.7a) — rather
     // than every permanent matching a filter. Only those still on the battlefield are sacrificed.
-    if (ab.def->defined_remembered) {
-        for (Entity e : live_entities(cur_game.resolution.memory.remembered))
+    if (ab.def->defined.is_remembered()) {
+        for (Entity e : resolve_objects(ab.def->defined, ResolveCtx::of(ab)))
             if (is_battlefield_permanent(e)) to_sac.push_back(e);
     } else {
         for (auto e : orderer->mEntities)

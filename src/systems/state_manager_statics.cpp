@@ -112,7 +112,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
         d.category = "ChangeZone";
-        d.defined_remembered = true;
+        d.defined = ObjectSpec(ObjectSpec::REMEMBERED);
         d.origin = Zone::BATTLEFIELD;
         d.destination = Zone::EXILE;
         return d;

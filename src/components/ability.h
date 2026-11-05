@@ -297,12 +297,6 @@ struct AbilityDef {
     // searched cards are already public (revealed), so the controller may see them when choosing.
     // Default (false) = the zone's owner chooses (the normal tutor case).
     bool chooser_is_controller = false;
-    bool defined_self = false;                  // Defined$ Self — ability moves its own source
-    // Defined$ ExiledWith (The Creation of Avacyn chapters II & III): the effect acts on the card
-    // this permanent's Saga chapter I exiled face down — the association is Permanent::exiled_with
-    // on the ability's SOURCE (the Saga). Resolved to that entity by exiled_with_card(source). A
-    // SetState turns it face up (chapter II); a ChangeZone moves it out of exile (chapter III).
-    bool defined_exiled_with = false;
     // ConditionDefined$ ExiledWith — condition_present/condition_compare are evaluated against the
     // card the source Saga exiled (is it a Creature?), not board presence. Gated at resolution:
     // on failure the body is skipped but subabilities still chain (The Creation of Avacyn II & III).
@@ -313,13 +307,6 @@ struct AbilityDef {
     // ExileFaceDown$ True on a ChangeZone | Destination$ Exile: the moved card is exiled FACE DOWN
     // (CR 708). Its Zone::is_face_down flag is set after the move (The Creation of Avacyn I).
     bool exile_face_down = false;
-    // Defined$ TriggeredAttacker / TriggeredAttackerLKICopy — the effect (a Pump) acts on the
-    // creature that triggered this ability by attacking (Tamiyo, Seasoned Scholar: the attacking
-    // creature "gets -1/-0"). Bound as this ability's target at trigger-fire time from the
-    // CREATURE_ATTACKED event's ENTITY. The LKICopy form would use the attacker's last-known
-    // info if it has since left combat/play; the trigger resolves during the same declare-
-    // attackers step (the attacker is still on the battlefield), so the live entity is used.
-    bool defined_triggered_attacker_lki = false;
     // K:Unearth (CR 702.84): this ChangeZone is the unearth return (Graveyard -> Battlefield).
     // When it resolves and the source enters the battlefield, the permanent is marked "unearthed"
     // (gains haste, is exiled at the next end step, and is exiled instead of leaving the
@@ -524,18 +511,9 @@ struct AbilityDef {
     // (the produced color/amount); ValidCard$ Creature gates which tapped source it watches.
     bool trigger_taps_for_mana_static = false;
 
-    // Attach / Equip sub-ability
-    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.resolution.memory.remembered[0]
     // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
     // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
     bool from_delayed_execute = false;
-    bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
-    // Defined$ TriggeredSourceSA — target is the spell/ability that targeted the source (the
-    // "triggering source spell ability" of a Mode$ BecomesTarget trigger, Reality Smasher). Bound
-    // at trigger-fire time from the BECAME_TARGET event's ENTITY (the targeting object). The Counter
-    // effect counters that specific spell. Distinct from TriggeredSpellAbility (the spell whose cast
-    // fired a SpellCast trigger) — here the trigger is "became the target of", not "was cast".
-    bool defined_triggered_source_sa = false;
 
     // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
     // loop once per player, setting cur_game.resolution.memory.remembered to that player's entity

@@ -1279,7 +1279,7 @@ static void kw_ninjutsu(const std::string &kw_line, KeywordContext &ctx) {
         "Ninjutsu", Zone::HAND,
         kw_line.substr(strlen("Ninjutsu:")) + " Return<1/Creature.attacking+unblocked>");
     ab.is_ninjutsu = true;
-    ab.defined_self = true;
+    ab.defined = ObjectSpec(ObjectSpec::SELF);
     ctx.face_defs.abilities.push_back(ab);
     ctx.card.keywords.push_back("Ninjutsu");
 }
@@ -1337,7 +1337,7 @@ static void kw_unearth(const std::string &kw_line, KeywordContext &ctx) {
                                               kw_line.substr(strlen("Unearth:")));
     ab.origin = Zone::GRAVEYARD;
     ab.destination = Zone::BATTLEFIELD;
-    ab.defined_self = true;        // returns its own source from the graveyard
+    ab.defined = ObjectSpec(ObjectSpec::SELF);  // returns its own source from the graveyard
     ab.sorcery_speed_only = true;  // "Unearth only as a sorcery." (CR 702.84a)
     ab.is_unearth = true;
     ctx.face_defs.abilities.push_back(ab);
@@ -1376,7 +1376,7 @@ static void kw_evoke(const std::string &kw_line, KeywordContext &ctx) {
     AbilityDef sac = keyword_self_trigger("ChangeZone", Events::CARD_CHANGED_ZONE);
     sac.trigger_zone_destination = Zone::BATTLEFIELD;
     sac.is_evoke_sacrifice = true;
-    sac.defined_self = true;          // moves its own source (no targeting)
+    sac.defined = ObjectSpec(ObjectSpec::SELF);  // moves its own source (no targeting)
     sac.origin = Zone::BATTLEFIELD;
     sac.destination = Zone::GRAVEYARD;
     ctx.face_defs.abilities.push_back(sac);
@@ -1395,7 +1395,7 @@ static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
     AbilityDef tok = keyword_self_trigger("CopyPermanent", Events::CARD_CHANGED_ZONE);
     tok.trigger_zone_destination = Zone::BATTLEFIELD;
     tok.is_offspring_token = true;
-    tok.defined_self = true;          // copies its own source (no targeting)
+    tok.defined = ObjectSpec(ObjectSpec::SELF);  // copies its own source (no targeting)
     ctx.face_defs.abilities.push_back(tok);
 }
 
@@ -2051,45 +2051,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.optional_choice = (value == "True");
     } else if (key == "Defined" || key == "DefinedPlayer") {
         ability.defined = parse_object_spec(value);
-        if (value == "Remembered") ability.defined_remembered = true;
-        // Defined$ DelayTriggerRememberedLKI — the objects a DB$ DelayedTrigger captured at
-        // registration (RememberObjects$ RememberedLKI). delayed_trigger() restores them into
-        // cur_game.resolution.memory.remembered before the fire ability resolves, so this resolves
-        // exactly like Defined$ Remembered (Flickerwisp / Phelia return the exiled card).
-        else if (value == "DelayTriggerRememberedLKI") ability.defined_remembered = true;
-        // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
-        // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
-        else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
-            ability.defined_triggered_spell = true;
-        // Defined$ TriggeredSourceSA — the effect acts on the spell/ability that targeted the
-        // source (Reality Smasher: "counter that spell"). Bound at trigger fire time from the
-        // BECAME_TARGET event's ENTITY (the targeting object).
-        else if (value == "TriggeredSourceSA")
-            ability.defined_triggered_source_sa = true;
-        // Defined$ TriggeredAttacker(LKICopy) — the effect acts on the creature whose attack
-        // fired this trigger (Tamiyo, Seasoned Scholar: the attacking creature gets -1/-0).
-        // Bound as the ability's target at trigger-fire time from the CREATURE_ATTACKED event.
-        else if (value == "TriggeredAttacker" || value == "TriggeredAttackerLKICopy")
-            ability.defined_triggered_attacker_lki = true;
-        // Defined$ TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed
-        // zones and fired this trigger, referenced in its NEW zone. For a Card.Self ChangesZone
-        // trigger (CR 603.6e) the triggering object IS the ability's own source (e.g. Triumph of
-        // Saint Katherine's dies-trigger, which exiles itself from the graveyard as the head of a
-        // "Descend"-style recursion), so bind it to the source. The LKICopy variant is a
-        // last-known snapshot of that same card; moving the real card in its new zone is
-        // equivalent here. General over self-referential graveyard-recursion cards.
-        else if (value == "TriggeredNewCardLKICopy" || value == "TriggeredNewCard" ||
-                 value == "TriggeredCardLKICopy" || value == "TriggeredCard")
-            ability.defined_self = true;
-        else if (value == "Self") ability.defined_self = true;
-        // Defined$ ExiledWith — the effect acts on the card this permanent's Saga chapter I
-        // exiled face down, tracked in Permanent::exiled_with on the source (The Creation of
-        // Avacyn chapters II & III). Resolved to that entity at resolution by exiled_with_card().
-        else if (value == "ExiledWith") ability.defined_exiled_with = true;
-        // Defined$ Valid <filter> (CopyPermanent's "for each token you control that entered
-        // this turn") — store the filter spec the same place ValidCards$ writes it, so the
-        // effect can scan the battlefield for matches.
-        else if (value.rfind("Valid ", 0) == 0) ability.valid_cards_filter = value.substr(6);
     } else if (key == "Chooser") {
         // Chooser$ You on a search/move ChangeZone over another player's hidden zone: the
         // ABILITY'S CONTROLLER makes the selection, not the searched zone's owner (Thought-Knot
@@ -2490,7 +2451,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // ForgetOtherRemembered$ True drops what the resolution remembered before this move: nothing,
     // at the head of a chain (Sneak Attack), or the move's own object (Tamiyo's Defined$ Remembered).
     if (key == "ForgetOtherRemembered")
-        return category == "ChangeZone" && (ability.defined_remembered || text.find("DB$") == std::string::npos);
+        return category == "ChangeZone" && (ability.defined.is_remembered() || text.find("DB$") == std::string::npos);
     // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge bookkeeping flag that
     // the per-iteration damage is collected into one simultaneous damage event. Our resolution deals
     // each player's damage in the repeat loop, and state-based actions wait for the whole spell.

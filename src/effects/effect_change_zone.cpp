@@ -52,6 +52,8 @@ static bool in_declared_origin(const Ability &ab, Entity e);
 static bool linked_exile_host_gone(const Ability &ab);
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
                                                FrameCtx &fctx);
+// The one object `ab`'s Defined$ names, or 0 when it is gone (CR 400.7).
+static Entity defined_object(const Ability &ab);
 
 // Name an object for a log line / action label without assuming it is a card: a token has a
 // Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
@@ -180,7 +182,7 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
             AbilityDef d;
             d.ability_type = AbilityDef::TRIGGERED;
             d.category = "ChangeZone";
-            d.defined_remembered = true;
+            d.defined = ObjectSpec(ObjectSpec::REMEMBERED);
             d.origin = Zone::EXILE;
             d.origins = {Zone::EXILE};
             d.destination = origin;
@@ -233,6 +235,12 @@ static bool search_reveals_card(const Ability &ab) {
     }
     bool specific_type = !ab.def->change_type.empty() && ab.def->change_type != "Card";
     return from_hidden && specific_type;
+}
+
+// See forward declaration at top of file.
+static Entity defined_object(const Ability &ab) {
+    const std::vector<Entity> objects = resolve_objects(ab.def->defined, ResolveCtx::of(ab));
+    return objects.empty() ? 0 : objects.front();
 }
 
 // Show and Tell family: DefinedPlayer$ Player — EACH player may put one matching card from THEIR
@@ -454,8 +462,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // remembers it (RememberChanged$) so the chained DB$ Attach re-attaches the aura to it. For a
     // normal already-attached aura reading "enchanted", fall back to its live attachment link.
     if (ab.def->defined.is(ObjectSpec::ENCHANTED) && !ab.source.empty()) {
-        const std::vector<Entity> objects = resolve_objects(ab.def->defined, ResolveCtx::of(ab));
-        const Entity enchanted = objects.empty() ? 0 : objects.front();
+        const Entity enchanted = defined_object(ab);
         // Origin$ (Animate Dead: Graveyard) names where the enchanted card is returned from; a
         // card no longer there is not moved.
         if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted) &&
@@ -489,8 +496,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
     // A source that has become a new object since the ability was put on the stack is not
     // "this" card any more (CR 400.7): it isn't moved.
-    if (ab.def->defined_self && !ab.source.empty()) {
-        const Entity self = ab.source.get();
+    if (ab.def->defined.is(ObjectSpec::SELF) && !ab.source.empty()) {
+        const Entity self = defined_object(ab);
         if (self == 0) return HandlerResult::DONE_RUN_SUBS;
         std::string sname = entity_name(self);
         if (ab.def->enters_tapped && ab.def->destination == Zone::BATTLEFIELD)
@@ -522,8 +529,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // leg acts only while the card is still in its Origin$ (Exile) zone, so once one leg moves it the
     // other naturally no-ops — declining the battlefield put (or a noncreature skipping the gated
     // first leg) leaves it in exile for the hand leg.
-    if (ab.def->defined_exiled_with) {
-        Entity card = exiled_with_card(ab.source.get());
+    if (ab.def->defined.is(ObjectSpec::EXILED_WITH)) {
+        Entity card = defined_object(ab);
         if (card == 0 || !global_coordinator.entity_has_component<Zone>(card))
             return HandlerResult::DONE_RUN_SUBS;
         Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(card).location;
@@ -552,14 +559,14 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
 
     // Defined$ Remembered with a bounded/optional selection (Cloak and Dagger's DBChangeZone:
-    // "you MAY exile up to one of the remembered candidates"). Unlike the blanket defined_remembered
+    // "you MAY exile up to one of the remembered candidates"). Unlike the blanket Defined$ Remembered
     // move below (Ajani, which moves EVERY remembered object), this PRESENTS A CHOICE of which
     // remembered object(s) to move: ChangeNum$ N caps the count and Optional$ True permits
     // declining. Candidates are the remembered objects currently in an eligible Origin zone (Hand
     // or Battlefield); nonland-only, honoring the oracle "exile a nonland card from their hand or
     // the chosen creature" (the creature is itself nonland). Only reached with an explicit
     // count/optionality, so the Ajani blanket path is unaffected.
-    if (ab.def->defined_remembered && (ab.def->optional_choice || ab.def->change_num >= 0)) {
+    if (ab.def->defined.is_remembered() && (ab.def->optional_choice || ab.def->change_num >= 0)) {
         int cap = (ab.def->change_num >= 0) ? ab.def->change_num
                                        : (ab.def->amount > 0 ? static_cast<int>(ab.def->amount) : 1);
         bool optional = ab.def->optional_choice;
@@ -575,7 +582,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         for (; rt.picked < cap; rt.picked++) {
             // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
             std::vector<Entity> cands;
-            for (Entity e : live_entities(cur_game.resolution.memory.remembered)) {
+            for (Entity e : resolve_objects(ab.def->defined, ResolveCtx::of(ab))) {
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
                 bool zone_ok = ab.def->origin_any;
@@ -625,12 +632,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Defined$ Remembered — move the remembered card(s) directly. Ajani's exile-and-
     // return chain uses this: TrigExile remembers the exiled permanent, DBReturn brings
     // that same card back to the battlefield (transformed) under its owner's control.
-    if (ab.def->defined_remembered) {
+    if (ab.def->defined.is_remembered()) {
         // An Aura among the returned cards picks what it enchants as it enters (CR 303.4f). That
         // pick may suspend only when a declared Origin$ lets the resumed loop skip the cards it
         // already moved; otherwise it is asked inline.
         FrameCtx remembered_ctx = ab.def->origins.empty() ? FrameCtx::blocking() : fctx;
-        for (Entity e : live_entities(cur_game.resolution.memory.remembered)) {
+        for (Entity e : resolve_objects(ab.def->defined, ResolveCtx::of(ab))) {
             // Only move a card that is still the remembered object (one that left exile is a new
             // object, CR 400.7) and is in the ability's declared Origin$ zone. A delayed return
             // (Phelia/Flickerwisp's TrigBounce, Origin$ Exile) must not "return" a card that

@@ -1953,7 +1953,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 // relocates it itself (Defined$ Self) or it was already discarded as an
                 // explicit cost (discard_self_cost, paid above) — guarding against a double
                 // move.
-                if (!ability.def->defined_self && !ability.def->discard_self_cost) {
+                if (!ability.def->defined.is(ObjectSpec::SELF) && !ability.def->discard_self_cost) {
                     orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 }
 

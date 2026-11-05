@@ -94,7 +94,10 @@ static const DefinedRow kDefinedRows[] = {
 
     // TriggeredAttacker(LKICopy) — the effect acts on the creature whose attack fired this trigger
     // (Tamiyo, Seasoned Scholar: the attacking creature gets -1/-0). Bound as the ability's target
-    // at trigger-fire time from the CREATURE_ATTACKED event.
+    // at trigger-fire time from the CREATURE_ATTACKED event. The LKICopy form would use the
+    // attacker's last-known info if it has since left combat/play; the trigger resolves during the
+    // same declare-attackers step (the attacker is still on the battlefield), so the live entity
+    // is used.
     {"TriggeredAttacker", ObjectSpec::TRIGGERED_ATTACKER, Refers::OBJECT, objects_targets, nullptr, false, nullptr},
     {"TriggeredAttackerLKICopy", ObjectSpec::TRIGGERED_ATTACKER, Refers::OBJECT, objects_targets, nullptr, false, nullptr},
     // TriggeredSpellAbility — the effect acts on the spell that fired this trigger (Chalice of the
@@ -103,11 +106,13 @@ static const DefinedRow kDefinedRows[] = {
     {"TriggeredSpell", ObjectSpec::TRIGGERED_SPELL, Refers::OBJECT, objects_targets, nullptr, false, nullptr},
     // TriggeredSourceSA — the effect acts on the spell/ability that targeted the source (Reality
     // Smasher: "counter that spell"). Bound at trigger fire time from the BECAME_TARGET event's
-    // ENTITY (the targeting object).
+    // ENTITY (the targeting object). Distinct from TriggeredSpellAbility (the spell whose cast fired
+    // a SpellCast trigger): here the trigger is "became the target of", not "was cast".
     {"TriggeredSourceSA", ObjectSpec::TRIGGERED_SOURCE_SA, Refers::OBJECT, objects_targets, nullptr, false, nullptr},
 
     // ExiledWith — the effect acts on the card this permanent's Saga chapter I exiled face down,
-    // tracked in Permanent::exiled_with on the source (The Creation of Avacyn chapters II & III).
+    // tracked in Permanent::exiled_with on the source (The Creation of Avacyn chapters II & III). A
+    // SetState turns it face up (chapter II); a ChangeZone moves it out of exile (chapter III).
     {"ExiledWith", ObjectSpec::EXILED_WITH, Refers::OBJECT, objects_exiled_with, nullptr, false, nullptr},
     {"Enchanted", ObjectSpec::ENCHANTED, Refers::OBJECT, objects_enchanted, nullptr, false, read_by_change_zone},
     // ReplacedCard — a ReplaceWith$ move (Mox Diamond, Leyline of the Void): the replacement

@@ -49,7 +49,7 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Defined$ Self (The Tabernacle at Pendrell Vale's granted upkeep trigger: "destroy this
     // creature unless you pay {1}"): the effect acts on its own source. Bind it as the target so
     // the shared destroy/unless path below operates on the creature. Idempotent on a suspend/resume.
-    if (ab.def->defined_self && ab.target.empty() && ab.targets.empty())
+    if (ab.def->defined.is(ObjectSpec::SELF) && ab.target.empty() && ab.targets.empty())
         ab.target = ab.source;
 
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
@@ -81,7 +81,7 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Unless-cost (The Tabernacle: "destroy this creature unless you pay {1}", CR 118.5 /
     // 603.2). The payer (UnlessPayer$ You ⇒ the ability's controller = the creature's controller)
     // may pay to prevent the destruction; run_unless_loop returns false when paid (don't destroy)
-    // and true when declined / unaffordable. Handled for the single-target / defined_self form. The
+    // and true when declined / unaffordable. Handled for the single-target / Defined$ Self form. The
     // MANA kind may suspend on a payment decision (checked before the return value); the arm-only
     // announcement is resume-guarded so a resume never re-logs it.
     if (ab.def->unless_generic_cost > 0) {

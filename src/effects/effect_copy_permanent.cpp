@@ -11,6 +11,7 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
@@ -52,7 +53,7 @@ static Token copyable_token_of(Entity src) {
 // token that's a copy of it." The set of permanents matching Defined$ Valid <filter> is
 // snapshotted *before* any copy is made, so the freshly created copies — which also entered
 // this turn — are not themselves re-copied. Each copy is a new token under the controller's
-// control. CopyPermanent's filter is carried in valid_cards_filter (parsed from Defined$ Valid).
+// control.
 HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     Zone::Ownership ctrl = ab.controller;
     const Entity self = ab.source.get();
@@ -77,9 +78,11 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
-    for (auto e : orderer->mEntities)
-        if (permanent_matches_filter(e, ab.def->valid_cards_filter, MatchCtx{ctrl, ab.source.lki_entity()}))
-            sources.push_back(e);
+    if (ab.def->defined.is(ObjectSpec::VALID)) {
+        ResolveCtx copied = ResolveCtx::of(ab);
+        copied.controller = ctrl;
+        sources = resolve_objects(ab.def->defined, copied);
+    }
 
     for (auto src : sources) {
         Token tok = copyable_token_of(src);

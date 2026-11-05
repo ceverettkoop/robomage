@@ -350,7 +350,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 Ability trigger_ab = ft;
                 trigger_ab.controller = ft.controller;
                 // Defined$ TriggeredAttacker(LKICopy) — bind the attacker as the pump's target.
-                if (trigger_ab.def->defined_triggered_attacker_lki) trigger_ab.target = ObjectRef::of(attacker);
+                if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_ATTACKER)) trigger_ab.target = ObjectRef::of(attacker);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ft.controller;
@@ -1161,7 +1161,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // targeting object). UnlessPayer$ TriggeredSourceSAController binds the payer of the
             // unless-cost to that spell's controller (the opponent), captured from PLAYER.
             if (ev.GetType() == Events::BECAME_TARGET) {
-                if (trigger_ab.def->defined_triggered_source_sa && ev.HasParam(Params::ENTITY))
+                if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_SOURCE_SA) && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
                 if (trigger_ab.def->unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER)) {
                     Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
@@ -1170,7 +1170,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             }
             // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
             // fired this trigger. Capture it from the event as the ability's target.
-            if (trigger_ab.def->defined_triggered_spell && ev.HasParam(Params::ENTITY))
+            if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_SPELL) && ev.HasParam(Params::ENTITY))
                 trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
             // Defined$ TriggeredActivator — bind the player who caused the trigger (the
             // event's PLAYER, e.g. the caster of the noncreature spell) onto this ability

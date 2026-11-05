@@ -110,7 +110,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
     // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
-    if (ab.def->defined_triggered_attacker_lki) {
+    if (ab.def->defined.is(ObjectSpec::TRIGGERED_ATTACKER)) {
         const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
         int pump_att = 0, pump_def = 0;
         resolve_pump_amounts(pp, ab.controller, orderer, ab.target.get(), pump_att, pump_def);

@@ -40,7 +40,7 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Resolve the card to play (Defined$ Remembered). While the cast is in flight the card has
     // left exile, so the card is looked up only for the offer.
     Entity card = 0;
-    if (ab.def->defined_remembered && !cur_game.resolution.memory.remembered.empty())
+    if (ab.def->defined.is_remembered() && !cur_game.resolution.memory.remembered.empty())
         card = cur_game.resolution.memory.remembered[0].get();
     else
         card = ab.target.get();  // fallback: a directly-defined/targeted card

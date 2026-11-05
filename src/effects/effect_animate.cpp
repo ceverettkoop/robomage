@@ -14,6 +14,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/counters.h"
 #include "../queries/delayed_triggers.h"
@@ -99,11 +100,10 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // ability's own source; Defined$ Remembered (Sneak Attack: the creature it just put onto the
     // battlefield) every remembered permanent; otherwise the chosen/inherited target (Guide of
     // Souls).
+    const ObjectSpec &spec = ab.def->defined;
     std::vector<Entity> objects;
-    if (ab.def->defined_self) {
-        objects.push_back(ab.source.get());
-    } else if (ab.def->defined_remembered) {
-        for (const ObjectRef &r : cur_game.resolution.memory.remembered) objects.push_back(r.get());
+    if (spec.is(ObjectSpec::SELF) || spec.is_remembered()) {
+        objects = resolve_objects(spec, ResolveCtx::of(ab));
     } else {
         objects.push_back(ab.target.get());
     }
@@ -266,7 +266,7 @@ static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
         d.category = "ChangeZone";
-        d.defined_remembered = true;
+        d.defined = ObjectSpec(ObjectSpec::REMEMBERED);
         d.origin = Zone::BATTLEFIELD;
         d.origins = {Zone::BATTLEFIELD};
         d.destination = Zone::GRAVEYARD;

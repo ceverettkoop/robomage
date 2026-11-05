@@ -81,7 +81,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
         d.category = "ChangeZone";
-        d.defined_self = true;
+        d.defined = ObjectSpec(ObjectSpec::SELF);
         d.origin = Zone::GRAVEYARD;     // unused for a Defined$ Self move; informational
         d.destination = Zone::BATTLEFIELD;
         d.enters_tapped = true;
