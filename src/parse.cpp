@@ -22,6 +22,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "queries/affected.h"
 #include "queries/filters.h"
 #include "str_util.h"
 #include "type_constants.h"
@@ -342,7 +343,6 @@ static bool param_form_checked(const std::string &key);
 static bool param_form_read(const AbilityDef &ability, const std::string &text, const std::string &key,
                             const std::string &value);
 static bool duration_read(const AbilityDef &ability, const std::string &value);
-static bool defined_value_read(const AbilityDef &ability, const std::string &value);
 static void ability_form_findings(const AbilityDef &ability, const std::string &text,
                                   const std::map<std::string, std::string> &svars);
 static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars);
@@ -2050,9 +2050,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined" || key == "DefinedPlayer") {
-        // Keep the raw token verbatim (CR 608.2c) so sub-ability target binding can read the
-        // script's stated intent; the specific bools below remain authoritative per effect.
-        ability.defined = value;
+        ability.defined = parse_object_spec(value);
         if (value == "Remembered") ability.defined_remembered = true;
         // Defined$ DelayTriggerRememberedLKI — the objects a DB$ DelayedTrigger captured at
         // registration (RememberObjects$ RememberedLKI). delayed_trigger() restores them into
@@ -2527,7 +2525,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is already tracked
     // in cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI), which the paired
     // ConditionDefined$ Imprinted gate reads. Any other imprint outlives the resolution.
-    if (key == "Imprint") return ability.defined == "DelayTriggerRememberedLKI";
+    if (key == "Imprint") return ability.defined.is(ObjectSpec::DELAY_REMEMBERED);
     // Reorder$ True (Brainstorm): cards go back on top one pick at a time, so the picks are the
     // order the player chooses.
     if (key == "Reorder") return ability.origin == Zone::HAND && ability.destination == Zone::LIBRARY;
@@ -2546,7 +2544,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // the creature put onto the battlefield with it. The reanimation + Attach chain already anchors
     // it (equipped_to), and the "unattached aura" state-based action reads that link.
     if (key == "RemoveKeywords") return category == "AnimateAll" || (category == "Animate" && value.rfind("Enchant", 0) == 0);
-    if (key == "Defined" || key == "DefinedPlayer") return defined_value_read(ability, value);
+    if (key == "Defined" || key == "DefinedPlayer") return defined_name_read(ability, value);
     // UnlessCost$ on an effect that does not run it is reported where it is read (read_unless_cost).
     if (key == "UnlessPayer") {
         if (!unless_cost_read_by(category)) return true;
@@ -2603,24 +2601,6 @@ static bool duration_read(const AbilityDef &ability, const std::string &value) {
     if (value == "Permanent") return !ability.effect_emblem_statics.empty();
     if (value == "UntilTheEndOfYourNextTurn") return ability.effect_may_play_from_exile;
     return value == "UntilYourNextTurn" && (!ability.effect_floating_triggers.empty() || ability.effect_cast_with_flash);
-}
-
-// Does some reader act on Defined$ / DefinedPlayer$ `value`? The names apply_param_to_ability and
-// affected_objects map, and the names one handler compares raw.
-static bool defined_value_read(const AbilityDef &ability, const std::string &value) {
-    static const std::set<std::string> kNames = {"Remembered", "DelayTriggerRememberedLKI", "TriggeredSpellAbility",
-        "TriggeredSpell", "TriggeredSourceSA", "TriggeredAttacker", "TriggeredAttackerLKICopy", "TargetedController",
-        "TriggeredActivator", "TriggeredDefendingPlayer", "TriggeredPlayer", "TriggeredCardController",
-        "TriggeredNewCardLKICopy", "TriggeredNewCard", "TriggeredCardLKICopy", "TriggeredCard", "Self", "ExiledWith",
-        "You", "Player.Opponent", "Opponent", "Targeted", "ParentTarget", "Parent", "ReplacedCard"};
-    if (kNames.count(value) > 0 || value.rfind("Valid ", 0) == 0) return true;
-    const std::string &category = ability.category;
-    if (value == "Player")
-        return category == "Vote" ||
-               (category == "ChangeZone" && ability.origin == Zone::HAND && ability.destination == Zone::BATTLEFIELD);
-    if (value == "Enchanted") return category == "ChangeZone";
-    if (value == "TriggeredCardOwner") return category == "ChangeZoneAll";
-    return category == "Pump" && value == "You & Valid Permanent.YouCtrl";
 }
 
 // Reports what a parsed ability's reader ignores, read off its script `text` and its fields.

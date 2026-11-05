@@ -47,6 +47,7 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     if (other->restrict_allows_activated != def->restrict_allows_activated) return false;
     if (other->restrict_activated_on_battlefield != def->restrict_activated_on_battlefield) return false;
     if (other->adds_no_counter != def->adds_no_counter) return false;
+    if (other->defined != def->defined) return false;
     return true;
 }
 

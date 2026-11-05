@@ -13,6 +13,7 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
@@ -91,12 +92,11 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // into their library"): operate on the OWNER of the card that triggered this ability (the
     // source), not the last controller. Read the owner off the source's Zone (it is in the
     // graveyard by now). CR 608.2g/400.3: ownership is fixed regardless of who controlled it.
-    const Entity trig_card = ab.source.lki_entity();  // ownership never changes (CR 108.3)
-    if (ab.def->defined == "TriggeredCardOwner" && trig_card != 0 &&
-        global_coordinator.entity_has_component<Zone>(trig_card)) {
-        Zone::Ownership src_owner = global_coordinator.GetComponent<Zone>(trig_card).owner;
-        if (src_owner != Zone::UNKNOWN) owner = src_owner;
-        player_defined = true;
+    if (ab.def->defined.is(ObjectSpec::TRIGGERED_CARD_OWNER)) {
+        for (Zone::Ownership who : resolve_players(ab.def->defined, ResolveCtx::of(ab))) {
+            owner = who;
+            player_defined = true;
+        }
     }
 
     // Determine which zones to search

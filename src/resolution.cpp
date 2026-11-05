@@ -16,6 +16,7 @@
 #include "effects/effects.h"
 #include "input_logger.h"
 #include "queries/activation.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/filters.h"
@@ -82,9 +83,8 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // outer player target (see Ability::targeted_player).
     sub.targeted_player = parent.player_target_for_subs();
     if (sub.def->valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
-    const std::string &d = sub.def->defined;
-    if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
-        d == "TargetedController")
+    const ObjectSpec &d = sub.def->defined;
+    if (d.is(ObjectSpec::DEFAULT) || inherits_parent_target(d))
         sub.target = parent.target;  // inherit the parent's chosen target (or its controller)
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
 }

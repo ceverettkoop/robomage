@@ -6,6 +6,7 @@
 #include "../effects/effect_kind.h"
 #include "../object_ref.h"
 #include "ability_params.h"
+#include "object_spec.h"
 #include "static_ability.h"
 #include "types.h"
 #include "zone.h"
@@ -285,12 +286,10 @@ struct AbilityDef {
 
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
-    // Raw Defined$/DefinedPlayer$ token verbatim from the script (e.g. "Targeted", "ParentTarget",
-    // "You", "Opponent", "Remembered", "TargetedController", "Self", ...). Empty when the ability
-    // declared no Defined$. Kept alongside the specific bools above so sub-ability target
-    // resolution can read the script's stated intent (CR 608.2c) instead of relying on a blanket
-    // N_A sentinel; the specific bools remain authoritative for their effects.
-    std::string defined = "";
+    // What the script's Defined$ / DefinedPlayer$ refers to (CR 608.2c): its objects and players
+    // through resolve_objects / resolve_players (queries/affected.h), and how a sub-ability binds
+    // its parent's target. ObjectSpec::DEFAULT when the ability declared no Defined$.
+    ObjectSpec defined;
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
     // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the

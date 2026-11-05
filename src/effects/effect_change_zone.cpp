@@ -19,6 +19,7 @@
 #include "../error.h"
 #include "../classes/action.h"
 #include "../action_processor.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/delayed_triggers.h"
@@ -348,21 +349,15 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // bind_sub_target the same way Forge walks ancestors. The targeted-move branch below is
     // skipped in both cases because this sub-ability carries no target of its own (ValidTgts$
     // N_A); the bound target/targeted_player only name the searched player here.
-    if (ab.def->defined == "Targeted") {
-        const Entity t = ab.target.get();
-        Entity ptgt = (t != 0 && global_coordinator.entity_has_component<Player>(t))
-                          ? t
-                          : ab.targeted_player;
-        if (ptgt != 0 && global_coordinator.entity_has_component<Player>(ptgt))
-            owner = seat_of_player(ptgt);
-    }
+    if (ab.def->defined.is(ObjectSpec::TARGETED))
+        for (Zone::Ownership who : resolve_players(ab.def->defined, ResolveCtx::of(ab))) owner = who;
 
     // DefinedPlayer$ Player — EACH player may put a matching card from THEIR OWN hand onto the
     // battlefield (Show and Tell), in APNAP order. Not a search (no filter reveal / library
     // shuffle) and not a caster-only put: it is a per-player "may". Routed here before the generic
     // caster-scoped search path below, which would otherwise put only the caster's card.
-    if (ab.def->defined == "Player" && ab.def->origin == Zone::HAND && ab.def->destination == Zone::BATTLEFIELD &&
-        ab.def->valid_tgts == "N_A")
+    if (ab.def->defined.is(ObjectSpec::EACH_PLAYER) && ab.def->origin == Zone::HAND &&
+        ab.def->destination == Zone::BATTLEFIELD && ab.def->valid_tgts == "N_A")
         return each_player_put_from_hand(ab, orderer, fctx);
 
     const char *dest_str = ab.def->destination == Zone::BATTLEFIELD ? "the battlefield"
@@ -460,18 +455,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // returns THAT card to the battlefield under the aura controller's control (GainControl$) and
     // remembers it (RememberChanged$) so the chained DB$ Attach re-attaches the aura to it. For a
     // normal already-attached aura reading "enchanted", fall back to its live attachment link.
-    if (ab.def->defined == "Enchanted" && !ab.source.empty()) {
-        Entity enchanted = 0;
-        const Entity aura = ab.source.get();
-        const EntryInfo *aura_entry = find_entry_info(ab.source.lki_entity());
-        if (aura_entry && !aura_entry->aura_target.empty()) {
-            // The card the aura was put onto the battlefield enchanting — only while it is still
-            // that object: one that left its zone in response is a new object (CR 400.7) that
-            // this aura does not enchant.
-            enchanted = aura_entry->aura_target.get();
-        } else if (aura != 0 && global_coordinator.entity_has_component<Permanent>(aura)) {
-            enchanted = global_coordinator.GetComponent<Permanent>(aura).equipped_to.get();
-        }
+    if (ab.def->defined.is(ObjectSpec::ENCHANTED) && !ab.source.empty()) {
+        const std::vector<Entity> objects = resolve_objects(ab.def->defined, ResolveCtx::of(ab));
+        const Entity enchanted = objects.empty() ? 0 : objects.front();
         // Origin$ (Animate Dead: Graveyard) names where the enchanted card is returned from; a
         // card no longer there is not moved.
         if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted) &&

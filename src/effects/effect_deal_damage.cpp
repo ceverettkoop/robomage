@@ -48,14 +48,14 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // may have already moved the permanent this same resolution, so the controller is read via
     // last-known information (CR 608.2g/h) — Zone.controller, else the live Permanent.controller,
     // else the controller captured as it left the battlefield. All three are centralized in
-    // resolve_defined_player; each resolves to one player we damage.
+    // resolve_players; each resolves to one player we damage.
     // TriggeredActivator (Eidolon of the Great Revel: "deals 2 damage to that player" — the
-    // player who cast the spell) also routes through resolve_defined_player, which binds the
-    // player captured at trigger-fire time. Without this it would fall to the targeted path
-    // with an unset target and trip the "should have fizzled" guard.
+    // player who cast the spell) also routes through resolve_players, which reads the player
+    // captured at trigger-fire time. Without this it would fall to the targeted path with an
+    // unset target and trip the "should have fizzled" guard.
     if (names_defined_player(ab)) {
-        Zone::Ownership who = resolve_defined_player(ab);
-        if (who != Zone::UNKNOWN) ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
+        for (Zone::Ownership who : resolve_players(ab.def->defined, ResolveCtx::of(ab)))
+            ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
         return HandlerResult::DONE_RUN_SUBS;
     }
     // Multi-target DealDamage (Prismari Charm: "deals 1 damage to each of one or two targets"):
