@@ -19,7 +19,6 @@
   "capability": {
    "detail": {
     "clean": [
-     "Powder Keg",
      "Stitcher's Supplier",
      "Watery Grave"
     ],
@@ -93,6 +92,15 @@
       ],
       "size": "S"
      },
+     "Mana value bound from an SVar": {
+      "cards": [
+       "Powder Keg"
+      ],
+      "findings": [
+       "filter:cmcEQX"
+      ],
+      "size": "S"
+     },
      "Sunburst (CR 702.44)": {
       "cards": [
        "Engineered Explosives"
@@ -143,6 +151,9 @@
      "Mockingbird": [
       "Enters as a copy (Mockingbird)",
       "Mana spent on casting (Count$CastTotalManaSpent)"
+     ],
+     "Powder Keg": [
+      "Mana value bound from an SVar"
      ]
     },
     "new_cards": [
@@ -156,19 +167,19 @@
      "Stitcher's Supplier",
      "Watery Grave"
     ],
-    "size_points": 32
+    "size_points": 33
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
+    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s): 3 clean, 6 need 10 mechanic(s) (32 points)",
-   "time": "2026-11-05T14:16:43"
+   "summary": "9 new card(s): 2 clean, 7 need 11 mechanic(s) (33 points)",
+   "time": "2026-11-05T14:21:01"
   },
   "diff": {
    "detail": {
@@ -206,6 +217,7 @@
      "Enters as a copy (Mockingbird)",
      "Hogaak casting",
      "Mana spent on casting (Count$CastTotalManaSpent)",
+     "Mana value bound from an SVar",
      "Sunburst (CR 702.44)",
      "Two-condition alternative cost (Massacre)",
      "without<Keyword> filter qualifier"
@@ -213,15 +225,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
+    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "10 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Count$ValidGraveyard, Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), Two-condition alternative cost (Massacre), without<Keyword> filter qualifier",
-   "time": "2026-11-05T14:16:43"
+   "summary": "11 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Count$ValidGraveyard, Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Mana value bound from an SVar, Sunburst (CR 702.44), Two-condition alternative cost (Massacre), wit",
+   "time": "2026-11-05T14:21:01"
   },
   "parse": {
    "detail": {
@@ -419,7 +431,20 @@
       "faces": [
        "Powder Keg"
       ],
-      "findings": [],
+      "findings": [
+       {
+        "detail": "ValidCards$ Artifact.cmcEQX,Creature.cmcEQX",
+        "kind": "filter",
+        "line": "A:AB$ DestroyAll | Cost$ T Sac<1/CARDNAME> | ValidCards$ Artifact.cmcEQX,Creature.cmcEQX | SpellDescription$ Destroy each artifact and creature with mana value equal to the number of fuse counters on CARDNAME.",
+        "name": "cmcEQX"
+       },
+       {
+        "detail": "ValidCards$ Artifact.cmcEQX,Creature.cmcEQX",
+        "kind": "filter",
+        "line": "A:AB$ DestroyAll | Cost$ T Sac<1/CARDNAME> | ValidCards$ Artifact.cmcEQX,Creature.cmcEQX | SpellDescription$ Destroy each artifact and creature with mana value equal to the number of fuse counters on CARDNAME.",
+        "name": "cmcEQX"
+       }
+      ],
       "layout": "normal",
       "script": "cardsfolder/p/powder_keg.txt",
       "tokens": [],
@@ -458,14 +483,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s), 6 with findings (17 findings), 0 without a script",
-   "time": "2026-11-05T14:16:43"
+   "summary": "9 new card(s), 7 with findings (19 findings), 0 without a script",
+   "time": "2026-11-05T14:21:01"
   },
   "provision": {
    "detail": {

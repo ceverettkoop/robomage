@@ -32,6 +32,15 @@
       ],
       "size": "M"
      },
+     "Mana value bound from an SVar": {
+      "cards": [
+       "Lazotep Quarry"
+      ],
+      "findings": [
+       "filter:cmcEQX"
+      ],
+      "size": "S"
+     },
      "Sand Scout": {
       "cards": [
        "Sand Scout"
@@ -57,7 +66,8 @@
       "UnlessCost on more effects"
      ],
      "Lazotep Quarry": [
-      "Copy with exceptions (CopyPermanent Set*)"
+      "Copy with exceptions (CopyPermanent Set*)",
+      "Mana value bound from an SVar"
      ],
      "Sand Scout": [
       "Sand Scout"
@@ -68,19 +78,19 @@
      "Lazotep Quarry",
      "Sand Scout"
     ],
-    "size_points": 7
+    "size_points": 8
    },
    "inputs": {
     "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
-    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
+    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 3 mechanic(s) (7 points)",
-   "time": "2026-11-05T14:16:43"
+   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (8 points)",
+   "time": "2026-11-05T14:21:00"
   },
   "diff": {
    "detail": {
@@ -106,21 +116,22 @@
    "detail": {
     "mechanics": [
      "Copy with exceptions (CopyPermanent Set*)",
+     "Mana value bound from an SVar",
      "Sand Scout",
      "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
-    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
+    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Sand Scout, UnlessCost on more effects",
-   "time": "2026-11-05T14:16:43"
+   "summary": "4 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Mana value bound from an SVar, Sand Scout, UnlessCost on more effects",
+   "time": "2026-11-05T14:21:00"
   },
   "parse": {
    "detail": {
@@ -174,6 +185,12 @@
         "kind": "ability_param",
         "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
         "name": "CopyPermanent.SetCreatureTypes"
+       },
+       {
+        "detail": "ValidTgts$ Creature.YouOwn+cmcEQX",
+        "kind": "filter",
+        "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
+        "name": "cmcEQX"
        }
       ],
       "layout": "normal",
@@ -219,14 +236,14 @@
    },
    "inputs": {
     "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (7 findings), 0 without a script",
-   "time": "2026-11-05T14:16:43"
+   "summary": "3 new card(s), 3 with findings (8 findings), 0 without a script",
+   "time": "2026-11-05T14:21:00"
   },
   "provision": {
    "detail": {

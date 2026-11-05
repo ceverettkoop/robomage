@@ -106,6 +106,7 @@
   "Targets in several zones": {"size": "S", "keys": ["ability_param:ChangeZone.TgtZone"], "note": "TgtZone$ Stack,Battlefield (Sink into Stupor)"},
   "Effect with a continuous static": {"size": "M", "keys": ["static_form:Effect.Continuous"], "note": "Sundering Eruption: an Effect's static beyond the forms grant_cast knows"},
   "Emblem with a trigger (Tezzeret)": {"size": "M", "keys": ["trigger_form:Effect.Phase", "ability_param:Effect.Duration"], "note": "the floating-trigger scan watches attacks and combat damage, and floating triggers lapse at cleanup"},
-  "Defined$ names no reader acts on": {"size": "M", "keys": ["ability_param:Animate.Defined", "ability_param:ChooseCard.Defined", "ability_param:CopyPermanent.Defined", "ability_param:Destroy.Defined", "ability_param:Discard.Defined", "ability_param:Draw.Defined", "ability_param:PutCounter.Defined", "ability_param:Reveal.Defined"], "note": "Player on Draw and Discard, ChosenCard, Enchanted off a ChangeZone, Player.IsRemembered, Targeted.<filter>: M2 parses these once"}
+  "Defined$ names no reader acts on": {"size": "M", "keys": ["ability_param:Animate.Defined", "ability_param:ChooseCard.Defined", "ability_param:CopyPermanent.Defined", "ability_param:Destroy.Defined", "ability_param:Discard.Defined", "ability_param:Draw.Defined", "ability_param:PutCounter.Defined", "ability_param:Reveal.Defined"], "note": "Player on Draw and Discard, ChosenCard, Enchanted off a ChangeZone, Player.IsRemembered, Targeted.<filter>: M2 parses these once"},
+  "Mana value bound from an SVar": {"size": "S", "keys": ["filter:cmcEQX"], "note": "cmcEQX in ValidTgts$ (Lazotep Quarry) or a DestroyAll (Powder Keg): no reader supplies the bound, so the qualifier passes every object"}
  }
 }

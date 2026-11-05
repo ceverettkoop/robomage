@@ -84,15 +84,15 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
+    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s): 2 clean, 3 need 4 mechanic(s) (27 points)",
-   "time": "2026-11-05T14:16:42"
+   "time": "2026-11-05T14:21:00"
   },
   "diff": {
    "detail": {
@@ -127,15 +127,15 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
+    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Cost statics by player (Defense Grid), Discard-a-card activation cost, Dungeons and venture (CR 309, 701.49), UnlessCost on more effects",
-   "time": "2026-11-05T14:16:42"
+   "time": "2026-11-05T14:21:00"
   },
   "parse": {
    "detail": {
@@ -248,14 +248,14 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
+    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-11-05T14:16:42"
+   "time": "2026-11-05T14:21:00"
   },
   "provision": {
    "detail": {

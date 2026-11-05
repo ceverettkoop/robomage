@@ -41,6 +41,10 @@ static void filter_findings(const std::string &script_text, std::vector<ParseFin
 static void check_filter(
     const std::string &spec, const std::string &where, const std::string &line, std::vector<ParseFinding> &findings);
 static bool filter_token_read_elsewhere(const std::string &token);
+static void check_cmc_bounds(const std::string &spec, const std::string &key, const std::string &body,
+                             const std::string &line, std::vector<ParseFinding> &findings);
+static bool cmc_bound_supplied(const std::string &op, const std::string &bound, const std::string &key,
+                               const std::string &body);
 static void svar_expr_findings(const std::string &script_text, std::vector<ParseFinding> &findings);
 static bool svar_expr_read_at_parse(const std::string &expr);
 static std::string card_layout(const CardData &card);
@@ -238,7 +242,10 @@ static void filter_findings(const std::string &script_text, std::vector<ParseFin
             const std::string key = trim(param.substr(0, dollar));
             const std::string value = trim(param.substr(dollar + 1));
             for (const char *k : kFilterKeys)
-                if (key == k) check_filter(value, key + "$", line, findings);
+                if (key == k) {
+                    check_filter(value, key + "$", line, findings);
+                    check_cmc_bounds(value, key, body, line, findings);
+                }
             // A ChooseCard's Choices$ is a card filter (a Charm's names its modes' SVars).
             if (key == "Choices" && body.find("$ ChooseCard") != std::string::npos)
                 check_filter(value, key + "$", line, findings);
@@ -275,6 +282,34 @@ static void check_filter(
     if (objects.empty()) return;
     for (const std::string &token : filter_unknown_qualifiers(objects))
         if (!filter_token_read_elsewhere(token)) findings.push_back({"filter", token, where + " " + spec, line});
+}
+
+// A cmc qualifier naming an SVar (cmcEQY) passes any object unless the filter's reader supplies the
+// bound (MatchCtx::cmc_bound): each one with no such reader is a "filter" finding.
+static void check_cmc_bounds(const std::string &spec, const std::string &key, const std::string &body,
+                             const std::string &line, std::vector<ParseFinding> &findings) {
+    size_t p = 0;
+    while (p <= spec.size()) {
+        size_t nx = spec.find_first_of(".+,;", p);
+        if (nx == std::string::npos) nx = spec.size();
+        const std::string tok = spec.substr(p, nx - p);
+        p = nx + 1;
+        if (tok.rfind("cmc", 0) != 0 || tok.size() <= 5 || std::isdigit(static_cast<unsigned char>(tok[5]))) continue;
+        if (!cmc_bound_supplied(tok.substr(3, 2), tok.substr(5), key, body))
+            findings.push_back({"filter", tok, key + "$ " + spec, line});
+    }
+}
+
+// Does the reader of filter param `key` supply a cmc bound? cmcLEX reads the X paid everywhere; a
+// ChangeType$ search, a SpellCast trigger's ValidCard$ and a DestroyAll resolve a named SVar, and
+// the mana-value gates of ConditionPresent$ and Dig's ChangeValid$ read cmcLE<SVar>.
+static bool cmc_bound_supplied(const std::string &op, const std::string &bound, const std::string &key,
+                               const std::string &body) {
+    if (op == "LE" && bound == "X") return true;
+    if (key == "ChangeType") return true;
+    if (key == "ValidCard") return body.find("Mode$ SpellCast") != std::string::npos;
+    if (key == "ValidCards") return body.find("$ DestroyAll") != std::string::npos && bound != "X";
+    return op == "LE" && (key == "ConditionPresent" || key == "ChangeValid");
 }
 
 // Filter tokens the shared matcher has no reading for that the engine reads where the filter is
