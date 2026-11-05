@@ -124,15 +124,15 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s): 0 clean, 5 need 7 mechanic(s) (27 points)",
-   "time": "2026-11-05T13:56:53"
+   "time": "2026-11-05T13:57:49"
   },
   "diff": {
    "detail": {
@@ -170,15 +170,15 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "7 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), Hybrid pips in costs, Prepare (CR 722), Repeat effect (DB$ Repeat), UnlessCost on more effects",
-   "time": "2026-11-05T13:56:53"
+   "time": "2026-11-05T13:57:49"
   },
   "parse": {
    "detail": {
@@ -360,14 +360,14 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s), 5 with findings (15 findings), 0 without a script",
-   "time": "2026-11-05T13:56:53"
+   "time": "2026-11-05T13:57:49"
   },
   "provision": {
    "detail": {

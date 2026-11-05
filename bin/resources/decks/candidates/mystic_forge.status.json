@@ -51,7 +51,8 @@
        "Perilous Snare"
       ],
       "findings": [
-       "keyword:Start your engines"
+       "keyword:Start your engines",
+       "static_param:Condition"
       ],
       "size": "M"
      },
@@ -94,15 +95,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "9 new card(s): 5 clean, 4 need 4 mechanic(s) (15 points)",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "diff": {
    "detail": {
@@ -141,15 +142,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Exile-the-card-itself costs, Play from the top of the library (Mystic Forge), Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "parse": {
    "detail": {
@@ -264,6 +265,12 @@
       ],
       "findings": [
        {
+        "detail": "Continuous Condition$ MaxSpeed",
+        "kind": "static_param",
+        "line": "S:Mode$ Continuous | AffectedDefined$ Self | Condition$ MaxSpeed | AddAbility$ ABPutCounter | Description$ Max speed — {T}: Put a +1/+1 counter on target creature or Vehicle you control. Activate only as a sorcery.",
+        "name": "Condition"
+       },
+       {
         "detail": "Start your engines",
         "kind": "keyword",
         "line": "K:Start your engines",
@@ -328,14 +335,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s), 4 with findings (8 findings), 0 without a script",
-   "time": "2026-11-05T13:56:54"
+   "summary": "9 new card(s), 4 with findings (9 findings), 0 without a script",
+   "time": "2026-11-05T13:57:50"
   },
   "provision": {
    "detail": {

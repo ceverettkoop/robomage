@@ -71,7 +71,7 @@
   "Play from the top of the library (Mystic Forge)": {"size": "L", "keys": ["filter:TopLibrary", "static_param:MayLookAt", "static_form:MayPlay.Library"], "note": "look at and cast the top card: a new public-to-one-seat zone view for the state format"},
   "Colour-adding static everywhere (Painter's Servant)": {"size": "L", "keys": ["static_param:AddColor", "keyword:ETBReplacement:ChooseColor"], "note": "cards in every zone gain the chosen colour (CR 613 layer 5 off the battlefield)"},
   "Targeted player's counts (TargetedPlayer$...)": {"size": "S", "keys": ["svar_expr:TargetedPlayer$CardsInLibrary/HalfUp", "svar_expr:TargetedPlayer$LifeTotal/HalfUp"], "note": "Peer into the Abyss"},
-  "Start your engines! (speed)": {"size": "M", "keys": ["keyword:Start your engines"], "note": "a 2025 keyword: a player's speed, raised once a turn"},
+  "Start your engines! (speed)": {"size": "M", "keys": ["keyword:Start your engines", "static_param:Condition"], "note": "a 2025 keyword: a player's speed, raised once a turn"},
   "Meld (CR 712)": {"size": "L", "keys": ["layout:Meld"], "note": "Phyrexian Dragon Engine"},
   "Revolt trigger condition": {"size": "S", "keys": ["trigger_param:Revolt"], "note": "Renegade Rallier"},
   "Discard the whole hand (Discard Mode$ Hand)": {"size": "S", "keys": ["ability_param:Discard.Mode"], "note": "Song of Creation, Runehorn Hellkite"},
@@ -87,7 +87,7 @@
   "Crew and vehicles (CR 702.122)": {"size": "M", "keys": ["keyword:Crew", "ability_param:ChangeZone.TargetsWithSameController", "svar_expr:Count$ValidExile"], "note": "Unlicensed Hearse: a vehicle whose P/T counts cards exiled with it"},
   "Change targets (CR 115.7)": {"size": "M", "keys": ["category:ChangeTargets"], "note": "Untimely Malfunction's redirect mode"},
   "Fuse (CR 702.102)": {"size": "M", "keys": ["keyword:Fuse"], "note": "Wear/Tear: cast both halves together"},
-  "Agatha's Soul Cauldron": {"size": "L", "keys": ["static_param:GainsAbilitiesOf", "static_param:GainsAbilitiesOfZones", "static_param:ValidPlayer", "static_param:ValidSA"], "note": "creatures with +1/+1 counters gain the activated abilities of exiled creature cards; mana spent as any type"},
+  "Agatha's Soul Cauldron": {"size": "L", "keys": ["static_param:GainsAbilitiesOf", "static_param:GainsAbilitiesOfZones", "static_param:ValidPlayer", "static_param:ValidSA", "static_param:ValidCard", "static_form:Affected.Counters"], "note": "creatures with +1/+1 counters gain the activated abilities of exiled creature cards; mana spent as any type"},
   "Boast (CR 702.142)": {"size": "M", "keys": ["ability_param:DealDamage.Boast", "svar_expr:Sacrificed$CardManaCost/Plus.2"], "note": "Broadside Bombardiers: activate only if it attacked this turn, once"},
   "A creature card in every other zone (Grist)": {"size": "M", "keys": ["static_param:ExcludeZone"], "note": "Grist is a 1/1 Insect creature card outside the battlefield"},
   "Least power (Drop of Honey)": {"size": "S", "keys": ["filter:leastPower"], "note": "the creature with the least power, ties chosen"},
@@ -95,6 +95,7 @@
   "Mana cost on a triggered ability": {"size": "S", "keys": ["cost:Mana"], "note": "Nihil Spellbomb: \"you may pay {B}. If you do\": resolve_ability pays only Sac<1/CARDNAME> and an ImmediateTrigger's energy"},
   "UnlessCost on more effects": {"size": "M", "keys": ["ability_param:CopyPermanent.UnlessCost", "ability_param:DealDamage.UnlessCost", "ability_param:ImmediateTrigger.UnlessCost", "ability_param:Token.UnlessCost"], "note": "run_unless_loop runs on Counter, Destroy, Sacrifice, CopySpellAbility and DestroyAll; any other effect happens unconditionally"},
   "Enters as a copy (Mockingbird)": {"size": "M", "keys": ["keyword:ETBReplacement:DBCopy"], "note": "an ETBReplacement that makes a permanent enter as a copy of another (CR 707.5)"},
-  "Two-condition alternative cost (Massacre)": {"size": "S", "keys": ["static_param:CheckSecondSVar"], "note": "AltCost holds one CheckSVar$"}
+  "Two-condition alternative cost (Massacre)": {"size": "S", "keys": ["static_param:CheckSecondSVar"], "note": "AltCost holds one CheckSVar$"},
+  "Cost statics by player (Defense Grid)": {"size": "S", "keys": ["static_param:Activator"], "note": "Activator$ on a RaiseCost: \"except during their own turn\"; every player is taxed today"}
  }
 }

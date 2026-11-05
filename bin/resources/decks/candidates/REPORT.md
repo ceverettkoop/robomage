@@ -28,7 +28,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 5 | 7 | 18 | capability |
 | maverick | Maverick | 1.0 | aggro | 38 | 6 | 6 | 19 | capability |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 2 | 23 | capability |
-| aluren | Aluren | 4.0 | combo | 32 | 5 | 3 | 26 | capability |
+| aluren | Aluren | 4.0 | combo | 32 | 5 | 4 | 27 | capability |
 | cradle_control | Cradle Control | 1.0 | control | 34 | 5 | 7 | 27 | capability |
 | hogaak | Hogaak | 2.0 | combo | 28 | 9 | 10 | 32 | capability |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 11 | 9 | 43 | capability |
@@ -61,14 +61,15 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Fable of the Mirror-Breaker | M | 2 | - | Fable of the Mirror-Breaker | `ability_param:CopyPermanent.AddKeywords`, `ability_param:Discard.RememberDiscarded` | Kiki's copies gain haste; the chapter II rummage counts discards |
 | Goblin Welder swap | M | 2 | - | Goblin Welder | `ability_param:Pump.ImprintCards`, `ability_param:Pump.PumpZone`, `ability_param:Pump.TargetsWithDefinedController`, `filter:sharesControllerWith`, `svar_expr:Imprinted$Valid` | targets in a graveyard and on the battlefield with the same controller, swapped at resolution |
 | Play from a zone with replacement (Bilbo) | M | 2 | - | Bilbo, Thief in the Night | `ability_param:Play.ReplaceGraveyard`, `ability_param:Play.ReplaceGraveyardValid`, `ability_param:Play.Valid`, `ability_param:Play.ValidZone`, `filter:!wasCastFromYourHand` | Bilbo, Thief in the Night: cast a card from a graveyard, exiled instead of going to the graveyard |
-| Start your engines! (speed) | M | 2 | - | Perilous Snare | `keyword:Start your engines` | a 2025 keyword: a player's speed, raised once a turn |
-| Agatha's Soul Cauldron | L | 2 | - | Agatha's Soul Cauldron | `static_param:GainsAbilitiesOf`, `static_param:GainsAbilitiesOfZones`, `static_param:ValidPlayer`, `static_param:ValidSA` | creatures with +1/+1 counters gain the activated abilities of exiled creature cards; mana spent as any type |
+| Start your engines! (speed) | M | 2 | - | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
+| Agatha's Soul Cauldron | L | 2 | - | Agatha's Soul Cauldron | `static_form:Affected.Counters`, `static_param:GainsAbilitiesOf`, `static_param:GainsAbilitiesOfZones`, `static_param:ValidCard`, `static_param:ValidPlayer`, `static_param:ValidSA` | creatures with +1/+1 counters gain the activated abilities of exiled creature cards; mana spent as any type |
 | Hogaak casting | L | 2 | - | Hogaak, Arisen Necropolis | `static_form:MayPlay.Graveyard`, `static_mode:ManaRestriction`, `static_param:EffectZone`, `static_param:InvertValidSource`, `static_param:ValidSource` | cast from the graveyard (EffectZone$ Graveyard MayPlay); S:Mode$ ManaRestriction: only convoke / delve can pay |
 | Prepare (CR 722) | L | 2 | - | Carnivorous Cultivator | `keyword:ETBReplacement:DBPrepare`, `layout:Prepare` | Carnivorous Cultivator: a prepared permanent may cast a copy of its prepare spell; a designation plus a cast option |
 | Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | - | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 | AlternateAdditionalCost keyword | S | 1 | - | Bitter Triumph | `keyword:AlternateAdditionalCost` | Bitter Triumph: discard a card or pay 3 life |
 | CantPreventDamage static | S | 1 | - | Frenzied Baloth | `static_mode:CantPreventDamage`, `static_param:IsCombat` | Frenzied Baloth (prevention exists for Maze of Ith) |
 | Clone a target (CloneTarget) | S | 1 | - | The Everflowing Well | `ability_param:Clone.CloneTarget` | The Everflowing Well's back face |
+| Cost statics by player (Defense Grid) | S | 1 | - | Defense Grid | `static_param:Activator` | Activator$ on a RaiseCost: "except during their own turn"; every player is taxed today |
 | Count$ValidGraveyard | S | 1 | - | Dark Matter Manipulator | `svar_expr:Count$ValidGraveyard` | Dark Matter Manipulator: cards in a graveyard, /DivideEvenlyDown.N |
 | Discard the whole hand (Discard Mode$ Hand) | S | 1 | - | Runehorn Hellkite, Song of Creation | `ability_param:Discard.Mode` | Song of Creation, Runehorn Hellkite |
 | Least power (Drop of Honey) | S | 1 | - | Drop of Honey | `filter:leastPower` | the creature with the least power, ties chosen |
@@ -131,10 +132,10 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 19 | hogaak | Count$ValidGraveyard; Enters as a copy (Mockingbird); Mana spent on casting (Count$CastTotalManaSpent) | 5 | 112 | 19 |
 | 20 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Prepare (CR 722); Repeat effect (DB$ Repeat); Revolt trigger condition | 16 | 128 | 20 |
 | 21 | cradle_control | Bestow (CR 702.103) | 8 | 136 | 21 |
-| 22 | aluren | Dungeons and venture (CR 309, 701.49) | 20 | 156 | 22 |
-| 23 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 176 | 23 |
-| 24 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 195 | 24 |
-| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 221 | 25 |
+| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 156 | 22 |
+| 23 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 175 | 23 |
+| 24 | aluren | Cost statics by player (Defense Grid); Dungeons and venture (CR 309, 701.49) | 21 | 196 | 24 |
+| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 222 | 25 |
 
 ## Per deck
 
@@ -295,9 +296,10 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### aluren — Aluren (4.0%, combo)
 
-32 cards, 5 new; clean: Aluren, Cursed Totem, Defense Grid
+32 cards, 5 new; clean: Aluren, Cursed Totem
 
 - Acererak the Archlich: Dungeons and venture (CR 309, 701.49); UnlessCost on more effects
+- Defense Grid: Cost statics by player (Defense Grid)
 - Formidable Speaker: Discard-a-card activation cost
 
 ### cradle_control — Cradle Control (1.0%, control)

@@ -126,15 +126,15 @@
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "checks": {
    "detail": {
@@ -182,15 +182,15 @@
    "detail": {},
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "parse": {
    "detail": {
@@ -199,14 +199,14 @@
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "provision": {
    "detail": {

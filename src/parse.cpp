@@ -58,7 +58,13 @@ static bool plain_keyword_modelled(const std::string &keyword);
 static std::string keyword_finding_name(const std::string &keyword);
 static bool alt_cost_param_assumed(const std::string &key, const std::string &value);
 static bool static_mode_modelled(const std::string &mode);
+static bool static_mode_reads(const std::string &mode, const std::string &key);
 static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value);
+static void static_value_finding(const StaticAbility &sa, const std::string &key, const std::string &value);
+static void static_form_findings(const StaticAbility &sa, const std::string &line,
+                                 const std::map<std::string, std::string> &svars);
+static void granted_keyword_findings(const std::string &spec);
+static bool granted_keyword_modelled(const std::string &keyword);
 static bool static_effect_zone_modelled(const StaticAbility &sa);
 static bool fold_affected_defined(std::string &affected, const std::string &defined);
 static bool trigger_param_assumed(const std::string &key, const std::string &value);
@@ -2352,7 +2358,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
-            "ConditionDescription",
+            "ConditionDescription", "Secondary",
             // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its
             // art — both cosmetic. Duration$ is read load-bearingly from the raw line in
             // resolve_effect_static_svars (Duration$ Permanent ⇒ the Effect makes a permanent emblem); the
@@ -3703,6 +3709,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     StaticAbility sa;
     if (line.find("Mode$") == std::string::npos) return sa;
 
+    std::set<std::string> unread_keys;  // keys already reported by the branch chain below
     bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
     bool may_play = false;              // MayPlay$ True (resolve_may_play_form)
     bool may_play_no_zone_grant = false;  // MayPlayDontGrantZonePermissions$ True
@@ -3728,12 +3735,15 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 }
             } else if (key == "AddKeyword") {
                 sa.add_keyword = value;
+                granted_keyword_findings(value);
             } else if (key == "SetMaxHandSize") {
                 // SetMaxHandSize$ Unlimited (Tamiyo, Seasoned Scholar's emblem: "You have no
                 // maximum hand size.") → -1 (no maximum); a numeric value sets the maximum to N.
                 if (value == "Unlimited") sa.set_max_hand_size = -1;
                 else if (!value.empty() && isdigit((unsigned char)value[0]))
                     sa.set_max_hand_size = std::stoi(value);
+                else
+                    static_value_finding(sa, key, value);
             } else if (key == "AddAbility") {
                 // AddAbility$ <SVarName> (Petrified Hamlet): a continuous static that grants
                 // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).
@@ -3790,6 +3800,10 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     const std::string body = svar_or_literal(svars, value);
                     if (body.find("ThisTurnCast") != std::string::npos)
                         sa.raise_cost_per_spell_cast = true;
+                    else
+                        static_value_finding(sa, key, value);
+                } else {
+                    static_value_finding(sa, key, value);
                 }
             } else if (key == "RaiseTo") {
                 // SetCost RaiseTo$ True (Trinisphere): the Amount$ is a FLOOR — raise a sub-Amount
@@ -3797,9 +3811,12 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (sa.category == "SetCost") sa.set_cost_raise_to = (value == "True");
             } else if (key == "Activator") {
                 // ReduceCost Activator$ You (Eye of Ugin): the reduction applies only to
-                // spells cast by the source's controller, not to everyone's spells.
+                // spells cast by the source's controller, not to everyone's spells. Activator$
+                // Player is what every reader assumes; no other activator restricts one.
                 if (sa.category == "ReduceCost" && value == "You")
                     sa.reduce_cost_you_only = true;
+                else if (value != "Player")
+                    static_value_finding(sa, key, value);
             } else if (key == "ValidCard") {
                 // Card.NamedCard restricts the static to the source's chosen card name
                 // (RaiseCost / CantBeActivated on Disruptor Flute).
@@ -3808,6 +3825,9 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (sa.category == "RaiseCost") {
                     if (value.find("nonCreature") != std::string::npos)
                         sa.raise_cost_filter = "nonCreature";
+                    // The tax reads nothing else of the filter (active_raise_cost_for).
+                    if (value != "Card" && value != "Card.nonCreature" && value != "Card.NamedCard")
+                        static_value_finding(sa, key, value);
                 } else if (sa.category == "ReduceCost") {
                     // Full ValidCard$ filter spec (e.g. "Eldrazi.Colorless"); matched against
                     // each spell's card characteristics when computing its cast cost. Card.Self
@@ -3843,8 +3863,10 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.cant_cast_limit_per_turn = std::stoi(value);
             } else if (key == "Caster") {
                 // CantBeCast Caster$ Opponent (Voice of Victory): the restriction applies to
-                // the source controller's opponents, not the controller themselves.
+                // the source controller's opponents, not the controller themselves. Caster$
+                // Player is the default; no other caster restricts it.
                 if (value == "Opponent") sa.cant_cast_by_opponent = true;
+                else if (value != "Player") static_value_finding(sa, key, value);
             } else if (key == "OnlySorcerySpeed") {
                 // CantBeCast OnlySorcerySpeed$ True (Teferi, Time Raveler): a TIMING restriction,
                 // not a blanket prohibition — the affected caster may cast spells only when they
@@ -3857,12 +3879,15 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (sa.category == "CantBeCast") {
                     if (value.find("Graveyard") != std::string::npos) sa.cant_cast_from_graveyard = true;
                     if (value.find("Library")   != std::string::npos) sa.cant_cast_from_library   = true;
+                    for (const std::string &zone : split(value, ','))
+                        if (zone != "Graveyard" && zone != "Library") static_value_finding(sa, key, value);
                 }
             } else if (key == "cmcGT") {
                 // CantBeCast cmcGT$ Land (Lavinia, Azorius Renegade): a DYNAMIC mana-value bound.
                 // The spell is prohibited when its mana value exceeds the number of lands the
                 // caster controls. Enforced in rules_mod::cast_prohibited on the opponent path.
                 if (sa.category == "CantBeCast" && value == "Land") sa.cant_cast_cmc_gt_land = true;
+                else static_value_finding(sa, key, value);
             } else if (key == "ValidCause") {
                 sa.disable_triggers_cause = value;
             } else if (key == "CharacteristicDefining") {
@@ -3908,6 +3933,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             } else if (key == "AdjustLandPlays") {
                 if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                     sa.adjust_land_plays = std::stoi(value);
+                else
+                    static_value_finding(sa, key, value);
             } else if (key == "MayPlay") {
                 may_play = (value == "True");
             } else if (key == "MayPlayWithoutManaCost") {
@@ -3947,15 +3974,20 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             } else if (key == "EffectZone") {
                 sa.effect_zone = value;
             } else if (!static_param_assumed(sa.category, key, value)) {
-                parse_finding("static_param", key, sa.category + " " + key + "$ " + value);
+                unread_keys.insert(key);
+                static_value_finding(sa, key, value);
             }
         }
+    param_pos = 0;
+    while (next_param(line, param_pos, key, value))
+        if (!static_mode_reads(sa.category, key) && unread_keys.insert(key).second) static_value_finding(sa, key, value);
     if (!affected_defined.empty() && !fold_affected_defined(sa.affected, affected_defined))
         parse_finding("static_param", "AffectedDefined", sa.category + " AffectedDefined$ " + affected_defined);
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
     if (!static_effect_zone_modelled(sa))
         parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
     if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
+    static_form_findings(sa, line, svars);
 
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
     // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
@@ -4513,6 +4545,123 @@ static bool static_mode_modelled(const std::string &mode) {
     for (const char *m : kModes)
         if (mode == m) return true;
     return false;
+}
+
+// The params the reader of each S: mode acts on: the mode's own, and with `gated` the gate of
+// ActiveStatic::condition_met, which that mode's reader checks. Any other param on the mode reads
+// as nothing, whichever branch of parse_one_static_ability consumes it.
+static bool static_mode_reads(const std::string &mode, const std::string &key) {
+    static const struct {
+        const char *mode;
+        bool gated;
+        const char *keys;
+    } kModeKeys[] = {
+        {"Continuous", true,
+         "Affected AffectedDefined AffectedZone AddPower AddToughness AddKeyword AddAbility AddTrigger AddSVar AddType "
+         "SetPower SetToughness SetColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
+         "AdjustLandPlays MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
+         "CharacteristicDefining"},
+        {"RaiseCost", false, "Amount Type Relative Activator ValidCard"},
+        {"ReduceCost", false, "Amount Type Activator ValidCard ValidTarget"},
+        {"SetCost", true, "Amount Type RaiseTo ValidCard"},
+        {"CantBeCast", true, "ValidCard Caster NumLimitEachTurn OnlySorcerySpeed Origin cmcGT"},
+        {"CantBeActivated", false, "ValidCard ValidSA AffectedZone Activator"},
+        {"CantAttack", true, "ValidCard Target"},
+        {"MustAttack", true, "ValidCreature"},
+        {"DisableTriggers", false, "ValidCause ValidMode Destination"},
+        {"ManaConvert", false, "ManaConversion"},
+    };
+    if (key == "Mode" || key == "Description" || key == "Secondary" || key == "EffectZone") return true;
+    for (const auto &row : kModeKeys) {
+        if (mode != row.mode) continue;
+        if (row.gated)
+            for (const char *gate : {"Condition", "CheckSVar", "SVarCompare", "IsPresent", "PresentZone", "PresentCompare"})
+                if (key == gate) return true;
+        const std::vector<std::string> keys = split(row.keys, ' ');
+        return std::find(keys.begin(), keys.end(), key) != keys.end();
+    }
+    return true;  // a mode the engine doesn't apply is its own finding (static_mode)
+}
+
+// A static param read as nothing: the param of `sa` with this value has no effect.
+static void static_value_finding(const StaticAbility &sa, const std::string &key, const std::string &value) {
+    parse_finding("static_param", key, sa.category + " " + key + "$ " + value);
+}
+
+// The forms of a whole static line its reader does not honour, each named for what is ignored.
+static void static_form_findings(const StaticAbility &sa, const std::string &line,
+                                 const std::map<std::string, std::string> &svars) {
+    // The two gate kinds ActiveStatic::condition_met evaluates by name.
+    if (!sa.condition.empty() && sa.condition != "Delirium" && sa.condition != "PlayerTurn")
+        static_value_finding(sa, "Condition", sa.condition);
+    // gather_active_statics reads a counters_ qualifier of Affected$ as a gate on the source itself.
+    if (!sa.self_counter_type.empty() && !filter_names_token(sa.affected, "Self"))
+        parse_finding("static_form", "Affected.Counters", "read as a counter on the source: " + sa.affected);
+    if (sa.category == "Continuous") {
+        // The layer appliers act on the battlefield; only a play permission and a colour reach past
+        // it (affected_zone_matches).
+        const bool layered = sa.add_power != 0 || sa.add_toughness != 0 || !sa.add_power_svar.empty() ||
+                             !sa.add_toughness_svar.empty() || !sa.add_keyword.empty() || !sa.add_type.empty() ||
+                             !sa.set_power_svar.empty() || !sa.set_toughness_svar.empty() || sa.remove_all_abilities;
+        if (layered && !sa.affected_zone.empty() && sa.affected_zone != "Battlefield")
+            static_value_finding(sa, "AffectedZone", sa.affected_zone);
+        // A hand size or land drop belongs to the static's controller (state_manager.cpp,
+        // rules_modifying.cpp).
+        if ((sa.set_max_hand_size != 0 || sa.adjust_land_plays != 0) && sa.affected != "You")
+            static_value_finding(sa, "Affected", sa.affected);
+    } else if (sa.category == "CantBeCast") {
+        // cast_prohibited takes the first form that matches: the Origin$ zones, the opponent lock
+        // (a blanket one unless it is Lavinia's bound, its ValidCard$ then read by mv_land_bound),
+        // the per-turn limit (on noncreature spells), or the ValidCard$ filter; only the opponent
+        // forms read the gate.
+        const bool origin = sa.cant_cast_from_graveyard || sa.cant_cast_from_library;
+        const bool opponent_filter_read = sa.cant_cast_cmc_gt_land;
+        if (!sa.cant_cast_filter.empty() && sa.cant_cast_filter != "Card" &&
+            (origin || (sa.cant_cast_by_opponent && !opponent_filter_read)))
+            static_value_finding(sa, "ValidCard", sa.cant_cast_filter);
+        if (sa.cant_cast_limit_per_turn > 0 && sa.cant_cast_filter != "Card.nonCreature")
+            static_value_finding(sa, "NumLimitEachTurn", std::to_string(sa.cant_cast_limit_per_turn));
+        if (sa.cant_cast_cmc_gt_land && !sa.cant_cast_by_opponent) static_value_finding(sa, "cmcGT", "Land");
+        if (sa.only_sorcery_speed && !sa.cant_cast_by_opponent) static_value_finding(sa, "OnlySorcerySpeed", "True");
+        if (!sa.cant_cast_by_opponent && (!sa.condition.empty() || !sa.check_svar_expr.empty() || !sa.present_filter.empty()))
+            parse_finding("static_param", "Condition", "CantBeCast reads its gate on Caster$ Opponent only: " + line);
+    } else if (sa.category == "CantBeActivated") {
+        // The chosen-name form leaves mana abilities usable and every other form stops them
+        // (rules_mod::activation_prohibited), whatever ValidSA$ says.
+        const std::string valid_sa = param_value(line, "ValidSA");
+        if (valid_sa != (sa.match_named_card ? "Activated.!ManaAbility" : "Activated"))
+            static_value_finding(sa, "ValidSA", valid_sa);
+        const std::string zone = param_value(line, "AffectedZone");
+        if (!zone.empty() && zone != "Battlefield") static_value_finding(sa, "AffectedZone", zone);
+    } else if (sa.category == "ManaConvert") {
+        if (sa.mana_conversion != "AnyType->AnyColor") static_value_finding(sa, "ManaConversion", sa.mana_conversion);
+    } else if (sa.category == "SetCost") {
+        if (!sa.set_cost_raise_to) parse_finding("static_form", "SetCost", "only a floor (RaiseTo$ True) is applied");
+    }
+    // A granted ability or trigger is parsed where it is granted, with no SVars but the one AddSVar$
+    // names (parse_ability_body, parse_granted_trigger): parsed the same way here for its findings.
+    if (g_findings == nullptr) return;
+    const std::string add_ability = param_value(line, "AddAbility");
+    if (!add_ability.empty() && svars.find(add_ability) == svars.end())
+        parse_finding("svar_missing", add_ability, "AddAbility$ names no SVar");
+    if (!sa.add_ability.empty()) parse_svar_ability(sa.add_ability, AbilityDef::ACTIVATED, {}, "");
+    if (!sa.add_trigger.empty()) {
+        std::map<std::string, std::string> trigger_svars;
+        if (!sa.add_trigger_svar_name.empty()) trigger_svars[sa.add_trigger_svar_name] = sa.add_trigger_svar;
+        parse_one_trigger(sa.add_trigger, trigger_svars, "");
+    }
+}
+
+// Each keyword of an AddKeyword$ / KW$ list ("Trample & Haste") nothing reads is a keyword finding.
+static void granted_keyword_findings(const std::string &spec) {
+    for (const std::string &kw : split_keyword_list(spec))
+        if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted: " + spec);
+}
+
+// A keyword a static or effect grants that some rule reads: a plain one or a Ward with a cost
+// parse_ward_cost reads.
+static bool granted_keyword_modelled(const std::string &keyword) {
+    return plain_keyword_modelled(keyword) || keyword == "Ward" || keyword.rfind("Ward:", 0) == 0;
 }
 
 // Does the engine apply static `sa` from the zones its EffectZone$ names (CR 113.6b)? The

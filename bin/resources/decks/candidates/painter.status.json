@@ -31,8 +31,10 @@
        "Agatha's Soul Cauldron"
       ],
       "findings": [
+       "static_form:Affected.Counters",
        "static_param:GainsAbilitiesOf",
        "static_param:GainsAbilitiesOfZones",
+       "static_param:ValidCard",
        "static_param:ValidPlayer",
        "static_param:ValidSA"
       ],
@@ -255,15 +257,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "18 new card(s): 5 clean, 13 need 15 mechanic(s) (54 points)",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "diff": {
    "detail": {
@@ -322,15 +324,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin Welder swap, Mana with riders and Exert ",
-   "time": "2026-11-05T13:56:54"
+   "time": "2026-11-05T13:57:50"
   },
   "parse": {
    "detail": {
@@ -354,6 +356,12 @@
         "name": "ValidSA"
        },
        {
+        "detail": "ManaConvert ValidCard$ Creature.YouCtrl+inZoneBattlefield",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaConvert | ValidPlayer$ You | ValidCard$ Creature.YouCtrl+inZoneBattlefield | ValidSA$ Activated | ManaConversion$ AnyType->AnyColor | Description$ You may spend mana as though it were mana of any color to activate abilities of creatures you control.",
+        "name": "ValidCard"
+       },
+       {
         "detail": "Continuous GainsAbilitiesOf$ Creature.ExiledWithSource",
         "kind": "static_param",
         "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
@@ -364,6 +372,12 @@
         "kind": "static_param",
         "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
         "name": "GainsAbilitiesOfZones"
+       },
+       {
+        "detail": "read as a counter on the source: Creature.YouCtrl+counters_GE1_P1P1",
+        "kind": "static_form",
+        "line": "S:Mode$ Continuous | Affected$ Creature.YouCtrl+counters_GE1_P1P1 | EffectZone$ Battlefield | GainsAbilitiesOf$ Creature.ExiledWithSource | GainsAbilitiesOfZones$ Exile | Description$ Creatures you control with +1/+1 counters on them have all activated abilities of all creature cards exiled with CARDNAME.",
+        "name": "Affected.Counters"
        }
       ],
       "layout": "normal",
@@ -856,14 +870,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "18 new card(s), 13 with findings (42 findings), 0 without a script",
-   "time": "2026-11-05T13:56:54"
+   "summary": "18 new card(s), 13 with findings (44 findings), 0 without a script",
+   "time": "2026-11-05T13:57:50"
   },
   "provision": {
    "detail": {

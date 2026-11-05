@@ -120,15 +120,15 @@
    },
    "inputs": {
     "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s): 0 clean, 5 need 7 mechanic(s) (18 points)",
-   "time": "2026-11-05T13:56:53"
+   "time": "2026-11-05T13:57:49"
   },
   "diff": {
    "detail": {
@@ -166,15 +166,15 @@
    },
    "inputs": {
     "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
-    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
+    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "7 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Mana cost on a triggered ability, Play from a zone with replacement (Bilbo), Targeted player's cards filter (TargetedPlayerOwn), Two-condition alternative cost (Massacre), without<Keyword> filter qualifier",
-   "time": "2026-11-05T13:56:53"
+   "time": "2026-11-05T13:57:49"
   },
   "parse": {
    "detail": {
@@ -334,14 +334,14 @@
    },
    "inputs": {
     "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
+    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
     "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s), 5 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T13:56:53"
+   "time": "2026-11-05T13:57:49"
   },
   "provision": {
    "detail": {
