@@ -2449,11 +2449,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // searched-for type ("basic land"). Purely cosmetic — the load-bearing ChangeType$
             // filter is parsed above.
             "ChangeTypeDesc",
-            // ShuffleNonMandatory$ True (Price of Freedom): marks the post-search shuffle as
-            // optional on a fail-to-find. The search-based ChangeZone already shuffles after a
-            // library fetch (the found case, which is all this card does in practice), so the
-            // flag adds nothing the handler doesn't already do.
-            "ShuffleNonMandatory",
             // ── AI-only / cosmetic params — no rules impact, safely ignored ──────────────
             // AITgts$ <filter> (Into the Flood Maw, Pyroblast, Hydroblast, Fatal Push) and
             // AIXMax$ <svar> (Green Sun's Zenith): hints that steer Forge's own AI (which

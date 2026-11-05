@@ -1,0 +1,14 @@
+{
+  "name": "cr608_2d_declined_search_no_shuffle",
+  "why": "CR 608.2d: Ghost Quarter's 'may search their library ..., then shuffle' is one choice; a player who declines doesn't search, so their library keeps its order",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island"],
+  "hand_b": ["Island"],
+  "library_b": ["Forest", "Plains"],
+  "battlefield_a": ["Ghost Quarter"],
+  "battlefield_b": ["Wasteland"],
+  "play": ["A:keep", "B:keep", "A:activate:Ghost Quarter", "A:target:Wasteland"],
+  "max_decisions": 8,
+  "expect": ["Wasteland is destroyed", "Player B fails to find"],
+  "expect_not": ["Player B shuffles their library"]
+}

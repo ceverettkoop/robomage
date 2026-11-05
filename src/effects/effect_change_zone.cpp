@@ -825,8 +825,10 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // holds it); rt.prev_priority is restored by the completion epilogue.
         if (suspended) return HandlerResult::SUSPENDED;
 
-        // after we have chosen but before we place it where it goes, if we messed with library shuffle it
-        if (ab.def->origin == Zone::LIBRARY) {
+        // after we have chosen but before we place it where it goes, if we messed with library shuffle it.
+        // ShuffleNonMandatory$ True is a "may search ..., then shuffle": finding nothing there is
+        // declining to search, and with no search there is no shuffle (CR 608.2d).
+        if (ab.def->origin == Zone::LIBRARY && !(chosen == 0 && ab.def->shuffle_non_mandatory)) {
             orderer->shuffle_library(owner);
             game_log("%s shuffles their library\n", player_name(owner).c_str());
         }
@@ -934,6 +936,9 @@ bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string
         return true;
     } else if (key == "MayShuffle") {
         ab.may_shuffle = (value == "True");
+        return true;
+    } else if (key == "ShuffleNonMandatory") {
+        ab.shuffle_non_mandatory = (value == "True");
         return true;
     } else if (key == "Tapped") {
         ab.enters_tapped = (value == "True");
