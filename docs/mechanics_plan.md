@@ -6,7 +6,7 @@ becoming playable is an output of this plan (Appendix C), never a reason to reor
 
 `candidates/REPORT.md` remains the source of *what* is missing. It ranks by deck unlock and sizes
 each mechanic alone, so it is the wrong source for *how* to build them. This plan groups the same
-133 parse-report findings (67 mechanics, 63 cards) under 11 engine primitives. Most findings are
+173 parse-report findings (76 mechanics, 71 cards) under 11 engine primitives. Most findings are
 one more row in a table once the primitive exists; built one at a time, each would be one more
 special case.
 
@@ -95,22 +95,28 @@ before any `make regen`. Commit the pin, status files and report with this stage
 
 Do this before any new mechanic; every later stage leans on it.
 
-**Silent failures to close.** Confirmed in the code unless marked:
+**Silent failures: done** (2026-11-05). `--parse-report` now reports what it used to pass over. The
+rule the audit left behind: a key a parser branch accepts is either honoured for that value or
+a finding, per ability category, static mode and trigger mode (`param_form_read`, `static_mode_reads`,
+`trigger_mode_reads`), and a cost token the engine does not pay adds nothing. What it found:
 
-- `parse_activation_cost` sends unrecognised tokens to `parse_mana_cost` character by character, so
-  `Exile<1/CARDNAME>` becomes mana pips (reported as `{1}{C}{R}`; not run).
-- `Discard<1/Card>` is dropped: the cost vanishes and the ability is free.
-- `Activator$` is read only for `ReduceCost`. Defense Grid therefore taxes the active player too,
-  yet reports clean.
-- Reported, verify: activation `Sac<N>` discards N; `cmc*` qualifiers return true and depend on a
-  separate `ctx.cmc_bound`; `trigger_zone_filter` turns any zone but Battlefield and Graveyard
-  into "any"; the ignored-param list in `parse.cpp` holds keys that can carry rules
-  (`ForgetOnMoved`, `Imprint`).
+- Costs: an unmodelled token no longer becomes mana. `Sac<N>`, `Return<N>` and `Discard<N>` beyond
+  the count their path pays, a variable `PayLife`/`PayEnergy`, hybrid and Phyrexian pips outside
+  `ManaCost:`, a `Cost$` on a spell or trigger that nothing pays, `UnlessCost$` on an effect that
+  never runs it, alternative-cost conditions.
+- Statics: `Activator$` (Defense Grid), `Caster$`, unread gates, filters the form ignores.
+- Triggers: `ValidCard$`, `ValidSource$`, `ValidTarget$`, `ValidSA$` values the mode ignores.
+- Abilities: the ignored-param list now holds only prose, AI hints and keys another param states;
+  `Imprint`, `ForgetOnMoved`, `ForgetOtherRemembered` and the rest are limited to their safe forms,
+  `ForgetOtherTargets` is off it. `Defined$` names with no reader, the forms of an `Effect`.
+- `cmc` qualifiers: a literal bound is compared in the matcher; a bound naming an SVar with no reader
+  to supply it is a `filter` finding.
+- Three vocab bugs fixed: Brotherhood's End destroyed every artifact, a declined "may search"
+  shuffled, and a Powerstone's mana cast anything. One vocab finding recorded: Ajani's
+  `TriggerAmount$` (`docs/rules_deviations.md` §2.8).
 
-Make each of these a finding. Audit the ignored-param and accepted-static-param lists: a key stays
-only if it is cosmetic or AI-only, with the reason in a comment. Expect this to surface findings on
-cards now called clean. The audit covers vocab cards too, so `tests/parse_report/vocab.json` may
-grow; fix or record those deliberately.
+Not audited: `R:` lines, which still match whole shapes (`replacement` when none fits), and whether a
+known `Defined$` name is read by the particular effect it sits on, which M2 settles.
 
 **Mechanic-first onboarding.** `onboard.py vocab` appends a whole deck and only once that deck needs
 nothing. CLAUDE.md also forbids testing cards outside the vocab. A mechanic-first plan cannot work
@@ -157,7 +163,7 @@ training start, not per stage.
 
 Order is by dependency, so each primitive exists before the mechanics that would otherwise hard-code
 it. Sizes use `mechanic_sizes.json`'s S/M/L/XL and are relative; they include the migration, which
-the report's 221 points do not. The findings each stage closes are in Appendix A.
+the report's 240 points do not. The findings each stage closes are in Appendix A.
 
 ```
 M0 pin → M1 reporting + kit → M2 object references → M3 filters + SVars ─┬→ M4 memory + flow
@@ -184,7 +190,9 @@ filters all use it. Anything kept past a zone change stays an `ObjectRef`.
 **Migrate.** Effect by effect, deleting each boolean once unread, then M0's fold.
 
 **Lands here.** `Reveal$ RevealDefined`; `DamageSource$`, where damage comes from another object
-(Pyrogoyf, Hawkeye's Bow, with `TriggeredCardLKICopy` reading `departed_lki_for`).
+(Pyrogoyf, Hawkeye's Bow, with `TriggeredCardLKICopy` reading `departed_lki_for`); the `*.Defined`
+findings, names no reader acts on (`Player` on Draw and Discard, `ChosenCard`, `Imprinted`,
+`Player.IsRemembered`, `Targeted.<filter>`).
 
 **Test.** Scenarios for damage from a departed source: lifelink, deathtouch and protection follow the
 LKI source, CR 120.
@@ -265,7 +273,8 @@ decisions, so that is a deliberate-change commit with `make regen`.
 
 **Lands here.** `Discard<N/...>`, `Exile<1/CARDNAME>`, `ExileFromHand`, `ExileFromGrave`, `Exert`
 (CR 701.43), Waterbend (CR 701.67), `AlternateAdditionalCost`, Bargain (CR 702.166), Convoke (CR
-702.51), Crew and Vehicles (CR 301.7).
+702.51), Crew and Vehicles (CR 301.7); hybrid pips in any cost (Fiend Artisan, Vibrance), a mana cost
+on a trigger (Nihil Spellbomb), `Activator$` on a cost static (Defense Grid).
 
 **Test.** Each part paid from each path (cast, activate, mana ability, trigger, unless); cost-payment
 order CR 601.2h; a mid-payment suspension for every chooser; can't-pay hides the option.
@@ -359,7 +368,9 @@ yields a replacement only for win-the-game text.
 - One tap choke point, so `Taps` needs one `SendEvent`.
 
 **Lands here.** Gaea's Will, Theorist's Proxy's can't-be-countered, Hullbreacher (with Treasure tokens),
-Hawkeye's Bow, Renegade Rallier, Sand Scout, Chrome Mox's forget trigger.
+Hawkeye's Bow, Renegade Rallier, Sand Scout, Chrome Mox's forget trigger; Tezzeret's emblem with a
+trigger, Sundering Eruption's Effect with a continuous static, an `Effect` of several forms, a
+`ValidCard$` with `Self` in one alternative (Pyrogoyf) or any filter on a `SpellCast`.
 
 **Test.** CR 614 and 616 with two applicable replacements; replacement with a suspended choice; Hullbreacher
 on the first draw of the draw step; trigger order with `Static$` mixed in; an `EffectObject` across the
@@ -446,15 +457,15 @@ None block M0 to M12. Before M13: the `league/` and `heldout/` split. Before M12
 justifies the subsystem, or whether Aluren should swap the card out. This plan assumes it is built.
 ## Appendix A. Every finding, by stage
 
-Generated from the status files at pin `f62f8048`: 133 findings, none unmapped. `onboard.py`'s mechanics are the report's grouping; this is the plan's.
+Generated from the status files at pin `f62f8048`: 173 findings, none unmapped. `onboard.py`'s mechanics are the report's grouping; this is the plan's.
 
 | stage | findings |
 |---|---|
 | M0 | `static_param:AffectedDefined` |
 | M2 | `ability_param:Animate.Defined`, `ability_param:ChooseCard.Defined`, `ability_param:CopyPermanent.Defined`, `ability_param:DealDamage.DamageSource`, `ability_param:Destroy.Defined`, `ability_param:Discard.Defined`, `ability_param:Draw.Defined`, `ability_param:PutCounter.Defined`, `ability_param:Reveal.Defined`, `ability_param:Reveal.RevealDefined` |
 | M3 | `amount_svar:All`, `filter:!wasCastFromYourHand`, `filter:AttachedTo Creature`, `filter:ControlledBy Remembered`, `filter:Defined`, `filter:ExiledWithSourceLKI`, `filter:Imprinted`, `filter:SharesColorWithOther`, `filter:TargetedPlayerOwn`, `filter:TopGraveyardCreature`, `filter:TopLibrary`, `filter:cmcEQX`, `filter:leastPower`, `filter:lowestRememberedCMC`, `filter:sharesControllerWith`, `filter:withoutFlying`, `filter:withoutIndestructible`, `svar_expr:Count$ValidExile`, `svar_expr:Count$ValidGraveyard`, `svar_expr:Count$xPaid/Twice`, `svar_expr:Imprinted$Amount`, `svar_expr:Imprinted$Valid`, `svar_expr:PlayerCountOpponents$HighestValid`, `svar_expr:Sacrificed$CardManaCost/Plus.2`, `svar_expr:TargetedPlayer$CardsInLibrary/HalfUp`, `svar_expr:TargetedPlayer$CardsInLibrary`, `svar_expr:TargetedPlayer$LifeTotal/HalfUp`, `svar_expr:TriggeredCard$CardPower` |
-| M4 | `ability_param:Branch.BranchConditionSVarCompare`, `ability_param:Branch.BranchConditionSVar`, `ability_param:Branch.FalseSubAbility`, `ability_param:Branch.TrueSubAbility`, `ability_param:ChangeZone.Imprint`, `ability_param:ChangeZone.NoShuffle`, `ability_param:ChangeZoneAll.UseAllOriginZones`, `ability_param:ChooseCard.AtRandom`, `ability_param:Cleanup.ClearNamedCard`, `ability_param:CopyPermanent.UnlessCost`, `ability_param:CopyPermanent.UnlessResolveSubs`, `ability_param:DealDamage.UnlessCost`, `ability_param:Discard.Mode`, `ability_param:Discard.RememberDiscarded`, `ability_param:ImmediateTrigger.ConditionDefined`, `ability_param:ImmediateTrigger.TriggerAmount`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:Pump.ForgetImprinted`, `ability_param:Pump.ForgetObjects`, `ability_param:Pump.ImprintCards`, `ability_param:Repeat.MaxRepeat`, `ability_param:Repeat.RepeatCheckSVar`, `ability_param:Repeat.RepeatSVarCompare`, `ability_param:Token.UnlessCost`, `category:Branch`, `category:Repeat`, `category:Shuffle`, `category:TapOrUntap` |
-| M5 | `ability_param:CopyPermanent.UnlessCost`, `ability_param:DealDamage.UnlessCost`, `ability_param:Discard.ActivationZone`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:Play.Condition`, `ability_param:Token.UnlessCost`, `cost:Discard`, `cost:Exert`, `cost:ExileFromGrave`, `cost:ExileFromHand`, `cost:Exile`, `cost:Hybrid`, `cost:Mana`, `cost:Waterbend`, `keyword:AlternateAdditionalCost`, `keyword:Bargain`, `keyword:Convoke`, `keyword:Crew`, `static_param:Activator` |
+| M4 | `ability_param:Branch.BranchConditionSVarCompare`, `ability_param:Branch.BranchConditionSVar`, `ability_param:Branch.FalseSubAbility`, `ability_param:Branch.TrueSubAbility`, `ability_param:ChangeZone.Imprint`, `ability_param:ChangeZone.NoShuffle`, `ability_param:ChangeZoneAll.UseAllOriginZones`, `ability_param:ChooseCard.AtRandom`, `ability_param:Cleanup.ClearNamedCard`, `ability_param:CopyPermanent.UnlessCost`, `ability_param:CopyPermanent.UnlessCost`, `ability_param:CopyPermanent.UnlessResolveSubs`, `ability_param:DealDamage.UnlessCost`, `ability_param:DealDamage.UnlessCost`, `ability_param:Discard.Mode`, `ability_param:Discard.RememberDiscarded`, `ability_param:ImmediateTrigger.ConditionDefined`, `ability_param:ImmediateTrigger.TriggerAmount`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:Pump.ForgetImprinted`, `ability_param:Pump.ForgetObjects`, `ability_param:Pump.ImprintCards`, `ability_param:Repeat.MaxRepeat`, `ability_param:Repeat.RepeatCheckSVar`, `ability_param:Repeat.RepeatSVarCompare`, `ability_param:Token.UnlessCost`, `ability_param:Token.UnlessCost`, `category:Branch`, `category:Repeat`, `category:Shuffle`, `category:TapOrUntap` |
+| M5 | `ability_param:Discard.ActivationZone`, `ability_param:Play.Condition`, `cost:Discard`, `cost:Exert`, `cost:ExileFromGrave`, `cost:ExileFromHand`, `cost:Exile`, `cost:Hybrid`, `cost:Mana`, `cost:Waterbend`, `keyword:AlternateAdditionalCost`, `keyword:Bargain`, `keyword:Convoke`, `keyword:Crew`, `static_param:Activator` |
 | M6 | `ability_param:AddMana.AddsKeywordsUntil`, `ability_param:AddMana.AddsKeywordsValid`, `ability_param:AddMana.AddsKeywords`, `ability_param:AddMana.Produced`, `keyword:Sunburst`, `static_mode:ManaRestriction`, `static_param:InvertValidSource`, `static_param:ValidCard`, `static_param:ValidPlayer`, `static_param:ValidSA`, `static_param:ValidSource`, `svar_expr:Count$CastTotalManaSpent`, `trigger_param:ValidSA` |
 | M7 | `ability_param:Play.ImprintPlayed`, `ability_param:Play.ReplaceGraveyardValid`, `ability_param:Play.ReplaceGraveyard`, `ability_param:Play.ValidZone`, `ability_param:Play.Valid`, `ability_param:Play.WithoutManaCost`, `keyword:Bestow`, `keyword:ETBReplacement:DBPrepare`, `keyword:Fuse`, `keyword:Overload`, `layout:Adventure`, `layout:Prepare`, `static_form:MayPlay.Graveyard`, `static_form:MayPlay.Library`, `static_param:CheckSecondSVar`, `static_param:EffectZone` |
 | M8 | `ability_param:Animate.AtEOT`, `ability_param:AnimateAll.Power`, `ability_param:AnimateAll.Toughness`, `ability_param:AnimateAll.Types`, `ability_param:ChangeZoneAll.GainControl`, `ability_param:ChangeZoneAll.StaticEffect`, `ability_param:ChangeZoneAll.WithCountersType`, `ability_param:Clone.CloneTarget`, `ability_param:Clone.Duration`, `ability_param:CopyPermanent.AddKeywords`, `ability_param:CopyPermanent.AtEOT`, `ability_param:CopyPermanent.SetColor`, `ability_param:CopyPermanent.SetCreatureTypes`, `ability_param:CopyPermanent.SetPower`, `ability_param:CopyPermanent.SetToughness`, `keyword:ETBReplacement:ChooseColor`, `keyword:ETBReplacement:DBCopy`, `keyword:HIDDEN CARDNAME can't block.`, `static_form:Affected.Counters`, `static_mode:CantBlockBy`, `static_mode:CantPreventDamage`, `static_param:AddColor`, `static_param:ExcludeZone`, `static_param:GainsAbilitiesOfZones`, `static_param:GainsAbilitiesOf`, `static_param:IsCombat`, `static_param:ValidAttacker`, `static_param:ValidBlocker` |
@@ -467,21 +478,20 @@ The 21 cards M0 repairs: the 15 vocab cards (Animate Dead, Cori-Steel Cutter, Dr
 
 ## Appendix B. When each card can enter the vocab
 
-A card joins the vocab at the exit of the last stage it needs (M1's `onboard.py vocab --cards`). The 45 cards reporting clean need no stage but still need a scenario (M13).
+A card joins the vocab at the exit of the last stage it needs (M1's `onboard.py vocab --cards`). The 37 cards reporting clean need no stage but still need a scenario (M13).
 
 | last stage | cards (all stages needed) |
 |---|---|
-| M0 | Fiend Artisan |
-| M3 | Dark Matter Manipulator (M0 M3); Drop of Honey; Peer into the Abyss; Pyrogoyf (M2 M3); Rough/Tumble; Strategic Betrayal; Sundering Eruption |
-| M4 | Chaos Defiler (M3 M4); Echo of Eons; Gamble; Grindstone (M3 M4); Sewer-veillance Cam; Song of Creation; Stronghold Gambit (M2 M3 M4) |
-| M5 | Bitter Triumph; Formidable Speaker; Melded Moxite; Runehorn Hellkite (M4 M5); Simian Spirit Guide; The Echoverse Fulcrum; The Stone Brain (M3 M4 M5) |
-| M6 | Arena of Glory (M5 M6); Engineered Explosives; Mockingbird |
-| M7 | Beseech the Mirror (M3 M5 M7); Bilbo, Thief in the Night (M3 M7); Carnivorous Cultivator; Cyclonic Rift; Hogaak, Arisen Necropolis (M5 M6 M7); Springheart Nantuko (M0 M3 M4 M7); Wear/Tear |
-| M8 | Agatha's Soul Cauldron (M6 M8); Allosaurus Shepherd; Brazen Borrower (M3 M7 M8); Fable of the Mirror-Breaker (M4 M8); Frenzied Baloth; Ghost Vacuum; Grist, the Hunger Tide (M4 M8); Lazotep Quarry; Painter's Servant; Shallow Grave (M3 M8); The Everflowing Well |
-| M9 | Chrome Mox (M3 M4 M9); Gaea's Will; Hawkeye's Bow (M0 M2 M9); Hullbreacher; Renegade Rallier; Sand Scout (M3 M9) |
-| M10 | Broadside Bombardiers (M3 M10); Fury; Goblin Welder (M3 M4 M10); Invasion Submersible (M5 M10); Shatterskull Smashing (M3 M10); Unlicensed Hearse (M3 M5 M10); Untimely Malfunction |
-| M11 | Aphetto Alchemist; Cryptic Coat (M0 M8 M11); Mystic Forge (M3 M7 M11) |
-| M12 | Acererak the Archlich; Perilous Snare (M0 M12); Phyrexian Dragon Engine (M5 M12); Theorist's Proxy (M9 M12) |
+| M3 | Dark Matter Manipulator; Drop of Honey (M2 M3); Peer into the Abyss; Powder Keg; Rough/Tumble; Strategic Betrayal |
+| M4 | Chaos Defiler (M2 M3 M4); Echo of Eons (M2 M4); Galvanic Discharge; Gamble; Grindstone (M3 M4); Sewer-veillance Cam; Song of Creation; Stronghold Gambit (M2 M3 M4) |
+| M5 | Bitter Triumph; Defense Grid; Fiend Artisan; Formidable Speaker; Melded Moxite; Nihil Spellbomb; Runehorn Hellkite (M2 M4 M5); Simian Spirit Guide; The Echoverse Fulcrum; The Stone Brain (M3 M4 M5); Vibrance |
+| M6 | Arena of Glory (M5 M6); Engineered Explosives |
+| M7 | Beseech the Mirror (M3 M5 M7); Bilbo, Thief in the Night (M3 M7); Carnivorous Cultivator; Cyclonic Rift; Hogaak, Arisen Necropolis (M5 M6 M7); Massacre; Springheart Nantuko (M2 M3 M4 M7); Wear/Tear |
+| M8 | Agatha's Soul Cauldron (M4 M6 M8); Allosaurus Shepherd; Brazen Borrower (M3 M7 M8); Fable of the Mirror-Breaker (M4 M8); Frenzied Baloth; Ghost Vacuum; Grist, the Hunger Tide (M4 M8); Lazotep Quarry (M3 M8); Mockingbird (M6 M8); Painter's Servant; Shallow Grave (M3 M8) |
+| M9 | Chrome Mox (M3 M4 M9); Gaea's Will (M7 M9); Hawkeye's Bow (M2 M9); Hullbreacher; Pyrogoyf (M2 M3 M9); Renegade Rallier; Sand Scout (M3 M9); Sundering Eruption (M3 M9); Tezzeret, Cruel Captain (M2 M9); The Everflowing Well (M6 M8 M9) |
+| M10 | Broadside Bombardiers (M3 M10); Fury; Goblin Welder (M3 M4 M10); Invasion Submersible (M5 M10); Shatterskull Smashing (M3 M10); Sink into Stupor; Unlicensed Hearse (M3 M5 M10); Untimely Malfunction (M8 M10) |
+| M11 | Aphetto Alchemist; Cryptic Coat (M8 M11); Mystic Forge (M3 M7 M11) |
+| M12 | Acererak the Archlich (M4 M12); Perilous Snare; Phyrexian Dragon Engine (M5 M12); Theorist's Proxy (M9 M12) |
 
 ## Appendix C. Deck readiness (an output, not a goal)
 
@@ -489,11 +499,10 @@ The stage after which each deck has every mechanic. Decks with no entry in the t
 
 | ready after | decks (meta share %) |
 |---|---|
-| none | death_and_taxes (3.0), uwx_control (8.0) |
 | M3 | lands_top8 (5.0) |
-| M8 | artifacts_blue (2.0), cradle_control (1.0), dimir_tempo (10.0), elves (2.0), hogaak (2.0), reanimator_top8 (3.0), ur_tempo (4.0) |
+| M8 | cradle_control (1.0), dimir_tempo (10.0), elves (2.0), hogaak (2.0), reanimator_top8 (3.0), ur_tempo (4.0) |
 | M9 | boros_aggro (6.0), maverick (1.0), storm (3.0) |
-| M10 | cloudpost_tron_ramp (5.0), dragon_stompy (1.0) |
+| M10 | artifacts_blue (2.0), cloudpost_tron_ramp (5.0), dragon_stompy (1.0) |
 | M11 | stoneblade (1.0), welder_cam (2.0) |
 | M12 | aluren (4.0), artifacts_prison (2.0), doomsday (4.0), mystic_forge (2.0), painter (1.0) |
 
@@ -508,7 +517,7 @@ Reviewed by reading the diff; M0 confirms them through the replay tier.
 | Oracle wording | Urza's Saga, Fable of the Mirror-Breaker, Arena of Glory | text rows for vocab cards (`make text-table`) |
 | `Reveal$` removed | Atraxa Grand Unifier, Endurance | key ignored by the parser |
 | `NoReveal$` removed | Sylvan Library | key not read |
-| `Reorder$ True` added | Jace the Mind Sculptor | key on the ignored list; check the top-of-library order stays a choice |
+| `Reorder$ True` added | Jace the Mind Sculptor | the picks are the order (M1 checked the put-back loop) |
 | AI-only keys | Cabal Therapy, Natural Order, Fiend Artisan | no rules effect |
-| `Activator$ Player.NonActive` → `Player.!Active` | Defense Grid | not read either way (M1) |
+| `Activator$ Player.NonActive` → `Player.!Active` | Defense Grid | not read either way: `static_param:Activator` (M5) |
 | `SVar:SacMe:1` added | Clue token | AI hint |
