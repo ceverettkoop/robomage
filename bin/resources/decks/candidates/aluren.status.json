@@ -42,11 +42,21 @@
        "svar_expr:DungeonsCompleted$Valid"
       ],
       "size": "XL"
+     },
+     "UnlessCost on more effects": {
+      "cards": [
+       "Acererak the Archlich"
+      ],
+      "findings": [
+       "ability_param:Token.UnlessCost"
+      ],
+      "size": "M"
      }
     },
     "needs": {
      "Acererak the Archlich": [
-      "Dungeons and venture (CR 309, 701.49)"
+      "Dungeons and venture (CR 309, 701.49)",
+      "UnlessCost on more effects"
      ],
      "Formidable Speaker": [
       "Discard-a-card activation cost"
@@ -59,19 +69,19 @@
      "Defense Grid",
      "Formidable Speaker"
     ],
-    "size_points": 23
+    "size_points": 26
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s): 3 clean, 2 need 2 mechanic(s) (23 points)",
-   "time": "2026-11-05T13:26:19"
+   "summary": "5 new card(s): 3 clean, 2 need 3 mechanic(s) (26 points)",
+   "time": "2026-11-05T13:56:53"
   },
   "diff": {
    "detail": {
@@ -99,20 +109,21 @@
    "detail": {
     "mechanics": [
      "Discard-a-card activation cost",
-     "Dungeons and venture (CR 309, 701.49)"
+     "Dungeons and venture (CR 309, 701.49)",
+     "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Discard-a-card activation cost, Dungeons and venture (CR 309, 701.49)",
-   "time": "2026-11-05T13:26:19"
+   "summary": "3 mechanic(s) to implement: Discard-a-card activation cost, Dungeons and venture (CR 309, 701.49), UnlessCost on more effects",
+   "time": "2026-11-05T13:56:53"
   },
   "parse": {
    "detail": {
@@ -128,6 +139,12 @@
         "kind": "category",
         "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | CheckSVar$ X | SVarCompare$ LT1 | Execute$ TrigBounce | TriggerDescription$ When CARDNAME enters, if you haven't completed Tomb of Annihilation, return CARDNAME to its owner's hand and venture into the dungeon.",
         "name": "Venture"
+       },
+       {
+        "detail": "UnlessCost$ Sac<1/Creature> is not offered",
+        "kind": "ability_param",
+        "line": "T:Mode$ Attacks | ValidCard$ Card.Self | Execute$ TrigRepeat | TriggerDescription$ Whenever CARDNAME attacks, for each opponent, you create a 2/2 black Zombie creature token unless that player sacrifices a creature.",
+        "name": "Token.UnlessCost"
        },
        {
         "detail": "X = DungeonsCompleted$Valid Card.namedTomb of Annihilation",
@@ -212,14 +229,14 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-05T13:26:19"
+   "summary": "5 new card(s), 2 with findings (4 findings), 0 without a script",
+   "time": "2026-11-05T13:56:53"
   },
   "provision": {
    "detail": {

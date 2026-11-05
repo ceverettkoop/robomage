@@ -42,10 +42,21 @@ struct FindingLine {
 };
 static void parse_finding(const char *kind, const std::string &name, const std::string &detail);
 static bool is_mana_cost_token(const std::string &tok);
+static bool is_plain_mana_token(const std::string &tok);
+static std::string cost_finding_name(const std::string &tok);
 static std::vector<std::string> cost_tokens(const std::string &cost_str);
-static bool activation_cost_token_modelled(const std::string &tok);
+static bool cost_token_arg(const std::string &tok, const char *name, std::vector<std::string> &parts);
+static bool read_cost_count(const std::string &text, int &count);
+static bool read_activation_cost_token(const std::string &tok, AbilityDef &ability);
+static bool cost_token_paid(const std::string &tok, const AbilityDef &ability);
+static bool read_alt_cost_token(const std::string &tok, AltCost &ac);
+static std::multiset<Colors> keyword_mana_cost(const std::string &cost, const std::string &keyword);
+static void ward_cost_findings(const std::string &arg);
+static void read_unless_cost(AbilityDef &ability, const std::string &value);
+static bool unless_cost_read_by(const std::string &category);
 static bool plain_keyword_modelled(const std::string &keyword);
 static std::string keyword_finding_name(const std::string &keyword);
+static bool alt_cost_param_assumed(const std::string &key, const std::string &value);
 static bool static_mode_modelled(const std::string &mode);
 static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value);
 static bool static_effect_zone_modelled(const StaticAbility &sa);
@@ -418,6 +429,15 @@ void parse_ward_cost(const std::string &arg, int &cost, bool &is_life) {
     }
 }
 
+// A Ward cost parse_ward_cost cannot express is a parse finding: it reads as a {1} ward.
+static void ward_cost_findings(const std::string &arg) {
+    std::vector<std::string> parts;
+    int count = 0;
+    const bool life = cost_token_arg(arg, "PayLife", parts) && parts.size() == 1 && read_cost_count(parts[0], count);
+    if (!arg.empty() && !life && !read_cost_count(arg, count))
+        parse_finding("cost", "Ward", "Ward:" + arg + " is read as a {1} ward");
+}
+
 // all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
     std::vector<size_t> to_rm;
@@ -455,218 +475,197 @@ std::string name_to_uid(std::string name) {
     return collapsed;
 }
 
-// Parses the cost portion of an alternate cost string (the value after Cost$ / after
-// "Evoke:") into an AltCost. Recognises "0" (free), PayLife<N>, ExileFromHand<n/filter>
-// (pitch), Return<n/Type>; anything else is treated as a mana cost (e.g. Evoke:R).
-// Condition fields (CheckSVar etc.) are parsed separately by the caller.
+// Parses the cost portion of an alternate cost string (the value after Cost$ / after "Evoke:")
+// into an AltCost: "0" (free), mana tokens, and read_alt_cost_token's other tokens. Anything else
+// is a parse finding and pays nothing. Condition fields (CheckSVar etc.) are parsed separately by
+// the caller.
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
     ac.has_alt_cost = true;
-    bool matched_special = false;
-    for (const std::string &tok : cost_tokens(cost_str)) {
-        static const char *const kAltCostTokens[] = {"PayLife<", "PayEnergy<", "ExileFromHand<", "Sac<", "Return<",
-                                                     "ExileFromGrave<"};
-        bool known = is_mana_cost_token(tok);
-        for (const char *prefix : kAltCostTokens) known = known || tok.rfind(prefix, 0) == 0;
-        if (!known) parse_finding("cost", tok.substr(0, tok.find('<')), "alternative cost " + cost_str);
-    }
     // Cost$ 0 means free
     if (cost_str == "0") {
         ac.is_free = true;
         return;
     }
-    size_t pl = cost_str.find("PayLife<");
-    if (pl != std::string::npos) {
-        size_t close = cost_str.find('>', pl);
-        ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
-        matched_special = true;
+    std::string mana;
+    for (const std::string &tok : cost_tokens(cost_str)) {
+        if (is_plain_mana_token(tok))
+            mana += (mana.empty() ? "" : " ") + tok;
+        else if (!read_alt_cost_token(tok, ac))
+            parse_finding("cost", cost_finding_name(tok), "alternative cost " + cost_str);
     }
-    size_t pe = cost_str.find("PayEnergy<");
-    if (pe != std::string::npos) {
-        size_t close = cost_str.find('>', pe);
-        ac.energy_cost = std::stoi(cost_str.substr(pe + 10, close - pe - 10));
-        matched_special = true;
+    if (!mana.empty()) ac.mana_cost = parse_mana_cost(mana);
+}
+
+// Reads one non-mana token of an alternative cost onto `ac`; false, recording nothing, for a token
+// or a form of one the cast path does not pay.
+static bool read_alt_cost_token(const std::string &tok, AltCost &ac) {
+    std::vector<std::string> parts;
+    if (cost_token_arg(tok, "PayLife", parts)) return parts.size() == 1 && read_cost_count(parts[0], ac.life_cost);
+    if (cost_token_arg(tok, "ExileFromHand", parts)) {
+        // The pitched card is matched by colour alone (CR 118.9, Force of Will): Card.<Color>+Other,
+        // the Other being the spell on its way out of the hand.
+        int count = 0;
+        if (parts.size() < 2 || !read_cost_count(parts[0], count)) return false;
+        const Colors color = filter_color(parts[1]);
+        if (color == NO_COLOR) return false;
+        for (const auto &cn : kColorNames)
+            if (cn.color == color && parts[1] != std::string("Card.") + cn.word + "+Other") return false;
+        ac.exile_from_hand_count = count;
+        ac.exile_from_hand_color = color;
+        return true;
     }
-    size_t ef = cost_str.find("ExileFromHand<");
-    if (ef != std::string::npos) {
-        size_t slash = cost_str.find('/', ef);
-        ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
-        // Extract color from filter e.g. "Card.Blue+Other" → BLUE
-        std::string filter = cost_str.substr(slash + 1);
-        size_t close = filter.find('>');
-        if (close != std::string::npos) filter = filter.substr(0, close);
-        ac.exile_from_hand_color = filter_color(filter);
-        matched_special = true;
+    if (cost_token_arg(tok, "Sac", parts)) {
+        // Sac<N/Type> — an ALTERNATIVE casting cost paid by sacrificing N permanents matching Type
+        // (CR 118.9, Fireblast: "sacrifice two Mountains"); a third part is the prompt's label.
+        int count = 0;
+        if (parts.size() < 2 || parts[1] == "CARDNAME" || !read_cost_count(parts[0], count)) return false;
+        ac.sac_cost_count = count;
+        ac.sac_cost_spec = parts[1];
+        return true;
     }
-    // Sac<N/Type> — an ALTERNATIVE casting cost paid by sacrificing N permanents matching Type
-    // (CR 118.9, Fireblast: "sacrifice two Mountains"). Mirrors the Sac token grammar in
-    // parse_activation_cost: the count precedes the first '/', the filter follows it (a trailing
-    // ';'/'/label' is stripped so "2/Mountain" and "1/Forest;Plains/label" both parse).
-    size_t sc = cost_str.find("Sac<");
-    if (sc != std::string::npos) {
-        size_t slash = cost_str.find('/', sc);
-        size_t close = cost_str.find('>', sc);
-        if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-            ac.sac_cost_count = std::stoi(cost_str.substr(sc + 4, slash - (sc + 4)));
-            std::string spec = cost_str.substr(slash + 1, close - slash - 1);
-            size_t spec_slash = spec.find('/');
-            if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-            ac.sac_cost_spec = spec;
-            matched_special = true;
-        }
+    if (cost_token_arg(tok, "Return", parts)) {
+        int count = 0;
+        if (parts.size() < 2 || parts[1] == "CARDNAME" || !read_cost_count(parts[0], count)) return false;
+        ac.return_to_hand_count = count;
+        ac.return_to_hand_type = parts[1];
+        return true;
     }
-    size_t rf = cost_str.find("Return<");
-    if (rf != std::string::npos) {
-        size_t slash = cost_str.find('/', rf);
-        size_t close = cost_str.find('>', rf);
-        ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
-        ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
-        matched_special = true;
+    if (cost_token_arg(tok, "ExileFromGrave", parts)) {
+        if (parts.size() < 2) return false;
+        // ExileFromGrave<X/Card.Other+withTypesGE<N>/<label>> (Escape: Nethergoyf): exile any number
+        // of other cards from your graveyard, constrained so the chosen set collectively has at
+        // least N distinct card types (CR 702.139).
+        static const std::string kTypesFilter = "Card.Other+withTypesGE";
+        if (parts[0] == "X" && parts[1].rfind(kTypesFilter, 0) == 0)
+            return read_cost_count(parts[1].substr(kTypesFilter.size()), ac.exile_grave_min_types);
+        // ExileFromGrave<N/Card.Other/<label>> (Escape: Uro — "Exile five other cards from your
+        // graveyard"): the fixed number of OTHER graveyard cards to exile.
+        return parts[1] == "Card.Other" && read_cost_count(parts[0], ac.exile_grave_count);
     }
-    // ExileFromGrave<X/<filter>/<label>> (Escape: Nethergoyf): exile any number of other
-    // cards from your graveyard, constrained so the chosen set collectively has at least N
-    // distinct card types. The "N" is encoded in the filter as "withTypesGE<N>" (CR 702.139).
-    size_t eg = cost_str.find("ExileFromGrave<");
-    if (eg != std::string::npos) {
-        size_t ge = cost_str.find("withTypesGE", eg);
-        if (ge != std::string::npos) {
-            size_t num_start = ge + strlen("withTypesGE");
-            size_t num_end = num_start;
-            while (num_end < cost_str.size() &&
-                   std::isdigit(static_cast<unsigned char>(cost_str[num_end])))
-                num_end++;
-            if (num_end > num_start)
-                ac.exile_grave_min_types = std::stoi(cost_str.substr(num_start, num_end - num_start));
-        } else {
-            // Literal-count form ExileFromGrave<N/<filter>/<label>> (Escape: Uro — "Exile five
-            // other cards from your graveyard"): the leading token before the first '/' is the
-            // fixed number of OTHER graveyard cards to exile. Only digits qualify; a non-numeric
-            // leading token (e.g. Nethergoyf's "X") is handled by the withTypesGE branch above.
-            size_t num_start = eg + strlen("ExileFromGrave<");
-            size_t num_end = num_start;
-            while (num_end < cost_str.size() &&
-                   std::isdigit(static_cast<unsigned char>(cost_str[num_end])))
-                num_end++;
-            if (num_end > num_start)
-                ac.exile_grave_count = std::stoi(cost_str.substr(num_start, num_end - num_start));
-        }
-        matched_special = true;
-    }
-    // No special cost token: the whole string is a mana cost (e.g. Evoke:R, Evoke:2 R)
-    if (!matched_special && !cost_str.empty()) {
-        ac.mana_cost = parse_mana_cost(cost_str);
-    }
+    return false;
 }
 
 // Parses a space-separated activation-cost string (the value after Cost$, or after a
-// Cycling:/Flashback: keyword) into the cost fields of `ability`. Recognises the tap
-// symbol `T`, PayLife<N>, Sac<.../...> (CARDNAME → sacrifice self), Discard<0/Hand or
-// CARDNAME>, Return<N/Type>, and bare mana symbols. Single source for the cost-token
-// grammar so every cost-bearing keyword honours the same tokens as Cost$ (previously
-// Cycling/Flashback open-coded partial copies that silently dropped tokens).
+// Cycling:/Flashback: keyword) into the cost fields of `ability`, the one grammar for every
+// cost-bearing keyword. A token the engine has no payment for (read_activation_cost_token), or
+// does not pay on an ability of this type (cost_token_paid), is a parse finding and adds nothing.
 static void parse_activation_cost(const std::string &cost_str, AbilityDef &ability) {
     for (const std::string &tok : cost_tokens(cost_str))
-        if (!activation_cost_token_modelled(tok)) parse_finding("cost", tok.substr(0, tok.find('<')), "Cost$ " + cost_str);
-    size_t tok_pos = 0;
-    while (tok_pos < cost_str.size()) {
-        size_t tok_end = cost_str.find(' ', tok_pos);
-        if (tok_end == std::string::npos) tok_end = cost_str.size();
-        std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
-        if (tok == "T") {
-            ability.tap_cost = true;
-        } else if (tok == "Mandatory") {
-            // "Mandatory" prefix on a triggered-ability cost (Dark Depths' TrigToken:
-            // Cost$ Mandatory Sac<1/CARDNAME>). The sacrifice is a mandatory part of the
-            // triggered ability's resolution, not an optional cost the controller may decline —
-            // record it and, crucially, do NOT let it fall through to parse_mana_cost (which
-            // would read the word as a spurious mana symbol). CR 603.8 / the card's "sacrifice
-            // it. If you do, ...".
-            ability.mandatory = true;
-        } else if (tok.rfind("PayLife<", 0) == 0) {
-            size_t angle = tok.find('<');
-            size_t close = tok.find('>');
-            if (angle != std::string::npos && close != std::string::npos && close > angle + 1) {
-                std::string arg = tok.substr(angle + 1, close - angle - 1);
-                if (!arg.empty() && std::isdigit(static_cast<unsigned char>(arg[0])))
-                    ability.life_cost = std::stoi(arg);
-                else
-                    // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid),
-                    // chosen as an additional cost while casting (Toxic Deluge). Don't stoi("X").
-                    ability.life_cost_is_x = true;
-            }
-        } else if (tok == "X") {
-            // A bare {X} in an activation cost (Candelabra of Tawnos: Cost$ X T). parse_mana_cost
-            // drops X (it has no fixed value); record that the activator chooses X, so the cost
-            // path can prompt for it and add X generic mana. X = Count$xPaid.
-            // COUNT the pips: a cost may repeat X (Blast Zone's "Cost$ X X T" = {X}{X}), and the
-            // one chosen X is then owed once per pip.
-            ability.activation_has_x = true;
-            ability.activation_x_count++;
-        } else if (tok.rfind("PayEnergy<", 0) == 0) {
-            // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
-            // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
-            size_t angle = tok.find('<');
-            size_t close = tok.find('>');
-            if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                ability.energy_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-        } else if (tok.rfind("Sac<", 0) == 0) {
-            // Consume additional tokens if '>' not found (label may contain spaces)
-            while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
-                tok_end = cost_str.find(' ', tok_pos);
-                if (tok_end == std::string::npos) tok_end = cost_str.size();
-                tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
-                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-            }
-            size_t slash = tok.find('/');
-            size_t close = tok.find('>');
-            if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-                std::string spec = tok.substr(slash + 1, close - slash - 1);
-                // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
-                size_t spec_slash = spec.find('/');
-                if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-                if (spec == "CARDNAME") {
-                    ability.sac_self = true;
-                } else {
-                    ability.sac_cost_spec = spec;
-                }
-            }
-        } else if (tok.rfind("Discard<", 0) == 0) {
-            // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
-            if (tok.find("0/Hand") != std::string::npos) {
-                ability.discard_hand_cost = true;
-            } else if (tok.find("CARDNAME") != std::string::npos) {
-                ability.discard_self_cost = true;
-            }
-        } else if (tok.rfind("Return<", 0) == 0) {
-            // Return<1/Forest> — bounce a land of given subtype
-            size_t slash = tok.find('/');
-            size_t close = tok.find('>');
-            if (slash != std::string::npos && close != std::string::npos) {
-                ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
-                ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
-            }
-        } else if ((tok.rfind("AddCounter<", 0) == 0 || tok.rfind("SubCounter<", 0) == 0) &&
-                   tok.find("/LOYALTY>") != std::string::npos) {
-            // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
-            size_t angle = tok.find('<');
-            size_t slash = tok.find('/');
-            std::string amt = tok.substr(angle + 1, slash - angle - 1);
-            bool is_sub = (tok[0] == 'S');
-            if (!amt.empty() && std::isdigit(static_cast<unsigned char>(amt[0]))) {
-                int n = std::stoi(amt);
-                ability.loyalty_cost = is_sub ? -n : n;
-            } else {
-                // SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X]
-                // ultimate). The amount X is chosen at activation; loyalty_cost holds only the sign.
-                // Don't stoi("X") (it would throw/abort — see PayLife<X> above).
-                ability.loyalty_cost_is_x = true;
-                ability.loyalty_cost = is_sub ? -1 : 1;
-            }
-        } else {
-            // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
-            auto mana = parse_mana_cost(tok);
-            ability.activation_mana_cost.insert(mana.begin(), mana.end());
+        if (!cost_token_paid(tok, ability) || !read_activation_cost_token(tok, ability))
+            parse_finding("cost", cost_finding_name(tok), "Cost$ " + cost_str);
+}
+
+// Reads one Cost$ token onto `ability`: the tap symbol `T`, mana, PayLife<N>, PayEnergy<N>,
+// Sac<1/...> (CARDNAME → sacrifice self), Discard<0/Hand> and Discard<1/CARDNAME>, Return<1/Type>
+// and a loyalty counter change. False, recording nothing, for any other token or form.
+static bool read_activation_cost_token(const std::string &tok, AbilityDef &ability) {
+    if (tok == "T") {
+        ability.tap_cost = true;
+        return true;
+    }
+    if (tok == "Mandatory") {
+        // "Mandatory" prefix on a triggered-ability cost (Dark Depths' TrigToken:
+        // Cost$ Mandatory Sac<1/CARDNAME>). The sacrifice is a mandatory part of the
+        // triggered ability's resolution, not an optional cost the controller may decline.
+        // CR 603.8 / the card's "sacrifice it. If you do, ...".
+        ability.mandatory = true;
+        return true;
+    }
+    if (tok == "X") {
+        // A bare {X} in an activation cost (Candelabra of Tawnos: Cost$ X T). parse_mana_cost
+        // drops X (it has no fixed value); record that the activator chooses X, so the cost
+        // path can prompt for it and add X generic mana. X = Count$xPaid.
+        // COUNT the pips: a cost may repeat X (Blast Zone's "Cost$ X X T" = {X}{X}), and the
+        // one chosen X is then owed once per pip.
+        ability.activation_has_x = true;
+        ability.activation_x_count++;
+        return true;
+    }
+    if (is_plain_mana_token(tok)) {
+        auto mana = parse_mana_cost(tok);
+        ability.activation_mana_cost.insert(mana.begin(), mana.end());
+        return true;
+    }
+    std::vector<std::string> parts;
+    if (cost_token_arg(tok, "PayLife", parts)) {
+        // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid), chosen as an
+        // additional cost while casting (Toxic Deluge).
+        if (parts.size() != 1) return false;
+        if (parts[0] != "X") return read_cost_count(parts[0], ability.life_cost);
+        ability.life_cost_is_x = true;
+        return true;
+    }
+    if (cost_token_arg(tok, "PayEnergy", parts)) {
+        // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
+        // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
+        return parts.size() == 1 && read_cost_count(parts[0], ability.energy_cost);
+    }
+    if (cost_token_arg(tok, "Sac", parts)) {
+        // The cost path sacrifices one permanent; a third part is the prompt's label
+        // ("Forest;Plains/Forest or Plains").
+        int count = 0;
+        if (parts.size() < 2 || !read_cost_count(parts[0], count) || count != 1) return false;
+        if (parts[1] == "CARDNAME")
+            ability.sac_self = true;
+        else
+            ability.sac_cost_spec = parts[1];
+        return true;
+    }
+    if (cost_token_arg(tok, "Discard", parts)) {
+        // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
+        if (parts.size() < 2) return false;
+        if (parts[0] == "0" && parts[1] == "Hand")
+            ability.discard_hand_cost = true;
+        else if (parts[0] == "1" && parts[1] == "CARDNAME")
+            ability.discard_self_cost = true;
+        else
+            return false;
+        return true;
+    }
+    if (cost_token_arg(tok, "Return", parts)) {
+        // Return<1/Forest> — bounce a permanent of the given type (the cost path returns one).
+        int count = 0;
+        if (parts.size() < 2 || parts[1] == "CARDNAME" || !read_cost_count(parts[0], count) || count != 1) return false;
+        ability.return_cost_count = count;
+        ability.return_cost_type = parts[1];
+        return true;
+    }
+    const bool add_counter = cost_token_arg(tok, "AddCounter", parts);
+    if (add_counter || cost_token_arg(tok, "SubCounter", parts)) {
+        // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
+        if (parts.size() != 2 || parts[1] != "LOYALTY") return false;
+        int n = 0;
+        if (read_cost_count(parts[0], n)) {
+            ability.loyalty_cost = add_counter ? n : -n;
+            return true;
         }
-        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+        // SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X] ultimate).
+        // The amount X is chosen at activation; loyalty_cost holds only the sign.
+        if (parts[0] != "X") return false;
+        ability.loyalty_cost_is_x = true;
+        ability.loyalty_cost = add_counter ? 1 : -1;
+        return true;
+    }
+    return false;
+}
+
+// Does the engine pay cost token `tok` on `ability`? An activated ability pays its whole cost as
+// it is activated, but a variable life cost only exists as a spell's (spell_has_variable_life_cost).
+// A spell's Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another
+// permanent (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
+// Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>.
+static bool cost_token_paid(const std::string &tok, const AbilityDef &ability) {
+    std::vector<std::string> parts;
+    const bool sacrifice = cost_token_arg(tok, "Sac", parts);
+    const bool sacrifices_self = sacrifice && parts.size() >= 2 && parts[1] == "CARDNAME";
+    switch (ability.ability_type) {
+        case AbilityDef::SPELL:
+            return tok == "X" || tok == "PayLife<X>" || is_plain_mana_token(tok) || (sacrifice && !sacrifices_self);
+        case AbilityDef::TRIGGERED:
+            return tok == "Mandatory" || sacrifices_self ||
+                   (ability.category == "ImmediateTrigger" && cost_token_arg(tok, "PayEnergy", parts));
+        default:
+            return tok != "PayLife<X>";
     }
 }
 
@@ -829,11 +828,18 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     for (auto &trig : parse_triggered_abilities(front_script, svars, card.name))
         face_defs.abilities.push_back(trig);
 
-    // Parse S: lines for alternate costs
+    // Parse S: lines for alternate costs (a card has one AltCost)
+    bool alt_cost_read = false;
     for (auto& line : multi_values_from_script(front_script, "S")) {
         if (line.find("AlternativeCost") == std::string::npos) continue;
+        const FindingLine finding_line("S:" + line);
         std::string cost_str = param_value(line, "Cost");
         if (cost_str.empty()) continue;
+        if (alt_cost_read) {
+            parse_finding("static_form", "AlternativeCost.Second", "only a card's first alternative cost is offered");
+            continue;
+        }
+        alt_cost_read = true;
         AltCost ac;
         parse_alt_cost_tokens(cost_str, ac);
         // Parse CheckSVar$ and SVarCompare$ conditions
@@ -848,10 +854,11 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
                 ac.condition_not_your_turn = true;
             } else if (key == "IsPresent") {
                 ac.condition_is_present = value;
+            } else if (!alt_cost_param_assumed(key, value)) {
+                parse_finding("static_param", key, "AlternativeCost " + key + "$ " + value);
             }
         }
         card.alt_cost = ac;
-        break;
     }
 
     // Parse S: lines for static abilities (Continuous, MustAttack, etc.)
@@ -1021,6 +1028,19 @@ static void kw_enchant(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.keywords.push_back("Enchant");
 }
 
+// The mana of a keyword's cost argument, for a keyword the engine pays in mana alone; any other
+// token is a parse finding and pays nothing.
+static std::multiset<Colors> keyword_mana_cost(const std::string &cost, const std::string &keyword) {
+    std::string mana;
+    for (const std::string &tok : cost_tokens(cost)) {
+        if (is_plain_mana_token(tok))
+            mana += (mana.empty() ? "" : " ") + tok;
+        else
+            parse_finding("cost", cost_finding_name(tok), keyword + ":" + cost);
+    }
+    return parse_mana_cost(mana);
+}
+
 // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
 // opponent controls, counter that spell or ability unless that player pays {N}."
 // (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger
@@ -1028,6 +1048,7 @@ static void kw_enchant(const std::string &kw_line, KeywordContext &ctx) {
 static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
     // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost.
     parse_ward_cost(keyword_arg(kw_line), ctx.card.ward_cost, ctx.card.ward_is_life);
+    ward_cost_findings(keyword_arg(kw_line));
     ctx.card.keywords.push_back("Ward");
 }
 
@@ -1035,20 +1056,26 @@ static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
 // control (CR 702.41). A generic cost reduction applied at cast time in
 // effective_base_cost(); only the artifact variant is supported.
 static void kw_affinity(const std::string &kw_line, KeywordContext &ctx) {
-    if (kw_line.find("Artifact") != std::string::npos) ctx.card.affinity_artifact = true;
+    if (kw_line == "Affinity:Artifact")
+        ctx.card.affinity_artifact = true;
+    else
+        parse_finding("keyword", "Affinity", kw_line + ": only Affinity:Artifact reduces a cost");
     ctx.card.keywords.push_back("Affinity");
 }
 
 // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls);
 // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute). Any other
-// ETBReplacement is kept as a plain keyword.
+// ETBReplacement names an effect nothing reads, a parse finding, and is kept as a plain keyword.
 static void kw_etb_replacement(const std::string &kw_line, KeywordContext &ctx) {
     if (kw_line.find("ChooseCT") != std::string::npos)
         ctx.card.has_etb_choose_creature_type = true;
     else if (kw_line.find("NameCard") != std::string::npos)
         ctx.card.has_etb_name_card = true;
-    else
+    else {
+        const std::vector<std::string> parts = split(kw_line, ':');
+        parse_finding("keyword", "ETBReplacement:" + (parts.size() > 2 ? parts[2] : kw_line), kw_line);
         split_keywords(kw_line, ctx.card.keywords);
+    }
 }
 
 // K:etbCounter:P1P1:X:... — "this card enters with counters"
@@ -1149,7 +1176,7 @@ static void kw_impending(const std::string &kw_line, KeywordContext &ctx) {
         ac.has_alt_cost = true;
         ac.is_impending = true;
         ac.impending_count = std::stoi(rest.substr(0, colon));
-        ac.mana_cost = parse_mana_cost(rest.substr(colon + 1));
+        ac.mana_cost = keyword_mana_cost(rest.substr(colon + 1), "Impending");
         ctx.card.alt_cost = ac;
     }
     ctx.card.keywords.push_back("Impending");
@@ -1168,7 +1195,7 @@ static void kw_suspend(const std::string &kw_line, KeywordContext &ctx) {
     if (colon != std::string::npos) {
         ctx.card.has_suspend = true;
         ctx.card.suspend_count = std::stoi(rest.substr(0, colon));
-        ctx.card.suspend_cost = parse_mana_cost(rest.substr(colon + 1));
+        ctx.card.suspend_cost = keyword_mana_cost(rest.substr(colon + 1), "Suspend");
     }
     ctx.card.keywords.push_back("Suspend");
 }
@@ -1263,7 +1290,11 @@ static void kw_flashback(const std::string &kw_line, KeywordContext &ctx) {
     // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
     // mana and life — which the token-by-token grammar handles in one pass.
     AbilityDef fb;
+    fb.ability_type = AbilityDef::ACTIVATED;
     parse_activation_cost(kw_line.substr(strlen("Flashback:")), fb);
+    if (fb.tap_cost || fb.activation_has_x || fb.energy_cost > 0 || fb.sac_self || fb.discard_hand_cost ||
+        fb.discard_self_cost || fb.return_cost_count > 0)
+        parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
     ctx.card.flashback_mana_cost = fb.activation_mana_cost;
     ctx.card.flashback_alt_cost.life_cost = fb.life_cost;
     // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
@@ -1309,7 +1340,7 @@ static void kw_escape(const std::string &kw_line, KeywordContext &ctx) {
         alt_part = cost_str.substr(eg);
     }
     mana_part = trim(mana_part);
-    if (!mana_part.empty()) ctx.card.escape_mana_cost = parse_mana_cost(mana_part);
+    if (!mana_part.empty()) ctx.card.escape_mana_cost = keyword_mana_cost(mana_part, "Escape");
     if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, ctx.card.escape_alt_cost);
     ctx.card.keywords.push_back("Escape");
 }
@@ -1336,7 +1367,7 @@ static void kw_evoke(const std::string &kw_line, KeywordContext &ctx) {
 // gating a synthetic ETB self-trigger that creates the 1/1 token copy.
 static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
     if (kw_line.find(':') != std::string::npos)
-        ctx.card.offspring_cost = parse_mana_cost(keyword_arg(kw_line));
+        ctx.card.offspring_cost = keyword_mana_cost(keyword_arg(kw_line), "Offspring");
     ctx.card.has_offspring = true;
     ctx.card.keywords.push_back("Offspring");
     AbilityDef tok = keyword_self_trigger("CopyPermanent", Events::CARD_CHANGED_ZONE);
@@ -1354,7 +1385,7 @@ static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
 // the linked "if it was kicked with its [N] kicker" triggers index into it.
 static void kw_kicker(const std::string &kw_line, KeywordContext &ctx) {
     for (const std::string &seg : split(kw_line.substr(strlen("Kicker:")), ':', /*skip_empty=*/true))
-        ctx.card.kicker_costs.push_back(parse_mana_cost(seg));
+        ctx.card.kicker_costs.push_back(keyword_mana_cost(seg, "Kicker"));
     ctx.card.keywords.push_back("Kicker");
 }
 
@@ -1363,7 +1394,7 @@ static void kw_kicker(const std::string &kw_line, KeywordContext &ctx) {
 // (the copies may choose new targets). Stored as a single per-instance mana cost; the
 // count paid is decided at cast time (see action_processor) and recorded per-Spell.
 static void kw_replicate(const std::string &kw_line, KeywordContext &ctx) {
-    ctx.card.replicate_cost = parse_mana_cost(kw_line.substr(strlen("Replicate:")));
+    ctx.card.replicate_cost = keyword_mana_cost(kw_line.substr(strlen("Replicate:")), "Replicate");
     ctx.card.has_replicate = true;
     ctx.card.keywords.push_back("Replicate");
 }
@@ -1375,7 +1406,7 @@ static void kw_escalate(const std::string &kw_line, KeywordContext &ctx) {
     const std::string cost = keyword_arg(kw_line);
     std::string mana;
     for (const std::string &tok : cost_tokens(cost)) {
-        if (is_mana_cost_token(tok)) {
+        if (is_plain_mana_token(tok)) {
             mana += (mana.empty() ? "" : " ") + tok;
         } else if (tok.rfind("Discard<", 0) == 0 && tok.back() == '>') {
             const std::string arg = tok.substr(strlen("Discard<"), tok.size() - strlen("Discard<") - 1);
@@ -1858,6 +1889,70 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
     return svars;
 }
 
+// The handlers that run an UnlessCost$ (run_unless_loop, DestroyAll's energy payment); on any other
+// effect it is a parse finding, and the effect happens unconditionally.
+static bool unless_cost_read_by(const std::string &category) {
+    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "DestroyAll"})
+        if (category == c) return true;
+    return false;
+}
+
+// Reads UnlessCost$ onto `ability`. A cost it cannot express is a parse finding and costs nothing.
+static void read_unless_cost(AbilityDef &ability, const std::string &value) {
+    if (!unless_cost_read_by(ability.category)) {
+        parse_finding("ability_param", ability.category + ".UnlessCost", "UnlessCost$ " + value + " is not offered");
+        return;
+    }
+    std::vector<std::string> parts;
+    if (cost_token_arg(value, "PayEnergy", parts) && parts.size() == 1) {
+        // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
+        // not the generic {N} mana unless-cost: route the energy amount (an SVar) to the
+        // DestroyAll params.
+        if (ability.category == "DestroyAll") {
+            effect_params<DestroyAllParams>(ability).energy_unless_expr = parts[0];  // SVar token; resolved post-parse
+            return;
+        }
+        // UnlessCost$ PayEnergy<N> on any other effect (Static Prison's DB$ Sacrifice): pay N
+        // energy ({E}) to prevent the effect. The count is a literal here; route it through the
+        // generic unless-cost count + an energy flag so run_unless_loop pays it.
+        int n = 0;
+        if (read_cost_count(parts[0], n)) {
+            ability.unless_cost_is_energy = true;
+            ability.unless_generic_cost = static_cast<size_t>(n);
+        } else {
+            parse_finding("cost", "PayEnergy", "UnlessCost$ " + value);
+        }
+        return;
+    }
+    if (cost_token_arg(value, "Discard", parts)) {
+        // UnlessCost$ Discard<N/Card> (Reality Smasher): the payer discards N card(s) from hand to
+        // prevent the counter. The N count rides on unless_generic_cost; the discard flag selects
+        // the discard payment path in run_unless_loop. run_discard_unless takes any card.
+        int n = 0;
+        if (parts.size() >= 2 && parts[1] == "Card" && read_cost_count(parts[0], n)) {
+            ability.unless_generic_cost = static_cast<size_t>(n);
+            ability.unless_cost_is_discard = true;
+        } else {
+            parse_finding("cost", "Discard", "UnlessCost$ " + value);
+        }
+        return;
+    }
+    int generic = 0;
+    if (read_cost_count(value, generic)) {
+        ability.unless_generic_cost = static_cast<size_t>(generic);
+        return;
+    }
+    // A colored/mixed unless-cost (Chain Lightning: UnlessCost$ R R = {R}{R}). Parse the exact
+    // pips; the pip count drives the >0 gate and logging, the pips drive payment.
+    for (const std::string &tok : cost_tokens(value)) {
+        if (is_plain_mana_token(tok)) continue;
+        parse_finding("cost", cost_finding_name(tok), "UnlessCost$ " + value);
+        return;
+    }
+    ability.unless_cost_pips = parse_mana_cost(value);
+    ability.unless_generic_cost = ability.unless_cost_pips.size();
+}
+
 // Applies a single key/value parameter to an ability struct.
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
@@ -1891,44 +1986,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
     } else if (key == "UnlessCost") {
-        // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
-        // not the generic {N} mana unless-cost: route the energy amount (an SVar) to the
-        // DestroyAll params. A numeric value is the legacy generic-mana unless-cost.
-        size_t pe = value.find("PayEnergy<");
-        size_t pd = value.find("Discard<");
-        if (pe != std::string::npos) {
-            size_t close = value.find('>', pe);
-            std::string n = (close != std::string::npos)
-                                ? value.substr(pe + 10, close - (pe + 10)) : "";
-            if (ability.category == "DestroyAll") {
-                effect_params<DestroyAllParams>(ability).energy_unless_expr = n;  // SVar token; resolved post-parse
-            } else {
-                // UnlessCost$ PayEnergy<N> on any other effect (Static Prison's DB$ Sacrifice):
-                // pay N energy ({E}) to prevent the effect. The count is a literal here; route it
-                // through the generic unless-cost count + an energy flag so run_unless_loop pays it.
-                ability.unless_cost_is_energy = true;
-                bool numeric = !n.empty() &&
-                               n.find_first_not_of("0123456789") == std::string::npos;
-                ability.unless_generic_cost = numeric ? static_cast<size_t>(std::stoi(n)) : 1;
-            }
-        } else if (pd != std::string::npos) {
-            // UnlessCost$ Discard<N/Card> (Reality Smasher): the payer discards N card(s) from
-            // hand to prevent the counter. The N count rides on unless_generic_cost; the discard
-            // flag selects the discard payment path in run_unless_loop. The "/Card" filter is the
-            // (only) supported discard-any-card filter today.
-            std::string inner = value.substr(pd + 8);  // after "Discard<"
-            size_t slash = inner.find('/');
-            std::string n = (slash != std::string::npos) ? inner.substr(0, slash) : inner;
-            ability.unless_generic_cost = static_cast<size_t>(std::stoi(n));
-            ability.unless_cost_is_discard = true;
-        } else if (value.find_first_not_of("0123456789") == std::string::npos) {
-            ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
-        } else {
-            // A colored/mixed unless-cost (Chain Lightning: UnlessCost$ R R = {R}{R}). Parse the
-            // exact pips; the pip count drives the >0 gate and logging, the pips drive payment.
-            ability.unless_cost_pips = parse_mana_cost(value);
-            ability.unless_generic_cost = ability.unless_cost_pips.size();
-        }
+        read_unless_cost(ability, value);
     } else if (key == "UnlessPayer") {
         // UnlessPayer$ You — the controller is the payer of the unless-cost (the only payer we
         // model for the energy unless-cost). Cosmetic given the energy is paid by the controller.
@@ -4379,17 +4437,37 @@ static std::vector<std::string> cost_tokens(const std::string &cost_str) {
     return out;
 }
 
-// True when parse_activation_cost gives cost token `tok` a meaning (a Discard<> only for a whole
-// hand or the card itself, a counter only for loyalty).
-static bool activation_cost_token_modelled(const std::string &tok) {
-    if (tok == "T" || tok == "Mandatory" || tok == "X" || is_mana_cost_token(tok)) return true;
-    for (const char *prefix : {"PayLife<", "PayEnergy<", "Sac<", "Return<"})
-        if (tok.rfind(prefix, 0) == 0) return true;
-    if (tok.rfind("Discard<", 0) == 0)
-        return tok.find("0/Hand") != std::string::npos || tok.find("CARDNAME") != std::string::npos;
-    if (tok.rfind("AddCounter<", 0) == 0 || tok.rfind("SubCounter<", 0) == 0)
-        return tok.find("/LOYALTY>") != std::string::npos;
-    return false;
+// True for a mana token every cost parser pays: a generic amount or one colour or colourless
+// letter. Only a printed ManaCost: keeps a hybrid or Phyrexian pip as what it is.
+static bool is_plain_mana_token(const std::string &tok) {
+    if (tok.size() == 1 && std::strchr("WUBRGC", tok[0]) != nullptr) return true;
+    return !tok.empty() && std::all_of(tok.begin(), tok.end(), [](unsigned char c) { return std::isdigit(c); });
+}
+
+// The name of the cost: finding for token `tok`: a token's own name ("Sac<2/Land>" → "Sac"), or
+// what kind of mana symbol it is.
+static std::string cost_finding_name(const std::string &tok) {
+    if (is_plain_mana_token(tok)) return "Mana";
+    if (tok == "X") return tok;
+    if (!is_mana_cost_token(tok)) return tok.substr(0, tok.find('<'));
+    if (tok.find('P') != std::string::npos) return "Phyrexian";
+    return tok.find('S') != std::string::npos ? "Snow" : "Hybrid";
+}
+
+// The '/'-separated parts of cost token <name><...> ("Sac<1/Creature/a creature>" → "1", "Creature",
+// "a creature"); false when `tok` is no such token.
+static bool cost_token_arg(const std::string &tok, const char *name, std::vector<std::string> &parts) {
+    const std::string open = std::string(name) + "<";
+    if (tok.rfind(open, 0) != 0 || tok.back() != '>') return false;
+    parts = split(tok.substr(open.size(), tok.size() - open.size() - 1), '/');
+    return true;
+}
+
+// Reads a literal count; false for an empty or non-numeric one (X, an SVar name).
+static bool read_cost_count(const std::string &text, int &count) {
+    if (text.empty() || text.find_first_not_of("0123456789") != std::string::npos) return false;
+    count = std::stoi(text);
+    return true;
 }
 
 // The plain keywords (a K: line no kKeywordTable entry parses) some rule of the engine reads from
@@ -4415,6 +4493,16 @@ static std::string keyword_finding_name(const std::string &keyword) {
     if (name.rfind("Protection from", 0) == 0) return "Protection";
     if (name.rfind("Hexproof from", 0) == 0) return "Hexproof from";
     return name;
+}
+
+// An AlternativeCost param whose value is what the cast path assumes anyway: its own card, cast by
+// its controller, from any zone the card can be cast from.
+static bool alt_cost_param_assumed(const std::string &key, const std::string &value) {
+    if (key == "Mode" || key == "Cost" || key == "Description" || key == "Secondary") return true;
+    if (key == "ValidSA") return value == "Spell" || value == "Spell.Self";
+    if (key == "ValidCard") return value == "Card.Self";
+    if (key == "ValidPlayer") return value == "You";
+    return key == "EffectZone" && value == "All";
 }
 
 // The S: modes the engine applies (state_manager_statics.cpp, rules_modifying.cpp; EtbCounter is the

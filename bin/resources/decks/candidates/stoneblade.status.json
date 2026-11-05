@@ -54,15 +54,15 @@
    },
    "inputs": {
     "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "fbab1288d66ad8bd9b7ffcadbbc07f501ddbcca0edb793559a6d429100d99803",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (23 points)",
-   "time": "2026-11-05T13:26:20"
+   "time": "2026-11-05T13:56:54"
   },
   "diff": {
    "detail": {
@@ -91,15 +91,15 @@
    },
    "inputs": {
     "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "fbab1288d66ad8bd9b7ffcadbbc07f501ddbcca0edb793559a6d429100d99803",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Can't-block restrictions (CantBlockBy), Face-down permanents (Morph, Cloak; CR 708)",
-   "time": "2026-11-05T13:26:20"
+   "time": "2026-11-05T13:56:54"
   },
   "parse": {
    "detail": {
@@ -147,14 +147,14 @@
    },
    "inputs": {
     "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "fbab1288d66ad8bd9b7ffcadbbc07f501ddbcca0edb793559a6d429100d99803",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "1 new card(s), 1 with findings (4 findings), 0 without a script",
-   "time": "2026-11-05T13:26:20"
+   "time": "2026-11-05T13:56:54"
   },
   "provision": {
    "detail": {

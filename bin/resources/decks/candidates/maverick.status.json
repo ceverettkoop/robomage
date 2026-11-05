@@ -47,6 +47,7 @@
        "Carnivorous Cultivator"
       ],
       "findings": [
+       "keyword:ETBReplacement:DBPrepare",
        "layout:Prepare"
       ],
       "size": "L"
@@ -70,6 +71,15 @@
        "trigger_param:Revolt"
       ],
       "size": "S"
+     },
+     "UnlessCost on more effects": {
+      "cards": [
+       "Grist, the Hunger Tide"
+      ],
+      "findings": [
+       "ability_param:ImmediateTrigger.UnlessCost"
+      ],
+      "size": "M"
      }
     },
     "needs": {
@@ -81,7 +91,8 @@
      ],
      "Grist, the Hunger Tide": [
       "A creature card in every other zone (Grist)",
-      "Repeat effect (DB$ Repeat)"
+      "Repeat effect (DB$ Repeat)",
+      "UnlessCost on more effects"
      ],
      "Renegade Rallier": [
       "Revolt trigger condition"
@@ -95,19 +106,19 @@
      "Nurturing Peatland",
      "Renegade Rallier"
     ],
-    "size_points": 16
+    "size_points": 19
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s): 2 clean, 4 need 5 mechanic(s) (16 points)",
-   "time": "2026-11-05T13:26:20"
+   "summary": "6 new card(s): 2 clean, 4 need 6 mechanic(s) (19 points)",
+   "time": "2026-11-05T13:56:54"
   },
   "diff": {
    "detail": {
@@ -139,20 +150,21 @@
      "CantPreventDamage static",
      "Prepare (CR 722)",
      "Repeat effect (DB$ Repeat)",
-     "Revolt trigger condition"
+     "Revolt trigger condition",
+     "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Prepare (CR 722), Repeat effect (DB$ Repeat), Revolt trigger condition",
-   "time": "2026-11-05T13:26:20"
+   "summary": "6 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Prepare (CR 722), Repeat effect (DB$ Repeat), Revolt trigger condition, UnlessCost on more effects",
+   "time": "2026-11-05T13:56:54"
   },
   "parse": {
    "detail": {
@@ -169,6 +181,12 @@
         "kind": "layout",
         "line": "",
         "name": "Prepare"
+       },
+       {
+        "detail": "ETBReplacement:Other:DBPrepare",
+        "kind": "keyword",
+        "line": "K:ETBReplacement:Other:DBPrepare",
+        "name": "ETBReplacement:DBPrepare"
        }
       ],
       "layout": "transform",
@@ -228,6 +246,12 @@
         "kind": "ability_param",
         "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
         "name": "Repeat.RepeatSVarCompare"
+       },
+       {
+        "detail": "UnlessCost$ Sac<1/Creature> is not offered",
+        "kind": "ability_param",
+        "line": "A:AB$ ImmediateTrigger | Cost$ SubCounter<2/LOYALTY> | Planeswalker$ True | Execute$ TrigDestroy | UnlessCost$ Sac<1/Creature> | UnlessPayer$ You | UnlessSwitched$ True | AILogic$ WeakerCreature | SpellDescription$ You may sacrifice a creature. When you do, destroy target creature or planeswalker.",
+        "name": "ImmediateTrigger.UnlessCost"
        },
        {
         "detail": "Continuous ExcludeZone$ Battlefield",
@@ -299,14 +323,14 @@
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s), 4 with findings (8 findings), 0 without a script",
-   "time": "2026-11-05T13:26:20"
+   "summary": "6 new card(s), 4 with findings (10 findings), 0 without a script",
+   "time": "2026-11-05T13:56:54"
   },
   "provision": {
    "detail": {

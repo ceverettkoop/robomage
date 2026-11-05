@@ -25,7 +25,6 @@
      "Llanowar Elves",
      "Quirion Ranger",
      "Temur Sabertooth",
-     "Vibrance",
      "Wirewood Symbiote"
     ],
     "mechanics": {
@@ -70,6 +69,15 @@
        "static_param:ValidSource"
       ],
       "size": "L"
+     },
+     "Hybrid pips in costs": {
+      "cards": [
+       "Vibrance"
+      ],
+      "findings": [
+       "cost:Hybrid"
+      ],
+      "size": "S"
      }
     },
     "needs": {
@@ -82,6 +90,9 @@
      "Hogaak, Arisen Necropolis": [
       "Convoke (CR 702.51)",
       "Hogaak casting"
+     ],
+     "Vibrance": [
+      "Hybrid pips in costs"
      ]
     },
     "new_cards": [
@@ -97,19 +108,19 @@
      "Vibrance",
      "Wirewood Symbiote"
     ],
-    "size_points": 15
+    "size_points": 16
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "11 new card(s): 8 clean, 3 need 4 mechanic(s) (15 points)",
-   "time": "2026-11-05T13:26:20"
+   "summary": "11 new card(s): 7 clean, 4 need 5 mechanic(s) (16 points)",
+   "time": "2026-11-05T13:56:53"
   },
   "diff": {
    "detail": {
@@ -145,20 +156,21 @@
      "AnimateAll power, toughness and types",
      "Convoke (CR 702.51)",
      "Discard-a-card activation cost",
-     "Hogaak casting"
+     "Hogaak casting",
+     "Hybrid pips in costs"
     ]
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
+    "sizes": "7d0b13a48636e6a049705b01fe9a4440d433276f0fbd8e3c61d4ad4ba9225524",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting",
-   "time": "2026-11-05T13:26:20"
+   "summary": "5 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting, Hybrid pips in costs",
+   "time": "2026-11-05T13:56:53"
   },
   "parse": {
    "detail": {
@@ -354,7 +366,20 @@
       "faces": [
        "Vibrance"
       ],
-      "findings": [],
+      "findings": [
+       {
+        "detail": "alternative cost RG RG",
+        "kind": "cost",
+        "line": "K:Evoke:RG RG",
+        "name": "Hybrid"
+       },
+       {
+        "detail": "alternative cost RG RG",
+        "kind": "cost",
+        "line": "K:Evoke:RG RG",
+        "name": "Hybrid"
+       }
+      ],
       "layout": "normal",
       "script": "cardsfolder/v/vibrance.txt",
       "tokens": [],
@@ -380,14 +405,14 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "engine": "a39270844c17b85e8d73fce0c9c7083cd8587ee94c7f0daaee6115acd50ba813",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "11 new card(s), 3 with findings (11 findings), 0 without a script",
-   "time": "2026-11-05T13:26:20"
+   "summary": "11 new card(s), 4 with findings (13 findings), 0 without a script",
+   "time": "2026-11-05T13:56:53"
   },
   "provision": {
    "detail": {

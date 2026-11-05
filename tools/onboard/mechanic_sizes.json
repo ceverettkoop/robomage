@@ -41,7 +41,7 @@
   "Free-cast statics (Omniscience, Aluren)": {"size": "M", "keys": ["static_param:MayPlayWithoutManaCost", "static_param:MayPlayWithFlash", "static_param:MayPlayPlayer", "static_param:MayPlayDontGrantZonePermissions"], "note": "cast from hand without paying the mana cost (any player, with flash, for Aluren's MV <= 3 creatures)"},
   "Convoke (CR 702.51)": {"size": "M", "keys": ["keyword:Convoke"], "note": "tap creatures to pay; like Improvise for artifacts (implemented)"},
   "Hogaak casting": {"size": "L", "keys": ["static_mode:ManaRestriction", "static_param:ValidSource", "static_param:InvertValidSource", "static_param:EffectZone", "static_form:MayPlay.Graveyard"], "note": "cast from the graveyard (EffectZone$ Graveyard MayPlay); S:Mode$ ManaRestriction: only convoke / delve can pay"},
-  "Prepare (CR 722)": {"size": "L", "keys": ["layout:Prepare"], "note": "Carnivorous Cultivator: a prepared permanent may cast a copy of its prepare spell; a designation plus a cast option"},
+  "Prepare (CR 722)": {"size": "L", "keys": ["layout:Prepare", "keyword:ETBReplacement:DBPrepare"], "note": "Carnivorous Cultivator: a prepared permanent may cast a copy of its prepare spell; a designation plus a cast option"},
   "Empower": {"size": "M", "keys": ["category:Empower", "ability_param:Empower.Type"], "note": "Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR"},
   "Next-spell effect (Theorist's Proxy)": {"size": "M", "keys": ["ability_param:DelayedTrigger.Static", "ability_param:DelayedTrigger.ValidActivatingPlayer", "replacement:Effect:Counter"], "note": "a delayed SpellCast trigger creating an Effect with an Event$ Counter replacement"},
   "Count$ValidGraveyard": {"size": "S", "keys": ["svar_expr:Count$ValidGraveyard"], "note": "Dark Matter Manipulator: cards in a graveyard, /DivideEvenlyDown.N"},
@@ -69,7 +69,7 @@
   "Copy with exceptions (CopyPermanent Set*)": {"size": "M", "keys": ["ability_param:CopyPermanent.SetColor", "ability_param:CopyPermanent.SetCreatureTypes", "ability_param:CopyPermanent.SetPower", "ability_param:CopyPermanent.SetToughness"], "note": "Lazotep Quarry: a token copy that is a 4/4 black Zombie"},
   "Mana spent on casting (Count$CastTotalManaSpent)": {"size": "S", "keys": ["svar_expr:Count$CastTotalManaSpent"], "note": "Mockingbird"},
   "Play from the top of the library (Mystic Forge)": {"size": "L", "keys": ["filter:TopLibrary", "static_param:MayLookAt", "static_form:MayPlay.Library"], "note": "look at and cast the top card: a new public-to-one-seat zone view for the state format"},
-  "Colour-adding static everywhere (Painter's Servant)": {"size": "L", "keys": ["static_param:AddColor"], "note": "cards in every zone gain the chosen colour (CR 613 layer 5 off the battlefield)"},
+  "Colour-adding static everywhere (Painter's Servant)": {"size": "L", "keys": ["static_param:AddColor", "keyword:ETBReplacement:ChooseColor"], "note": "cards in every zone gain the chosen colour (CR 613 layer 5 off the battlefield)"},
   "Targeted player's counts (TargetedPlayer$...)": {"size": "S", "keys": ["svar_expr:TargetedPlayer$CardsInLibrary/HalfUp", "svar_expr:TargetedPlayer$LifeTotal/HalfUp"], "note": "Peer into the Abyss"},
   "Start your engines! (speed)": {"size": "M", "keys": ["keyword:Start your engines"], "note": "a 2025 keyword: a player's speed, raised once a turn"},
   "Meld (CR 712)": {"size": "L", "keys": ["layout:Meld"], "note": "Phyrexian Dragon Engine"},
@@ -90,6 +90,11 @@
   "Agatha's Soul Cauldron": {"size": "L", "keys": ["static_param:GainsAbilitiesOf", "static_param:GainsAbilitiesOfZones", "static_param:ValidPlayer", "static_param:ValidSA"], "note": "creatures with +1/+1 counters gain the activated abilities of exiled creature cards; mana spent as any type"},
   "Boast (CR 702.142)": {"size": "M", "keys": ["ability_param:DealDamage.Boast", "svar_expr:Sacrificed$CardManaCost/Plus.2"], "note": "Broadside Bombardiers: activate only if it attacked this turn, once"},
   "A creature card in every other zone (Grist)": {"size": "M", "keys": ["static_param:ExcludeZone"], "note": "Grist is a 1/1 Insect creature card outside the battlefield"},
-  "Least power (Drop of Honey)": {"size": "S", "keys": ["filter:leastPower"], "note": "the creature with the least power, ties chosen"}
+  "Least power (Drop of Honey)": {"size": "S", "keys": ["filter:leastPower"], "note": "the creature with the least power, ties chosen"},
+  "Hybrid pips in costs": {"size": "S", "keys": ["cost:Hybrid"], "note": "a hybrid pip outside a printed ManaCost: (Fiend Artisan's {B/G}, Vibrance's evoke): the cost parsers pay plain symbols only"},
+  "Mana cost on a triggered ability": {"size": "S", "keys": ["cost:Mana"], "note": "Nihil Spellbomb: \"you may pay {B}. If you do\": resolve_ability pays only Sac<1/CARDNAME> and an ImmediateTrigger's energy"},
+  "UnlessCost on more effects": {"size": "M", "keys": ["ability_param:CopyPermanent.UnlessCost", "ability_param:DealDamage.UnlessCost", "ability_param:ImmediateTrigger.UnlessCost", "ability_param:Token.UnlessCost"], "note": "run_unless_loop runs on Counter, Destroy, Sacrifice, CopySpellAbility and DestroyAll; any other effect happens unconditionally"},
+  "Enters as a copy (Mockingbird)": {"size": "M", "keys": ["keyword:ETBReplacement:DBCopy"], "note": "an ETBReplacement that makes a permanent enter as a copy of another (CR 707.5)"},
+  "Two-condition alternative cost (Massacre)": {"size": "S", "keys": ["static_param:CheckSecondSVar"], "note": "AltCost holds one CheckSVar$"}
  }
 }
