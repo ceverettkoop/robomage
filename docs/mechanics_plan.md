@@ -129,14 +129,16 @@ then `make registry` and `make text-table`. Each stage's exit appends the cards 
 (Appendix B). Ids stay permanent and append-only, so nothing existing moves. **Done** (2026-11-05):
 `onboard.py vocab --card NAME` (repeatable, as names hold commas), and the first test-kit bullet below.
 
-**The test kit** (§4 defines how it is used):
+**The test kit: done** (2026-11-05; §4 defines how it is used):
 
 - A gate check that every card in the vocab added under this plan has a scenario naming it.
 - `decks/tests/mech_<primitive>.dk`: dense fixture decks, so fuzz reaches a primitive in most games
-  rather than waiting for a rare line.
+  rather than waiting for a rare line. Each has a sidecar `.expect`; the first is `mech_cost_paths`.
 - `--coverage FILE`: per run, hit counts per `EffectKind`, cost part, cast option, trigger mode,
-  replacement kind and action category, summed by the `fuzz` tier. A fixture matchup fails if a
-  listed path has zero hits, which proves fuzz reached the code rather than assuming it.
+  replacement kind and action category (`docs/game_running.md`), summed by the `fuzz` tier. A fixture
+  fails if a listed key has zero hits, which proves fuzz reached the code rather than assuming it
+  (`docs/ci.md`). The `cost` and `cast` names are today's fields, simply named at the pay step; M5 and
+  M7 replace them with their typed parts and options, and rename `mech_cost_paths.expect`'s keys.
 
 ## 4. Testing model
 
@@ -152,6 +154,15 @@ Every stage uses the same evidence; the stage sections list only what is specifi
 | Hidden information | `--selfcheck-knowledge`, scramble and permutation checks; a scenario proving the opponent's frame withholds it |
 | New primitive path | Fixture deck fuzz with `--coverage` non-zero, then `--fuzz-games 100` for the fixture; any draw or error is a finding |
 | Deliberate behaviour change | Its own commit, `make regen`, the corpus diff read and explained |
+
+**Adding a fixture.** A stage with a new primitive path adds `decks/tests/mech_<primitive>.dk` (vocab
+cards only, so its cards enter the vocab first, Appendix B; dense enough to reach the path in most
+games, and legal for the engine) and beside it `mech_<primitive>.expect`, the coverage keys that prove
+the path ran, one per line. To write the list, run
+`bin/debug/robomage_check --tier fuzz --matchups tests/mech_<primitive>` and read the summed counts in
+`ci_out/coverage/mech_<primitive>.txt`. A path with no key of its own gets one: a hit in `src/coverage.h`'s
+kinds at the stage's choke point. Nothing else is wired up: `make check` picks the fixture up, and
+the stage's evidence is that same command with `--fuzz-games 100`.
 
 Agent behaviour: keep `scripted_core.py` changes minimal (new decisions get a safe default,
 confirmed by test, since the default for unlisted categories in the scripted agent is unverified).

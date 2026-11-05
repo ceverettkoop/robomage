@@ -56,6 +56,9 @@ findings and zero missing mechanics (stage 6 `ok`), and `vocab --card` zero find
 names, whatever their decks' stages say; `designate` needs a clean campaign (stage 9
 `ok`); at least one fair and, when available, one combo deck stay in `heldout/` permanently.
 
+`decks/tests/` holds test decks, the `fuzz` tier's fixtures among them (`docs/ci.md`): vocab cards
+only, never onboarded, and in no preset.
+
 ## A card ahead of its deck
 
 Mechanic-first work (`docs/mechanics_plan.md`) finishes cards while their decks are still blocked,

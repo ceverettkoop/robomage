@@ -1,0 +1,22 @@
+# Every way the engine pays a non-mana cost today, on a cast and on an activation.
+# Sacrifice: itself (Bloodstained Mire, Mishra's Bauble), another permanent as an activation cost
+# (Goblin Bombardment), as a flashback cost (Cabal Therapy) and as an alternative cost (Fireblast).
+cost:SacSelf
+cost:Sac
+category:SACRIFICE_PERMANENT
+# Discard: itself from hand (Faerie Macabre), the hand (Lion's Eye Diamond).
+cost:DiscardSelf
+cost:DiscardHand
+# Life: a fixed cost (Bloodstained Mire; Snuff Out's alternative cost), an announced X (Toxic
+# Deluge), a Phyrexian pip (Dismember).
+cost:PayLife
+cost:PayLifeX
+cost:PhyrexianLife
+category:CHOOSE_X
+# How the spells were cast: an alternative cost (Fireblast, Snuff Out), flashback, the plain cast.
+cast:alt_cost
+cast:flashback
+cast:hand
+# The rest of an ordinary payment.
+cost:Tap
+cost:Mana

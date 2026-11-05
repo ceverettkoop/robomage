@@ -5,6 +5,7 @@
 #include <ctime>
 
 #include "actor.h"
+#include "coverage_check.h"
 #include "embed.h"
 #include "gate.h"
 #include "proc.h"
@@ -18,11 +19,16 @@ struct GameJob {
         bool bo3 = false;
         bool no_auto_mana = false;  // --no-auto-mana: mana paid source by source
         std::string mode;
+        std::string coverage;  // --coverage FILE ("" = none)
         rmcheck::ProcResult result;
         std::string transcript;  // what the per-matchup file gets for this game
         int a_wins = 0, b_wins = 0, draws = 0;
         bool finished = false;  // a result for every game, no crash
 };
+
+// Games of a fixture deck's mirror at the least (--fuzz-games raises it): enough that a fixture's
+// .expect keys are hit whatever the seed, so a small --fuzz-games cannot fail one.
+const int FIXTURE_MIN_GAMES = 16;
 
 // Runs of each bench game and stage; each figure is the fastest (process timings on a shared machine
 // vary by 10-20% from run to run).
@@ -115,6 +121,10 @@ static std::vector<std::string> engine_game_args(const GameJob &job) {
         "--deck-a", job.deck_a, "--deck-b", job.deck_b, "--narrative", "--trace-decisions"};
     if (job.bo3) a.push_back("--bo3");
     if (job.no_auto_mana) a.push_back("--no-auto-mana");
+    if (!job.coverage.empty()) {
+        a.push_back("--coverage");
+        a.push_back(job.coverage);
+    }
     return a;
 }
 
@@ -379,7 +389,10 @@ namespace rmcheck {
 // explore:patient match per ring matchup (seed + 500000 + k), then --manual-mana-games bo1 <mode>
 // games per ring matchup under --no-auto-mana (ring matchup k's game i: seed + 700000 + 1000k + i).
 // The ring is the playable decks' ring, or the matchups themselves when --matchups is an explicit
-// list ("candidates/x:*", a deck's onboarding campaign: every leg plays the deck).
+// list ("candidates/x:*", a deck's onboarding campaign: every leg plays the deck). Then the
+// fixture decks (coverage_check.h): each one's mirror, bo1 <mode> games under --coverage (fixture k's
+// game i: seed + 800000 + 1000k + i), their counts summed and its .expect keys checked. Only the
+// mirror's counts prove a key: an opponent's deck hitting it would prove nothing about the fixture.
 void tier_fuzz(const Options &opt, Report &rep) {
     const std::vector<std::pair<std::string, std::string>> pairs =
         matchups(opt, opt.matchups.empty() ? "mirrors" : opt.matchups);
@@ -414,10 +427,27 @@ void tier_fuzz(const Options &opt, Report &rep) {
             j.no_auto_mana = true;
             manual.push_back(j);
         }
+    const std::vector<std::string> fixtures = fuzz_fixtures(opt);
+    const int fixture_games = std::max(opt.fuzz_games, FIXTURE_MIN_GAMES);
+    const std::string coverage_dir = fixtures.empty() ? "" : make_temp_dir(opt.out("coverage"), "games_");
+    std::vector<std::pair<std::string, std::string>> fixture_pairs;
+    std::vector<GameJob> fixture_jobs;
+    for (size_t k = 0; k < fixtures.size(); ++k) {
+        fixture_pairs.emplace_back(fixtures[k], fixtures[k]);
+        for (int i = 0; i < fixture_games; ++i) {
+            GameJob j;
+            j.deck_a = j.deck_b = fixtures[k];
+            j.seed = opt.seed + 800000 + 1000 * static_cast<long>(k) + i;
+            j.mode = opt.mode;
+            j.coverage = path_join(coverage_dir, std::to_string(k) + "_" + std::to_string(i) + ".txt");
+            fixture_jobs.push_back(j);
+        }
+    }
     std::vector<GameJob *> all;
     for (GameJob &j : bo1) all.push_back(&j);
     for (GameJob &j : bo3) all.push_back(&j);
     for (GameJob &j : manual) all.push_back(&j);
+    for (GameJob &j : fixture_jobs) all.push_back(&j);
     parallel_for(all.size(), opt.jobs, [&](size_t i) {
         GameJob &job = *all[i];
         ProcSpec spec;
@@ -434,6 +464,14 @@ void tier_fuzz(const Options &opt, Report &rep) {
     report_matchups(opt, rep, "fuzz", "fuzz_bo3", ring, bo3, 1);
     if (opt.manual_mana_games > 0)
         report_matchups(opt, rep, "fuzz", "fuzz_manual", ring, manual, opt.manual_mana_games);
+    report_matchups(opt, rep, "fuzz", "fuzz_mech", fixture_pairs, fixture_jobs, fixture_games);
+    for (size_t k = 0; k < fixtures.size(); ++k) {
+        std::vector<std::string> files;
+        for (int i = 0; i < fixture_games; ++i)
+            files.push_back(fixture_jobs[k * static_cast<size_t>(fixture_games) + static_cast<size_t>(i)].coverage);
+        check_fixture_coverage(opt, rep, fixtures[k], files);
+    }
+    if (!coverage_dir.empty()) remove_tree(coverage_dir);
     size_t decisions = 0;
     double cpu = 0;
     for (const GameJob *j : all) {

@@ -27,7 +27,9 @@
 //              sessions against their dumps; rmknow --isolation and --truth
 //   fuzz       C++ explore vs explore over the playable decks' matchups (league/ and heldout/: bo1,
 //              bo3 explore:patient matches and --no-auto-mana games; --matchups "deck:*" plays one deck
-//              against every playable deck in every leg); draws are findings
+//              against every playable deck in every leg); draws are findings. Then each fixture deck
+//              (decks/tests/mech_*.dk) against itself under --coverage: a key of its .expect with no
+//              hits is an error (coverage_check.h)
 //   bench      decisions per second of a fixed explore workload
 //   smoke      scripted hard vs hard league games through the Python driver (python/rm_driver.py)
 //              and the kept Python's own checks (python/pycheck.py: the Python decoder against the
