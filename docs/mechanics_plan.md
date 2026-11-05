@@ -124,9 +124,10 @@ temporary: retire each as M2 and M3 make the engine's own tables the source of w
 
 **Mechanic-first onboarding.** `onboard.py vocab` appends a whole deck and only once that deck needs
 nothing. CLAUDE.md also forbids testing cards outside the vocab. A mechanic-first plan cannot work
-under both, so add `onboard.py vocab --cards A,B`: append named cards whose own findings are gone,
+under both, so add `onboard.py vocab --card A --card B`: append named cards whose own findings are gone,
 then `make registry` and `make text-table`. Each stage's exit appends the cards it finished
-(Appendix B). Ids stay permanent and append-only, so nothing existing moves.
+(Appendix B). Ids stay permanent and append-only, so nothing existing moves. **Done** (2026-11-05):
+`onboard.py vocab --card NAME` (repeatable, as names hold commas), and the first test-kit bullet below.
 
 **The test kit** (§4 defines how it is used):
 
@@ -486,7 +487,7 @@ The 21 cards M0 repairs: the 15 vocab cards (Animate Dead, Cori-Steel Cutter, Dr
 
 ## Appendix B. When each card can enter the vocab
 
-A card joins the vocab at the exit of the last stage it needs (M1's `onboard.py vocab --cards`). The 37 cards reporting clean need no stage but still need a scenario (M13).
+A card joins the vocab at the exit of the last stage it needs (M1's `onboard.py vocab --card`). The 37 cards reporting clean need no stage but still need a scenario (M13).
 
 | last stage | cards (all stages needed) |
 |---|---|

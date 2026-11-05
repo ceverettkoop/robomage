@@ -14,7 +14,8 @@
 // onboard_check_part: python3 tools/onboard/onboard.py check (stages 2, 4 and 5 of every candidate
 // in decks/candidates/, nothing written, no network): a tool failure is an error, a committed
 // status file whose result the current engine and vocab no longer give is a warning (rerun
-// onboard.py all). Skipped without a Python.
+// onboard.py all), a card added under docs/mechanics_plan.md that no scenario names an error.
+// Skipped without a Python.
 
 namespace rmcheck {
 

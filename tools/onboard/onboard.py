@@ -12,7 +12,8 @@ Stages, in order (a stage never runs past an earlier one that is not ok):
      5 capability  per card clean / needs mechanic X; per deck missing cards and mechanics;
                    writes decks/candidates/REPORT.md (mechanics ranked by decks they unlock)
      6 implement   ok once no new card needs a mechanic (the engine work itself is a developer's)
-     7 vocab       append the deck's new cards (and their tokens) to src/card_vocab.h, make registry
+     7 vocab       append the deck's new cards (and their tokens) to src/card_vocab.h, make registry;
+                   --card NAME (repeatable) appends named cards ahead of their decks instead
      8 text        make text-table (the new cards' oracle-text rows; network, libtorch)
      9 checks      make check, then the fuzz campaign robomage_check --tier fuzz --matchups <deck>:*
     10 designate   git mv the deck to decks/league/ (--to league) or decks/heldout/ (--to heldout)
@@ -25,7 +26,8 @@ skipped while its inputs are unchanged and its result ok (--force reruns it). St
 themselves when a later stage needs them and their inputs changed; stages 7-10 need only an ok.
 `report` prints every status file as one table; `check` reruns stages 2, 4 and 5 for every
 candidate without writing anything or touching the network and reports any committed status file
-whose result is out of date (the gate's vocab tier runs it). Standard library only.
+whose result is out of date, and fails on a card added under docs/mechanics_plan.md that no scenario
+names (the gate's vocab tier runs it). Standard library only.
 """
 
 import argparse
@@ -46,6 +48,7 @@ DECKS = os.path.join(RESOURCES, "decks")
 CARDS = os.path.join(RESOURCES, "cardsfolder")
 TOKENS = os.path.join(RESOURCES, "tokenscripts")
 VOCAB_H = os.path.join(REPO, "src", "card_vocab.h")
+SCENARIOS = os.path.join(REPO, "tests", "scenarios")
 TEXT_TABLE = os.path.join(RESOURCES, "embeddings", "oracle_text.rmtb")
 DECK_DIRS = ("candidates", "league", "heldout")
 STATUS_DIR = os.path.join(DECKS, "candidates")
@@ -62,6 +65,14 @@ AUTOMATIC = ["diff", "provision", "parse", "capability", "implement"]
 TOKEN_BASE, TOKEN_LAST = 900, 1022
 # The column token_vocab_entries' trailing comments (the card that makes the token) start at.
 TOKEN_COMMENT_COLUMN = 69
+# Ids below this predate docs/mechanics_plan.md; every card from here up needs a scenario naming it.
+FIRST_PLAN_CARD_ID = 367
+# The scenario keys that list cards (tools/robomage_check/scenarios.h); deck_a / deck_b name a deck.
+SCENARIO_ZONE_KEYS = tuple("%s_%s" % (zone, seat) for zone in ("hand", "library", "battlefield", "graveyard", "exile",
+                                                               "sideboard") for seat in "ab")
+# src/str_util.h ascii_fold_card_name's table: the Latin-1 letters with an ASCII base.
+ASCII_FOLD = str.maketrans("ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöøùúûüýÿ",
+                           "AAAAAACEEEEIIIIDNOOOOOOUUUUYaaaaaaceeeeiiiidnoooooouuuuyy")
 
 sys.path.insert(0, os.path.join(REPO, "tools", "forge_fetch"))
 import provision_decks  # noqa: E402  (collect_tokens: the token scripts a set of cards makes)
@@ -92,6 +103,12 @@ def name_to_uid(name):
     collapse runs of '_'."""
     uid = re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
     return re.sub(r"_+", "_", uid)
+
+
+def card_key(name):
+    """What two spellings of one card share: case, punctuation and accents gone (the vocab's
+    ascii_fold_card_name, then name_to_uid). "Lórien Revealed" and "lorien revealed" are one key."""
+    return name_to_uid(name.translate(ASCII_FOLD).encode("ascii", "ignore").decode())
 
 
 def script_face_name(path, back):
@@ -201,6 +218,19 @@ class Engine:
         if not os.path.exists(self.binary):
             raise RuntimeError("no engine at %s (make, or --binary)" % self.binary)
         return subprocess.run([self.binary] + args, cwd=BIN, capture_output=True, text=True)
+
+    def parse_report(self, names):
+        """--parse-report over `names`: (one report per card, None), or (None, what went wrong)."""
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
+            f.write("\n".join(names) + "\n")
+            names_file = f.name
+        try:
+            r = self.run(["--parse-report", "@" + names_file])
+        finally:
+            os.unlink(names_file)
+        if r.returncode not in (0, 1):
+            return None, {"summary": "--parse-report exited %d" % r.returncode, "stderr": r.stderr[-2000:]}
+        return [json.loads(line) for line in r.stdout.splitlines()], None
 
 
 def default_binary():
@@ -372,17 +402,10 @@ class Pipeline:
                 "no_script": unprovisioned}
         cards = {}
         if diff["not_in_vocab"]:
-            with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
-                f.write("\n".join(diff["not_in_vocab"]) + "\n")
-                names_file = f.name
-            try:
-                r = self.engine.run(["--parse-report", "@" + names_file])
-            finally:
-                os.unlink(names_file)
-            if r.returncode not in (0, 1):
-                return "fail", "--parse-report exited %d" % r.returncode, {"stderr": r.stderr[-2000:]}
-            for line in r.stdout.splitlines():
-                rep = json.loads(line)
+            reports, err = self.engine.parse_report(diff["not_in_vocab"])
+            if err:
+                return "fail", err["summary"], {"stderr": err["stderr"]}
+            for rep in reports:
                 if rep.get("card") is None:
                     return "fail", "%s has no script" % rep["query"], {}
                 cards[rep["query"]] = {k: rep[k] for k in ("card", "script", "faces", "layout", "vocab", "tokens",
@@ -427,19 +450,7 @@ class Pipeline:
 
     # 7 vocab
     def stage_vocab(self, status):
-        cards = status["stages"]["parse"]["detail"]["cards"]
-        added, tokens = append_vocab(cards, dry_run=self.args.dry_run)
-        detail = {"added": added, "tokens": tokens}
-        if self.args.dry_run:
-            return "pending", "dry run: would add %d entries, %d token(s)" % (len(added), len(tokens)), detail
-        if added or tokens:
-            r = subprocess.run(["make", "registry"], cwd=REPO)
-            detail["make_registry"] = r.returncode
-            if r.returncode != 0:
-                return "fail", "make registry exited %d" % r.returncode, detail
-        print(subprocess.run(["git", "diff", "--stat", "--", "src/card_vocab.h"], cwd=REPO, capture_output=True,
-                             text=True).stdout)
-        return "ok", "%d entries and %d token(s) appended" % (len(added), len(tokens)), detail
+        return add_to_vocab(status["stages"]["parse"]["detail"]["cards"], self.args.dry_run)
 
     # 8 text
     def stage_text(self, status):
@@ -634,7 +645,7 @@ def append_vocab(cards, dry_run=False):
     with open(VOCAB_H, encoding="utf-8") as f:
         text = f.read()
     existing, tokens = vocab_entries(text)
-    known = {n.lower() for n, _ in existing}
+    known = {card_key(n) for n, _ in existing}
     next_id = max(i for _, i in existing if i < TOKEN_BASE) + 1
     known_tokens = {s for s, _, _ in tokens}
     next_token = max([i for _, _, i in tokens] + [TOKEN_BASE - 1]) + 1
@@ -646,7 +657,7 @@ def append_vocab(cards, dry_run=False):
         # card's faces each have an id (Delver of Secrets / Insectile Aberration).
         groups = [list(faces) + ["/".join(faces)]] if c["layout"] == "split" else [[f] for f in faces]
         for group in groups:
-            fresh = [n for n in group if n.lower() not in known]
+            fresh = [n for n in group if card_key(n) not in known]
             if not fresh:
                 continue
             if next_id >= TOKEN_BASE:
@@ -654,7 +665,7 @@ def append_vocab(cards, dry_run=False):
             for name in fresh:
                 added[name] = next_id
                 card_lines.append('    {"%s", %d},' % (name.replace('"', '\\"'), next_id))
-                known.add(name.lower())
+                known.add(card_key(name))
             next_id += 1
         for t in c["tokens"]:
             stem = t["script"]
@@ -678,6 +689,58 @@ def append_vocab(cards, dry_run=False):
     with open(VOCAB_H, "w", encoding="utf-8") as f:
         f.write(text)
     return added, added_tokens
+
+
+def add_to_vocab(cards, dry_run):
+    """append_vocab, then make registry and the vocab diff's stat for review: stage 7's result, summary
+    and detail, for `cards` (card name -> parse report) from a deck or from --card."""
+    added, tokens = append_vocab(cards, dry_run=dry_run)
+    detail = {"added": added, "tokens": tokens}
+    if dry_run:
+        return "pending", "dry run: would add %d entries, %d token(s)" % (len(added), len(tokens)), detail
+    if added or tokens:
+        r = subprocess.run(["make", "registry"], cwd=REPO)
+        detail["make_registry"] = r.returncode
+        if r.returncode != 0:
+            return "fail", "make registry exited %d" % r.returncode, detail
+    print(subprocess.run(["git", "diff", "--stat", "--", "src/card_vocab.h"], cwd=REPO, capture_output=True,
+                         text=True).stdout)
+    return "ok", "%d entries and %d token(s) appended" % (len(added), len(tokens)), detail
+
+
+def vocab_cards(args):
+    """`vocab --card NAME ...`: stage 7 for named cards, ahead of their decks. A card already in the
+    vocab is a no-op; one with no script or any parse-report finding refuses the whole call, which
+    then appends nothing. No deck's status is read or written: the decks holding an added card see
+    it as no longer new at their next `onboard.py all`."""
+    reports, err = Engine(args.binary or default_binary()).parse_report(args.card)
+    if err:
+        print("vocab: %s\n%s" % (err["summary"], err["stderr"]), file=sys.stderr)
+        return 1
+    cards, refused = {}, 0
+    for rep in reports:
+        if rep.get("card") is None:
+            print("  %s: refused: no script" % rep["query"])
+            refused += 1
+        elif all(i >= 0 for i in rep["vocab"]):
+            print("  %s: already in the vocab (%s)" % (rep["card"], ", ".join(str(i) for i in rep["vocab"])))
+        elif rep["findings"]:
+            print("  %s: refused: %s" % (rep["card"], "; ".join(sorted({finding_key(f) for f in rep["findings"]}))))
+            refused += 1
+        else:
+            cards[rep["query"]] = rep
+    if refused:
+        print("vocab: %d card(s) refused, nothing appended" % refused)
+        return 1
+    result, summary, detail = add_to_vocab(cards, args.dry_run)
+    for name, i in detail["added"].items():
+        print("  %-40s %d" % (name, i))
+    for stem, i in detail["tokens"].items():
+        print("  %-40s %d (token)" % (stem, i))
+    print("vocab: %s" % summary)
+    if result == "ok" and detail["added"]:
+        print("vocab: next make text-table if make registry did not, a scenario naming each card, onboard.py all")
+    return 1 if result == "fail" else 0
 
 
 # ── Stage 1: the scrape ─────────────────────────────────────────────────────────────────────────
@@ -859,14 +922,72 @@ def write_report_md(sizes):
 
 # ── check (the gate's offline part) ─────────────────────────────────────────────────────────────
 
+def scenario_card_keys():
+    """The card_key of every card a scenario names, in a zone key or a deck_a / deck_b deck, its
+    variants' overrides included. A zone entry splits on commas, as the engine's flags do."""
+    keys = set()
+    for fn in sorted(os.listdir(SCENARIOS)):
+        if not fn.endswith(".json"):
+            continue
+        with open(os.path.join(SCENARIOS, fn), encoding="utf-8") as f:
+            doc = json.load(f)
+        for part in [doc] + doc.get("variants", []):
+            for key in SCENARIO_ZONE_KEYS:
+                for entry in part.get(key) or []:
+                    keys.update(card_key(name.strip()) for name in entry.split(",") if name.strip())
+            for key in ("deck_a", "deck_b"):
+                path = os.path.join(DECKS, "%s.dk" % part.get(key))
+                if os.path.exists(path):
+                    keys.update(card_key(name) for name in deck_names(path))
+    return keys
+
+
+def plan_cards():
+    """The cards at ids from FIRST_PLAN_CARD_ID, tokens excepted, as [(a name, {card_key of each
+    name it goes by})]: an id's vocab names and every face of its script, so that the two ids of a
+    double-faced card are one entry."""
+    with open(VOCAB_H, encoding="utf-8") as f:
+        entries, _ = vocab_entries(f.read())
+    names_of = {}
+    for name, i in entries:
+        if FIRST_PLAN_CARD_ID <= i < TOKEN_BASE:
+            names_of.setdefault(i, []).append(name)
+    out, seen = [], set()
+    for i in sorted(names_of):
+        keys = {card_key(n) for n in names_of[i]}
+        for name in names_of[i]:
+            script = resolve_script(name)
+            if script:
+                keys.update(card_key(script_face_name(script, back)) for back in (False, True))
+        keys.discard("")
+        if frozenset(keys) not in seen:
+            seen.add(frozenset(keys))
+            out.append((names_of[i][0], keys))
+    return out
+
+
+def check_scenarios():
+    """The test kit's rule (docs/mechanics_plan.md §3): a card added under the plan has a scenario
+    naming it. Prints an ERROR per card without one and returns their number."""
+    named = scenario_card_keys()
+    cards = plan_cards()
+    missing = [name for name, keys in cards if not keys & named]
+    for name in missing:
+        print("onboard check: ERROR %s: no tests/scenarios/*.json names it in a zone key or a deck_a/b deck" % name)
+    print("onboard check: scenario rule: %d card(s) from id %d, %d without a scenario" % (
+        len(cards), FIRST_PLAN_CARD_ID, len(missing)))
+    return len(missing)
+
+
 def check(args):
     """Reruns diff, parse and capability for every candidate in memory (no file written, no
     network) and compares the results with the committed status files: a tool failure is an
-    error (exit 1), a status file whose recorded result differs is reported as stale."""
+    error (exit 1), a status file whose recorded result differs is reported as stale. Then the
+    scenario rule (check_scenarios), whose every missing card is an error."""
     pipe = Pipeline(args)
     pipe.write = False
     pipe.online = False
-    errors, stale, n = 0, [], 0
+    errors, stale, n = check_scenarios(), [], 0
     for stem in all_stems():
         if not os.path.exists(status_path(stem)):
             continue
@@ -901,6 +1022,9 @@ def main(argv=None):
     ap.add_argument("command", choices=STAGES + ["all", "report", "check"])
     ap.add_argument("--deck", action="append", default=[], help="a deck stem (repeatable; default every deck "
                                                                 "with a status file or in decks/candidates/)")
+    ap.add_argument("--card", action="append", default=[], metavar="NAME",
+                    help="vocab: a card to append ahead of its decks, instead of --deck (repeatable, since a card "
+                         "name can hold a comma)")
     ap.add_argument("--force", action="store_true", help="rerun the named stage even when it is current")
     ap.add_argument("--binary", help="the engine (default bin/debug/robomage; ROBOMAGE_BUILD=release for "
                                      "bin/release/robomage)")
@@ -922,6 +1046,8 @@ def main(argv=None):
     ap.add_argument("--bench-policies", help="baseline: rmtrain bench --policies (default: the run's default set)")
     ap.add_argument("--bench-matches", type=int, default=480, help="baseline: rmtrain bench --matches (default 480)")
     args = ap.parse_args(argv)
+    if args.card and (args.command != "vocab" or args.deck):
+        ap.error("--card goes with the vocab command, without --deck")
 
     if args.command == "scrape":
         return scrape(args)
@@ -929,6 +1055,8 @@ def main(argv=None):
         return report(args)
     if args.command == "check":
         return check(args)
+    if args.card:
+        return vocab_cards(args)
     pipe = Pipeline(args)
     pipe.write = not args.dry_run
     stems = args.deck or all_stems()

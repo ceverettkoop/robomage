@@ -9,6 +9,7 @@ python3 tools/onboard/onboard.py scrape --top 25 --meta 39   # stage 1 (network)
 python3 tools/onboard/onboard.py all                         # stages 2-6 for every deck
 python3 tools/onboard/onboard.py report                      # one table of every status file
 python3 tools/onboard/onboard.py vocab --deck bant_control --dry-run
+python3 tools/onboard/onboard.py vocab --card "Llanowar Elves" --card "Bilbo, Thief in the Night"
 ```
 
 ## Deck directories and status files
@@ -43,16 +44,37 @@ while its inputs are unchanged and its result `ok`; `--force` reruns it.
 | 4 | `parse` | `robomage --parse-report @<names>` over the deck's cards not in the vocab (`docs/game_running.md`, `src/parse_report.h`): every finding per card | yes |
 | 5 | `capability` | per card clean / needs mechanics; per deck the new cards and mechanics with a size; writes `candidates/REPORT.md` over every status file: decks cheapest first, mechanics ranked by the decks that need them (and the decks each alone unlocks), a greedy unlock order | yes |
 | 6 | `implement` | `ok` once the deck's new cards need no mechanic; else `pending` with the list. The engine work is a developer's, one mechanic per commit, honouring the scripts' tags, a rules scenario each, `docs/rules_deviations.md` for gaps | yes |
-| 7 | `vocab` | appends the deck's new cards to `card_vocab_entries` at the next free ids below 900 (each face of a double-faced card its own id; a split card's halves and `A/B` one id) and the token scripts they make to `token_vocab_entries` (900-1022), then `make registry` and prints `git diff --stat src/card_vocab.h` for review. `--dry-run` only reports | no |
+| 7 | `vocab` | appends the deck's new cards to `card_vocab_entries` at the next free ids below 900 (each face of a double-faced card its own id; a split card's halves and `A/B` one id) and the token scripts they make to `token_vocab_entries` (900-1022), then `make registry` and prints `git diff --stat src/card_vocab.h` for review. `--dry-run` only reports. `--card NAME` (repeatable) does this for named cards instead of a deck (below) | no |
 | 8 | `text` | `make text-table`: the new cards' oracle-text rows (fetches the pinned model, needs `make rmembed`) | no |
 | 9 | `checks` | `make check` (unless `--skip-make-check`), then the campaign `robomage_check --tier fuzz --matchups <dir>/<stem>:* --fuzz-games 100 --manual-mana-games 10 --out-dir ci_out/onboard_<stem>`: bo1 explore, bo3 `explore:patient` and `--no-auto-mana` games against every playable deck. Any error or drawn game fails it | no |
 | 10 | `designate` | `--to league` or `--to heldout`: `git mv` the deck there | no |
 | 11 | `baseline` | `rm_driver.py` `scripted:hard` with the deck against every league deck (`--baseline-games` bo1 each), then the zero-shot benchmark of the run's policies (`--run`; `--bench-policies`, default the run's set; `--bench-matches`, default 480): `learn/rmtrain bench <run> --decks league,<dir>/<stem> --focus <dir>/<stem> --label onboard-<stem>` — the deck against every league deck, the policy playing it and facing it (`docs/rmtrain.md` §7.1). The status records the scripted record per opponent and, per policy, the deck played and faced from the benchmark's `summary.json` | no |
 
 Rules (plan S7): a stage never runs past an earlier one that is not `ok` (stages 2-6 rerun
-themselves first when their inputs changed; 7-10 need only a recorded `ok`); `vocab` needs zero
-findings and zero missing mechanics (stage 6 `ok`); `designate` needs a clean campaign (stage 9
+themselves first when their inputs changed; 7-10 need only a recorded `ok`); `vocab --deck` needs zero
+findings and zero missing mechanics (stage 6 `ok`), and `vocab --card` zero findings on the cards it
+names, whatever their decks' stages say; `designate` needs a clean campaign (stage 9
 `ok`); at least one fair and, when available, one combo deck stay in `heldout/` permanently.
+
+## A card ahead of its deck
+
+Mechanic-first work (`docs/mechanics_plan.md`) finishes cards while their decks are still blocked,
+and a card outside the vocab may not be tested. `onboard.py vocab --card NAME` (repeatable, since a
+card name can hold a comma; either face of a double-faced card) appends named cards by stage 7's
+rules and code, with no deck involved and no stage 6 needed:
+
+- a card with no script, or any parse-report finding, is refused with the finding named, and then
+  nothing in the call is appended;
+- a card already in the vocab is a no-op, findings or not; no existing id moves;
+- no status file is read or written. Each deck holding an added card shows `STALE` in `onboard.py
+  check` until `onboard.py all` is rerun and committed, and from then on the card is no longer new
+  to that deck: it leaves `not_in_vocab`, stage 4 no longer reports it, and stage 3 no longer
+  fetches its tokens. A deck left with no new cards passes `vocab --deck` as a no-op and goes on to
+  stages 8-11.
+
+`make registry` builds `all`, whose text-table check regenerates a new card's oracle-text row, so a
+card with a new row needs the model (`.cache/embed/`) and libtorch: set `LIBTORCH_DIR` for the call,
+or rerun `make registry LIBTORCH_DIR=...` if it failed there (the entries stay appended).
 
 ## Mechanics and sizes
 
@@ -67,7 +89,14 @@ or estimate; stage 5 reruns (the file is one of its inputs).
 `onboard.py check` reruns stages 2, 4 and 5 for every deck in `candidates/` in memory — no file
 written, no network — and compares the results with the committed status files: a tool failure
 exits 1, a status file whose recorded result the current engine and vocab no longer give is
-printed as `STALE` (rerun `onboard.py all` and commit the status files). The gate's `vocab` tier
-runs it (`tools/robomage_check/parse_report_check.h`): errors fail, stale files warn. CI has the
+printed as `STALE` (rerun `onboard.py all` and commit the status files). It also applies the
+scenario rule: every card with an id from `FIRST_PLAN_CARD_ID` (367; lower ids predate
+`docs/mechanics_plan.md`) needs a `tests/scenarios/*.json` naming it in a zone key (`hand`, `library`,
+`battlefield`, `graveyard`, `exile`, `sideboard`, `_a` or `_b`, a variant's included) or in a
+`deck_a` / `deck_b` deck, else it is an `ERROR` naming the card. Names match as the engine's do, so
+case and punctuation do not count, and a zone entry splits on commas (write `Thalia Guardian of
+Thraben`). Either face satisfies a double-faced card, any name a split card; tokens are exempt. The
+gate's `vocab` tier runs it (`tools/robomage_check/parse_report_check.h`): errors fail, stale files
+warn. CI has the
 candidates' scripts because `tools/forge_fetch/provision_decks.py` provisions the `candidates/` and
 `heldout/` decks with the vocab and `league/`.
