@@ -1,0 +1,14 @@
+{
+  "name": "cr106_6_powerstone_mana_cant_cast_nonartifact",
+  "why": "CR 106.6: a Powerstone's mana can't be spent to cast a nonartifact spell, so with the token as the second source only the artifact spell is offered",
+  "hand_b": ["Grizzly Bears", "Shadowspear"],
+  "library_b": ["Forest"],
+  "library_a": ["Mountain"],
+  "hand_a": ["Mountain"],
+  "battlefield_a": ["Cityscape Leveler"],
+  "battlefield_b": ["Forest", "Mox Opal"],
+  "play": ["A:keep", "B:keep", "A:attack:Cityscape Leveler", "A:target:Mox Opal", "B:cast:Shadowspear"],
+  "max_decisions": 12,
+  "expect": ["Player B casts Shadowspear"],
+  "expect_menu_not": ["Grizzly Bears"]
+}

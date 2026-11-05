@@ -67,6 +67,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
+static bool casting_nonartifact_spell(Entity paid_for);
 static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for);
 static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
 static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
@@ -237,6 +238,14 @@ static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
     return is_colorless(paid_for);
 }
 
+// Is `paid_for` a nonartifact spell, which a Powerstone's mana can't be spent to cast (CR 106.6)?
+// An activated ability pays with its permanent as `paid_for`, and that mana may pay for it.
+static bool casting_nonartifact_spell(Entity paid_for) {
+    if (paid_for == 0 || is_battlefield_permanent(paid_for)) return false;
+    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
+    return !type_set_has(global_coordinator.GetComponent<CardData>(paid_for).types, "Artifact");
+}
+
 // True if a mana source (its ability `ab`, on `source_entity`) may be spent to pay for
 // `paid_for` under its mana spending restriction (CR 106.7). An unrestricted source is always
 // usable; a restricted source is usable only when the spell being paid for matches. This is the
@@ -250,6 +259,7 @@ static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Enti
         return false;
     if (ab.def->restrict_to_colorless_eldrazi && !colorless_eldrazi_restricted_mana_matches(paid_for))
         return false;
+    if (ab.def->restrict_from_nonartifact_spells && casting_nonartifact_spell(paid_for)) return false;
     return true;
 }
 

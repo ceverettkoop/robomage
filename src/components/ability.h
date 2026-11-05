@@ -90,6 +90,7 @@ struct AbilityDef {
     std::string reflected_mana_filter = "";
     bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
     bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
+    bool restrict_from_nonartifact_spells = false;   // RestrictValid$ CantCastNonArtifactSpells (Powerstone tokens)
     bool restrict_to_colorless_eldrazi = false;      // RestrictValid$ Spell.Eldrazi+Colorless (Eldrazi Temple)
     bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
 

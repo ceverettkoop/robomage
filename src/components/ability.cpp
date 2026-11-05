@@ -42,6 +42,7 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     if (other->reflected_mana_filter != def->reflected_mana_filter) return false;
     if (other->restrict_to_chosen_type_creature != def->restrict_to_chosen_type_creature) return false;
     if (other->restrict_to_creature != def->restrict_to_creature) return false;
+    if (other->restrict_from_nonartifact_spells != def->restrict_from_nonartifact_spells) return false;
     if (other->adds_no_counter != def->adds_no_counter) return false;
     return true;
 }

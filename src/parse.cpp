@@ -2204,6 +2204,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell
             // (any creature, no subtype constraint), e.g. Abundant Countryside. CR 106.7.
             ability.restrict_to_creature = true;
+        } else if (value == "CantCastNonArtifactSpells") {
+            // A Powerstone's mana: spendable on anything but casting a nonartifact spell.
+            ability.restrict_from_nonartifact_spells = true;
         }
     } else if (key == "AddsNoCounter") {
         ability.adds_no_counter = (value == "True");
