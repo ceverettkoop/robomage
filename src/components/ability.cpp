@@ -30,6 +30,7 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     // different dynamic amounts are distinct. Without these the second is wrongly deduped.
     if (other->activation_condition != def->activation_condition) return false;
     if (other->dynamic_amount_expr != def->dynamic_amount_expr) return false;
+    if (other->trigger_mode != def->trigger_mode) return false;
     if (other->tap_cost != def->tap_cost) return false;
     if (other->activation_mana_cost != def->activation_mana_cost) return false;
     if (other->sac_self != def->sac_self) return false;

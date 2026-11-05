@@ -14,8 +14,8 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 done and
-   `make check` green. Card scripts are untracked: on a fresh clone, run
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 and M1 done
+   and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
    where to start reading, and re-verify before relying on one.
@@ -92,6 +92,8 @@ before any `make regen`. Commit the pin, status files and report with this stage
 `make refetch` run on a clean tree confirms the provisioned scripts reproduce the result.
 
 ## 3. M1: truthful reporting and the test kit
+
+**Done** (2026-11-05). `make check` green, the opt-in `actor` tier skipped, corpus not re-recorded.
 
 Do this before any new mechanic; every later stage leans on it.
 
