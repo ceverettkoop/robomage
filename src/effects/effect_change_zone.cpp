@@ -332,12 +332,10 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // definition names no one and the effect does nothing (White Orchid Phantom's "up to one
     // target" trigger with zero targets picked: no land was destroyed, so nobody searches —
     // the search must not fall back to the caster's own library).
-    if (ab.def->defined_targeted_controller) {
-        Zone::Ownership tc =
-            !ab.target.empty() ? last_known_controller(ab.target.lki_entity())  // CR 608.2g/h, robust to post-move reads
-                               : Zone::UNKNOWN;
-        if (tc == Zone::UNKNOWN) return HandlerResult::DONE_RUN_SUBS;  // no targeted object → no defined player; still chain subs
-        owner = tc;
+    if (ab.def->defined.is(ObjectSpec::TARGETED_CONTROLLER)) {
+        const std::vector<Zone::Ownership> tc = resolve_players(ab.def->defined, ResolveCtx::of(ab));  // CR 608.2g/h, robust to post-move reads
+        if (tc.empty()) return HandlerResult::DONE_RUN_SUBS;  // no targeted object → no defined player; still chain subs
+        owner = tc.front();
     }
 
     // DefinedPlayer$ Targeted — the searched/owning zone belongs to the chain's targeted PLAYER,
@@ -968,7 +966,7 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
     // targeted card) rather than ab.target, which a Pump vehicle may have overwritten.
     Zone::Ownership caster = ab.controller;
     Zone::Ownership searched = caster;
-    if (ab.def->defined_targeted_controller && global_coordinator.entity_has_component<Zone>(ref))
+    if (ab.def->defined.is(ObjectSpec::TARGETED_CONTROLLER) && global_coordinator.entity_has_component<Zone>(ref))
         searched = global_coordinator.GetComponent<Zone>(ref).owner;
 
     std::vector<Zone::ZoneValue> zones =

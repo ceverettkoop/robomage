@@ -11,6 +11,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
@@ -129,7 +130,8 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     }
 
     // No SacValid$ filter and not an edict ⇒ self-sacrifice (sacrifice CARDNAME), CR 701.16.
-    if (ab.def->sac_valid.empty() && !ab.def->defined_each_opponent) {
+    const bool edict = ab.def->defined.is(ObjectSpec::OPPONENT);
+    if (ab.def->sac_valid.empty() && !edict) {
         Entity sacked = sacrifice_self(ab, orderer);
         if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
         return HandlerResult::DONE_RUN_SUBS;
@@ -139,8 +141,8 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // two-player game "each opponent" is the controller's single opponent. The edict is mandatory
     // for an opponent who controls a matching permanent (they must pick one), so it is never
     // optional regardless of Optional$.
-    if (ab.def->defined_each_opponent) {
-        Zone::Ownership opp = opponent_of(ab.controller);
+    if (edict) {
+        Zone::Ownership opp = affected_player(ab);
         // sac_count > 1: the sacrificer chooses and sacrifices that many permanents, one at a
         // time (Annihilator N, CR 702.85b). Each iteration re-gathers candidates, so the choices
         // shrink as permanents leave; sacrifice_one returns 0 when none remain, so a player who

@@ -1512,7 +1512,7 @@ static void kw_storm(const std::string &, KeywordContext &ctx) {
 // K:Annihilator:N — Annihilator N (CR 702.85). "Whenever this creature attacks, defending
 // player sacrifices N permanents." Synthesize the self-attack trigger here (general over any
 // Annihilator card): a TRIGGERED Sacrifice that fires once per declared attack of this
-// creature (CREATURE_ATTACKED). defined_each_opponent routes the edict to the defending
+// creature (CREATURE_ATTACKED). ObjectSpec::OPPONENT routes the edict to the defending
 // player (the controller's opponent in the two-player engine), who chooses and sacrifices N
 // of their own permanents one at a time (sac_count). It resolves like any triggered ability,
 // i.e. before blockers are declared. SacValid$ Permanent = any permanent they control.
@@ -1522,7 +1522,7 @@ static void kw_annihilator(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.keywords.push_back(kw_line);
     // ValidCard$ Card.Self — only this creature's own attack
     AbilityDef ab = keyword_self_trigger("Sacrifice", Events::CREATURE_ATTACKED);
-    ab.defined_each_opponent = true;  // the defending player sacrifices (CR 702.85b)
+    ab.defined = ObjectSpec(ObjectSpec::OPPONENT);  // the defending player sacrifices (CR 702.85b)
     ab.sac_valid = "Permanent";       // any permanent the defending player controls
     ab.sac_count = static_cast<size_t>(n);
     ctx.face_defs.abilities.push_back(ab);
@@ -2071,24 +2071,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // Bound as the ability's target at trigger-fire time from the CREATURE_ATTACKED event.
         else if (value == "TriggeredAttacker" || value == "TriggeredAttackerLKICopy")
             ability.defined_triggered_attacker_lki = true;
-        else if (value == "TargetedController") ability.defined_targeted_controller = true;
-        // Defined$ TriggeredActivator — the effect acts on the player who caused the trigger
-        // (the caster of the triggering spell). The actual player is bound at trigger-fire
-        // time from the event's PLAYER param. CR 603.x.
-        else if (value == "TriggeredActivator") ability.defined_triggered_activator = true;
-        // Defined$ TriggeredDefendingPlayer — the effect acts on the defending player of the
-        // attack that fired this trigger (Goblin Guide). Bound at trigger-fire time from the
-        // CREATURE_ATTACKED event (the opponent of the attacker's controller in a 2-player game).
-        else if (value == "TriggeredDefendingPlayer") ability.defined_triggered_defending_player = true;
-        // Defined$ TriggeredPlayer — the effect acts on the player whose event fired this trigger
-        // (Roiling Vortex: each player's upkeep damages THAT player). The actual player is bound at
-        // trigger-fire time from the event's PLAYER param.
-        else if (value == "TriggeredPlayer") ability.defined_triggered_player = true;
-        // Defined$ TriggeredCardController — the effect's player is the controller of the card
-        // whose zone change fired the (Mode$ ChangesZone delayed) trigger (Searing Blood: the
-        // dead creature's controller). Bound from the watched card's last-known controller at
-        // trigger-fire time (CR 608.2g); the card is already in the graveyard by then.
-        else if (value == "TriggeredCardController") ability.defined_triggered_card_controller = true;
         // Defined$ TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed
         // zones and fired this trigger, referenced in its NEW zone. For a Card.Self ChangesZone
         // trigger (CR 603.6e) the triggering object IS the ability's own source (e.g. Triumph of
@@ -2104,12 +2086,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // exiled face down, tracked in Permanent::exiled_with on the source (The Creation of
         // Avacyn chapters II & III). Resolved to that entity at resolution by exiled_with_card().
         else if (value == "ExiledWith") ability.defined_exiled_with = true;
-        // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
-        // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.
-        else if (value == "You") ability.defined_you = true;
-        // Defined$ Player.Opponent — the effect's player is "each opponent" (no chosen
-        // target). CR 109.5 / 102.1: in a two-player game this is the single opponent.
-        else if (value == "Player.Opponent" || value == "Opponent") ability.defined_each_opponent = true;
         // Defined$ Valid <filter> (CopyPermanent's "for each token you control that entered
         // this turn") — store the filter spec the same place ValidCards$ writes it, so the
         // effect can scan the battlefield for matches.

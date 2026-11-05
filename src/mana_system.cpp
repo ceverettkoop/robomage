@@ -924,7 +924,8 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
 static bool mana_ability_is_painful(const Ability &ab) {
     if (ab.def->life_cost > 0) return true;
     for (const auto &sub : ab.subabilities)
-        if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) && sub.def->defined_you)
+        if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) &&
+            sub.def->defined.is(ObjectSpec::YOU))
             return true;
     return false;
 }
@@ -938,7 +939,8 @@ static bool mana_ability_is_painful(const Ability &ab) {
 static int mana_ability_life_loss(const Ability &ab) {
     int loss = ab.def->life_cost;
     for (const auto &sub : ab.subabilities)
-        if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) && sub.def->defined_you)
+        if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) &&
+            sub.def->defined.is(ObjectSpec::YOU))
             loss += static_cast<int>(sub.def->amount);
     return loss;
 }

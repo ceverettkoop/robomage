@@ -166,7 +166,7 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
 // Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
-// subabilities/charm_choices. Only abilities flagged defined_triggered_activator are touched.
+// subabilities/charm_choices. Only abilities naming Defined$ TriggeredActivator are touched.
 static void append_ability_defs(std::vector<const AbilityDef *> &out,
                                 const std::vector<const AbilityDef *> &defs) {
     out.insert(out.end(), defs.begin(), defs.end());
@@ -211,7 +211,7 @@ static bool is_self_etb_event(const Event &ev, Entity entity) {
 
 static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
     Zone::Ownership activator = seat_of_player(activator_entity);
-    if (ab.def->defined_triggered_activator) ab.triggered_activator = activator;
+    if (ab.def->defined.is(ObjectSpec::TRIGGERED_ACTIVATOR)) ab.triggered_activator = activator;
     for (auto &sub : ab.subabilities) bind_triggered_activator(sub, activator_entity);
     for (auto &c : ab.charm_choices) bind_triggered_activator(c, activator_entity);
 }
@@ -219,11 +219,11 @@ static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
 // Bind the triggering event's player (Defined$ TriggeredPlayer, e.g. the active player whose
 // upkeep began — Roiling Vortex) onto any ability in the tree that reads it. Sibling of
 // bind_triggered_activator; the DealDamage/etc. effect lives in a DB$ subability under Execute$,
-// so recurse into subabilities/charm_choices. Only abilities flagged defined_triggered_player
+// so recurse into subabilities/charm_choices. Only abilities naming Defined$ TriggeredPlayer
 // are touched.
 static void bind_triggered_player(Ability &ab, Entity player_entity) {
     Zone::Ownership who = seat_of_player(player_entity);
-    if (ab.def->defined_triggered_player) ab.triggered_player = who;
+    if (ab.def->defined.is(ObjectSpec::TRIGGERED_PLAYER)) ab.triggered_player = who;
     for (auto &sub : ab.subabilities) bind_triggered_player(sub, player_entity);
     for (auto &c : ab.charm_choices) bind_triggered_player(c, player_entity);
 }
@@ -299,7 +299,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 // Defined$ TriggeredCardController (Searing Blood): bind the fire ability's player
                 // to the last-known controller of the object whose departure fired this trigger
                 // (CR 608.2g — it is in the graveyard by now). Shares triggered_player storage.
-                if (trigger_ab.def->defined_triggered_card_controller && dt.fire_on_leave_battlefield)
+                if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_CARD_CONTROLLER) && dt.fire_on_leave_battlefield)
                     trigger_ab.triggered_player = last_known_controller(dt.watched.lki_entity());
                 // CR 400.7e: an ability that triggers on the watched object leaving the
                 // battlefield can find the new object it became in a public zone (earthbend's
@@ -1186,7 +1186,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // PLAYER = the attacker's controller (active player); in a two-player game the
             // defender is that player's opponent. Bind it as the ability's target (a player
             // entity), which the Dig handler reads as the library owner.
-            if (trigger_ab.def->defined_triggered_defending_player &&
+            if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_DEFENDING_PLAYER) &&
                 ev.GetType() == Events::CREATURE_ATTACKED && ev.HasParam(Params::PLAYER)) {
                 Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
                 trigger_ab.target = ObjectRef::of(get_player_entity(opponent_of(seat_of_player(attacker_player))));

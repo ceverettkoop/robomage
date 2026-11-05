@@ -53,7 +53,7 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Defined$ You — the counters go on the controlling PLAYER, not a permanent (CR 122.1c:
     // a player can have counters too, e.g. energy {E}, poison, experience). Guide of Souls'
     // "get {E}" puts an ENERGY counter on the source's controller.
-    if (ab.def->defined_you) {
+    if (ab.def->defined.is(ObjectSpec::YOU)) {
         const CounterParams *cp = std::get_if<CounterParams>(&ab.def->params);
         if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
         // A dynamic CounterNum$ (Wrath of the Skies: CounterNum$ X, X = Count$xPaid → the

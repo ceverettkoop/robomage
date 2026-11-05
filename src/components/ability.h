@@ -290,7 +290,6 @@ struct AbilityDef {
     // through resolve_objects / resolve_players (queries/affected.h), and how a sub-ability binds
     // its parent's target. ObjectSpec::DEFAULT when the ability declared no Defined$.
     ObjectSpec defined;
-    bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
     // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the
     // targeted opponent reveals their hand (DefinedPlayer$ Targeted routes the search to that
@@ -326,32 +325,6 @@ struct AbilityDef {
     // (gains haste, is exiled at the next end step, and is exiled instead of leaving the
     // battlefield). General over any unearth card.
     bool is_unearth = false;
-    bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
-    bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
-    // Defined$ TriggeredActivator — the effect's player is the player who caused the trigger
-    // (the caster of the triggering spell / the activator of the triggering event), CR 603.x.
-    // Set at parse time; the actual player is captured into `triggered_activator` when the
-    // trigger fires (from the event's PLAYER param). Used by Mai, Scornful Striker (the player
-    // who cast the noncreature spell loses 2 life), but general to any effect reading a
-    // Defined player.
-    bool defined_triggered_activator = false;
-    // Defined$ TriggeredDefendingPlayer — the effect's player is the defending player of the
-    // attack that fired this trigger (Goblin Guide: the DEFENDER reveals/draws). In a two-player
-    // game the defender is the opponent of the attacker's controller (the non-active player).
-    // Bound as the ability's target (a player entity) at CREATURE_ATTACKED fire time.
-    bool defined_triggered_defending_player = false;
-    // Defined$ TriggeredPlayer — the effect's player is the player whose event fired the trigger
-    // (Roiling Vortex: "at the beginning of EACH player's upkeep, deal 1 damage to THAT player").
-    // A sibling of TriggeredActivator/TriggeredDefendingPlayer: bound at trigger-fire time from the
-    // triggering event's PLAYER param (e.g. the upkeep's active player), captured into
-    // `triggered_player`. General to any effect reading a Defined player off the event's player.
-    bool defined_triggered_player = false;
-    // Defined$ TriggeredCardController — the effect's player is the controller of the card that
-    // changed zones to fire this trigger (Searing Blood: the dead creature's controller takes 3
-    // damage). Fired by a Mode$ ChangesZone delayed trigger; the controller is read from the
-    // watched card's last-known information (CR 608.2g) and bound into `triggered_player` at
-    // trigger-fire time (the card is in the graveyard by then). Shares triggered_player storage.
-    bool defined_triggered_card_controller = false;
 
     // DB$ Animate (Guide of Souls): the Types$ list (classified into TYPE/SUBTYPE/SUPERTYPE
     // at parse time) to add to the targeted permanent (e.g. "Angel"), and whether the grant
@@ -967,11 +940,11 @@ struct Ability {
     Entity targeted_player = 0;
 
     // The player who caused this triggered ability to fire (the triggering event's PLAYER).
-    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
+    // Populated at trigger-fire time for Defined$ TriggeredActivator; UNKNOWN until then.
     Zone::Ownership triggered_activator = Zone::UNKNOWN;
 
-    // The player whose event fired this triggered ability. Populated at trigger-fire time when
-    // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
+    // The player whose event fired this triggered ability. Populated at trigger-fire time for
+    // Defined$ TriggeredPlayer (from the event's PLAYER param); UNKNOWN until then.
     Zone::Ownership triggered_player = Zone::UNKNOWN;
 
     // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
