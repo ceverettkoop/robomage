@@ -67,7 +67,15 @@ static void granted_keyword_findings(const std::string &spec);
 static bool granted_keyword_modelled(const std::string &keyword);
 static bool static_effect_zone_modelled(const StaticAbility &sa);
 static bool fold_affected_defined(std::string &affected, const std::string &defined);
+struct TriggerLine;
 static bool trigger_param_assumed(const std::string &key, const std::string &value);
+static bool read_by_trigger_branch(const std::string &key);
+static bool trigger_mode_reads(const std::string &mode, const std::string &key);
+static bool trigger_value_read(const TriggerLine &t, const std::string &key, const std::string &value,
+                               bool floating);
+static bool trigger_valid_card_read(const std::string &mode, const std::string &value, bool floating);
+static bool filter_reads_only(const std::string &spec, const std::vector<std::string> &tokens);
+static void trigger_form_findings(const std::string &line, const TriggerLine &t);
 
 static std::string value_from_script(const std::string &script, const std::string &key);
 static std::vector<std::string> multi_values_from_script(const std::string &script, const std::string &key);
@@ -3204,6 +3212,7 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
     ability.ability_type = AbilityDef::TRIGGERED;
     const TriggerLine t = read_trigger_line(line, svars, ability);
     const bool mode_bound = bind_trigger_line(t, ability);
+    if (mode_bound) trigger_form_findings(line, t);
     if (!mode_bound)
         parse_finding("trigger_mode", t.mode, "no event binding: the trigger is dropped");
     else if (ability.trigger_on == 0 && !ability.trigger_state_condition)
@@ -4694,4 +4703,131 @@ static bool static_param_assumed(const std::string &mode, const std::string &key
 static bool trigger_param_assumed(const std::string &key, const std::string &value) {
     (void)value;
     return key == "TriggerDescription" || key == "Execute" || key == "Secondary";
+}
+
+// The keys read_trigger_line has a branch for (it reports any other itself).
+static bool read_by_trigger_branch(const std::string &key) {
+    static const char *const kKeys[] = {"ValidSource", "ValidTarget", "Activator", "AttackingPlayer", "Phase",
+        "ValidPlayer", "ValidActivatingPlayer", "ValidSA", "Origin", "Destination", "ValidCard", "ValidCards",
+        "FirstCardInDrawStep", "Number", "Attacked", "CombatDamage", "ActivatorThisTurnCast"};
+    for (const char *k : kKeys)
+        if (key == k) return true;
+    return false;
+}
+
+// The params bind_trigger_line and the trigger scan act on for each mode, beyond the ones every
+// mode reads (trigger_form_findings). Any other param on that mode reads as nothing, whichever
+// branch of read_trigger_line consumes it.
+static bool trigger_mode_reads(const std::string &mode, const std::string &key) {
+    static const struct {
+        const char *mode;
+        const char *keys;
+    } kModeKeys[] = {
+        {"ChangesZone", "Origin Destination ValidCard ValidCards"},
+        {"ChangesZoneAll", "Origin Destination ValidCard ValidCards"},
+        {"Phase", "Phase ValidPlayer"},
+        {"SpellCast", "ValidCard ValidActivatingPlayer ValidSA ActivatorThisTurnCast"},
+        {"DamageDone", "ValidSource ValidTarget CombatDamage"},
+        {"DamageAll", "ValidSource ValidTarget CombatDamage"},
+        {"Drawn", "ValidCard FirstCardInDrawStep Number"},
+        {"LandPlayed", "ValidCard Origin"},
+        {"Attacks", "ValidCard Attacked"},
+        {"AttackersDeclared", "AttackingPlayer"},
+        {"TapsForMana", "ValidCard Activator"},
+        {"BecomesTarget", "ValidSource ValidTarget"},
+        {"BecomeMonstrous", "ValidCard"},
+    };
+    for (const auto &row : kModeKeys) {
+        if (mode != row.mode) continue;
+        const std::vector<std::string> keys = split(row.keys, ' ');
+        return std::find(keys.begin(), keys.end(), key) != keys.end();
+    }
+    return false;  // Mode$ Always reads none
+}
+
+// Does a param of a key mode `t.mode` reads have a value its reader honours? `floating`: the
+// trigger sits on an Effect (TriggerZones$ Command).
+static bool trigger_value_read(const TriggerLine &t, const std::string &key, const std::string &value,
+                               bool floating) {
+    const std::string &mode = t.mode;
+    if (key == "ValidCard" || key == "ValidCards") return trigger_valid_card_read(mode, value, floating);
+    if (key == "ValidSource") {
+        if (mode == "BecomesTarget") return filter_reads_only(value, {"Spell", "Card", "OppCtrl"});
+        return value == (mode == "DamageAll" ? "Creature.YouCtrl" : "Card.Self");
+    }
+    if (key == "ValidTarget") return value == (mode == "BecomesTarget" ? "Card.Self" : "Player");
+    if (key == "ValidPlayer") return value == "You" || value == "Player";
+    if (key == "ValidActivatingPlayer") return value == "You" || value == "Player" || value == "Opponent";
+    if (key == "ValidSA") return value == "Spell" || value.rfind("Spell.ManaSpent ", 0) == 0;
+    if (key == "Activator" || key == "AttackingPlayer") return value == "You" || value == "Player";
+    if (key == "Attacked") return value == "You,Planeswalker.YouCtrl";
+    if (key == "CombatDamage") return value == "True";
+    if (key == "FirstCardInDrawStep") return value == "False";
+    if (key == "Number") return t.draw_number_eq > 0;
+    if (key == "ActivatorThisTurnCast") return t.cast_count_eq > 0;
+    return true;
+}
+
+// Does the reader of mode `mode` honour ValidCard$ `value`? The move modes match it whole against
+// the moving object (zone_change_object_matches), but read Self and Other off the whole list; the
+// others read only the tokens their binding names.
+static bool trigger_valid_card_read(const std::string &mode, const std::string &value, bool floating) {
+    if (mode == "ChangesZone" || mode == "ChangesZoneAll" || mode == "LandPlayed")
+        return value.find(',') == std::string::npos ||
+               (!filter_names_token(value, "Self") && !filter_names_token(value, "Other"));
+    if (mode == "SpellCast") {
+        // bind_spell_cast_trigger binds one gate: a noncreature spell, or a colour or mana value.
+        if (filter_names_token(value, "nonCreature") &&
+            (filter_names_token(value, "Colorless") || value.find("cmc") != std::string::npos))
+            return false;
+        return filter_reads_only(value, {"Card", "Colorless", "nonCreature", "Self", "YouCtrl", "cmc*", "kicked*"});
+    }
+    if (mode == "Drawn") return filter_reads_only(value, {"Card", "OppOwn", "YouCtrl"});
+    if (mode == "Attacks") return value == "Card.Self" || (floating && value == "Creature.OppCtrl");
+    if (mode == "BecomeMonstrous") return value == "Card.Self";
+    if (mode == "TapsForMana") return value == "Creature";
+    return false;
+}
+
+// Does the filter spec name nothing but `tokens`, in a single alternative? A token ending in '*'
+// stands for any token with that prefix.
+static bool filter_reads_only(const std::string &spec, const std::vector<std::string> &tokens) {
+    if (spec.find_first_of(",;") != std::string::npos) return false;
+    size_t p = 0;
+    while (p <= spec.size()) {
+        const size_t nx = std::min(spec.find_first_of(".+", p), spec.size());
+        const std::string tok = spec.substr(p, nx - p);
+        p = nx + 1;
+        bool known = false;
+        for (const std::string &t : tokens)
+            known = known || tok == t || (t.back() == '*' && tok.rfind(t.substr(0, t.size() - 1), 0) == 0);
+        if (!known) return false;
+    }
+    return true;
+}
+
+// Reports the params of a bound trigger line that its mode's reader does not honour: a key the mode
+// does not read, or a value of one it does. The zones it functions from are checked against the
+// scans: only a Phase trigger has a graveyard scan, and every mode reads the gates and optionality
+// of bind_trigger_line.
+static void trigger_form_findings(const std::string &line, const TriggerLine &t) {
+    static const char *const kEveryMode[] = {"Mode", "Execute", "TriggerDescription", "Secondary", "TriggerZones",
+        "OptionalDecider", "IsPresent", "PresentCompare", "CheckSVar", "SVarCompare", "ResolvedLimit",
+        "NoResolvingCheck", "Static"};
+    const std::string zones = param_value(line, "TriggerZones");
+    const bool floating = zones.find("Command") != std::string::npos;
+    if (zones.find("Graveyard") != std::string::npos && t.mode != "Phase")
+        parse_finding("trigger_zone", "TriggerZones:Graveyard", t.mode + " has no graveyard scan");
+    size_t pos = 0;
+    std::string key, value;
+    while (next_param(line, pos, key, value)) {
+        bool every_mode = false;
+        for (const char *k : kEveryMode) every_mode = every_mode || key == k;
+        if (every_mode || !read_by_trigger_branch(key)) continue;
+        if (trigger_mode_reads(t.mode, key) && trigger_value_read(t, key, value, floating)) continue;
+        if (key == "ValidCard" || key == "ValidCards")
+            parse_finding("trigger_form", t.mode + ".ValidCard", key + "$ " + value);
+        else
+            parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+    }
 }

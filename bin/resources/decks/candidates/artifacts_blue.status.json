@@ -24,6 +24,15 @@
      "Thought Monitor"
     ],
     "mechanics": {
+     "Cast with this mana (The Everflowing Well)": {
+      "cards": [
+       "The Everflowing Well"
+      ],
+      "findings": [
+       "trigger_param:ValidSA"
+      ],
+      "size": "S"
+     },
      "Clone a target (CloneTarget)": {
       "cards": [
        "The Everflowing Well"
@@ -52,6 +61,15 @@
       ],
       "size": "M"
      },
+     "Spell-cast filters": {
+      "cards": [
+       "The Everflowing Well"
+      ],
+      "findings": [
+       "trigger_form:SpellCast.ValidCard"
+      ],
+      "size": "S"
+     },
      "The Stone Brain": {
       "cards": [
        "The Stone Brain"
@@ -68,7 +86,9 @@
       "Ghost Vacuum return"
      ],
      "The Everflowing Well": [
-      "Clone a target (CloneTarget)"
+      "Cast with this mana (The Everflowing Well)",
+      "Clone a target (CloneTarget)",
+      "Spell-cast filters"
      ],
      "The Stone Brain": [
       "Exile-the-card-itself costs",
@@ -83,19 +103,19 @@
      "The Stone Brain",
      "Thought Monitor"
     ],
-    "size_points": 8
+    "size_points": 10
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
+    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
+    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s): 3 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-11-05T13:57:49"
+   "summary": "6 new card(s): 3 clean, 3 need 6 mechanic(s) (10 points)",
+   "time": "2026-11-05T14:02:11"
   },
   "diff": {
    "detail": {
@@ -123,23 +143,25 @@
   "implement": {
    "detail": {
     "mechanics": [
+     "Cast with this mana (The Everflowing Well)",
      "Clone a target (CloneTarget)",
      "Exile-the-card-itself costs",
      "Ghost Vacuum return",
+     "Spell-cast filters",
      "The Stone Brain"
     ]
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
+    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
+    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Clone a target (CloneTarget), Exile-the-card-itself costs, Ghost Vacuum return, The Stone Brain",
-   "time": "2026-11-05T13:57:49"
+   "summary": "6 mechanic(s) to implement: Cast with this mana (The Everflowing Well), Clone a target (CloneTarget), Exile-the-card-itself costs, Ghost Vacuum return, Spell-cast filters, The Stone Brain",
+   "time": "2026-11-05T14:02:11"
   },
   "parse": {
    "detail": {
@@ -210,6 +232,18 @@
         "kind": "ability_param",
         "line": "T:Mode$ SpellCast | ValidCard$ Permanent | ValidSA$ Spell.ManaFromCard.StrictlySelf | ValidActivatingPlayer$ You | Execute$ TrigCopy | TriggerDescription$ Whenever you cast a permanent spell using mana produced by CARDNAME, up to one other target permanent you control becomes a copy of that spell until end of turn.",
         "name": "Clone.CloneTarget"
+       },
+       {
+        "detail": "ValidCard$ Permanent",
+        "kind": "trigger_form",
+        "line": "T:Mode$ SpellCast | ValidCard$ Permanent | ValidSA$ Spell.ManaFromCard.StrictlySelf | ValidActivatingPlayer$ You | Execute$ TrigCopy | TriggerDescription$ Whenever you cast a permanent spell using mana produced by CARDNAME, up to one other target permanent you control becomes a copy of that spell until end of turn.",
+        "name": "SpellCast.ValidCard"
+       },
+       {
+        "detail": "SpellCast ValidSA$ Spell.ManaFromCard.StrictlySelf",
+        "kind": "trigger_param",
+        "line": "T:Mode$ SpellCast | ValidCard$ Permanent | ValidSA$ Spell.ManaFromCard.StrictlySelf | ValidActivatingPlayer$ You | Execute$ TrigCopy | TriggerDescription$ Whenever you cast a permanent spell using mana produced by CARDNAME, up to one other target permanent you control becomes a copy of that spell until end of turn.",
+        "name": "ValidSA"
        }
       ],
       "layout": "transform",
@@ -270,14 +304,14 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
+    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s), 3 with findings (6 findings), 0 without a script",
-   "time": "2026-11-05T13:57:49"
+   "summary": "6 new card(s), 3 with findings (8 findings), 0 without a script",
+   "time": "2026-11-05T14:02:11"
   },
   "provision": {
    "detail": {

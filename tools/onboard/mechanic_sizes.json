@@ -96,6 +96,9 @@
   "UnlessCost on more effects": {"size": "M", "keys": ["ability_param:CopyPermanent.UnlessCost", "ability_param:DealDamage.UnlessCost", "ability_param:ImmediateTrigger.UnlessCost", "ability_param:Token.UnlessCost"], "note": "run_unless_loop runs on Counter, Destroy, Sacrifice, CopySpellAbility and DestroyAll; any other effect happens unconditionally"},
   "Enters as a copy (Mockingbird)": {"size": "M", "keys": ["keyword:ETBReplacement:DBCopy"], "note": "an ETBReplacement that makes a permanent enter as a copy of another (CR 707.5)"},
   "Two-condition alternative cost (Massacre)": {"size": "S", "keys": ["static_param:CheckSecondSVar"], "note": "AltCost holds one CheckSVar$"},
-  "Cost statics by player (Defense Grid)": {"size": "S", "keys": ["static_param:Activator"], "note": "Activator$ on a RaiseCost: \"except during their own turn\"; every player is taxed today"}
+  "Cost statics by player (Defense Grid)": {"size": "S", "keys": ["static_param:Activator"], "note": "Activator$ on a RaiseCost: \"except during their own turn\"; every player is taxed today"},
+  "Self-or-other zone triggers (Pyrogoyf)": {"size": "S", "keys": ["trigger_form:ChangesZone.ValidCard"], "note": "a ValidCard$ list naming Self in one alternative is read as Self alone"},
+  "Spell-cast filters": {"size": "S", "keys": ["trigger_form:SpellCast.ValidCard"], "note": "bind_spell_cast_trigger reads Card, Colorless, nonCreature, Self, YouCtrl, cmc and kicked; ValidCard$ Permanent (The Everflowing Well) fires on every spell"},
+  "Cast with this mana (The Everflowing Well)": {"size": "S", "keys": ["trigger_param:ValidSA"], "note": "ValidSA$ Spell.ManaFromCard: mana provenance on a cast trigger"}
  }
 }

@@ -85,6 +85,15 @@
       ],
       "size": "M"
      },
+     "Self-or-other zone triggers (Pyrogoyf)": {
+      "cards": [
+       "Pyrogoyf"
+      ],
+      "findings": [
+       "trigger_form:ChangesZone.ValidCard"
+      ],
+      "size": "S"
+     },
      "without<Keyword> filter qualifier": {
       "cards": [
        "Sundering Eruption"
@@ -109,7 +118,8 @@
       "Divided damage (CR 601.2d)"
      ],
      "Pyrogoyf": [
-      "Damage dealt by another object (DamageSource$)"
+      "Damage dealt by another object (DamageSource$)",
+      "Self-or-other zone triggers (Pyrogoyf)"
      ],
      "Shatterskull Smashing": [
       "Divided damage (CR 601.2d)"
@@ -132,19 +142,19 @@
      "Simian Spirit Guide",
      "Sundering Eruption"
     ],
-    "size_points": 15
+    "size_points": 16
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
+    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
+    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s): 1 clean, 8 need 7 mechanic(s) (15 points)",
-   "time": "2026-11-05T13:57:49"
+   "summary": "9 new card(s): 1 clean, 8 need 8 mechanic(s) (16 points)",
+   "time": "2026-11-05T14:02:11"
   },
   "diff": {
    "detail": {
@@ -181,20 +191,21 @@
      "Divided damage (CR 601.2d)",
      "Exile-the-card-itself costs",
      "Fable of the Mirror-Breaker",
+     "Self-or-other zone triggers (Pyrogoyf)",
      "without<Keyword> filter qualifier"
     ]
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
+    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "sizes": "56f6193e5ad3b35777f0126b77cb2a5fb6413fbd6950b7fe4e5f13494a0beb87",
+    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "7 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Exile-the-card-itself costs, Fable of the Mirror-Breaker, without<Keyword> filter qualifier",
-   "time": "2026-11-05T13:57:49"
+   "summary": "8 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Exile-the-card-itself costs, Fable of the Mirror-Breaker, Self-or-other zone triggers (Pyrogoyf), without<Keyword> filter qualifier",
+   "time": "2026-11-05T14:02:11"
   },
   "parse": {
    "detail": {
@@ -348,6 +359,12 @@
         "name": "DealDamage.DamageSource"
        },
        {
+        "detail": "ValidCard$ Card.Self,Creature.Lhurgoyf+YouCtrl",
+        "kind": "trigger_form",
+        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self,Creature.Lhurgoyf+YouCtrl | Origin$ Any | Destination$ Battlefield | Execute$ TrigDealDamage | TriggerZones$ Battlefield | TriggerDescription$ Whenever CARDNAME or another Lhurgoyf creature you control enters, that creature deals damage equal to its power to any target.",
+        "name": "ChangesZone.ValidCard"
+       },
+       {
         "detail": "Z = TriggeredCard$CardPower",
         "kind": "svar_expr",
         "line": "SVar:Z:TriggeredCard$CardPower",
@@ -436,14 +453,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "869a6dda350da5126bab512b2ae5de7039bf799a1a3e818718c97fe8401c64e8",
+    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s), 8 with findings (16 findings), 0 without a script",
-   "time": "2026-11-05T13:57:49"
+   "summary": "9 new card(s), 8 with findings (17 findings), 0 without a script",
+   "time": "2026-11-05T14:02:11"
   },
   "provision": {
    "detail": {

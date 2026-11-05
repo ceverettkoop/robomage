@@ -17,12 +17,12 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 7 | 3 | 5 | capability |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 3 | 2 | 6 | capability |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 3 | 3 | 7 | capability |
-| artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 6 | 4 | 8 | capability |
+| artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 6 | 6 | 10 | capability |
 | cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 7 | 4 | 12 | capability |
 | storm | Storm | 3.0 | combo | 30 | 15 | 8 | 14 | capability |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 3 | 4 | 15 | capability |
-| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 9 | 7 | 15 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 9 | 4 | 15 | capability |
+| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 9 | 8 | 16 | capability |
 | elves | Elves | 2.0 | combo | 32 | 11 | 5 | 16 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 2 | 5 | 18 | capability |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 5 | 7 | 18 | capability |
@@ -68,6 +68,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | - | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 | AlternateAdditionalCost keyword | S | 1 | - | Bitter Triumph | `keyword:AlternateAdditionalCost` | Bitter Triumph: discard a card or pay 3 life |
 | CantPreventDamage static | S | 1 | - | Frenzied Baloth | `static_mode:CantPreventDamage`, `static_param:IsCombat` | Frenzied Baloth (prevention exists for Maze of Ith) |
+| Cast with this mana (The Everflowing Well) | S | 1 | - | The Everflowing Well | `trigger_param:ValidSA` | ValidSA$ Spell.ManaFromCard: mana provenance on a cast trigger |
 | Clone a target (CloneTarget) | S | 1 | - | The Everflowing Well | `ability_param:Clone.CloneTarget` | The Everflowing Well's back face |
 | Cost statics by player (Defense Grid) | S | 1 | - | Defense Grid | `static_param:Activator` | Activator$ on a RaiseCost: "except during their own turn"; every player is taxed today |
 | Count$ValidGraveyard | S | 1 | - | Dark Matter Manipulator | `svar_expr:Count$ValidGraveyard` | Dark Matter Manipulator: cards in a graveyard, /DivideEvenlyDown.N |
@@ -78,7 +79,9 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Random choice (AtRandom) | S | 1 | - | Chaos Defiler | `ability_param:ChooseCard.AtRandom`, `filter:ControlledBy Remembered` | Chaos Defiler: a random nonland permanent each opponent controls |
 | Revolt trigger condition | S | 1 | - | Renegade Rallier | `trigger_param:Revolt` | Renegade Rallier |
 | Sand Scout | S | 1 | - | Sand Scout | `svar_expr:PlayerCountOpponents$HighestValid`, `trigger_param:ActivationLimit` | compare land counts; once each turn |
+| Self-or-other zone triggers (Pyrogoyf) | S | 1 | - | Pyrogoyf | `trigger_form:ChangesZone.ValidCard` | a ValidCard$ list naming Self in one alternative is read as Self alone |
 | Shuffle effect | S | 1 | - | Gamble | `ability_param:ChangeZone.NoShuffle`, `category:Shuffle` | Gamble |
+| Spell-cast filters | S | 1 | - | The Everflowing Well | `trigger_form:SpellCast.ValidCard` | bind_spell_cast_trigger reads Card, Colorless, nonCreature, Self, YouCtrl, cmc and kicked; ValidCard$ Permanent (The Everflowing Well) fires on every spell |
 | Taps trigger | S | 1 | - | Hawkeye's Bow | `trigger_mode:Taps` | Hawkeye's Bow: whenever equipped creature becomes tapped |
 | Targeted player's cards filter (TargetedPlayerOwn) | S | 1 | - | Strategic Betrayal | `filter:TargetedPlayerOwn` | Strategic Betrayal |
 | Targeted player's counts (TargetedPlayer$...) | S | 1 | - | Peer into the Abyss | `svar_expr:TargetedPlayer$CardsInLibrary/HalfUp`, `svar_expr:TargetedPlayer$LifeTotal/HalfUp` | Peer into the Abyss |
@@ -120,22 +123,22 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 7 | reanimator_top8 | AlternateAdditionalCost keyword; Stronghold Gambit; Top creature of a graveyard (Shallow Grave) | 5 | 7 | 7 |
 | 8 | artifacts_prison | Start your engines! (speed); Sunburst (CR 702.44) | 6 | 13 | 8 |
 | 9 | boros_aggro | Copy with exceptions (CopyPermanent Set*); Sand Scout; UnlessCost on more effects | 7 | 20 | 9 |
-| 10 | artifacts_blue | Clone a target (CloneTarget); Exile-the-card-itself costs; Ghost Vacuum return; The Stone Brain | 8 | 28 | 10 |
-| 11 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 36 | 11 |
-| 12 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher); Overload (CR 702.96) | 9 | 45 | 12 |
-| 13 | dragon_stompy | Boast (CR 702.142); Chrome Mox imprint; Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Fable of the Mirror-Breaker | 13 | 58 | 13 |
-| 14 | storm | Bargain and free casting (Beseech the Mirror); Discard the whole hand (Discard Mode$ Hand); Gaea's Will; Shuffle effect; Targeted player's counts (TargetedPlayer$...); UseAllOriginZones | 10 | 68 | 14 |
-| 15 | ur_tempo | Adventure (CR 715); Can't-block restrictions (CantBlockBy); Play from a zone with replacement (Bilbo) | 14 | 82 | 15 |
-| 16 | dimir_tempo | Mana cost on a triggered ability; Targeted player's cards filter (TargetedPlayerOwn); Two-condition alternative cost (Massacre) | 3 | 85 | 16 |
-| 17 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 91 | 17 |
-| 18 | elves | AnimateAll power, toughness and types; Convoke (CR 702.51); Discard-a-card activation cost; Hogaak casting; Hybrid pips in costs | 16 | 107 | 18 |
-| 19 | hogaak | Count$ValidGraveyard; Enters as a copy (Mockingbird); Mana spent on casting (Count$CastTotalManaSpent) | 5 | 112 | 19 |
-| 20 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Prepare (CR 722); Repeat effect (DB$ Repeat); Revolt trigger condition | 16 | 128 | 20 |
-| 21 | cradle_control | Bestow (CR 702.103) | 8 | 136 | 21 |
-| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 156 | 22 |
-| 23 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 175 | 23 |
-| 24 | aluren | Cost statics by player (Defense Grid); Dungeons and venture (CR 309, 701.49) | 21 | 196 | 24 |
-| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 222 | 25 |
+| 10 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher); Overload (CR 702.96) | 9 | 29 | 10 |
+| 11 | mystic_forge | Exile-the-card-itself costs; Play from the top of the library (Mystic Forge) | 9 | 38 | 11 |
+| 12 | artifacts_blue | Cast with this mana (The Everflowing Well); Clone a target (CloneTarget); Ghost Vacuum return; Spell-cast filters; The Stone Brain | 9 | 47 | 12 |
+| 13 | storm | Bargain and free casting (Beseech the Mirror); Chrome Mox imprint; Discard the whole hand (Discard Mode$ Hand); Gaea's Will; Shuffle effect; Targeted player's counts (TargetedPlayer$...); UseAllOriginZones | 13 | 60 | 13 |
+| 14 | dragon_stompy | Boast (CR 702.142); Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Fable of the Mirror-Breaker; Self-or-other zone triggers (Pyrogoyf) | 11 | 71 | 14 |
+| 15 | ur_tempo | Adventure (CR 715); Can't-block restrictions (CantBlockBy); Play from a zone with replacement (Bilbo) | 14 | 85 | 15 |
+| 16 | dimir_tempo | Mana cost on a triggered ability; Targeted player's cards filter (TargetedPlayerOwn); Two-condition alternative cost (Massacre) | 3 | 88 | 16 |
+| 17 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 94 | 17 |
+| 18 | elves | AnimateAll power, toughness and types; Convoke (CR 702.51); Discard-a-card activation cost; Hogaak casting; Hybrid pips in costs | 16 | 110 | 18 |
+| 19 | hogaak | Count$ValidGraveyard; Enters as a copy (Mockingbird); Mana spent on casting (Count$CastTotalManaSpent) | 5 | 115 | 19 |
+| 20 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Prepare (CR 722); Repeat effect (DB$ Repeat); Revolt trigger condition | 16 | 131 | 20 |
+| 21 | cradle_control | Bestow (CR 702.103) | 8 | 139 | 21 |
+| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 159 | 22 |
+| 23 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 178 | 23 |
+| 24 | aluren | Cost statics by player (Defense Grid); Dungeons and venture (CR 309, 701.49) | 21 | 199 | 24 |
+| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 225 | 25 |
 
 ## Per deck
 
@@ -198,7 +201,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 33 cards, 6 new; clean: Displacer Kitten, Sink into Stupor, Thought Monitor
 
 - Ghost Vacuum: Ghost Vacuum return
-- The Everflowing Well: Clone a target (CloneTarget)
+- The Everflowing Well: Cast with this mana (The Everflowing Well); Clone a target (CloneTarget); Spell-cast filters
 - The Stone Brain: Exile-the-card-itself costs; The Stone Brain
 
 ### cloudpost_tron_ramp — Cloudpost / Tron Ramp (5.0%, control)
@@ -231,19 +234,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Brazen Borrower: Adventure (CR 715); Can't-block restrictions (CantBlockBy); without<Keyword> filter qualifier
 - Rough/Tumble: without<Keyword> filter qualifier
 
-### dragon_stompy — Dragon Stompy (1.0%, aggro)
-
-22 cards, 9 new; clean: Fiery Confluence
-
-- Broadside Bombardiers: Boast (CR 702.142)
-- Chrome Mox: Chrome Mox imprint
-- Fable of the Mirror-Breaker: Fable of the Mirror-Breaker
-- Fury: Divided damage (CR 601.2d)
-- Pyrogoyf: Damage dealt by another object (DamageSource$)
-- Shatterskull Smashing: Divided damage (CR 601.2d)
-- Simian Spirit Guide: Exile-the-card-itself costs
-- Sundering Eruption: without<Keyword> filter qualifier
-
 ### mystic_forge — Mystic Forge (2.0%, combo)
 
 32 cards, 9 new; clean: Archive Arbiter, Basalt Monolith, Mishra's Research Desk, Portable Hole, Tezzeret, Cruel Captain
@@ -252,6 +242,19 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Mystic Forge: Play from the top of the library (Mystic Forge)
 - Perilous Snare: Start your engines! (speed)
 - The Echoverse Fulcrum: Exile-the-card-itself costs
+
+### dragon_stompy — Dragon Stompy (1.0%, aggro)
+
+22 cards, 9 new; clean: Fiery Confluence
+
+- Broadside Bombardiers: Boast (CR 702.142)
+- Chrome Mox: Chrome Mox imprint
+- Fable of the Mirror-Breaker: Fable of the Mirror-Breaker
+- Fury: Divided damage (CR 601.2d)
+- Pyrogoyf: Damage dealt by another object (DamageSource$); Self-or-other zone triggers (Pyrogoyf)
+- Shatterskull Smashing: Divided damage (CR 601.2d)
+- Simian Spirit Guide: Exile-the-card-itself costs
+- Sundering Eruption: without<Keyword> filter qualifier
 
 ### elves — Elves (2.0%, combo)
 
