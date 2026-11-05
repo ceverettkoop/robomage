@@ -53,14 +53,14 @@
       ],
       "size": "L"
      },
-     "FORGE_PIN bump": {
+     "Prepare (CR 722)": {
       "cards": [
        "Carnivorous Cultivator"
       ],
       "findings": [
-       "script:Carnivorous Cultivator"
+       "layout:Prepare"
       ],
-      "size": "M"
+      "size": "L"
      },
      "Repeat effect (DB$ Repeat)": {
       "cards": [
@@ -79,7 +79,7 @@
       "AnimateAll power, toughness and types"
      ],
      "Carnivorous Cultivator": [
-      "FORGE_PIN bump"
+      "Prepare (CR 722)"
      ],
      "Grist, the Hunger Tide": [
       "A creature card in every other zone (Grist)",
@@ -96,29 +96,28 @@
      "Grist, the Hunger Tide",
      "Springheart Nantuko"
     ],
-    "size_points": 18
+    "size_points": 23
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s): 1 clean, 4 need 5 mechanic(s) (18 points)",
-   "time": "2026-10-25T02:09:21"
+   "summary": "5 new card(s): 1 clean, 4 need 5 mechanic(s) (23 points)",
+   "time": "2026-11-05T13:26:19"
   },
   "diff": {
    "detail": {
     "distinct": 34,
     "in_vocab": 29,
-    "no_script": [
-     "Carnivorous Cultivator"
-    ],
+    "no_script": [],
     "not_in_vocab": [
      "Allosaurus Shepherd",
+     "Carnivorous Cultivator",
      "Fiend Artisan",
      "Grist, the Hunger Tide",
      "Springheart Nantuko"
@@ -126,12 +125,12 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "34 cards: 29 in vocab, 5 new (1 without a script)",
-   "time": "2026-10-25T01:08:29"
+   "summary": "34 cards: 29 in vocab, 5 new (0 without a script)",
+   "time": "2026-11-05T13:02:36"
   },
   "implement": {
    "detail": {
@@ -139,21 +138,21 @@
      "A creature card in every other zone (Grist)",
      "AnimateAll power, toughness and types",
      "Bestow (CR 702.103)",
-     "FORGE_PIN bump",
+     "Prepare (CR 722)",
      "Repeat effect (DB$ Repeat)"
     ]
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), FORGE_PIN bump, Repeat effect (DB$ Repeat)",
-   "time": "2026-10-25T02:09:21"
+   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), Prepare (CR 722), Repeat effect (DB$ Repeat)",
+   "time": "2026-11-05T13:26:19"
   },
   "parse": {
    "detail": {
@@ -187,6 +186,28 @@
       "script": "cardsfolder/a/allosaurus_shepherd.txt",
       "tokens": [],
       "vocab": [
+       -1
+      ]
+     },
+     "Carnivorous Cultivator": {
+      "card": "Carnivorous Cultivator",
+      "faces": [
+       "Carnivorous Cultivator",
+       "Enroot"
+      ],
+      "findings": [
+       {
+        "detail": "AlternateMode:Prepare is read as a transforming card",
+        "kind": "layout",
+        "line": "",
+        "name": "Prepare"
+       }
+      ],
+      "layout": "transform",
+      "script": "cardsfolder/c/carnivorous_cultivator_enroot.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
        -1
       ]
      },
@@ -284,20 +305,18 @@
       ]
      }
     },
-    "no_script": [
-     "Carnivorous Cultivator"
-    ]
+    "no_script": []
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "4 new card(s), 3 with findings (10 findings), 1 without a script",
-   "time": "2026-10-25T02:09:21"
+   "summary": "5 new card(s), 4 with findings (11 findings), 0 without a script",
+   "time": "2026-11-05T13:26:19"
   },
   "provision": {
    "detail": {
@@ -309,18 +328,16 @@
     ],
     "tokens_fetched": [],
     "tokens_missing": [],
-    "unobtainable": [
-     "Carnivorous Cultivator"
-    ]
+    "unobtainable": []
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "scripts": "1e6deffdf555ea876ae2c475e679d4edae7c72ac27d3ea0cdf4db17883406eff",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "0 fetched, 1 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:30"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-05T13:02:36"
   },
   "scrape": {
    "detail": {

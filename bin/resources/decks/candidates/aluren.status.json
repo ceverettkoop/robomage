@@ -63,15 +63,15 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "ce47c1015165a5beda031c394800ef99c0a4ddf3e3d7f7f4eab2f37b592dd6f4",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s): 3 clean, 2 need 2 mechanic(s) (23 points)",
-   "time": "2026-10-25T02:09:20"
+   "time": "2026-11-05T13:26:19"
   },
   "diff": {
    "detail": {
@@ -88,12 +88,12 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "scripts": "ce47c1015165a5beda031c394800ef99c0a4ddf3e3d7f7f4eab2f37b592dd6f4",
+    "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "32 cards: 27 in vocab, 5 new (0 without a script)",
-   "time": "2026-10-25T01:08:27"
+   "time": "2026-11-05T13:02:35"
   },
   "implement": {
    "detail": {
@@ -104,15 +104,15 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "ce47c1015165a5beda031c394800ef99c0a4ddf3e3d7f7f4eab2f37b592dd6f4",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Discard-a-card activation cost, Dungeons and venture (CR 309, 701.49)",
-   "time": "2026-10-25T02:09:20"
+   "time": "2026-11-05T13:26:19"
   },
   "parse": {
    "detail": {
@@ -212,14 +212,14 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "ce47c1015165a5beda031c394800ef99c0a4ddf3e3d7f7f4eab2f37b592dd6f4",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-10-25T02:09:20"
+   "time": "2026-11-05T13:26:19"
   },
   "provision": {
    "detail": {
@@ -234,12 +234,12 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "scripts": "ce47c1015165a5beda031c394800ef99c0a4ddf3e3d7f7f4eab2f37b592dd6f4",
+    "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:27"
+   "time": "2026-11-05T13:02:35"
   },
   "scrape": {
    "detail": {

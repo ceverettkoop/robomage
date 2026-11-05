@@ -63,10 +63,11 @@
        "Hogaak, Arisen Necropolis"
       ],
       "findings": [
-       "ability_param:PermanentCreature.ManaRestriction",
-       "category:PermanentCreature",
        "static_form:MayPlay.Graveyard",
-       "static_param:EffectZone"
+       "static_mode:ManaRestriction",
+       "static_param:EffectZone",
+       "static_param:InvertValidSource",
+       "static_param:ValidSource"
       ],
       "size": "L"
      }
@@ -100,15 +101,15 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "11 new card(s): 8 clean, 3 need 4 mechanic(s) (15 points)",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:20"
   },
   "diff": {
    "detail": {
@@ -131,12 +132,12 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "32 cards: 21 in vocab, 11 new (0 without a script)",
-   "time": "2026-10-25T01:08:31"
+   "time": "2026-11-05T13:02:36"
   },
   "implement": {
    "detail": {
@@ -149,15 +150,15 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:20"
   },
   "parse": {
    "detail": {
@@ -260,16 +261,28 @@
       ],
       "findings": [
        {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:SP$ PermanentCreature | Cost$ 5 BG BG | ManaRestriction$ None",
-        "name": "PermanentCreature"
+        "detail": "ManaRestriction ValidSource$ Card,Emblem",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
+        "name": "ValidSource"
        },
        {
-        "detail": "PermanentCreature ManaRestriction$ None",
-        "kind": "ability_param",
-        "line": "A:SP$ PermanentCreature | Cost$ 5 BG BG | ManaRestriction$ None",
-        "name": "PermanentCreature.ManaRestriction"
+        "detail": "ManaRestriction InvertValidSource$ True",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
+        "name": "InvertValidSource"
+       },
+       {
+        "detail": "the engine applies no such static",
+        "kind": "static_mode",
+        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
+        "name": "ManaRestriction"
+       },
+       {
+        "detail": "ManaRestriction EffectZone$ All",
+        "kind": "static_param",
+        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
+        "name": "EffectZone"
        },
        {
         "detail": "Continuous EffectZone$ Graveyard",
@@ -367,14 +380,14 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "11 new card(s), 3 with findings (9 findings), 0 without a script",
-   "time": "2026-10-25T02:09:21"
+   "summary": "11 new card(s), 3 with findings (11 findings), 0 without a script",
+   "time": "2026-11-05T13:26:20"
   },
   "provision": {
    "detail": {
@@ -387,12 +400,12 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "scripts": "c7c1ac2031c19b8e6a6c041b5c4dcc806e89b34bad423d5e859d68631696eb34",
+    "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:31"
+   "time": "2026-11-05T13:02:36"
   },
   "scrape": {
    "detail": {

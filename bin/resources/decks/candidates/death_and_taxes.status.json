@@ -26,15 +26,15 @@
    },
    "inputs": {
     "deck": "9101cacf48b7bf57fcf4ff18e09a1c6e0671a5798d56a81f3749ba49f6755bde",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "399f3685dbc7c81b99bbef4014b601ba33643c3a308ab398c89402d489f4a096",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "9834f635b77d846aa4fcb14e181035b945bf9c8bc75c5b0d6405737b3bfb61cd",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:19"
   },
   "diff": {
    "detail": {
@@ -45,26 +45,26 @@
    },
    "inputs": {
     "deck": "9101cacf48b7bf57fcf4ff18e09a1c6e0671a5798d56a81f3749ba49f6755bde",
-    "scripts": "399f3685dbc7c81b99bbef4014b601ba33643c3a308ab398c89402d489f4a096",
+    "scripts": "9834f635b77d846aa4fcb14e181035b945bf9c8bc75c5b0d6405737b3bfb61cd",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "31 cards: 31 in vocab, 0 new (0 without a script)",
-   "time": "2026-10-25T01:08:30"
+   "time": "2026-11-05T13:02:36"
   },
   "implement": {
    "detail": {},
    "inputs": {
     "deck": "9101cacf48b7bf57fcf4ff18e09a1c6e0671a5798d56a81f3749ba49f6755bde",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "399f3685dbc7c81b99bbef4014b601ba33643c3a308ab398c89402d489f4a096",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "9834f635b77d846aa4fcb14e181035b945bf9c8bc75c5b0d6405737b3bfb61cd",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:19"
   },
   "parse": {
    "detail": {
@@ -73,14 +73,14 @@
    },
    "inputs": {
     "deck": "9101cacf48b7bf57fcf4ff18e09a1c6e0671a5798d56a81f3749ba49f6755bde",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "399f3685dbc7c81b99bbef4014b601ba33643c3a308ab398c89402d489f4a096",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "9834f635b77d846aa4fcb14e181035b945bf9c8bc75c5b0d6405737b3bfb61cd",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:19"
   },
   "provision": {
    "detail": {
@@ -93,12 +93,12 @@
    },
    "inputs": {
     "deck": "9101cacf48b7bf57fcf4ff18e09a1c6e0671a5798d56a81f3749ba49f6755bde",
-    "scripts": "399f3685dbc7c81b99bbef4014b601ba33643c3a308ab398c89402d489f4a096",
+    "scripts": "9834f635b77d846aa4fcb14e181035b945bf9c8bc75c5b0d6405737b3bfb61cd",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:30"
+   "time": "2026-11-05T13:02:36"
   },
   "scrape": {
    "detail": {

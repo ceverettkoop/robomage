@@ -42,14 +42,14 @@
       ],
       "size": "S"
      },
-     "FORGE_PIN bump": {
+     "Prepare (CR 722)": {
       "cards": [
        "Carnivorous Cultivator"
       ],
       "findings": [
-       "script:Carnivorous Cultivator"
+       "layout:Prepare"
       ],
-      "size": "M"
+      "size": "L"
      },
      "Repeat effect (DB$ Repeat)": {
       "cards": [
@@ -74,7 +74,7 @@
     },
     "needs": {
      "Carnivorous Cultivator": [
-      "FORGE_PIN bump"
+      "Prepare (CR 722)"
      ],
      "Frenzied Baloth": [
       "CantPreventDamage static"
@@ -95,28 +95,27 @@
      "Nurturing Peatland",
      "Renegade Rallier"
     ],
-    "size_points": 11
+    "size_points": 16
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s): 2 clean, 4 need 5 mechanic(s) (11 points)",
-   "time": "2026-10-25T02:09:21"
+   "summary": "6 new card(s): 2 clean, 4 need 5 mechanic(s) (16 points)",
+   "time": "2026-11-05T13:26:20"
   },
   "diff": {
    "detail": {
     "distinct": 38,
     "in_vocab": 32,
-    "no_script": [
-     "Carnivorous Cultivator"
-    ],
+    "no_script": [],
     "not_in_vocab": [
+     "Carnivorous Cultivator",
      "Frenzied Baloth",
      "Grist, the Hunger Tide",
      "Lush Portico",
@@ -126,38 +125,60 @@
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "38 cards: 32 in vocab, 6 new (1 without a script)",
-   "time": "2026-10-25T01:08:32"
+   "summary": "38 cards: 32 in vocab, 6 new (0 without a script)",
+   "time": "2026-11-05T13:02:37"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "A creature card in every other zone (Grist)",
      "CantPreventDamage static",
-     "FORGE_PIN bump",
+     "Prepare (CR 722)",
      "Repeat effect (DB$ Repeat)",
      "Revolt trigger condition"
     ]
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, FORGE_PIN bump, Repeat effect (DB$ Repeat), Revolt trigger condition",
-   "time": "2026-10-25T02:09:21"
+   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Prepare (CR 722), Repeat effect (DB$ Repeat), Revolt trigger condition",
+   "time": "2026-11-05T13:26:20"
   },
   "parse": {
    "detail": {
     "cards": {
+     "Carnivorous Cultivator": {
+      "card": "Carnivorous Cultivator",
+      "faces": [
+       "Carnivorous Cultivator",
+       "Enroot"
+      ],
+      "findings": [
+       {
+        "detail": "AlternateMode:Prepare is read as a transforming card",
+        "kind": "layout",
+        "line": "",
+        "name": "Prepare"
+       }
+      ],
+      "layout": "transform",
+      "script": "cardsfolder/c/carnivorous_cultivator_enroot.txt",
+      "tokens": [],
+      "vocab": [
+       -1,
+       -1
+      ]
+     },
      "Frenzied Baloth": {
       "card": "Frenzied Baloth",
       "faces": [
@@ -274,20 +295,18 @@
       ]
      }
     },
-    "no_script": [
-     "Carnivorous Cultivator"
-    ]
+    "no_script": []
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "5 new card(s), 3 with findings (7 findings), 1 without a script",
-   "time": "2026-10-25T02:09:21"
+   "summary": "6 new card(s), 4 with findings (8 findings), 0 without a script",
+   "time": "2026-11-05T13:26:20"
   },
   "provision": {
    "detail": {
@@ -298,18 +317,16 @@
     ],
     "tokens_fetched": [],
     "tokens_missing": [],
-    "unobtainable": [
-     "Carnivorous Cultivator"
-    ]
+    "unobtainable": []
    },
    "inputs": {
     "deck": "dff7aca4e293acc4ffddc59444737d881d3974244045fdcb2e367adb579f8e09",
-    "scripts": "9409aa7e6912643e3fbcdd5f21d869e7c0f4b3e687c56c2518ca5d4e783487b8",
+    "scripts": "45915354d31bfa48cd1125d84f76a4c5bc680245eaa56dc56bd5a5f182168e9f",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "0 fetched, 1 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:33"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-05T13:02:37"
   },
   "scrape": {
    "detail": {

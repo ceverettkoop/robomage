@@ -40,12 +40,24 @@
       ],
       "size": "M"
      },
-     "FORGE_PIN bump": {
+     "Empower": {
       "cards": [
        "Theorist's Proxy"
       ],
       "findings": [
-       "script:Theorist's Proxy"
+       "ability_param:Empower.Type",
+       "category:Empower"
+      ],
+      "size": "M"
+     },
+     "Next-spell effect (Theorist's Proxy)": {
+      "cards": [
+       "Theorist's Proxy"
+      ],
+      "findings": [
+       "ability_param:DelayedTrigger.Static",
+       "ability_param:DelayedTrigger.ValidActivatingPlayer",
+       "replacement:Effect:Counter"
       ],
       "size": "M"
      },
@@ -66,67 +78,68 @@
       "without<Keyword> filter qualifier"
      ],
      "Theorist's Proxy": [
-      "FORGE_PIN bump"
+      "Empower",
+      "Next-spell effect (Theorist's Proxy)"
      ]
     },
     "new_cards": [
      "Brazen Borrower",
      "Theorist's Proxy"
     ],
-    "size_points": 15
+    "size_points": 18
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "c0ac1fa2cd8efea80bf580eae92e33889842bf8bce18d929886782ed5a66d2d4",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 4 mechanic(s) (15 points)",
-   "time": "2026-10-25T02:09:21"
+   "summary": "2 new card(s): 0 clean, 2 need 5 mechanic(s) (18 points)",
+   "time": "2026-11-05T13:26:20"
   },
   "diff": {
    "detail": {
     "distinct": 33,
     "in_vocab": 31,
-    "no_script": [
-     "Theorist's Proxy"
-    ],
+    "no_script": [],
     "not_in_vocab": [
-     "Brazen Borrower"
+     "Brazen Borrower",
+     "Theorist's Proxy"
     ]
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "scripts": "c0ac1fa2cd8efea80bf580eae92e33889842bf8bce18d929886782ed5a66d2d4",
+    "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "33 cards: 31 in vocab, 2 new (1 without a script)",
-   "time": "2026-10-25T01:08:30"
+   "summary": "33 cards: 31 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-05T13:02:36"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Adventure (CR 715)",
      "Can't-block restrictions (CantBlockBy)",
-     "FORGE_PIN bump",
+     "Empower",
+     "Next-spell effect (Theorist's Proxy)",
      "without<Keyword> filter qualifier"
     ]
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "c0ac1fa2cd8efea80bf580eae92e33889842bf8bce18d929886782ed5a66d2d4",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), FORGE_PIN bump, without<Keyword> filter qualifier",
-   "time": "2026-10-25T02:09:21"
+   "summary": "5 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Empower, Next-spell effect (Theorist's Proxy), without<Keyword> filter qualifier",
+   "time": "2026-11-05T13:26:20"
   },
   "parse": {
    "detail": {
@@ -176,44 +189,82 @@
        -1,
        -1
       ]
+     },
+     "Theorist's Proxy": {
+      "card": "Theorist's Proxy",
+      "faces": [
+       "Theorist's Proxy"
+      ],
+      "findings": [
+       {
+        "detail": "DelayedTrigger ValidActivatingPlayer$ You",
+        "kind": "ability_param",
+        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
+        "name": "DelayedTrigger.ValidActivatingPlayer"
+       },
+       {
+        "detail": "Event$ Counter | ValidCard$ Card.IsRemembered | ValidSA$ Spell | Layer$ CantHappen | Description$ This spell can't be countered.",
+        "kind": "replacement",
+        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
+        "name": "Effect:Counter"
+       },
+       {
+        "detail": "DelayedTrigger Static$ True",
+        "kind": "ability_param",
+        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
+        "name": "DelayedTrigger.Static"
+       },
+       {
+        "detail": "resolves as a no-op",
+        "kind": "category",
+        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | Execute$ DBEmpower | TriggerDescription$ When this creature enters, empower Jace 3. (Put three loyalty counters on a Jace token you control. If you don't control one, first create a blue Jace planeswalker token with \"[-1]: Surveil 1\" and \"[-3]: Draw a card.\")",
+        "name": "Empower"
+       },
+       {
+        "detail": "Empower Type$ Jace",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | Execute$ DBEmpower | TriggerDescription$ When this creature enters, empower Jace 3. (Put three loyalty counters on a Jace token you control. If you don't control one, first create a blue Jace planeswalker token with \"[-1]: Surveil 1\" and \"[-3]: Draw a card.\")",
+        "name": "Empower.Type"
+       }
+      ],
+      "layout": "normal",
+      "script": "cardsfolder/t/theorists_proxy.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
      }
     },
-    "no_script": [
-     "Theorist's Proxy"
-    ]
+    "no_script": []
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "c0ac1fa2cd8efea80bf580eae92e33889842bf8bce18d929886782ed5a66d2d4",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (5 findings), 1 without a script",
-   "time": "2026-10-25T02:09:21"
+   "summary": "2 new card(s), 2 with findings (10 findings), 0 without a script",
+   "time": "2026-11-05T13:26:20"
   },
   "provision": {
    "detail": {
     "fetched": [],
-    "on_forge_master": [
-     "Theorist's Proxy"
-    ],
+    "on_forge_master": [],
     "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
-    "unobtainable": [
-     "Theorist's Proxy"
-    ]
+    "unobtainable": []
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "scripts": "c0ac1fa2cd8efea80bf580eae92e33889842bf8bce18d929886782ed5a66d2d4",
+    "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:31"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-05T13:02:36"
   },
   "scrape": {
    "detail": {

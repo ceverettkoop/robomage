@@ -254,15 +254,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "18 new card(s): 5 clean, 13 need 15 mechanic(s) (54 points)",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:20"
   },
   "diff": {
    "detail": {
@@ -292,12 +292,12 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "41 cards: 23 in vocab, 18 new (0 without a script)",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-11-05T13:02:37"
   },
   "implement": {
    "detail": {
@@ -321,15 +321,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin Welder swap, Mana with riders and Exert ",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:20"
   },
   "parse": {
    "detail": {
@@ -379,27 +379,27 @@
       ],
       "findings": [
        {
-        "detail": "Cost$ R T Exert<1/CARDNAME>",
+        "detail": "Cost$ R T Exert<1/CARDNAME/this land>",
         "kind": "cost",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
         "name": "Exert"
        },
        {
         "detail": "AddMana AddsKeywords$ Haste",
         "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
         "name": "AddMana.AddsKeywords"
        },
        {
         "detail": "AddMana AddsKeywordsValid$ Spell.Creature",
         "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
         "name": "AddMana.AddsKeywordsValid"
        },
        {
         "detail": "AddMana AddsKeywordsUntil$ UntilEOT",
         "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
         "name": "AddMana.AddsKeywordsUntil"
        }
       ],
@@ -849,14 +849,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "18 new card(s), 13 with findings (41 findings), 0 without a script",
-   "time": "2026-10-25T02:09:21"
+   "time": "2026-11-05T13:26:20"
   },
   "provision": {
    "detail": {
@@ -873,12 +873,12 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "scripts": "ea3832066cb5ae5f8d2173269154cb52871cb9cced6c297f375f9ff7c692ff9b",
+    "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 3 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:35"
+   "time": "2026-11-05T13:02:37"
   },
   "scrape": {
    "detail": {

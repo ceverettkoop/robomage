@@ -19,6 +19,7 @@
   "capability": {
    "detail": {
     "clean": [
+     "Giant's Boulder",
      "Sink into Stupor",
      "Thundertrap Trainer"
     ],
@@ -30,15 +31,6 @@
       "findings": [
        "ability_param:Animate.Exhaust",
        "cost:Waterbend"
-      ],
-      "size": "M"
-     },
-     "FORGE_PIN bump": {
-      "cards": [
-       "Giant's Boulder"
-      ],
-      "findings": [
-       "script:Giant's Boulder"
       ],
       "size": "M"
      },
@@ -77,9 +69,6 @@
      "Engineered Explosives": [
       "Sunburst (CR 702.44)"
      ],
-     "Giant's Boulder": [
-      "FORGE_PIN bump"
-     ],
      "Hullbreacher": [
       "Opponent's-draw replacement (Hullbreacher)"
      ],
@@ -96,30 +85,29 @@
      "Sink into Stupor",
      "Thundertrap Trainer"
     ],
-    "size_points": 15
+    "size_points": 12
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "7 new card(s): 2 clean, 5 need 5 mechanic(s) (15 points)",
-   "time": "2026-10-25T02:09:21"
+   "summary": "7 new card(s): 3 clean, 4 need 4 mechanic(s) (12 points)",
+   "time": "2026-11-05T13:26:19"
   },
   "diff": {
    "detail": {
     "distinct": 29,
     "in_vocab": 22,
-    "no_script": [
-     "Giant's Boulder"
-    ],
+    "no_script": [],
     "not_in_vocab": [
      "Cyclonic Rift",
      "Engineered Explosives",
+     "Giant's Boulder",
      "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor",
@@ -128,18 +116,17 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "29 cards: 22 in vocab, 7 new (1 without a script)",
-   "time": "2026-10-25T01:08:29"
+   "summary": "29 cards: 22 in vocab, 7 new (0 without a script)",
+   "time": "2026-11-05T13:02:36"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Exhaust and Waterbend (Avatar)",
-     "FORGE_PIN bump",
      "Opponent's-draw replacement (Hullbreacher)",
      "Overload (CR 702.96)",
      "Sunburst (CR 702.44)"
@@ -147,15 +134,15 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
-    "sizes": "9b617446d01787be4fbda56a1a543ab4e0e5ef6a157405c9629ee03e352af08c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
+    "sizes": "f140b434d026ac14bfc7fd1b81eb4c9fccc5ef39234bdfca9fddf0b464219fa3",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "5 mechanic(s) to implement: Exhaust and Waterbend (Avatar), FORGE_PIN bump, Opponent's-draw replacement (Hullbreacher), Overload (CR 702.96), Sunburst (CR 702.44)",
-   "time": "2026-10-25T02:09:21"
+   "summary": "4 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Opponent's-draw replacement (Hullbreacher), Overload (CR 702.96), Sunburst (CR 702.44)",
+   "time": "2026-11-05T13:26:19"
   },
   "parse": {
    "detail": {
@@ -195,6 +182,19 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/e/engineered_explosives.txt",
+      "tokens": [],
+      "vocab": [
+       -1
+      ]
+     },
+     "Giant's Boulder": {
+      "card": "Giant's Boulder",
+      "faces": [
+       "Giant's Boulder"
+      ],
+      "findings": [],
+      "layout": "normal",
+      "script": "cardsfolder/g/giants_boulder.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -280,44 +280,38 @@
       ]
      }
     },
-    "no_script": [
-     "Giant's Boulder"
-    ]
+    "no_script": []
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
-    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "engine": "771f95438ea13a905598ce97cd60c8e7fe98877b63db4142b620268f0727bbc2",
+    "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s), 4 with findings (5 findings), 1 without a script",
-   "time": "2026-10-25T02:09:21"
+   "summary": "7 new card(s), 4 with findings (5 findings), 0 without a script",
+   "time": "2026-11-05T13:26:19"
   },
   "provision": {
    "detail": {
     "fetched": [],
-    "on_forge_master": [
-     "Giant's Boulder"
-    ],
+    "on_forge_master": [],
     "tokens": [
      "c_a_treasure_sac"
     ],
     "tokens_fetched": [],
     "tokens_missing": [],
-    "unobtainable": [
-     "Giant's Boulder"
-    ]
+    "unobtainable": []
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "scripts": "0761836e200fad7d98ae9b1e71db9348742bcd98de75eb8de31480780984d63c",
+    "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "0 fetched, 1 not at the Forge pin (1 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-10-25T01:08:29"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-05T13:02:36"
   },
   "scrape": {
    "detail": {
