@@ -1,0 +1,11 @@
+{
+  "name": "cr301_5_equipment_static_affects_only_equipped_creature",
+  "why": "CR 301.5: AffectedDefined$ Equipped | Affected$ Creature (Forge f62f8048) buffs the equipped creature alone, not every creature",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Shadowspear", "Grizzly Bears", "Stoneforge Mystic", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:desc:Equip", "A:target:Grizzly Bears"],
+  "max_decisions": 8,
+  "expect": ["Grizzly Bears gains 1/1 Trample & Lifelink"],
+  "expect_not": ["Creatures gain"]
+}

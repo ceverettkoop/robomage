@@ -1,0 +1,13 @@
+{
+  "name": "cr122_1d_stun_counter_replaces_untap",
+  "why": "CR 122.1d: a tapped permanent with a stun counter sheds one instead of untapping; Kaito's script writes the counter type STUN (Forge f62f8048)",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest"],
+  "hand_b": ["Forest"],
+  "battlefield_a": ["Kaito Bane of Nightmares", "Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:[-2]", "A:target:Grizzly Bears@opp"],
+  "max_decisions": 12,
+  "expect_order": ["Kaito, Bane of Nightmares activates a loyalty ability", "Grizzly Bears has a stun counter removed instead of untapping"]
+}

@@ -9,6 +9,7 @@
 # engine for any mechanism changes, replace the SHA below, delete the changed
 # local scripts so they re-fetch, and run `make check` before committing.
 #
-# Pinned 2026-07-20 ("HOB: 4 cards (#11286)", 2026-07-19 — the ref this clone's
-# scripts were fetched from and the full `make check` suite passed against).
-3c208607edded47cdc41c05e30baca068018272c
+# Pinned 2026-11-05 ("Skip API check when SA copy needs no retargeting (#12695)",
+# 2026-11-05 — the ref this clone's scripts were fetched from and the full
+# `make check` suite passed against).
+f62f804806c2c207d41828c78faad00f0fc72585

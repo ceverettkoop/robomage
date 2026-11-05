@@ -49,6 +49,7 @@ static std::string keyword_finding_name(const std::string &keyword);
 static bool static_mode_modelled(const std::string &mode);
 static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value);
 static bool static_effect_zone_modelled(const StaticAbility &sa);
+static bool fold_affected_defined(std::string &affected, const std::string &defined);
 static bool trigger_param_assumed(const std::string &key, const std::string &value);
 
 static std::string value_from_script(const std::string &script, const std::string &key);
@@ -3647,6 +3648,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
     bool may_play = false;              // MayPlay$ True (resolve_may_play_form)
     bool may_play_no_zone_grant = false;  // MayPlayDontGrantZonePermissions$ True
+    std::string affected_defined;       // AffectedDefined$ (fold_affected_defined)
     size_t param_pos = 0;
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
@@ -3691,6 +3693,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // its name (so the reparse's svars map is keyed correctly) and its resolved body.
                 sa.add_trigger_svar_name = value;
                 sa.add_trigger_svar = svar_or_literal(svars, value);
+            } else if (key == "AffectedDefined") {
+                affected_defined = value;
             } else if (key == "Affected") {
                 sa.affected = value;
                 // Per-source counter gate (Kaito: Affected$ Permanent.Self+counters_GE1_LOYALTY).
@@ -3888,6 +3892,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 parse_finding("static_param", key, sa.category + " " + key + "$ " + value);
             }
         }
+    if (!affected_defined.empty() && !fold_affected_defined(sa.affected, affected_defined))
+        parse_finding("static_param", "AffectedDefined", sa.category + " AffectedDefined$ " + affected_defined);
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
     if (!static_effect_zone_modelled(sa))
         parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
@@ -3932,6 +3938,24 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
     }
     for (const std::string &z : zones)
         parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected + " from " + z);
+}
+
+// AffectedDefined$ names the one object a static affects (Self, or what its source is attached
+// to) and Affected$, when present, restricts it further. Writes that as the qualifier every reader
+// of StaticAbility::affected knows: Creature + Equipped is "Creature.EquippedBy", and
+// Permanent.counters_GE1_LOYALTY + Self is "Permanent.Self+counters_GE1_LOYALTY". False for a name
+// or an Affected$ list it cannot express.
+static bool fold_affected_defined(std::string &affected, const std::string &defined) {
+    const char *qualifier = defined == "Self"        ? "Self"
+                            : defined == "Equipped"  ? "EquippedBy"
+                            : defined == "Enchanted" ? "EnchantedBy"
+                                                     : nullptr;
+    if (!qualifier || affected.find(',') != std::string::npos) return false;
+    if (affected.empty()) affected = "Card";
+    const size_t dot = affected.find('.');
+    if (dot == std::string::npos) affected += std::string(".") + qualifier;
+    else affected.insert(dot + 1, std::string(qualifier) + "+");
+    return true;
 }
 
 static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {

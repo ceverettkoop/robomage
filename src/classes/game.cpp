@@ -398,9 +398,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             // counter rather than untapping; otherwise it untaps normally.
                             if (!rev.skip_untap) {
                                 // Counter type is stored verbatim from the script's CounterType$
-                                // (Forge writes "Stun", CR 122.1d), so match that exact key.
-                                if (permanent.is_tapped && get_counters(entity, "Stun") > 0) {
-                                    add_counters(entity, "Stun", -1);
+                                // (Forge writes "STUN", CR 122.1d), so match that exact key.
+                                if (permanent.is_tapped && get_counters(entity, "STUN") > 0) {
+                                    add_counters(entity, "STUN", -1);
                                     game_log("%s has a stun counter removed instead of untapping.\n",
                                              permanent.name.c_str());
                                 } else {
