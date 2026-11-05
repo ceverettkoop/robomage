@@ -31,7 +31,9 @@ struct CardData;
 struct MatchCtx {
     Zone::Ownership controller = Zone::UNKNOWN;  // the "you" reference for YouCtrl/OppCtrl
     Entity source = 0;                           // self-exclusion source for .Other
-    int cmc_bound = -1;                          // dynamic mana-value bound (Aether Vial); <0 = none
+    // Mana-value bound of a cmc<OP><SVar> qualifier (Aether Vial), which only the caller can
+    // resolve; <0 = none. A cmc<OP><n> qualifier needs none: the matcher compares its literal.
+    int cmc_bound = -1;
     std::string cmc_op = "";                     // comparator for cmc_bound (EQ/LE/GE/…)
     // Dynamic value of SVar X for a power/toughness-vs-X qualifier (Ensnaring Bridge's
     // Creature.powerGTX): the caller resolves X (e.g. the controller's hand size) and supplies
@@ -100,15 +102,6 @@ bool card_matches_any(Entity e, const std::string &comma_or_spec,
                       const MatchCtx &ctx = MatchCtx{});
 // The same over a printed card with no object (card_matches_filter's CardData form).
 bool card_matches_any(const CardData &cd, const std::string &comma_or_spec, const MatchCtx &ctx = MatchCtx{});
-
-// Pull a STATIC numeric mana-value qualifier out of a filter spec into a MatchCtx
-// (e.g. "Card.Colorless+cmcGE7" → ctx.cmc_op = "GE", ctx.cmc_bound = 7). The qualifier
-// evaluator defers `cmcLE3`/`cmcGE7`/… to ctx.cmc_bound (returning true for the bare token),
-// so a caller that matches a static cmc filter through card_matches_filter must seed the bound
-// here or the comparator is silently ignored. Non-numeric forms (cmcLEX / cmcEQX, keyed off X
-// paid) are left to the inline evaluator and not extracted. Mirrors the per-token extraction in
-// svar_eval.cpp; shared so static-cmc filter sites (ReduceCost, …) cannot drift on the parsing.
-void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx);
 
 // Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
 // Blast: "target blue permanent", CR 115.1) against an already-resolved color set. Sharing the

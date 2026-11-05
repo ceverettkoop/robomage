@@ -1,0 +1,11 @@
+{
+  "name": "cr202_3_destroy_all_mana_value_bound",
+  "why": "CR 202.3: a filter's literal mana-value bound is compared by the matcher, so Brotherhood's End's second mode destroys only artifacts with mana value 3 or less and leaves the 8-drop in play",
+  "hand_a": ["Brotherhood's End"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain"],
+  "battlefield_b": ["Cityscape Leveler", "Mox Opal"],
+  "play": ["A:keep", "B:keep", "A:cast:Brotherhood's End", "A:desc:Destroy all artifacts"],
+  "max_decisions": 8,
+  "expect": ["Mox Opal is destroyed"],
+  "expect_not": ["Cityscape Leveler is destroyed"]
+}

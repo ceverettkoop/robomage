@@ -273,11 +273,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
         // through the shared comma-OR card filter. A standalone ability entity on the stack (an
         // Activated/Triggered alternative the script names explicitly — Stifle, Consign to
         // Memory) is not a card, so a card-shaped ValidTgts ("Card,Emblem") never filters it.
-        // A static numeric cmc qualifier (Spell Snare: ValidTgts$ Card.cmcEQ2) is deferred by
-        // the filter evaluator to ctx.cmc_bound, so seed it here or the comparator is a no-op
-        // and the counterspell would target any spell.
         MatchCtx spell_ctx{caster, ab.source.lki_entity()};
-        extract_static_cmc_bound(vt, spell_ctx);
         if (vt != "N_A" && !vt.empty() &&
             global_coordinator.entity_has_component<Spell>(cand) &&
             !card_matches_any(cand, vt, spell_ctx))
@@ -291,21 +287,6 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
                global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
 
-    int cmc_le = -1;
-    {
-        size_t cmc_pos = vt.find("cmcLE");
-        if (cmc_pos != std::string::npos) {
-            std::string bound = vt.substr(cmc_pos + 5);
-            // Trim to the leading token (stop at the next '.'/'+' qualifier).
-            size_t end = bound.find_first_of(".+");
-            if (end != std::string::npos) bound = bound.substr(0, end);
-            if (!bound.empty() && std::isdigit(static_cast<unsigned char>(bound[0])))
-                cmc_le = std::stoi(bound);
-            else
-                // cmcLEX (Kozilek's Command): the bound is the X paid at cast time.
-                cmc_le = current_x_paid();
-        }
-    }
     // The ValidTgts spec in the shared matcher's grammar: "YouDontCtrl" is Forge's spelling of
     // OppCtrl (a permanent you don't control), and "Any" as a permanent target is "any creature
     // or planeswalker" (CR 115.4 / 306.7; players are handled in their own branch below).
@@ -313,9 +294,6 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     ctx.controller = caster;
     ctx.source = ab.source.lki_entity();
     if (ab.targeted_player != 0) ctx.targeted_player = seat_of_player(ab.targeted_player);
-    // The mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed above into
-    // cmc_le; feed it to the evaluator so the bound is actually enforced.
-    if (cmc_le >= 0) { ctx.cmc_bound = cmc_le; ctx.cmc_op = "LE"; }
     std::string spec = (vt == "Any") ? std::string("Creature,Planeswalker") : vt;
     for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
          pos = spec.find("YouDontCtrl", pos))
@@ -342,7 +320,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     if (!is_battlefield_permanent(cand)) return false;
 
     // Match the ValidTgts spec against the permanent through the shared filter evaluator
-    // (queries/filters), with the normalized spec and mana-value bound built above.
+    // (queries/filters), with the normalized spec built above.
     if (!permanent_matches_filter(cand, spec, ctx)) return false;
 
     // Protection (CR 702.16e): a creature with protection from the source's color/quality can't

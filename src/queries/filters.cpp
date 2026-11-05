@@ -155,8 +155,8 @@ void warn_unknown_qualifier(const std::string &q) {
         printf("WARNING: Unrecognized filter qualifier '%s' (fail-closed, matched nothing)\n", q.c_str());
 }
 
-// Evaluate ONE '.'/'+'-joined qualifier token. Dynamic mana-value bounds are applied once by
-// the caller, so cmc tokens here only honour the legacy "cmcLEX" (x_paid) form.
+// Evaluate ONE '.'/'+'-joined qualifier token. A cmc token with a literal bound is compared here;
+// one naming an SVar reads ctx.cmc_bound, applied once by the caller (eval_alternative).
 bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q) {
     if (q.empty()) return true;
     // "!<qualifier>" negates it (Doomsday's Card.!IsRemembered); "!token" is spelled out below.
@@ -217,12 +217,16 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // hasABasicLandType — the object's subtypes include one of the five basic land types
     // (CR 305.6; Boseiju, Who Endures' compensation search "a land card with a basic land type").
     if (q == "hasABasicLandType") return v.types && has_a_basic_land_type(*v.types);
-    // mana-value family (dynamic bound applied once by the caller) --------------
+    // mana-value family -------------------------------------------------------
     if (q.rfind("cmc", 0) == 0) {
+        // cmc<OP><n>: the object's mana value against a literal bound (CR 202.3), in this
+        // alternative only ("Artifact.cmcLE3", Abrupt Decay's "Permanent.nonLand+cmcLE3").
+        if (q.size() > 5 && std::all_of(q.begin() + 5, q.end(), [](unsigned char ch) { return std::isdigit(ch); }))
+            return apply_svar_op(v.cmc, q.substr(3, 2), std::stoi(q.substr(5)));
         // cmcLEX reads the X paid, unless the caller resolved X itself and supplied it as the
         // dynamic bound (Birthing Ritual's X = 1 + the sacrificed creature's mana value).
         if (q == "cmcLEX") return ctx.cmc_bound >= 0 || v.cmc <= current_x_paid();
-        return true;  // cmcEQX / cmcLE3 / … enforced via ctx.cmc_bound
+        return true;  // cmc<OP><SVar>: enforced through ctx.cmc_bound, which only its caller knows
     }
     // dynamic power/toughness vs SVar X (Ensnaring Bridge: Creature.powerGTX — "power greater
     // than the number of cards in your hand"). The X value is supplied by the caller in
@@ -547,24 +551,6 @@ bool card_matches_any(const CardData &cd, const std::string &comma_or_spec, cons
     for (const auto &alt : split(comma_or_spec, ',', /*skip_empty=*/true))
         if (card_matches_filter(cd, alt, ctx)) return true;
     return false;
-}
-
-void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
-    size_t p = 0;
-    while (p < spec.size()) {
-        size_t pos = spec.find("cmc", p);
-        if (pos == std::string::npos) return;
-        // A numeric cmc qualifier is "cmc" + 2-letter op + at least one digit (cmcGE7).
-        if (pos + 5 < spec.size() &&
-            std::isdigit(static_cast<unsigned char>(spec[pos + 5]))) {
-            size_t e = pos + 5;
-            while (e < spec.size() && std::isdigit(static_cast<unsigned char>(spec[e]))) ++e;
-            ctx.cmc_op = spec.substr(pos + 3, 2);
-            ctx.cmc_bound = std::stoi(spec.substr(pos + 5, e - (pos + 5)));
-            return;
-        }
-        p = pos + 3;
-    }
 }
 
 bool color_set_passes(const std::string &vt, const std::set<Colors> &colors) {

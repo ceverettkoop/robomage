@@ -153,14 +153,13 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         // Characteristic-based prohibition (Gaddock Teeg: "Noncreature spells with mana value 4 or
         // greater can't be cast", "…with {X} in their mana costs can't be cast"). The static's
         // ValidCard$ filter is matched against the spell's PRINTED characteristics — including the
-        // numeric mana-value bound (cmcGE4) seeded via extract_static_cmc_bound and the {X}-cost
+        // numeric mana-value bound (cmcGE4) and the {X}-cost
         // qualifier (hasXCost). Reached only by statics that aren't one of the special-cased forms
         // above, so it never double-applies to an origin/opponent/per-turn static. Applies to all
         // casters (Gaddock Teeg's lock is symmetric, CR 614/611 continuous prohibition).
         if (!as.sa()->cant_cast_filter.empty()) {
             MatchCtx ctx;
             ctx.controller = caster;
-            extract_static_cmc_bound(as.sa()->cant_cast_filter, ctx);
             if (card_matches_filter(card, as.sa()->cant_cast_filter, ctx)) return true;
         }
     }
@@ -238,7 +237,6 @@ FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership
         MatchCtx ctx;
         ctx.controller = as.controller;  // "you" of YouOwn: the static's controller
         ctx.source = as.entity;
-        extract_static_cmc_bound(sa.affected, ctx);  // Aluren's cmcLE3
         if (!(own_face ? card_matches_filter(card, sa.affected, ctx) : card_matches_filter(face, sa.affected, ctx)))
             continue;
         grant.granted = true;

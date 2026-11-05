@@ -614,8 +614,7 @@ static int graveyard_card_types(const std::string &expr, Zone::Ownership control
     bool opp_own = restriction.find("OppOwn") != std::string::npos ||
                    restriction.find("OppCtrl") != std::string::npos;
     // Split the restriction into qualifier tokens; keep everything that is not an ownership
-    // token as a real card subfilter, and pull a numeric mana-value bound into the MatchCtx
-    // (the evaluator defers cmcLE<n>/cmcGE<n>/… to ctx.cmc_bound).
+    // token as a real card subfilter.
     std::string sub;  // '+'-joined remaining qualifiers
     MatchCtx sub_ctx;
     sub_ctx.controller = controller;
@@ -631,18 +630,10 @@ static int graveyard_card_types(const std::string &expr, Zone::Ownership control
             if (tok.empty()) continue;
             if (tok == "YouOwn" || tok == "YouCtrl" || tok == "OppOwn" || tok == "OppCtrl")
                 continue;
-            // cmc<OP><n> (e.g. cmcLE3): a numeric mana-value bound goes in the MatchCtx. A
-            // non-numeric form like cmcLEX falls through and is handled inline by the evaluator.
-            if (tok.rfind("cmc", 0) == 0 && tok.size() >= 6 &&
-                std::isdigit(static_cast<unsigned char>(tok[5]))) {
-                sub_ctx.cmc_op = tok.substr(3, 2);
-                sub_ctx.cmc_bound = std::stoi(tok.substr(5));
-                continue;
-            }
             sub += (sub.empty() ? "" : "+") + tok;
         }
     }
-    std::string sub_spec = (sub.empty() && sub_ctx.cmc_bound < 0) ? "" : ("Card+" + sub);
+    std::string sub_spec = sub.empty() ? "" : ("Card+" + sub);
     std::set<std::string> type_names;
     for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, Zone::UNKNOWN)) {
         const Zone &z = global_coordinator.GetComponent<Zone>(e);

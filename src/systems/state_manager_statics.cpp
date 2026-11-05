@@ -274,12 +274,7 @@ static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership c
         if (sa.reduce_cost_you_only && as.controller != caster) continue;
         // An empty filter means the reduction applies to every spell (no characteristic gate).
         if (!sa.reduce_cost_filter.empty()) {
-            // Seed any static mana-value qualifier (It That Heralds the End's cmcGE7) into the
-            // MatchCtx — the evaluator defers cmc comparators to ctx.cmc_bound, so without this
-            // the bound is silently ignored and every colorless spell would be reduced.
-            MatchCtx ctx;
-            extract_static_cmc_bound(sa.reduce_cost_filter, ctx);
-            if (!card_matches_filter(card_data, sa.reduce_cost_filter, ctx)) continue;
+            if (!card_matches_filter(card_data, sa.reduce_cost_filter, MatchCtx{})) continue;
         }
         fn(sa, as.controller);
     }
@@ -293,7 +288,6 @@ static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership co
     if (target == 0) return false;
     MatchCtx ctx;
     ctx.controller = controller;
-    extract_static_cmc_bound(sa.reduce_cost_valid_target, ctx);
     return object_matches_filter(target, sa.reduce_cost_valid_target, ctx);
 }
 
@@ -350,9 +344,7 @@ int active_cost_floor_for(const CardData &card_data) {
         if (as.sa()->category != "SetCost" || !as.sa()->set_cost_raise_to) continue;
         // An empty filter means the floor applies to every spell (Trinisphere: ValidCard$ Card).
         if (!as.sa()->set_cost_filter.empty()) {
-            MatchCtx ctx;
-            extract_static_cmc_bound(as.sa()->set_cost_filter, ctx);
-            if (!card_matches_filter(card_data, as.sa()->set_cost_filter, ctx)) continue;
+            if (!card_matches_filter(card_data, as.sa()->set_cost_filter, MatchCtx{})) continue;
         }
         floor = std::max(floor, as.sa()->set_cost_min);
     }
@@ -403,7 +395,6 @@ static std::vector<Entity> permanents_matching_static_filter(
     MatchCtx ctx;
     ctx.controller = as.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
     ctx.source = as.entity;           // .Other self-exclusion
-    extract_static_cmc_bound(aff, ctx);
     for (auto e : entities)
         if (permanent_matches_filter(e, aff, ctx)) out.push_back(e);
     return out;
@@ -530,7 +521,6 @@ bool setcolor_override_for(Entity e, std::set<Colors> &out) {
             MatchCtx ctx;
             ctx.controller = as.controller;
             ctx.source = as.entity;
-            extract_static_cmc_bound(as.sa()->affected, ctx);
             if (!card_matches_filter(e, as.sa()->affected, ctx)) continue;
         } else {
             // Battlefield token permanent: recursion-safe type/controller filter match.
