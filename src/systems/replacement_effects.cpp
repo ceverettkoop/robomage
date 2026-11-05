@@ -9,6 +9,7 @@
 #include "../choice_labels.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../components/carddata.h"
 #include "../components/entry_info.h"
 #include "../components/permanent.h"
@@ -28,6 +29,8 @@
 #include "../input_logger.h"
 #include "../svar_eval.h"
 #include "state_manager.h"
+
+static const char *candidate_kind_name(int kind);
 
 // Internal description of a single applicable replacement effect for one dispatch.
 namespace {
@@ -620,6 +623,22 @@ void dispatch_draw(ReplacementEvent &ev) {
 
 }  // namespace
 
+// A candidate's kind, as its --coverage key names it.
+static const char *candidate_kind_name(int kind) {
+    switch (kind) {
+        case SELF_TAPPED: return "SELF_TAPPED";
+        case PENDING_TAPPED: return "PENDING_TAPPED";
+        case ETB_COUNTERS: return "ETB_COUNTERS";
+        case EXILE_INSTEAD: return "EXILE_INSTEAD";
+        case EXILE_INSTEAD_OF_ETB: return "EXILE_INSTEAD_OF_ETB";
+        case SKIP_UNTAP: return "SKIP_UNTAP";
+        case PREVENT_ETB: return "PREVENT_ETB";
+        case PRODUCE_MANA: return "PRODUCE_MANA";
+        case DISCARD_ELSE_GRAVEYARD: return "DISCARD_ELSE_GRAVEYARD";
+        default: return "OTHER";
+    }
+}
+
 namespace replacement {
 
 std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
@@ -691,6 +710,7 @@ void dispatch(ReplacementEvent &ev) {
         // in flight belongs to a site downstream of a resumed pass and must
         // not truncate an unrelated dispatch.
         if (cur_game.pending.query.active && !cur_game.pending.query.answered) return;
+        if (!ev.simulation) coverage_replacement(candidate_kind_name(cands[pick].kind));
         applied.insert({cands[pick].source, cands[pick].index});
     }
 }

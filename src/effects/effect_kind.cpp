@@ -12,3 +12,16 @@ bool effect_kind_from_category(const std::string &category, EffectKind &out) {
     out = (it != table.end()) ? it->second : EffectKind::None;
     return it != table.end();
 }
+
+const char *effect_kind_name(EffectKind kind) {
+    switch (kind) {
+#define EFFECT_KIND(kind, category, handler) \
+    case EffectKind::kind:                   \
+        return category;
+#define EFFECT_KIND_ELSEWHERE(kind, category) \
+    case EffectKind::kind:                    \
+        return category;
+#include "effect_kinds.def"
+        default: return "None";
+    }
+}

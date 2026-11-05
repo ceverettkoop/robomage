@@ -8,6 +8,7 @@
 #include "classes/action.h"
 #include "classes/game.h"
 #include "cli_output.h"
+#include "coverage.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
@@ -504,6 +505,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // A suspended handler parked its decision; propagate WITHOUT chaining subs
         // or clearing the named card — the re-entry finishes both.
         if (hres == HandlerResult::SUSPENDED) return ResolveStatus::SUSPENDED;
+        coverage_effect(ab.def->kind);
         next_sub = 0;
         // Chain subabilities unless the handler opted out (Charm/WinsGame and the
         // non-peek PeekAndReveal path return DONE_NO_SUBS to handle their own resolution).

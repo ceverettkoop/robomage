@@ -12,6 +12,7 @@
 #include "../classes/game.h"
 #include "../classes/action.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -673,6 +674,7 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
 }
 
 void Orderer::apply_dredge(Zone::Ownership player, Entity source, int mill_ct) {
+    coverage_replacement("DREDGE");
     // Mill N, then return the dredge card from graveyard to hand. The dredge card is
     // in the graveyard (not the library), so milling never touches it.
     std::string dname = global_coordinator.GetComponent<CardData>(source).name;

@@ -15,6 +15,7 @@
 #include "components/spell.h"
 #include "components/token.h"
 #include "components/zone.h"
+#include "coverage.h"
 #include "ecs/coordinator.h"
 #include "ecs/entity.h"
 #include "ecs/events.h"
@@ -158,6 +159,8 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 // The cast's total cost can't be paid (CR 601.2h): count the failure for the offer gate's
 // payment_blocked guard and reverse the cast.
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
+static const char *cost_removal_part(const Game::PendingCast::CostRemoval &item);
+static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
 // The cards in `caster`'s hand the escalate discard of the spell `pc` is casting may discard
@@ -279,6 +282,33 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 }
 
 // See forward declaration at top of file.
+// The --coverage cost part a chosen cost item pays, read before it moves: from where it is and
+// where it goes.
+static const char *cost_removal_part(const Game::PendingCast::CostRemoval &item) {
+    if (item.delve) return "Delve";
+    const Zone::ZoneValue from = global_coordinator.GetComponent<Zone>(item.entity).location;
+    if (from == Zone::BATTLEFIELD) return item.dest == Zone::HAND ? "Return" : "Sac";
+    if (from == Zone::GRAVEYARD) return "ExileFromGrave";
+    return item.dest == Zone::EXILE ? "ExileFromHand" : "Discard";
+}
+
+// The --coverage cast keys of a spell becoming cast: one per LegalAction flag the cast carries (a
+// split card's second half is its back face), or the zone of a cast with none.
+static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity) {
+    if (pc.use_flashback) coverage_cast("flashback");
+    if (pc.use_escape) coverage_cast("escape");
+    if (pc.use_alt_cost) coverage_cast("alt_cost");
+    if (pc.use_offspring) coverage_cast("offspring");
+    if (pc.impulse_cast) coverage_cast("impulse");
+    if (pc.without_mana_cost) coverage_cast("without_mana_cost");
+    if (pc.cast_back_face) coverage_cast(front.is_split ? "split_half" : "back_face");
+    if (pc.use_flashback || pc.use_escape || pc.use_alt_cost || pc.use_offspring || pc.impulse_cast ||
+        pc.without_mana_cost || pc.cast_back_face)
+        return;
+    const EntryInfo *entry = find_entry_info(spell_entity);
+    coverage_cast(entry && entry->cast_from_hand ? "hand" : "graveyard_permission");
+}
+
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer) {
     const Entity spell_entity = pc.spell_entity;
     game_log("Payment cancelled.\n");
@@ -1817,10 +1847,12 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 if (leaving != 0)
                     float_mana_before_cost_removal(leaving, controller, orderer, activate_cost,
                                                    ability_payee);
-            if (!activate_cost.empty() &&
-                !prompt_mana_payment(controller, activate_cost, ability_payee, orderer)) {
-                fail_activation_payment(pa, orderer);
-                return;
+            if (!activate_cost.empty()) {
+                if (!prompt_mana_payment(controller, activate_cost, ability_payee, orderer)) {
+                    fail_activation_payment(pa, orderer);
+                    return;
+                }
+                coverage_cost("Mana");
             }
             pa.step = Game::PendingActivation::PAY_APPLY;
             break;
@@ -1839,6 +1871,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 fail_activation_payment(pa, orderer);
                 return;
             }
+            if (ability.def->tap_cost) coverage_cost("Tap");
             // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
             // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability
             // still goes on the stack and resolves later; the loyalty change is the cost, paid
@@ -1856,16 +1889,19 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 perm.loyalty_ability_activated_this_turn = true;
                 game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
                          entity_name(permanent_entity).c_str(), loyalty_delta, loyalty);
+                coverage_cost("Loyalty");
             }
             // Life cost
             if (ability.def->life_cost > 0) {
                 pay_life(activating_player, ability.def->life_cost);
                 game_log("%s pays %d life\n", player_name(controller).c_str(), ability.def->life_cost);
+                coverage_cost("PayLife");
             }
             // Energy cost (PayEnergy<N>, CR 122.1c).
             if (ability.def->energy_cost > 0) {
                 pay_energy(activating_player, ability.def->energy_cost);
                 game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.def->energy_cost);
+                coverage_cost("PayEnergy");
             }
             // Sacrifice self: move to graveyard; apply_permanent_components SBA removes
             // Permanent next pass
@@ -1873,11 +1909,13 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 std::string sname = entity_name(permanent_entity);
                 orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
+                coverage_cost("SacSelf");
             }
             if (pa.sac_choice != 0) {
                 std::string sac_name = global_coordinator.GetComponent<Permanent>(pa.sac_choice).name;
                 orderer->add_to_zone(false, pa.sac_choice, Zone::GRAVEYARD);
                 game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
+                coverage_cost("Sac");
             }
             if (pa.return_choice != 0) {
                 std::string ret_name =
@@ -1885,6 +1923,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 orderer->add_to_zone(false, pa.return_choice, Zone::HAND);
                 game_log("%s returns %s to hand\n", player_name(controller).c_str(),
                          ret_name.c_str());
+                coverage_cost("Return");
             }
             // Discard self from hand cost (Faerie Macabre)
             if (ability.def->discard_self_cost) {
@@ -1892,9 +1931,11 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
                 orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+                coverage_cost("DiscardSelf");
             }
             // Discard hand cost (Lion's Eye Diamond)
             if (ability.def->discard_hand_cost) {
+                coverage_cost("DiscardHand");
                 for (auto card : orderer->get_hand(controller)) {
                     std::string cname = global_coordinator.entity_has_component<CardData>(card)
                         ? global_coordinator.GetComponent<CardData>(card).name : "card";
@@ -2426,6 +2467,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         // here.
                         if (life_payable && phyrex_choice == 0) {
                             pay_life(phyrex_player, 2);
+                            coverage_cost("PhyrexianLife");
                             pc.phyrexian_life_paid += 2;
                             game_log("%s pays 2 life\n", player_name(caster).c_str());
                         } else {
@@ -2893,6 +2935,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     fail_cast_payment(pc, orderer);
                     return;
                 }
+                if (pc.mana_spent > 0) coverage_cost("Mana");
             }
 
             pc.step = Game::PendingCast::PAY_APPLY;
@@ -2925,22 +2968,26 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (pc.deferred_life_cost > 0) {
                     pay_life(player, pc.deferred_life_cost);
                     game_log("%s pays %d life\n", player_name(caster).c_str(), pc.deferred_life_cost);
+                    coverage_cost("PayLife");
                 }
                 if (pc.life_x_announced >= 0) {
                     pay_life(player, pc.life_x_announced);
                     game_log("%s pays %d life (X = %d)\n", player_name(caster).c_str(),
                              pc.life_x_announced, pc.life_x_announced);
+                    coverage_cost("PayLifeX");
                 }
                 if (pc.deferred_energy_cost > 0) {
                     pay_energy(player, pc.deferred_energy_cost);
                     game_log("%s pays %d energy\n", player_name(caster).c_str(),
                              pc.deferred_energy_cost);
+                    coverage_cost("PayEnergy");
                 }
             }
             // A delve cast's exiles replace any a previous delve spell recorded
             // (delve_exiled persists until an etbCounter replacement consumes it).
             if (card_data.has_delve) cur_game.delve_exiled.clear();
             for (const auto &r : pc.cost_removals) {
+                coverage_cost(cost_removal_part(r));
                 game_log("%s\n", r.log.c_str());
                 orderer->add_to_zone(false, r.entity, r.dest);
                 if (r.delve) cur_game.delve_exiled.push_back(ObjectRef::of(r.entity));
@@ -3111,6 +3158,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 }
             }
             global_coordinator.GetComponent<Spell>(spell_entity) = spell;
+            count_cast_modes(pc, front_data, spell_entity);
             // A play permission is consumed by the cast it allowed (it lapses once the card
             // has left exile).
             if (pc.impulse_cast) cur_game.resolved_effects.impulse_cast_permission.erase(spell_entity);
@@ -3240,6 +3288,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 zone.counters["TIME"] = cd.suspend_count;
                 game_log("%s suspends %s (exiled with %d time counter(s)).\n",
                          player_name(owner).c_str(), cd.name.c_str(), cd.suspend_count);
+                coverage_cast("suspend");
                 game.take_action();
                 break;
             }
@@ -3265,6 +3314,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 player.companion_brought_to_hand = true;
                 game_log("%s pays {3} and puts %s into their hand from outside the game\n",
                          player_name(owner).c_str(), cname.c_str());
+                coverage_cast("companion");
                 game.take_action();
                 break;
             }
@@ -3282,6 +3332,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             if (action.play_back_face && card_data.backside) {
                 played_face = card_data.backside.get();
                 entry_info(land_entity).enters_transformed = true;
+                coverage_cast("land_back_face");
             }
 
             // Move to battlefield. A land enters under the control of the player who played it
@@ -3616,6 +3667,7 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     trig.source = ObjectRef::of(card);
     trig.controller = owner;
     const Entity trig_entity = orderer->push_ability_onto_stack(trig, owner);
+    coverage_trigger(trig);
     // It stays revealed until it leaves the hand or that ability leaves the stack (CR 702.94b).
     reveal_until_leaves_stack(card, trig_entity);
 }

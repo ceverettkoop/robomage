@@ -565,6 +565,9 @@ sections above are not repeated here.
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
 - `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
+- `src/coverage.{h,cpp}` — `--coverage FILE`: hit counts of effects, triggers, replacements, decisions by
+  category, cost parts and cast modes, written at exit (`docs/game_running.md`); kept out of `Game` and
+  the ECS so a snapshot restore cannot rewind them
 - `src/file_util.{h,cpp}` — `make_dirs` (mkdir -p) and `write_file_atomic` (a temporary file renamed
   into place)
 - `src/stable_rng.h` — every gameplay random draw (platform-portable; never `std::shuffle` /

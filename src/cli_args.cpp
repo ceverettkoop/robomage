@@ -9,6 +9,7 @@
 #include "agents/trajectory.h"
 #include "cli_output.h"
 #include "components/zone.h"
+#include "coverage.h"
 #include "error.h"
 #include "game_driver.h"
 #include "parse_report.h"
@@ -284,6 +285,8 @@ static const CliOption OPTIONS[] = {
     {"--trace-handles", nullptr, false, false, [](const char *) { trace_handles = true; }, nullptr},
     // Narrate each observation event as it is queued, per viewer (EVENT: lines in the game log).
     {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
+    // Count the engine paths the run reaches and write them to a file at exit (coverage.h).
+    {"--coverage", nullptr, true, false, [](const char *v) { coverage_open(v); }, nullptr},
     // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
     {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
     // The machine protocol's stdout format: rmstate, the only one (state_format/stream.h), so the

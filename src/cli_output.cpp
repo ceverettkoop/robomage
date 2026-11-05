@@ -165,6 +165,10 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (HANDLES: / HANDLE: lines in the game log; a debugging aid)\n");
     printf("  --trace-events      Narrate each observation event as it is queued, per\n");
     printf("                      viewer (EVENT: lines in the game log; a debugging aid)\n");
+    printf("  --coverage <file>   Count the engine paths the run reaches (effects, triggers,\n");
+    printf("                      replacements, decisions by category, cost parts, cast modes)\n");
+    printf("                      and write them at exit, sorted <kind> <name> <count> lines;\n");
+    printf("                      changes nothing else (docs/game_running.md)\n");
     printf("  --rmstate-dump <file>  Write every viewer's (A, B, omniscient) RMSTATE frames\n");
     printf("                      to <file> at each decision, and a terminal frame each at\n");
     printf("                      match end (%%p in <file> = the process id); the normal\n");
@@ -275,7 +279,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      narrative (under --machine, only with --narrative).\n");
     printf("                      Output flags (--machine, --narrative, --player,\n");
     printf("                      --log-viewer, --trace-visibility, --trace-handles,\n");
-    printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
+    printf("                      --trace-events, --rmstate-dump, --state-dump, --coverage,\n");
     printf("                      --knowledge-a/-b, --selfcheck-state, --selfcheck-knowledge)\n");
     printf("                      still apply; --log-decisions has no effect\n");
     printf("\nIn-process agents (each option implies --machine; incompatible with --replay\n");

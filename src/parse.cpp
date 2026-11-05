@@ -3379,6 +3379,7 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
     }
     ability.ability_type = AbilityDef::TRIGGERED;
     const TriggerLine t = read_trigger_line(line, svars, ability);
+    ability.trigger_mode = t.mode;
     const bool mode_bound = bind_trigger_line(t, ability);
     if (mode_bound) trigger_form_findings(line, t);
     if (!mode_bound)

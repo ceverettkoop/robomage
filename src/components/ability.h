@@ -113,6 +113,8 @@ struct AbilityDef {
     // the keyword a keyword-built ability stands for ("Equip", "Ninjutsu", "Reconfigure:unattach"),
     // or an engine-built definition's keyed_ability_def key; empty for a plain script ability.
     std::string ref_key = "";
+    // A T: line's Mode$ (a trigger's --coverage key); empty for anything else.
+    std::string trigger_mode = "";
 
 
     // Activated ability costs

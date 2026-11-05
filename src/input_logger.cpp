@@ -1,3 +1,4 @@
+#include "coverage.h"
 #include "input_logger.h"
 
 #include <cstdio>
@@ -453,6 +454,8 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // trajectory writer's record (agents/driver.h).
     agents_begin_decision(actions, decisions_read);
     const int choice = read_choice(actions, seat);
+    if (last_reply != CONCEDE_GAME && last_reply != CONCEDE_MATCH)
+        coverage_decision(actions[static_cast<size_t>(choice)].category);
     agents_end_decision(choice, last_reply);
     return choice;
 }

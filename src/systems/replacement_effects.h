@@ -70,6 +70,7 @@ struct ReplacementEvent {
     // its controller (affected_player), the color it would produce and how much. dispatch() may
     // rewrite produced_color (e.g. to {C}) and sets mana_replaced; the caller adds produced_amount
     // mana of the (possibly replaced) color to the pool.
+    bool   simulation = false;                         // input: a mana simulation (can_pay_mana), not a real event: --coverage does not count it
     Colors produced_color = COLORLESS;                 // input: color the source would produce; dispatch may replace it
     size_t produced_amount = 0;                        // input: amount of mana produced this tap
     bool   mana_replaced = false;                      // output: a ProduceMana replacement rewrote the production (idempotency guard)

@@ -1,3 +1,4 @@
+#include "coverage.h"
 #include "mana_system.h"
 
 #include <algorithm>
@@ -794,6 +795,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
         ev.affected_player = controller;
         ev.produced_color = ab.color;
         ev.produced_amount = amount;
+        ev.simulation = !commit;
         replacement::dispatch(ev);
         produced_color = ev.produced_color;
     }
@@ -905,9 +907,11 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
             Colors produced = ab->color;
             size_t add_amt = ab->amount > 0 ? ab->amount : 1;
             for (size_t i = 0; i < add_amt; i++) pool.insert(produced);
-            if (log)
+            if (log) {
                 game_log("%s adds an additional %zu(%s).\n",
                          cd.name.c_str(), add_amt, mana_symbol_str(produced));
+                coverage_trigger(Ability(ab));
+            }
         }
     }
 }

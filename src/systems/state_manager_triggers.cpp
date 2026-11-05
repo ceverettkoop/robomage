@@ -1,3 +1,4 @@
+#include "../coverage.h"
 #include "state_manager.h"
 #include "state_manager_internal.h"
 #include "rules_modifying.h"
@@ -695,6 +696,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             // it here keeps Static$ True triggers off the stack as the rules require, rather than
             // queueing a spurious trigger.
             if (trigger_ab.def->trigger_static_offstack) {
+                coverage_trigger(trigger_ab);
                 resolve_ability(trigger_ab, orderer);
                 continue;
             }
@@ -1213,6 +1215,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // 605.1a-style), rather than queueing a PendingTrigger. Bookkeeping only — safe to run
             // inline mid-scan.
             if (trigger_ab.def->trigger_static_offstack) {
+                coverage_trigger(trigger_ab);
                 resolve_ability(trigger_ab, orderer);
                 continue;
             }
@@ -1382,6 +1385,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         // source's own X is 0 off the stack), so it never reads a stale X from another spell.
         if (pt.ab.x_paid < 0) pt.ab.x_paid = 0;
         tp.placed.push_back(orderer->push_ability_onto_stack(pt.ab, pt.controller));
+        coverage_trigger(pt.ab);
         game_log("%s\n", pt.log_line.c_str());
         tp.queue.erase(tp.queue.begin());
     }
