@@ -206,7 +206,8 @@ bool run_unless_loop(
         for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
     while (true) {
-        std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
+        std::vector<LegalAction> unless_actions =
+            collect_mana_legal_actions(controller, orderer, ManaPayee(paid_for, ManaPurpose::OTHER));
         // Drop cost-bearing mana sources (Talon Gates' {1}{T}) whose activation cost the
         // FLOATING pool can't cover right now: the tap-a-source loop below pays activation
         // costs only from mana already floating, so offering such a source would either

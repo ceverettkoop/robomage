@@ -206,7 +206,7 @@ static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> 
 // `x_pips` is how many {X} the cost carries (2 for Blast Zone's {X}{X}); `exclude` is the
 // ability's source when its own tap is part of the cost.
 static size_t payable_max_x(Zone::Ownership payer, const ManaValue &base_cost, size_t coarse_max,
-                            size_t x_pips, Entity paid_for, Entity exclude,
+                            size_t x_pips, ManaPayee paid_for, Entity exclude,
                             std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise) {
     while (coarse_max > 0) {
         ManaValue trial = base_cost;
@@ -1637,6 +1637,7 @@ void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                                 std::shared_ptr<Orderer> orderer, int resume_choice) {
     Entity permanent_entity = pa.source_entity;
+    const ManaPayee ability_payee(permanent_entity, ManaPurpose::ACTIVATE);
     const Ability &ability = pa.ability;
     Zone::Ownership controller = pa.activator_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
     // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
@@ -1679,7 +1680,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     size_t max_x = max_available_mana(controller, base_cost, orderer, x_exclude);
                     size_t x_pips = std::max<size_t>(1, ability.def->activation_x_count);
                     max_x /= x_pips;
-                    max_x = payable_max_x(controller, base_cost, max_x, x_pips, permanent_entity,
+                    max_x = payable_max_x(controller, base_cost, max_x, x_pips, ability_payee,
                                           x_exclude, orderer, /*has_delve=*/false,
                                           /*has_improvise=*/false);
                     game_log("Choose X value (0-%zu):\n", max_x);
@@ -1815,9 +1816,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             for (Entity leaving : {pa.sac_choice, pa.return_choice})
                 if (leaving != 0)
                     float_mana_before_cost_removal(leaving, controller, orderer, activate_cost,
-                                                   permanent_entity);
+                                                   ability_payee);
             if (!activate_cost.empty() &&
-                !prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
+                !prompt_mana_payment(controller, activate_cost, ability_payee, orderer)) {
                 fail_activation_payment(pa, orderer);
                 return;
             }
@@ -3229,7 +3230,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 Zone::Ownership owner = zone.owner;
                 auto mana_snap = snapshot_mana_state(owner, orderer);
                 ManaValue cost = cd.suspend_cost;  // copy (prompt_mana_payment takes a mutable ref)
-                if (!prompt_mana_payment(owner, cost, card, orderer)) {
+                if (!prompt_mana_payment(owner, cost, ManaPayee(card, ManaPurpose::OTHER), orderer)) {
                     restore_mana_state(owner, mana_snap, orderer);
                     game_log("Payment cancelled.\n");
                     cur_game.priority.payment_fail_counts[card]++;
@@ -3252,7 +3253,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 Zone::Ownership owner = zone.owner;
                 auto mana_snap = snapshot_mana_state(owner, orderer);
                 ManaValue three = {GENERIC, GENERIC, GENERIC};
-                if (!prompt_mana_payment(owner, three, comp, orderer)) {
+                if (!prompt_mana_payment(owner, three, ManaPayee(comp, ManaPurpose::OTHER), orderer)) {
                     restore_mana_state(owner, mana_snap, orderer);
                     game_log("Payment cancelled.\n");
                     cur_game.priority.payment_fail_counts[comp]++;

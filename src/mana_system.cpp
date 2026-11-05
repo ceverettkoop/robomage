@@ -57,18 +57,20 @@ static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue
 // The part of `cost` that `pool` would leave unpaid, the pool left untouched.
 static ManaValue pool_shortfall(const ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
-                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                          ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true, bool has_improvise = false,
                           Entity exclude_entity = 0, int life_reserve = 0);
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
-                                  Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                  ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, bool has_improvise,
                                   Entity exclude_entity, bool max_yield_only, int life_reserve);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
 static bool casting_nonartifact_spell(Entity paid_for);
-static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for);
+static bool restricts_spending_to(const AbilityDef &def);
+static bool restriction_covers_activation(const AbilityDef &def, Entity paid_for);
+static bool mana_source_usable_for(const Ability &ab, Entity source_entity, ManaPayee paid_for);
 static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
 static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
@@ -238,28 +240,51 @@ static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
     return is_colorless(paid_for);
 }
 
-// Is `paid_for` a nonartifact spell, which a Powerstone's mana can't be spent to cast (CR 106.6)?
-// An activated ability pays with its permanent as `paid_for`, and that mana may pay for it.
+// Is the spell being cast, `paid_for`, a nonartifact spell, which a Powerstone's mana can't be
+// spent to cast (CR 106.6)?
 static bool casting_nonartifact_spell(Entity paid_for) {
-    if (paid_for == 0 || is_battlefield_permanent(paid_for)) return false;
+    if (paid_for == 0) return false;
     if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
     return !type_set_has(global_coordinator.GetComponent<CardData>(paid_for).types, "Artifact");
 }
 
-// True if a mana source (its ability `ab`, on `source_entity`) may be spent to pay for
-// `paid_for` under its mana spending restriction (CR 106.7). An unrestricted source is always
-// usable; a restricted source is usable only when the spell being paid for matches. This is the
-// single predicate behind all three payment paths — legal-action listing, the affordability
-// gate, and the auto-payer — so they can never disagree on whether a source is spendable (the
-// "offered legal then fails to pay" divergence can_pay_mana exists to prevent).
-static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for) {
-    if (ab.def->restrict_to_chosen_type_creature && !restricted_mana_matches(source_entity, paid_for))
+// Is `def`'s mana spendable only to do certain things ("spend this mana only to ...")?
+static bool restricts_spending_to(const AbilityDef &def) {
+    return def.restrict_to_chosen_type_creature || def.restrict_to_creature || def.restrict_to_colorless_eldrazi;
+}
+
+// Does `def`'s RestrictValid$ extend its spending restriction to an ability of `paid_for`? Its
+// Activated. clause says so, for an ability of a battlefield permanent alone when the clause says
+// inZoneBattlefield.
+static bool restriction_covers_activation(const AbilityDef &def, Entity paid_for) {
+    if (!def.restrict_allows_activated) return false;
+    return !def.restrict_activated_on_battlefield || is_battlefield_permanent(paid_for);
+}
+
+// True if a mana source (its ability `ab`, on `source_entity`) may be spent on `paid_for`
+// under its mana spending restriction (CR 106.6). An unrestricted source is always usable. A
+// "spend only to" source is usable when the spell cast, or the source of the ability activated
+// where its RestrictValid$ allows abilities, matches, and never for any other cost. A Powerstone
+// only stops the casting of a nonartifact spell. This is the single predicate behind all three
+// payment paths — legal-action listing, the affordability gate, and the auto-payer — so they can
+// never disagree on whether a source is spendable (the "offered legal then fails to pay"
+// divergence can_pay_mana exists to prevent).
+static bool mana_source_usable_for(const Ability &ab, Entity source_entity, ManaPayee paid_for) {
+    const Entity subject = paid_for.entity;
+    if (restricts_spending_to(*ab.def)) {
+        if (paid_for.purpose == ManaPurpose::OTHER) return false;
+        if (paid_for.purpose == ManaPurpose::ACTIVATE && !restriction_covers_activation(*ab.def, subject))
+            return false;
+    }
+    if (ab.def->restrict_to_chosen_type_creature && !restricted_mana_matches(source_entity, subject))
         return false;
-    if (ab.def->restrict_to_creature && !creature_restricted_mana_matches(paid_for))
+    if (ab.def->restrict_to_creature && !creature_restricted_mana_matches(subject))
         return false;
-    if (ab.def->restrict_to_colorless_eldrazi && !colorless_eldrazi_restricted_mana_matches(paid_for))
+    if (ab.def->restrict_to_colorless_eldrazi && !colorless_eldrazi_restricted_mana_matches(subject))
         return false;
-    if (ab.def->restrict_from_nonartifact_spells && casting_nonartifact_spell(paid_for)) return false;
+    if (ab.def->restrict_from_nonartifact_spells && paid_for.purpose == ManaPurpose::CAST &&
+        casting_nonartifact_spell(subject))
+        return false;
     return true;
 }
 
@@ -420,7 +445,7 @@ ActionCategory mana_action_category(Colors color) {
 }
 
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for, bool at_priority) {
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for, bool at_priority) {
     std::vector<LegalAction> actions;
     auto sources = collect_available_mana_sources(player, orderer, at_priority);
     for (auto &[entity, ab] : sources) {
@@ -445,7 +470,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
 
 bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
                              std::shared_ptr<Orderer> orderer, Entity exclude_entity,
-                             Entity paid_for) {
+                             ManaPayee paid_for) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -992,7 +1017,7 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // pass can complete is still paid painlessly. Simulate picks the strategy; a commit run
 // replays the winning strategy so legality and payment stay in lockstep.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
-                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                          ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit, bool has_improvise, Entity exclude_entity,
                           int life_reserve) {
     ManaValue trial = remaining;
@@ -1023,7 +1048,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 }
 
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
-                                  Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                  ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, bool has_improvise,
                                   Entity exclude_entity, bool max_yield_only, int life_reserve) {
     Entity player_entity = get_player_entity(controller);
@@ -1155,7 +1180,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     //      over one that also carries a utility ability (Karakas's bounce, Wasteland's
     //      destroy, a man-land's animation).
     {
-        std::array<int, 6> demand = hand_color_demand(controller, paid_for, orderer);
+        std::array<int, 6> demand = hand_color_demand(controller, paid_for.entity, orderer);
         std::map<Entity, int> entity_demand;
         for (const auto &si : valid_sources) {
             int d = (si.color >= WHITE && si.color <= COLORLESS)
@@ -1390,7 +1415,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             bool tapped_one = false;
             for (auto e : orderer->mEntities) {
                 if (tapped_entities.count(e)) continue;
-                if (!is_improvise_eligible(e, controller, paid_for)) continue;
+                if (!is_improvise_eligible(e, controller, paid_for.entity)) continue;
                 if (commit) {
                     improvise_tap_one(e, controller, remaining);
                 } else {
@@ -1410,7 +1435,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 }
 
 bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
-                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                  ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                   bool has_improvise, Entity exclude_entity, int life_reserve) {
     Entity player_entity = get_player_entity(controller);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
@@ -1424,7 +1449,7 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
 
 bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     std::shared_ptr<Orderer> orderer,
-                                    const ManaValue &unpaid_cost, Entity paid_for) {
+                                    const ManaValue &unpaid_cost, ManaPayee paid_for) {
     if (unpaid_cost.empty()) return false;
     if (!is_battlefield_permanent(leaving, controller)) return false;
     Entity player_entity = get_player_entity(controller);
@@ -1478,7 +1503,7 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
 // before a twobrid's generic alternative so the cheapest/most-flexible payable assignment wins.
 static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
                                    const std::vector<HybridPip> &hybrids, size_t idx,
-                                   Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                    bool has_delve, bool has_improvise, ManaValue *out,
                                    int life_reserve) {
     if (idx == hybrids.size()) {
@@ -1507,7 +1532,7 @@ static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
 }
 
 bool resolve_hybrid_cost(Zone::Ownership caster, const ManaValue &base_flat_cost,
-                         const std::vector<HybridPip> &hybrids, Entity paid_for,
+                         const std::vector<HybridPip> &hybrids, ManaPayee paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
                          ManaValue *out_resolved, int life_reserve) {
     ManaValue cur = base_flat_cost;
@@ -1516,7 +1541,7 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const ManaValue &base_flat_cost
 }
 
 bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
-                        const CardData &cd, Entity paid_for, std::shared_ptr<Orderer> orderer) {
+                        const CardData &cd, ManaPayee paid_for, std::shared_ptr<Orderer> orderer) {
     const Player &pl = global_coordinator.GetComponent<Player>(get_player_entity(caster));
     const size_t pips = cd.phyrexian_mana.size();
     // Each subset of the Phyrexian pips paid with life (the empty subset first, so a spell
@@ -1537,7 +1562,7 @@ bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
 }
 
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
-                         Entity paid_for, std::shared_ptr<Orderer> orderer,
+                         ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                          bool has_delve, bool has_improvise, ManaValue *spent_out) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -1555,7 +1580,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
     // If pool already covers it, just spend
     if (can_afford_pool(player.mana, cost)) {
-        spend_mana(controller, cost, paid_for);
+        spend_mana(controller, cost, paid_for.entity);
         return true;
     }
 
@@ -1570,14 +1595,14 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
     // The payment in progress, for the state format's pending_cost (queries/pending_cost.h).
     Game::PendingDecisions::CostPayment payment;
-    payment.paid_for = paid_for;
+    payment.paid_for = paid_for.entity;
     CostPaymentScope payment_scope(payment);
 
     // Payment loop: prompt player to tap sources or delve until cost is paid
     while (!remaining.empty()) {
         // Check if pool now covers remaining cost (from prior mana activations or delve)
         if (can_afford_pool(player.mana, remaining)) {
-            spend_mana(controller, remaining, paid_for);
+            spend_mana(controller, remaining, paid_for.entity);
             return true;
         }
 
@@ -1611,7 +1636,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         size_t improvise_action_start = pay_actions.size();
         if (has_improvise && remaining.count(GENERIC) > 0) {
             for (auto e : orderer->mEntities) {
-                if (!is_improvise_eligible(e, controller, paid_for)) continue;
+                if (!is_improvise_eligible(e, controller, paid_for.entity)) continue;
                 auto &perm = global_coordinator.GetComponent<Permanent>(e);
                 LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (Improvise)");
                 la.category = ActionCategory::PAYING_COSTS;
@@ -1649,7 +1674,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         payment_scope.set_remaining(owed, static_cast<int>(cost.size()) - static_cast<int>(owed.size()));
         int choice;
         {
-            PendingDecisionScope pending(paid_for);
+            PendingDecisionScope pending(paid_for.entity);
             choice = InputLogger::instance().get_input(pay_actions);
         }
 

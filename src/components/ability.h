@@ -92,6 +92,8 @@ struct AbilityDef {
     bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
     bool restrict_from_nonartifact_spells = false;   // RestrictValid$ CantCastNonArtifactSpells (Powerstone tokens)
     bool restrict_to_colorless_eldrazi = false;      // RestrictValid$ Spell.Eldrazi+Colorless (Eldrazi Temple)
+    bool restrict_allows_activated = false;          // RestrictValid$ has an Activated. clause (Secluded Courtyard)
+    bool restrict_activated_on_battlefield = false;  // that clause says inZoneBattlefield (Eldrazi Temple)
     bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
 
     // Set by apply_land_abilities for mana abilities generated from land subtypes;

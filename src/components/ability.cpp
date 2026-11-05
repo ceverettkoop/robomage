@@ -43,6 +43,8 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     if (other->restrict_to_chosen_type_creature != def->restrict_to_chosen_type_creature) return false;
     if (other->restrict_to_creature != def->restrict_to_creature) return false;
     if (other->restrict_from_nonartifact_spells != def->restrict_from_nonartifact_spells) return false;
+    if (other->restrict_allows_activated != def->restrict_allows_activated) return false;
+    if (other->restrict_activated_on_battlefield != def->restrict_activated_on_battlefield) return false;
     if (other->adds_no_counter != def->adds_no_counter) return false;
     return true;
 }

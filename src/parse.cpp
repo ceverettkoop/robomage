@@ -2198,15 +2198,22 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // activation time (CR 601.2f).
         ability.reduce_cost_expr = value;
     } else if (key == "RestrictValid") {
+        // An Activated. clause lets the mana pay for abilities as well as cast spells (Secluded
+        // Courtyard); with inZoneBattlefield, abilities of battlefield permanents only (Eldrazi
+        // Temple). The subject is the same as the Spell. clause's, which the branches below read.
+        for (const std::string &clause : split(value, ',')) {
+            if (clause.rfind("Activated.", 0) != 0) continue;
+            ability.restrict_allows_activated = true;
+            ability.restrict_activated_on_battlefield = filter_names_token(clause, "inZoneBattlefield");
+        }
         if (filter_names_token(value, "Creature") &&
             value.find("ChosenType") != std::string::npos) {
             ability.restrict_to_chosen_type_creature = true;
         } else if (value.find("Eldrazi") != std::string::npos &&
                    value.find("Colorless") != std::string::npos) {
             // RestrictValid$ Spell.Eldrazi+Colorless,... — mana usable only to cast a
-            // colorless Eldrazi spell (Eldrazi Temple). The trailing Activated.Eldrazi…
-            // clause (activate abilities of colorless Eldrazi) is folded into the same
-            // restriction. CR 106.7.
+            // colorless Eldrazi spell (Eldrazi Temple) or, by its Activated. clause, to
+            // activate an ability of a colorless Eldrazi. CR 106.7.
             ability.restrict_to_colorless_eldrazi = true;
         } else if (filter_names_token(value, "Creature")) {
             // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell

@@ -118,6 +118,10 @@ a finding, per ability category, static mode and trigger mode (`param_form_read`
 Not audited: `R:` lines, which still match whole shapes (`replacement` when none fits), and whether a
 known `Defined$` name is read by the particular effect it sits on, which M2 settles.
 
+The per-param form checks M1 added to `src/parse.cpp` (`param_form_read`, `defined_value_read` and
+similar) are a second recogniser, against §1's "one recogniser, one implementation". They are
+temporary: retire each as M2 and M3 make the engine's own tables the source of what is known.
+
 **Mechanic-first onboarding.** `onboard.py vocab` appends a whole deck and only once that deck needs
 nothing. CLAUDE.md also forbids testing cards outside the vocab. A mechanic-first plan cannot work
 under both, so add `onboard.py vocab --cards A,B`: append named cards whose own findings are gone,
@@ -284,6 +288,10 @@ order CR 601.2h; a mid-payment suspension for every chooser; can't-pay hides the
 **Today.** The pool is `multiset<Colors>`, so mana carries nothing. Spells record a pip count and colours
 only. Restrictions are three bools on the source; the only rider is a global,
 `pending_cant_be_countered`.
+
+**Starting point.** `ManaPayee` (`src/mana_system.h`): every payment already says what it pays for and
+why (`ManaPurpose`: cast, activate, other), and `mana_source_usable_for` reads it. Restrictions still
+act on the source, when it is tapped, so mana already floating carries none.
 
 **Build.** `ManaUnit {color, source, rider, restriction}` in the pool and a `paid` list on the `Spell`.
 `colors_spent`, Converge, Sunburst (CR 702.44), `Count$CastTotalManaSpent` and `ManaFromCard` become

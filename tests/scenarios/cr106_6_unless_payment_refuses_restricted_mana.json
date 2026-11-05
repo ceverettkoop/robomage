@@ -1,0 +1,16 @@
+{
+  "name": "cr106_6_unless_payment_refuses_restricted_mana",
+  "why": "CR 106.6: paying for Daze's unless cost is neither casting nor activating, so Cavern of Souls offers its {C} and not its any-color mana",
+  "hand_a": ["Cavern of Souls", "Shadowspear", "Stoneforge Mystic"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "battlefield_a": ["Mountain"],
+  "hand_b": ["Daze"],
+  "library_b": ["Island", "Island", "Island", "Island", "Island", "Island"],
+  "battlefield_b": ["Island", "Island"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:land:Cavern of Souls", "A:desc:Artificer", "A:cast:Shadowspear", "A:tap:Mountain", "B:cast:Daze", "B:tap:Island", "B:tap:Island", "A:pass", "A:desc:Tap Cavern of Souls"],
+  "max_decisions": 17,
+  "expect": ["Player A tapped Cavern of Souls for \\{C\\}", "Player A pays \\{1\\}"],
+  "expect_menu": ["Tap Cavern of Souls for \\(C\\)"],
+  "expect_menu_not": ["Tap Cavern of Souls for \\([WUBRG]\\)"]
+}

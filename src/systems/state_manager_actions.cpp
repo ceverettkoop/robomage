@@ -209,7 +209,7 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     // cost needs (life_reserve).
     ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
     if (!cost.empty() &&
-        !can_pay_mana(activator, cost, source, orderer, /*has_delve=*/false,
+        !can_pay_mana(activator, cost, ManaPayee(source, ManaPurpose::ACTIVATE), orderer, /*has_delve=*/false,
                       /*has_improvise=*/false, /*exclude_entity=*/ab.def->tap_cost ? source : 0,
                       /*life_reserve=*/ab.def->life_cost))
         return false;
@@ -775,7 +775,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             global_coordinator.GetComponent<Zone>(comp).location == Zone::SIDEBOARD &&
             global_coordinator.entity_has_component<CardData>(comp)) {
             ManaValue three = {GENERIC, GENERIC, GENERIC};
-            if (can_pay_mana(priority_player, three, comp, orderer) && !payment_blocked(comp)) {
+            if (can_pay_mana(priority_player, three, ManaPayee(comp, ManaPurpose::OTHER), orderer) &&
+                !payment_blocked(comp)) {
                 auto &cd = global_coordinator.GetComponent<CardData>(comp);
                 LegalAction la(SPECIAL_ACTION, comp,
                                "Companion: pay {3}, put " + cd.name + " into your hand");
@@ -861,7 +862,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // affordable. General over any Suspend card. Offered independently of the normal-cast block.
         if (card_data.has_suspend && timing_ok &&
             !rules_mod::cast_prohibited(priority_player, card_data) &&
-            can_pay_mana(priority_player, card_data.suspend_cost, card_entity, orderer) &&
+            can_pay_mana(priority_player, card_data.suspend_cost, ManaPayee(card_entity, ManaPurpose::OTHER),
+                         orderer) &&
             !payment_blocked(card_entity)) {
             LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
             sus_la.category = ActionCategory::CAST_SPELL;  // cast-adjacent "play this card" action

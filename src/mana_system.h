@@ -22,6 +22,22 @@ struct HybridPip;
 struct CardData;
 struct Player;
 
+// Why mana is being spent, which is what a mana spending restriction reads (CR 106.6).
+enum class ManaPurpose {
+    CAST,      // casting a spell
+    ACTIVATE,  // an activated ability's cost
+    OTHER,     // any other cost: an unless cost, a suspend cost, a companion's {3}
+};
+
+// What a payment pays for: the spell, the source of the ability, or the card a cost concerns, and
+// why. A bare Entity is a cast. Entity 0 with CAST is no particular payment, which only
+// unrestricted and Powerstone mana can serve.
+struct ManaPayee {
+    Entity entity = 0;
+    ManaPurpose purpose = ManaPurpose::CAST;
+    ManaPayee(Entity paid_for = 0, ManaPurpose why = ManaPurpose::CAST) : entity(paid_for), purpose(why) {}
+};
+
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
 // without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected
 // (Mox Amber), whose producible colors are computed dynamically. Single source so every
@@ -108,14 +124,14 @@ bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 // Check if player can afford a cost considering current pool plus all activatable mana sources
 // exclude_entity: if nonzero, skip this entity when counting available sources (used when
 // the ability being checked will tap the source as part of its own cost)
-// paid_for: if nonzero, only count restricted mana sources (Cavern of Souls) when the
-// spell matches the restriction (creature of chosen type)
+// paid_for: only count restricted mana sources (Cavern of Souls) when this payment matches the
+// restriction (casting a creature spell of the chosen type)
 // NOTE: this is a hypothetical-pool HEURISTIC (flexible-count accounting for multi-color
 // sources), not the simulate-mode payer. can_pay_mana is the exact predicate; this one is
 // kept for the cost-bearing-source gates, where changing it would shift legality menus.
 bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>& cost,
                              std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0,
-                             Entity paid_for = 0);
+                             ManaPayee paid_for = {});
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
 // obligations; used for computing max X value. `exclude_entity` drops one permanent from the
@@ -175,7 +191,7 @@ ActionCategory mana_action_category(Colors color);
 // at_priority includes instant-speed mana abilities (e.g. Lion's Eye Diamond), which may
 // only be activated when their controller holds priority — never mid-cost-payment.
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for = 0,
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for = {},
     bool at_priority = false);
 
 // Can the controller pay `cost`? Runs the real machine-mode payment algorithm in a
@@ -196,7 +212,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // exactly as the payer does for the payment in flight, so a gate never offers a cost whose mana
 // can only be paid by spending the life the rest of it needs (CR 601.2h, 602.2b).
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
-                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
+                  ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
                   bool has_improvise = false, Entity exclude_entity = 0, int life_reserve = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
@@ -209,7 +225,7 @@ bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
 // cast-legality gate and the machine/auto payment path so castability and payment agree on the
 // hybrid choice.
 bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
-                         const std::vector<HybridPip>& hybrids, Entity paid_for,
+                         const std::vector<HybridPip>& hybrids, ManaPayee paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
                          bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr,
                          int life_reserve = 0);
@@ -220,7 +236,7 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& ba
 // reserved from painful mana sources. The cast-legality gate for every path that pays the card's
 // own mana cost, so a Phyrexian spell is never offered when neither half of a pip can be paid.
 bool can_pay_spell_mana(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
-                        const CardData& cd, Entity paid_for, std::shared_ptr<Orderer> orderer);
+                        const CardData& cd, ManaPayee paid_for, std::shared_ptr<Orderer> orderer);
 
 // A permanent about to LEAVE the battlefield to pay a NON-mana cost (a spell's additional
 // sacrifice, an alternate cost's return-to-hand) takes its mana ability with it. CR 601.2g
@@ -237,7 +253,7 @@ bool can_pay_spell_mana(Zone::Ownership caster, const std::multiset<Colors>& bas
 // sacrifice never charges life for mana the payment did not need.
 bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     std::shared_ptr<Orderer> orderer,
-                                    const ManaValue& unpaid_cost, Entity paid_for);
+                                    const ManaValue& unpaid_cost, ManaPayee paid_for);
 
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
@@ -245,7 +261,7 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
 // `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
 // pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90).
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
-                         Entity paid_for, std::shared_ptr<Orderer> orderer,
+                         ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                          bool has_delve = false, bool has_improvise = false,
                          ManaValue* spent_out = nullptr);
 
