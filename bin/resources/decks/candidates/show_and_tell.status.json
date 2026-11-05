@@ -126,7 +126,7 @@
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
     "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
     "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -134,7 +134,7 @@
    },
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-11-05T14:21:01"
+   "time": "2026-11-05T14:52:45"
   },
   "checks": {
    "detail": {
@@ -182,7 +182,7 @@
    "detail": {},
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
     "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
     "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -190,7 +190,7 @@
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-11-05T14:21:01"
+   "time": "2026-11-05T14:52:45"
   },
   "parse": {
    "detail": {
@@ -199,14 +199,14 @@
    },
    "inputs": {
     "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
     "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-11-05T14:21:01"
+   "time": "2026-11-05T14:52:45"
   },
   "provision": {
    "detail": {

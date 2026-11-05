@@ -45,54 +45,6 @@ USER_AGENT = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
 # tools/meta_scraper/scrape_meta.py -> repo root is two levels up.
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_OUT = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "candidates")
-DEFAULT_CARDS = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
-
-
-def name_to_uid(name):
-    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen/slash -> '_', drop other
-    punct ('/' is a split-card separator, so "Dead/Gone" -> "dead_gone")."""
-    return re.sub(r"[^a-z0-9_]", "",
-                  name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
-
-
-def _script_face_names(path):
-    """Return the list of `Name:` values in a card script (front first, back after ALTERNATE)."""
-    names = []
-    with open(path, encoding="utf-8", errors="replace") as f:
-        for line in f:
-            if line.startswith("Name:"):
-                names.append(line[len("Name:"):].strip())
-    return names
-
-
-def expand_dfc_name(name, cards_dir):
-    """Expand a single-face DFC/adventure name to the combined `Front Back` form.
-
-    Multi-face cards (DFCs, adventures, split cards) are stored under a combined
-    `front_back` filename (e.g. ajani_nacatl_pariah_ajani_nacatl_avenger.txt), and
-    decks must reference that combined name so name_to_uid resolves the script
-    (mirrors how delver.dk writes "Delver of Secrets Insectile Aberration").
-
-    MTGTop8 lists only the front face, so when there is no exact single-face
-    script but a `<uid>_*.txt` combined script exists whose front Name matches,
-    return "Front Back". Otherwise return the name unchanged (single-faced, or
-    no local script — left for implementation; see the engine's `--check-decks`).
-    """
-    uid = name_to_uid(name)
-    if not uid or not cards_dir:
-        return name
-    letter_dir = os.path.join(cards_dir, uid[0])
-    if not os.path.isdir(letter_dir):
-        return name
-    if os.path.exists(os.path.join(letter_dir, f"{uid}.txt")):
-        return name  # single-faced card (exact script present)
-    for fn in sorted(os.listdir(letter_dir)):
-        if not (fn.startswith(uid + "_") and fn.endswith(".txt")):
-            continue
-        faces = _script_face_names(os.path.join(letter_dir, fn))
-        if len(faces) >= 2 and name_to_uid(faces[0]) == uid:
-            return f"{faces[0]} {faces[1]}"
-    return name
 
 
 def fetch(url, retries=3, timeout=25):
@@ -200,9 +152,6 @@ def main(argv=None):
     ap.add_argument("--manifest", default=None,
                     help="write a JSON record of the scrape (date, URL, per deck: stem, name, "
                          "rank, share, section, archetype and deck ids) to this file")
-    ap.add_argument("--cardsfolder", default=DEFAULT_CARDS,
-                    help="cardsfolder used to expand DFC names to Front Back "
-                         "(default bin/resources/cardsfolder; '' to disable)")
     ap.add_argument("--delay", type=float, default=0.6,
                     help="seconds to wait between requests (be polite; default 0.6)")
     ap.add_argument("--dry-run", action="store_true",
@@ -242,11 +191,6 @@ def main(argv=None):
         if not main_b:
             print(f"  [{rank:2}] {name}: SKIP (empty mainboard)", file=sys.stderr)
             continue
-
-        # Expand multi-face cards (DFC/adventure/split) to their combined name so
-        # the engine resolves the script (e.g. "Brazen Borrower" -> "Brazen Borrower Petty Theft").
-        main_b = [(q, expand_dfc_name(cn, args.cardsfolder)) for q, cn in main_b]
-        side_b = [(q, expand_dfc_name(cn, args.cardsfolder)) for q, cn in side_b]
 
         fname = f"{sanitize_filename(name)}.dk"
         path = os.path.join(args.out, fname)

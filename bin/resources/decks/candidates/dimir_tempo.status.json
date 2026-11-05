@@ -119,16 +119,16 @@
     "size_points": 18
    },
    "inputs": {
-    "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
-    "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
+    "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s): 0 clean, 5 need 7 mechanic(s) (18 points)",
-   "time": "2026-11-05T14:21:00"
+   "time": "2026-11-05T14:52:44"
   },
   "diff": {
    "detail": {
@@ -144,13 +144,13 @@
     ]
    },
    "inputs": {
-    "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
+    "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
+    "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "31 cards: 26 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-05T13:02:36"
+   "time": "2026-11-05T14:52:44"
   },
   "implement": {
    "detail": {
@@ -165,16 +165,16 @@
     ]
    },
    "inputs": {
-    "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
-    "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
+    "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "7 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Mana cost on a triggered ability, Play from a zone with replacement (Bilbo), Targeted player's cards filter (TargetedPlayerOwn), Two-condition alternative cost (Massacre), without<Keyword> filter qualifier",
-   "time": "2026-11-05T14:21:00"
+   "time": "2026-11-05T14:52:44"
   },
   "parse": {
    "detail": {
@@ -333,15 +333,15 @@
     "no_script": []
    },
    "inputs": {
-    "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
-    "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
+    "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "5 new card(s), 5 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T14:21:00"
+   "time": "2026-11-05T14:52:44"
   },
   "provision": {
    "detail": {
@@ -353,13 +353,13 @@
     "unobtainable": []
    },
    "inputs": {
-    "deck": "2fbbe07a792f38d201e17959f96be29e730560f166ca7e8faf84bd4d140126bf",
-    "scripts": "b7c785b1257e39c2fb9ecee10ed5591b1f596e3f4f3873c76e1b236a5f1f4d08",
+    "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
+    "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T13:02:36"
+   "time": "2026-11-05T14:52:44"
   },
   "scrape": {
    "detail": {

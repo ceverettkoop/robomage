@@ -32,7 +32,6 @@ Options:
 | `--format CODE` | `LE` | MTGTop8 format code (LE = Legacy) |
 | `--meta ID` | the site's (34) | MTGTop8's time window: 34 = last 2 weeks, 39 = last 2 months |
 | `--manifest FILE` | none | write a JSON record of the scrape: date, URL, window, and per deck its stem, name, rank, share, section (aggro / control / combo), archetype and deck ids, card counts |
-| `--cardsfolder DIR` | `bin/resources/cardsfolder/` | scripts used to expand double-faced names (`''` disables) |
 | `--delay SEC` | 0.6 | pause between requests (be polite) |
 | `--dry-run` | off | print the plan without writing files |
 
@@ -53,11 +52,9 @@ The run is idempotent: files are overwritten by sanitized archetype name.
    line, then `SIDEBOARD:`; `src/classes/deck.cpp` splits at the first space).
 
 Card names are kept verbatim (apostrophes included; the engine's `name_to_uid`
-strips punctuation), except that a front-face-only name of a multi-face card
-(DFC/adventure/split) is expanded to the combined `Front Back` name when a local
-combined script exists (e.g. `Brazen Borrower` -> `Brazen Borrower Petty Theft`),
-so the engine resolves its `<front>_<back>.txt` script; with no local combined
-script the name is left as-is.
+strips punctuation). MTGTop8 lists a multi-face card (DFC/adventure/split) by its
+front face, which is the name decks use: `load_card` finds the combined
+`<front>_<back>.txt` script from it, and it is the card's vocab name.
 
 ## Notes
 

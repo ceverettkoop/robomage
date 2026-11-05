@@ -81,16 +81,16 @@
     "size_points": 8
    },
    "inputs": {
-    "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
-    "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
+    "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-11-05T14:21:00"
+   "time": "2026-11-05T14:52:44"
   },
   "diff": {
    "detail": {
@@ -104,13 +104,13 @@
     ]
    },
    "inputs": {
-    "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
+    "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
+    "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "31 cards: 28 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-05T13:02:36"
+   "time": "2026-11-05T14:52:44"
   },
   "implement": {
    "detail": {
@@ -122,16 +122,16 @@
     ]
    },
    "inputs": {
-    "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
-    "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
+    "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Mana value bound from an SVar, Sand Scout, UnlessCost on more effects",
-   "time": "2026-11-05T14:21:00"
+   "time": "2026-11-05T14:52:44"
   },
   "parse": {
    "detail": {
@@ -235,15 +235,15 @@
     "no_script": []
    },
    "inputs": {
-    "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "engine": "da8a8907418f83665c7c9a9428133da9620c15052e250cae66ed74f7ac525b2f",
-    "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
+    "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
+    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s), 3 with findings (8 findings), 0 without a script",
-   "time": "2026-11-05T14:21:00"
+   "time": "2026-11-05T14:52:44"
   },
   "provision": {
    "detail": {
@@ -257,13 +257,13 @@
     "unobtainable": []
    },
    "inputs": {
-    "deck": "d436ac11b12040b28b8f2d641ed75891006abad68ec7692ba81a4700ab4d789b",
-    "scripts": "16272a37cf3e812a5c3754282b38a2ad9ce1b1fec124b9db90e83ac7ff5e832c",
+    "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
+    "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T13:02:36"
+   "time": "2026-11-05T14:52:44"
   },
   "scrape": {
    "detail": {

@@ -9,6 +9,7 @@
 
 #include "card_db.h"
 #include "card_vocab.h"
+#include "classes/deck_state.h"
 #include "classes/deck.h"
 #include "parse.h"
 
@@ -85,7 +86,9 @@ int check_decks(const std::vector<std::string> &dirs) {
     std::vector<Missing> missing;
     for (const auto &kv : cards) {
         const CardData *cd = card_data_by_name(kv.second.name);
-        if (cd && card_name_to_index(cd->name) >= 0) continue;
+        // A deck line resolves to its script by a wider rule than to its vocab id (a joined
+        // "Front Back" name finds the combined script); a game needs both.
+        if (cd && card_name_to_index(cd->name) >= 0 && deck_card_vocab(kv.second.name) >= 0) continue;
         missing.push_back({&kv.second, cd != nullptr});
     }
     std::stable_sort(missing.begin(), missing.end(), [](const Missing &a, const Missing &b) {
