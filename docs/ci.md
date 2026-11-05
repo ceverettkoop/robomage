@@ -130,8 +130,8 @@ Draws are not acceptable, but the causes differ in severity (`tools/robomage_che
 
 `WARNING: Unrecognized ability param` lines stay in the transcripts (greppable) but are not
 surfaced: they fire in bulk for cosmetic / AI-hint params. Params the parser drops without
-warning are the `ignored_keys` set in `src/parse.cpp`; their review is tracked in `todo.md`
-("Audit: ability-param keys the parser silently ignores").
+warning are the `ignored_keys` set in `src/parse.cpp` (prose, AI hints, facts another param
+states), and those of `param_form_checked`, which `--parse-report` reports outside their safe forms.
 
 ## The replay corpus (`tests/corpus/`)
 

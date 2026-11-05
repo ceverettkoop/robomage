@@ -160,15 +160,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "9 new card(s): 3 clean, 6 need 10 mechanic(s) (32 points)",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -213,15 +213,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "10 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Count$ValidGraveyard, Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), Two-condition alternative cost (Massacre), without<Keyword> filter qualifier",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -458,14 +458,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "9 new card(s), 6 with findings (17 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

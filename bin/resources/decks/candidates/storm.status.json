@@ -28,6 +28,15 @@
      "Tendrils of Agony"
     ],
     "mechanics": {
+     "Abilities activated from any zone": {
+      "cards": [
+       "Runehorn Hellkite"
+      ],
+      "findings": [
+       "ability_param:Discard.ActivationZone"
+      ],
+      "size": "S"
+     },
      "Bargain and free casting (Beseech the Mirror)": {
       "cards": [
        "Beseech the Mirror"
@@ -51,6 +60,17 @@
        "filter:ExiledWithSourceLKI",
        "filter:Imprinted",
        "trigger_zone:ChangesZone:Exile"
+      ],
+      "size": "M"
+     },
+     "Defined$ names no reader acts on": {
+      "cards": [
+       "Echo of Eons",
+       "Runehorn Hellkite"
+      ],
+      "findings": [
+       "ability_param:Discard.Defined",
+       "ability_param:Draw.Defined"
       ],
       "size": "M"
      },
@@ -79,6 +99,24 @@
       ],
       "findings": [
        "replacement:Effect:Moved"
+      ],
+      "size": "M"
+     },
+     "Hogaak casting": {
+      "cards": [
+       "Gaea's Will"
+      ],
+      "findings": [
+       "static_form:MayPlay.Graveyard"
+      ],
+      "size": "L"
+     },
+     "Imprint past the resolution": {
+      "cards": [
+       "Chrome Mox"
+      ],
+      "findings": [
+       "ability_param:ChangeZone.Imprint"
       ],
       "size": "M"
      },
@@ -117,13 +155,16 @@
       "Bargain and free casting (Beseech the Mirror)"
      ],
      "Chrome Mox": [
-      "Chrome Mox imprint"
+      "Chrome Mox imprint",
+      "Imprint past the resolution"
      ],
      "Echo of Eons": [
+      "Defined$ names no reader acts on",
       "UseAllOriginZones"
      ],
      "Gaea's Will": [
-      "Gaea's Will"
+      "Gaea's Will",
+      "Hogaak casting"
      ],
      "Gamble": [
       "Shuffle effect"
@@ -132,6 +173,8 @@
       "Targeted player's counts (TargetedPlayer$...)"
      ],
      "Runehorn Hellkite": [
+      "Abilities activated from any zone",
+      "Defined$ names no reader acts on",
       "Discard the whole hand (Discard Mode$ Hand)",
       "Exile-the-card-itself costs"
      ],
@@ -156,19 +199,19 @@
      "Taiga",
      "Tendrils of Agony"
     ],
-    "size_points": 14
+    "size_points": 29
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "15 new card(s): 7 clean, 8 need 8 mechanic(s) (14 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "15 new card(s): 7 clean, 8 need 12 mechanic(s) (29 points)",
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -205,11 +248,15 @@
   "implement": {
    "detail": {
     "mechanics": [
+     "Abilities activated from any zone",
      "Bargain and free casting (Beseech the Mirror)",
      "Chrome Mox imprint",
+     "Defined$ names no reader acts on",
      "Discard the whole hand (Discard Mode$ Hand)",
      "Exile-the-card-itself costs",
      "Gaea's Will",
+     "Hogaak casting",
+     "Imprint past the resolution",
      "Shuffle effect",
      "Targeted player's counts (TargetedPlayer$...)",
      "UseAllOriginZones"
@@ -217,15 +264,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "8 mechanic(s) to implement: Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, Gaea's Will, Shuffle effect, Targeted player's counts (TargetedPlayer$...), UseAllOriginZones",
-   "time": "2026-11-05T14:02:12"
+   "summary": "12 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution, Shuffle effect, Targeted player'",
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -294,6 +341,12 @@
       ],
       "findings": [
        {
+        "detail": "ChangeZone Imprint$ True",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | OptionalDecider$ You | Execute$ TrigExile | TriggerDescription$ Imprint — When CARDNAME enters, you may exile a nonartifact, nonland card from your hand.",
+        "name": "ChangeZone.Imprint"
+       },
+       {
         "detail": "Pump ForgetImprinted$ TriggeredCard",
         "kind": "ability_param",
         "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
@@ -338,6 +391,12 @@
       ],
       "findings": [
        {
+        "detail": "Draw Defined$ Player",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZoneAll | ChangeType$ Card | Origin$ Hand,Graveyard | Destination$ Library | Shuffle$ True | SubAbility$ DBDraw | UseAllOriginZones$ True | AILogic$ Timetwister | SpellDescription$ Each player shuffles their graveyard and hand into their library, then draws seven cards.",
+        "name": "Draw.Defined"
+       },
+       {
         "detail": "ChangeZoneAll UseAllOriginZones$ True",
         "kind": "ability_param",
         "line": "A:SP$ ChangeZoneAll | ChangeType$ Card | Origin$ Hand,Graveyard | Destination$ Library | Shuffle$ True | SubAbility$ DBDraw | UseAllOriginZones$ True | AILogic$ Timetwister | SpellDescription$ Each player shuffles their graveyard and hand into their library, then draws seven cards.",
@@ -380,6 +439,12 @@
         "kind": "replacement",
         "line": "A:SP$ Effect | ReplacementEffects$ GraveToExile | StaticAbilities$ STPlay | AILogic$ YawgmothsWill | AINoRecursiveCheck$ True | SpellDescription$ Until end of turn, you may play lands and cast spells from your graveyard. If a card would be put into your graveyard from anywhere this turn, exile that card instead.",
         "name": "Effect:Moved"
+       },
+       {
+        "detail": "an Effect's permission to play from Graveyard",
+        "kind": "static_form",
+        "line": "A:SP$ Effect | ReplacementEffects$ GraveToExile | StaticAbilities$ STPlay | AILogic$ YawgmothsWill | AINoRecursiveCheck$ True | SpellDescription$ Until end of turn, you may play lands and cast spells from your graveyard. If a card would be put into your graveyard from anywhere this turn, exile that card instead.",
+        "name": "MayPlay.Graveyard"
        }
       ],
       "layout": "normal",
@@ -497,6 +562,24 @@
         "kind": "ability_param",
         "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
         "name": "Discard.Mode"
+       },
+       {
+        "detail": "Draw Defined$ Player",
+        "kind": "ability_param",
+        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
+        "name": "Draw.Defined"
+       },
+       {
+        "detail": "Discard ActivationZone$ Graveyard",
+        "kind": "ability_param",
+        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
+        "name": "Discard.ActivationZone"
+       },
+       {
+        "detail": "Discard Defined$ Player",
+        "kind": "ability_param",
+        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
+        "name": "Discard.Defined"
        }
       ],
       "layout": "normal",
@@ -557,14 +640,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "15 new card(s), 8 with findings (19 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "15 new card(s), 8 with findings (25 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

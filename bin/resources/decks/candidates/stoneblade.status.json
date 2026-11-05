@@ -35,6 +35,7 @@
        "Cryptic Coat"
       ],
       "findings": [
+       "ability_param:Cloak.Defined",
        "ability_param:Cloak.RememberCloaked",
        "category:Cloak"
       ],
@@ -54,15 +55,15 @@
    },
    "inputs": {
     "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "fbab1288d66ad8bd9b7ffcadbbc07f501ddbcca0edb793559a6d429100d99803",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (23 points)",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -91,15 +92,15 @@
    },
    "inputs": {
     "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "fbab1288d66ad8bd9b7ffcadbbc07f501ddbcca0edb793559a6d429100d99803",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Can't-block restrictions (CantBlockBy), Face-down permanents (Morph, Cloak; CR 708)",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -121,6 +122,12 @@
         "kind": "ability_param",
         "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigCloak | TriggerDescription$ When CARDNAME enters, cloak the top card of your library, then attach CARDNAME to it. (To cloak a card, put it onto the battlefield face down as a 2/2 creature with ward {2}. Turn it face up any time for its mana cost if it's a creature card.)",
         "name": "Cloak.RememberCloaked"
+       },
+       {
+        "detail": "Cloak Defined$ TopOfLibrary",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigCloak | TriggerDescription$ When CARDNAME enters, cloak the top card of your library, then attach CARDNAME to it. (To cloak a card, put it onto the battlefield face down as a 2/2 creature with ward {2}. Turn it face up any time for its mana cost if it's a creature card.)",
+        "name": "Cloak.Defined"
        },
        {
         "detail": "CantBlockBy ValidAttacker$ Creature.EquippedBy",
@@ -147,14 +154,14 @@
    },
    "inputs": {
     "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "fbab1288d66ad8bd9b7ffcadbbc07f501ddbcca0edb793559a6d429100d99803",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (4 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "1 new card(s), 1 with findings (5 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

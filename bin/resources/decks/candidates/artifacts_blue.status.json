@@ -20,7 +20,6 @@
    "detail": {
     "clean": [
      "Displacer Kitten",
-     "Sink into Stupor",
      "Thought Monitor"
     ],
     "mechanics": {
@@ -38,7 +37,8 @@
        "The Everflowing Well"
       ],
       "findings": [
-       "ability_param:Clone.CloneTarget"
+       "ability_param:Clone.CloneTarget",
+       "ability_param:Clone.Duration"
       ],
       "size": "S"
      },
@@ -56,8 +56,18 @@
        "Ghost Vacuum"
       ],
       "findings": [
+       "ability_param:ChangeZoneAll.GainControl",
        "ability_param:ChangeZoneAll.StaticEffect",
        "ability_param:ChangeZoneAll.WithCountersType"
+      ],
+      "size": "M"
+     },
+     "Imprint past the resolution": {
+      "cards": [
+       "The Stone Brain"
+      ],
+      "findings": [
+       "ability_param:ChangeZone.Imprint"
       ],
       "size": "M"
      },
@@ -67,6 +77,15 @@
       ],
       "findings": [
        "trigger_form:SpellCast.ValidCard"
+      ],
+      "size": "S"
+     },
+     "Targets in several zones": {
+      "cards": [
+       "Sink into Stupor"
+      ],
+      "findings": [
+       "ability_param:ChangeZone.TgtZone"
       ],
       "size": "S"
      },
@@ -85,6 +104,9 @@
      "Ghost Vacuum": [
       "Ghost Vacuum return"
      ],
+     "Sink into Stupor": [
+      "Targets in several zones"
+     ],
      "The Everflowing Well": [
       "Cast with this mana (The Everflowing Well)",
       "Clone a target (CloneTarget)",
@@ -92,6 +114,7 @@
      ],
      "The Stone Brain": [
       "Exile-the-card-itself costs",
+      "Imprint past the resolution",
       "The Stone Brain"
      ]
     },
@@ -103,19 +126,19 @@
      "The Stone Brain",
      "Thought Monitor"
     ],
-    "size_points": 10
+    "size_points": 14
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s): 3 clean, 3 need 6 mechanic(s) (10 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "6 new card(s): 2 clean, 4 need 8 mechanic(s) (14 points)",
+   "time": "2026-11-05T14:16:42"
   },
   "diff": {
    "detail": {
@@ -147,21 +170,23 @@
      "Clone a target (CloneTarget)",
      "Exile-the-card-itself costs",
      "Ghost Vacuum return",
+     "Imprint past the resolution",
      "Spell-cast filters",
+     "Targets in several zones",
      "The Stone Brain"
     ]
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "6 mechanic(s) to implement: Cast with this mana (The Everflowing Well), Clone a target (CloneTarget), Exile-the-card-itself costs, Ghost Vacuum return, Spell-cast filters, The Stone Brain",
-   "time": "2026-11-05T14:02:11"
+   "summary": "8 mechanic(s) to implement: Cast with this mana (The Everflowing Well), Clone a target (CloneTarget), Exile-the-card-itself costs, Ghost Vacuum return, Imprint past the resolution, Spell-cast filters, Targets in several zones, The Stone Brain",
+   "time": "2026-11-05T14:16:42"
   },
   "parse": {
    "detail": {
@@ -196,6 +221,12 @@
         "kind": "ability_param",
         "line": "A:AB$ ChangeZoneAll | Cost$ 6 T Sac<1/CARDNAME> | ChangeType$ Creature.ExiledWithSource | Origin$ Exile | Destination$ Battlefield | GainControl$ True | SorcerySpeed$ True | WithCountersType$ Flying | StaticEffect$ Animate | SpellDescription$ Put each creature card exiled with CARDNAME onto the battlefield under your control with a flying counter on it. Each of them is a 1/1 Spirit in addition to its other types. Activate only as a sorcery.",
         "name": "ChangeZoneAll.StaticEffect"
+       },
+       {
+        "detail": "ChangeZoneAll GainControl$ True",
+        "kind": "ability_param",
+        "line": "A:AB$ ChangeZoneAll | Cost$ 6 T Sac<1/CARDNAME> | ChangeType$ Creature.ExiledWithSource | Origin$ Exile | Destination$ Battlefield | GainControl$ True | SorcerySpeed$ True | WithCountersType$ Flying | StaticEffect$ Animate | SpellDescription$ Put each creature card exiled with CARDNAME onto the battlefield under your control with a flying counter on it. Each of them is a 1/1 Spirit in addition to its other types. Activate only as a sorcery.",
+        "name": "ChangeZoneAll.GainControl"
        }
       ],
       "layout": "normal",
@@ -211,7 +242,14 @@
        "Sink into Stupor",
        "Soporific Springs"
       ],
-      "findings": [],
+      "findings": [
+       {
+        "detail": "ChangeZone TgtZone$ Stack,Battlefield",
+        "kind": "ability_param",
+        "line": "A:SP$ ChangeZone | ValidTgts$ Permanent.nonLand+OppCtrl,Card.inZoneStack+OppCtrl | TgtZone$ Stack,Battlefield | Origin$ Battlefield,Stack | Destination$ Hand | SpellDescription$ Return target spell or nonland permanent an opponent controls to its owner's hand.",
+        "name": "ChangeZone.TgtZone"
+       }
+      ],
       "layout": "modal",
       "script": "cardsfolder/s/sink_into_stupor_soporific_springs.txt",
       "tokens": [],
@@ -232,6 +270,12 @@
         "kind": "ability_param",
         "line": "T:Mode$ SpellCast | ValidCard$ Permanent | ValidSA$ Spell.ManaFromCard.StrictlySelf | ValidActivatingPlayer$ You | Execute$ TrigCopy | TriggerDescription$ Whenever you cast a permanent spell using mana produced by CARDNAME, up to one other target permanent you control becomes a copy of that spell until end of turn.",
         "name": "Clone.CloneTarget"
+       },
+       {
+        "detail": "Clone Duration$ UntilEndOfTurn",
+        "kind": "ability_param",
+        "line": "T:Mode$ SpellCast | ValidCard$ Permanent | ValidSA$ Spell.ManaFromCard.StrictlySelf | ValidActivatingPlayer$ You | Execute$ TrigCopy | TriggerDescription$ Whenever you cast a permanent spell using mana produced by CARDNAME, up to one other target permanent you control becomes a copy of that spell until end of turn.",
+        "name": "Clone.Duration"
        },
        {
         "detail": "ValidCard$ Permanent",
@@ -273,6 +317,12 @@
         "name": "Cleanup.ClearNamedCard"
        },
        {
+        "detail": "ChangeZone Imprint$ True",
+        "kind": "ability_param",
+        "line": "A:AB$ NameCard | Cost$ 2 T Exile<1/CARDNAME> | Defined$ You | SubAbility$ ExileYard | SorcerySpeed$ True | SpellDescription$ Choose a card name. Search target opponent's graveyard, hand, and library for up to four cards with that name and exile them. That player shuffles, then draws a card for each card exiled from their hand this way. Activate only as a sorcery.",
+        "name": "ChangeZone.Imprint"
+       },
+       {
         "detail": "Z = Imprinted$Amount",
         "kind": "svar_expr",
         "line": "SVar:Z:Imprinted$Amount",
@@ -304,14 +354,14 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "6 new card(s), 3 with findings (8 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "6 new card(s), 4 with findings (12 findings), 0 without a script",
+   "time": "2026-11-05T14:16:42"
   },
   "provision": {
    "detail": {

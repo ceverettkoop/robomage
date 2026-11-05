@@ -338,6 +338,14 @@ static void resolve_ability_svars(AbilityDef& ability, const std::string& text,
                                   const std::string& card_name);
 static void resolve_effect_static_svars(AbilityDef& ability, const std::string& text,
                                         const std::map<std::string, std::string>& svars);
+static bool param_form_checked(const std::string &key);
+static bool param_form_read(const AbilityDef &ability, const std::string &text, const std::string &key,
+                            const std::string &value);
+static bool duration_read(const AbilityDef &ability, const std::string &value);
+static bool defined_value_read(const AbilityDef &ability, const std::string &value);
+static void ability_form_findings(const AbilityDef &ability, const std::string &text,
+                                  const std::map<std::string, std::string> &svars);
+static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars);
 static void resolve_amount_svar(AbilityDef& ability, const std::map<std::string, std::string>& svars,
                                 const std::string& card_name);
 static bool resolve_conditional_amount(AbilityDef& ability, const std::string& sv,
@@ -2367,15 +2375,12 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
+        // Params with no effect of their own: prose shown to players, hints for Forge's AI, or a
+        // fact another param already states. A key that carries rules in some forms is checked once
+        // the whole ability is parsed instead (param_form_checked, param_form_read).
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
             "ConditionDescription", "Secondary",
-            // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its
-            // art — both cosmetic. Duration$ is read load-bearingly from the raw line in
-            // resolve_effect_static_svars (Duration$ Permanent ⇒ the Effect makes a permanent emblem); the
-            // Animate/UntilHostLeavesPlay/UntilYourNextTurn Duration forms are consumed by their
-            // own branches above, so any Duration reaching here is already handled or cosmetic.
-            "Name", "Image", "Duration",
             // SelectPrompt$ — the prose prompt shown when a ChangeZone effect asks the player to
             // pick which permanents to move (Yorion: "Select any number of other nonland
             // permanents..."). Purely cosmetic, like TgtPrompt; the selection is driven by
@@ -2392,22 +2397,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // TriggerDescription$ — reminder/Oracle prose on an AB$ ImmediateTrigger's reflexive
             // ability (Guide of Souls). Purely cosmetic, like SpellDescription/StackDescription.
             "TriggerDescription",
-            // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
-            // chooses or how the search is hidden, but the change_zone_same_name handler
-            // already derives the full behavior from ChangeType/Origin/Destination/Defined.
-            // Hidden/ForgetOtherTargets are cosmetic given the "move the maximum" simplification.
-            // (Chooser$ is parsed above into chooser_is_controller — the search-based ChangeZone
-            // honors Chooser$ You. Shuffle$ is handled in apply_param_to_ability above.)
-            "Hidden", "ForgetOtherTargets",
-            // ForgetOnMoved$ Exile (the play-from-exile Effects of Ugin -11, Light Up the Stage,
-            // Dauthi Voidwalker): tells Forge to drop a remembered object from the effect once it
-            // leaves the named zone. The exile-play permission already covers a card only while it
-            // stays in exile (card_play_permission), so the tag needs no separate handling.
-            "ForgetOnMoved",
-            // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
-            // ChooseEach$; ControlledByPlayer$ Chooser and Reveal$ are captured by / cosmetic to
-            // the choose_each handler. (A ChooseCard's Choices$ is read as its filter above.)
-            "ControlledByPlayer", "Reveal",
+            // Hidden$ True tells Forge a ChangeZone's origin is a hidden zone. The handlers take the
+            // same decision from ChangeType$ (a search) or Defined$ (a named object), which every
+            // Hidden$ script states.
+            "Hidden",
             // ChoiceTitle$ <text> (Dauthi Voidwalker's ChooseCard): the prose prompt shown for the
             // choice. Purely cosmetic — the load-bearing Choices$ / ChoiceZone$ are parsed above.
             "ChoiceTitle",
@@ -2417,29 +2410,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // Stackable$ False on an emblem-making Effect (Tamiyo's ultimate): tells Forge not to
             // create a second identical emblem. We don't model emblem de-duplication; cosmetic.
             "Stackable",
-            // ForgetOtherRemembered$ True on a Defined$ Remembered ChangeZone (Tamiyo's front
-            // exile-and-return-transformed): drops the OTHER remembered objects. Only the single
-            // returned card is ever remembered here, so this is a no-op — cosmetic.
-            "ForgetOtherRemembered",
-            // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge
-            // bookkeeping flag that the per-iteration damage is collected into one
-            // simultaneous damage event. Our resolution deals each player's damage in the
-            // repeat loop; the simultaneity is cosmetic for a one-shot instant.
-            "DamageMap",
-            // Announce$ X (Kozilek's Command): declares the X to announce while casting. The
-            // X cost is already auto-detected from a ManaCost containing X (has_x_cost), so
-            // the announce is prompted regardless; the tag is informational here.
-            "Announce",
-            // SP$ NameCard ValidCards$ Card.nonLand / ValidDescription$ nonland (Cabal
-            // Therapy): the name_card handler already restricts the candidate set to nonland
-            // vocab cards, so the filter spec and its prose are informational here.
-            "ValidCards", "ValidDescription",
-            // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is
-            // already tracked in cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI),
-            // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
-            // (ClearImprinted$ True is parsed above into clear_imprinted — a no-op for Phelia,
-            // whose memory.imprinted set is empty, but load-bearing for Atraxa.)
-            "Imprint",
+            // SP$ NameCard ValidDescription$ nonland (Cabal Therapy) and DigUntil's: the prose of
+            // the ValidCards$ / Valid$ filter, which is the load-bearing one.
+            "ValidDescription",
             // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
             // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
             // VoteCard$ filter and VoteSubAbility$ are parsed above.
@@ -2470,43 +2443,228 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // (Once Upon a Time): prose describing the gift offered / the ChangeZone filter.
             // Purely cosmetic — the load-bearing filters are parsed from the other params.
             "GiftDescription", "ChangeValidDesc",
-            // ForceRevealToController$ True (Once Upon a Time): reveals the looked-at card to
-            // its own controller. Informational in a perfect-information engine.
+            // ForceRevealToController$ True (Once Upon a Time): shows the looked-at cards to the
+            // ability's controller, who is the player digging, and sees them anyway.
             "ForceRevealToController",
             // NoRegen$ True (Snuff Out's SP$ Destroy): "it can't be regenerated". The engine has
             // no regeneration (no vocab card creates a regeneration shield), so a destroy is
             // never replaced by one and the tag has nothing to prevent.
             "NoRegen",
-            // ── Params for mechanics NOT YET MODELED — currently no-ops, tracked in todo.md ─
-            // Suppressed here to keep the log clean; each still needs a real handler (see the
-            // "Audit: ability-param keys the parser silently ignores" section of todo.md):
-            //   Reorder$ True (Brainstorm) — let the player order the cards put back on top.
-            //   TriggerAmount$ / RememberOriginalTokens$ (Ajani, Nacatl Avenger) — the token
-            //     count carried to the transform trigger, and tracking the original tokens.
-            //   LockTokenScript$ True (Into the Flood Maw) — pin the gifted Fish token's script.
-            //   ExileOnMoved$ Battlefield (Manifold Key) — exile the permanent when it moves.
-            "Reorder", "TriggerAmount", "RememberOriginalTokens", "LockTokenScript",
-            "ExileOnMoved",
-            // Controller$ <token> (Chain Lightning's DB$ CopySpellAbility: Controller$
-            // TargetedOrController) — names who controls the resolving sub-ability. The
-            // copy_spell_ability handler derives the copy's controller from UnlessPayer$
-            // TargetedOrController directly, so this is informational here.
-            "Controller",
-            // DB$ Animate | Keywords$ / RemoveKeywords$ (Animate Dead): the keyword swap that
-            // re-anchors the aura's Enchant restriction from "creature card in a graveyard" to
-            // "the creature put onto the battlefield with this" is cosmetic here — the reanimation
-            // + Attach chain already anchors the aura to the returned creature (equipped_to), and
-            // the "unattached aura" state-based action reads that link, not the Enchant filter
-            // string. So the live keyword text is never re-evaluated; ignoring the swap is a no-op.
-            "Keywords", "RemoveKeywords"
+            // LockTokenScript$ True (Into the Flood Maw): keeps Forge from swapping the gifted Fish's
+            // script. Nothing here replaces a token's script.
+            "LockTokenScript"
         };
-        if (ignored_keys.find(key) == ignored_keys.end()) {
+        if (ignored_keys.find(key) == ignored_keys.end() && !param_form_checked(key)) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
             if (!card_name.empty()) msg += " (card: " + card_name + ")";
             warning(msg);
             parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
         }
     }
+}
+
+// The ability params that carry rules in some forms and have no field of their own, which
+// apply_param_to_ability passes over for param_form_read to judge with the whole ability parsed.
+static bool param_form_checked(const std::string &key) {
+    static const std::set<std::string> kKeys = {"Name", "Image", "Duration", "ForgetOnMoved", "ExileOnMoved",
+        "ControlledByPlayer", "Reveal", "ForgetOtherRemembered", "DamageMap", "Announce", "Imprint", "Reorder",
+        "TriggerAmount", "RememberOriginalTokens", "Controller", "RemoveKeywords"};
+    return kKeys.count(key) > 0;
+}
+
+// Does the engine honour param `key` as `value` on the fully parsed `ability`? The params of
+// param_form_checked, and the ones a branch of apply_param_to_ability reads only some values of.
+// True for any other key.
+static bool param_form_read(const AbilityDef &ability, const std::string &text, const std::string &key,
+                            const std::string &value) {
+    const std::string &category = ability.category;
+    // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its art.
+    if (key == "Name" || key == "Image") return category == "Effect";
+    if (key == "Duration") return duration_read(ability, value);
+    // ForgetOnMoved$ Exile (the play-from-exile Effects of Ugin -11, Light Up the Stage, Dauthi
+    // Voidwalker): tells Forge to drop a remembered object from the effect once it leaves the named
+    // zone. The exile-play permission already covers a card only while it stays in exile
+    // (card_play_permission).
+    if (key == "ForgetOnMoved") return ability.effect_may_play_from_exile && value == "Exile";
+    // ExileOnMoved$ <zone>: the Effect ends when its object leaves that zone. Each grant of
+    // grant_cast is kept on the object's own state or by identity, and ends with it: the
+    // can't-be-blocked mark and a prevention shield on the battlefield (Kappa Cannoneer, Maze of
+    // Ith), an exile permission in exile, a may-cast in the graveyard (Emry).
+    if (key == "ExileOnMoved") {
+        if (value == "Battlefield")
+            return ability.effect_static_ability == "Unblockable" || ability.effect_prevent_combat_damage_by_remembered ||
+                   ability.effect_prevent_combat_damage_to_remembered;
+        return value == "Exile" ? ability.effect_may_play_from_exile : value == "Graveyard" && ability.target_in_graveyard;
+    }
+    // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing ChooseEach$;
+    // ControlledByPlayer$ Chooser is captured by the choose_each handler.
+    if (key == "ControlledByPlayer") return !ability.choose_each.empty() && value == "Chooser";
+    // Reveal$ True on a ChooseCard among public objects shows what is already public (Ajani -4); a
+    // restricted search reveals its find anyway (search_reveals_card).
+    if (key == "Reveal") {
+        if (category == "Dig") return true;
+        if (category == "ChooseCard") return param_value(text, "ChoiceZone").empty();
+        return category == "ChangeZone" && !ability.change_type.empty() && ability.change_type != "Card";
+    }
+    // ForgetOtherRemembered$ True drops what the resolution remembered before this move: nothing,
+    // at the head of a chain (Sneak Attack), or the move's own object (Tamiyo's Defined$ Remembered).
+    if (key == "ForgetOtherRemembered")
+        return category == "ChangeZone" && (ability.defined_remembered || text.find("DB$") == std::string::npos);
+    // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge bookkeeping flag that
+    // the per-iteration damage is collected into one simultaneous damage event. Our resolution deals
+    // each player's damage in the repeat loop, and state-based actions wait for the whole spell.
+    if (key == "DamageMap") return category == "RepeatEach";
+    // Announce$ X (Kozilek's Command): declares the X to announce while casting. The X cost is
+    // already auto-detected from a ManaCost containing X (has_x_cost).
+    if (key == "Announce") return value == "X";
+    // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is already tracked
+    // in cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI), which the paired
+    // ConditionDefined$ Imprinted gate reads. Any other imprint outlives the resolution.
+    if (key == "Imprint") return ability.defined == "DelayTriggerRememberedLKI";
+    // Reorder$ True (Brainstorm): cards go back on top one pick at a time, so the picks are the
+    // order the player chooses.
+    if (key == "Reorder") return ability.origin == Zone::HAND && ability.destination == Zone::LIBRARY;
+    // TriggerAmount$ (Ajani, Nacatl Avenger): how many times a reflexive ability triggers. It
+    // triggers once.
+    if (key == "TriggerAmount") return false;
+    // RememberOriginalTokens$ True: token() remembers every token it creates, and no effect here
+    // makes a token beyond the originals.
+    if (key == "RememberOriginalTokens") return category == "Token";
+    // Controller$ <token> (Chain Lightning's DB$ CopySpellAbility: Controller$ TargetedOrController)
+    // names who controls the resolving sub-ability. The copy_spell_ability handler derives the
+    // copy's controller from UnlessPayer$ TargetedOrController directly; a Play is the controller's.
+    if (key == "Controller")
+        return value == (category == "CopySpellAbility" ? "TargetedOrController" : category == "Play" ? "You" : "");
+    // DB$ Animate | RemoveKeywords$ (Animate Dead): the Enchant keyword swap re-anchors the aura to
+    // the creature put onto the battlefield with it. The reanimation + Attach chain already anchors
+    // it (equipped_to), and the "unattached aura" state-based action reads that link.
+    if (key == "RemoveKeywords") return category == "AnimateAll" || (category == "Animate" && value.rfind("Enchant", 0) == 0);
+    if (key == "Defined" || key == "DefinedPlayer") return defined_value_read(ability, value);
+    // UnlessCost$ on an effect that does not run it is reported where it is read (read_unless_cost).
+    if (key == "UnlessPayer") {
+        if (!unless_cost_read_by(category)) return true;
+        if (category == "Counter") return value == "TriggeredSourceSAController";
+        return value == (category == "CopySpellAbility" ? "TargetedOrController" : "You");
+    }
+    if (key == "UnlessSwitched") return !unless_cost_read_by(category) || category == "DestroyAll" || category == "CopySpellAbility";
+    if (key == "Chooser") return value == "You";
+    if (key == "RememberObjects") {
+        for (const char *name : {"Targeted", "Self", "RememberedLKI", "ChosenCard"})
+            if (value.find(name) != std::string::npos) return true;
+        return category == "Effect" && value == "Remembered";
+    }
+    if (key == "TgtZone")
+        return value == "Graveyard" || value == "Battlefield" || (value == "Stack" && !ability.target_type.empty());
+    if (key == "ActivationZone") return value == "Hand";
+    if (key == "Activation") return value == "Metalcraft";
+    if (key == "RestrictValid")
+        return ability.restrict_to_chosen_type_creature || ability.restrict_to_colorless_eldrazi ||
+               ability.restrict_to_creature || ability.restrict_from_nonartifact_spells;
+    if (key == "ConditionDefined") {
+        if (category == "ImmediateTrigger") return false;  // it scans the battlefield for ConditionPresent$
+        for (const char *name : {"Targeted", "Remembered", "Imprinted", "RememberedLKI", "TriggeredCard", "ExiledWith"})
+            if (value == name) return true;
+        return false;
+    }
+    if (key == "ChoiceZone")
+        return value == "Exile" || value == "Graveyard" || value == "Hand" || (value == "Library" && ability.choose_imprinted);
+    if (key == "TokenOwner") {
+        for (const char *name : {"You", "Targeted", "Remembered", "Promised"})
+            if (value.find(name) != std::string::npos) return true;
+        return false;
+    }
+    if (key == "ColorOrType") return value == "Color";
+    if (key == "ReflectProperty") return value == "Is";
+    if (key == "Produced")
+        return value == "Any" || value.rfind("Combo", 0) == 0 || (value.size() == 1 && is_plain_mana_token(value));
+    if (key == "AtEOT") return category == "Animate" || (category == "Token" && value == "ExileCombat");
+    if (key == "GainControl") return category == "ChangeZone";
+    return true;
+}
+
+// Does a reader honour Duration$ `value` on `ability`? Each effect has its own durations: an
+// Effect's by what it grants (grant_cast).
+static bool duration_read(const AbilityDef &ability, const std::string &value) {
+    const std::string &category = ability.category;
+    if (category == "Animate") return value == "Permanent" || value == "UntilYourNextTurn" || value == "UntilEndOfTurn";
+    if (category == "ChangeZone") return value == "UntilHostLeavesPlay";
+    if (category == "Pump") {
+        const auto *pp = std::get_if<PumpParams>(&ability.params);
+        return value == "UntilEndOfTurn" || (value == "UntilYourNextTurn" && pp && pp->grant_protection_from_everything);
+    }
+    if (category != "Effect") return false;
+    if (value == "Permanent") return !ability.effect_emblem_statics.empty();
+    if (value == "UntilTheEndOfYourNextTurn") return ability.effect_may_play_from_exile;
+    return value == "UntilYourNextTurn" && (!ability.effect_floating_triggers.empty() || ability.effect_cast_with_flash);
+}
+
+// Does some reader act on Defined$ / DefinedPlayer$ `value`? The names apply_param_to_ability and
+// affected_objects map, and the names one handler compares raw.
+static bool defined_value_read(const AbilityDef &ability, const std::string &value) {
+    static const std::set<std::string> kNames = {"Remembered", "DelayTriggerRememberedLKI", "TriggeredSpellAbility",
+        "TriggeredSpell", "TriggeredSourceSA", "TriggeredAttacker", "TriggeredAttackerLKICopy", "TargetedController",
+        "TriggeredActivator", "TriggeredDefendingPlayer", "TriggeredPlayer", "TriggeredCardController",
+        "TriggeredNewCardLKICopy", "TriggeredNewCard", "TriggeredCardLKICopy", "TriggeredCard", "Self", "ExiledWith",
+        "You", "Player.Opponent", "Opponent", "Targeted", "ParentTarget", "Parent", "ReplacedCard"};
+    if (kNames.count(value) > 0 || value.rfind("Valid ", 0) == 0) return true;
+    const std::string &category = ability.category;
+    if (value == "Player")
+        return category == "Vote" ||
+               (category == "ChangeZone" && ability.origin == Zone::HAND && ability.destination == Zone::BATTLEFIELD);
+    if (value == "Enchanted") return category == "ChangeZone";
+    if (value == "TriggeredCardOwner") return category == "ChangeZoneAll";
+    return category == "Pump" && value == "You & Valid Permanent.YouCtrl";
+}
+
+// Reports what a parsed ability's reader ignores, read off its script `text` and its fields.
+static void ability_form_findings(const AbilityDef &ability, const std::string &text,
+                                  const std::map<std::string, std::string> &svars) {
+    size_t pos = text.find('|');
+    std::string key, value;
+    while (next_param(text, pos, key, value))
+        if (!param_form_read(ability, text, key, value))
+            parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
+    effect_form_findings(ability, svars);
+    if (const auto *pp = std::get_if<PumpParams>(&ability.params))
+        for (const std::string &kw : pp->grant_keywords)
+            if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted by " + ability.category);
+    for (const std::vector<std::string> *list : {&ability.animate_keywords, &ability.add_keywords})
+        for (const std::string &kw : *list)
+            if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted by " + ability.category);
+}
+
+// grant_cast applies the first form an Effect matches, so an Effect is honoured as one form, and a
+// static only as one of the forms parse_ability_text resolves.
+static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars) {
+    if (ability.category != "Effect") return;
+    const bool emblem = !ability.effect_emblem_statics.empty();
+    const bool shield = ability.effect_prevent_combat_damage_by_remembered || ability.effect_prevent_combat_damage_to_remembered;
+    const bool cant_gain = ability.effect_cant_gain_life != AbilityDef::CantGainLifeScope::NONE;
+    const int forms = int(emblem) + int(!ability.effect_floating_triggers.empty()) + int(ability.effect_may_play_from_exile) +
+                      int(ability.effect_static_ability == "Unblockable") +
+                      int(ability.effect_spells_uncounterable_this_turn) + int(shield) + int(cant_gain) +
+                      int(ability.effect_cast_with_flash);
+    if (forms > 1) parse_finding("static_form", "Effect.Forms", "only the first of an Effect's forms applies");
+    const std::string &name = ability.effect_static_ability;
+    if (name.empty()) return;
+    const auto it = svars.find(name);
+    if (it == svars.end()) {
+        parse_finding("svar_missing", name, "StaticAbilities$ names no SVar");
+        return;
+    }
+    const std::string &body = it->second;
+    const std::string mode = param_value(body, "Mode");
+    const std::string zone = param_value(body, "AffectedZone");
+    const bool may_play = param_value(body, "MayPlay") == "True";
+    const bool remembered = filter_names_token(param_value(body, "Affected"), "IsRemembered");
+    const bool read = (may_play && zone == "Exile") || (may_play && zone == "Graveyard" && remembered && ability.target_in_graveyard) ||
+                      (emblem && mode == "Continuous") || mode == "CantGainLife" || mode == "CastWithFlash" ||
+                      (name == "Unblockable" && mode == "CantBlockBy" && param_value(body, "ValidAttacker") == "Card.IsRemembered");
+    if (read) return;
+    if (may_play)
+        parse_finding("static_form", "MayPlay." + zone, "an Effect's permission to play from " + zone);
+    else
+        parse_finding("static_form", "Effect." + mode, body);
 }
 
 // Normalizes script category names to the internal names used throughout the engine. A category
@@ -2662,6 +2820,7 @@ static AbilityDef parse_ability_text(const std::string &text, size_t category_po
         if (!apply_composite_param(ability, key, value, svars, card_name))
             apply_param_to_ability(ability, key, value, card_name);
     resolve_ability_svars(ability, text, svars, card_name);
+    if (g_findings) ability_form_findings(ability, text, svars);
     return ability;
 }
 
@@ -2771,6 +2930,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             if (it != svars.end()) {
                 AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                 if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
+                // The floating-trigger scan watches these two events (collect_triggered_abilities).
+                if (trig.trigger_on != 0 && trig.trigger_on != Events::CREATURE_ATTACKED &&
+                    trig.trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER)
+                    parse_finding("trigger_form", "Effect." + param_value(it->second, "Mode"), it->second);
             } else {
                 parse_finding("svar_missing", svar_name, "Triggers$ names no SVar");
             }

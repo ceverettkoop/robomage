@@ -24,20 +24,24 @@
 // null, "error": "no script", "clean": false}. The finding kinds:
 //
 //   category        an ability category with no effect handler (it resolves as a no-op)
-//   ability_param   an ability param no parse branch reads ("name" the key)
+//   ability_param   an ability param no parse branch reads, or a value or category its reader does
+//                   not honour ("name" <category>.<key>)
 //   amount_svar     an amount names an SVar the script lacks
 //   svar_missing    SubAbility$ / Execute$ / Choices$ / … names an SVar the script lacks
 //   trigger_mode    a trigger Mode$ with no event binding (the trigger is dropped)
-//   trigger_form    a bound mode whose form here binds no event (dropped)
-//   trigger_param   a trigger param no branch reads
+//   trigger_form    a bound mode whose form here binds no event (dropped), or a ValidCard$ or Effect
+//                   trigger its mode's reader does not honour
+//   trigger_param   a trigger param no branch reads, its mode does not read, or read with a value
+//                   its reader does not honour
 //   trigger_phase   a Phase$ step with no event
 //   trigger_zone    TriggerZones$ / Origin$ / Destination$ zones the binding does not filter on
 //   static_mode     an S: mode the engine applies nowhere
-//   static_param    a static param no branch reads
+//   static_param    a static param no branch reads, its mode does not read, or read with a value
+//                   its reader does not honour
 //   static_form     a form of a modelled static mode that is dropped
 //   replacement     an R: line (or an Effect's ReplacementEffects$ SVar) that yields no replacement
-//   keyword         a plain keyword no rule reads
-//   cost            a cost token with no meaning
+//   keyword         a plain or granted keyword no rule reads, an ETBReplacement nothing reads
+//   cost            a cost token, or a form of one, its cost path does not pay (it pays nothing)
 //   layout          an AlternateMode the engine has no layout for
 //   type_token      a type-line token that is no card type, subtype or supertype the engine knows
 //                   (type_constants.h; a game reads it as a subtype with a non-fatal error)

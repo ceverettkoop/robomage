@@ -23,6 +23,15 @@
      "Soul-Guide Lantern"
     ],
     "mechanics": {
+     "Defined$ names no reader acts on": {
+      "cards": [
+       "Drop of Honey"
+      ],
+      "findings": [
+       "ability_param:Destroy.Defined"
+      ],
+      "size": "M"
+     },
      "Least power (Drop of Honey)": {
       "cards": [
        "Drop of Honey"
@@ -44,6 +53,7 @@
     },
     "needs": {
      "Drop of Honey": [
+      "Defined$ names no reader acts on",
       "Least power (Drop of Honey)",
       "without<Keyword> filter qualifier"
      ]
@@ -53,19 +63,19 @@
      "Drop of Honey",
      "Soul-Guide Lantern"
     ],
-    "size_points": 2
+    "size_points": 5
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "3 new card(s): 2 clean, 1 need 2 mechanic(s) (2 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "3 new card(s): 2 clean, 1 need 3 mechanic(s) (5 points)",
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -90,21 +100,22 @@
   "implement": {
    "detail": {
     "mechanics": [
+     "Defined$ names no reader acts on",
      "Least power (Drop of Honey)",
      "without<Keyword> filter qualifier"
     ]
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Least power (Drop of Honey), without<Keyword> filter qualifier",
-   "time": "2026-11-05T14:02:11"
+   "summary": "3 mechanic(s) to implement: Defined$ names no reader acts on, Least power (Drop of Honey), without<Keyword> filter qualifier",
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -128,6 +139,12 @@
        "Drop of Honey"
       ],
       "findings": [
+       {
+        "detail": "Destroy Defined$ ChosenCard",
+        "kind": "ability_param",
+        "line": "T:Mode$ Phase | Phase$ Upkeep | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigChooseOneToDestroy | TriggerDescription$ At the beginning of your upkeep, destroy the creature with the least power. It can't be regenerated. If two or more creatures are tied for least power, you choose one of them.",
+        "name": "Destroy.Defined"
+       },
        {
         "detail": "Choices$ Creature.leastPower+withoutIndestructible",
         "kind": "filter",
@@ -166,14 +183,14 @@
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "3 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "3 new card(s), 1 with findings (3 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

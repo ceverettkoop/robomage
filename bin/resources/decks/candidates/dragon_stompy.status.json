@@ -66,6 +66,15 @@
       ],
       "size": "M"
      },
+     "Effect with a continuous static": {
+      "cards": [
+       "Sundering Eruption"
+      ],
+      "findings": [
+       "static_form:Effect.Continuous"
+      ],
+      "size": "M"
+     },
      "Exile-the-card-itself costs": {
       "cards": [
        "Simian Spirit Guide"
@@ -81,7 +90,17 @@
       ],
       "findings": [
        "ability_param:CopyPermanent.AddKeywords",
+       "ability_param:CopyPermanent.AtEOT",
        "ability_param:Discard.RememberDiscarded"
+      ],
+      "size": "M"
+     },
+     "Imprint past the resolution": {
+      "cards": [
+       "Chrome Mox"
+      ],
+      "findings": [
+       "ability_param:ChangeZone.Imprint"
       ],
       "size": "M"
      },
@@ -109,7 +128,8 @@
       "Boast (CR 702.142)"
      ],
      "Chrome Mox": [
-      "Chrome Mox imprint"
+      "Chrome Mox imprint",
+      "Imprint past the resolution"
      ],
      "Fable of the Mirror-Breaker": [
       "Fable of the Mirror-Breaker"
@@ -128,6 +148,7 @@
       "Exile-the-card-itself costs"
      ],
      "Sundering Eruption": [
+      "Effect with a continuous static",
       "without<Keyword> filter qualifier"
      ]
     },
@@ -142,19 +163,19 @@
      "Simian Spirit Guide",
      "Sundering Eruption"
     ],
-    "size_points": 16
+    "size_points": 22
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s): 1 clean, 8 need 8 mechanic(s) (16 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "9 new card(s): 1 clean, 8 need 10 mechanic(s) (22 points)",
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -189,23 +210,25 @@
      "Chrome Mox imprint",
      "Damage dealt by another object (DamageSource$)",
      "Divided damage (CR 601.2d)",
+     "Effect with a continuous static",
      "Exile-the-card-itself costs",
      "Fable of the Mirror-Breaker",
+     "Imprint past the resolution",
      "Self-or-other zone triggers (Pyrogoyf)",
      "without<Keyword> filter qualifier"
     ]
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "8 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Exile-the-card-itself costs, Fable of the Mirror-Breaker, Self-or-other zone triggers (Pyrogoyf), without<Keyword> filter qualifier",
-   "time": "2026-11-05T14:02:11"
+   "summary": "10 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Effect with a continuous static, Exile-the-card-itself costs, Fable of the Mirror-Breaker, Imprint past the resolution, Self-or-other zone triggers (Pyrogoyf), without<Keyword> filter ",
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -242,6 +265,12 @@
        "Chrome Mox"
       ],
       "findings": [
+       {
+        "detail": "ChangeZone Imprint$ True",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | OptionalDecider$ You | Execute$ TrigExile | TriggerDescription$ Imprint — When CARDNAME enters, you may exile a nonartifact, nonland card from your hand.",
+        "name": "ChangeZone.Imprint"
+       },
        {
         "detail": "Pump ForgetImprinted$ TriggeredCard",
         "kind": "ability_param",
@@ -298,6 +327,12 @@
         "kind": "ability_param",
         "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
         "name": "CopyPermanent.AddKeywords"
+       },
+       {
+        "detail": "CopyPermanent AtEOT$ Sacrifice",
+        "kind": "ability_param",
+        "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
+        "name": "CopyPermanent.AtEOT"
        }
       ],
       "layout": "transform",
@@ -434,6 +469,12 @@
       ],
       "findings": [
        {
+        "detail": "Mode$ Continuous | AffectedZone$ Battlefield | Affected$ Creature.withoutFlying | AddHiddenKeyword$ CARDNAME can't block. | Description$ Creatures without flying can't block this turn.",
+        "kind": "static_form",
+        "line": "A:SP$ Destroy | ValidTgts$ Land | SubAbility$ DBChange | SpellDescription$ Destroy target land. Its controller may search their library for a basic land card, put it onto the battlefield tapped, then shuffle. Creatures without flying can't block this turn.",
+        "name": "Effect.Continuous"
+       },
+       {
         "detail": "Affected$ Creature.withoutFlying",
         "kind": "filter",
         "line": "SVar:KWPump:Mode$ Continuous | AffectedZone$ Battlefield | Affected$ Creature.withoutFlying | AddHiddenKeyword$ CARDNAME can't block. | Description$ Creatures without flying can't block this turn.",
@@ -453,14 +494,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s), 8 with findings (17 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "9 new card(s), 8 with findings (20 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

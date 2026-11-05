@@ -22,10 +22,29 @@
      "Archive Arbiter",
      "Basalt Monolith",
      "Mishra's Research Desk",
-     "Portable Hole",
-     "Tezzeret, Cruel Captain"
+     "Portable Hole"
     ],
     "mechanics": {
+     "Defined$ names no reader acts on": {
+      "cards": [
+       "Tezzeret, Cruel Captain"
+      ],
+      "findings": [
+       "ability_param:Animate.Defined",
+       "ability_param:PutCounter.Defined"
+      ],
+      "size": "M"
+     },
+     "Emblem with a trigger (Tezzeret)": {
+      "cards": [
+       "Tezzeret, Cruel Captain"
+      ],
+      "findings": [
+       "ability_param:Effect.Duration",
+       "trigger_form:Effect.Phase"
+      ],
+      "size": "M"
+     },
      "Exile-the-card-itself costs": {
       "cards": [
        "The Echoverse Fulcrum"
@@ -76,6 +95,10 @@
      "Perilous Snare": [
       "Start your engines! (speed)"
      ],
+     "Tezzeret, Cruel Captain": [
+      "Defined$ names no reader acts on",
+      "Emblem with a trigger (Tezzeret)"
+     ],
      "The Echoverse Fulcrum": [
       "Exile-the-card-itself costs"
      ]
@@ -91,19 +114,19 @@
      "Tezzeret, Cruel Captain",
      "The Echoverse Fulcrum"
     ],
-    "size_points": 15
+    "size_points": 21
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s): 5 clean, 4 need 4 mechanic(s) (15 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "9 new card(s): 4 clean, 5 need 6 mechanic(s) (21 points)",
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -134,6 +157,8 @@
   "implement": {
    "detail": {
     "mechanics": [
+     "Defined$ names no reader acts on",
+     "Emblem with a trigger (Tezzeret)",
      "Exile-the-card-itself costs",
      "Play from the top of the library (Mystic Forge)",
      "Start your engines! (speed)",
@@ -142,15 +167,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Exile-the-card-itself costs, Play from the top of the library (Mystic Forge), Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "6 mechanic(s) to implement: Defined$ names no reader acts on, Emblem with a trigger (Tezzeret), Exile-the-card-itself costs, Play from the top of the library (Mystic Forge), Start your engines! (speed), Sunburst (CR 702.44)",
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -302,7 +327,32 @@
       "faces": [
        "Tezzeret, Cruel Captain"
       ],
-      "findings": [],
+      "findings": [
+       {
+        "detail": "PutCounter Defined$ Targeted.Artifact+Creature",
+        "kind": "ability_param",
+        "line": "A:AB$ Untap | Cost$ AddCounter<0/LOYALTY> | Planeswalker$ True | ValidTgts$ Artifact,Creature | TgtPrompt$ Select target artifact or creature | SubAbility$ DBPutCounter | SpellDescription$ Untap target artifact or creature. If it's an artifact creature, put a +1/+1 counter on it.",
+        "name": "PutCounter.Defined"
+       },
+       {
+        "detail": "Animate Defined$ Targeted.!Creature",
+        "kind": "ability_param",
+        "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
+        "name": "Animate.Defined"
+       },
+       {
+        "detail": "Mode$ Phase | Phase$ BeginCombat | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigPutCounter2 | TriggerDescription$ At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.",
+        "kind": "trigger_form",
+        "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
+        "name": "Effect.Phase"
+       },
+       {
+        "detail": "Effect Duration$ Permanent",
+        "kind": "ability_param",
+        "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
+        "name": "Effect.Duration"
+       }
+      ],
       "layout": "normal",
       "script": "cardsfolder/t/tezzeret_cruel_captain.txt",
       "tokens": [],
@@ -335,14 +385,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "9 new card(s), 4 with findings (9 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "9 new card(s), 5 with findings (13 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

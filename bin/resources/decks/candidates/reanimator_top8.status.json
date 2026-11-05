@@ -34,6 +34,16 @@
       ],
       "size": "S"
      },
+     "Defined$ names no reader acts on": {
+      "cards": [
+       "Stronghold Gambit"
+      ],
+      "findings": [
+       "ability_param:ChooseCard.Defined",
+       "ability_param:Reveal.Defined"
+      ],
+      "size": "M"
+     },
      "Stronghold Gambit": {
       "cards": [
        "Stronghold Gambit"
@@ -64,6 +74,7 @@
       "Top creature of a graveyard (Shallow Grave)"
      ],
      "Stronghold Gambit": [
+      "Defined$ names no reader acts on",
       "Stronghold Gambit"
      ]
     },
@@ -76,19 +87,19 @@
      "Stronghold Gambit",
      "Unmask"
     ],
-    "size_points": 5
+    "size_points": 8
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "7 new card(s): 4 clean, 3 need 3 mechanic(s) (5 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "7 new card(s): 4 clean, 3 need 4 mechanic(s) (8 points)",
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -118,21 +129,22 @@
    "detail": {
     "mechanics": [
      "AlternateAdditionalCost keyword",
+     "Defined$ names no reader acts on",
      "Stronghold Gambit",
      "Top creature of a graveyard (Shallow Grave)"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: AlternateAdditionalCost keyword, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "4 mechanic(s) to implement: AlternateAdditionalCost keyword, Defined$ names no reader acts on, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -229,10 +241,22 @@
       ],
       "findings": [
        {
+        "detail": "ChooseCard Defined$ Player.IsRemembered",
+        "kind": "ability_param",
+        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
+        "name": "ChooseCard.Defined"
+       },
+       {
         "detail": "Reveal RevealDefined$ ValidHand Card.IsRemembered+RememberedPlayerCtrl",
         "kind": "ability_param",
         "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
         "name": "Reveal.RevealDefined"
+       },
+       {
+        "detail": "Reveal Defined$ Player.IsRemembered",
+        "kind": "ability_param",
+        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
+        "name": "Reveal.Defined"
        },
        {
         "detail": "Pump ForgetObjects$ ValidHand Card.nonCreature+IsRemembered",
@@ -272,14 +296,14 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "7 new card(s), 3 with findings (6 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "7 new card(s), 3 with findings (8 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

@@ -31,6 +31,7 @@
        "Agatha's Soul Cauldron"
       ],
       "findings": [
+       "ability_param:ImmediateTrigger.ConditionDefined",
        "static_form:Affected.Counters",
        "static_param:GainsAbilitiesOf",
        "static_param:GainsAbilitiesOfZones",
@@ -50,6 +51,15 @@
        "ability_param:Branch.FalseSubAbility",
        "ability_param:Branch.TrueSubAbility",
        "category:Branch"
+      ],
+      "size": "M"
+     },
+     "Can't-block restrictions (CantBlockBy)": {
+      "cards": [
+       "Untimely Malfunction"
+      ],
+      "findings": [
+       "keyword:HIDDEN CARDNAME can't block."
       ],
       "size": "M"
      },
@@ -83,6 +93,15 @@
       ],
       "size": "M"
      },
+     "Defined$ names no reader acts on": {
+      "cards": [
+       "Chaos Defiler"
+      ],
+      "findings": [
+       "ability_param:Destroy.Defined"
+      ],
+      "size": "M"
+     },
      "Discard-a-card activation cost": {
       "cards": [
        "Melded Moxite",
@@ -108,6 +127,7 @@
       ],
       "findings": [
        "ability_param:CopyPermanent.AddKeywords",
+       "ability_param:CopyPermanent.AtEOT",
        "ability_param:Discard.RememberDiscarded"
       ],
       "size": "M"
@@ -133,6 +153,7 @@
        "ability_param:AddMana.AddsKeywords",
        "ability_param:AddMana.AddsKeywordsUntil",
        "ability_param:AddMana.AddsKeywordsValid",
+       "ability_param:AddMana.Produced",
        "cost:Exert"
       ],
       "size": "M"
@@ -197,6 +218,7 @@
       "Mana with riders and Exert (Arena of Glory)"
      ],
      "Chaos Defiler": [
+      "Defined$ names no reader acts on",
       "Random choice (AtRandom)",
       "without<Keyword> filter qualifier"
      ],
@@ -230,6 +252,7 @@
       "Crew and vehicles (CR 702.122)"
      ],
      "Untimely Malfunction": [
+      "Can't-block restrictions (CantBlockBy)",
       "Change targets (CR 115.7)"
      ]
     },
@@ -253,19 +276,19 @@
      "Unlicensed Hearse",
      "Untimely Malfunction"
     ],
-    "size_points": 54
+    "size_points": 60
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "18 new card(s): 5 clean, 13 need 15 mechanic(s) (54 points)",
-   "time": "2026-11-05T14:02:11"
+   "summary": "18 new card(s): 5 clean, 13 need 17 mechanic(s) (60 points)",
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -307,9 +330,11 @@
     "mechanics": [
      "Agatha's Soul Cauldron",
      "Branch effect (DB$ Branch)",
+     "Can't-block restrictions (CantBlockBy)",
      "Change targets (CR 115.7)",
      "Colour-adding static everywhere (Painter's Servant)",
      "Crew and vehicles (CR 702.122)",
+     "Defined$ names no reader acts on",
      "Discard-a-card activation cost",
      "Divided damage (CR 601.2d)",
      "Fable of the Mirror-Breaker",
@@ -324,15 +349,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin Welder swap, Mana with riders and Exert ",
-   "time": "2026-11-05T14:02:11"
+   "summary": "17 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Defined$ names no reader acts on, Discard-a-card activation cost, Divided damage (CR 601.2d), Fa",
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -343,6 +368,12 @@
        "Agatha's Soul Cauldron"
       ],
       "findings": [
+       {
+        "detail": "ImmediateTrigger ConditionDefined$ Remembered",
+        "kind": "ability_param",
+        "line": "A:AB$ ChangeZone | Cost$ T | Origin$ Graveyard | Destination$ Exile | TgtPrompt$ Choose target card in a graveyard | RememberChanged$ True | ValidTgts$ Card | SubAbility$ TrigImmediateTrig | SpellDescription$ Exile target card from a graveyard. When a creature card is exiled this way, put a +1/+1 counter on target creature you control.",
+        "name": "ImmediateTrigger.ConditionDefined"
+       },
        {
         "detail": "ManaConvert ValidPlayer$ You",
         "kind": "static_param",
@@ -416,6 +447,12 @@
         "kind": "ability_param",
         "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
         "name": "AddMana.AddsKeywordsUntil"
+       },
+       {
+        "detail": "AddMana Produced$ R R",
+        "kind": "ability_param",
+        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
+        "name": "AddMana.Produced"
        }
       ],
       "layout": "normal",
@@ -438,10 +475,22 @@
         "name": "ChooseCard.AtRandom"
        },
        {
+        "detail": "Destroy Defined$ ChosenCard",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigRepeat | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
+        "name": "Destroy.Defined"
+       },
+       {
         "detail": "ChooseCard AtRandom$ True",
         "kind": "ability_param",
         "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Graveyard | ValidCard$ Card.Self | Execute$ TrigRepeat | Secondary$ True | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
         "name": "ChooseCard.AtRandom"
+       },
+       {
+        "detail": "Destroy Defined$ ChosenCard",
+        "kind": "ability_param",
+        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Graveyard | ValidCard$ Card.Self | Execute$ TrigRepeat | Secondary$ True | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
+        "name": "Destroy.Defined"
        },
        {
         "detail": "Choices$ Permanent.nonLand+ControlledBy Remembered",
@@ -494,6 +543,12 @@
         "kind": "ability_param",
         "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
         "name": "CopyPermanent.AddKeywords"
+       },
+       {
+        "detail": "CopyPermanent AtEOT$ Sacrifice",
+        "kind": "ability_param",
+        "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
+        "name": "CopyPermanent.AtEOT"
        }
       ],
       "layout": "transform",
@@ -856,6 +911,12 @@
         "kind": "category",
         "line": "A:SP$ Charm | Choices$ DBDestroy,DBChangeTargets,DBCantBlock",
         "name": "ChangeTargets"
+       },
+       {
+        "detail": "granted by Pump",
+        "kind": "keyword",
+        "line": "A:SP$ Charm | Choices$ DBDestroy,DBChangeTargets,DBCantBlock",
+        "name": "HIDDEN CARDNAME can't block."
        }
       ],
       "layout": "normal",
@@ -870,14 +931,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "18 new card(s), 13 with findings (44 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "summary": "18 new card(s), 13 with findings (50 findings), 0 without a script",
+   "time": "2026-11-05T14:16:43"
   },
   "provision": {
    "detail": {

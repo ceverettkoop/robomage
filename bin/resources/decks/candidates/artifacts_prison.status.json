@@ -59,15 +59,15 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s): 1 clean, 2 need 2 mechanic(s) (6 points)",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "diff": {
    "detail": {
@@ -98,15 +98,15 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
-    "sizes": "35441b5dd567ccc5ebfdde0240eb1487ea74bf7b1836650db0c0fee1ec04193b",
+    "sizes": "222815b0d29e516b26a789ceaf390737995ff10f56ae1d48a417ce2e5fc6ed7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:43"
   },
   "parse": {
    "detail": {
@@ -175,14 +175,14 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "8aaccb81f4173e10b8040ac6bf3cf3c110ce06847901da7d45b1adff8c5444ef",
+    "engine": "b8446631d483641452fdf72371ec93ba548f759375752e5f70ebcce26b9706b8",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
    "summary": "3 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-05T14:02:11"
+   "time": "2026-11-05T14:16:42"
   },
   "provision": {
    "detail": {

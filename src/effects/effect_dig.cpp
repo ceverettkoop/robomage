@@ -360,7 +360,7 @@ bool parse_dig(AbilityDef &ab, const std::string &key, const std::string &value)
     } else if (key == "RestRandomOrder" || key == "RandomOrder") {
         ab.rest_random_order = (value == "True");
         return true;
-    } else if (key == "Reveal") {
+    } else if (key == "Reveal" && ab.category == "Dig") {
         // Reveal$ True — the looked-at cards are shown to all players (Goblin Guide).
         ab.dig_reveal = (value == "True");
         return true;
