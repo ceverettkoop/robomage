@@ -921,6 +921,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             break;
         }
     }
+    // A search with no card left to find (The Stone Brain's four found already, Ugin's ChangeNum$ X
+    // of nothing) is still a search, and its library is still shuffled (CR 701.23).
+    if (rt.num_to_move == 0 && ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle && !ab.def->shuffle_non_mandatory) {
+        orderer->shuffle_library(owner);
+        game_log("%s shuffles their library\n", player_name(owner).c_str());
+    }
     cur_game.priority.player_a_has_priority = rt.prev_priority;
     return HandlerResult::DONE_RUN_SUBS;
 }
