@@ -8,6 +8,11 @@ const ManaRestriction *intern_mana_restriction(const ManaRestriction &r) {
     return &*store.insert(r).first;
 }
 
+const ManaRider *intern_mana_rider(const ManaRider &r) {
+    static std::set<ManaRider> store;
+    return &*store.insert(r).first;
+}
+
 size_t mana_of_color(const ManaPaid &paid, Colors color) {
     return static_cast<size_t>(
         std::count_if(paid.begin(), paid.end(), [color](const ManaUnit &unit) { return unit.color == color; }));
@@ -25,8 +30,9 @@ size_t mana_from(const ManaPaid &paid, Entity source) {
         paid.begin(), paid.end(), [source](const ManaUnit &unit) { return unit.source.lki_entity() == source; }));
 }
 
-bool mana_carried(const ManaPaid &paid, ManaRider rider) {
-    return std::any_of(paid.begin(), paid.end(), [rider](const ManaUnit &unit) { return (unit.riders & rider) != 0; });
+bool mana_makes_uncounterable(const ManaPaid &paid) {
+    return std::any_of(paid.begin(), paid.end(),
+                       [](const ManaUnit &unit) { return unit.rider && unit.rider->cant_be_countered; });
 }
 
 size_t ManaPool::count(Colors color) const {

@@ -2125,7 +2125,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             ability.mana_restriction.kind = ManaRestriction::NO_NONARTIFACT_SPELLS;
         }
     } else if (key == "AddsNoCounter") {
-        ability.adds_no_counter = (value == "True");
+        ManaRider rider;
+        rider.cant_be_countered = (value == "True");
+        ability.mana_rider = intern_mana_rider(rider);
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
     } else if (key == "SorcerySpeed") {

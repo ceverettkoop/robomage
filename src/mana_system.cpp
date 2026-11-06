@@ -128,7 +128,7 @@ static ManaPool::const_iterator spendable_unit(const ManaPool &pool, Colors colo
     for (auto unit = pool.begin(); unit != pool.end(); ++unit) {
         if (color != NO_COLOR && unit->color != color) continue;
         if (!unit_spendable_on(*unit, paid_for)) continue;
-        if (unit->restriction || unit->riders) return unit;
+        if (unit->restriction || unit->rider) return unit;
         if (plain == pool.end()) plain = unit;
     }
     return plain;
@@ -167,7 +167,7 @@ void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
 ManaUnit mana_unit_from(const Ability &ab, Colors color, Entity source, bool commit) {
     ManaUnit unit(color);
     if (commit) unit.source = ObjectRef::of(source);
-    if (ab.def->adds_no_counter) unit.riders |= MANA_RIDER_CANT_BE_COUNTERED;
+    unit.rider = ab.def->mana_rider;
     const ManaRestriction &restriction = ab.def->mana_restriction;
     if (restriction.kind == ManaRestriction::CHOSEN_TYPE_CREATURE) {
         ManaRestriction with_type = restriction;
@@ -1369,6 +1369,10 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // colored pip only a painful source produces) does.
     auto painless = [](const SourceInfo &s) { return !mana_ability_is_painful(s.ability); };
 
+    auto makes_uncounterable = [](const SourceInfo &s) {
+        return s.ability.def->mana_rider && s.ability.def->mana_rider->cant_be_countered;
+    };
+
     // A source that spends itself, sacrificed or exiled from the hand, is the last resort.
     auto keeps_itself = [](const SourceInfo &s) {
         return !s.ability.def->cost.self(CostPart::SACRIFICE) && !s.from_hand;
@@ -1444,7 +1448,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             continue;
         }
 
-        // Try sources in priority order: adds_no_counter > single-color > multi-color. Under
+        // Try sources in priority order: a can't-be-countered rider > single-color > multi-color. Under
         // ManaConvert any source's mana can pay the pip, so the exact-color gate is dropped.
         auto try_source = [&](auto predicate) -> bool {
             for (auto &si : valid_sources) {
@@ -1473,7 +1477,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             }
             return false;
         };
-        if (try_source([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && keeps_itself(s) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return makes_uncounterable(s) && keeps_itself(s) && painless(s); })) continue;
         if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && keeps_itself(s) && painless(s); })) continue;
         if (try_source([&](const SourceInfo &s) { return cost_free(s) && keeps_itself(s) && painless(s); })) continue;
         if (try_source([&](const SourceInfo &s) { return !s.is_multi_color && keeps_itself(s) && painless(s); })) continue;
@@ -1484,7 +1488,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         return false;
     }
 
-    // Pay generic costs with remaining sources — prefer adds_no_counter (Cavern)
+    // Pay generic costs with remaining sources — prefer a can't-be-countered rider (Cavern)
     while (remaining.count(GENERIC) > 0) {
         if (pay_pip_from_pool(NO_COLOR)) {
             auto git = remaining.find(GENERIC);
@@ -1509,7 +1513,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             }
             return false;
         };
-        if (try_generic([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && keeps_itself(s) && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return makes_uncounterable(s) && keeps_itself(s) && painless(s); })) continue;
         if (try_generic([&](const SourceInfo &s) { return cost_free(s) && keeps_itself(s) && painless(s); })) continue;
         if (try_generic([&](const SourceInfo &s) { return keeps_itself(s) && painless(s); })) continue;
         if (try_generic(keeps_itself)) continue;  // painful, if needed

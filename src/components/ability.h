@@ -93,7 +93,7 @@ struct AbilityDef {
     // Empty = not a reflected-mana ability. CR 605 / "mana of any color among …".
     FilterSpec reflected_mana_filter;
     ManaRestriction mana_restriction;                // RestrictValid$
-    bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
+    const ManaRider *mana_rider = nullptr;           // AddsNoCounter$; null: its mana carries none
 
     // Set by apply_land_abilities for mana abilities generated from land subtypes;
     // cleared and regenerated each SBE pass when type-changing effects are active.

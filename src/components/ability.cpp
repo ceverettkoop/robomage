@@ -44,7 +44,7 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     if (other->mana_choices != def->mana_choices) return false;
     if (other->reflected_mana_filter != def->reflected_mana_filter) return false;
     if (other->mana_restriction != def->mana_restriction) return false;
-    if (other->adds_no_counter != def->adds_no_counter) return false;
+    if (other->mana_rider != def->mana_rider) return false;
     if (other->defined != def->defined) return false;
     return true;
 }

@@ -42,10 +42,14 @@ struct ManaRestriction {
 const ManaRestriction *intern_mana_restriction(const ManaRestriction &r);
 
 // What mana does to what it is spent on, by the ability that made it.
-enum ManaRider : uint8_t {
-    MANA_RIDER_NONE = 0,
-    MANA_RIDER_CANT_BE_COUNTERED = 1 << 0,  // AddsNoCounter$ True (Cavern of Souls)
+struct ManaRider {
+        bool cant_be_countered = false;  // AddsNoCounter$ True (Cavern of Souls)
+
+        bool operator<(const ManaRider &o) const { return cant_be_countered < o.cant_be_countered; }
 };
+
+// `r` in the same kind of store as a restriction's: a definition and every unit it makes hold one pointer.
+const ManaRider *intern_mana_rider(const ManaRider &r);
 
 // One mana (CR 106.1): its color, what made it and what that said about it.
 struct ManaUnit {
@@ -55,8 +59,8 @@ struct ManaUnit {
         // sacrificed or exiled itself is named where it went. Empty in a simulated payment.
         ObjectRef source;
         const ManaRestriction *restriction = nullptr;  // null: spendable on anything
+        const ManaRider *rider = nullptr;              // null: it does nothing to what it is spent on
         Colors color;
-        uint8_t riders = MANA_RIDER_NONE;
 };
 
 // The mana a cost spent, in the order it left the pool. Everything a card asks about the mana spent
@@ -71,8 +75,8 @@ std::set<Colors> colors_of(const ManaPaid &paid);
 // moving, so a source that spent itself to make the mana still counts.
 size_t mana_from(const ManaPaid &paid, Entity source);
 
-// Did any of it carry `rider`?
-bool mana_carried(const ManaPaid &paid, ManaRider rider);
+// Does any of it say what it is spent on can't be countered?
+bool mana_makes_uncounterable(const ManaPaid &paid);
 
 // A player's mana pool (CR 106.4), or the copy a simulated payment works on. Its units stay in Colors
 // order, oldest first within a color: what the pool spends first is what a multiset of colors would.

@@ -2410,7 +2410,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             }
             spell.chosen = pc.chosen;
             // Mana spent on it may say it can't be countered (Cavern of Souls).
-            if (mana_carried(pc.chosen.mana_paid, MANA_RIDER_CANT_BE_COUNTERED)) spell.cant_be_countered = true;
+            if (mana_makes_uncounterable(pc.chosen.mana_paid)) spell.cant_be_countered = true;
             // Check card's own replacement effects for "can't be countered" (Long Goodbye).
             // Only the UNCONDITIONAL SELF form ("This spell can't be countered") stamps the spell
             // at cast; the battlefield form (Hexing Squelcher's "Spells you control can't be
