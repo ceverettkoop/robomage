@@ -1,0 +1,12 @@
+{
+  "name": "cr603_2_nantuko_as_a_creature_makes_an_insect",
+  "why": "Springheart Nantuko unattached: the condition fails, so nothing asks for {1}{G} and the second instruction makes a 1/1 Insect (CR 608.2c).",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Springheart Nantuko", "Forest", "Forest"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:play:Forest"],
+  "max_decisions": 8,
+  "expect": ["Token created: .*Insect"],
+  "expect_menu_not": ["Pay \\{1\\}\\{G\\}"]
+}

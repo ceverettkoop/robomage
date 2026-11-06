@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <set>
 
 #include "../classes/game.h"
 #include "../components/ability.h"
@@ -16,12 +17,15 @@ static void target_reads_each(AbilityDef &ability);
 static void overload_spell(CardData &face);
 static std::shared_ptr<const CardData> combined_halves(const CardData &left, const CardData &right);
 static void on_an_adventure(Entity card, Zone::Ownership caster);
+static bool has_bestow(const CardData &card);
+static void bestow_aura(CardData &face);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
-    // kind                   name         variant                                            resolved_to      has           change          resolved
-    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,        nullptr},
-    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell, nullptr},
-    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,        on_an_adventure},
+    // kind                   name         variant                                            resolved_to      has           change          resolved         stays_on_the_permanent
+    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,        nullptr,         false},
+    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell, nullptr,         false},
+    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,        on_an_adventure, false},
+    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,    nullptr,         true},
 };
 
 static bool has_overload(const CardData &card) { return card.alt_cost.is_overload; }
@@ -85,6 +89,21 @@ static void on_an_adventure(Entity card, Zone::Ownership caster) {
     grant.allow_land = true;
     grant.on_an_adventure = true;
     cur_game.resolved_effects.impulse_cast_permission[card] = grant;
+}
+
+static bool has_bestow(const CardData &card) { return card.alt_cost.is_bestow; }
+
+// CR 702.103b: an Aura enchantment with enchant creature, no longer a creature, so without the
+// creature types (CR 205.1b).
+static void bestow_aura(CardData &face) {
+    std::set<Type> types;
+    for (const Type &type : face.types)
+        if (type.kind == SUPERTYPE || (type.kind == TYPE && type.name != "Creature")) types.insert(type);
+    types.insert(Type{TYPE, "Enchantment"});
+    types.insert(Type{SUBTYPE, "Aura"});
+    face.types = types;
+    face.types_text = "Enchantment Aura";
+    face.enchant_filter = "Creature";
 }
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind) { return kSpellOverlayRows[static_cast<size_t>(kind)]; }

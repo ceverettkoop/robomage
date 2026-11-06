@@ -321,6 +321,7 @@ static std::vector<std::string> object_status(const Frame &f, size_t row) {
     if (o.u(row, o.col("tapped"))) out.push_back("tapped");
     if (o.u(row, o.col("sick"))) out.push_back("summoning sick");
     if (o.u(row, o.col("phased_out"))) out.push_back("phased out");
+    if (o.u(row, o.col("bestowed"))) out.push_back("bestowed");
     if (o.u(row, o.col("face_down"))) out.push_back("face down");
     if (o.u(row, o.col("attacking"))) {
         std::string a = "attacking";

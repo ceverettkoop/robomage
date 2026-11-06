@@ -19,6 +19,7 @@ public:
 
 private:
     static bool aura_spell_target_illegal(Entity spell);
+    static bool spell_ceases_to_be_overlaid(Entity spell);
     // Record on the resolving permanent spell's entry how it was cast (EntryInfo): evoke,
     // offspring, escape, impending and warp, and the X it was cast with.
     static void record_cast_entry(Entity spell_entity, const Spell &spell);

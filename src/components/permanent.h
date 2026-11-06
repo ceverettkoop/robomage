@@ -26,6 +26,7 @@ struct Permanent {
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
     size_t entered_on_turn = 0;  // cur_game.turn_state.turn when this entered the battlefield (Ocelot Pride "entered this turn")
     bool transformed = false;  // true when DFC is showing its back face
+    SpellOverlay overlay = SpellOverlay::NONE;  // what it keeps of its spell (bestowed, CR 702.103b), read through active_face
     uint32_t times_transformed = 0;  // transforms since it entered (CR 701.27f stamp)
     // For an Equipment or Aura: the permanent it is attached to (0 = unattached). This is the
     // one record of an attachment; what is attached to a permanent is derived from it (several

@@ -1,0 +1,12 @@
+{
+  "name": "cr702_103b_bestow_needs_a_creature_to_enchant",
+  "why": "CR 702.103b, d: only the characteristics as modified by bestow are evaluated, so with no creature to enchant the bestow row isn't offered, and the creature cast is.",
+  "hand_a": ["Springheart Nantuko"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu": ["Cast Springheart Nantuko$"],
+  "expect_menu_not": ["\\(bestow\\)"]
+}

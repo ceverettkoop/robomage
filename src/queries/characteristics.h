@@ -33,7 +33,8 @@ inline const CardData &cast_face(const CardData &cd, const CastOption &how) {
 
 // The CardData face a permanent entity is currently showing: the back face while the
 // permanent is transformed (CR 712.8e — a face-up back face has its own characteristics),
-// else the front. A spell has the characteristics it was cast with (cast_face). Falls back to the
+// else the front, or what the overlay it entered with gives it (bestowed). A spell has the
+// characteristics it was cast with (cast_face). Falls back to the
 // front face for single-faced cards and any other object.
 // Use this instead of reading GetComponent<CardData>(e) directly wherever a transformed
 // permanent's PRINTED characteristics (colors, types, P/T) matter; note that MANA VALUE is
@@ -41,9 +42,11 @@ inline const CardData &cast_face(const CardData &cd, const CastOption &how) {
 // computes it from the front face's cost; only a MODAL back face carries its own, 712.8d).
 inline const CardData &active_face(Entity e, const CardData &cd) {
     if (!cd.backside && cd.overlay_faces.empty()) return cd;
-    if (cd.backside && global_coordinator.entity_has_component<Permanent>(e) &&
-        global_coordinator.GetComponent<Permanent>(e).transformed)
-        return *cd.backside;
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (cd.backside && perm.transformed) return *cd.backside;
+        if (const CardData *overlaid = overlay_face(cd, perm.overlay)) return *overlaid;
+    }
     if (global_coordinator.entity_has_component<Spell>(e))
         return cast_face(cd, global_coordinator.GetComponent<Spell>(e).chosen.option);
     return cd;

@@ -396,6 +396,7 @@
 {"id":433,"name":"Wear","digest":"c59fe774da03ece3"},
 {"id":434,"name":"Brazen Borrower","digest":"c312aa10c851982e"},
 {"id":435,"name":"Petty Theft","digest":"468b825ac16e751a"},
+{"id":436,"name":"Springheart Nantuko","digest":"70d926bdbab45c5d"},
 {"id":900,"name":"Orc Army","digest":"92bd63e23c33bf12"},
 {"id":901,"name":"Construct","digest":"4a82576f764923f0"},
 {"id":902,"name":"Eldrazi Spawn","digest":"a63ca3e8a2ffb670"},
@@ -416,5 +417,6 @@
 {"id":917,"name":"Eldrazi Scion","digest":"91e857ca5a275386"},
 {"id":918,"name":"Goblin","digest":"7882d8f2b493dbae"},
 {"id":919,"name":"Golem","digest":"9abd4c42e449002b"},
-{"id":920,"name":"Robot","digest":"62f74a29182e6f23"}
+{"id":920,"name":"Robot","digest":"62f74a29182e6f23"},
+{"id":921,"name":"Insect","digest":"e510e3ab73564e9b"}
 ]}

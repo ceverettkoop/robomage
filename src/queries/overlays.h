@@ -25,6 +25,10 @@ struct SpellOverlayRow {
         void (*change)(CardData &face);
         // What follows once it has gone to `resolved_to`, for the player who cast it.
         void (*resolved)(Entity card, Zone::Ownership caster);
+        // The permanent it becomes keeps it (Permanent::overlay), and with its target illegal as it
+        // resolves, or attached to nothing legal, it ends and the object goes on as the card it is
+        // (CR 702.103e, f) where another Aura would go to the graveyard.
+        bool stays_on_the_permanent;
 };
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind);

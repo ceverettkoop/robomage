@@ -318,6 +318,11 @@ static const KeywordEntry kKeywordTable[] = {
          add_keyword_alt_cost(kw_line, "Miracle", &AltCost::is_miracle, ctx.card);
      }},
     {"Overload", KeywordEntry::PREFIX, kw_overload},
+    // K:Bestow:<cost> — Bestow (CR 702.103). An alternative cost whose row makes the spell an Aura.
+    {"Bestow", KeywordEntry::PREFIX,
+     [](const std::string &kw_line, KeywordContext &ctx) {
+         add_keyword_alt_cost(kw_line, "Bestow", &AltCost::is_bestow, ctx.card);
+     }},
     // K:Fuse (CR 702.102): a split card's two halves may be cast together from the hand.
     {"Fuse", KeywordEntry::EXACT,
      [](const std::string &, KeywordContext &ctx) {
@@ -1971,7 +1976,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 // The handlers that run an UnlessCost$ (run_unless_loop, DestroyAll's energy payment); on any other
 // effect it is a parse finding, and the effect happens unconditionally.
 static bool unless_cost_read_by(const std::string &category) {
-    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "DestroyAll", "DealDamage"})
+    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "CopyPermanent", "DestroyAll", "DealDamage"})
         if (category == c) return true;
     return false;
 }
@@ -2044,6 +2049,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // permanent's controller; derived from the target at resolution.
         else if (value == "TargetedOrController")
             ability.unless_payer_is_targeted_or_controller = true;
+    } else if (key == "UnlessResolveSubs") {
+        ability.unless_subs_when_not_paid = value == "WhenNotPaid";
     } else if (key == "UnlessSwitched") {
         // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid" (Wrath of
         // the Skies: destroy only if the energy was paid; Chain Lightning's CopySpellAbility: copy
@@ -2483,7 +2490,8 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // DealDamage reads only the form that pays before it deals.
     if (key == "UnlessCost") return category != "DealDamage" || ability.unless_switched;
     if (key == "UnlessSwitched") return !unless_cost_read_by(category) || category == "DestroyAll" || category == "CopySpellAbility" ||
-                                        category == "DealDamage";
+                                        category == "DealDamage" || category == "CopyPermanent";
+    if (key == "UnlessResolveSubs") return category == "CopyPermanent" && value == "WhenNotPaid";
     if (key == "Chooser") return value == "You";
     if (key == "RememberObjects") {
         for (const char *name : {"Targeted", "Self", "RememberedLKI", "ChosenCard"})

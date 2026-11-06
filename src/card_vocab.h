@@ -358,6 +358,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Wear/Tear", 433},
     {"Brazen Borrower", 434},
     {"Petty Theft", 435},
+    {"Springheart Nantuko", 436},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -402,6 +403,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"r_1_1_goblin", "Goblin", 918},                                 // Empty the Warrens
     {"c_3_3_a_golem", "Golem", 919},                                 // Legion Extruder
     {"c_2_2_a_robot", "Robot", 920},                                 // Melded Moxite
+    {"g_1_1_insect", "Insect", 921},                                 // Springheart Nantuko
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

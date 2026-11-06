@@ -253,6 +253,8 @@ struct AbilityDef {
     // invert the normal "do the effect UNLESS the cost is paid" into "do the effect ONLY IF the cost
     // is paid" (paying {R}{R} ENABLES the copy).
     bool unless_switched = false;
+    // UnlessResolveSubs$ WhenNotPaid: what is chained resolves only when the unless-cost wasn't paid.
+    bool unless_subs_when_not_paid = false;
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)

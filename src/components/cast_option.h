@@ -38,6 +38,7 @@ enum class SpellOverlay : uint8_t {
     NONE,
     OVERLOAD,  // CR 702.96: no targets, "target" reads as "each"
     ADVENTURE,  // CR 715: exiled as it resolves, and its caster may play the card from exile
+    BESTOW,     // CR 702.103: an Aura with enchant creature, and a creature if it falls off
 };
 
 // One way of casting a card: a row of a menu holds it, and the cast proceeds from it. The rows are

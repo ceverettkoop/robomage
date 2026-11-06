@@ -108,12 +108,22 @@ static void frame_finish() {
     supersede_departed_cards();
 }
 
+// CR 702.103e: as a bestowed Aura spell begins resolving with an illegal target, it ceases to be
+// bestowed and goes on resolving as the creature spell it is. True if that happened.
+bool StackManager::spell_ceases_to_be_overlaid(Entity spell) {
+    if (!global_coordinator.entity_has_component<Spell>(spell)) return false;
+    CastOption &how = global_coordinator.GetComponent<Spell>(spell).chosen.option;
+    if (!spell_overlay(how.overlay).stays_on_the_permanent || !aura_spell_target_illegal(spell)) return false;
+    how.overlay = SpellOverlay::NONE;
+    entry_info(spell).aura_target = ObjectRef{};
+    return true;
+}
+
 // True if `spell` is an Aura spell whose enchant target (chosen at cast, CR 303.4a) is no longer
 // legal as it resolves (CR 608.3b / 608.2b): the object changed zones (CR 400.7) or no longer
 // matches its enchant ability. An Aura spell with no recorded target is not judged here.
 bool StackManager::aura_spell_target_illegal(Entity spell) {
-    const auto &cd = global_coordinator.GetComponent<CardData>(spell);
-    if (cd.enchant_filter.empty()) return false;
+    if (active_face(spell, global_coordinator.GetComponent<CardData>(spell)).enchant_filter.empty()) return false;
     const EntryInfo *entry = find_entry_info(spell);
     if (!entry || entry->aura_target.empty()) return false;
     return !pending_aura_target_legal(spell, source_controller(spell));
@@ -123,6 +133,8 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     EntryInfo &entry = entry_info(spell_entity);
     // Evoke: its evoke self-sacrifice ETB trigger fires.
     if (spell.chosen.option.cost == CastCost::EVOKE) entry.evoked = true;
+    // Bestowed: the permanent is a bestowed Aura (CR 702.103b).
+    if (spell_overlay(spell.chosen.option.overlay).stays_on_the_permanent) entry.overlay = spell.chosen.option.overlay;
     // Vibrance's "if {R}{R} was spent to cast it" reads it, and each object's row shows it.
     entry.mana_paid = spell.chosen.mana_paid;
     entry.keywords_until_eot = spell.keywords_until_eot;
@@ -190,6 +202,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         auto &card_data = global_coordinator.GetComponent<CardData>(top_entity);
         // A permanent spell (CR 110.4a, any permanent card type incl. Battle) of the face that
         // was cast (a modal back face / split half, CR 712.8f, 709.3) enters the battlefield.
+        if (spell_ceases_to_be_overlaid(top_entity)) game_log("%s is no longer bestowed.\n", card_data.name.c_str());
         const CardData &face = active_face(top_entity, card_data);
         bool is_permanent = is_permanent_card(face);
         if (is_permanent && aura_spell_target_illegal(top_entity)) {

@@ -39,6 +39,7 @@ struct EntryInfo {
     bool escaped = false;    // cast with Escape → Permanent::cast_with_escape (Uro)
     bool impending = false;  // cast for its Impending cost (CR 702.175d) → enters with time counters
     bool warp = false;       // cast for its warp cost → the delayed end-step exile
+    SpellOverlay overlay = SpellOverlay::NONE;  // what its spell keeps as it enters → Permanent::overlay
     // The X its spell was cast with (> 0): an "enters with X counters" replacement (Chalice of
     // the Void) and Permanent::entered_x for its ETB abilities (CR 107.3m). 0 = none.
     int x_paid = 0;
@@ -65,7 +66,7 @@ struct EntryInfo {
 
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
-               !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp &&
+               !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp && overlay == SpellOverlay::NONE &&
                x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
     }
 };

@@ -132,7 +132,7 @@ static const DefinedRow kDefinedRows[] = {
     // tracked in Permanent::exiled_with on the source (The Creation of Avacyn chapters II & III). A
     // SetState turns it face up (chapter II); a ChangeZone moves it out of exile (chapter III).
     {"ExiledWith", ObjectSpec::EXILED_WITH, Refers::OBJECT, objects_exiled_with},
-    {"Enchanted", ObjectSpec::ENCHANTED, Refers::OBJECT, objects_enchanted, nullptr, read_by_change_zone, false, true},
+    {"Enchanted", ObjectSpec::ENCHANTED, Refers::OBJECT, objects_enchanted, nullptr, read_by_copy_permanent_or_change_zone, false, true},
     {"Equipped", ObjectSpec::EQUIPPED, Refers::OBJECT, objects_equipped, nullptr, read_by_no_ability, false, true},
     // ReplacedCard — a ReplaceWith$ move (Mox Diamond, Leyline of the Void): the replacement
     // dispatcher applies it to its event's own object, so no resolver reads this.

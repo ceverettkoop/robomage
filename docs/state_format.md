@@ -819,6 +819,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `entered_x` | u16 | `count` | |
 | | `monstrous`, `evoked`, `escaped`, `unearthed`, `cast_from_hand` | u8 | `bool` | |
 | | `exerted` | u8 | `bool` | it won't untap in the next untap step of the player who exerted it (CR 701.43) |
+| | `bestowed` | u8 | `bool` | a bestowed Aura: it goes on as a creature if it falls off (CR 702.103f) |
 | | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it; 0 for a permanent not cast |
 
 A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_value`, `chosen_name`,
@@ -861,7 +862,7 @@ computes neither outside its legal-action enumeration.
 | | `x` | i16 | `signed` | −1 = no X |
 | | `amount` | u16 | `count` | `Ability::amount` |
 | | `kicked`, `replicate` | u8 | `count` | |
-| | `variant` | u32 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face, fused, and its overlay (overload, adventure) |
+| | `variant` | u32 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face, fused, and its overlay (overload, adventure, bestow) |
 | | `copy`, `cant_be_countered`, `gift_promised` | u8 | `bool` | |
 | | `mana_spent` | u8 | `count` | the mana that left the pool: a pip a delve exile or a tap paid is none |
 | | `colors_spent` | u8 | `mask:color` | |
@@ -937,7 +938,7 @@ computes neither outside its legal-action enumeration.
 | | `source_player`, `target_player` | seat | | when the source / target is a player |
 | | ability | abref | | an ACTIVATE_ABILITY action's ability |
 | | `ordinal` | i16 | `signed` | `option_ordinal`; −1 = n/a |
-| | `variant` | u32 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static), fused, and its overlay (overload, adventure) |
+| | `variant` | u32 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static), fused, and its overlay (overload, adventure, bestow) |
 | | `card_public` | u8 | `bool` | |
 | | `description` | text | `text` | covered by the leak checks (register 12). For a seat, an entry whose source or target's identity the viewer cannot see (and that is not `card_public`) gets `(hidden card)` instead |
 | `match` (47) | `game` | u8 | `count` | as `header.game` |
@@ -1049,7 +1050,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT (the `Permission` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
-| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE |
+| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW |
 | `knowledge_level` | OFF, EXPERT |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
 | `amount_kind` | NONE, FIXED, VARIABLE |

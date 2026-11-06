@@ -853,6 +853,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     for (Colors col : {WHITE, BLUE, BLACK, RED, GREEN})
         r.u8(perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
     r.u8(perm && perm->exerted_by != Zone::UNKNOWN ? 1 : 0);
+    r.u8(perm && perm->overlay == SpellOverlay::BESTOW ? 1 : 0);
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.

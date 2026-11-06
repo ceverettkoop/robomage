@@ -759,6 +759,10 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
     if (entry->escaped) perm.cast_with_escape = true;
     // Cast with its Offspring additional cost: its offspring token-copy ETB trigger fires.
     if (entry->offspring) perm.entered_with_offspring = true;
+    // What its spell kept (bestowed, CR 702.103b).
+    perm.overlay = entry->overlay;
+    // A bestowed Aura is a creature card: what it falls off into has been here since it entered.
+    if (perm.overlay != SpellOverlay::NONE) perm.has_summoning_sickness = true;
     // Cast for its Impending alternate cost (CR 702.175d): the permanent enters with N time
     // counters. Set them on the Permanent being built (before it is added) so this same pass's
     // creature-suppression check already sees them and strips the Creature component — it
@@ -776,6 +780,7 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
     // grants the recast-from-exile permission (no haste, no leaves→exile redirect).
     if (entry->warp) mark_warp_permanent(entity, perm);
     entry->evoked = false;
+    entry->overlay = SpellOverlay::NONE;
     entry->escaped = false;
     entry->offspring = false;
     entry->impending = false;

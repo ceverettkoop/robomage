@@ -16,6 +16,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
 #include "../systems/orderer.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -33,9 +34,10 @@ static Token copyable_token_of(Entity src) {
     Token tok;
     if (!global_coordinator.entity_has_component<CardData>(src)) return tok;
     const CardData &card = global_coordinator.GetComponent<CardData>(src);
-    const CardData &face = active_face(src, card);
     bool transformed = global_coordinator.entity_has_component<Permanent>(src) &&
                        global_coordinator.GetComponent<Permanent>(src).transformed;
+    // Being bestowed isn't a copiable value.
+    const CardData &face = transformed ? active_face(src, card) : card;
     tok.name = face.name;
     tok.types = face.types;
     tok.explicit_colors = card_colors(face);
@@ -78,10 +80,27 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
-    if (ab.def->defined.is(ObjectSpec::VALID)) {
+    if (ab.def->defined.is(ObjectSpec::VALID) || ab.def->defined.is(ObjectSpec::ENCHANTED)) {
         ResolveCtx copied = ResolveCtx::of(ab);
         copied.controller = ctrl;
         sources = resolve_objects(ab.def->defined, copied);
+    }
+
+    // UnlessCost$ (CR 118.12): Springheart Nantuko's "you may pay {1}{G}. If you do, create a token
+    // that's a copy", UnlessSwitched$ making it happen only if paid. UnlessResolveSubs$ WhenNotPaid
+    // keeps what is chained for when it isn't.
+    bool paid = false;
+    const size_t unless = unless_amount(ab.def->unless_cost);
+    if (unless > 0) {
+        const Entity from = ab.source.lki_entity();
+        bool suspended = false;
+        const bool declined =
+            run_unless_loop(unless, ctrl, orderer, from, from, ctx, suspended,
+                            UnlessSubject{UnlessEffect::COPY, sources.empty() ? from : sources.front(), ab.def->unless_switched},
+                            unless_pay_kind(ab.def->unless_cost), &ab.def->unless_cost.mana());
+        if (suspended) return HandlerResult::SUSPENDED;
+        paid = !declined;
+        if (paid != ab.def->unless_switched) return HandlerResult::DONE_RUN_SUBS;
     }
 
     for (auto src : sources) {
@@ -94,7 +113,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         bootstrap_token_components(tok_entity, tok, ctrl, cur_game.timestamp);
         game_log("Token copy created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
     }
-    return HandlerResult::DONE_RUN_SUBS;
+    return paid && ab.def->unless_subs_when_not_paid ? HandlerResult::DONE_NO_SUBS : HandlerResult::DONE_RUN_SUBS;
 }
 
 // AB$ Clone (Thespian's Stage: "{2}, {T}: CARDNAME becomes a copy of target land, except it has

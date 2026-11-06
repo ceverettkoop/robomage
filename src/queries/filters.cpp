@@ -178,6 +178,7 @@ static bool parse_keyword_after(const std::string &token, size_t from, Qualifier
 static bool parse_with_keyword(const std::string &token, Qualifier &q);
 static bool parse_without_keyword(const std::string &token, Qualifier &q);
 static bool parse_in_zone(const std::string &token, Qualifier &q);
+static bool parse_attached_to(const std::string &token, Qualifier &q);
 static bool parse_mana_cost(const std::string &token, Qualifier &q);
 static bool parse_color(const std::string &token, Qualifier &q);
 static bool parse_read_elsewhere(const std::string &token, Qualifier &q);
@@ -191,6 +192,7 @@ static bool ev_named_card(const CharView &v, const Qualifier &q);
 static bool ev_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_self(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -282,6 +284,9 @@ static const QualifierRow kQualifierRows[] = {
     // Dagger, Entwined's exile filter alternative "Card.targetedBy" matches exactly the
     // creature its DBPump sub chose). Fails closed when no chain target is in context.
     set_row("targetedBy", object_in_set, ObjectSpec::TARGETED),
+    // "AttachedTo <filter>": the object is attached to a permanent the filter matches (Springheart
+    // Nantuko's "attached to a creature you control"). The filter runs to the next '+'.
+    parsed_relative_row("AttachedTo ", NameForm::PREFIX, parse_attached_to, ev_attached_to),
     relative_row("YouCtrl", ev_you_ctrl),
     relative_row("OppCtrl", ev_opp_ctrl),
     // "ControlledBy TriggeredDefendingPlayer" (Forge): the object is controlled by the defending
@@ -486,7 +491,7 @@ static Alternative compile_alternative(const std::string &alt) {
     const std::string rest = alt.substr(sep + 1);
     size_t p = 0;
     while (p <= rest.size()) {
-        size_t nx = rest.find_first_of(".+", p);
+        size_t nx = rest.find_first_of(rest.compare(p, 11, "AttachedTo ") == 0 ? "+" : ".+", p);
         if (nx == std::string::npos) nx = rest.size();
         const std::string q = rest.substr(p, nx - p);
         p = nx + 1;
@@ -806,6 +811,17 @@ static bool ev_self(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
 
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
     return !object_in_set(v, q, ctx);
+}
+
+static bool parse_attached_to(const std::string &token, Qualifier &q) {
+    q.text = token.substr(std::strlen("AttachedTo "));
+    return true;
+}
+
+static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    if (!v.on_battlefield || !global_coordinator.entity_has_component<Permanent>(v.entity)) return false;
+    const Entity host = global_coordinator.GetComponent<Permanent>(v.entity).equipped_to.get();
+    return host != 0 && permanent_matches_filter(host, FilterSpec(q.text), ctx);
 }
 
 static bool ev_you_ctrl(const CharView &v, const Qualifier &, const MatchCtx &ctx) {

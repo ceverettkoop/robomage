@@ -64,6 +64,9 @@ struct AltCost {
     // K:Overload:<cost> (CR 702.96). An ALTERNATIVE casting cost, a row of the cast table whose
     // SpellOverlay reads "target" as "each".
     bool is_overload = false;
+    // K:Bestow:<cost> (CR 702.103). An ALTERNATIVE casting cost, a row of the cast table whose
+    // SpellOverlay makes the spell an Aura with enchant creature.
+    bool is_bestow = false;
 };
 
 //this is the underlying card, not a permanent or spell

@@ -1,0 +1,14 @@
+{
+  "name": "cr702_103f_bestow_falls_off_into_a_creature",
+  "why": "CR 702.103f: a bestowed Aura that becomes unattached stops being bestowed and stays on the battlefield as a creature, an exception to CR 704.5m. It came in this turn, so it is summoning sick (CR 302.6).",
+  "hand_a": ["Springheart Nantuko"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Grizzly Bears"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "B:pass", "B:cast:Lightning Bolt", "B:target:Grizzly Bears"],
+  "max_decisions": 14,
+  "expect_order": ["is attached to Grizzly Bears", "Grizzly Bears is destroyed", "Springheart Nantuko is no longer bestowed"],
+  "expect_not": ["Springheart Nantuko is put into the graveyard"]
+}

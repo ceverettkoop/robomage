@@ -35,6 +35,7 @@
 #include "../queries/counters.h"
 #include "../queries/entry.h"
 #include "../queries/keywords.h"
+#include "../queries/overlays.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
 #include "../input_logger.h"
@@ -51,9 +52,10 @@ namespace {
 struct SbaActions {
     std::vector<std::pair<Entity, std::string>> to_graveyard;  // object + narrative line (704.5f-j, m, s)
     std::vector<Entity> unattach;                               // 704.5n / 704.5p
+    std::vector<Entity> ends_overlay;                           // 702.103f: an exception to 704.5m
     std::vector<std::pair<Entity, int>> annihilate;             // 704.5q: permanent + N
 
-    bool empty() const { return to_graveyard.empty() && unattach.empty() && annihilate.empty(); }
+    bool empty() const { return to_graveyard.empty() && unattach.empty() && ends_overlay.empty() && annihilate.empty(); }
     // Records `e` as put into its owner's graveyard, once however many actions apply to it.
     void put_into_graveyard(Entity e, const std::string &log_line) {
         for (const auto &entry : to_graveyard)
@@ -335,10 +337,15 @@ static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaAction
         // gone, itself, or the Equipment is a creature without reconfigure, 301.5c), and any
         // other non-Aura permanent attached to something, becomes unattached and stays on the
         // battlefield.
-        if (cd && !cd->enchant_filter.empty()) {
-            if (aura_attached_illegally(entity, *cd, perm))
-                out.put_into_graveyard(
-                    entity, name + " is put into the graveyard (Aura not attached to a legal object)");
+        const CardData *face = cd ? &active_face(entity, *cd) : nullptr;
+        if (face && !face->enchant_filter.empty()) {
+            if (aura_attached_illegally(entity, *face, perm)) {
+                if (spell_overlay(perm.overlay).stays_on_the_permanent)
+                    out.ends_overlay.push_back(entity);
+                else
+                    out.put_into_graveyard(
+                        entity, name + " is put into the graveyard (Aura not attached to a legal object)");
+            }
         } else if (!perm.equipped_to.empty() &&
                    !(cd && cd->is_equipment && perm.equipped_to.get() != 0 &&
                      equipment_can_equip(entity, perm.equipped_to.get()))) {
@@ -446,6 +453,16 @@ static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaAc
         if (moving(entity)) continue;
         game_log("%s becomes unattached\n", entity_name(entity).c_str());
         global_coordinator.GetComponent<Permanent>(entity).equipped_to = ObjectRef{};
+    }
+    for (Entity entity : actions.ends_overlay) {
+        if (moving(entity)) continue;
+        // It stays on the battlefield as the card it is (CR 702.103f); the next pass gives it what
+        // that needs, its Creature component among them.
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        game_log("%s is no longer bestowed.\n", perm.name.c_str());
+        perm.equipped_to = ObjectRef{};
+        perm.overlay = SpellOverlay::NONE;
+        perm.types = global_coordinator.GetComponent<CardData>(entity).types;
     }
     for (const auto &[entity, line] : actions.to_graveyard) {
         game_log("%s\n", line.c_str());

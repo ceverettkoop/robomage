@@ -1023,8 +1023,8 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
     if (!global_coordinator.entity_has_component<CardData>(aura)) return false;
     Entity tgt = entry->aura_target.get();
     if (tgt == 0) return false;
-    const auto &cd = global_coordinator.GetComponent<CardData>(aura);
-    return is_legal_target(enchant_target_ability(aura, cd, controller), tgt, controller);
+    const CardData &face = active_face(aura, global_coordinator.GetComponent<CardData>(aura));
+    return is_legal_target(enchant_target_ability(aura, face, controller), tgt, controller);
 }
 
 // Gather a spell's targeting abilities: the primary spell ability plus any chained sub-ability
