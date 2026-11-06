@@ -1082,6 +1082,7 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
             if (sp->chosen.option.face == CastFace::BOTH) bit(CastVariant::FUSED);
             variant |= spell_overlay_variant_mask(sp->chosen.option.overlay);
             if (spell_graveyard_replaced(e)) bit(CastVariant::GRAVEYARD_REPLACED);
+            if (spell_bargained(e)) bit(CastVariant::BARGAINED);
         }
         r.u32(variant)
             .u8(sp && sp->is_copy ? 1 : 0)

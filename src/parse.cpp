@@ -281,6 +281,14 @@ static const KeywordEntry kKeywordTable[] = {
          ctx.card.tap_to_pay = TapToPay::IMPROVISE;
          ctx.card.keywords.push_back("Improvise");
      }},
+    {"Bargain", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) {
+         CostPart sacrifice = CostPart::of(CostPart::SACRIFICE, 1);
+         sacrifice.filter = FilterSpec("Artifact;Enchantment;Permanent.token");
+         ctx.card.bargain_cost.add(sacrifice);
+         ctx.card.has_bargain = true;
+         ctx.card.keywords.push_back("Bargain");
+     }},
     {"Companion:", KeywordEntry::PREFIX, kw_companion},
     {"Enchant:", KeywordEntry::PREFIX, kw_enchant},
     {"Ward", KeywordEntry::PREFIX, kw_ward},
@@ -2026,6 +2034,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // (no player choice / DIG_CHOICE prompt). Goblin Guide reveals the top card and
             // the defender takes it if it's a land.
             ability.change_num_all = true;
+        } else if (key == "Amount" && value == "All" && ability.category == "Play") {
+            // Every Defined$ card: Beseech the Mirror, the one script that says so, names one.
         } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
             // For Dig, ChangeNum$ is the exact take count and 0 is meaningful ("take nothing"),

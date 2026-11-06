@@ -46,6 +46,7 @@ static StatePart cast_step_part(const Cast &pc) {
         case Cast::ALT_HYBRID:
             return StatePart::ALTERNATIVE;
         case Cast::KICKER:
+        case Cast::BARGAIN:
         case Cast::REPLICATE:
         case Cast::ADDITIONAL:
         case Cast::GIFT:

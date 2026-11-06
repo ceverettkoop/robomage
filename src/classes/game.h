@@ -353,6 +353,7 @@ struct Game {
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
                 KICKER,           // per-kicker optional-additional-cost y/n
+                BARGAIN,          // whether its bargain cost will be paid
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
                 HYBRID,           // hybrid pips (auto-mana resolves them; otherwise one prompt per pip)
@@ -386,6 +387,7 @@ struct Game {
             // resolved.
             ManaValue cost_to_pay;
             size_t kicker_idx = 0;     // next kicker pip to offer/apply
+            bool bargaining = false;   // its bargain cost was declared (CR 702.166b)
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
             size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
             // An alternative cost, or nothing, is paid rather than the mana cost (CR 118.9): its X is 0

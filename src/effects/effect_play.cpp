@@ -12,7 +12,9 @@
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
 #include "../queries/types.h"
+#include "../queries/spells.h"
 #include "../queries/zones.h"
+#include "../resolution_memory.h"
 #include "../action_processor.h"
 #include "../resolution_frame.h"
 #include "../systems/orderer.h"
@@ -46,10 +48,12 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     std::vector<ResolutionCastOffer> offers;
     std::string decline_label;
     if (rt.stage == ResolutionCastRt::OFFER) {
+        if (pp.needs_bargain && !spell_bargained(ab.source.get())) return HandlerResult::DONE_RUN_SUBS;
         const std::vector<Entity> cards = play_candidates(ab, pp);
         for (Entity card : cards) {
             const ResolutionCastTerms terms = play_terms(ab, pp, card);
-            if (terms.grant.resource != GrantResource::NORMAL && !ctx.resuming()) {
+            const bool resource = terms.grant.resource == GrantResource::ENERGY || terms.grant.resource == GrantResource::LIFE;
+            if (resource && !ctx.resuming()) {
                 const char *res = (terms.grant.resource == GrantResource::LIFE) ? "life" : "energy";
                 game_log("%s may cast %s by paying %d %s rather than its mana cost.\n",
                          player_name(ab.controller).c_str(), entity_name(card).c_str(), terms.grant.amount, res);
@@ -59,9 +63,9 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         }
         decline_label = cards.size() == 1 ? "Do not cast " + entity_name(cards.front()) : "Do not cast a spell";
     }
-    if (cast_during_resolution(offers, decline_label, ab.controller, rt, ctx, orderer) ==
-        ResolutionCastStatus::SUSPENDED)
-        return HandlerResult::SUSPENDED;
+    const ResolutionCastStatus status = cast_during_resolution(offers, decline_label, ab.controller, rt, ctx, orderer);
+    if (status == ResolutionCastStatus::SUSPENDED) return HandlerResult::SUSPENDED;
+    if (status == ResolutionCastStatus::CAST) report_object(ab, EffectObjects::PLAYED, rt.card);
     return HandlerResult::DONE_RUN_SUBS;
 }
 
@@ -70,6 +74,12 @@ bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value
     PlayParams &pp = effect_params<PlayParams>(ab);
     if (key == "ValidSA") {
         pp.valid_sa = FilterSpec(value);
+        return true;
+    } else if (key == "WithoutManaCost" && value == "True") {
+        pp.cost_resource = GrantResource::FREE;
+        return true;
+    } else if (key == "Condition" && value == "Bargain") {
+        pp.needs_bargain = true;
         return true;
     } else if (key == "ValidZone" && value == "Graveyard") {
         pp.from_zone = true;

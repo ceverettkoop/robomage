@@ -52,6 +52,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::IMPRINTED, MemoryAction::APPEND, EffectObjects::MOVED}},
     {"ImprintRevealed", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::REVEALED_TOP}},
+    {"ImprintPlayed", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::IMPRINTED, MemoryAction::APPEND, EffectObjects::PLAYED}},
     {"ClearRemembered", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::CLEANED}},
     {"ClearChosenCard", ParamForm::IS_TRUE, EffectKind::None,

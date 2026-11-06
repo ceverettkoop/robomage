@@ -165,6 +165,10 @@ struct CardData{
     // count >= 1). Empty = the card has no kicker. Linked "if it was kicked with its [N]
     // kicker" triggers read the per-Spell kicked flags by index (see ChosenCost::kicked).
     std::vector<CostParts> kicker_costs;
+    // K:Bargain — "As an additional cost to cast this spell, you may sacrifice an artifact,
+    // enchantment, or token" (CR 702.166a).
+    bool has_bargain = false;
+    CostParts bargain_cost;
     // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost that may be paid ANY NUMBER OF TIMES as
     // the spell is cast (CR 702.x / Consign to Memory). Each payment increments the spell's
     // "replicate count"; when the spell is cast it is copied that many times, and the copies

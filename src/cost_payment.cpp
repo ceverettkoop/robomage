@@ -42,6 +42,7 @@ enum class CostSlot {
     ALTERNATIVE,
     ADDITIONAL,
     ADDITIONAL_CHOICE,
+    BARGAIN,
     ESCALATE,
     FLASHBACK,
     ESCAPE
@@ -176,6 +177,9 @@ static const PickRule kAltSacrifice = {CostSlot::ALTERNATIVE, CostPart::SACRIFIC
 // cost to cast this spell, sacrifice a green creature."
 static const PickRule kAdditionalSacrifice = {CostSlot::ADDITIONAL, CostPart::SACRIFICE, "Sacrifice ", "",
     ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, false};
+// Bargain's sacrifice (CR 702.166a), when its intention was declared.
+static const PickRule kBargainSacrifice = {CostSlot::BARGAIN, CostPart::SACRIFICE, "Sacrifice ", " (Bargain)",
+    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", " (Bargain)", PickRule::ONE_IF_ANY, false};
 // The discard of an additional cost announced in that form (Bitter Triumph, CR 601.2b, 601.2h).
 static const PickRule kAdditionalDiscard = {CostSlot::ADDITIONAL_CHOICE, CostPart::DISCARD, "Discard ", "",
     ActionCategory::DISCARD, Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false};
@@ -208,6 +212,7 @@ static const CostStep kCastSteps[] = {
     {CostStep::PICK, &kAltReturn},
     {CostStep::PICK, &kAltSacrifice},
     {CostStep::PICK, &kAdditionalSacrifice},
+    {CostStep::PICK, &kBargainSacrifice},
     {CostStep::PICK, &kAdditionalDiscard},
     {CostStep::PICK, &kEscalateDiscard},
     {CostStep::DELVE_COUNT},
@@ -564,6 +569,8 @@ static const CostParts *pick_cost(const PickRule &rule, const CostPayer &who) {
             return who.additional;
         case CostSlot::ADDITIONAL_CHOICE:
             return who.additional_choice;
+        case CostSlot::BARGAIN:
+            return who.bargain;
         case CostSlot::ESCALATE:
             return who.escalate;
         case CostSlot::FLASHBACK:

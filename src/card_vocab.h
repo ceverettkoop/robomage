@@ -362,6 +362,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Carnivorous Cultivator", 437},
     {"Enroot", 438},
     {"Bilbo, Thief in the Night", 439},
+    {"Beseech the Mirror", 440},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

@@ -1051,7 +1051,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT, PREPARED (the `Permission` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
-| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED, GRAVEYARD_REPLACED (what cast it sends it elsewhere if it would go to a graveyard) |
+| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED, GRAVEYARD_REPLACED (what cast it sends it elsewhere if it would go to a graveyard), BARGAINED |
 | `knowledge_level` | OFF, EXPERT |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
 | `amount_kind` | NONE, FIXED, VARIABLE |

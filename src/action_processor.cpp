@@ -1977,6 +1977,24 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                 return;
             }
+            pc.step = Game::PendingCast::BARGAIN;
+            break;
+        }
+
+        case Game::PendingCast::BARGAIN: {
+            // BARGAIN (CR 702.166a, 601.2b): an optional additional cost, its intention declared
+            // here. What is sacrificed is chosen as the costs are paid, and a spell is bargained
+            // once it has been (ChosenCost::moved).
+            if (card_data.has_bargain &&
+                additional_cost_payable(pc, card_data, card_data.bargain_cost, pc.cost_to_pay, caster, orderer)) {
+                if (resume_choice < 0) {
+                    arm_cast_query(game, optional_yesno_menu("sacrifice an artifact, enchantment, or token (Bargain)"),
+                                   caster, spell_entity);
+                    return;
+                }
+                pc.bargaining = resume_choice == 1;
+                resume_choice = -1;
+            }
             pc.step = Game::PendingCast::REPLICATE;
             break;
         }
@@ -2405,6 +2423,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 who.additional_choice = &card_data.additional_choices[static_cast<size_t>(pc.chosen.additional_choice)];
             who.escalate = &card_data.escalate_cost;
             who.escalate_times = pc.chosen.escalate_count;
+            if (pc.bargaining) who.bargain = &card_data.bargain_cost;
             if (pc.chosen.flashback()) who.flashback = &card_data.flashback_cost;
             if (pc.chosen.escape()) who.escape = &card_data.escape_cost;
             who.chosen = &pc.chosen;

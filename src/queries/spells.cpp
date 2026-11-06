@@ -48,6 +48,16 @@ bool spell_graveyard_replaced(Entity spell) {
     return pp.replaces_graveyard && card_matches_filter(spell, pp.graveyard_replaced_valid);
 }
 
+bool spell_bargained(Entity spell) {
+    if (!global_coordinator.entity_has_component<Spell>(spell) ||
+        !global_coordinator.entity_has_component<CardData>(spell) ||
+        !active_face(spell, global_coordinator.GetComponent<CardData>(spell)).has_bargain)
+        return false;
+    const std::vector<ChosenCost::Moved> &moved = global_coordinator.GetComponent<Spell>(spell).chosen.moved;
+    return std::any_of(moved.begin(), moved.end(),
+                       [](const ChosenCost::Moved &m) { return m.kind == CostPart::SACRIFICE; });
+}
+
 FilterSpec spell_additional_sac_spec(const CardData &cd) {
     for (const auto &ab : cd.abilities)
         if (ab->ability_type == AbilityDef::SPELL && !ab->cost.filter(CostPart::SACRIFICE).empty())

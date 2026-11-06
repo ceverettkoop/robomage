@@ -1,0 +1,52 @@
+{
+  "name": "cr702_166_a_spell_not_bargained_puts_the_card_in_hand",
+  "why": "CR 702.166b: Beseech the Mirror cast with no bargain exiles the found card face down and then puts it into the hand: the cast isn't offered.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mishra's Bauble"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Beseech the Mirror",
+    "A:desc:Decline",
+    "A:search:Lightning Bolt"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A casts Beseech the Mirror"
+  ],
+  "expect_menu": [
+    "Accept: sacrifice an artifact, enchantment, or token \\(Bargain\\)"
+  ],
+  "expect_menu_not": [
+    "without paying its mana cost"
+  ],
+  "expect_not": [
+    "sacrifices",
+    "Player A casts Lightning Bolt"
+  ]
+}

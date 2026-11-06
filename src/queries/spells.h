@@ -40,6 +40,10 @@ SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, Spell
 // way it leaves the stack (DB$ Play's ReplaceGraveyard$)?
 bool spell_graveyard_replaced(Entity spell);
 
+// Was `spell` bargained (CR 702.166b)? Its bargain cost is the one sacrifice a spell with Bargain
+// pays, so what the cost moved says.
+bool spell_bargained(Entity spell);
+
 // The additional Sacrifice-a-<type> cost a spell pays as it is cast, taken from the
 // card's SPELL ability `Cost$` (e.g. Natural Order's "Sac<1/Creature.Green>" →
 // "Creature.Green"). Empty when the spell has no additional sacrifice cost. Mirrors how

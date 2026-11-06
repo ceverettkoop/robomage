@@ -164,10 +164,11 @@ struct AmassParams {
 struct PlayParams {
     // PlayCost$: what is paid rather than the card's mana cost, and how much: a literal int (as a
     // string) or "ConvertedManaCost" (the spell's mana value). Amped Raptor pays energy. NORMAL:
-    // the card's own cost (Bilbo).
+    // the card's own cost (Bilbo). FREE: WithoutManaCost$ True (Beseech the Mirror).
     GrantResource cost_resource = GrantResource::NORMAL;
     std::string cost_expr = "";
     FilterSpec valid_sa;  // ValidSA$: the spells it may be cast as, read as the face it would be
+    bool needs_bargain = false;  // Condition$ Bargain: only if the spell doing this was bargained
     // ValidZone$ + Valid$: the cards it may cast are those of the zone the filter matches, rather
     // than Defined$'s.
     bool from_zone = false;

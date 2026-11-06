@@ -114,6 +114,7 @@ struct CostPayer {
         const CostParts *alternative = nullptr;  // the alternative cost it was cast for
         const CostParts *additional = nullptr;   // a spell's additional sacrifice
         const CostParts *additional_choice = nullptr;  // the form of its additional cost announced
+        const CostParts *bargain = nullptr;      // its bargain cost, when it is being paid
         const CostParts *escalate = nullptr;     // the Escalate cost, paid `escalate_times` times
         int escalate_times = 0;
         const CostParts *flashback = nullptr;

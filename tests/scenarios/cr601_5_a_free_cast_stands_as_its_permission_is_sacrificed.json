@@ -1,0 +1,40 @@
+{
+  "name": "cr601_5_a_free_cast_stands_as_its_permission_is_sacrificed",
+  "why": "CR 601.5: what lets a spell be cast may be lost while its costs are paid. Omniscience, sacrificed to Beseech the Mirror's bargain, still let it be cast without paying its mana cost.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Omniscience"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:without paying its mana cost",
+    "A:desc:Accept",
+    "A:search:Lightning Bolt"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player A casts Beseech the Mirror without paying its mana cost",
+    "Player A sacrifices Omniscience \\(Bargain\\)",
+    "Player A casts Beseech the Mirror"
+  ]
+}

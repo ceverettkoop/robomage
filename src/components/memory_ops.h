@@ -32,6 +32,7 @@ struct EffectObjects {
             KEPT = 1u << 13,              // a permanent a ChooseEach$ ChooseCard kept
             CLEANED = 1u << 14,           // a Cleanup ran (it has no objects)
             FINISHED = 1u << 15,          // any effect is done (the step reports it)
+            PLAYED = 1u << 16,            // the card a Play cast
         };
 };
 
