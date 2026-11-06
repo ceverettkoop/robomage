@@ -123,7 +123,7 @@ struct CostPayer {
 
         // A mana ability paying through activate_mana_source: the pool and the player it pays from, the
         // real ones or a simulated payment's copies (commit false: no tap, no sacrifice, no narrative).
-        ManaValue *pool = nullptr;
+        ManaPool *pool = nullptr;
         Player *working = nullptr;
         bool commit = true;
         int life_reserve = 0;

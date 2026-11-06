@@ -7,6 +7,7 @@
 #include "../object_ref.h"
 #include "ability_params.h"
 #include "cost_part.h"
+#include "mana_unit.h"
 #include "memory_ops.h"
 #include "object_spec.h"
 #include "static_ability.h"
@@ -91,12 +92,7 @@ struct AbilityDef {
     // permanent's effective_colors), then expanded into per-color choices like mana_choices.
     // Empty = not a reflected-mana ability. CR 605 / "mana of any color among …".
     FilterSpec reflected_mana_filter;
-    bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
-    bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
-    bool restrict_from_nonartifact_spells = false;   // RestrictValid$ CantCastNonArtifactSpells (Powerstone tokens)
-    bool restrict_to_colorless_eldrazi = false;      // RestrictValid$ Spell.Eldrazi+Colorless (Eldrazi Temple)
-    bool restrict_allows_activated = false;          // RestrictValid$ has an Activated. clause (Secluded Courtyard)
-    bool restrict_activated_on_battlefield = false;  // that clause says inZoneBattlefield (Eldrazi Temple)
+    ManaRestriction mana_restriction;                // RestrictValid$
     bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
 
     // Set by apply_land_abilities for mana abilities generated from land subtypes;

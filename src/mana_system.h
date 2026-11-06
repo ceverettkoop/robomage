@@ -11,6 +11,7 @@
 #include "classes/action.h"
 #include "classes/colors.h"
 #include "components/filter_spec.h"
+#include "components/mana_unit.h"
 #include "components/tap_to_pay.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
@@ -83,7 +84,7 @@ enum class ManaLogStyle {
 // Replacements and triggers run in simulate mode (!commit) too, so affordability
 // (can_pay_mana) and the real payment always agree on the mana produced.
 void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer, ManaValue& pool,
+                               std::shared_ptr<Orderer> orderer, ManaPool& pool,
                                bool commit, ManaLogStyle log_style);
 
 // Activate one mana source: pay its activation mana cost from the working `pool`,
@@ -99,7 +100,7 @@ void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership
 // auto-payer (commit per simulate/real), the interactive payer, and the pay-unless loop (both
 // always commit, with pool == the player's real mana pool).
 bool activate_mana_source(Entity source, const Ability& ab, Zone::Ownership controller,
-                          std::shared_ptr<Orderer> orderer, ManaValue& pool, Player& player,
+                          std::shared_ptr<Orderer> orderer, ManaPool& pool, Player& player,
                           bool commit, ManaLogStyle log_style, int life_reserve = 0);
 
 // ── Mana development summary (ML observation) ───────────────────────────────
@@ -129,7 +130,7 @@ struct ManaPotential {
 ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities);
 
 // Check if a given mana pool can afford a cost (does not read player state)
-bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);
+bool can_afford_pool(const ManaPool& pool, const std::multiset<Colors>& cost);
 
 // Check if player can afford a mana cost
 bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
@@ -160,8 +161,13 @@ size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
 // paid_for: the entity being paid for (used for diagnostics on insufficient mana)
 void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, Entity paid_for);
 
-// Add mana to player's pool
-void add_mana(Zone::Ownership player, Colors mana_color, size_t amount);
+// One mana of `color` as `ab`, activated or resolving from `source`, makes it: the restriction and
+// riders its definition gives it, and in a real payment (commit) where it came from. A chosen type
+// in the restriction is `source`'s now.
+ManaUnit mana_unit_from(const Ability& ab, Colors color, Entity source, bool commit);
+
+// Add `amount` of `unit` to player's pool
+void add_mana(Zone::Ownership player, const ManaUnit& unit, size_t amount);
 
 // Pay as much of cost as possible from player's pool, return the unpaid remainder
 ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost);
@@ -173,7 +179,7 @@ void empty_mana_pool(Zone::Ownership player);
 // the payment activated (CR 733.1) restores the pool, the sources' tapped state and activation
 // counts, and the life a painful source took (Ancient Tomb's damage, a horizon land's PayLife).
 struct ManaPaymentSnapshot {
-    std::multiset<Colors> player_mana;
+    ManaPool player_mana;
     int32_t life_total = 0;
     int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
@@ -270,7 +276,7 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
 // Pays `cost` out of `pool` and returns the portion that could not be paid. `spent` (when non-null)
 // collects each color erased from `pool` — so a REAL-pool consumer can report the colors it spent.
 // Dry-run callers (can_afford_pool, activation-cost trials) pass nullptr and are unaffected.
-ManaValue pay_from_pool(ManaValue& pool, const ManaValue& cost, ManaValue* spent = nullptr);
+ManaValue pay_from_pool(ManaPool& pool, const ManaValue& cost, ManaValue* spent = nullptr);
 
 // Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
 // payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's

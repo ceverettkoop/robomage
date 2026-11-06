@@ -2104,25 +2104,25 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // Temple). The subject is the same as the Spell. clause's, which the branches below read.
         for (const std::string &clause : split(value, ',')) {
             if (clause.rfind("Activated.", 0) != 0) continue;
-            ability.restrict_allows_activated = true;
-            ability.restrict_activated_on_battlefield = filter_names_token(clause, "inZoneBattlefield");
+            ability.mana_restriction.allows_activated = true;
+            ability.mana_restriction.activated_on_battlefield = filter_names_token(clause, "inZoneBattlefield");
         }
         if (filter_names_token(value, "Creature") &&
             value.find("ChosenType") != std::string::npos) {
-            ability.restrict_to_chosen_type_creature = true;
+            ability.mana_restriction.kind = ManaRestriction::CHOSEN_TYPE_CREATURE;
         } else if (value.find("Eldrazi") != std::string::npos &&
                    value.find("Colorless") != std::string::npos) {
             // RestrictValid$ Spell.Eldrazi+Colorless,... — mana usable only to cast a
             // colorless Eldrazi spell (Eldrazi Temple) or, by its Activated. clause, to
             // activate an ability of a colorless Eldrazi. CR 106.7.
-            ability.restrict_to_colorless_eldrazi = true;
+            ability.mana_restriction.kind = ManaRestriction::COLORLESS_ELDRAZI;
         } else if (filter_names_token(value, "Creature")) {
             // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell
             // (any creature, no subtype constraint), e.g. Abundant Countryside. CR 106.7.
-            ability.restrict_to_creature = true;
+            ability.mana_restriction.kind = ManaRestriction::CREATURE;
         } else if (value == "CantCastNonArtifactSpells") {
             // A Powerstone's mana: spendable on anything but casting a nonartifact spell.
-            ability.restrict_from_nonartifact_spells = true;
+            ability.mana_restriction.kind = ManaRestriction::NO_NONARTIFACT_SPELLS;
         }
     } else if (key == "AddsNoCounter") {
         ability.adds_no_counter = (value == "True");
@@ -2459,8 +2459,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "ActivationZone") return ability.activation_zone != -1;
     if (key == "Activation") return value == "Metalcraft";
     if (key == "RestrictValid")
-        return ability.restrict_to_chosen_type_creature || ability.restrict_to_colorless_eldrazi ||
-               ability.restrict_to_creature || ability.restrict_from_nonartifact_spells;
+        return ability.mana_restriction.kind != ManaRestriction::NONE;
     if (key == "ConditionDefined") {
         if (category == "ImmediateTrigger") return false;  // it scans the battlefield for ConditionPresent$
         for (const char *name : {"Targeted", "Remembered", "Imprinted", "RememberedLKI", "TriggeredCard", "ExiledWith"})

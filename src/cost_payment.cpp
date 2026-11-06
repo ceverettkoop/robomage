@@ -903,7 +903,7 @@ static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &o
 // bounces.
 static PayStatus pay_from_working_pool(const CostPayer &who) {
     if (who.cost->mana().empty()) return PayStatus::PAID;
-    ManaValue pool_before = *who.pool;
+    ManaPool pool_before = *who.pool;
     ManaValue unpaid = pay_from_pool(*who.pool, who.cost->mana());
     if (unpaid.empty()) return PayStatus::PAID;
     *who.pool = pool_before;

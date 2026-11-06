@@ -46,7 +46,7 @@ HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         mana_color = ab.def->mana_choices[static_cast<size_t>(choice)];
     }
-    ::add_mana(mana_controller, mana_color, mana_amount);
+    ::add_mana(mana_controller, mana_unit_from(ab, mana_color, ab.source.lki_entity(), /*commit=*/true), mana_amount);
     game_log("%s adds %zu{%s}\n", player_name(mana_controller).c_str(), mana_amount, mana_symbol(mana_color).c_str());
     return HandlerResult::DONE_RUN_SUBS;
 }

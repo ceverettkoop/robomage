@@ -10,6 +10,7 @@
 #include "../ecs/entity.h"
 #include "../object_ref.h"
 #include "counter_map.h"
+#include "mana_unit.h"
 
 struct Player {
     int32_t life_total = 20;
@@ -21,7 +22,7 @@ struct Player {
     // lives under "ENERGY" (CR 122.1c). Mutate via the get/add helpers below so all counter
     // kinds share one store. An entry is absent (not 0) when the player has none of that type.
     CounterMap counters;
-    std::multiset<Colors> mana;
+    ManaPool mana;
     uint8_t lands_played_this_turn = 0;
     size_t spells_cast_this_turn = 0;
     size_t spells_cast_this_game = 0;
