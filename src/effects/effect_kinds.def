@@ -202,5 +202,8 @@ EFFECT_KIND_ELSEWHERE(ManaReflected, "ManaReflected")
 // "Tap or untap target permanent": its controller chooses which, as it resolves (CR 608.2d).
 EFFECT_KIND(TapOrUntap, "TapOrUntap", tap_or_untap)
 
+// "Then shuffle": a player shuffles their library as an instruction of its own.
+EFFECT_KIND(Shuffle, "Shuffle", shuffle)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE

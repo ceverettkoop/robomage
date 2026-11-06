@@ -1,0 +1,41 @@
+{
+  "name": "cr701_23d_gamble_must_find_a_card",
+  "why": "CR 701.23d / 701.9b: a search for simply 'a card' must find one, so Gamble offers no failing to find; the card it finds is in hand as the random discard is made, so it can be the card discarded",
+  "hand_a": [
+    "Gamble"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Lightning Bolt",
+    "Forest",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Gamble",
+    "A:search:Lightning Bolt"
+  ],
+  "max_decisions": 5,
+  "expect": [
+    "Player A discards Lightning Bolt at random"
+  ],
+  "expect_menu_not": [
+    "Fail to find"
+  ],
+  "seed": 5
+}

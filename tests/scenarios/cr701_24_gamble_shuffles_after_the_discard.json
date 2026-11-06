@@ -1,0 +1,42 @@
+{
+  "name": "cr701_24_gamble_shuffles_after_the_discard",
+  "why": "CR 608.2c / 701.24a: Gamble's instructions run in order: search, put the card into hand, discard a card at random, then shuffle, once, after the discard rather than after the search",
+  "hand_a": [
+    "Gamble"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Lightning Bolt",
+    "Forest",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Gamble",
+    "A:search:Lightning Bolt"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "Player A casts Gamble",
+    "discards .* at random",
+    "Player A shuffles their library"
+  ],
+  "expect_count": {
+    "Player A shuffles their library": 1
+  }
+}

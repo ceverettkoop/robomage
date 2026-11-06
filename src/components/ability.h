@@ -249,6 +249,7 @@ struct AbilityDef {
     bool shuffle_after = false;          // Shuffle$ True — shuffle the destination library after a ChangeZoneAll move (Emrakul death trigger: shuffle graveyard into library)
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     bool shuffle_non_mandatory = false;  // ShuffleNonMandatory$ True — no shuffle when the search finds nothing
+    bool no_shuffle = false;             // NoShuffle$ True — a library search doesn't shuffle; a later instruction does
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
     // UnlessCost$ Discard<N/Card> (Reality Smasher: "counter ... unless its controller discards a
