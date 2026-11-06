@@ -1015,7 +1015,8 @@ Meld with one half missing; each new field across a snapshot.
   deck stay held out.
 - Fuzz all playable decks, `--matchups all --fuzz-games 100`, bo1 and `explore:patient`.
 - Update CLAUDE.md's architecture notes for what changed, and `docs/rules_deviations.md`. Known so far: its
-  key files omit `src/resolution_memory.{h,cpp}`, `src/cost_payment.{h,cpp}` and `src/components/chosen_cost.h`, its `src/coverage`
+  key files omit `src/resolution_memory.{h,cpp}`, `src/cost_payment.{h,cpp}`, `src/components/chosen_cost.h`, `src/cast_options.{h,cpp}`, `src/components/cast_option.h` and
+  `src/queries/permissions.{h,cpp}`, its `src/coverage`
   line omits the `row` kind, and its machine protocol section still names `prompt_mana_payment` (now `pay_mana_cost`).
 - Make an amount SVar `is_runtime_amount_expr` doesn't list a finding, or read it from the SVar table: today it
   is silently 0 (M4's Done note).
@@ -1039,7 +1040,7 @@ Meld with one half missing; each new field across a snapshot.
 None block M0 to M12. Before M13: the `league/` and `heldout/` split. Before M12's Dungeons: whether Acererak alone
 justifies the subsystem, or whether Aluren should swap the card out. This plan assumes it is built.
 
-Settled 2026-11-06: `learn/open_vocab_acceptance.py` runs on a test-only copy of the tables holding the rows S0 recorded (`tests/open_vocab/s0_rows.json`), so a card whose rows move on purpose is one more entry there and every decision stays in the check. `gate` passes; `full` is to run at M7's stage gate. Left: `spell_reads_colors_spent` can go in its own commit, with a mode of `write_inputs` that keeps the file's decisions at today's digests.
+Settled 2026-11-06: `learn/open_vocab_acceptance.py` runs on a test-only copy of the tables holding the rows S0 recorded (`tests/open_vocab/s0_rows.json`), so a card whose rows move on purpose is one more entry there and every decision stays in the check. `gate` passes; `full` is to run at M7's stage gate. `spell_reads_colors_spent` no longer gates the record: `spent_w` to `spent_g` fill for every cast, and `inputs --keep-decisions` kept the file's 8,735 decisions at today's digests (6,572 moved; S0's networks hold those columns at zero, so `gate` passes unchanged). It stays only for a hybrid pip's choice under auto-mana.
 
 ## Appendix A. Every finding, by stage
 

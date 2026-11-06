@@ -122,10 +122,8 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     EntryInfo &entry = entry_info(spell_entity);
     // Evoke: its evoke self-sacrifice ETB trigger fires.
     if (spell.chosen.option.cost == CastCost::EVOKE) entry.evoked = true;
-    // Vibrance's "if {R}{R} was spent to cast it" reads it. Kept only for a card that does: the
-    // record is a column of every object's row, which no other card's should move.
-    if (spell_reads_colors_spent(global_coordinator.GetComponent<CardData>(spell_entity)))
-        entry.mana_paid = spell.chosen.mana_paid;
+    // Vibrance's "if {R}{R} was spent to cast it" reads it, and each object's row shows it.
+    entry.mana_paid = spell.chosen.mana_paid;
     entry.keywords_until_eot = spell.keywords_until_eot;
     entry.moved = spell.chosen.moved;
     // Offspring: its token-copy ETB trigger fires.

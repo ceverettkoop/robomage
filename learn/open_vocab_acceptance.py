@@ -33,7 +33,8 @@ outputs on the decisions mentioning neither its new nor its drifted card (``--sk
 its seat and omniscient decisions' arrays as rmfeat writes them) under today's featurization, which
 the ``featurize`` tier checks without torch (``python/pycheck.py --part open_vocab``): run it only
 after showing today's featurization equals S0's mapped one; a decision whose inputs later move
-intentionally is dropped from the file (``inputs --drop-moved``), and (a) runs on the rest.
+intentionally is dropped from the file (``inputs --drop-moved``), and (a) runs on the rest; one that moved in a
+column S0's networks hold at zero keeps its place at today's digest (``inputs --keep-decisions``).
 
 **Rows that moved on purpose.** S0's outputs are of the card rows of their day. A card whose table rows moved
 since, by a script change or a parser change the digest reports, has its old rows in
@@ -595,7 +596,7 @@ def write_inputs(args):
     man, idx, _ = fixture_index()
     ds, do = digests(seat), digests(omni)
     old = None
-    if args.drop_moved and os.path.exists(INPUTS):
+    if (args.drop_moved or args.keep_decisions) and os.path.exists(INPUTS):
         with open(INPUTS) as fp:
             old = json.load(fp)
     keep = {}
@@ -603,7 +604,7 @@ def write_inputs(args):
     for r, a, b in zip(rows.tolist(), ds, do):
         if old is not None:
             prev = old["decisions"].get(str(r))
-            if prev is None or prev != [a, b]:
+            if prev is None or (prev != [a, b] and not args.keep_decisions):
                 if prev is not None:
                     dropped.append(r)
                 continue
@@ -641,6 +642,8 @@ def main(argv=None):
     ap.add_argument("--also-load", nargs="*", default=[], help="full: more migrated checkpoint files to load over "
                                                              "--expanded (the runs not in S0's fixtures)")
     ap.add_argument("--drop-moved", action="store_true", help="inputs: keep only decisions whose digest is unchanged")
+    ap.add_argument("--keep-decisions", action="store_true",
+                    help="inputs: the file's decisions at today's digests, for inputs that moved and networks that don't read them")
     a = ap.parse_args(argv)
     if a.mode == "inputs":
         return write_inputs(a)

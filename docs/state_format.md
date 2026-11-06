@@ -819,7 +819,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `entered_x` | u16 | `count` | |
 | | `monstrous`, `evoked`, `escaped`, `unearthed`, `cast_from_hand` | u8 | `bool` | |
 | | `exerted` | u8 | `bool` | it won't untap in the next untap step of the player who exerted it (CR 701.43) |
-| | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it, for a card that reads it (Vibrance); 0 for any other |
+| | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it; 0 for a permanent not cast |
 
 A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_value`, `chosen_name`,
 `chosen_type`) and its `object_subtype`, `object_keyword`, `object_ability`, `object_provenance`
