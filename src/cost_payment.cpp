@@ -722,7 +722,7 @@ static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const s
 // graveyard each pass minus the cards already picked. When the remaining candidates are all going to
 // be exiled anyway (candidates <= picks left, including the single-candidate case) there is no real
 // choice, so they are taken without a prompt. Each pick pays one GENERIC pip of the cost (CR 702.66a)
-// and is a chosen cost item: the card is exiled, and recorded in ChosenCost::paid, as the items move.
+// and is a chosen cost item: the card is exiled, and recorded in ChosenCost::moved, as the items move.
 static PayStatus choose_delve_cards(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     CostRun &run = *who.run;
     if (!run.delve_seat_held) return PayStatus::PAID;
@@ -837,7 +837,7 @@ static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &ord
         if (who.path == CostPath::CAST) game_log("%s\n", item.log.c_str());
         orderer->add_to_zone(false, item.entity, item.dest);
         if (who.path != CostPath::CAST) game_log("%s\n", item.log.c_str());
-        if (who.chosen) who.chosen->paid.push_back({item.kind, ObjectRef::of(item.entity)});
+        if (who.chosen) who.chosen->moved.push_back({item.kind, ObjectRef::of(item.entity)});
     }
     run.items.clear();
 }

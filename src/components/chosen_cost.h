@@ -73,11 +73,11 @@ struct ChosenCost {
         ManaValue mana_by_color;
         // What the cost moved, as the objects they became where they went: sacrificed, returned,
         // discarded or exiled, in the order they moved.
-        struct Paid {
+        struct Moved {
                 CostPart::Kind kind;
                 ObjectRef object;
         };
-        std::vector<Paid> paid;
+        std::vector<Moved> moved;
 
         bool flashback() const { return mode == Mode::FLASHBACK; }
         bool escape() const { return mode == Mode::ESCAPE; }

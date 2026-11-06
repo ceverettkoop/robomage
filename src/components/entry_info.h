@@ -44,9 +44,9 @@ struct EntryInfo {
     int x_paid = 0;
     // Each mana its spell was cast with, by color → Permanent::cast_mana_by_color.
     ManaValue mana_by_color;
-    // What its spell's cost moved (ChosenCost::paid), read as it enters: Murktide Regent's "exiled
+    // What its spell's cost moved (ChosenCost::moved), read as it enters: Murktide Regent's "exiled
     // with it". An object that wasn't cast has none, whatever an earlier cast of the card paid.
-    std::vector<ChosenCost::Paid> paid;
+    std::vector<ChosenCost::Moved> moved;
     bool unearthed = false;  // returned by its unearth ability (CR 702.84)
     // An Equipment a DB$ Attach attached to it before its Permanent existed (reanimate-then-
     // attach, Pre-War Formalwear): the link is made as the Permanent is created.
@@ -64,7 +64,7 @@ struct EntryInfo {
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
                !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp &&
-               x_paid == 0 && mana_by_color.empty() && paid.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
+               x_paid == 0 && mana_by_color.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
     }
 };
 

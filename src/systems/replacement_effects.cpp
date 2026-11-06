@@ -163,9 +163,9 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     dctx.controller = ev.affected_player;
                     dctx.source = ev.entity;
                     if (const EntryInfo *entry = find_entry_info(ev.entity))
-                        for (const ChosenCost::Paid &paid : entry->paid) {
-                            const Entity ex = paid.object.get();
-                            if (paid.kind != CostPart::EXILE_FROM_GRAVEYARD || ex == 0) continue;
+                        for (const ChosenCost::Moved &moved : entry->moved) {
+                            const Entity ex = moved.object.get();
+                            if (moved.kind != CostPart::EXILE_FROM_GRAVEYARD || ex == 0) continue;
                             if (sa.counter_count_delve_filter.empty() ||
                                 card_matches_filter(ex, sa.counter_count_delve_filter, dctx))
                                 n++;
