@@ -177,6 +177,7 @@ static void set_your_library(const SvarExpr &x, const SvarArgs &a, std::vector<E
 static void set_your_yard_of_type(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_remembered(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_target(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_targeted_player(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_exiled_with_card(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_cards_exiled_with(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_battlefield(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
@@ -186,6 +187,7 @@ static void set_graveyard_cards(const SvarExpr &x, const SvarArgs &a, std::vecto
 
 static int prop_energy(Entity player);
 static int prop_life_total(Entity player);
+static int prop_cards_in_library(Entity player);
 static int prop_life_gained(Entity player);
 static int prop_spells_cast_this_game(Entity player);
 static int prop_power(Entity e);
@@ -299,6 +301,9 @@ static const SvarRow kSvarRows[] = {
 static const NamedSet kNamedSets[] = {
     // Targeted$ — the ability's chosen target.
     {"Targeted", set_target},
+    // TargetedPlayer$ — the player the ability targets, no one if its target is an object (Peer into
+    // the Abyss: half the cards in that player's library, half their life).
+    {"TargetedPlayer", set_targeted_player},
     // ExiledWith$ — the card the source Saga exiled face down (The Creation of Avacyn chapter II:
     // "you lose life equal to its mana value"). Resolved from the source's Permanent::exiled_with;
     // an absent/gone card contributes 0.
@@ -322,6 +327,8 @@ static const NamedProperty kNamedProperties[] = {
     // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
     // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
     {"CardManaCost", prop_mana_value},
+    {"CardsInLibrary", prop_cards_in_library},
+    {"LifeTotal", prop_life_total},
 };
 
 // /Plus.N adds N (Birthing Ritual: 1 plus the sacrificed creature's mana value), /Times.N
@@ -855,6 +862,10 @@ static void set_target(const SvarExpr &, const SvarArgs &a, std::vector<Entity> 
     if (a.target != 0) out.push_back(a.target);
 }
 
+static void set_targeted_player(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (seat_of_player(a.target) != Zone::UNKNOWN) out.push_back(a.target);
+}
+
 static void set_exiled_with_card(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
     if (Entity e = exiled_with_card(a.source)) out.push_back(e);
 }
@@ -923,8 +934,16 @@ static void set_graveyard_cards(const SvarExpr &x, const SvarArgs &a, std::vecto
 
 static int prop_energy(Entity player) { return player_energy(global_coordinator.GetComponent<Player>(player)); }
 
+// An object has no life total or library: Targeted$ may name either.
 static int prop_life_total(Entity player) {
+    if (seat_of_player(player) == Zone::UNKNOWN) return 0;
     return std::max(0, static_cast<int>(global_coordinator.GetComponent<Player>(player).life_total));
+}
+
+static int prop_cards_in_library(Entity player) {
+    const Zone::Ownership seat = seat_of_player(player);
+    if (seat == Zone::UNKNOWN) return 0;
+    return static_cast<int>(zone_objects(zoned_entities(), Zone::LIBRARY, seat).size());
 }
 
 static int prop_life_gained(Entity player) { return global_coordinator.GetComponent<Player>(player).life_gained_this_turn; }

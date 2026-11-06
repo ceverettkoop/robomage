@@ -3132,7 +3132,7 @@ static bool resolve_conditional_amount(AbilityDef &ability, const std::string &s
 // activation/resolution.
 static bool is_runtime_amount_expr(const std::string &sv) {
     static const char *const kRuntimeMarkers[] = {
-        "Count$Valid", "Targeted$", "Count$InYourLibrary", "Count$YourLifeTotal", "Count$Revolt",
+        "Count$Valid", "Targeted$", "TargetedPlayer$", "Count$InYourLibrary", "Count$YourLifeTotal", "Count$Revolt",
         // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling (Cabal Ritual: Amount$ X,
         // X = Count$Threshold.5.3 → BBBBB if the caster has 7+ cards in their graveyard, else BBB).
         "Count$Threshold",

@@ -1,0 +1,15 @@
+{
+  "name": "cr107_1a_peer_into_the_abyss_rounds_up",
+  "why": "CR 107.1a: Peer into the Abyss rounds each half up, a 9-card library drawing 5 and 7 life losing 4, both read from its target, whose library and life differ from its caster's",
+  "hand_a": ["Peer into the Abyss", "Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "life_b": 7,
+  "play": ["A:keep", "B:keep", "A:cast:Peer into the Abyss", "A:target:Player B"],
+  "max_decisions": 4,
+  "expect_count": {"Player B draws Swamp": 5},
+  "expect": ["Player B loses 4 life \\(now at 3\\)"],
+  "expect_not": ["Player A (draws|loses)"]
+}
