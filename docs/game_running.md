@@ -349,12 +349,12 @@ cannot rewind them.
 | `trigger` | a triggered ability goes on the stack, or resolves at once if it uses no stack (`Static$ True`, `TapsForMana`) | the `T:` line's `Mode$` (`ChangesZone`); else `Delayed`, its keyword or engine key (`keyword:Prowess`, `triggered:SuspendTick`), or `Reflexive` |
 | `replacement` | `replacement::dispatch` applies one to a real event (not a mana simulation), or a dredge replaces a draw | `SELF_TAPPED`, `PENDING_TAPPED`, `ETB_COUNTERS`, `EXILE_INSTEAD`, `EXILE_INSTEAD_OF_ETB`, `SKIP_UNTAP`, `PREVENT_ETB`, `PRODUCE_MANA`, `DISCARD_ELSE_GRAVEYARD`, `DREDGE`; draw additions and can't-be-countered do not pass through the dispatcher and are not counted |
 | `category` | a decision is asked and answered, so their sum is the decision log's length less its concessions (a one-row menu is never asked) | the taken row's `ActionCategory`, by its SCHEMA name (`SACRIFICE_PERMANENT`) |
-| `cost` | a cast or activation pays this part at its pay step | `Mana`, `Tap`, `Loyalty`, `PayLife`, `PayLifeX`, `PayEnergy`, `PhyrexianLife`, `SacSelf`, `Sac`, `Return`, `DiscardSelf`, `DiscardHand`, `Discard`, `ExileFromHand`, `ExileFromGrave`, `Delve`; a mana ability the payer taps by itself, unless costs and costs of special actions are not counted |
+| `cost` | a cast or activation pays this part at its pay step | the part's kind (`CostPart::Kind`): `MANA`, `TAP`, `LOYALTY`, `LIFE`, `ENERGY`, `SACRIFICE`, `RETURN`, `DISCARD`, `EXILE_FROM_HAND`, `EXILE_FROM_GRAVEYARD`; with a form, `LIFE.x`, `LIFE.phyrexian`, `SACRIFICE.self`, `DISCARD.self`, `DISCARD.hand`, `EXILE_FROM_GRAVEYARD.delve`; a mana ability the payer taps by itself, unless costs and costs of special actions are not counted |
 | `row` | a filter or SVar table row is read that no other kind tells from its neighbours | `leastPower`, `without`, `TargetedPlayerOwn`, `TargetedPlayer`, `DivideEvenlyDown` |
 | `cast` | a spell becomes cast, once per `LegalAction` flag it carries | `flashback`, `escape`, `alt_cost`, `offspring`, `impulse`, `without_mana_cost`, `back_face`, `split_half`; with no flag, `hand` or `graveyard_permission`. The special actions too: `suspend`, `companion`, `land_back_face` |
 
-The `cost` and `cast` names mirror today's ad-hoc fields; `docs/mechanics_plan.md` M5 and M7 replace
-them with typed cost parts and cast options. The `fuzz` tier uses the counts to prove that a fixture
+The `cast` names mirror today's ad-hoc fields; `docs/mechanics_plan.md` M7 replaces them with typed
+cast options. The `fuzz` tier uses the counts to prove that a fixture
 deck's games reached their paths (`docs/ci.md`).
 
 ## Checking decks and card scripts (no game)

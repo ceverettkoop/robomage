@@ -116,7 +116,6 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
 static bool resources_payable(const CostPayer &who);
 static void pay_loyalty(const CostPayer &who);
 static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
-static const char *cost_item_part(const CostItem &item);
 static void pay_life_x(const CostPayer &who);
 static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void discard_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
@@ -319,7 +318,7 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             who.run->committed = true;
             break;
         case CostStep::COUNT_TAP:
-            if (who.cost->taps()) coverage_cost("Tap");
+            if (who.cost->taps()) coverage_cost(CostPart::TAP);
             break;
         case CostStep::LOYALTY:
             pay_loyalty(who);
@@ -328,7 +327,7 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             if (who.run->life > 0) {
                 pay_life(global_coordinator.GetComponent<Player>(get_player_entity(who.payer)), who.run->life);
                 game_log("%s pays %d life\n", player_name(who.payer).c_str(), who.run->life);
-                coverage_cost("PayLife");
+                coverage_cost(CostPart::LIFE);
             }
             break;
         case CostStep::LIFE_X:
@@ -339,7 +338,7 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             if (who.run->energy > 0) {
                 pay_energy(global_coordinator.GetComponent<Player>(get_player_entity(who.payer)), who.run->energy);
                 game_log("%s pays %d energy\n", player_name(who.payer).c_str(), who.run->energy);
-                coverage_cost("PayEnergy");
+                coverage_cost(CostPart::ENERGY);
             }
             break;
         case CostStep::SACRIFICE_SELF:
@@ -659,7 +658,7 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
                                          /*has_delve=*/false, run.improvise, &run.spent_colors);
-    if (paid == PayStatus::PAID) coverage_cost("Mana");
+    if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA);
     return paid;
 }
 
@@ -688,7 +687,7 @@ static void pay_loyalty(const CostPayer &who) {
     perm.loyalty_ability_activated_this_turn = true;
     game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n", entity_name(who.source).c_str(), loyalty_delta,
              loyalty);
-    coverage_cost("Loyalty");
+    coverage_cost(CostPart::LOYALTY);
 }
 
 // Everything the picks chose moves, in the order chosen. Nothing here can fail: the choices were
@@ -700,7 +699,7 @@ static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &ord
     // an etbCounter replacement consumes it).
     if (who.spell_has_delve) cur_game.delve_exiled.clear();
     for (const CostItem &item : run.items) {
-        coverage_cost(cost_item_part(item));
+        coverage_cost(item.kind, item.delve ? "delve" : nullptr);
         if (who.path == CostPath::CAST) game_log("%s\n", item.log.c_str());
         orderer->add_to_zone(false, item.entity, item.dest);
         if (who.path != CostPath::CAST) game_log("%s\n", item.log.c_str());
@@ -710,30 +709,13 @@ static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &ord
     run.items.clear();
 }
 
-// The --coverage cost part a chosen cost item pays.
-static const char *cost_item_part(const CostItem &item) {
-    if (item.delve) return "Delve";
-    switch (item.kind) {
-        case CostPart::RETURN:
-            return "Return";
-        case CostPart::EXILE_FROM_GRAVEYARD:
-            return "ExileFromGrave";
-        case CostPart::EXILE_FROM_HAND:
-            return "ExileFromHand";
-        case CostPart::DISCARD:
-            return "Discard";
-        default:
-            return "Sac";
-    }
-}
-
 // A variable life cost's announced X, paid with the rest of the life (Toxic Deluge).
 static void pay_life_x(const CostPayer &who) {
     const CostRun &run = *who.run;
     if (run.life_x < 0) return;
     pay_life(global_coordinator.GetComponent<Player>(get_player_entity(who.payer)), run.life_x);
     game_log("%s pays %d life (X = %d)\n", player_name(who.payer).c_str(), run.life_x, run.life_x);
-    coverage_cost("PayLifeX");
+    coverage_cost(CostPart::LIFE, "x");
 }
 
 // Sacrifice self: move to graveyard; apply_permanent_components SBA removes Permanent next pass.
@@ -742,7 +724,7 @@ static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> 
     std::string sname = entity_name(who.source);
     orderer->add_to_zone(false, who.source, Zone::GRAVEYARD);
     game_log("%s sacrifices %s\n", player_name(who.payer).c_str(), sname.c_str());
-    coverage_cost("SacSelf");
+    coverage_cost(CostPart::SACRIFICE, "self");
 }
 
 // Discard self from hand cost (Faerie Macabre).
@@ -753,13 +735,13 @@ static void discard_self(const CostPayer &who, const std::shared_ptr<Orderer> &o
                             : "card";
     orderer->add_to_zone(false, who.source, Zone::GRAVEYARD);
     game_log("%s discards %s\n", player_name(who.payer).c_str(), cname.c_str());
-    coverage_cost("DiscardSelf");
+    coverage_cost(CostPart::DISCARD, "self");
 }
 
 // Discard hand cost (Lion's Eye Diamond).
 static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
     if (!who.cost->discards_hand()) return;
-    coverage_cost("DiscardHand");
+    coverage_cost(CostPart::DISCARD, "hand");
     for (auto card : orderer->get_hand(who.payer)) {
         std::string cname = global_coordinator.entity_has_component<CardData>(card)
                                 ? global_coordinator.GetComponent<CardData>(card).name

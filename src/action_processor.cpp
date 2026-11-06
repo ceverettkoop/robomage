@@ -2082,7 +2082,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         // here.
                         if (life_payable && phyrex_choice == 0) {
                             pay_life(phyrex_player, 2);
-                            coverage_cost("PhyrexianLife");
+                            coverage_cost(CostPart::LIFE, "phyrexian");
                             pc.phyrexian_life_paid += 2;
                             game_log("%s pays 2 life\n", player_name(caster).c_str());
                         } else {

@@ -101,7 +101,7 @@ dense deck that reaches it in most games, and a list of what must have been reac
 
 - `bin/resources/decks/tests/mech_<primitive>.dk`: vocab cards only. It is outside `league/` and
   `heldout/`, so no matchup preset, training run or onboarding step plays it.
-- `mech_<primitive>.expect` beside it: one coverage key per line, `<kind>:<name>` (`cost:Sac`,
+- `mech_<primitive>.expect` beside it: one coverage key per line, `<kind>:<name>` (`cost:SACRIFICE`,
   `cast:flashback`; the kinds and names are `docs/game_running.md`'s `--coverage` table), `#` starting
   a comment.
 

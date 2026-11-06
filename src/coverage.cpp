@@ -14,6 +14,7 @@
 
 static void count_hit(const char *kind, const std::string &name);
 static void write_coverage();
+static const char *cost_kind_name(CostPart::Kind kind);
 
 static bool counting = false;
 static std::string coverage_path;
@@ -69,8 +70,38 @@ void coverage_decision(ActionCategory category) {
     if (counting) count_hit("category", action_category_enum_name(category));
 }
 
-void coverage_cost(const char *part) {
-    if (counting) count_hit("cost", part);
+static const char *cost_kind_name(CostPart::Kind kind) {
+    switch (kind) {
+        case CostPart::MANA:
+            return "MANA";
+        case CostPart::X_MANA:
+            return "X_MANA";
+        case CostPart::TAP:
+            return "TAP";
+        case CostPart::LIFE:
+            return "LIFE";
+        case CostPart::ENERGY:
+            return "ENERGY";
+        case CostPart::LOYALTY:
+            return "LOYALTY";
+        case CostPart::SACRIFICE:
+            return "SACRIFICE";
+        case CostPart::DISCARD:
+            return "DISCARD";
+        case CostPart::RETURN:
+            return "RETURN";
+        case CostPart::EXILE_FROM_HAND:
+            return "EXILE_FROM_HAND";
+        case CostPart::EXILE_FROM_GRAVEYARD:
+            return "EXILE_FROM_GRAVEYARD";
+        case CostPart::MANDATORY:
+            break;
+    }
+    return "MANDATORY";
+}
+
+void coverage_cost(CostPart::Kind kind, const char *form) {
+    if (counting) count_hit("cost", std::string(cost_kind_name(kind)) + (form ? std::string(".") + form : ""));
 }
 
 void coverage_cast(const char *mode) {

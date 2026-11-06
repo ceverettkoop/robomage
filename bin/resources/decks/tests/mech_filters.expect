@@ -14,7 +14,7 @@ effect:Destroy
 trigger:Always
 effect:Sacrifice
 # Powder Keg's activation.
-cost:SacSelf
+cost:SACRIFICE.self
 effect:DestroyAll
 # Both halves of Rough/Tumble.
 effect:DamageAll

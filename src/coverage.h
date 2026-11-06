@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "components/cost_part.h"
+
 struct Ability;
 enum class ActionCategory;
 enum class EffectKind;
@@ -38,8 +40,9 @@ void coverage_replacement(const char *kind);
 void coverage_decision(ActionCategory category);
 // row <name>: a filter or SVar table row was read that no other kind tells from its neighbours.
 void coverage_row(const char *name);
-// cost <part>: a cast or activation paid this part of its cost.
-void coverage_cost(const char *part);
+// cost <KIND>[.<form>]: a cast or activation paid a part of this kind (CostPart::Kind); `form` tells
+// apart the ways of paying one: a self-sacrifice, a discard of the hand, a Phyrexian pip's life.
+void coverage_cost(CostPart::Kind kind, const char *form = nullptr);
 // cast <mode>: a spell became cast with this LegalAction flag set (one hit per flag), or a special
 // action of that kind was taken.
 void coverage_cast(const char *mode);
