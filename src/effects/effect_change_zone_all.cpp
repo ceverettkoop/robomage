@@ -149,9 +149,11 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // the remembered pile). A permanent is matched by its characteristics on the battlefield
     // (Terminus' Creature: tokens and animated permanents too). Absent a ChangeType$, every card in
     // the zones moves.
+    const ResolveCtx rctx = ResolveCtx::of(ab);
     MatchCtx mctx;
     mctx.controller = owner;
     mctx.source = ab.source.lki_entity();
+    mctx.resolve = &rctx;
     std::vector<Entity> to_move;
     for (auto entity : zone_contents)
         if (ab.def->change_type.empty() || object_matches_filter(entity, ab.def->change_type, mctx))

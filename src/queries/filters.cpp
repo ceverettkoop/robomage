@@ -190,6 +190,7 @@ static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx 
 static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_token(const CharView &v, const Qualifier &q);
@@ -267,6 +268,9 @@ static const QualifierRow kQualifierRows[] = {
     relative_row("Other", ev_other),
     relative_row("Self", ev_self),
     set_row("nonChosenCard", ev_not_in_set, ObjectSpec::CHOSEN_CARDS),
+    // ChosenCard — one of the cards a ChooseCard of this resolution chose (Strategic Betrayal's
+    // ChangeZoneAll exiles the creature its opponent chose).
+    set_row("ChosenCard", object_in_set, ObjectSpec::CHOSEN_CARDS),
     // targetedBy — the object IS the card the resolving ability chain targeted (Cloak and
     // Dagger, Entwined's exile filter alternative "Card.targetedBy" matches exactly the
     // creature its DBPump sub chose). Fails closed when no chain target is in context.
@@ -281,6 +285,11 @@ static const QualifierRow kQualifierRows[] = {
     // "ControlledBy ParentTarget" (Forge): the object is controlled by the player the parent
     // ability targeted (Cloak and Dagger, Entwined: "up to one target creature they control").
     set_row("ControlledBy ParentTarget", ev_controlled_by_set, ObjectSpec::PARENT_TARGET),
+    // TargetedPlayerCtrl / TargetedPlayerOwn: controlled or owned by the player the ability targets
+    // (Strategic Betrayal: "a creature they control and their graveyard"). Count$Valid's
+    // TargetedPlayerCtrl never reaches these: it counts as that player's YouCtrl (svar_eval.cpp).
+    set_row("TargetedPlayerCtrl", ev_controlled_by_set, ObjectSpec::TARGETED),
+    set_row("TargetedPlayerOwn", ev_owned_by_set, ObjectSpec::TARGETED),
     // Ownership (CR 108.3) — distinct from control; meaningful for cards in any zone
     // (e.g. Karn's -2 "an artifact card you own from outside the game or in exile").
     // Lenient when either side is unknown (bare CardData / no "you" supplied), mirroring
@@ -378,8 +387,8 @@ static const QualifierRow kQualifierRows[] = {
     // Read where the filter is used, in the forms its cards use them: targeting (Emblem, YouDontCtrl,
     // targeting.cpp), the cards exiled with a source (ExiledWithSource), the sameName / Remembered /
     // TargetedCard / NotDefinedTargeted / sharesNameWith movers (effect_change_zone*.cpp), chosen
-    // cards and types (effect_choose_card.cpp), the player-relative counts (RememberedPlayerCtrl,
-    // TargetedPlayerCtrl, svar_eval.cpp), cast history (!wasCast, wasCastFromYourHandByYou),
+    // types (effect_choose_card.cpp), the player-relative count RememberedPlayerCtrl (svar_eval.cpp),
+    // cast history (!wasCast, wasCastFromYourHandByYou),
     // kicker-linked triggers ("kicked N"), delayed-trigger memory (IsTriggerRemembered), Animate
     // Dead's StrictlySelf, Eldrazi Temple's Activated mana restriction and Sylvan Library's
     // DrawnThisTurn (its own SylvanLibrary resolution, parse_one_trigger). The same token in another
@@ -392,10 +401,8 @@ static const QualifierRow kQualifierRows[] = {
     elsewhere_row("TargetedCard"),
     elsewhere_row("NotDefinedTargeted"),
     elsewhere_row("sharesNameWith Targeted"),
-    elsewhere_row("ChosenCard"),
     elsewhere_row("ChosenType"),
     elsewhere_row("RememberedPlayerCtrl"),
-    elsewhere_row("TargetedPlayerCtrl"),
     elsewhere_row("wasCast"),
     elsewhere_row("wasCastFromYourHandByYou"),
     elsewhere_row("IsTriggerRemembered"),
@@ -790,6 +797,11 @@ static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const Ma
     if (!v.on_battlefield) return true;
     const std::vector<Zone::Ownership> players = resolve_filter_players(q.set, set_context(ctx));
     return std::find(players.begin(), players.end(), v.controller) != players.end();
+}
+
+static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    const std::vector<Zone::Ownership> players = resolve_filter_players(q.set, set_context(ctx));
+    return std::find(players.begin(), players.end(), v.owner) != players.end();
 }
 
 static bool ev_you_own(const CharView &v, const Qualifier &, const MatchCtx &ctx) {

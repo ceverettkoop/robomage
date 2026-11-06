@@ -1,0 +1,15 @@
+{
+  "name": "cr701_13_strategic_betrayal_exiles_graveyard_with_no_creature",
+  "why": "CR 608.2c: with no creature to exile Strategic Betrayal still does all it can, exiling the target opponent's graveyard, and nothing of its caster's",
+  "hand_a": ["Strategic Betrayal"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Soul Warden"],
+  "graveyard_a": ["Mox Opal"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "graveyard_b": ["Lightning Bolt"],
+  "play": ["A:keep", "B:keep", "A:cast:Strategic Betrayal"],
+  "max_decisions": 4,
+  "expect": ["moves Lightning Bolt to exile"],
+  "expect_not": ["moves Soul Warden", "moves Mox Opal"]
+}

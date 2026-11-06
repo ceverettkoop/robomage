@@ -13,6 +13,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
@@ -136,8 +137,9 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
 
     // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
-    // card an opponent owns with a void counter on it."): the controller chooses one card in that
-    // zone matching the filter. The choice becomes the resolution's chosen card
+    // card an opponent owns with a void counter on it."): the player it names or targets, else its
+    // controller, chooses one card in that zone matching the filter (Strategic Betrayal: "target
+    // opponent exiles a creature they control", CR 608.2d). The choice becomes the resolution's chosen card
     // (cur_game.resolution.memory.chosen_cards), which a chained RememberObjects$ ChosenCard Effect acts on (Dauthi:
     // "You may play it this turn without paying its mana cost"). Mandatory$ True leaves no
     // "choose nothing" option; with no matching card nothing is chosen.
@@ -161,15 +163,16 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         none.category = ActionCategory::CHOOSE_CARD;
         picks.push_back(none);
     }
-    if (!ctx.resuming()) game_log("%s chooses a card:\n", player_name(ab.controller).c_str());
-    int choice = ctx.ask(std::move(picks), ab.controller, ab.source.lki_entity());
+    const Zone::Ownership chooser = affected_player(ab);
+    if (!ctx.resuming()) game_log("%s chooses a card:\n", player_name(chooser).c_str());
+    int choice = ctx.ask(std::move(picks), chooser, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
     cur_game.resolution.memory.chosen_cards.clear();
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
         Entity chosen = cands[static_cast<size_t>(choice)];
         cur_game.resolution.memory.chosen_cards.insert(chosen);
         if (ab.def->remember_chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
-        game_log("%s chooses %s.\n", player_name(ab.controller).c_str(), entity_name(chosen).c_str());
+        game_log("%s chooses %s.\n", player_name(chooser).c_str(), entity_name(chosen).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
@@ -177,13 +180,15 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 }  // namespace effects
 
 // The objects a generic ChooseCard chooses among: those in its ChoiceZone$ matching its Choices$
-// filter, read relative to the ability's controller (YouOwn / OppOwn). On the battlefield they are
-// permanents, tokens too; elsewhere they are cards.
+// filter, read relative to the ability's controller (YouOwn / OppOwn) and against its targets. On
+// the battlefield they are permanents, tokens too; elsewhere they are cards.
 static std::vector<Entity> choose_card_candidates(const Ability &ab,
                                                  std::shared_ptr<Orderer> orderer) {
+    const ResolveCtx rctx = ResolveCtx::of(ab);
     MatchCtx mctx;
     mctx.controller = ab.controller;
     mctx.source = ab.source.lki_entity();
+    mctx.resolve = &rctx;
     std::vector<Entity> cands;
     for (auto e : orderer->mEntities) {
         if (global_coordinator.GetComponent<Zone>(e).location != ab.def->choose_card_zone) continue;
