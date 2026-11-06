@@ -127,7 +127,6 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             !ab.def->dynamic_amount_expr.empty()) {
             mctx.cmc_bound = static_cast<int>(
                 evaluate_amount(ab.def->dynamic_amount_expr, dig_owner, 0, ab.target.get()));
-            mctx.cmc_op = "LE";
         }
         std::vector<Entity> matching;
         for (auto e : rt.lib)

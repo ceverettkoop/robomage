@@ -40,10 +40,10 @@ struct ResolveCtx;
 struct MatchCtx {
     Zone::Ownership controller = Zone::UNKNOWN;  // the "you" reference for YouCtrl/OppCtrl
     Entity source = 0;                           // self-exclusion source for .Other
-    // Mana-value bound of a cmc<OP><SVar> qualifier (Aether Vial), which only the caller can
-    // resolve; <0 = none. A cmc<OP><n> qualifier needs none: the matcher compares its literal.
+    // Value of the SVar a cmc<OP><SVar> qualifier names (Aether Vial's cmcEQX), which only the
+    // caller can resolve; <0 = none. The qualifier compares it by its own operator, and passes with
+    // none. A cmc<OP><n> qualifier needs none: the matcher compares its literal.
     int cmc_bound = -1;
-    std::string cmc_op = "";                     // comparator for cmc_bound (EQ/LE/GE/…)
     // Dynamic value of SVar X for a power/toughness-vs-X qualifier (Ensnaring Bridge's
     // Creature.powerGTX): the caller resolves X (e.g. the controller's hand size) and supplies
     // it here. INT_MIN = "no X provided", in which case a powerGTX/-style qualifier fails closed.
@@ -88,6 +88,17 @@ bool zone_change_object_matches(Entity e, Zone::ZoneValue origin, Zone::ZoneValu
 // qualifier that is no type name (read as a type-line name no object has). Reads no game state
 // (--parse-report, parse_report.h).
 std::vector<std::string> filter_unknown_qualifiers(const std::string &spec);
+
+// A "cmc<OP><bound>" qualifier of a filter (read at parse time, not for matching an object).
+struct FilterCmcBound {
+    std::string token;        // as the script spells it
+    std::string op;           // its two-letter comparator
+    std::string bound;        // its literal, or the name of the SVar it reads
+    bool names_svar = false;  // no literal: its reader supplies the value (MatchCtx::cmc_bound)
+};
+
+// Every cmc qualifier of `spec` with a bound, in order.
+std::vector<FilterCmcBound> filter_cmc_bounds(const FilterSpec &spec);
 
 // Filter-spec structure (read at parse time, not for matching an object): true when `token`
 // is one whole '.'/'+'/','/';'-delimited token of the spec — "nonCreature" is a token of

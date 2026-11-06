@@ -800,7 +800,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     search.destination = ab.def->destination;
     search.reveal = reveal;
     search.cmc_bound = rt.cmc_bound;
-    search.cmc_op = ab.def->change_type_cmc_op;
     search.resolve = &resolve;
     // A multi-zone search picks its cards one at a time from pools the picks don't leave
     // (Doomsday), so a card already chosen is not offered again.

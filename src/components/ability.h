@@ -189,12 +189,11 @@ struct AbilityDef {
     std::string reduce_cost_expr = "";
     FilterSpec change_type;        // ChangeType$ — comma-separated subtypes to search
     // ChangeType filter with a dynamic mana-value bound (Aether Vial: "Creature.cmcEQX",
-    // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
-    // two-letter comparator ("EQ"/"LE"); evaluated against this ability's source at
-    // resolution and applied as a per-card mana-value gate in the zone search. Empty = no
-    // dynamic cmc filter (the legacy cmcLEX path keys off current_x_paid() instead).
+    // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression; evaluated
+    // against this ability's source at resolution and read by the filter's cmc qualifier in the
+    // zone search. Empty = no dynamic cmc filter (the legacy cmcLEX path keys off
+    // current_x_paid() instead).
     std::string change_type_cmc_expr = "";
-    std::string change_type_cmc_op = "";
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)

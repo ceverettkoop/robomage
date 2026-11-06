@@ -360,7 +360,7 @@ static void resolve_pump_exprs(AbilityDef& ability, const std::map<std::string, 
 static void resolve_destroyall_svars(AbilityDef& ability, const std::map<std::string, std::string>& svars);
 static void resolve_additive_svar(const std::string& expr, const std::map<std::string, std::string>& svars,
                                   std::vector<std::string>& terms);
-static bool find_cmc_bound(const std::string& filter, const char* only_op, std::string& op,
+static bool find_cmc_bound(const FilterSpec& filter, const char* only_op, std::string& op,
                            std::string& bound);
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
@@ -2689,29 +2689,26 @@ static void resolve_destroyall_svars(AbilityDef &ability,
         auto it = svars.find(bound);
         if (it != svars.end()) {
             dp.cmc_expr = it->second;
-            dp.cmc_op = op;
         }
     }
     resolve_svar_ref(dp.energy_unless_expr, svars);
 }
 
 // The first "cmc<OP><bound>" mana-value qualifier in a card filter (e.g. "Creature.cmcLEX+YouCtrl"
-// → "LE", "X"): its two-letter comparator and its bound, the SVar name or number that follows (a
-// run of letters, digits and '_'). OP is tried in the order EQ, LE, GE, LT, GT, NE, or is only
-// `only_op` when given. False when the filter has no such qualifier.
-static bool find_cmc_bound(const std::string &filter, const char *only_op, std::string &op,
+// → "LE", "X"): its two-letter comparator and its bound, the SVar name or number that follows. OP
+// is tried in the order EQ, LE, GE, LT, GT, NE, or is only `only_op` when given. False when the
+// filter has no such qualifier.
+static bool find_cmc_bound(const FilterSpec &filter, const char *only_op, std::string &op,
                            std::string &bound) {
+    const std::vector<FilterCmcBound> bounds = filter_cmc_bounds(filter);
     for (const char *cmp : {"EQ", "LE", "GE", "LT", "GT", "NE"}) {
         if (only_op && std::strcmp(cmp, only_op) != 0) continue;
-        size_t pos = filter.find(std::string("cmc") + cmp);
-        if (pos == std::string::npos) continue;
-        size_t start = pos + 5, end = start;
-        while (end < filter.size() &&
-               (std::isalnum(static_cast<unsigned char>(filter[end])) || filter[end] == '_'))
-            end++;
-        op = cmp;
-        bound = filter.substr(start, end - start);
-        return true;
+        for (const FilterCmcBound &b : bounds) {
+            if (b.op != cmp) continue;
+            op = cmp;
+            bound = b.bound;
+            return true;
+        }
     }
     return false;
 }
@@ -2955,7 +2952,6 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
         auto it = svars.find(bound);
         if (it != svars.end()) {
             ability.change_type_cmc_expr = it->second;
-            ability.change_type_cmc_op = op;
         }
     }
     // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
@@ -3519,7 +3515,7 @@ static void read_trigger_valid_card(const std::string &value,
     // qualifier to its runtime Count$ expression + comparison op, mirroring the
     // ChangeType cmcEQ handling used by Aether Vial.
     std::string op, bound;
-    if (find_cmc_bound(value, nullptr, op, bound)) {
+    if (find_cmc_bound(FilterSpec(value), nullptr, op, bound)) {
         auto it = svars.find(bound);
         if (it != svars.end()) {
             ability.trigger_cmc_expr = it->second;

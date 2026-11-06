@@ -64,9 +64,8 @@ struct DestroyAllParams {
     // Dynamic mana-value bound for a cmcLE<SVar> filter whose threshold is not the X paid at
     // cast (the legacy cmcLEX path keys off current_x_paid()). Wrath of the Skies'
     // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
-    // expression and cmc_op the comparator ("LE"). Empty = no dynamic bound.
+    // expression. Empty = no dynamic bound.
     std::string cmc_expr = "";
-    std::string cmc_op = "";
     // UnlessCost$ PayEnergy<N> | UnlessPayer$ You | UnlessSwitched$ True (Wrath of the Skies):
     // the controller pays N energy ({E}); with UnlessSwitched the destroy happens ONLY IF the
     // energy is paid. energy_unless_expr is the runtime Count$ expression for N (Count$ChosenNumber).

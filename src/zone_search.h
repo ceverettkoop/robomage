@@ -25,10 +25,9 @@ struct ZoneSearch {
     // Every offered card is public knowledge (a revealed tutor), so observers may show the chosen
     // card's name even into a hidden zone.
     bool reveal = false;
-    // Mana-value bound on the candidates (Aether Vial: MV == its charge counters): cmc_op
-    // ("EQ"/"LE"/...) against cmc_bound; -1 = none.
+    // The value of the SVar a cmc<OP><SVar> qualifier of change_type reads (Aether Vial: its charge
+    // counters); -1 = none.
     int cmc_bound = -1;
-    std::string cmc_op;
     // What a ChangeType `targetedBy` alternative reads its chain's target from (Cloak and Dagger,
     // Entwined); null = none.
     const ResolveCtx *resolve = nullptr;

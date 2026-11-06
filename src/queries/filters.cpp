@@ -97,7 +97,8 @@ struct Qualifier {
     std::string op_text;         // and its spelling, to report one the engine can't read
     int number = 0;              // a comparator's literal
     bool of_power = false;       // a P/T comparator reads power, else toughness
-    std::string text;            // the row's name argument: a type, keyword or counter
+    std::string text;            // the row's name argument: a type, keyword or counter; a cmc
+                                 // qualifier's bound
     Colors color = NO_COLOR;
     Zone::ZoneValue zone = Zone::SIDEBOARD;  // inZone<Zone>; `known_zone` says it names one
     bool known_zone = false;
@@ -159,6 +160,7 @@ static CharView permanent_view(Entity e, const Permanent &perm);
 static CharView lki_view(Entity e, const LastKnownInfo &lki);
 
 static bool parse_cmc_literal(const std::string &token, Qualifier &q);
+static bool parse_cmc_named(const std::string &token, Qualifier &q);
 static bool parse_pt_vs_x(const std::string &token, Qualifier &q);
 static bool parse_pt_literal(const std::string &token, Qualifier &q);
 static bool parse_counters(const std::string &token, Qualifier &q);
@@ -201,6 +203,7 @@ static bool ev_has_x_cost(const CharView &v, const Qualifier &q);
 static bool ev_has_basic_land_type(const CharView &v, const Qualifier &q);
 static bool ev_cmc_le_x(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_cmc_literal(const CharView &v, const Qualifier &q);
+static bool ev_cmc_bound(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_pt_vs_x(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_pt_literal(const CharView &v, const Qualifier &q);
 static bool ev_counters(const CharView &v, const Qualifier &q);
@@ -295,12 +298,13 @@ static const QualifierRow kQualifierRows[] = {
     // mana-value family -------------------------------------------------------
     // cmcLEX reads the X paid, unless the caller resolved X itself and supplied it as the
     // dynamic bound (Birthing Ritual's X = 1 + the sacrificed creature's mana value).
-    relative_row("cmcLEX", ev_cmc_le_x),
+    parsed_relative_row("cmcLEX", NameForm::EXACT, parse_cmc_named, ev_cmc_le_x),
     // cmc<OP><n>: the object's mana value against a literal bound (CR 202.3), in this
     // alternative only ("Artifact.cmcLE3", Abrupt Decay's "Permanent.nonLand+cmcLE3").
     parsed_row("cmc", NameForm::PREFIX, parse_cmc_literal, ev_cmc_literal),
-    // cmc<OP><SVar>: enforced through ctx.cmc_bound, which only its caller knows
-    parsed_row("cmc", NameForm::PREFIX, nullptr, ev_always),
+    // cmc<OP><SVar>: against ctx.cmc_bound, which only its caller knows (Aether Vial's MV ==
+    // charge count); with no bound supplied it passes.
+    parsed_relative_row("cmc", NameForm::PREFIX, parse_cmc_named, ev_cmc_bound),
     // dynamic power/toughness vs SVar X (Ensnaring Bridge: Creature.powerGTX — "power greater
     // than the number of cards in your hand"). The X value is supplied by the caller in
     // ctx.x_bound (the static source's controller's hand size). A P/T-less object never matches,
@@ -475,7 +479,16 @@ static bool parse_cmc_literal(const std::string &token, Qualifier &q) {
     if (token.size() <= 5 || !all_digits(token, 5)) return false;
     q.op_text = token.substr(3, 2);
     q.op = svar_op_of(q.op_text);
-    q.number = std::stoi(token.substr(5));
+    q.text = token.substr(5);
+    q.number = std::stoi(q.text);
+    return true;
+}
+
+// cmc<OP><SVar>, whatever follows "cmc".
+static bool parse_cmc_named(const std::string &token, Qualifier &q) {
+    q.op_text = token.substr(3, 2);
+    q.op = svar_op_of(q.op_text);
+    if (token.size() > 5) q.text = token.substr(5);
     return true;
 }
 
@@ -596,8 +609,6 @@ static bool eval_qualifier(const Qualifier &q, const CharView &v, const MatchCtx
 static bool alternative_matches(const Alternative &alt, const CharView &v, const MatchCtx &ctx) {
     for (const Qualifier &q : alt.qualifiers)
         if (!eval_qualifier(q, v, ctx)) return false;
-    // Dynamic mana-value bound supplied by the caller (Aether Vial: MV == charge count).
-    if (ctx.cmc_bound >= 0 && !apply_svar_op(v.cmc, ctx.cmc_op, ctx.cmc_bound)) return false;
     return true;
 }
 
@@ -745,10 +756,14 @@ static bool ev_has_basic_land_type(const CharView &v, const Qualifier &) {
 }
 
 static bool ev_cmc_le_x(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
-    return ctx.cmc_bound >= 0 || v.cmc <= current_x_paid();
+    return v.cmc <= (ctx.cmc_bound >= 0 ? ctx.cmc_bound : current_x_paid());
 }
 
 static bool ev_cmc_literal(const CharView &v, const Qualifier &q) { return compare_qualifier(v.cmc, q, q.number); }
+
+static bool ev_cmc_bound(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    return ctx.cmc_bound < 0 || compare_qualifier(v.cmc, q, ctx.cmc_bound);
+}
 
 static bool ev_pt_vs_x(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
     if (!v.has_pt || ctx.x_bound == INT_MIN) return false;
@@ -993,6 +1008,19 @@ FilterSpec target_filter(const FilterSpec &valid_tgts) {
         compiled.target_form_read = true;
     }
     return compiled.target_form;
+}
+
+std::vector<FilterCmcBound> filter_cmc_bounds(const FilterSpec &spec) {
+    std::vector<FilterCmcBound> out;
+    if (spec.empty()) return out;
+    for (const Alternative &alt : spec.compiled()->alternatives)
+        for (size_t i = alt.head_qualifiers; i < alt.qualifiers.size(); i++) {
+            const Qualifier &q = alt.qualifiers[i];
+            const bool literal = q.row->local == ev_cmc_literal;
+            if ((literal || q.row->relative == ev_cmc_bound || q.row->relative == ev_cmc_le_x) && !q.text.empty())
+                out.push_back({q.token, q.op_text, q.text, !literal});
+        }
+    return out;
 }
 
 bool filter_has_head(const std::string &spec, const std::string &head) {

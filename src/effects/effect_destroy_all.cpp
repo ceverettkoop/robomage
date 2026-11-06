@@ -74,7 +74,6 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (dp && !dp->cmc_expr.empty()) {
         mctx.cmc_bound = static_cast<int>(
             evaluate_amount(dp->cmc_expr, ResolveCtx::of(ab)));
-        mctx.cmc_op = dp->cmc_op.empty() ? "LE" : dp->cmc_op;
     }
     std::vector<Entity> to_destroy;
     for (auto e : orderer->mEntities)

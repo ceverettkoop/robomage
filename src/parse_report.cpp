@@ -288,16 +288,9 @@ static void check_filter(
 // bound (MatchCtx::cmc_bound): each one with no such reader is a "filter" finding.
 static void check_cmc_bounds(const std::string &spec, const std::string &key, const std::string &body,
                              const std::string &line, std::vector<ParseFinding> &findings) {
-    size_t p = 0;
-    while (p <= spec.size()) {
-        size_t nx = spec.find_first_of(".+,;", p);
-        if (nx == std::string::npos) nx = spec.size();
-        const std::string tok = spec.substr(p, nx - p);
-        p = nx + 1;
-        if (tok.rfind("cmc", 0) != 0 || tok.size() <= 5 || std::isdigit(static_cast<unsigned char>(tok[5]))) continue;
-        if (!cmc_bound_supplied(tok.substr(3, 2), tok.substr(5), key, body))
-            findings.push_back({"filter", tok, key + "$ " + spec, line});
-    }
+    for (const FilterCmcBound &b : filter_cmc_bounds(FilterSpec(spec)))
+        if (b.names_svar && !cmc_bound_supplied(b.op, b.bound, key, body))
+            findings.push_back({"filter", b.token, key + "$ " + spec, line});
 }
 
 // Does the reader of filter param `key` supply a cmc bound? cmcLEX reads the X paid everywhere; a
