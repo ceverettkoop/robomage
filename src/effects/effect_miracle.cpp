@@ -3,6 +3,7 @@
 #include <string>
 
 #include "../action_processor.h"
+#include "../cast_options.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../queries/characteristics.h"

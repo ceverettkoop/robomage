@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "announce.h"
+#include "cast_options.h"
 #include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 
+#include "../classes/game.h"
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
 #include "../systems/orderer.h"
@@ -152,4 +153,9 @@ static bool mana_payable(const CostParts &cost, const CostCheck &check) {
     if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude);
     return can_pay_mana(check.payer, owed, payee, check.orderer, check.delve, tap, exclude,
                         cost.life() + check.life_reserve);
+}
+
+bool payment_blocked(Entity paid_for) {
+    const int *fails = cur_game.priority.payment_fail_counts.find(paid_for);
+    return fails && *fails >= 2;
 }

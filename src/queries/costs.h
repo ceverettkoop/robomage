@@ -60,4 +60,8 @@ std::vector<size_t> payable_choices(const std::vector<CostParts> &choices, const
 // The fewest cards of the payer's hand any payable form takes: what a cast's mana must leave there.
 int fewest_hand_cards(const std::vector<CostParts> &choices, const CostCheck &check);
 
+// Stop offering a spell or ability whose payment already failed twice (the payer bumps
+// priority.payment_fail_counts on each cancelled payment), so an agent can't loop on it.
+bool payment_blocked(Entity paid_for);
+
 #endif /* QUERIES_COSTS_H */
