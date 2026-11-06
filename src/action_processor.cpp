@@ -152,7 +152,7 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 // payment_blocked guard and reverse the cast.
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity);
-static const char *grant_row(Entity spell_entity);
+static const char *grant_row(const CastGrant &grant);
 // Begin a special action paid for in mana, suspending a card or bringing a companion to hand, and
 // drive it: its payment, then the move, or on a failed payment nothing.
 static void begin_special_action(Game &game, Entity card, bool companion, const ManaValue &cost,
@@ -198,6 +198,9 @@ static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_d
 // joins the mana owed (CR 601.2f), its discards are picked with the cost's other items.
 static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card);
+// The menu of a resolution's offer: the row that declines, then one row per cast.
+static std::vector<LegalAction> resolution_offer_menu(const std::vector<ResolutionCastOffer> &offers,
+                                                      const std::string &decline_label);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -264,7 +267,7 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
     const CastOption &how = pc.chosen.option;
     const bool impulse = how.permission == Permission::EXILE_GRANT;
     coverage_cast_row(how.row);
-    if (how.cost == CastCost::GRANT) coverage_cast_row(grant_row(spell_entity));
+    if (how.cost == CastCost::GRANT) coverage_cast_row(grant_row(how.grant));
     if (how.offspring) coverage_cast("offspring");
     if (impulse) coverage_cast("impulse");
     if (how.cost == CastCost::NO_MANA_COST) coverage_cast("without_mana_cost");
@@ -276,11 +279,10 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
     coverage_cast(entry && entry->cast_from_hand ? "hand" : "graveyard_permission");
 }
 
-// The --coverage row of what `spell_entity`'s exile grant put in place of its mana cost.
-static const char *grant_row(Entity spell_entity) {
-    const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
-    if (grant && grant->resource == Game::ImpulseCastPermission::FREE) return "grant_free";
-    if (grant && grant->resource == Game::ImpulseCastPermission::ENERGY) return "grant_energy";
+// The --coverage row of what `grant` put in place of a spell's mana cost.
+static const char *grant_row(const CastGrant &grant) {
+    if (grant.resource == GrantResource::FREE) return "grant_free";
+    if (grant.resource == GrantResource::ENERGY) return "grant_energy";
     return "grant_life";
 }
 
@@ -1858,25 +1860,18 @@ static void determine_mana_cost(Game::PendingCast &pc, const CardData &card_data
         for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
 }
 
-// CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
-// (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
-// resource (ENERGY / LIFE: Amped Raptor's DB$ Play) of the permission's resolved
-// amount, determined here (CR 601.2f) and paid with the other costs at PAY_COSTS
-// (CR 601.2h). The permission is consumed as the spell becomes cast (FINISH). X is 0
-// for a spell cast without paying its mana cost (CR 107.3b).
+// CAST under a grant, for the cost its row said replaces its mana cost (CR 118.9): nothing (FREE:
+// Ugin -11, Dauthi Voidwalker, suspend) or an alternative resource (ENERGY / LIFE: Amped Raptor's
+// DB$ Play), determined here (CR 601.2f) and paid with the other costs at PAY_COSTS (CR 601.2h). X
+// is 0 for a spell cast without paying its mana cost (CR 107.3b).
 static void determine_grant_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
-    const Game::ImpulseCastPermission *grant_p =
-        cur_game.resolved_effects.impulse_cast_permission.find(pc.spell_entity);
-    if (grant_p) {
-        const auto &grant = *grant_p;
-        if (grant.resource == Game::ImpulseCastPermission::FREE)
-            game_log("%s casts %s without paying its mana cost\n",
-                     player_name(caster).c_str(), card_data.name.c_str());
-        else if (grant.resource == Game::ImpulseCastPermission::ENERGY)
-            pc.pay.energy = grant.amount;
-        else
-            pc.pay.life = grant.amount;
-    }
+    const CastGrant &grant = pc.chosen.option.grant;
+    if (grant.resource == GrantResource::FREE)
+        game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(), card_data.name.c_str());
+    else if (grant.resource == GrantResource::ENERGY)
+        pc.pay.energy = grant.amount;
+    else
+        pc.pay.life = grant.amount;
 
     // Cost-increase / SetCost-floor statics apply to alternative costs too
     // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
@@ -2995,26 +2990,27 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
 }
 
 // See declaration in action_processor.h.
-ResolutionCastStatus cast_during_resolution(const LegalAction &cast, Zone::Ownership caster,
-                                            bool castable, const std::string &accept_label,
+ResolutionCastStatus cast_during_resolution(const std::vector<ResolutionCastOffer> &offers,
+                                            const std::string &decline_label, Zone::Ownership caster,
                                             ResolutionCastRt &rt, FrameCtx &ctx,
                                             std::shared_ptr<Orderer> orderer) {
-    Entity card = cast.source_entity;
     if (rt.stage == ResolutionCastRt::OFFER) {
-        if (!castable) {
+        if (offers.empty()) {
             rt.stage = ResolutionCastRt::DONE;
             return ResolutionCastStatus::DECLINED;
         }
-        int choice =
-            ctx.ask(yesno_menu("Do not cast " + entity_name(card), accept_label, card), caster, card);
+        const Entity asking = offers.front().cast.source_entity;
+        int choice = ctx.ask(resolution_offer_menu(offers, decline_label), caster, asking);
         if (choice < 0 && decision_suspended()) return ResolutionCastStatus::SUSPENDED;
-        if (choice != 1) {
+        if (choice < 1) {
             rt.stage = ResolutionCastRt::DONE;
             return ResolutionCastStatus::DECLINED;
         }
         // The cast is made by `caster`, who holds the cast flow's prompts; priority returns to
         // the resolving ability's controller once it completes.
+        const LegalAction &cast = offers[static_cast<size_t>(choice) - 1].cast;
         rt.stage = ResolutionCastRt::CASTING;
+        rt.card = cast.source_entity;
         rt.prev_priority = cur_game.priority.player_a_has_priority;
         cur_game.priority.player_a_has_priority = (caster == Zone::PLAYER_A);
         process_action(cast, cur_game, orderer);
@@ -3026,35 +3022,48 @@ ResolutionCastStatus cast_during_resolution(const LegalAction &cast, Zone::Owner
         cur_game.priority.player_a_has_priority = rt.prev_priority;
         rt.stage = ResolutionCastRt::DONE;
         // A cancelled cast leaves the card where it was.
-        bool on_stack = global_coordinator.entity_has_component<Zone>(card) &&
-                        global_coordinator.GetComponent<Zone>(card).location == Zone::STACK;
+        bool on_stack = global_coordinator.entity_has_component<Zone>(rt.card) &&
+                        global_coordinator.GetComponent<Zone>(rt.card).location == Zone::STACK;
         return on_stack ? ResolutionCastStatus::CAST : ResolutionCastStatus::DECLINED;
     }
     return ResolutionCastStatus::DECLINED;
 }
 
 // See declaration in action_processor.h.
-ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
-                                            Game::ImpulseCastPermission grant,
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster, const ResolutionCastTerms &terms,
                                             ResolutionCastRt &rt, FrameCtx &ctx,
                                             std::shared_ptr<Orderer> orderer) {
-    // The permission exists only while the offer is open or the cast is in flight: the cast
-    // consumes it, and a declined or cancelled cast drops it.
-    bool castable = false;
+    std::vector<ResolutionCastOffer> offers;
+    std::string decline_label;
     if (rt.stage == ResolutionCastRt::OFFER) {
-        grant.caster = caster;
-        grant.during_resolution = true;
-        cur_game.resolved_effects.impulse_cast_permission[card] = grant;
-        castable = exile_grant_castable(card, caster, /*sorcery_window=*/false, orderer);
+        offers = resolution_cast_offers(card, caster, terms, orderer);
+        decline_label = "Do not cast " + entity_name(card);
     }
-    const std::string nm = entity_name(card);
-    const LegalAction cast = exile_grant_cast_action(card, nm);
-    const char *how = grant.resource == Game::ImpulseCastPermission::FREE
-                          ? " without paying its mana cost" : "";
-    ResolutionCastStatus status =
-        cast_during_resolution(cast, caster, castable, "Cast " + nm + how, rt, ctx, orderer);
-    if (status != ResolutionCastStatus::SUSPENDED) cur_game.resolved_effects.impulse_cast_permission.erase(card);
-    return status;
+    return cast_during_resolution(offers, decline_label, caster, rt, ctx, orderer);
+}
+
+// See forward declaration at top of file.
+static std::vector<LegalAction> resolution_offer_menu(const std::vector<ResolutionCastOffer> &offers,
+                                                      const std::string &decline_label) {
+    std::vector<LegalAction> menu = yesno_menu(decline_label, offers.front().label, offers.front().cast.source_entity);
+    for (size_t i = 1; i < offers.size(); i++) {
+        menu.push_back(menu[1]);
+        menu.back().source_entity = offers[i].cast.source_entity;
+        menu.back().description = offers[i].label;
+        menu.back().option_ordinal = static_cast<int>(i) + 1;
+    }
+    return menu;
+}
+
+// See declaration in action_processor.h.
+std::vector<ResolutionCastOffer> resolution_cast_offers(Entity card, Zone::Ownership caster,
+                                                        const ResolutionCastTerms &terms,
+                                                        std::shared_ptr<Orderer> orderer) {
+    std::vector<ResolutionCastOffer> offers;
+    const char *how = terms.grant.resource == GrantResource::FREE ? " without paying its mana cost" : "";
+    for (const LegalAction &cast : resolution_cast_rows(card, caster, terms, orderer))
+        offers.push_back({cast, cast.description + how});
+    return offers;
 }
 
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {

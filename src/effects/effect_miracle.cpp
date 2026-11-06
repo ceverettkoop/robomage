@@ -29,11 +29,12 @@ HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
     Entity card = ab.source.get();
     // The revealed card is no longer that object (it left the hand, CR 400.7): no offer.
     if (card == 0 && rt.stage == ResolutionCastRt::OFFER) return HandlerResult::DONE_RUN_SUBS;
-    bool castable =
-        rt.stage == ResolutionCastRt::OFFER && miracle_castable(card, ab.controller, orderer);
+    std::vector<ResolutionCastOffer> offers;
     const std::string nm = entity_name(card);
-    if (cast_during_resolution(miracle_cast_action(card, nm), ab.controller, castable, "Cast " + nm + " for its miracle cost",
-                               rt, ctx, orderer) == ResolutionCastStatus::SUSPENDED)
+    if (rt.stage == ResolutionCastRt::OFFER && miracle_castable(card, ab.controller, orderer))
+        offers.push_back({miracle_cast_action(card, nm), "Cast " + nm + " for its miracle cost"});
+    if (cast_during_resolution(offers, "Do not cast " + nm, ab.controller, rt, ctx, orderer) ==
+        ResolutionCastStatus::SUSPENDED)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }

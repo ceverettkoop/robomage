@@ -256,6 +256,7 @@ struct ResolutionCastRt {
     enum Stage { OFFER, CASTING, DONE };
     Stage stage = OFFER;
     bool prev_priority = false;   // priority.player_a_has_priority to restore once the cast completes
+    Entity card = 0;              // the card being cast: on the stack once it is
 };
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,

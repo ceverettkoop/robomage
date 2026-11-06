@@ -94,10 +94,11 @@ static bool free_offspring_offered(CastOffer &offer);
 static bool replacing_cost_payable(const CastOffer &offer, const CostParts &cost);
 static bool flashback_offered(CastOffer &offer);
 static bool escape_offered(CastOffer &offer);
-static bool grant_cost_payable(Entity card, const CardData &ecd, const Game::ImpulseCastPermission &grant,
-                               Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static bool grant_cost_payable(Entity card, const CardData &ecd, const CastGrant &grant, Zone::Ownership caster,
+                               std::shared_ptr<Orderer> orderer);
 static const Game::ImpulseCastPermission &offer_grant(const CastOffer &offer);
 static bool grant_offered(CastOffer &offer);
+static bool resolution_grant_offered(CastOffer &offer);
 static bool exile_mana_cost_offered(CastOffer &offer);
 static bool exile_resource_offered(CastOffer &offer);
 static bool exile_no_cost_offered(CastOffer &offer);
@@ -196,14 +197,16 @@ static const CastSection kCastSections[] = {
     }},
 };
 
-// The casts a resolution offers (CR 608.2g), not priority: miracle_castable and exile_grant_castable
-// say whether they are offered, so they aren't walked.
+// The casts a resolution offers (CR 608.2g), not priority: miracle_castable says whether a miracle's
+// is offered, and resolution_cast_rows walks the others.
 static const CastSection kMiracleCast = {Zone::HAND, Permission::NONE, CastFace::FRONT, nullptr, nullptr, {
     {"miracle",             CastCost::ALTERNATIVE,  false, 1, " (miracle)",            Zone::GRAVEYARD, nullptr},
 }};
-static const CastSection kResolutionGrantCast = {Zone::EXILE, Permission::EXILE_GRANT, CastFace::FRONT, nullptr, nullptr, {
-    {"exile_resolution",    CastCost::GRANT,        false, -1, "",                     Zone::GRAVEYARD, nullptr},
-}};
+static const CastSection kResolutionCasts[] = {
+    {Zone::EXILE, Permission::EXILE_GRANT, CastFace::FRONT, cast_from_exile, nullptr, {
+        {"exile_resolution", CastCost::GRANT,       false, -1, "",                     Zone::GRAVEYARD, resolution_grant_offered},
+    }},
+};
 
 // May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
 // 307.1)? An instant, a Flash card, or a spell a cast-with-flash permission covers (Teferi, Time
@@ -291,34 +294,15 @@ static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone:
     return can_pay(spell_additional_cost(face), check);
 }
 
-// See declaration in cast_options.h.
-bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
-                          std::shared_ptr<Orderer> orderer) {
-    const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(card);
-    if (grant == nullptr) return false;
-    const Game::ImpulseCastPermission &perm_grant = *grant;
-    const CardData &ecd = global_coordinator.GetComponent<CardData>(card);
-
-    // A cast made during a resolution (CR 608.2g) ignores the card's type-based timing.
-    // Aura enchant-target gate: the concrete crash it fixes here is Animate Dead reanimating
-    // the opponent's Amped Raptor (emptying the graveyard), the Raptor's impulse exiling a
-    // SECOND Animate Dead and granting this energy-cast permission — which must not be
-    // offered while no creature card is in any graveyard.
-    if (!can_cast_now(ecd, card, caster, Zone::EXILE, sorcery_window,
-                      /*ignore_timing=*/perm_grant.during_resolution, orderer))
-        return false;
-    return grant_cost_payable(card, ecd, perm_grant, caster, orderer);
-}
-
 // Can `caster` pay what `perm_grant` asks of `card`?
-static bool grant_cost_payable(Entity card, const CardData &ecd, const Game::ImpulseCastPermission &perm_grant,
-                               Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+static bool grant_cost_payable(Entity card, const CardData &ecd, const CastGrant &perm_grant, Zone::Ownership caster,
+                               std::shared_ptr<Orderer> orderer) {
     // Affordability of the alternative resource cost.
     Entity pe = get_player_entity(caster);
     if (!global_coordinator.entity_has_component<Player>(pe)) return false;
     auto &ppl = global_coordinator.GetComponent<Player>(pe);
-    bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
-    if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
+    bool is_normal_play = (perm_grant.resource == GrantResource::NORMAL);
+    if (perm_grant.resource == GrantResource::FREE) {
         // No cost to pay (Ugin -11 grant) — always affordable.
     } else if (is_normal_play) {
         // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
@@ -326,7 +310,7 @@ static bool grant_cost_payable(Entity card, const CardData &ecd, const Game::Imp
         // paid.
         if (!regular_cast_payable(ecd, card, caster, regular_cast_cost(ecd, card, caster, orderer), orderer))
             return false;
-    } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
+    } else if (perm_grant.resource == GrantResource::ENERGY) {
         if (player_energy(ppl) < perm_grant.amount) return false;
     } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
               // legality bar in MTG, but a player won't be forced; require enough life so
@@ -342,8 +326,7 @@ static bool grant_cost_payable(Entity card, const CardData &ecd, const Game::Imp
     // cost above, so this alt-cost floor doesn't apply to them.
     // A LIFE grant's life is paid before this mana, so the mana may not spend it either.
     if (!is_normal_play) {
-        int grant_life = perm_grant.resource == Game::ImpulseCastPermission::LIFE
-                             ? perm_grant.amount : 0;
+        int grant_life = perm_grant.resource == GrantResource::LIFE ? perm_grant.amount : 0;
         ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, caster);
         if (!floor_mana.empty() &&
             !can_pay_mana(caster, floor_mana, card, orderer, ecd.has_delve,
@@ -584,7 +567,14 @@ static const Game::ImpulseCastPermission &offer_grant(const CastOffer &offer) {
 
 static bool grant_offered(CastOffer &offer) {
     return offer_castable(offer) &&
-           grant_cost_payable(offer.card, offer.face, offer_grant(offer), offer.window.caster, offer.window.orderer);
+           grant_cost_payable(offer.card, offer.face, offer_grant(offer).grant(), offer.window.caster,
+                              offer.window.orderer);
+}
+
+// A resolution's cast ignores the card's type-based timing (CR 608.2g).
+static bool resolution_grant_offered(CastOffer &offer) {
+    return offer_gates_ok(offer) && grant_cost_payable(offer.card, offer.face, offer.window.resolution->grant,
+                                                       offer.window.caster, offer.window.orderer);
 }
 
 // A NORMAL grant casts the card for its own costs, which leaves them open to a free-cast static's
@@ -702,6 +692,8 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
             CastOffer &asked = row.overlay == SpellOverlay::NONE ? offer : overlaid;
             if (row.offered(asked)) {
                 actions.push_back(row_action(row, section, card, "Cast " + asked.face.name + row.label));
+                if (row.cost == CastCost::GRANT)
+                    actions.back().option.grant = window.resolution ? window.resolution->grant : offer_grant(asked).grant();
                 coverage_cast_offer(row.name);
             }
         }
@@ -715,9 +707,14 @@ LegalAction miracle_cast_action(Entity card, const std::string &name) {
 }
 
 // See declaration in cast_options.h.
-LegalAction exile_grant_cast_action(Entity card, const std::string &name) {
-    const CastRow &row = kResolutionGrantCast.rows.front();
-    return row_action(row, kResolutionGrantCast, card, "Cast " + name + row.label);
+std::vector<LegalAction> resolution_cast_rows(Entity card, Zone::Ownership caster, const ResolutionCastTerms &terms,
+                                              std::shared_ptr<Orderer> orderer) {
+    const CastWindow window{caster, /*sorcery_window=*/false, orderer, &terms};
+    const Zone::ZoneValue zone = global_coordinator.GetComponent<Zone>(card).location;
+    std::vector<LegalAction> rows;
+    for (const CastSection &section : kResolutionCasts)
+        if (section.zone == zone) enumerate_cast_options(card, section, window, rows);
+    return rows;
 }
 
 // See declaration in cast_options.h.

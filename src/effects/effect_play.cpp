@@ -54,18 +54,16 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         if (ab.def->play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
     }
 
-    Game::ImpulseCastPermission grant;
-    grant.resource = (ab.def->play_cost_resource == AbilityDef::PLAY_COST_LIFE)
-                         ? Game::ImpulseCastPermission::LIFE
-                         : Game::ImpulseCastPermission::ENERGY;
-    grant.amount = play_cost_amount(ab, card);
+    ResolutionCastTerms terms;
+    terms.grant.resource =
+        (ab.def->play_cost_resource == AbilityDef::PLAY_COST_LIFE) ? GrantResource::LIFE : GrantResource::ENERGY;
+    terms.grant.amount = play_cost_amount(ab, card);
     if (rt.stage == ResolutionCastRt::OFFER && !ctx.resuming()) {
-        const char *res = (grant.resource == Game::ImpulseCastPermission::LIFE) ? "life" : "energy";
+        const char *res = (terms.grant.resource == GrantResource::LIFE) ? "life" : "energy";
         game_log("%s may cast %s by paying %d %s rather than its mana cost.\n",
-                 player_name(ab.controller).c_str(), entity_name(card).c_str(), grant.amount, res);
+                 player_name(ab.controller).c_str(), entity_name(card).c_str(), terms.grant.amount, res);
     }
-    if (cast_during_resolution(card, ab.controller, grant, rt, ctx, orderer) ==
-        ResolutionCastStatus::SUSPENDED)
+    if (cast_during_resolution(card, ab.controller, terms, rt, ctx, orderer) == ResolutionCastStatus::SUSPENDED)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }

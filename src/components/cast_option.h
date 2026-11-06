@@ -32,6 +32,17 @@ enum class CastCost : uint8_t {
                    // for its normal cost
 };
 
+// What an effect lets a card be cast for (CR 118.9). ENERGY / LIFE: `amount` of that resource rather
+// than its mana cost (Amped Raptor's DB$ Play). FREE: without paying its mana cost (Ugin, Eye of the
+// Storms' -11; Dauthi Voidwalker; suspend). NORMAL: for its own cost (Light Up the Stage).
+enum class GrantResource : uint8_t { ENERGY, LIFE, FREE, NORMAL };
+struct CastGrant {
+        GrantResource resource = GrantResource::ENERGY;
+        int amount = 0;  // resolved cost (e.g. the card's mana value); 0 when FREE/NORMAL
+
+        bool operator==(const CastGrant &o) const { return resource == o.resource && amount == o.amount; }
+};
+
 // What a cast changes on the spell beyond its face and its cost: a kind and a row of
 // kSpellOverlayRows (queries/overlays.cpp), and a column of the cast table.
 enum class SpellOverlay : uint8_t {
@@ -55,11 +66,13 @@ struct CastOption {
         Zone::ZoneValue destination = Zone::GRAVEYARD;
         const char *row = nullptr;  // the name of its row, its --coverage key
         SpellOverlay overlay = SpellOverlay::NONE;  // what it changes on the spell, read through cast_face
+        CastGrant grant;  // what CastCost::GRANT pays, decided as the row is offered
 
         bool alternative() const { return cost >= CastCost::ALTERNATIVE; }
         bool operator==(const CastOption &o) const {
             return face == o.face && zone == o.zone && cost == o.cost && permission == o.permission &&
-                   offspring == o.offspring && destination == o.destination && overlay == o.overlay;
+                   offspring == o.offspring && destination == o.destination && overlay == o.overlay &&
+                   grant == o.grant;
         }
 };
 

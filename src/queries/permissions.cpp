@@ -78,8 +78,6 @@ static bool exile_grant_covers(const PermissionQuery &q) {
     if (grant == nullptr) return false;
     const Game::ImpulseCastPermission &g = *grant;
     if (g.caster != q.player) return false;
-    // A permission for a cast made during a resolution (CR 608.2g) is used only there.
-    if (g.during_resolution) return false;
     return !is_land_card(q.cd) || g.allow_land;
 }
 

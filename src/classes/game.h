@@ -722,21 +722,19 @@ struct Game {
         // not yet delivered in a frame, with its match-long seq counter. Carried into the next
         // game of a bo3 match (obs_events_for_next_game); written only while events are consumed.
         ObsEventState obs_events;
-        // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
-        // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
-        // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution
-        // only (Amped Raptor's DB$ Play, suspend's last time counter; during_resolution, CR
-        // 608.2g). Keyed by the exiled card as an object: it lapses once the card becomes a new
-        // object, except that it follows the card onto the stack as it is cast (CR 400.7g). The
-        // casting path reads it for the cost that replaces the card's mana cost (CR 118.9) and
-        // consumes it as the card is cast.
+        // Play-from-exile permission: a card in EXILE that an effect lets a player play at priority
+        // for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp;
+        // cleared at cleanup unless it lasts longer). Keyed by the exiled card as an object: it
+        // lapses once the card becomes a new object, except that it follows the card onto the stack
+        // as it is cast (CR 400.7g). A row offers what it grants (CastOption::grant), and the cast
+        // consumes it.
         struct ImpulseCastPermission {
-            // FREE = cast without paying its mana cost (Ugin, Eye of the Storms' -11: "cast those
-            // cards without paying their mana costs"; Dauthi Voidwalker: "play it ... without
-            // paying its mana cost", CR 118.9 / 601.2f). ENERGY/LIFE pay an alternative resource
-            // cost equal to `amount` (Amped Raptor's DB$ Play). NORMAL = PLAY the card for its
-            // NORMAL cost (Light Up the Stage's "you may play those cards").
-            enum Resource { ENERGY, LIFE, FREE, NORMAL } resource = ENERGY;
+            using Resource = GrantResource;
+            static constexpr Resource ENERGY = GrantResource::ENERGY;
+            static constexpr Resource LIFE = GrantResource::LIFE;
+            static constexpr Resource FREE = GrantResource::FREE;
+            static constexpr Resource NORMAL = GrantResource::NORMAL;
+            Resource resource = ENERGY;
             int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE/NORMAL
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
             bool allow_land = false;   // a "play" grant may also play a LAND card from exile (CR 305.1)
@@ -746,23 +744,17 @@ struct Game {
             // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
             bool persist_until_end_of_next_turn = false;
             size_t grant_turn = 0;
-            // during_resolution: granted by a resolving effect for a cast made as part of that
-            // resolution (CR 608.2g; cast_during_resolution — Suspend's last time counter, CR
-            // 702.62a). The cast ignores the card's type-based timing, and the permission is never
-            // offered at priority: it is consumed by that cast or dropped when it isn't made.
-            // Ordinary free casts (Ugin) leave this false and keep their type-based timing.
-            bool during_resolution = false;
             // warp: granted when a warp-cast object is exiled at the next end step. Unlike the
             // per-turn grants above, a warp permission persists across turns FOR AS LONG AS the
             // card remains in exile — it lapses only once the card leaves exile (cast, or moved
             // by another effect). The recast keeps the card's normal sorcery/instant timing (a
-            // creature is recast at sorcery speed), so during_resolution stays false. See
-            // effect_warp.cpp.
+            // creature is recast at sorcery speed). See effect_warp.cpp.
             bool warp = false;
             // on_an_adventure: its caster may play the card that resolved as an Adventure for as
             // long as it remains exiled, though not as an Adventure again (CR 715.3d).
             bool on_an_adventure = false;
             bool lasts_while_exiled() const { return warp || on_an_adventure; }
+            CastGrant grant() const { return {resource, amount}; }
         };
         // Continuous effects and floating triggered abilities that belong to no permanent: created
         // by resolved spells and abilities (CR 611.2), and emblems (CR 114). Each lasts as its

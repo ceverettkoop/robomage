@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "cast_options.h"
 #include "classes/action.h"
 #include "classes/game.h"
 #include "components/ability.h"
@@ -26,22 +27,28 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 // ability, and no player receives priority after it is cast. Suspendable: the offer is asked
 // through `ctx`, and a cast prompt parks as a CAST query that the main loop resumes before
 // re-entering the resolution — the calling handler returns SUSPENDED on SUSPENDED and calls this
-// again with the same `rt` when re-entered (`castable` is read only before the offer is answered).
+// again with the same `rt` when re-entered (`offers` is read only before the offer is answered).
 // CAST when the spell was cast, DECLINED when it wasn't (declined, not castable, or the cast was
 // cancelled). Used by suspend's last time counter (CR 702.62a), a miracle trigger (CR 702.94a)
 // and DB$ Play (Amped Raptor).
 enum class ResolutionCastStatus { CAST, DECLINED, SUSPENDED };
-ResolutionCastStatus cast_during_resolution(const LegalAction& cast, Zone::Ownership caster,
-                                            bool castable, const std::string& accept_label,
+// One cast on offer: the row it is made from, and what the menu calls it.
+struct ResolutionCastOffer {
+        LegalAction cast;
+        std::string label;
+};
+ResolutionCastStatus cast_during_resolution(const std::vector<ResolutionCastOffer>& offers,
+                                            const std::string& decline_label, Zone::Ownership caster,
                                             ResolutionCastRt& rt, FrameCtx& ctx,
                                             std::shared_ptr<Orderer> orderer);
-// The exile form: `caster` may cast the exiled `card` for the cost `grant` puts in place of its
-// mana cost (FREE = "without paying its mana cost"), checked by exile_grant_castable. The grant
-// is a Game::resolved_effects.impulse_cast_permission that lasts only while the offer and the cast are open.
-ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
-                                            Game::ImpulseCastPermission grant,
+// The one-card form: `caster` may cast `card` from the zone it is in, on `terms`.
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster, const ResolutionCastTerms& terms,
                                             ResolutionCastRt& rt, FrameCtx& ctx,
                                             std::shared_ptr<Orderer> orderer);
+// The casts of `card` on `terms`, as offers (resolution_cast_rows).
+std::vector<ResolutionCastOffer> resolution_cast_offers(Entity card, Zone::Ownership caster,
+                                                        const ResolutionCastTerms& terms,
+                                                        std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
 // tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
