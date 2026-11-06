@@ -34,6 +34,9 @@ enum class Permission : uint8_t {
     // `player` (Light Up the Stage, Ugin's -11, Dauthi Voidwalker, warp); a land only under a
     // "play" grant that allows lands
     EXILE_GRANT,
+    // the exiled copy of a prepared permanent's prepare spell, for that permanent's controller
+    // (CR 722.3c)
+    PREPARED,
     NONE,  // no permission is needed: a card in its owner's hand
 };
 

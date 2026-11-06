@@ -91,7 +91,8 @@ inline int card_mana_value(const CardData &cd) {
 std::string whole_card_name(const CardData &cd);
 
 // The names a player may choose when an effect has them choose a card name and they want this card:
-// a split card's each half's (CR 709.4a), an adventurer card's alternative name too (CR 715.5).
+// a split card's each half's (CR 709.4a), an adventurer or preparation card's alternative name too
+// (CR 715.5, 722.5).
 std::vector<std::string> card_names(const CardData &cd);
 
 // Mana value of object `e` (printed characteristics `cd`). A spell on the stack has the face

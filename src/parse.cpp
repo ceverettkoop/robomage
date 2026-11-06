@@ -869,8 +869,9 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     // AlternateMode:DoubleFaced is a transforming double-faced card (the ALTERNATE face is its back).
     const std::string alternate_mode = value_from_script(front_script, "AlternateMode");
     card.is_adventure = alternate_mode == "Adventure";
+    card.is_prepare = alternate_mode == "Prepare";
     if (!alternate_mode.empty() && alternate_mode != "Modal" && alternate_mode != "Split" &&
-        alternate_mode != "DoubleFaced" && !card.is_adventure)
+        alternate_mode != "DoubleFaced" && !card.is_adventure && !card.is_prepare)
         parse_finding("layout", alternate_mode, "AlternateMode:" + alternate_mode + " is read as a transforming card");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
@@ -1158,15 +1159,21 @@ static void kw_affinity(const std::string &kw_line, KeywordContext &ctx) {
 }
 
 // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls);
-// K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute). Any other
-// ETBReplacement names an effect nothing reads, a parse finding, and is kept as a plain keyword.
+// K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute);
+// K:ETBReplacement:Other:<SVar> whose SVar is DB$ AlterAttribute | Attributes$ Prepared — this
+// creature enters prepared (CR 722.3a). Any other ETBReplacement names an effect nothing reads, a
+// parse finding, and is kept as a plain keyword.
 static void kw_etb_replacement(const std::string &kw_line, KeywordContext &ctx) {
+    const std::vector<std::string> parts = split(kw_line, ':');
+    const auto svar = ctx.svars.find(parts.size() > 2 ? parts[2] : "");
     if (kw_line.find("ChooseCT") != std::string::npos)
         ctx.card.has_etb_choose_creature_type = true;
     else if (kw_line.find("NameCard") != std::string::npos)
         ctx.card.has_etb_name_card = true;
+    else if (svar != ctx.svars.end() && param_value(svar->second, "DB") == "AlterAttribute" &&
+             param_value(svar->second, "Attributes") == "Prepared")
+        ctx.card.enters_prepared = true;
     else {
-        const std::vector<std::string> parts = split(kw_line, ':');
         parse_finding("keyword", "ETBReplacement:" + (parts.size() > 2 ? parts[2] : kw_line), kw_line);
         split_keywords(kw_line, ctx.card.keywords);
     }

@@ -10,6 +10,7 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/prepared_copy.h"
 #include "../components/spell.h"
 #include "../components/token.h"
 #include "../components/zone.h"
@@ -95,7 +96,8 @@ static bool is_card_object(Entity e) {
 }
 
 static bool is_token_object(Entity e) {
-    if (global_coordinator.entity_has_component<Token>(e)) return true;
+    if (global_coordinator.entity_has_component<Token>(e) || global_coordinator.entity_has_component<PreparedCopy>(e))
+        return true;
     return global_coordinator.entity_has_component<Spell>(e) && global_coordinator.GetComponent<Spell>(e).is_copy;
 }
 

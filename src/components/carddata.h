@@ -105,6 +105,12 @@ struct CardData{
     // AlternateMode:Adventure — an adventurer card (CR 715): `backside` holds the Adventure's
     // alternative characteristics, which exist only on a spell cast as an Adventure (CR 715.4).
     bool is_adventure = false;
+    // AlternateMode:Prepare — a preparation card (CR 722): `backside` holds its prepare spell's
+    // characteristics, which only the copy a prepared permanent makes has (CR 722.3c).
+    bool is_prepare = false;
+    // K:ETBReplacement:Other:<SVar> naming a DB$ AlterAttribute | Attributes$ Prepared: "this creature
+    // enters prepared" (CR 722.3a).
+    bool enters_prepared = false;
     // A split card's two halves as one object (CR 709.4): both names joined, the combined mana cost,
     // both halves' types, keywords and abilities, the right half's spell ability following the
     // left's. What it is in every zone but the stack, and on the stack when fused (CR 702.102b).

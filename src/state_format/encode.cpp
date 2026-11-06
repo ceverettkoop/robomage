@@ -16,6 +16,7 @@
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/prepared_copy.h"
 #include "../components/spell.h"
 #include "../components/token.h"
 #include "../components/zone.h"
@@ -270,6 +271,7 @@ static rmstate::Layout card_layout(const CardData &cd) {
     if (cd.is_split) return rmstate::Layout::SPLIT;
     if (cd.is_modal_dfc) return rmstate::Layout::MODAL_DFC;
     if (cd.is_adventure) return rmstate::Layout::ADVENTURE;
+    if (cd.is_prepare) return rmstate::Layout::PREPARE;
     if (cd.backside) return rmstate::Layout::TRANSFORM;
     return rmstate::Layout::NORMAL;
 }
@@ -777,7 +779,9 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
                              : nullptr;
     const int card = visible_card_id(e, c.viewer);
     const bool visible = identity_visible(e, c.viewer);
-    const bool is_token = (perm && perm->is_token) || global_coordinator.entity_has_component<Token>(e);
+    // A prepared copy (CR 722.3c) is no card, as a token is none.
+    const bool is_token = (perm && perm->is_token) || global_coordinator.entity_has_component<Token>(e) ||
+                          global_coordinator.entity_has_component<PreparedCopy>(e);
     const CardData *cd = visible ? object_card_data(e) : nullptr;
 
     Row r = c.w.row(TableId::OBJECT);
@@ -791,8 +795,9 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
               : NONE16);
     r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(z.is_face_down ? 1 : 0);
     const bool transformed =
-        visible && ((perm && perm->transformed) || (global_coordinator.entity_has_component<Spell>(e) &&
-                                                       global_coordinator.GetComponent<Spell>(e).chosen.back_face()));
+        visible && ((perm && perm->transformed) || global_coordinator.entity_has_component<PreparedCopy>(e) ||
+                    (global_coordinator.entity_has_component<Spell>(e) &&
+                     global_coordinator.GetComponent<Spell>(e).chosen.back_face()));
     r.u8(transformed ? 1 : 0);
     r.u16(visible && perm && perm->printed_card && cd ? card_or_none(card_name_to_index(cd->name)) : NONE16);
     // The phasing subsystem's flag is read directly: phased-out permanents are included and
@@ -854,6 +859,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         r.u8(perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
     r.u8(perm && perm->exerted_by != Zone::UNKNOWN ? 1 : 0);
     r.u8(perm && perm->overlay == SpellOverlay::BESTOW ? 1 : 0);
+    r.u8(perm && perm->prepared ? 1 : 0);
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.
@@ -1291,7 +1297,7 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
         for (Zone::Ownership p : {c.self, opponent_of(c.self)}) {
             const PlayPermissions perm = play_permissions(e, p);
             if (!perm.playable()) continue;
-            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::EXILE_GRANT); ++bit) {
+            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::PREPARED); ++bit) {
                 if (!(perm.sources & (1u << bit))) continue;
                 rmstate::PermissionResource resource = rmstate::PermissionResource::MANA;
                 int amount = 0;

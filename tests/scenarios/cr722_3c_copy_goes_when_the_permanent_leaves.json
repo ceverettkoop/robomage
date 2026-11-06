@@ -1,0 +1,14 @@
+{
+  "name": "cr722_3c_copy_goes_when_the_permanent_leaves",
+  "why": "CR 722.3c: the copy remains in exile only for as long as the prepared permanent remains on the battlefield: exiled by Swords to Plowshares in response to nothing, the Cultivator takes its Enroot with it.",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Carnivorous Cultivator", "Forest"],
+  "hand_b": ["Swords to Plowshares"],
+  "library_b": ["Plains"],
+  "battlefield_b": ["Plains"],
+  "play": ["A:keep", "B:keep", "B:cast:Swords to Plowshares", "B:target:Carnivorous Cultivator"],
+  "max_decisions": 10,
+  "expect": ["Carnivorous Cultivator is moved to exile", "Enroot ceases to exist"],
+  "expect_order": ["Carnivorous Cultivator is moved to exile", "Enroot ceases to exist"]
+}

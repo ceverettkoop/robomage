@@ -1,0 +1,12 @@
+{
+  "name": "cr510_2_cultivator_returns_a_land_on_combat_damage",
+  "why": "Carnivorous Cultivator: whenever it deals combat damage to a player, return target land card from your graveyard to your hand; deathtouch from its keyword.",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Carnivorous Cultivator"],
+  "graveyard_a": ["Taiga"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:attack:Carnivorous Cultivator", "A:attack:done"],
+  "max_decisions": 12,
+  "expect": ["Carnivorous Cultivator deals 2 damage to Player B", "Taiga is moved to hand"]
+}

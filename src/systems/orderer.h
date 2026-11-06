@@ -26,6 +26,10 @@ public:
     // an object that was never in that zone. Use for copies/tokens that come into existence on the
     // stack rather than add_to_zone (which models a genuine zone transition).
     void place_created_on_stack(Entity target, Zone::Ownership controller);
+    // The same for an object that comes into existence in `owner`'s exile (CR 722.3c).
+    void place_created_in_exile(Entity target, Zone::Ownership owner);
+    // An object that was no card ceases to exist where it is (CR 704.5e).
+    void remove_created_object(Entity target);
     // Take a spell or ability off the stack without resolving it: countered (CR 701.5a), exiled
     // from the stack (Mindbreak Trap), or removed as it fails to resolve (CR 608.3b). A card goes
     // to `destination`, or to exile when it was cast with flashback (CR 702.34a). A copy of a

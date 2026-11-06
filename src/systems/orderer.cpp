@@ -95,6 +95,23 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     obs_object_created(target);
 }
 
+void Orderer::place_created_in_exile(Entity target, Zone::Ownership owner) {
+    Zone z(Zone::EXILE, owner, owner);
+    z.distance_from_top = 0;
+    for (auto &&card : mEntities) {
+        auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
+        if (cmp_zone.location == Zone::EXILE && cmp_zone.owner == owner) cmp_zone.distance_from_top++;
+    }
+    global_coordinator.AddComponent(target, z);
+    obs_object_created(target);
+}
+
+void Orderer::remove_created_object(Entity target) {
+    obs_object_ceased(target, true);
+    close_zone_gap(target);
+    global_coordinator.DestroyEntity(target);
+}
+
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down) {
     move_object(on_bottom, target, destination, exile_face_down, MoveOptions{});
 }

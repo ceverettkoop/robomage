@@ -29,6 +29,7 @@ struct SpellOverlayRow {
         // resolves, or attached to nothing legal, it ends and the object goes on as the card it is
         // (CR 702.103e, f) where another Aura would go to the graveyard.
         bool stays_on_the_permanent;
+        bool casts_a_copy;  // the object is a copy, not a card: it ceases to exist as it leaves the stack
 };
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind);

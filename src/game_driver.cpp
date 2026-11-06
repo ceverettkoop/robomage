@@ -26,6 +26,7 @@
 #include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
+#include "components/prepared_copy.h"
 #include "components/spell.h"
 #include "components/token.h"
 #include "components/zone.h"
@@ -388,6 +389,7 @@ EcsSystems init_ecs() {
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Token>();
     global_coordinator.RegisterComponent<EntryInfo>();
+    global_coordinator.RegisterComponent<PreparedCopy>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();

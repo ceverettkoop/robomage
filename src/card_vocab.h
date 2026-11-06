@@ -359,6 +359,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Brazen Borrower", 434},
     {"Petty Theft", 435},
     {"Springheart Nantuko", 436},
+    {"Carnivorous Cultivator", 437},
+    {"Enroot", 438},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

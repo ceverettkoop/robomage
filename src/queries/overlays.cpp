@@ -21,11 +21,12 @@ static bool has_bestow(const CardData &card);
 static void bestow_aura(CardData &face);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
-    // kind                   name         variant                                            resolved_to      has           change          resolved         stays_on_the_permanent
-    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,        nullptr,         false},
-    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell, nullptr,         false},
-    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,        on_an_adventure, false},
-    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,    nullptr,         true},
+    // kind                   name         variant                                            resolved_to      has           change          resolved         stays  copy
+    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,        nullptr,         false, false},
+    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell, nullptr,         false, false},
+    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,        on_an_adventure, false, false},
+    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,    nullptr,         true,  false},
+    {SpellOverlay::PREPARE,   "prepared",  static_cast<int>(rmstate::CastVariant::PREPARED),  Zone::GRAVEYARD, nullptr,      nullptr,        nullptr,         false, true},
 };
 
 static bool has_overload(const CardData &card) { return card.alt_cost.is_overload; }

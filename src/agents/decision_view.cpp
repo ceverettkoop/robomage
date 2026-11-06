@@ -71,10 +71,11 @@ int DecisionView::stack_row(uint64_t h) const {
 std::optional<std::string> DecisionView::object_name(size_t row) const {
     int cid = object_.card(row, o_card_);
     if (cid < 0) return std::nullopt;
-    if (object_.u(row, o_token_)) return cards().name(cid);
+    const bool back = object_.u(row, o_transformed_) != 0;
+    if (object_.u(row, o_token_)) return cards().name(cid, back);
     const int copy = object_.card(row, o_copy_of_);
     if (copy >= 0) cid = copy;
-    return cards().name(cid, object_.u(row, o_transformed_) != 0);
+    return cards().name(cid, back);
 }
 
 std::optional<std::string> DecisionView::stack_card(size_t row) const {

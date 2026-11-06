@@ -35,6 +35,7 @@
 #include "../queries/filters.h"
 #include "../queries/keywords.h"
 #include "../queries/players.h"
+#include "../queries/prepared.h"
 #include "../queries/types.h"
 #include "../queries/zones.h"
 #include "../input_logger.h"
@@ -970,6 +971,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // later turns).
                 if (card_is_saga(card_data) && !entering_object_loses_abilities(entity))
                     saga_add_lore_counters(entity, 1);
+                // "This creature enters prepared" (CR 722.3a), a replacement of the card's own.
+                if (card_data.is_prepare && face->enters_prepared && !entering_object_loses_abilities(entity))
+                    global_coordinator.GetComponent<Permanent>(entity).prepared = true;
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
@@ -1233,6 +1237,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
     // die (CR 704.5d); that death was already logged and its dies-triggers queued by the mover
     // that put it there, so here we only note that it ceases to exist. Done after iteration to
     // avoid invalidating iterators.
+    sync_prepared_copies(mEntities, orderer);
     for (auto e : tokens_to_destroy) {
         const char *tok_name = global_coordinator.entity_has_component<Token>(e)
             ? global_coordinator.GetComponent<Token>(e).name.c_str() : "Token";

@@ -236,6 +236,7 @@ static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
     spell.caster = caster;
     spell.chosen.option.face = pc.chosen.option.face;
     spell.chosen.option.overlay = pc.chosen.option.overlay;
+    spell.is_copy = spell_overlay(pc.chosen.option.overlay).casts_a_copy;
     global_coordinator.AddComponent(pc.spell_entity, spell);
 }
 
@@ -2444,6 +2445,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             Spell spell;
             spell.caster = caster;
             spell.chosen = pc.chosen;
+            spell.is_copy = spell_overlay(pc.chosen.option.overlay).casts_a_copy;
             // Mana spent on it may say it can't be countered (Cavern of Souls).
             if (mana_makes_uncounterable(pc.chosen.mana_paid)) spell.cant_be_countered = true;
             spell.keywords_until_eot = keywords_from_mana(pc.chosen.mana_paid, spell_entity);

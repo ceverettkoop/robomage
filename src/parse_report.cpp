@@ -347,6 +347,7 @@ static std::string card_layout(const CardData &card) {
     if (card.is_split) return "split";
     if (card.is_modal_dfc) return "modal";
     if (card.is_adventure) return "adventure";
+    if (card.is_prepare) return "prepare";
     if (card.backside) return "transform";
     return "normal";
 }

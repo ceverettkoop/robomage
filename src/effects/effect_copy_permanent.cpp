@@ -48,6 +48,8 @@ static Token copyable_token_of(Entity src) {
     tok.abilities = face.abilities;
     tok.static_abilities = face.static_abilities;
     tok.replacement_effects = face.replacement_effects;
+    if (card.is_prepare) tok.prepare_spell = card.backside;
+    tok.enters_prepared = face.enters_prepared;
     return tok;
 }
 

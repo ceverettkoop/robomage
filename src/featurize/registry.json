@@ -2,7 +2,7 @@
 "dims":{"F":96,"C":12,"K":6,"Q":2,"G":1408,"types":64,"categorical":6144,"relations":64,"ab_keys":256,"abilities_per_card":16,"hash_buckets":256},
 "enums":[
 {"name":"face","capacity":2,"closed":true,"values":["FRONT","BACK"]},
-{"name":"layout","capacity":16,"values":["NORMAL","TRANSFORM","MODAL_DFC","SPLIT","ADVENTURE"]},
+{"name":"layout","capacity":16,"values":["NORMAL","TRANSFORM","MODAL_DFC","SPLIT","ADVENTURE","PREPARE"]},
 {"name":"color","capacity":8,"closed":true,"values":["WHITE","BLUE","BLACK","RED","GREEN","COLORLESS","GENERIC","NO_COLOR"]},
 {"name":"card_type","capacity":32,"values":["Artifact","Battle","Conspiracy","Creature","Dragon","Elemental","Enchantment","Goblin","Hero","Instant","Jaguar","Kindred","Knights","Land","Legend","Phenomenon","Plane","Planeswalker","Scheme","Sorcery","Stickers","Summon","Tribal","Universewalker","Vanguard","Wolf","instant"]},
 {"name":"supertype","capacity":8,"values":["Basic","Host","Legendary","Ongoing","Snow","World"]},
@@ -25,12 +25,12 @@
 {"name":"link_kind","capacity":8,"values":["EXILED_WITH","RETURNABLE"]},
 {"name":"attack_target_kind","capacity":8,"values":["PLAYER","PLANESWALKER"]},
 {"name":"stack_kind","capacity":8,"values":["SPELL","ACTIVATED","TRIGGERED","COPY"]},
-{"name":"cast_variant","capacity":32,"values":["FLASHBACK","EVOKE","ESCAPE","OFFSPRING","IMPENDING","WARP","BACK_FACE","ALT_COST","IMPULSE","COMPANION","SUSPEND","CANCEL","WITHOUT_MANA_COST","OVERLOAD","FUSED","ADVENTURE","BESTOW"]},
+{"name":"cast_variant","capacity":32,"values":["FLASHBACK","EVOKE","ESCAPE","OFFSPRING","IMPENDING","WARP","BACK_FACE","ALT_COST","IMPULSE","COMPANION","SUSPEND","CANCEL","WITHOUT_MANA_COST","OVERLOAD","FUSED","ADVENTURE","BESTOW","PREPARED"]},
 {"name":"target_kind","capacity":8,"values":["OBJECT","PLAYER"]},
 {"name":"delayed_state","capacity":8,"values":["WAITING","ON_STACK"]},
 {"name":"fire_kind","capacity":8,"values":["FIRE_UPKEEP","FIRE_END_STEP","FIRE_END_OF_COMBAT","FIRE_LEAVES_BATTLEFIELD"]},
 {"name":"player_effect_kind","capacity":16,"values":["PROTECTION_FROM_EVERYTHING","CANT_GAIN_LIFE","HEXPROOF_FROM","SPELLS_CANT_BE_COUNTERED","CAST_AS_FLASH","SORCERY_SPEED_ONLY","FLOATING_TRIGGER"]},
-{"name":"permission_kind","capacity":16,"values":["FLASHBACK","ESCAPE","GRAVEYARD_CAST","GRAVEYARD_LAND","EXILE_GRANT"]},
+{"name":"permission_kind","capacity":16,"values":["FLASHBACK","ESCAPE","GRAVEYARD_CAST","GRAVEYARD_LAND","EXILE_GRANT","PREPARED"]},
 {"name":"permission_resource","capacity":8,"values":["MANA","ENERGY","LIFE","FREE"]},
 {"name":"shield_kind","capacity":8,"values":["COMBAT_DAMAGE"]},
 {"name":"window_kind","capacity":8,"values":["REVEAL","LOOK","FACE_DOWN_LOOK","CONTINUOUS_REVEAL"]},
@@ -297,7 +297,8 @@
 {"type":"pool_mana","name":"activated_on_battlefield","kind":"scalar","at":2},
 {"type":"pool_mana","name":"cant_be_countered","kind":"scalar","at":3},
 {"type":"object","name":"exerted","kind":"scalar","at":86},
-{"type":"object","name":"bestowed","kind":"scalar","at":87}
+{"type":"object","name":"bestowed","kind":"scalar","at":87},
+{"type":"object","name":"prepared","kind":"scalar","at":88}
 ],
 "categorical":[
 {"type":"header","name":"knowledge","source":"enum:knowledge_level","col":0,"offset":1,"size":9},

@@ -502,8 +502,10 @@ static int physical_card_id(Entity e) {
         if (perm.is_token) return token_card_id(e);
         if (perm.printed_card) return card_name_to_index(perm.printed_card->name);
     }
+    // A prepared copy has only its prepare spell's characteristics (CR 722.3c): the card it shows
+    // is that face of the preparation card.
     if (global_coordinator.entity_has_component<CardData>(e))
-        return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+        return physical_card_of(card_name_to_index(global_coordinator.GetComponent<CardData>(e).name));
     if (global_coordinator.entity_has_component<Token>(e)) return token_card_id(e);
     return last_known_card_id(e);
 }

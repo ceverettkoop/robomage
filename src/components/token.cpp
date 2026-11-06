@@ -21,6 +21,7 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         perm.is_token = true;
         perm.controller = controller;
         perm.has_summoning_sickness = true;
+        perm.prepared = tok.enters_prepared && tok.prepare_spell;
         // The replacement effects that shape how a permanent enters apply to a token as to a
         // card (CR 614.1c-d, 614.12): a token copy of a card has its self-replacements
         // (CR 707.2) — "enters tapped", "enters with counters".

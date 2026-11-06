@@ -453,7 +453,7 @@ class FrameView:
         if cid < 0:
             return None
         if o["token"]:
-            return self.cards.name(cid)
+            return self.cards.name(cid, back=bool(o["transformed"]))
         if o["copy_of"] != _NONE16:
             cid = o["copy_of"]
         return self.cards.name(cid, back=bool(o["transformed"]))

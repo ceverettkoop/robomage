@@ -183,6 +183,12 @@ static const CastSection kCastSections[] = {
         {"exile_back_no_cost",   CastCost::GRANT,     false, 7, " (from exile, no cost)", Zone::GRAVEYARD, exile_no_cost_offered},
         {"exile_back_free",      CastCost::NO_MANA_COST, false, 8, " (from exile) without paying its mana cost", Zone::GRAVEYARD, exile_free_offered},
     }},
+    // CR 722.3c: the prepared permanent's controller may cast the copy, for its own costs. Its
+    // CardData is the prepare spell's alone; to a frame it is the preparation card's back face.
+    {Zone::EXILE, Permission::PREPARED, CastFace::BACK, nullptr, nullptr, {
+        {"prepared",        CastCost::MANA_COST,    false, 7, " (prepared)",           Zone::GRAVEYARD, mana_cost_offered, SpellOverlay::PREPARE},
+        {"prepared_free",   CastCost::NO_MANA_COST, false, 8, " (prepared) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered, SpellOverlay::PREPARE},
+    }},
     // CR 715.3d: the permission an Adventure leaves doesn't cast it as an Adventure again; another
     // effect's may.
     {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_as_adventure, nullptr, {

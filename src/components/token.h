@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 #include <cstdint>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -12,6 +13,8 @@
 #include "zone.h"
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+
+struct CardData;
 
 // Token entities have Zone + Permanent + Creature + Damage + Token on the battlefield.
 // They have no CardData. When a token leaves the battlefield it is destroyed entirely.
@@ -42,6 +45,9 @@ struct Token {
     // Mana value of the mana cost a token copy of a card copied (CR 707.2, 202.3); a scripted
     // token has no mana cost, so 0.
     int mana_value = 0;
+    // A copy of a preparation card keeps its prepare spell (CR 722.2b) and "enters prepared".
+    std::shared_ptr<const CardData> prepare_spell;
+    bool enters_prepared = false;
 };
 
 // Attach the Permanent + Creature + Damage components a token needs on the battlefield,

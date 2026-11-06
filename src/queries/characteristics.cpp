@@ -117,7 +117,7 @@ std::string whole_card_name(const CardData &cd) {
 
 std::vector<std::string> card_names(const CardData &cd) {
     std::vector<std::string> names = {cd.name};
-    if ((cd.is_split || cd.is_adventure) && cd.backside) names.push_back(cd.backside->name);
+    if ((cd.is_split || cd.is_adventure || cd.is_prepare) && cd.backside) names.push_back(cd.backside->name);
     return names;
 }
 

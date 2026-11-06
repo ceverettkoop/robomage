@@ -2,8 +2,11 @@
 
 #include "../classes/game.h"
 #include "../components/carddata.h"
+#include "../components/prepared_copy.h"
 #include "../ecs/coordinator.h"
 #include "../systems/rules_modifying.h"
+#include "battlefield.h"
+#include "prepared.h"
 #include "types.h"
 
 // What a row of the registry is asked about.
@@ -33,6 +36,7 @@ static bool graveyard_land_static(const PermissionQuery &q);
 static bool exile_grant_covers(const PermissionQuery &q);
 static bool exile_grant_expires(const PermissionQuery &q);
 static void exile_grant_spent(Entity card);
+static bool prepared_copy_covers(const PermissionQuery &q);
 static unsigned zones_with_rows();
 
 static const PermissionRow kPermissionRows[] = {
@@ -42,6 +46,7 @@ static const PermissionRow kPermissionRows[] = {
     {Permission::GRAVEYARD_CAST, Zone::GRAVEYARD, true,       granted_graveyard_cast, expires_at_cleanup,  nullptr},
     {Permission::GRAVEYARD_LAND, Zone::GRAVEYARD, true,       graveyard_land_static,  never_expires,       nullptr},
     {Permission::EXILE_GRANT,    Zone::EXILE,     false,      exile_grant_covers,     exile_grant_expires, exile_grant_spent},
+    {Permission::PREPARED,       Zone::EXILE,     false,      prepared_copy_covers,   never_expires,       prepared_copy_cast},
 };
 
 static const unsigned kZonesWithRows = zones_with_rows();
@@ -89,6 +94,12 @@ static bool exile_grant_expires(const PermissionQuery &q) {
 }
 
 static void exile_grant_spent(Entity card) { cur_game.resolved_effects.impulse_cast_permission.erase(card); }
+
+static bool prepared_copy_covers(const PermissionQuery &q) {
+    if (!global_coordinator.entity_has_component<PreparedCopy>(q.card)) return false;
+    const Entity permanent = global_coordinator.GetComponent<PreparedCopy>(q.card).permanent.get();
+    return is_battlefield_permanent(permanent, q.player);
+}
 
 PlayPermissions play_permissions(Entity card, Zone::Ownership player) {
     PlayPermissions out;
