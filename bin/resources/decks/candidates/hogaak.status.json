@@ -52,15 +52,6 @@
       ],
       "size": "M"
      },
-     "Count$ValidGraveyard": {
-      "cards": [
-       "Dark Matter Manipulator"
-      ],
-      "findings": [
-       "svar_expr:Count$ValidGraveyard"
-      ],
-      "size": "S"
-     },
      "Enters as a copy (Mockingbird)": {
       "cards": [
        "Mockingbird"
@@ -92,15 +83,6 @@
       ],
       "size": "S"
      },
-     "Mana value bound from an SVar": {
-      "cards": [
-       "Powder Keg"
-      ],
-      "findings": [
-       "filter:cmcEQX"
-      ],
-      "size": "S"
-     },
      "Sunburst (CR 702.44)": {
       "cards": [
        "Engineered Explosives"
@@ -118,25 +100,12 @@
        "static_param:CheckSecondSVar"
       ],
       "size": "S"
-     },
-     "without<Keyword> filter qualifier": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "filter:withoutFlying"
-      ],
-      "size": "S"
      }
     },
     "needs": {
      "Brazen Borrower": [
       "Adventure (CR 715)",
-      "Can't-block restrictions (CantBlockBy)",
-      "without<Keyword> filter qualifier"
-     ],
-     "Dark Matter Manipulator": [
-      "Count$ValidGraveyard"
+      "Can't-block restrictions (CantBlockBy)"
      ],
      "Engineered Explosives": [
       "Sunburst (CR 702.44)"
@@ -151,49 +120,42 @@
      "Mockingbird": [
       "Enters as a copy (Mockingbird)",
       "Mana spent on casting (Count$CastTotalManaSpent)"
-     ],
-     "Powder Keg": [
-      "Mana value bound from an SVar"
      ]
     },
     "new_cards": [
      "Brazen Borrower",
-     "Dark Matter Manipulator",
      "Engineered Explosives",
      "Hogaak, Arisen Necropolis",
      "Massacre",
      "Mockingbird",
-     "Powder Keg",
      "Stitcher's Supplier",
      "Watery Grave"
     ],
-    "size_points": 33
+    "size_points": 30
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "9 new card(s): 2 clean, 7 need 11 mechanic(s) (33 points)",
-   "time": "2026-11-05T17:03:23"
+   "summary": "7 new card(s): 2 clean, 5 need 8 mechanic(s) (30 points)",
+   "time": "2026-11-05T18:01:44"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 19,
+    "in_vocab": 21,
     "no_script": [],
     "not_in_vocab": [
      "Brazen Borrower",
-     "Dark Matter Manipulator",
      "Engineered Explosives",
      "Hogaak, Arisen Necropolis",
      "Massacre",
      "Mockingbird",
-     "Powder Keg",
      "Stitcher's Supplier",
      "Watery Grave"
     ]
@@ -201,11 +163,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "28 cards: 19 in vocab, 9 new (0 without a script)",
-   "time": "2026-11-05T13:02:36"
+   "summary": "28 cards: 21 in vocab, 7 new (0 without a script)",
+   "time": "2026-11-05T18:01:44"
   },
   "implement": {
    "detail": {
@@ -213,27 +175,24 @@
      "Adventure (CR 715)",
      "Can't-block restrictions (CantBlockBy)",
      "Convoke (CR 702.51)",
-     "Count$ValidGraveyard",
      "Enters as a copy (Mockingbird)",
      "Hogaak casting",
      "Mana spent on casting (Count$CastTotalManaSpent)",
-     "Mana value bound from an SVar",
      "Sunburst (CR 702.44)",
-     "Two-condition alternative cost (Massacre)",
-     "without<Keyword> filter qualifier"
+     "Two-condition alternative cost (Massacre)"
     ]
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "pending",
-   "summary": "11 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Count$ValidGraveyard, Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Mana value bound from an SVar, Sunburst (CR 702.44), Two-condition alternative cost (Massacre), wit",
-   "time": "2026-11-05T17:03:23"
+   "summary": "8 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), Two-condition alternative cost (Massacre)",
+   "time": "2026-11-05T18:01:44"
   },
   "parse": {
    "detail": {
@@ -268,12 +227,6 @@
         "kind": "static_mode",
         "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
         "name": "CantBlockBy"
-       },
-       {
-        "detail": "ValidAttacker$ Creature.withoutFlying",
-        "kind": "filter",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "withoutFlying"
        }
       ],
       "layout": "transform",
@@ -281,26 +234,6 @@
       "tokens": [],
       "vocab": [
        -1,
-       -1
-      ]
-     },
-     "Dark Matter Manipulator": {
-      "card": "Dark Matter Manipulator",
-      "faces": [
-       "Dark Matter Manipulator"
-      ],
-      "findings": [
-       {
-        "detail": "Y = Count$ValidGraveyard Card.YouOwn/DivideEvenlyDown.7",
-        "kind": "svar_expr",
-        "line": "SVar:Y:Count$ValidGraveyard Card.YouOwn/DivideEvenlyDown.7",
-        "name": "Count$ValidGraveyard"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/d/dark_matter_manipulator.txt",
-      "tokens": [],
-      "vocab": [
        -1
       ]
      },
@@ -426,32 +359,6 @@
        -1
       ]
      },
-     "Powder Keg": {
-      "card": "Powder Keg",
-      "faces": [
-       "Powder Keg"
-      ],
-      "findings": [
-       {
-        "detail": "ValidCards$ Artifact.cmcEQX,Creature.cmcEQX",
-        "kind": "filter",
-        "line": "A:AB$ DestroyAll | Cost$ T Sac<1/CARDNAME> | ValidCards$ Artifact.cmcEQX,Creature.cmcEQX | SpellDescription$ Destroy each artifact and creature with mana value equal to the number of fuse counters on CARDNAME.",
-        "name": "cmcEQX"
-       },
-       {
-        "detail": "ValidCards$ Artifact.cmcEQX,Creature.cmcEQX",
-        "kind": "filter",
-        "line": "A:AB$ DestroyAll | Cost$ T Sac<1/CARDNAME> | ValidCards$ Artifact.cmcEQX,Creature.cmcEQX | SpellDescription$ Destroy each artifact and creature with mana value equal to the number of fuse counters on CARDNAME.",
-        "name": "cmcEQX"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/p/powder_keg.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Stitcher's Supplier": {
       "card": "Stitcher's Supplier",
       "faces": [
@@ -483,14 +390,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "9 new card(s), 7 with findings (19 findings), 0 without a script",
-   "time": "2026-11-05T17:03:23"
+   "summary": "7 new card(s), 5 with findings (15 findings), 0 without a script",
+   "time": "2026-11-05T18:01:44"
   },
   "provision": {
    "detail": {
@@ -504,11 +411,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T13:02:36"
+   "time": "2026-11-05T18:01:44"
   },
   "scrape": {
    "detail": {

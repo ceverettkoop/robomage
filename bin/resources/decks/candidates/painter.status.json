@@ -93,15 +93,6 @@
       ],
       "size": "M"
      },
-     "Defined$ names no reader acts on": {
-      "cards": [
-       "Chaos Defiler"
-      ],
-      "findings": [
-       "ability_param:Destroy.Defined"
-      ],
-      "size": "M"
-     },
      "Discard-a-card activation cost": {
       "cards": [
        "Melded Moxite",
@@ -186,8 +177,7 @@
        "ability_param:Repeat.RepeatCheckSVar",
        "ability_param:Repeat.RepeatSVarCompare",
        "category:Repeat",
-       "filter:SharesColorWithOther",
-       "svar_expr:TargetedPlayer$CardsInLibrary"
+       "filter:SharesColorWithOther"
       ],
       "size": "M"
      },
@@ -197,15 +187,6 @@
       ],
       "findings": [
        "category:TapOrUntap"
-      ],
-      "size": "S"
-     },
-     "without<Keyword> filter qualifier": {
-      "cards": [
-       "Chaos Defiler"
-      ],
-      "findings": [
-       "filter:withoutIndestructible"
       ],
       "size": "S"
      }
@@ -218,9 +199,7 @@
       "Mana with riders and Exert (Arena of Glory)"
      ],
      "Chaos Defiler": [
-      "Defined$ names no reader acts on",
-      "Random choice (AtRandom)",
-      "without<Keyword> filter qualifier"
+      "Random choice (AtRandom)"
      ],
      "Fable of the Mirror-Breaker": [
       "Fable of the Mirror-Breaker"
@@ -276,19 +255,19 @@
      "Unlicensed Hearse",
      "Untimely Malfunction"
     ],
-    "size_points": 60
+    "size_points": 56
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "18 new card(s): 5 clean, 13 need 17 mechanic(s) (60 points)",
-   "time": "2026-11-05T17:03:23"
+   "summary": "18 new card(s): 5 clean, 13 need 15 mechanic(s) (56 points)",
+   "time": "2026-11-05T18:01:44"
   },
   "diff": {
    "detail": {
@@ -319,11 +298,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "41 cards: 23 in vocab, 18 new (0 without a script)",
-   "time": "2026-11-05T13:02:37"
+   "time": "2026-11-05T18:01:44"
   },
   "implement": {
    "detail": {
@@ -334,7 +313,6 @@
      "Change targets (CR 115.7)",
      "Colour-adding static everywhere (Painter's Servant)",
      "Crew and vehicles (CR 702.122)",
-     "Defined$ names no reader acts on",
      "Discard-a-card activation cost",
      "Divided damage (CR 601.2d)",
      "Fable of the Mirror-Breaker",
@@ -343,21 +321,20 @@
      "Meld (CR 712)",
      "Random choice (AtRandom)",
      "Repeat effect (DB$ Repeat)",
-     "TapOrUntap effect",
-     "without<Keyword> filter qualifier"
+     "TapOrUntap effect"
     ]
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "pending",
-   "summary": "17 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Defined$ names no reader acts on, Discard-a-card activation cost, Divided damage (CR 601.2d), Fa",
-   "time": "2026-11-05T17:03:23"
+   "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin ",
+   "time": "2026-11-05T18:01:44"
   },
   "parse": {
    "detail": {
@@ -475,34 +452,16 @@
         "name": "ChooseCard.AtRandom"
        },
        {
-        "detail": "Destroy Defined$ ChosenCard",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigRepeat | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
-        "name": "Destroy.Defined"
-       },
-       {
         "detail": "ChooseCard AtRandom$ True",
         "kind": "ability_param",
         "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Graveyard | ValidCard$ Card.Self | Execute$ TrigRepeat | Secondary$ True | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
         "name": "ChooseCard.AtRandom"
        },
        {
-        "detail": "Destroy Defined$ ChosenCard",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Graveyard | ValidCard$ Card.Self | Execute$ TrigRepeat | Secondary$ True | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
-        "name": "Destroy.Defined"
-       },
-       {
         "detail": "Choices$ Permanent.nonLand+ControlledBy Remembered",
         "kind": "filter",
         "line": "SVar:DBChooseCard:DB$ ChooseCard | Choices$ Permanent.nonLand+ControlledBy Remembered | Mandatory$ True | RememberChosen$ True",
         "name": "ControlledBy Remembered"
-       },
-       {
-        "detail": "Choices$ Card.IsRemembered+withoutIndestructible",
-        "kind": "filter",
-        "line": "SVar:DBChooseRandom:DB$ ChooseCard | AtRandom$ True | Choices$ Card.IsRemembered+withoutIndestructible | Reveal$ True | SubAbility$ DBDestroy",
-        "name": "withoutIndestructible"
        }
       ],
       "layout": "normal",
@@ -719,12 +678,6 @@
         "kind": "filter",
         "line": "SVar:MilledSharesColor:Remembered$Valid Card.SharesColorWithOther Remembered",
         "name": "SharesColorWithOther"
-       },
-       {
-        "detail": "MaxRepeats = TargetedPlayer$CardsInLibrary",
-        "kind": "svar_expr",
-        "line": "SVar:MaxRepeats:TargetedPlayer$CardsInLibrary",
-        "name": "TargetedPlayer$CardsInLibrary"
        }
       ],
       "layout": "normal",
@@ -931,14 +884,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "18 new card(s), 13 with findings (50 findings), 0 without a script",
-   "time": "2026-11-05T17:03:23"
+   "summary": "18 new card(s), 13 with findings (46 findings), 0 without a script",
+   "time": "2026-11-05T18:01:44"
   },
   "provision": {
    "detail": {
@@ -956,11 +909,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 3 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T13:02:37"
+   "time": "2026-11-05T18:01:44"
   },
   "scrape": {
    "detail": {

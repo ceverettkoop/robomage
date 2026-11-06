@@ -130,16 +130,6 @@
       ],
       "size": "S"
      },
-     "Targeted player's counts (TargetedPlayer$...)": {
-      "cards": [
-       "Peer into the Abyss"
-      ],
-      "findings": [
-       "svar_expr:TargetedPlayer$CardsInLibrary/HalfUp",
-       "svar_expr:TargetedPlayer$LifeTotal/HalfUp"
-      ],
-      "size": "S"
-     },
      "UseAllOriginZones": {
       "cards": [
        "Echo of Eons"
@@ -169,9 +159,6 @@
      "Gamble": [
       "Shuffle effect"
      ],
-     "Peer into the Abyss": [
-      "Targeted player's counts (TargetedPlayer$...)"
-     ],
      "Runehorn Hellkite": [
       "Abilities activated from any zone",
       "Defined$ names no reader acts on",
@@ -192,31 +179,30 @@
      "Gamble",
      "Giant's Boulder",
      "Haywire Mite",
-     "Peer into the Abyss",
      "Raucous Theater",
      "Runehorn Hellkite",
      "Song of Creation",
      "Taiga",
      "Tendrils of Agony"
     ],
-    "size_points": 29
+    "size_points": 28
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "15 new card(s): 7 clean, 8 need 12 mechanic(s) (29 points)",
-   "time": "2026-11-05T17:03:23"
+   "summary": "14 new card(s): 7 clean, 7 need 11 mechanic(s) (28 points)",
+   "time": "2026-11-05T18:01:44"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 15,
+    "in_vocab": 16,
     "no_script": [],
     "not_in_vocab": [
      "Beseech the Mirror",
@@ -228,7 +214,6 @@
      "Gamble",
      "Giant's Boulder",
      "Haywire Mite",
-     "Peer into the Abyss",
      "Raucous Theater",
      "Runehorn Hellkite",
      "Song of Creation",
@@ -239,11 +224,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "30 cards: 15 in vocab, 15 new (0 without a script)",
-   "time": "2026-11-05T13:02:37"
+   "summary": "30 cards: 16 in vocab, 14 new (0 without a script)",
+   "time": "2026-11-05T18:01:44"
   },
   "implement": {
    "detail": {
@@ -258,21 +243,20 @@
      "Hogaak casting",
      "Imprint past the resolution",
      "Shuffle effect",
-     "Targeted player's counts (TargetedPlayer$...)",
      "UseAllOriginZones"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "pending",
-   "summary": "12 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution, Shuffle effect, Targeted player'",
-   "time": "2026-11-05T17:03:23"
+   "summary": "11 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution, Shuffle effect, UseAllOriginZone",
+   "time": "2026-11-05T18:01:44"
   },
   "parse": {
    "detail": {
@@ -506,32 +490,6 @@
        -1
       ]
      },
-     "Peer into the Abyss": {
-      "card": "Peer into the Abyss",
-      "faces": [
-       "Peer into the Abyss"
-      ],
-      "findings": [
-       {
-        "detail": "X = TargetedPlayer$CardsInLibrary/HalfUp",
-        "kind": "svar_expr",
-        "line": "SVar:X:TargetedPlayer$CardsInLibrary/HalfUp",
-        "name": "TargetedPlayer$CardsInLibrary/HalfUp"
-       },
-       {
-        "detail": "Y = TargetedPlayer$LifeTotal/HalfUp",
-        "kind": "svar_expr",
-        "line": "SVar:Y:TargetedPlayer$LifeTotal/HalfUp",
-        "name": "TargetedPlayer$LifeTotal/HalfUp"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/p/peer_into_the_abyss.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Raucous Theater": {
       "card": "Raucous Theater",
       "faces": [
@@ -640,14 +598,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "15 new card(s), 8 with findings (25 findings), 0 without a script",
-   "time": "2026-11-05T17:03:23"
+   "summary": "14 new card(s), 7 with findings (23 findings), 0 without a script",
+   "time": "2026-11-05T18:01:44"
   },
   "provision": {
    "detail": {
@@ -663,11 +621,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T13:02:37"
+   "time": "2026-11-05T18:01:44"
   },
   "scrape": {
    "detail": {

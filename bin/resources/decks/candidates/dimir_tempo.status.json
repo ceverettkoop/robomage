@@ -62,30 +62,12 @@
       ],
       "size": "M"
      },
-     "Targeted player's cards filter (TargetedPlayerOwn)": {
-      "cards": [
-       "Strategic Betrayal"
-      ],
-      "findings": [
-       "filter:TargetedPlayerOwn"
-      ],
-      "size": "S"
-     },
      "Two-condition alternative cost (Massacre)": {
       "cards": [
        "Massacre"
       ],
       "findings": [
        "static_param:CheckSecondSVar"
-      ],
-      "size": "S"
-     },
-     "without<Keyword> filter qualifier": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "filter:withoutFlying"
       ],
       "size": "S"
      }
@@ -96,61 +78,55 @@
      ],
      "Brazen Borrower": [
       "Adventure (CR 715)",
-      "Can't-block restrictions (CantBlockBy)",
-      "without<Keyword> filter qualifier"
+      "Can't-block restrictions (CantBlockBy)"
      ],
      "Massacre": [
       "Two-condition alternative cost (Massacre)"
      ],
      "Nihil Spellbomb": [
       "Mana cost on a triggered ability"
-     ],
-     "Strategic Betrayal": [
-      "Targeted player's cards filter (TargetedPlayerOwn)"
      ]
     },
     "new_cards": [
      "Bilbo, Thief in the Night",
      "Brazen Borrower",
      "Massacre",
-     "Nihil Spellbomb",
-     "Strategic Betrayal"
+     "Nihil Spellbomb"
     ],
-    "size_points": 18
+    "size_points": 16
    },
    "inputs": {
     "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "5 new card(s): 0 clean, 5 need 7 mechanic(s) (18 points)",
-   "time": "2026-11-05T17:03:23"
+   "summary": "4 new card(s): 0 clean, 4 need 5 mechanic(s) (16 points)",
+   "time": "2026-11-05T18:01:43"
   },
   "diff": {
    "detail": {
     "distinct": 31,
-    "in_vocab": 26,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
      "Bilbo, Thief in the Night",
      "Brazen Borrower",
      "Massacre",
-     "Nihil Spellbomb",
-     "Strategic Betrayal"
+     "Nihil Spellbomb"
     ]
    },
    "inputs": {
     "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
     "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "31 cards: 26 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-05T14:52:44"
+   "summary": "31 cards: 27 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-05T18:01:43"
   },
   "implement": {
    "detail": {
@@ -159,22 +135,20 @@
      "Can't-block restrictions (CantBlockBy)",
      "Mana cost on a triggered ability",
      "Play from a zone with replacement (Bilbo)",
-     "Targeted player's cards filter (TargetedPlayerOwn)",
-     "Two-condition alternative cost (Massacre)",
-     "without<Keyword> filter qualifier"
+     "Two-condition alternative cost (Massacre)"
     ]
    },
    "inputs": {
     "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "pending",
-   "summary": "7 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Mana cost on a triggered ability, Play from a zone with replacement (Bilbo), Targeted player's cards filter (TargetedPlayerOwn), Two-condition alternative cost (Massacre), without<Keyword> filter qualifier",
-   "time": "2026-11-05T17:03:23"
+   "summary": "5 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Mana cost on a triggered ability, Play from a zone with replacement (Bilbo), Two-condition alternative cost (Massacre)",
+   "time": "2026-11-05T18:01:43"
   },
   "parse": {
    "detail": {
@@ -253,12 +227,6 @@
         "kind": "static_mode",
         "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
         "name": "CantBlockBy"
-       },
-       {
-        "detail": "ValidAttacker$ Creature.withoutFlying",
-        "kind": "filter",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "withoutFlying"
        }
       ],
       "layout": "transform",
@@ -308,40 +276,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Strategic Betrayal": {
-      "card": "Strategic Betrayal",
-      "faces": [
-       "Strategic Betrayal"
-      ],
-      "findings": [
-       {
-        "detail": "ChangeType$ Card.ChosenCard,Card.TargetedPlayerOwn+inZoneGraveyard",
-        "kind": "filter",
-        "line": "SVar:DBChangeZoneAll:DB$ ChangeZoneAll | Origin$ Battlefield,Graveyard | Destination$ Exile | DefinedPlayer$ Targeted | ChangeType$ Card.ChosenCard,Card.TargetedPlayerOwn+inZoneGraveyard",
-        "name": "TargetedPlayerOwn"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/strategic_betrayal.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T17:03:23"
+   "summary": "4 new card(s), 4 with findings (11 findings), 0 without a script",
+   "time": "2026-11-05T18:01:43"
   },
   "provision": {
    "detail": {
@@ -355,11 +303,11 @@
    "inputs": {
     "deck": "143c43231d52f8513dd1b625f5e8a89324dd9917b9a5bbc8d9448e12964cc521",
     "scripts": "518ccd9af91911c2e18ce9c1e3b04fc5cc8040d0bb3a65bd70d2814c5d2d4416",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T14:52:44"
+   "time": "2026-11-05T18:01:43"
   },
   "scrape": {
    "detail": {

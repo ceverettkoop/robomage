@@ -22,100 +22,58 @@
      "Crucible of Worlds",
      "Soul-Guide Lantern"
     ],
-    "mechanics": {
-     "Defined$ names no reader acts on": {
-      "cards": [
-       "Drop of Honey"
-      ],
-      "findings": [
-       "ability_param:Destroy.Defined"
-      ],
-      "size": "M"
-     },
-     "Least power (Drop of Honey)": {
-      "cards": [
-       "Drop of Honey"
-      ],
-      "findings": [
-       "filter:leastPower"
-      ],
-      "size": "S"
-     },
-     "without<Keyword> filter qualifier": {
-      "cards": [
-       "Drop of Honey"
-      ],
-      "findings": [
-       "filter:withoutIndestructible"
-      ],
-      "size": "S"
-     }
-    },
-    "needs": {
-     "Drop of Honey": [
-      "Defined$ names no reader acts on",
-      "Least power (Drop of Honey)",
-      "without<Keyword> filter qualifier"
-     ]
-    },
+    "mechanics": {},
+    "needs": {},
     "new_cards": [
      "Crucible of Worlds",
-     "Drop of Honey",
      "Soul-Guide Lantern"
     ],
-    "size_points": 5
+    "size_points": 0
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "3 new card(s): 2 clean, 1 need 3 mechanic(s) (5 points)",
-   "time": "2026-11-05T17:03:23"
+   "summary": "2 new card(s): 2 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-05T18:01:44"
   },
   "diff": {
    "detail": {
     "distinct": 35,
-    "in_vocab": 32,
+    "in_vocab": 33,
     "no_script": [],
     "not_in_vocab": [
      "Crucible of Worlds",
-     "Drop of Honey",
      "Soul-Guide Lantern"
     ]
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "35 cards: 32 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-05T13:02:36"
+   "summary": "35 cards: 33 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-05T18:01:44"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Defined$ names no reader acts on",
-     "Least power (Drop of Honey)",
-     "without<Keyword> filter qualifier"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
-   "result": "pending",
-   "summary": "3 mechanic(s) to implement: Defined$ names no reader acts on, Least power (Drop of Honey), without<Keyword> filter qualifier",
-   "time": "2026-11-05T17:03:23"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-05T18:01:44"
   },
   "parse": {
    "detail": {
@@ -128,38 +86,6 @@
       "findings": [],
       "layout": "normal",
       "script": "cardsfolder/c/crucible_of_worlds.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Drop of Honey": {
-      "card": "Drop of Honey",
-      "faces": [
-       "Drop of Honey"
-      ],
-      "findings": [
-       {
-        "detail": "Destroy Defined$ ChosenCard",
-        "kind": "ability_param",
-        "line": "T:Mode$ Phase | Phase$ Upkeep | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigChooseOneToDestroy | TriggerDescription$ At the beginning of your upkeep, destroy the creature with the least power. It can't be regenerated. If two or more creatures are tied for least power, you choose one of them.",
-        "name": "Destroy.Defined"
-       },
-       {
-        "detail": "Choices$ Creature.leastPower+withoutIndestructible",
-        "kind": "filter",
-        "line": "SVar:TrigChooseOneToDestroy:DB$ ChooseCard | Choices$ Creature.leastPower+withoutIndestructible | Mandatory$ True | SubAbility$ DBDestroy",
-        "name": "leastPower"
-       },
-       {
-        "detail": "Choices$ Creature.leastPower+withoutIndestructible",
-        "kind": "filter",
-        "line": "SVar:TrigChooseOneToDestroy:DB$ ChooseCard | Choices$ Creature.leastPower+withoutIndestructible | Mandatory$ True | SubAbility$ DBDestroy",
-        "name": "withoutIndestructible"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/d/drop_of_honey.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -183,14 +109,14 @@
    },
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
-   "summary": "3 new card(s), 1 with findings (3 findings), 0 without a script",
-   "time": "2026-11-05T17:03:23"
+   "summary": "2 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-05T18:01:44"
   },
   "provision": {
    "detail": {
@@ -204,11 +130,11 @@
    "inputs": {
     "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
     "scripts": "57e5a0f24c4d89c84fbfa90aa434ebf6806f0611ed257011d88b4a24405b93c1",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T13:02:36"
+   "time": "2026-11-05T18:01:44"
   },
   "scrape": {
    "detail": {

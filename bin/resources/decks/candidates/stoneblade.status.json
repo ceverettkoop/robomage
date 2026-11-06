@@ -65,15 +65,15 @@
    },
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 3 mechanic(s) (24 points)",
-   "time": "2026-11-05T17:03:23"
+   "time": "2026-11-05T18:01:44"
   },
   "diff": {
    "detail": {
@@ -87,11 +87,11 @@
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "38 cards: 37 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-05T14:52:45"
+   "time": "2026-11-05T18:01:44"
   },
   "implement": {
    "detail": {
@@ -103,15 +103,15 @@
    },
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
     "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "pending",
    "summary": "3 mechanic(s) to implement: Can't-block restrictions (CantBlockBy), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708)",
-   "time": "2026-11-05T17:03:23"
+   "time": "2026-11-05T18:01:44"
   },
   "parse": {
    "detail": {
@@ -171,14 +171,14 @@
    },
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
-    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
+    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "1 new card(s), 1 with findings (6 findings), 0 without a script",
-   "time": "2026-11-05T17:03:23"
+   "time": "2026-11-05T18:01:44"
   },
   "provision": {
    "detail": {
@@ -192,11 +192,11 @@
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
-    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T14:52:45"
+   "time": "2026-11-05T18:01:44"
   },
   "scrape": {
    "detail": {

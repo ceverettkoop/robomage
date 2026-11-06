@@ -14,7 +14,7 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M2 done
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M3 done
    and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
@@ -174,7 +174,7 @@ Teaching the agent to pilot new decks well is out of scope.
 Learned-model safety: a change to how a known card parses moves its table rows. The `vocab` tier
 reports it through the card digest, and each such diff is read before `make registry` records it.
 New enum values and columns append through the registry; capacity (`action_category` 128, 48 used;
-`abilities_per_card` 16, no candidate near it; card ids to 899, 366 used; token band to 1022, 917
+`abilities_per_card` 16, no candidate near it; card ids to 899, 372 used; token band to 1022, 917
 used) is ample, so no layout bump is expected. Existing runs need `rmtrain retable` once at the next
 training start, not per stage.
 
@@ -252,8 +252,8 @@ an aggregate, with `<Set>$<Property>` a row of neither, plus the suffix table. `
 and `svar_expr_recognized` read those tables; the tokens only a filter's reader reads are rows too, and
 `EquippedBy`, which nothing reads, is now a finding (Cryptic Coat, Hawkeye's Bow).
 
-No existing qualifier is population-relative, so that shape is defined and unused: `select_matching`
-and `population_row` wait for `leastPower`. Still hand-kept, because none is a question either table
+No qualifier is population-relative, so that shape is defined and unused: `select_matching` and
+`population_row` have no caller (see Done below for why `leastPower` is not one). Still hand-kept, because none is a question either table
 answers: `is_runtime_amount_expr` and `svar_expr_read_at_parse` (the forms the parser resolves),
 `cmc_bound_supplied` (which reader supplies a bound), `trigger_valid_card_read` (M9's binder), and
 TargetType$'s own reader (`stack_spell_alt_matches`). The legacy `evaluate_svar` callers that pass source
@@ -263,7 +263,53 @@ TargetType$'s own reader (`stack_spell_alt_matches`). The legacy `evaluate_svar`
 all 430 scripts but for that finding; 6,144 explore games byte-identical; `bench` faster (137.4 to
 128.6 us, median of 11 alternating release runs).
 
-Still to do in M3: the new qualifiers and expressions below, and their cards.
+**Lands with its first card, not here.** A card outside the vocab can't be tested, so as in M2 these
+wait for the first stage that can prove them. The stage is when the card's own last need is met:
+
+| finding | first testable card | stage |
+|---|---|---|
+| `filter:ControlledBy Remembered` | Chaos Defiler | M4 |
+| `filter:SharesColorWithOther` | Grindstone | M4 |
+| `filter:lowestRememberedCMC` | Stronghold Gambit | M4 |
+| `svar_expr:Imprinted$Amount` | The Stone Brain | M5 |
+| `amount_svar:All` | Beseech the Mirror | M7 |
+| `filter:!wasCastFromYourHand` | Bilbo, Thief in the Night | M7 |
+| `filter:AttachedTo Creature` | Springheart Nantuko | M7 |
+| `filter:TopGraveyardCreature` | Shallow Grave | M8 |
+| `filter:cmcEQX` in `ValidTgts$` (the X paid, against a card in a graveyard) | Lazotep Quarry | M8 |
+| `filter:Defined`, `filter:ExiledWithSourceLKI`, `filter:Imprinted` | Chrome Mox | M9 |
+| `filter:EquippedBy` | Hawkeye's Bow (then Cryptic Coat, M11) | M9 |
+| `svar_expr:PlayerCountOpponents$HighestValid` | Sand Scout | M9 |
+| `svar_expr:TriggeredCard$CardPower` | Pyrogoyf | M9 |
+| `filter:sharesControllerWith`, `svar_expr:Imprinted$Valid` | Goblin Welder | M10 |
+| `svar_expr:Count$ValidExile` | Unlicensed Hearse | M10 |
+| `svar_expr:Count$xPaid/Twice` | Shatterskull Smashing | M10 |
+| `svar_expr:Sacrificed$CardManaCost/Plus.2` | Broadside Bombardiers | M10 |
+| `filter:TopLibrary` | Mystic Forge | M11 |
+
+`Remembered$CardManaCost` still reads the first object and `Count$Valid …$CardManaCost` sums printed
+values: no M3 card needs either to do more. `lowestRememberedCMC` and `TopGraveyardCreature` are the
+remaining candidates for the population shape, and each should be checked against its card as
+`leastPower` was before it is built as one.
+
+**Done** (2026-11-05). In the vocab, ids 367 to 372: Rough/Tumble, Peer into the Abyss, Dark Matter
+Manipulator, Powder Keg, Drop of Honey, Strategic Betrayal, each with per-rule scenarios that fail with
+its row or fix removed. New rows: `without<Keyword>`, `leastPower`, `ChosenCard`, `TargetedPlayerCtrl`
+and `TargetedPlayerOwn` (`ChosenCard` and `TargetedPlayerCtrl` were read-elsewhere tokens that no
+ChooseCard or ChangeZoneAll read), the `TargetedPlayer` set, the `CardsInLibrary` and `LifeTotal` properties, the
+`/DivideEvenlyDown.N` suffix, and `Defined$ ChosenCard` on Destroy. A `cmc<OP>X` other than `cmcLEX` on
+DestroyAll is a named bound. A static's SVar opening with `SVar$<name>` expands at parse.
+
+`leastPower` is a plain row, not population-relative. "The creature with the least power" compares with
+every creature on the battlefield, so select_matching's narrowing would be wrong: with an indestructible
+creature least, `Creature.leastPower+withoutIndestructible` must match nothing, not promote the next
+creature up. Both population-shape helpers therefore still have no caller.
+
+ChooseCard's player is now the one it names or targets (`affected_player`), its battlefield candidates
+include tokens, and with no candidate it leaves nothing chosen. A qualifier with no reading fails
+closed when negated too, which changed no vocab card. `replay` stayed byte-identical at each commit:
+no vocab card changed behaviour and the corpus was not re-recorded. `decks/tests/mech_filters.dk` is the
+fixture, with a new coverage kind, `row`.
 
 **Today.** `eval_qualifier` and the SVar evaluator are if-chains; parametrised forms are prefix-parsed
 by hand; `<Set>$<Property>` exists per name; sets reach the matcher by reading
