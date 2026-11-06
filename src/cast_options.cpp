@@ -60,9 +60,6 @@ struct CastSection {
 
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer);
-static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, Zone::Ownership priority_player,
-                                        const std::vector<Entity> &hand, std::shared_ptr<Orderer> orderer,
-                                        bool sorcery_window);
 static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window);
 static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
@@ -92,6 +89,7 @@ static bool offspring_offered(CastOffer &offer);
 static bool free_cast_offered(CastOffer &offer);
 static bool free_offspring_offered(CastOffer &offer);
 static bool cast_from_front(const CardData &card);
+static bool cast_from_back(const CardData &front);
 static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions);
 static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc);
 static void enumerate_cast_options(Entity card, const CastSection &section, const CastWindow &window,
@@ -111,6 +109,11 @@ static const CastSection kCastSections[] = {
         {"offspring",       CastCost::MANA_COST,    true,  2, " (offspring)",          Zone::GRAVEYARD, offspring_offered},
         {"hand_free",       CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"hand_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
+    }},
+    {Zone::HAND, Permission::NONE, CastFace::BACK, cast_from_back, nullptr, {
+        {"back_face",       CastCost::MANA_COST,    false, 3, "",                      Zone::GRAVEYARD, mana_cost_offered},
+        {"back_face_free",  CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
+        {"back_face_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
     }},
 };
 
@@ -392,35 +395,6 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     return can_pay(alt_cost.cost, check);
 }
 
-// Modal DFC whose BACK face is a NONLAND spell (Tergrid, God of Fright // Tergrid's Lantern):
-// offer a CAST_SPELL that casts the BACK face — paying the back's mana cost and using the back
-// face's characteristics/abilities (CR 712.8). The front face is offered as a normal cast by the
-// main hand loop, and the LAND-back case is offered there as a PLAY_LAND; only the nonland-back
-// CAST is added here. Kept in its own hand pass so a prohibition/`continue` on the front face
-// doesn't suppress the back-face option (the two faces are cast independently).
-static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, Zone::Ownership priority_player,
-                                        const std::vector<Entity> &hand, std::shared_ptr<Orderer> orderer,
-                                        bool sorcery_window) {
-    for (auto card_entity : hand) {
-        auto &front = global_coordinator.GetComponent<CardData>(card_entity);
-        // Offer the back half for both modal DFCs (nonland back) and split cards (CR 709): both
-        // store the second face in `backside` and cast it via the shared cast_back_face path.
-        if ((!front.is_modal_dfc && !front.is_split) || !front.backside) continue;
-        const CardData &back = *front.backside;
-        if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
-
-        LegalAction la = cast_action(card_entity, "Cast " + back.name, 3);
-        la.option.face = CastFace::BACK;
-        // Timing, targets and prohibitions are the back face's own (Gone is an instant).
-        if (can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
-                /*ignore_timing=*/false, orderer) &&
-            regular_cast_payable(back, card_entity, priority_player,
-                                 regular_cast_cost(back, card_entity, priority_player, orderer), orderer))
-            actions.push_back(la);
-        offer_free_cast(actions, la, back, Zone::HAND, priority_player, sorcery_window, orderer);
-    }
-}
-
 // The spell's timing, once.
 static bool offer_timing_ok(CastOffer &offer) {
     if (offer.timing < 0)
@@ -527,6 +501,17 @@ static bool free_offspring_offered(CastOffer &offer) {
 // A land isn't cast (CR 601.1).
 static bool cast_from_front(const CardData &card) { return !card_has_type(card, "Land"); }
 
+// Modal DFC whose BACK face is a NONLAND spell (Tergrid, God of Fright // Tergrid's Lantern):
+// a CAST_SPELL that casts the BACK face — paying the back's mana cost and using the back
+// face's characteristics/abilities (CR 712.8). Timing, targets and prohibitions are the back
+// face's own (Gone is an instant), so the two faces are cast independently.
+static bool cast_from_back(const CardData &front) {
+    // Offer the back half for both modal DFCs (nonland back) and split cards (CR 709): both
+    // store the second face in `backside`.
+    if ((!front.is_modal_dfc && !front.is_split) || !front.backside) return false;
+    return !is_land_card(*front.backside);  // land back is a PLAY_LAND
+}
+
 // SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
 // the card (`timing_ok` — sorcery speed for a sorcery), its owner may instead pay the
 // suspend cost and exile it with N time counters. This is a special action (doesn't use the
@@ -583,9 +568,6 @@ void offer_cast_options(std::vector<LegalAction> &actions, const CastWindow &win
         for (const auto &[card, routes] : zone_play_routes)
             if (routes & permission_bit(section.permission)) enumerate_cast_options(card, section, window, actions);
     }
-    // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
-    // cast and the land-back PLAY_LAND were handled in the hand loop above).
-    offer_modal_back_face_casts(actions, priority_player, hand, orderer, sorcery_window);
     // checking graveyard for flashback spells (the FLASHBACK route)
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & permission_bit(Permission::FLASHBACK))) continue;
