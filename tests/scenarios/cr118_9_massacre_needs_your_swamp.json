@@ -1,0 +1,12 @@
+{
+  "name": "cr118_9_massacre_needs_your_swamp",
+  "why": "CR 118.9: CheckSecondSVar$ is a second condition: an opponent's Plains with no Swamp of yours (their Swamp doesn't count) offers no alternative cost, whatever the first condition says.",
+  "hand_a": ["Massacre"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island"],
+  "library_b": ["Plains"],
+  "battlefield_b": ["Plains", "Swamp"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu_not": ["Cast Massacre"]
+}

@@ -919,6 +919,10 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
                 ac.condition_svar = svar_or_literal(svars, value);
             } else if (key == "SVarCompare") {
                 ac.condition_compare = value;
+            } else if (key == "CheckSecondSVar") {
+                ac.condition_second_svar = svar_or_literal(svars, value);
+            } else if (key == "SecondSVarCompare") {
+                ac.condition_second_compare = value;
             } else if (key == "Condition" && value == "NotPlayerTurn") {
                 ac.condition_not_your_turn = true;
             } else if (key == "IsPresent") {

@@ -1,0 +1,13 @@
+{
+  "name": "cr118_9_massacre_free_with_their_plains_and_your_swamp",
+  "why": "CR 118.9: Massacre's alternative cost needs both conditions (CheckSVar$ and CheckSecondSVar$): an opponent controls a Plains and you control a Swamp. Cast for it, all creatures get -2/-2 until end of turn, either side's.",
+  "hand_a": ["Massacre"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Grizzly Bears"],
+  "library_b": ["Plains"],
+  "battlefield_b": ["Plains", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Massacre (alternate cost)"],
+  "max_decisions": 8,
+  "expect_menu": ["Cast Massacre \\(alternate cost\\)"],
+  "expect_count": {"Grizzly Bears dies": 2}
+}

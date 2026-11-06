@@ -1,0 +1,14 @@
+{
+  "name": "cr601_2f_massacre_for_its_mana_cost",
+  "why": "CR 601.2f: with no condition met Massacre is still cast for its mana cost {2}{B}{B}, at sorcery timing, and shrinks a creature it doesn't kill until end of turn.",
+  "hand_a": ["Massacre"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp", "Swamp"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Air Elemental"],
+  "play": ["A:keep", "B:keep", "A:cast:Massacre"],
+  "max_decisions": 8,
+  "expect_menu_not": ["Cast Massacre \\(alternate cost\\)"],
+  "expect": ["Player A casts Massacre", "-2/-2"],
+  "expect_not": ["Air Elemental dies"]
+}

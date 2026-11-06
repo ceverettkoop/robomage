@@ -73,6 +73,7 @@ static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone
                                   const std::shared_ptr<Orderer> &orderer);
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                  const ManaValue &mana, std::shared_ptr<Orderer> orderer);
+static bool alt_svar_condition_holds(const std::string &svar, const std::string &compare, Zone::Ownership player);
 static bool can_afford_alt(const CardData &card_data, const AltCost &alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer);
 static bool offer_timing_ok(CastOffer &offer);
@@ -353,21 +354,23 @@ static bool aura_enchant_target_available(const CardData &card_data, Zone::Owner
     return has_legal_targets(enchant_target_ability(0, card_data, caster), orderer);
 }
 
+// An alternative cost's condition: its SVar (Once Upon a Time: Count$YouCastThisGame EQ0; Mindbreak
+// Trap: PlayerCountOpponents$ConditionGE3 SpellsCastThisTurn — an opponent cast three or more spells
+// this turn), compared as scripted, else at least 1 (Forge's default comparator). No SVar: it holds.
+static bool alt_svar_condition_holds(const std::string &svar, const std::string &compare, Zone::Ownership player) {
+    if (svar.empty()) return true;
+    return compare_svar(evaluate_svar(svar, player), compare.empty() ? std::string("GE1") : compare);
+}
+
 static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
 
-    // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
-    if (!alt_cost.condition_svar.empty()) {
-        // The condition's SVar (Once Upon a Time: Count$YouCastThisGame EQ0; Mindbreak Trap:
-        // PlayerCountOpponents$ConditionGE3 SpellsCastThisTurn — an opponent cast three or more
-        // spells this turn), compared as scripted, else at least 1 (Forge's default comparator).
-        const std::string compare =
-            alt_cost.condition_compare.empty() ? std::string("GE1") : alt_cost.condition_compare;
-        if (!compare_svar(evaluate_svar(alt_cost.condition_svar, priority_player), compare))
-            return false;
-    }
+    // Check SVar conditions (e.g. Once Upon a Time: free only if first spell this game)
+    if (!alt_svar_condition_holds(alt_cost.condition_svar, alt_cost.condition_compare, priority_player) ||
+        !alt_svar_condition_holds(alt_cost.condition_second_svar, alt_cost.condition_second_compare, priority_player))
+        return false;
 
     // IsPresent$ <type>[.YouCtrl] — the alt cost is only available while the
     // caster controls a matching permanent (e.g. Snuff Out: control a Swamp).
