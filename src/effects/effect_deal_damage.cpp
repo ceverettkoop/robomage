@@ -18,6 +18,7 @@
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 #include "../queries/affected.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 
@@ -26,6 +27,9 @@ namespace effects {
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
 
 HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    // Galvanic Discharge: "you may pay any amount of {E}", the amount chosen by its ChooseNumber,
+    // pays for the damage.
+    if (!ab.def->unless_energy_expr.empty() && !pay_switched_energy(ab)) return HandlerResult::DONE_RUN_SUBS;
     // Delirium-conditional damage (Unholy Heat)
     size_t dmg = ab.def->amount;
     // Dynamic damage (e.g. Ajani's "damage equal to the number of creatures you control",

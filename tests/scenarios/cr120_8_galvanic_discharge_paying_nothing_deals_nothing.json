@@ -1,0 +1,15 @@
+{
+  "name": "cr120_8_galvanic_discharge_paying_nothing_deals_nothing",
+  "why": "CR 120.8: choosing to pay no energy, Galvanic Discharge deals 0 damage, which is no damage at all; the three energy stay, and the next one can pay them with its own",
+  "hand_a": ["Galvanic Discharge", "Galvanic Discharge"],
+  "library_a": ["Mountain","Mountain","Mountain","Mountain","Mountain","Mountain","Mountain","Mountain"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Galvanic Discharge", "A:x:0", "A:cast:Galvanic Discharge", "A:x:6"],
+  "max_decisions": 7,
+  "expect": ["Player A pays 6 energy", "Galvanic Discharge deals 6 damage to Grizzly Bears"],
+  "expect_not": ["deals 0 damage", "pays 0 energy"],
+  "expect_menu": ["^6$"]
+}

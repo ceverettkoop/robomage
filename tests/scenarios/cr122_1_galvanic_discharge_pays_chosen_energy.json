@@ -1,0 +1,49 @@
+{
+  "name": "cr122_1_galvanic_discharge_pays_chosen_energy",
+  "why": "CR 601.2c / 122.1: Galvanic Discharge's target sits two links down its script and is chosen as it is cast; it gets {E}{E}{E}, its controller chooses how much to pay, and that much energy pays for that much damage",
+  "hand_a": [
+    "Galvanic Discharge"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Galvanic Discharge",
+    "A:x:2"
+  ],
+  "max_decisions": 4,
+  "expect_order": [
+    "Choose target for Galvanic Discharge",
+    "Player A casts Galvanic Discharge",
+    "Player A chooses 2",
+    "Player A pays 2 energy",
+    "Galvanic Discharge deals 2 damage to Grizzly Bears"
+  ],
+  "expect_menu": [
+    "^3$"
+  ],
+  "expect_menu_not": [
+    "^4$"
+  ]
+}

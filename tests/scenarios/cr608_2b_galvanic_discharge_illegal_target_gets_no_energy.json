@@ -1,0 +1,14 @@
+{
+  "name": "cr608_2b_galvanic_discharge_illegal_target_gets_no_energy",
+  "why": "CR 608.2b: with its only target gone Galvanic Discharge doesn't resolve at all: its controller gets no energy and is asked for nothing, though the target sits on a sub-ability and getting energy names none",
+  "hand_a": ["Galvanic Discharge"],
+  "library_a": ["Mountain","Mountain","Mountain","Mountain","Mountain","Mountain","Mountain","Mountain"],
+  "battlefield_a": ["Mountain"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Galvanic Discharge", "B:cast:Lightning Bolt", "B:target:Grizzly Bears"],
+  "max_decisions": 6,
+  "expect": ["Grizzly Bears is destroyed|Grizzly Bears dies|Lightning Bolt deals 3 damage to Grizzly Bears", "fizzles"],
+  "expect_not": ["Player A chooses", "energy"]
+}

@@ -1927,7 +1927,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 // The handlers that run an UnlessCost$ (run_unless_loop, DestroyAll's energy payment); on any other
 // effect it is a parse finding, and the effect happens unconditionally.
 static bool unless_cost_read_by(const std::string &category) {
-    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "DestroyAll"})
+    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "DestroyAll", "DealDamage"})
         if (category == c) return true;
     return false;
 }
@@ -1942,7 +1942,8 @@ static void read_unless_cost(AbilityDef &ability, const std::string &value) {
     if (cost_token_arg(value, "PayEnergy", parts) && parts.size() == 1) {
         // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
         // not the generic {N} mana unless-cost: the energy amount is an SVar read as it resolves.
-        if (ability.category == "DestroyAll") {
+        // Galvanic Discharge's DealDamage pays the same way.
+        if (ability.category == "DestroyAll" || ability.category == "DealDamage") {
             ability.unless_energy_expr = parts[0];  // SVar token; resolved post-parse
             return;
         }
@@ -1956,6 +1957,10 @@ static void read_unless_cost(AbilityDef &ability, const std::string &value) {
         } else {
             parse_finding("cost", "PayEnergy", "UnlessCost$ " + value);
         }
+        return;
+    }
+    if (ability.category == "DealDamage") {
+        parse_finding("ability_param", "DealDamage.UnlessCost", "UnlessCost$ " + value + " is not offered");
         return;
     }
     if (cost_token_arg(value, "Discard", parts)) {
@@ -2471,7 +2476,10 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
         if (category == "Counter") return value == "TriggeredSourceSAController";
         return value == (category == "CopySpellAbility" ? "TargetedOrController" : "You");
     }
-    if (key == "UnlessSwitched") return !unless_cost_read_by(category) || category == "DestroyAll" || category == "CopySpellAbility";
+    // DealDamage reads only the form that pays before it deals.
+    if (key == "UnlessCost") return category != "DealDamage" || ability.unless_switched;
+    if (key == "UnlessSwitched") return !unless_cost_read_by(category) || category == "DestroyAll" || category == "CopySpellAbility" ||
+                                        category == "DealDamage";
     if (key == "Chooser") return value == "You";
     if (key == "RememberObjects") {
         for (const char *name : {"Targeted", "Self", "RememberedLKI", "ChosenCard"})
@@ -2676,7 +2684,6 @@ static void resolve_destroyall_svars(AbilityDef &ability,
             dp.cmc_expr = it->second;
         }
     }
-    resolve_svar_ref(ability.unless_energy_expr, svars);
 }
 
 // The first "cmc<OP><bound>" mana-value qualifier in a card filter (e.g. "Creature.cmcLEX+YouCtrl"
@@ -2970,6 +2977,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // SVar references to their runtime Count$ expressions so the effect can evaluate them at
     // resolution.
     if (ability.category == "ChooseNumber") resolve_svar_ref(ability.dynamic_amount_expr, svars);
+    resolve_svar_ref(ability.unless_energy_expr, svars);
     if (auto *cp = std::get_if<CounterParams>(&ability.params)) resolve_svar_ref(cp->count_expr, svars);
     // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →
     // Remembered$CardManaCost): resolve the reference to its runtime expression so the Token
@@ -3131,6 +3139,9 @@ static bool is_runtime_amount_expr(const std::string &sv) {
         // Count$Converge (Prismatic Ending) — the distinct colors of mana spent to cast the spell,
         // from current_converge(). Used as the cmcLEY exile threshold.
         "Count$Converge",
+        // Count$ChosenNumber — the number a ChooseNumber of this resolution chose (Galvanic
+        // Discharge: NumDmg$ X).
+        "Count$ChosenNumber",
         // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a RememberChanged$
         // ChangeZoneAll) cards matching the filter (Canoptek Scarab Swarm: TokenAmount$ X, X =
         // Remembered$Valid Land,Artifact). The RememberedLKI$ form reads the same remembered set,
