@@ -19,11 +19,11 @@ struct AltCost {
     int exile_from_hand_count = 0;
     Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
     int return_to_hand_count = 0;
-    std::string return_to_hand_type = "";
+    FilterSpec return_to_hand_type;
     ManaValue mana_cost;                // mana portion of the alt cost (e.g. Evoke:R)
     std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
     std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
-    std::string condition_is_present = "";  // IsPresent$ <filter> — controller must control a matching permanent (e.g. "Swamp.YouCtrl" for Snuff Out)
+    FilterSpec condition_is_present;  // IsPresent$ <filter> — controller must control a matching permanent (e.g. "Swamp.YouCtrl" for Snuff Out)
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
@@ -56,7 +56,7 @@ struct AltCost {
     // reveal (Game::pending.miracle_reveal), and the revealed card is cast, if at all, as its
     // miracle trigger resolves (effect_miracle.cpp).
     bool is_miracle = false;
-    std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
+    FilterSpec sac_cost_spec;           // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
     // Sac<N/Type> count of an ALTERNATIVE casting cost (CR 118.9, e.g. Fireblast: "sacrifice two
     // Mountains rather than pay this spell's mana cost"). sac_cost_spec holds the "Type" filter,
     // this holds N. 0 = the alt cost has no sacrifice component. (The flashback sac path always
@@ -123,7 +123,7 @@ struct CardData{
     int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)
     bool ward_is_life = false;           // K:Ward:PayLife<N> — the ward cost is paid as N life rather than {N} mana (CR 702.21)
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
-    std::string enchant_filter;          // K:Enchant:<ValidTgts> — for Auras, the object this can enchant (CR 303.4); the aura's spell targets it at cast and attaches on resolution
+    FilterSpec enchant_filter;          // K:Enchant:<ValidTgts> — for Auras, the object this can enchant (CR 303.4); the aura's spell targets it at cast and attaches on resolution
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
     int x_pip_count = 0;                 // how MANY {X} the ManaCost carries (Chalice of the Void's "X X" = 2); the one chosen X is owed once per pip (CR 107.3a)
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
@@ -185,7 +185,7 @@ struct CardData{
     bool has_escalate = false;
     ManaValue escalate_mana;
     int escalate_discard = 0;
-    std::string escalate_discard_valid;
+    FilterSpec escalate_discard_valid;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
     // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). A card
     // with this keyword may begin the game in the sideboard ("outside the game"); if the chosen

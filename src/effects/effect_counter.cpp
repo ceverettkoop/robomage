@@ -56,7 +56,7 @@ static bool spell_uncounterable_by_own_condition(Entity spell, const EntitySet &
             const auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != zone || z.owner != caster) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (card_matches_any(e, r.cant_counter_present, mctx)) count++;  // ',' = OR over filters
+            if (card_matches_filter(e, r.cant_counter_present, mctx)) count++;  // ',' = OR over filters
         }
         if (compare_svar(count, r.cant_counter_compare.empty() ? "GE1" : r.cant_counter_compare))
             return true;

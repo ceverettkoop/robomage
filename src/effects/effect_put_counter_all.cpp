@@ -34,7 +34,7 @@ HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // The parent (a DB$ Pump) chose the target; PutCounterAll inherited it as ab.target.
     // CR 109/115: this picks out exactly that targeted permanent (Guide of Souls puts the
     // +1/+1s and flying counter on the attacking creature the trigger targeted).
-    if (ab.def->valid_cards_filter.find("targetedBy") != std::string::npos) {
+    if (ab.def->valid_cards_filter.text().find("targetedBy") != std::string::npos) {
         const Entity t = ab.target.get();
         if (t != 0 && is_battlefield_permanent(t)) targets.push_back(t);
     } else {

@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <string>
 
+#include "filter_spec.h"
+
 // A reference to objects or players, as a script's Defined$ / DefinedPlayer$ value names them (CR
 // 608.2c). Parsed once onto the immutable AbilityDef; resolved each time it is read, against a
 // ResolveCtx (resolve_objects / resolve_players, queries/affected.h). Each name, what it resolves
@@ -16,6 +18,8 @@ struct ObjectSpec {
         SELF,                // the ability's source
         REMEMBERED,          // the objects the resolution remembers
         DELAY_REMEMBERED,    // the objects a delayed trigger captured, restored as remembered
+        IMPRINTED,           // the objects the resolution imprinted (a filter's set; no Defined$ name)
+        CHOSEN_CARDS,        // the cards the resolution chose (a filter's set; no Defined$ name)
         TARGETED,            // the target its parent chose
         PARENT_TARGET,       // the same; only ChangeZone tells the two apart
         TRIGGERED_ATTACKER,  // bound as the target when it triggered
@@ -40,7 +44,7 @@ struct ObjectSpec {
     };
 
     Kind kind = DEFAULT;
-    std::string filter;  // Valid <filter>'s filter; empty for every other kind
+    FilterSpec filter;  // Valid <filter>'s filter; empty for every other kind
 
     ObjectSpec() = default;
     explicit ObjectSpec(Kind k) : kind(k) {}

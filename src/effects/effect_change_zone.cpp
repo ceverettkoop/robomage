@@ -275,7 +275,7 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 // A hand card is matched by its PRINTED characteristics (card_matches_any), not the
                 // battlefield-permanent matcher — the card is not on the battlefield yet.
-                if (card_matches_any(e, ab.def->change_type, mctx)) cands.push_back(e);
+                if (card_matches_filter(e, ab.def->change_type, mctx)) cands.push_back(e);
             }
             if (cands.empty()) continue;  // no eligible card — this player puts nothing
 
@@ -317,7 +317,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
     // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
     // Hunt, ...): ChangeType$ Remembered.sameName / Targeted.sameName.
-    if (ab.def->change_type.find("sameName") != std::string::npos)
+    if (ab.def->change_type.text().find("sameName") != std::string::npos)
         return change_zone_same_name(ab, orderer, /*force_all=*/false)
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;
@@ -390,7 +390,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // ConditionPresent carries a cmcLE<svar> threshold resolved into dynamic_amount_expr.
         int cmc_threshold = -1;
         if (ab.def->condition_on_target && !ab.def->dynamic_amount_expr.empty() &&
-            ab.def->condition_present.find("cmcLE") != std::string::npos)
+            ab.def->condition_present.text().find("cmcLE") != std::string::npos)
             cmc_threshold = static_cast<int>(
                 evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab)));
 
@@ -710,7 +710,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         while (true) {
             std::vector<Entity> cands;
             for (auto e : battlefield_permanents(orderer->mEntities)) {
-                if (permanent_matches_any(e, ab.def->change_type, ctx)) cands.push_back(e);
+                if (permanent_matches_filter(e, ab.def->change_type, ctx)) cands.push_back(e);
             }
             if (cands.empty()) break;
             std::vector<LegalAction> picks;
@@ -789,12 +789,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     // The chain's targeted CARD, for a ChangeType `targetedBy` filter alternative (Cloak and
     // Dagger, Entwined: the DBPump-chosen creature). A player-entity target names the searched
-    // player above, not a card, so it is excluded here.
-    const Entity bound_target = ab.target.get();
-    Entity chain_target =
-        (bound_target != 0 && !global_coordinator.entity_has_component<Player>(bound_target))
-            ? bound_target
-            : 0;
+    // player above; no card matches it.
+    const ResolveCtx resolve = ResolveCtx::of(ab);
 
     ZoneSearch search;
     search.owner = owner;
@@ -805,7 +801,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     search.reveal = reveal;
     search.cmc_bound = rt.cmc_bound;
     search.cmc_op = ab.def->change_type_cmc_op;
-    search.chain_target = chain_target;
+    search.resolve = &resolve;
     // A multi-zone search picks its cards one at a time from pools the picks don't leave
     // (Doomsday), so a card already chosen is not offered again.
     search.exclude_remembered = multi_zone;
@@ -960,7 +956,7 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
     // The reference card whose name we match: the target (Targeted.sameName) or the
     // remembered object (Remembered.sameName, set by RememberTargets/RememberObjects).
     Entity ref = 0;
-    if (ab.def->change_type.find("Targeted") != std::string::npos)
+    if (ab.def->change_type.text().find("Targeted") != std::string::npos)
         ref = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
     else
         ref = !cur_game.resolution.memory.remembered.empty() ? cur_game.resolution.memory.remembered[0].lki_entity()

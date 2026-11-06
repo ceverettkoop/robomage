@@ -291,7 +291,7 @@ static bool aura_attached_illegally(Entity aura, const CardData &cd,
     if (enchanted == 0 || enchanted == aura || !is_battlefield_permanent(enchanted) ||
         global_coordinator.entity_has_component<Creature>(aura))
         return true;
-    return cd.enchant_filter.find("Creature") != std::string::npos &&
+    return cd.enchant_filter.text().find("Creature") != std::string::npos &&
            !global_coordinator.entity_has_component<Creature>(enchanted);
 }
 

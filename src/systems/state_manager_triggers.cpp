@@ -838,7 +838,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
 
                 // Stable per-trigger signature for the latch (category + the state condition),
                 // so two distinct state triggers on one permanent latch independently.
-                const std::string sig = ab.category + "|" + ab.condition_present;
+                const std::string sig = ab.category + "|" + ab.condition_present.text();
                 bool cond = evaluate_present_condition(trigger_ab, perm.controller, orderer);
                 bool armed = perm.state_triggers_armed.count(sig) != 0;
                 if (!cond) {

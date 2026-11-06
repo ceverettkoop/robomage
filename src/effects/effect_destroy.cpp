@@ -61,7 +61,7 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     }
 
     // Conditional destroy (Fatal Push): check target CMC against threshold
-    if (!ab.def->condition_present.empty() && ab.def->condition_present.find("cmcLEX") != std::string::npos) {
+    if (!ab.def->condition_present.empty() && ab.def->condition_present.text().find("cmcLEX") != std::string::npos) {
         // Evaluate X from dynamic_amount_expr (resolved at parse time to e.g. "Count$Revolt.4.2")
         int threshold = 2;  // default fallback
         if (!ab.def->dynamic_amount_expr.empty()) {

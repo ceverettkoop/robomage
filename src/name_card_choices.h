@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "classes/action.h"
+#include "components/filter_spec.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
 #include "ecs/entity_set.h"
@@ -48,7 +49,7 @@
 enum class NameCardScope { CHOOSER_ONLY, BOTH_PLAYERS };
 
 std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone::Ownership owner,
-    const std::string &valid_filter, std::vector<std::string> &out_names,
+    const FilterSpec &valid_filter, std::vector<std::string> &out_names,
     NameCardScope scope = NameCardScope::CHOOSER_ONLY);
 
 #endif /* NAME_CARD_CHOICES_H */

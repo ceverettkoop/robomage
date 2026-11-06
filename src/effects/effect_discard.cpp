@@ -24,12 +24,12 @@ extern Game cur_game;
 namespace effects {
 
 // Forward declaration (see definition below).
-static bool discard_filter_matches(Entity e, const std::string &discard_valid);
+static bool discard_filter_matches(Entity e, const FilterSpec &discard_valid);
 
 // True if the card entity `e` matches a DiscardValid$ filter spec (Thoughtseize's
 // Card.nonLand, Cabal Therapy's Card.NamedCard, Mox Diamond's Land), matched by the shared filter
 // matcher against the card's characteristics. An empty filter matches every card.
-static bool discard_filter_matches(Entity e, const std::string &discard_valid) {
+static bool discard_filter_matches(Entity e, const FilterSpec &discard_valid) {
     return discard_valid.empty() || card_matches_filter(e, discard_valid);
 }
 
@@ -48,7 +48,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     std::vector<Entity> hand = orderer->get_hand(tgt_owner);
 
     const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def->params);
-    std::string discard_valid = dp ? dp->valid : std::string();
+    const FilterSpec discard_valid = dp ? dp->valid : FilterSpec();
     std::string mode = dp ? dp->mode : std::string();
 
     // Random (Hymn to Tourach): the target player discards NumCards$ cards chosen uniformly at

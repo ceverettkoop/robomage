@@ -13,6 +13,7 @@
 #include "components/player.h"
 #include "components/spell.h"
 #include "ecs/coordinator.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/filters.h"
@@ -242,12 +243,11 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // Permanent.Other+nonLand), never as a substring of a longer subtype/name (so a future
     // "Brotherhood"/"Otherworldly" token can't spuriously forbid self-targeting).
     if (cand == ab.source.get()) {
-        for (size_t p = ab.def->valid_tgts.find("Other"); p != std::string::npos;
-             p = ab.def->valid_tgts.find("Other", p + 1)) {
-            bool left_ok = (p > 0) && (ab.def->valid_tgts[p - 1] == '.' || ab.def->valid_tgts[p - 1] == '+');
+        const std::string &tgts = ab.def->valid_tgts.text();
+        for (size_t p = tgts.find("Other"); p != std::string::npos; p = tgts.find("Other", p + 1)) {
+            bool left_ok = (p > 0) && (tgts[p - 1] == '.' || tgts[p - 1] == '+');
             size_t end = p + 5;  // length of "Other"
-            bool right_ok = (end == ab.def->valid_tgts.size()) ||
-                            ab.def->valid_tgts[end] == '.' || ab.def->valid_tgts[end] == '+';
+            bool right_ok = (end == tgts.size()) || tgts[end] == '.' || tgts[end] == '+';
             if (left_ok && right_ok) return false;
         }
     }
@@ -261,7 +261,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // the shared filter evaluator on both the stack-spell and battlefield-permanent paths
     // (CR 115.1: target restrictions are checked when chosen, against the candidate).
 
-    const std::string &vt = ab.def->valid_tgts;
+    const std::string &vt = ab.def->valid_tgts.text();
 
     // Stack-object targets (counterspells, Stifle, Consign to Memory).
     if (targets_stack_objects(*ab.def)) {
@@ -276,7 +276,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
         MatchCtx spell_ctx{caster, ab.source.lki_entity()};
         if (vt != "N_A" && !vt.empty() &&
             global_coordinator.entity_has_component<Spell>(cand) &&
-            !card_matches_any(cand, vt, spell_ctx))
+            !card_matches_filter(cand, ab.def->valid_tgts, spell_ctx))
             return false;
         return true;
     }
@@ -287,17 +287,14 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
                global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
 
-    // The ValidTgts spec in the shared matcher's grammar: "YouDontCtrl" is Forge's spelling of
-    // OppCtrl (a permanent you don't control), and "Any" as a permanent target is "any creature
-    // or planeswalker" (CR 115.4 / 306.7; players are handled in their own branch below).
+    // The ValidTgts spec in the shared matcher's grammar (players are handled in their own branch
+    // below).
+    const ResolveCtx resolve = ResolveCtx::of(ab);
     MatchCtx ctx;
     ctx.controller = caster;
     ctx.source = ab.source.lki_entity();
-    if (ab.targeted_player != 0) ctx.targeted_player = seat_of_player(ab.targeted_player);
-    std::string spec = (vt == "Any") ? std::string("Creature,Planeswalker") : vt;
-    for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
-         pos = spec.find("YouDontCtrl", pos))
-        spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
+    ctx.resolve = &resolve;
+    const FilterSpec spec = target_filter(ab.def->valid_tgts);
 
     // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both
     // graveyard→non-battlefield moves (e.g. Life from the Loam: ValidTgts$ Land.YouCtrl,

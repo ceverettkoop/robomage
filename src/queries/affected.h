@@ -56,6 +56,11 @@ std::vector<Entity> resolve_objects(const ObjectSpec &spec, const ResolveCtx &ct
 // reading ability does not act on is no players.
 std::vector<Zone::Ownership> resolve_players(const ObjectSpec &spec, const ResolveCtx &ctx);
 
+// The same for a filter's set-relative qualifier: a filter reads its set wherever it is matched, so
+// no Defined$ reader's gate applies.
+std::vector<Entity> resolve_filter_objects(const ObjectSpec &spec, const ResolveCtx &ctx);
+std::vector<Zone::Ownership> resolve_filter_players(const ObjectSpec &spec, const ResolveCtx &ctx);
+
 // True for the references a sub-ability takes from its parent's chosen target, which
 // bind_sub_target hands down (CR 608.2c).
 bool inherits_parent_target(const ObjectSpec &spec);

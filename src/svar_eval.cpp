@@ -66,14 +66,32 @@ static bool parse_int(const std::string &s, int &out) {
 
 static bool starts_with(const std::string &s, const char *prefix) { return s.rfind(prefix, 0) == 0; }
 
+SvarOp svar_op_of(const std::string &op2) {
+    if (op2 == "EQ") return SvarOp::EQ;
+    if (op2 == "NE") return SvarOp::NE;
+    if (op2 == "GE") return SvarOp::GE;
+    if (op2 == "LE") return SvarOp::LE;
+    if (op2 == "GT") return SvarOp::GT;
+    if (op2 == "LT") return SvarOp::LT;
+    return SvarOp::UNKNOWN;
+}
+
 bool apply_svar_op(int lhs, const std::string &op2, int rhs) {
-    if (op2 == "EQ") return lhs == rhs;
-    if (op2 == "NE") return lhs != rhs;
-    if (op2 == "GE") return lhs >= rhs;
-    if (op2 == "LE") return lhs <= rhs;
-    if (op2 == "GT") return lhs >  rhs;
-    if (op2 == "LT") return lhs <  rhs;
-    non_fatal_error("unrecognized SVar comparison operator '" + op2 + "'");
+    const SvarOp op = svar_op_of(op2);
+    if (op == SvarOp::UNKNOWN) non_fatal_error("unrecognized SVar comparison operator '" + op2 + "'");
+    return apply_svar_op(lhs, op, rhs);
+}
+
+bool apply_svar_op(int lhs, SvarOp op, int rhs) {
+    switch (op) {
+    case SvarOp::EQ: return lhs == rhs;
+    case SvarOp::NE: return lhs != rhs;
+    case SvarOp::GE: return lhs >= rhs;
+    case SvarOp::LE: return lhs <= rhs;
+    case SvarOp::GT: return lhs >  rhs;
+    case SvarOp::LT: return lhs <  rhs;
+    case SvarOp::UNKNOWN: return false;
+    }
     return false;
 }
 
@@ -358,7 +376,7 @@ static int evaluate_base(const std::string &expr, Zone::Ownership controller, En
         int count = 0;
         for (Entity e : lki_entities(cur_game.resolution.memory.remembered)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
+            if (card_matches_filter(e, FilterSpec(filters), mctx)) count++;  // ',' = OR over the filters
         }
         return count;
     }
@@ -377,7 +395,7 @@ static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
     if (!spec.empty() && spec[0] == ' ') spec.erase(0, 1);
     // A $-suffixed aggregate (…$GreatestCardManaCost) is not a count of matching cards.
     if (spec.find('$') != std::string::npos) return unrecognized(spec);
-    const std::string filter = spec.empty() ? std::string("Card") : owner_relative_filter(spec);
+    const FilterSpec filter = spec.empty() ? FilterSpec("Card") : owner_relative_filter(FilterSpec(spec));
     MatchCtx ctx;
     ctx.controller = controller;
     int count = 0;
@@ -542,7 +560,7 @@ static int count_valid(std::string spec, Zone::Ownership controller, Entity sour
         mctx.source = source;
         int total = 0;
         for (Entity e : battlefield_permanents(zoned_entities())) {
-            if (!permanent_matches_filter(e, spec, mctx)) continue;
+            if (!permanent_matches_filter(e, FilterSpec(spec), mctx)) continue;
             if (global_coordinator.entity_has_component<CardData>(e))
                 total += card_mana_value(global_coordinator.GetComponent<CardData>(e));
         }
@@ -562,9 +580,9 @@ static int count_valid(std::string spec, Zone::Ownership controller, Entity sour
             if (seat == Zone::UNKNOWN) seat = controller;
         }
         spec.replace(pos, std::string(who).size(), "YouCtrl");
-        return count_battlefield_matching(spec, seat, source);
+        return count_battlefield_matching(FilterSpec(spec), seat, source);
     }
-    return count_battlefield_matching(spec, controller, source);
+    return count_battlefield_matching(FilterSpec(spec), controller, source);
 }
 
 // Count$ValidStack <filter> — number of stack objects matching a card filter (Mindbreak Trap:
@@ -579,7 +597,7 @@ static int count_valid_stack(const std::string &spec, Zone::Ownership controller
     for (Entity e : zone_objects(zoned_entities(), Zone::STACK, Zone::UNKNOWN)) {
         if (e == source) continue;
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        if (card_matches_any(e, spec, MatchCtx{controller, source})) count++;
+        if (card_matches_filter(e, FilterSpec(spec), MatchCtx{controller, source})) count++;
     }
     return count;
 }
@@ -649,7 +667,7 @@ static int graveyard_card_types(const std::string &expr, Zone::Ownership control
         if (you_own && z.owner != controller) continue;
         if (opp_own && z.owner == controller) continue;
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        if (!sub_spec.empty() && !card_matches_filter(e, sub_spec, sub_ctx)) continue;
+        if (!sub_spec.empty() && !card_matches_filter(e, FilterSpec(sub_spec), sub_ctx)) continue;
         for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
             if (t.kind == TYPE) type_names.insert(t.name);
     }

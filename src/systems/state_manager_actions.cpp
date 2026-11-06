@@ -168,7 +168,7 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
                                             : spell_timing_ok(face, caster, sorcery_window);
     if (!timing_ok || !can_cast_now(face, card, caster, from_zone, sorcery_window, /*ignore_timing=*/true, orderer))
         return;
-    const std::string sac_spec = spell_additional_sac_spec(face);
+    const FilterSpec sac_spec = spell_additional_sac_spec(face);
     if (!sac_spec.empty() && controlled_permanents_matching(caster, sac_spec, orderer->mEntities, card).empty()) return;
     const ManaValue mana = floored_alt_mana_cost(face, ManaValue{}, caster);
     if (!mana.empty() && !can_pay_mana(caster, mana, card, orderer, face.has_delve, face.has_improvise)) return;
@@ -556,8 +556,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     // Basics: "If you controlled that permanent" against the bounced permanent) is
                     // resolved from last-known information — the controller it had as it left
                     // (CR 608.2g) — captured in cur_game.last_known_info when it left play.
-                    bool youctrl = ab.def->condition_present.find("YouCtrl") != std::string::npos;
-                    bool oppctrl = ab.def->condition_present.find("OppCtrl") != std::string::npos;
+                    bool youctrl = ab.def->condition_present.text().find("YouCtrl") != std::string::npos;
+                    bool oppctrl = ab.def->condition_present.text().find("OppCtrl") != std::string::npos;
                     if (youctrl || oppctrl) {
                         const LastKnownInfo *lki = lki_for(e);
                         Zone::Ownership lc = lki ? lki->controller : Zone::UNKNOWN;
@@ -569,8 +569,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     continue;
                 }
                 if (global_coordinator.entity_has_component<Permanent>(e)) continue;  // handled above
-                bool youctrl = ab.def->condition_present.find("YouCtrl") != std::string::npos;
-                bool oppctrl = ab.def->condition_present.find("OppCtrl") != std::string::npos;
+                bool youctrl = ab.def->condition_present.text().find("YouCtrl") != std::string::npos;
+                bool oppctrl = ab.def->condition_present.text().find("OppCtrl") != std::string::npos;
                 bool ctrl_ok = youctrl ? (z.controller == caster)
                              : oppctrl ? (z.controller != caster)
                                        : true;
@@ -632,9 +632,9 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // counters_GE1_M1M1; Dark Depths: "when this has no ice counters on it" → counters_EQ0_ICE.
     // CR 122.1/603.4/603.8 — the counter count is re-checked whenever the condition is evaluated
     // (trigger placement, resolution, and each state-based check for a Mode$ Always state trigger).
-    if (ab.def->condition_present.rfind("Card.Self+counters_", 0) == 0) {
+    if (ab.def->condition_present.text().rfind("Card.Self+counters_", 0) == 0) {
         if (!ability_source_on_battlefield(ab)) return false;
-        std::string rest = ab.def->condition_present.substr(std::string("Card.Self+counters_").size());
+        std::string rest = ab.def->condition_present.text().substr(std::string("Card.Self+counters_").size());
         // rest is "<OP><N>_<TYPE>", e.g. "EQ0_ICE" / "GE1_M1M1".
         std::string op = rest.substr(0, 2);          // two-letter comparator
         std::string after = rest.substr(2);          // "<N>_<TYPE>"
@@ -649,7 +649,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // / player state, NOT board presence, so route every Count$ condition through the shared
     // SVar evaluator and compare, rather than falling through to the permanent-presence scan
     // below — where the raw "Count$..." string would be read as a permanent type name.
-    if (ab.def->condition_present.rfind("Count$", 0) == 0)
+    if (ab.def->condition_present.text().rfind("Count$", 0) == 0)
         return compare_svar(evaluate_svar(ab.def->condition_present, caster, ab.source.lki_entity()),
                             compare);
 
@@ -815,7 +815,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // The spell can't be cast unless a matching permanent is available to
             // sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$ carries
             // a Sac<...> token, matched (incl. color qualifier) like an activation cost.
-            std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+            const FilterSpec spell_sac_spec = spell_additional_sac_spec(card_data);
             if (!spell_sac_spec.empty() &&
                 controlled_permanents_matching(priority_player, spell_sac_spec,
                                                orderer->mEntities, card_entity).empty())

@@ -1256,7 +1256,7 @@ static int select_single_target(Ability &ability, const std::vector<Entity> &val
         std::string src_name = !ability.source.empty() ? entity_name(ability.source.lki_entity())
                                                        : std::string("(unknown source)");
         fatal_error("Zero legal targets when choosing a required target for " + src_name +
-                    " (ValidTgts$ " + ability.def->valid_tgts + ") — a targeted spell/ability with no "
+                    " (ValidTgts$ " + ability.def->valid_tgts.text() + ") — a targeted spell/ability with no "
                     "legal target was offered/forced (CR 601.2c violated upstream).");
     }
     int choice = asker.ask(tgt_actions, ability.source.lki_entity());
@@ -2203,7 +2203,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // battlefield each pass. pc.alt_return_done counts completed picks.
             while (pc.alt_return_done < card_data.alt_cost.return_to_hand_count) {
                 std::vector<LegalAction> rth_actions;
-                const std::string &type = card_data.alt_cost.return_to_hand_type;
+                const FilterSpec &type = card_data.alt_cost.return_to_hand_type;
                 for (auto e : controlled_permanents_matching(caster, type, orderer->mEntities)) {
                     if (already_chosen_as_cost(pc, e)) continue;
                     LegalAction la(PASS_PRIORITY, e,
@@ -2568,7 +2568,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // Cast legality already guaranteed a matching permanent exists. General to
             // any spell whose SPELL ability Cost$ carries a Sac<...> token; flashback /
             // alternate casts pay their own sac cost in their own branch above.
-            std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+            const FilterSpec spell_sac_spec = spell_additional_sac_spec(card_data);
             if (!spell_sac_spec.empty()) {
                 // The exact pool/menu pay_sacrifice_cost's prompt_permanent_choice built,
                 // armed as a pending decision instead. The pool re-derives identically at

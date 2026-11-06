@@ -20,7 +20,7 @@ bool entered_battlefield_this_turn(long entered_on_turn) {
     return entered_on_turn == static_cast<long>(cur_game.turn_state.turn);
 }
 
-int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+int count_battlefield_matching(const FilterSpec &filter_spec, Zone::Ownership controller,
                                Entity source) {
     MatchCtx mctx;
     mctx.controller = controller;  // the "you" reference for YouCtrl/OppCtrl in the spec
@@ -33,7 +33,7 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
 }
 
 std::vector<Entity> controlled_permanents_matching(
-    Zone::Ownership player, const std::string &spec, const EntitySet &entities, Entity exclude_entity) {
+    Zone::Ownership player, const FilterSpec &spec, const EntitySet &entities, Entity exclude_entity) {
     std::vector<Entity> out;
     MatchCtx ctx;
     ctx.controller = player;

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../classes/colors.h"
+#include "filter_spec.h"
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -59,7 +60,7 @@ struct DamageParams {
 
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".
 struct DestroyAllParams {
-    std::string filter = "";  // ValidCards$ — type/CMC filter for what to destroy
+    FilterSpec filter;  // ValidCards$ — type/CMC filter for what to destroy
     // Dynamic mana-value bound for a cmcLE<SVar> filter whose threshold is not the X paid at
     // cast (the legacy cmcLEX path keys off current_x_paid()). Wrath of the Skies'
     // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
@@ -123,7 +124,7 @@ struct CounterParams {
 
 // Discard (e.g. Thoughtseize/Duress/Cabal Therapy).
 struct DiscardParams {
-    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand", "Card.NamedCard")
+    FilterSpec valid;  // DiscardValid$ — filter (e.g. "Card.nonLand", "Card.NamedCard")
     // Mode$ — "RevealYouChoose" (default): target player reveals hand, the ability's
     // controller picks ONE matching card to discard (Thoughtseize/Duress). Empty is
     // treated as this default. "RevealDiscardAll": target player reveals hand and discards

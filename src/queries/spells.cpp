@@ -12,11 +12,11 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
                                                  Zone::Ownership player);
 
-std::string spell_additional_sac_spec(const CardData &cd) {
+FilterSpec spell_additional_sac_spec(const CardData &cd) {
     for (const auto &ab : cd.abilities)
         if (ab->ability_type == AbilityDef::SPELL && !ab->sac_cost_spec.empty())
             return ab->sac_cost_spec;
-    return "";
+    return FilterSpec();
 }
 
 bool spell_has_variable_life_cost(const CardData &cd) {
@@ -57,9 +57,9 @@ bool spell_uncounterable_by_static(Entity spell, const EntitySet &entities) {
             if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) continue;
             // Controller scope is read from the spell's caster (the matcher can't read it for a
             // stack object). YouCtrl → caster is the source's controller; OppCtrl → it isn't.
-            if (r.valid_sa_filter.find("YouCtrl") != std::string::npos) {
+            if (r.valid_sa_filter.text().find("YouCtrl") != std::string::npos) {
                 if (spell_ctrl != perm_ctrl) continue;
-            } else if (r.valid_sa_filter.find("OppCtrl") != std::string::npos) {
+            } else if (r.valid_sa_filter.text().find("OppCtrl") != std::string::npos) {
                 if (spell_ctrl == perm_ctrl || spell_ctrl == Zone::UNKNOWN) continue;
             }
             // Any remaining type/characteristic qualifiers on the filter (head "Spell", color,

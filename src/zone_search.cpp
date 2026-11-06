@@ -59,7 +59,7 @@ static std::vector<Entity> zone_contents(const std::shared_ptr<Orderer> &orderer
 // through the shared filter matcher in whatever zone the candidate sits: a card by its printed
 // characteristics, a battlefield permanent (a multi-zone search's Battlefield origin) by its live
 // ones. An empty spec or the catch-all "Card" (a bare "search for a card", Demonic Tutor) matches
-// every candidate. The owner is the YouOwn/YouCtrl reference, `chain_target` the targetedBy card,
+// every candidate. The owner is the YouOwn/YouCtrl reference, `resolve` holds the targetedBy card,
 // and a dynamic mana-value bound (Aether Vial) flows in through cmc_bound / cmc_op.
 static bool search_candidate_matches(Entity entity, const ZoneSearch &search) {
     if (search.change_type.empty() || search.change_type == "Card") return true;
@@ -67,7 +67,7 @@ static bool search_candidate_matches(Entity entity, const ZoneSearch &search) {
     ctx.cmc_bound = search.cmc_bound;
     ctx.cmc_op = search.cmc_op;
     ctx.controller = search.owner;
-    ctx.chain_target = search.chain_target;
+    ctx.resolve = search.resolve;
     return object_matches_filter(entity, search.change_type, ctx);
 }
 

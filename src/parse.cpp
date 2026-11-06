@@ -1133,18 +1133,18 @@ static void kw_etb_counter(const std::string &kw_line, KeywordContext &ctx) {
                         // restricted to the matching delve exiles — Delve itself may
                         // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
                         // is implied by membership in cur_game.delve_exiled, so strip
-                        // it; the remainder ("Instant,Sorcery") is a card_matches_any
+                        // it; the remainder ("Instant,Sorcery") is a card_matches_filter
                         // spec.
                         const std::string ve_prefix = "Count$ValidExile ";
                         size_t vp = svar_it->second.find(ve_prefix);
                         if (vp != std::string::npos) {
-                            std::string &delve_filter = sa.counter_count_delve_filter;
-                            delve_filter = svar_it->second.substr(vp + ve_prefix.size());
+                            std::string delve_filter = svar_it->second.substr(vp + ve_prefix.size());
                             for (const char *qual : {".ExiledWithSource", "+ExiledWithSource"}) {
                                 size_t qp;
                                 while ((qp = delve_filter.find(qual)) != std::string::npos)
                                     delve_filter.erase(qp, strlen(qual));
                             }
+                            sa.counter_count_delve_filter = delve_filter;
                         }
                     }
                     // Count$xPaid — the count equals the X value paid at cast time
@@ -4079,7 +4079,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     // it further. An Affected$ list is a form no reader restricts by.
     if (!affected_defined.empty()) {
         const ObjectSpec spec = parse_affected_defined(affected_defined);
-        if (spec.is(ObjectSpec::UNREAD) || sa.affected.find(',') != std::string::npos) {
+        if (spec.is(ObjectSpec::UNREAD) || sa.affected.text().find(',') != std::string::npos) {
             parse_finding("static_param", "AffectedDefined", sa.category + " AffectedDefined$ " + affected_defined);
         } else {
             sa.affected_defined = spec;
@@ -4095,7 +4095,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
     // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
     if (sa.category == "CantAttack" && cant_attack_targeted) {
-        sa.cant_attack_filter.clear();
+        sa.cant_attack_filter = FilterSpec();
         parse_finding("static_form", "CantAttack.Target", "a can't-attack restriction naming the attacked player");
     }
 
@@ -4124,13 +4124,13 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
                     "static_form", "MayPlay." + z, "a permission to cast from " + z + " without paying the mana cost");
         return;
     }
-    const bool lands = filter_has_head(sa.affected, "Land") && sa.affected.find(',') == std::string::npos;
+    const bool lands = filter_has_head(sa.affected, "Land") && sa.affected.text().find(',') == std::string::npos;
     if (lands && zones.size() == 1 && zones[0] == "Graveyard" && !sa.may_play_with_flash) {
         sa.may_play_from_graveyard = true;
         return;
     }
     for (const std::string &z : zones)
-        parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected + " from " + z);
+        parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected.text() + " from " + z);
 }
 
 static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
@@ -4682,7 +4682,7 @@ static void static_form_findings(const StaticAbility &sa, const std::string &lin
     // gather_active_statics reads a counters_ qualifier of Affected$ as a gate on the source itself.
     if (!sa.self_counter_type.empty() && !sa.affected_defined.is(ObjectSpec::SELF) &&
         !filter_names_token(sa.affected, "Self"))
-        parse_finding("static_form", "Affected.Counters", "read as a counter on the source: " + sa.affected);
+        parse_finding("static_form", "Affected.Counters", "read as a counter on the source: " + sa.affected.text());
     if (sa.category == "Continuous") {
         // The layer appliers act on the battlefield; only a play permission and a colour reach past
         // it (affected_zone_matches).

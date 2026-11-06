@@ -22,7 +22,7 @@
 
 namespace rules_mod {
 
-static bool cant_activate_filter_matches(Entity permanent_entity, const std::string &filter,
+static bool cant_activate_filter_matches(Entity permanent_entity, const FilterSpec &filter,
                                          Zone::Ownership source_controller);
 static std::string activation_source_name(Entity source);
 static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const CardData &card);
@@ -35,12 +35,12 @@ static bool may_play_player_covers(
 // permanent_matches_any so type qualifiers AND controller qualifiers (.YouCtrl/.OppCtrl) are
 // honored — the controller reference is the static's own controller, so Karn's ".OppCtrl"
 // correctly restricts the lock to the opponent's artifacts and never the controller's own.
-static bool cant_activate_filter_matches(Entity permanent_entity, const std::string &filter,
+static bool cant_activate_filter_matches(Entity permanent_entity, const FilterSpec &filter,
                                          Zone::Ownership source_controller) {
     if (filter.empty()) return false;
     MatchCtx ctx;
     ctx.controller = source_controller;  // the "you" for YouCtrl/OppCtrl in the spec
-    return permanent_matches_any(permanent_entity, filter, ctx);
+    return permanent_matches_filter(permanent_entity, filter, ctx);
 }
 
 // The name a NamedCard CantBeActivated static (Pithing Needle, Disruptor Flute) compares against
@@ -66,7 +66,8 @@ static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const C
     ctx.controller = caster;  // "you" reference for the ValidCard$ filter
     if (!as.sa()->cant_cast_filter.empty() && !card_matches_filter(card, as.sa()->cant_cast_filter, ctx))
         return -1;  // creature / land spells are unaffected
-    return count_battlefield_matching("Land.YouCtrl", caster, 0);
+    static const FilterSpec lands_you_control("Land.YouCtrl");
+    return count_battlefield_matching(lands_you_control, caster, 0);
 }
 
 bool mana_activation_prohibited(Entity permanent_entity) {
@@ -108,7 +109,7 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa()->category != "CantBeCast") continue;
         // Creatures are unaffected by a nonCreature restriction.
-        if (as.sa()->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
+        if (as.sa()->cant_cast_filter.text().find("nonCreature") != std::string::npos && card_is_creature)
             continue;
         // Origin$ Graveyard,Library (Grafdigger's Cage): only spells cast from those zones are
         // prohibited. A spell cast from any other zone (e.g. the hand) is unaffected by this

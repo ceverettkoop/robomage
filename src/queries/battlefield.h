@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "../components/filter_spec.h"
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -71,7 +72,7 @@ bool entered_battlefield_this_turn(long entered_on_turn);
 // "Count$Valid "); control/type/etc. qualifiers in it are enforced by permanent_matches_filter.
 // Its callers (SVar evaluation, cast-cost and presence checks) sit outside any system, so it
 // walks zoned_entities() (zones.h).
-int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+int count_battlefield_matching(const FilterSpec &filter_spec, Zone::Ownership controller,
                                Entity source);
 
 // Battlefield permanents controlled by `player` matching the ';'-delimited `spec` used by
@@ -83,7 +84,7 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
 // Matching runs through the shared permanent_matches_filter so the full qualifier grammar
 // (colors, P/T, subtypes, …) is available here too.
 std::vector<Entity> controlled_permanents_matching(
-    Zone::Ownership player, const std::string &spec, const EntitySet &entities, Entity exclude_entity = 0);
+    Zone::Ownership player, const FilterSpec &spec, const EntitySet &entities, Entity exclude_entity = 0);
 
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — first unattaching every Equipment and Aura among `entities`

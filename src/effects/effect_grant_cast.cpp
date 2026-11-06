@@ -210,7 +210,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         cur_game.resolved_effects.cast_with_flash_permissions.push_back(std::move(perm));
         game_log("%s may cast %s spells as though they had flash%s.\n",
                  player_name(ab.controller).c_str(),
-                 ab.def->effect_cast_with_flash_filter.empty() ? "" : ab.def->effect_cast_with_flash_filter.c_str(),
+                 ab.def->effect_cast_with_flash_filter.empty() ? "" : ab.def->effect_cast_with_flash_filter.text().c_str(),
                  ab.def->duration_until_your_next_turn ? " until their next turn" : " this turn");
         return HandlerResult::DONE_RUN_SUBS;
     }

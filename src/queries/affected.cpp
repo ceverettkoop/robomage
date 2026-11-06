@@ -39,6 +39,8 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static void objects_source(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_targets(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_remembered(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
+static void objects_imprinted(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
+static void objects_chosen_cards(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_exiled_with(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_enchanted(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_equipped(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
@@ -67,6 +69,9 @@ static const DefinedRow kDefinedRows[] = {
     // Forge's default: an ability that names nothing acts on its source.
     {nullptr, ObjectSpec::DEFAULT, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     {nullptr, ObjectSpec::UNREAD, Refers::OBJECT},
+    // Sets only a filter's qualifiers read (IsImprinted, nonChosenCard).
+    {nullptr, ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted},
+    {nullptr, ObjectSpec::CHOSEN_CARDS, Refers::OBJECT, objects_chosen_cards},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     // TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed zones and fired
@@ -184,6 +189,14 @@ static void objects_targets(const ObjectSpec &, const ResolveCtx &ctx, std::vect
 
 static void objects_remembered(const ObjectSpec &, const ResolveCtx &, std::vector<Entity> &out) {
     for (Entity e : live_entities(cur_game.resolution.memory.remembered)) out.push_back(e);
+}
+
+static void objects_imprinted(const ObjectSpec &, const ResolveCtx &, std::vector<Entity> &out) {
+    for (Entity e : live_entities(cur_game.resolution.memory.imprinted)) out.push_back(e);
+}
+
+static void objects_chosen_cards(const ObjectSpec &, const ResolveCtx &, std::vector<Entity> &out) {
+    for (Entity e : cur_game.resolution.memory.chosen_cards.live()) out.push_back(e);
 }
 
 static void objects_exiled_with(const ObjectSpec &, const ResolveCtx &ctx, std::vector<Entity> &out) {
@@ -345,6 +358,21 @@ std::vector<Zone::Ownership> resolve_players(const ObjectSpec &spec, const Resol
     std::vector<Zone::Ownership> out;
     const DefinedRow &row = row_of(spec.kind);
     if (row.players && row_read_by(row, ctx.ability ? ctx.ability->def : nullptr)) row.players(ctx, out);
+    out.erase(std::remove(out.begin(), out.end(), Zone::UNKNOWN), out.end());
+    return out;
+}
+
+std::vector<Entity> resolve_filter_objects(const ObjectSpec &spec, const ResolveCtx &ctx) {
+    std::vector<Entity> out;
+    const DefinedRow &row = row_of(spec.kind);
+    if (row.objects) row.objects(spec, ctx, out);
+    return out;
+}
+
+std::vector<Zone::Ownership> resolve_filter_players(const ObjectSpec &spec, const ResolveCtx &ctx) {
+    std::vector<Zone::Ownership> out;
+    const DefinedRow &row = row_of(spec.kind);
+    if (row.players) row.players(ctx, out);
     out.erase(std::remove(out.begin(), out.end(), Zone::UNKNOWN), out.end());
     return out;
 }

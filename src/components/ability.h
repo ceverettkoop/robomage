@@ -66,7 +66,7 @@ struct AbilityDef {
     // copy — the clone handler appends the source's own Clone ability(ies) onto the copied
     // characteristics so the permanent can keep re-cloning.
     bool gain_this_ability = false;
-    std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
+    FilterSpec valid_tgts{"N_A"};  // Value of ValidTgts$ param; "N_A" if no targeting required
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)
     bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
@@ -88,7 +88,7 @@ struct AbilityDef {
     // computed dynamically at mana-source enumeration from the live board (each matching
     // permanent's effective_colors), then expanded into per-color choices like mana_choices.
     // Empty = not a reflected-mana ability. CR 605 / "mana of any color among …".
-    std::string reflected_mana_filter = "";
+    FilterSpec reflected_mana_filter;
     bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
     bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
     bool restrict_from_nonartifact_spells = false;   // RestrictValid$ CantCastNonArtifactSpells (Powerstone tokens)
@@ -132,13 +132,13 @@ struct AbilityDef {
                                         // chosen as an additional cost while casting (Toxic Deluge)
     int energy_cost = 0;                // PayEnergy<N> — energy ({E}) paid as part of the cost (CR 122.1c)
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
-    std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
+    FilterSpec sac_cost_spec;           // Sac<1/Type;Type/> — type-based sac cost; empty = none
     // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
     // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
-    std::string sac_valid = "";         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
+    FilterSpec sac_valid;         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
     bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to the remembered set
-    std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
+    FilterSpec return_cost_type;        // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
     bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
@@ -187,7 +187,7 @@ struct AbilityDef {
     // = no reduction. effective_activation_mana_cost() applies it for BOTH the affordability
     // check and the actual payment so the two never diverge.
     std::string reduce_cost_expr = "";
-    std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
+    FilterSpec change_type;        // ChangeType$ — comma-separated subtypes to search
     // ChangeType filter with a dynamic mana-value bound (Aether Vial: "Creature.cmcEQX",
     // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
     // two-letter comparator ("EQ"/"LE"); evaluated against this ability's source at
@@ -363,7 +363,7 @@ struct AbilityDef {
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or
     // "Permanent.nonLand+OppCtrl+nonChosenCard". A plain member (not in the params
     // variant) so PutCounterAll can carry it alongside CounterParams.
-    std::string valid_cards_filter = "";
+    FilterSpec valid_cards_filter;
 
     // AB$ AnimateAll | RemoveKeywords$ Hexproof & Indestructible (Shadowspear): the keyword(s)
     // a mass continuous effect REMOVES from every permanent matching valid_cards_filter, until
@@ -392,7 +392,7 @@ struct AbilityDef {
     // against it with zone_change_object_matches (types, subtypes, control, ownership, token-ness,
     // colors and tap state as the object exists after the event, or as it last existed on the
     // battlefield for a departure — CR 603.6a / 603.10a).
-    std::string trigger_valid_card = "";
+    FilterSpec trigger_valid_card;
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature (TapsForMana)
     // ValidCard$ ...+untapped (Mystic Sanctuary: "When this land enters untapped"). Matched by
     // trigger_valid_card on the live permanent; the self look-back scan (a permanent that already
@@ -543,7 +543,7 @@ struct AbilityDef {
     // zone matching the filter. The choice becomes the resolution's chosen card
     // (cur_game.resolution.memory.chosen_cards), which a later RememberObjects$ ChosenCard Effect reads. Mandatory$
     // True means no "choose nothing" option. Unset zone = the battlefield.
-    std::string choose_card_filter = "";
+    FilterSpec choose_card_filter;
     Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
     // Mill: remember milled cards in cur_game.resolution.memory.remembered
@@ -566,7 +566,7 @@ struct AbilityDef {
     // chooses among (e.g. "Permanent.nonLand+YouDontCtrl"). In the two-player engine the vote
     // reduces to the controller choosing one matching permanent; the winner is fed to the
     // VoteSubAbility (parsed into subabilities) via the remembered set. See effect_vote.cpp.
-    std::string vote_card_filter = "";
+    FilterSpec vote_card_filter;
 
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
@@ -673,7 +673,7 @@ struct AbilityDef {
     // controller for the effect's Duration (until their next turn), consulted by the cast-speed
     // gate (rules_mod::cast_with_flash_active). General over any CastWithFlash-granting Effect.
     bool effect_cast_with_flash = false;
-    std::string effect_cast_with_flash_filter = "";  // ValidCard$ filter of the grant (e.g. "Sorcery")
+    FilterSpec effect_cast_with_flash_filter;  // ValidCard$ filter of the grant (e.g. "Sorcery")
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;
@@ -690,7 +690,7 @@ struct AbilityDef {
     // Dig ability (Once Upon a Time, Thassa's Oracle)
     size_t dig_num = 0;              // DigNum$ N — how many cards to look at from top of library
     std::string dig_num_expr = "";   // DigNum$ SVar — dynamic dig count (e.g. "Count$Devotion.Blue")
-    std::string change_valid = "";   // ChangeValid$ — comma-separated filter like "Card.Creature,Card.Land"
+    FilterSpec change_valid;   // ChangeValid$ — comma-separated filter like "Card.Creature,Card.Land"
     bool rest_random_order = false;  // RestRandomOrder$ True
     bool optional_choice = false;    // Optional$ True — the effect is a "may": Dig can choose nothing, Attach/Sacrifice/ChangeZone/Play may be declined
     bool change_num_any = false;     // ChangeNum$ Any — may take any number (0..pool) of looked-at cards (Fateseal)
@@ -745,7 +745,7 @@ struct AbilityDef {
     // search..."): count permanents matching the filter and compare to the threshold as the
     // ability resolves (CR 608.2c); on failure resolve_ability skips the body and still chains
     // the subabilities. It never restricts casting or activating.
-    std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
+    FilterSpec condition_present;   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
     // ConditionNotPresent$ — the condition is INVERTED: the gated body runs only when the
     // condition_present check is FALSE (Uro: "sacrifice it unless it escaped" →

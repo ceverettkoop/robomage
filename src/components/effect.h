@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "filter_spec.h"
 #include "types.h"
 #include "../classes/colors.h"
 
@@ -37,7 +38,7 @@ struct Effect {
         // caster relative to this permanent's controller, since a stack spell has no Permanent
         // controller for the filter matcher to read.
         bool from_battlefield = false;      // ActiveZones$ Battlefield — a continuous battlefield static
-        std::string valid_sa_filter = "";   // ValidSA$ spec the replacement protects from being countered
+        FilterSpec valid_sa_filter;   // ValidSA$ spec the replacement protects from being countered
         // CANT_BE_COUNTERED spell-mastery gate (Exquisite Firecraft: "this spell can't be
         // countered if there are two or more instant and/or sorcery cards in your graveyard").
         // When cant_counter_present is non-empty the SELF form is NOT stamped onto the spell at
@@ -46,7 +47,7 @@ struct Effect {
         // filter `cant_counter_present` in zone `cant_counter_zone` against `cant_counter_compare`.
         // An empty filter is the unconditional self form ("This spell can't be countered", a
         // cast-time stamp like Long Goodbye).
-        std::string cant_counter_present = "";   // IsPresent$ (e.g. "Instant.YouOwn,Sorcery.YouOwn")
+        FilterSpec cant_counter_present;   // IsPresent$ (e.g. "Instant.YouOwn,Sorcery.YouOwn")
         std::string cant_counter_zone = "";      // PresentZone$ (e.g. "Graveyard")
         std::string cant_counter_compare = "";   // PresentCompare$ (e.g. "GE2")
         std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
@@ -55,7 +56,7 @@ struct Effect {
         // permanents matching `tapped_condition_filter` satisfies `tapped_condition_compare`
         // (e.g. filter "Land.Basic", compare "EQ0" — tapped only with zero basic lands).
         // Empty filter = unconditional (the plain "enters tapped").
-        std::string tapped_condition_filter = "";   // e.g. "Land.Basic" (controller-relative)
+        FilterSpec tapped_condition_filter;   // e.g. "Land.Basic" (controller-relative)
         std::string tapped_condition_compare = "";   // e.g. "EQ0", "GE1"
         // ENTERS_TAPPED "unless you pay N life" (the shock-land / Witch-Blessed Meadow pattern:
         // DB$ Tap | ETB$ True | UnlessCost$ PayLife<N>). When > 0, the controller may pay this
@@ -77,7 +78,7 @@ struct Effect {
         // DISCARD_ELSE_GRAVEYARD (Mox Diamond / Chrome Mox): the type filter of the card the owner
         // may discard as the additional cost to have this permanent enter (e.g. "Land"); if they
         // don't (or can't), it is put into its owner's graveyard instead.
-        std::string discard_else_filter = "";
+        FilterSpec discard_else_filter;
         // DRAW_ADD (Quantum Riddler: "As long as you have one or fewer cards in hand, if you would
         // draw one or more cards, you draw that many cards plus one instead."). draw_add is the
         // number of EXTRA cards added to each draw event by the source's controller (K in "plus K",

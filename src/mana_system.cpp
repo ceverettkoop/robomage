@@ -181,7 +181,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
     // the full qualifier grammar (subtype head, type/ownership qualifiers) is honored.
     const std::string kPrefix = "Count$Valid ";
     if (!ab.def->dynamic_amount_expr.empty() && ab.def->dynamic_amount_expr.rfind(kPrefix, 0) == 0) {
-        std::string filter = ab.def->dynamic_amount_expr.substr(kPrefix.size());
+        const FilterSpec filter(ab.def->dynamic_amount_expr.substr(kPrefix.size()));
         MatchCtx ctx;
         ctx.controller = controller;
         ctx.source = ab.source.lki_entity();
@@ -314,7 +314,7 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
     // permanent_matches_any matches each alternative (legendary creature / legendary
     // planeswalker) independently, so the comma-OR is handled in one shared place.
     for (auto entity : battlefield_permanents(entities, player)) {
-        if (!permanent_matches_any(entity, ab.def->reflected_mana_filter, ctx)) continue;
+        if (!permanent_matches_filter(entity, ab.def->reflected_mana_filter, ctx)) continue;
         for (Colors c : effective_colors(entity)) colors.insert(c);
     }
     std::vector<Colors> ordered;

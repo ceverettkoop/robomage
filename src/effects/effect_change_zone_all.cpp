@@ -59,14 +59,14 @@ static bool change_zone_shares_name_battlefield(Ability &ab, std::shared_ptr<Ord
 
 HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Same-name move-all (e.g. Extirpate's ExileYard): ChangeType$ Remembered.sameName.
-    if (ab.def->change_type.find("sameName") != std::string::npos)
+    if (ab.def->change_type.text().find("sameName") != std::string::npos)
         return change_zone_same_name(ab, orderer, /*force_all=*/true)
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;
 
     // Echoing Truth family: ChangeType$ ...+sharesNameWith Targeted over the battlefield — return
     // the target and all other permanents with its name to their owners' hands.
-    if (ab.def->change_type.find("sharesNameWith") != std::string::npos && ab.def->origin == Zone::BATTLEFIELD)
+    if (ab.def->change_type.text().find("sharesNameWith") != std::string::npos && ab.def->origin == Zone::BATTLEFIELD)
         return change_zone_shares_name_battlefield(ab, orderer)
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;

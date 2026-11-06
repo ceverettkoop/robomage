@@ -33,7 +33,7 @@ struct StaticAbility {
     std::string add_trigger = "";
     std::string add_trigger_svar_name = "";
     std::string add_trigger_svar = "";
-    std::string affected = "";        // Affected$: the filter over what this static affects
+    FilterSpec affected;        // Affected$: the filter over what this static affects
     // AffectedDefined$: the one object this static affects (Self, or what its source is attached
     // to), which `affected` restricts further ("Card" when the script gives no Affected$).
     // ObjectSpec::DEFAULT when the static names none: `affected` alone decides.
@@ -45,7 +45,7 @@ struct StaticAbility {
     // Count$ValidExile printed-characteristics filter for the delve counter count (Murktide
     // Regent: "Instant,Sorcery" — the ExiledWithSource qualifier is stripped at parse time,
     // it being implied by membership in cur_game.delve_exiled). Empty = count every exile.
-    std::string counter_count_delve_filter = "";
+    FilterSpec counter_count_delve_filter;
     bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
@@ -61,7 +61,7 @@ struct StaticAbility {
     // (CR 118.7 / 601.2f). reduce_cost_filter is the ValidCard$ spec (e.g. "Eldrazi.Colorless").
     // reduce_cost_you_only gates the reduction to the source's controller (Activator$ You).
     int reduce_cost = 0;
-    std::string reduce_cost_filter = "";
+    FilterSpec reduce_cost_filter;
     bool reduce_cost_you_only = false;
     // ValidCard$ Card.Self (Mystical Dispute: "This spell costs {2} less to cast if ..."): the
     // static reduces only its own card's cost, as that card is cast. It functions on the stack
@@ -71,7 +71,7 @@ struct StaticAbility {
     // ValidTarget$ <filter> (Mystical Dispute: Spell.Blue): the reduction applies only to a spell
     // that targets an object matching the filter, so it is known once the targets are chosen
     // (CR 601.2c before 601.2f). Empty = no target condition.
-    std::string reduce_cost_valid_target = "";
+    FilterSpec reduce_cost_valid_target;
     // EffectZone$ (the zones the static functions from, CR 113.6b): "All" or a zone list; empty =
     // the battlefield (Forge's default).
     std::string effect_zone = "";
@@ -92,7 +92,7 @@ struct StaticAbility {
     // one implemented) from a hypothetical "set the cost to exactly N" form.
     int set_cost_min = 0;
     bool set_cost_raise_to = false;
-    std::string set_cost_filter = "";
+    FilterSpec set_cost_filter;
     // CantAttack fields (category = "CantAttack"; Ensnaring Bridge): a continuous combat
     // restriction — creatures matching cant_attack_filter can't be declared as attackers
     // (CR 509.1a). cant_attack_filter is the ValidCard$ spec (e.g. "Creature.powerGTX"); it is
@@ -102,10 +102,10 @@ struct StaticAbility {
     // (Ensnaring Bridge: "Count$ValidHand Card.YouOwn"), evaluated against the static SOURCE's
     // controller at declare-attackers time ("your hand" = the source controller's hand, applied to
     // every creature). Empty x_svar = the filter has no dynamic X.
-    std::string cant_attack_filter = "";
+    FilterSpec cant_attack_filter;
     std::string cant_attack_x_svar = "";
     // CantBeActivated fields (category = "CantBeActivated"):
-    std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
+    FilterSpec cant_activate_card_filter;  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):
     // when true the static applies only to cards whose name equals the source permanent's chosen_name.
     bool match_named_card = false;
@@ -142,12 +142,12 @@ struct StaticAbility {
     // satisfies present_compare. Re-evaluated every SBA pass so the static turns on/off as the
     // zone count changes. present_zone defaults to "Battlefield" (Forge convention) when the
     // script omits PresentZone$. present_compare defaults to "GE1" when omitted.
-    std::string present_filter  = "";   // IsPresent$ filter (e.g. "Land.YouOwn")
+    FilterSpec present_filter;   // IsPresent$ filter (e.g. "Land.YouOwn")
     std::string present_zone    = "";   // PresentZone$ (Battlefield/Graveyard/Hand/Exile/Library)
     std::string present_compare = "";   // PresentCompare$ (e.g. "GE3", "EQ0", "LT2")
 
     // CantBeCast fields (category = "CantBeCast"):
-    std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
+    FilterSpec cant_cast_filter;      // "Card.nonCreature" — card type filter
     int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn
     bool cant_cast_by_opponent = false;     // Caster$ Opponent — restricts the controller's opponents
                                             // (Voice of Victory: "your opponents can't cast spells

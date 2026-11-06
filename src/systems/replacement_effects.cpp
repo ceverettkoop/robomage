@@ -58,7 +58,7 @@ struct Candidate {
     bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
     int tapped_unless_life = 0;     // SELF_TAPPED: "enters tapped unless you pay N life" — pay N to enter untapped instead
     Colors produce_color = COLORLESS; // PRODUCE_MANA: color the production is converted to
-    std::string discard_filter;     // DISCARD_ELSE_GRAVEYARD: type filter of the card the owner may discard
+    FilterSpec discard_filter;      // DISCARD_ELSE_GRAVEYARD: type filter of the card the owner may discard
 };
 
 bool already_applied(const std::set<std::pair<Entity, int>> &applied, const Candidate &c) {
@@ -87,7 +87,7 @@ void for_each_battlefield_replacement(Effect::Replacement::Kind kind, Zone::Owne
 // An empty filter means unconditional (always tapped). The entering permanent (`entering`) is
 // excluded — it isn't a live battlefield permanent yet during the ENTERS_BATTLEFIELD dispatch —
 // and so is every permanent entering together with it (Game::entering_together, CR 614.12).
-static bool tapped_condition_met(const std::string &filter, const std::string &compare,
+static bool tapped_condition_met(const FilterSpec &filter, const std::string &compare,
                                  Zone::Ownership controller, Entity entering) {
     if (filter.empty()) return true;
     MatchCtx ctx;
@@ -164,7 +164,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     dctx.source = ev.entity;
                     for (Entity ex : live_entities(cur_game.delve_exiled))
                         if (sa.counter_count_delve_filter.empty() ||
-                            card_matches_any(ex, sa.counter_count_delve_filter, dctx))
+                            card_matches_filter(ex, sa.counter_count_delve_filter, dctx))
                             n++;
                 }
                 else if (sa.counter_count_from_xpaid) {
@@ -485,13 +485,13 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             for (Entity e : zone_objects(zoned_entities(), Zone::HAND, ev.affected_player)) {
                 if (e == ev.entity) continue;  // the entering card is not in hand
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-                if (card_matches_any(e, c.discard_filter, dctx)) discardable.push_back(e);
+                if (card_matches_filter(e, c.discard_filter, dctx)) discardable.push_back(e);
             }
             if (discardable.empty()) {
                 // Can't pay the cost — put it into its owner's graveyard (614.1a).
                 ev.destination = Zone::GRAVEYARD;
                 game_log("%s has no %s to discard and is put into its owner's graveyard.\n",
-                         self_name.c_str(), c.discard_filter.c_str());
+                         self_name.c_str(), c.discard_filter.text().c_str());
                 break;
             }
             std::vector<LegalAction> choices;

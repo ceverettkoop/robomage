@@ -2,6 +2,7 @@
 #define SVAR_EVAL_H
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "ecs/entity.h"
@@ -14,9 +15,14 @@ struct ResolveCtx;
 // comparator for its "GE4"-style comparisons, shared by effect amounts, target counts, resolution
 // conditions, static abilities, alternative-cost conditions, replacement and trigger gates.
 
+// A two-letter comparison operator, read once from a script (UNKNOWN: any other spelling).
+enum class SvarOp : uint8_t { EQ, NE, GE, LE, GT, LT, UNKNOWN };
+SvarOp svar_op_of(const std::string &op2);
+
 // Apply a two-letter comparison operator (EQ/NE/GE/LE/GT/LT) to lhs and rhs. Any other operator
 // is a script the engine can't read: reported as an error, and the comparison fails.
 bool apply_svar_op(int lhs, const std::string &op2, int rhs);
+bool apply_svar_op(int lhs, SvarOp op, int rhs);
 
 // Compare an integer against a Forge-style comparator string ("GE4", "LT2", ...): a two-letter
 // operator followed by an integer. A malformed comparator is reported as an error and fails.

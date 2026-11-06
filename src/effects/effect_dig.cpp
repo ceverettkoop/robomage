@@ -123,7 +123,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         MatchCtx mctx;
         mctx.controller = dig_owner;
         mctx.source = ab.source.lki_entity();
-        if (!ab.def->change_valid.empty() && ab.def->change_valid.find("cmcLE") != std::string::npos &&
+        if (!ab.def->change_valid.empty() && ab.def->change_valid.text().find("cmcLE") != std::string::npos &&
             !ab.def->dynamic_amount_expr.empty()) {
             mctx.cmc_bound = static_cast<int>(
                 evaluate_amount(ab.def->dynamic_amount_expr, dig_owner, 0, ab.target.get()));

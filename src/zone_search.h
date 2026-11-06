@@ -5,18 +5,20 @@
 #include <string>
 #include <vector>
 
+#include "components/filter_spec.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
 
 class Orderer;
 class FrameCtx;
+struct ResolveCtx;
 
 // What one pick of a search (CR 701.23) looks through and for.
 struct ZoneSearch {
     Zone::Ownership owner = Zone::PLAYER_A;   // whose zones are searched
     std::vector<Zone::ZoneValue> zones;       // searched together (Doomsday: Graveyard,Library)
     // Comma-separated ChangeType$ filter alternatives; empty (or "Card") matches every card.
-    std::string change_type;
+    FilterSpec change_type;
     // Mandatory$: "fail to find" is offered only when nothing matches.
     bool mandatory = false;
     Zone::ZoneValue destination = Zone::HAND;  // where the chosen card is headed (picks the menu kind)
@@ -27,9 +29,9 @@ struct ZoneSearch {
     // ("EQ"/"LE"/...) against cmc_bound; -1 = none.
     int cmc_bound = -1;
     std::string cmc_op;
-    // The resolving chain's card target, for a ChangeType `targetedBy` alternative (Cloak and
-    // Dagger, Entwined); 0 = none.
-    Entity chain_target = 0;
+    // What a ChangeType `targetedBy` alternative reads its chain's target from (Cloak and Dagger,
+    // Entwined); null = none.
+    const ResolveCtx *resolve = nullptr;
     // Leave out the objects this resolution has already remembered (Doomsday choosing its five
     // cards one at a time).
     bool exclude_remembered = false;

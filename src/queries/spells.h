@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 
+#include "../components/filter_spec.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -30,7 +31,7 @@ inline bool spell_cast_with_flashback(Entity e) {
 // ability keeps the parser's real Cost$ tag authoritative (no retag). The cast path pays
 // it with the same SACRIFICE_PERMANENT machinery activated abilities use, and cast
 // legality requires a matching permanent (CR 601.2f).
-std::string spell_additional_sac_spec(const CardData &cd);
+FilterSpec spell_additional_sac_spec(const CardData &cd);
 
 // True if the spell's SPELL ability carries a VARIABLE life cost (Cost$ ... PayLife<X>): the
 // amount of life paid IS the spell's X (Count$xPaid), chosen as an additional cost while casting

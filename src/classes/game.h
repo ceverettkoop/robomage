@@ -465,7 +465,7 @@ struct Game {
             // picks are limited to those whose cost is payable, and the reduction comes off
             // deferred_mana_cost as the payment phase begins.
             bool target_cost_reduction = false;
-            std::string deferred_sac_spec;
+            FilterSpec deferred_sac_spec;
             int deferred_exile_min_types = 0;
             int deferred_exile_count = 0;
             // Cost items that have been CHOSEN but not yet applied. Every non-mana cost
@@ -767,7 +767,7 @@ struct Game {
         // permanent). Consulted by the cast-speed gate (rules_mod::cast_with_flash_active).
         struct CastWithFlashPermission {
             Zone::Ownership controller = Zone::UNKNOWN;
-            std::string filter = "";  // ValidCard$ filter the flash permission applies to
+            FilterSpec filter;  // ValidCard$ filter the flash permission applies to
             bool until_your_next_turn = false;
         };
         // Turn-scoped combat-damage prevention shield (CR 615) created by a resolving DB$ Effect |

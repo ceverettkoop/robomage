@@ -60,7 +60,7 @@ static bool affected_is_general_filter(const std::string &aff);
 static bool static_is_general(const StaticAbility &sa);
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities);
 static std::vector<Entity> permanents_matching_static_filter(
-    const ActiveStatic &as, const std::string &aff, const EntitySet &entities);
+    const ActiveStatic &as, const FilterSpec &aff, const EntitySet &entities);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
 static void enter_as_recorded(Entity entity, const CardData &card_data, Permanent &perm);
@@ -164,9 +164,9 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
 // scoped via Zone::owner here and stripped before the type/characteristic match), mirroring
 // evaluate_present_condition's owner handling. `controller` is the static source's controller
 // (the "You" reference per CR 109.5). An empty filter means "no gate" → always met.
-static bool static_present_condition_met(const std::string &filter, const std::string &zone_str,
+static bool static_present_condition_met(const FilterSpec &spec, const std::string &zone_str,
     const std::string &compare_in, Zone::Ownership controller, Entity source, const EntitySet &entities) {
-    if (filter.empty()) return true;
+    if (spec.empty()) return true;
     std::string compare = compare_in.empty() ? "GE1" : compare_in;
 
     // Default zone is the battlefield (Forge convention when PresentZone$ is omitted).
@@ -188,13 +188,14 @@ static bool static_present_condition_met(const std::string &filter, const std::s
         // against a permanent's live controller/owner, so the original filter is passed through
         // unchanged — a controller qualifier (YouCtrl) must test the controller, not Zone::owner
         // (which would mishandle a permanent you control but don't own, e.g. a stolen creature).
-        count = count_battlefield_matching(filter, controller, source);
+        count = count_battlefield_matching(spec, controller, source);
     } else {
         // Off-battlefield zones have no controller, so a YouCtrl/YouOwn (or OppCtrl/OppOwn)
         // qualifier collapses to ownership (a card in your graveyard/hand/exile is "yours").
         // card_matches_filter has no owner/controller token, so split those off and check them
         // against Zone::owner here, passing only the characteristic portion to the matcher.
         bool you = false, opp = false;
+        const std::string &filter = spec.text();
         std::string type_filter;
         {
             bool first = true;
@@ -215,13 +216,14 @@ static bool static_present_condition_met(const std::string &filter, const std::s
         Zone::Ownership owner_req = you ? controller
                                  : opp ? opponent_of(controller)
                                        : Zone::UNKNOWN;
+        const FilterSpec characteristics(type_filter);
         for (auto e : entities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             const auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != zone) continue;
             if (owner_req != Zone::UNKNOWN && z.owner != owner_req) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (!card_matches_filter(e, type_filter, ctx)) continue;
+            if (!card_matches_filter(e, characteristics, ctx)) continue;
             count++;
         }
     }
@@ -259,7 +261,8 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
 
 // Number of artifacts `caster` controls on the battlefield (Affinity count, CR 702.41).
 static int artifacts_controlled_by(Zone::Ownership caster) {
-    return count_battlefield_matching("Artifact.YouCtrl", caster, 0);
+    static const FilterSpec artifacts_you_control("Artifact.YouCtrl");
+    return count_battlefield_matching(artifacts_you_control, caster, 0);
 }
 
 // Call fn(static, its controller) for each ReduceCost static that reduces the cost of casting
@@ -388,7 +391,7 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const
 // affected_permanents_for_static, also used with a qualifier-stripped filter by
 // ability_grant_targets).
 static std::vector<Entity> permanents_matching_static_filter(
-    const ActiveStatic &as, const std::string &aff, const EntitySet &entities) {
+    const ActiveStatic &as, const FilterSpec &aff, const EntitySet &entities) {
     std::vector<Entity> out;
     // AffectedDefined$ / Self / no-filter forms are single-target (the layer appliers resolve
     // them directly); only a general permanent filter fans out here. Shared predicate so this and
@@ -1143,7 +1146,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     // helper also used by Cabal Therapy's SP$ NameCard.
                     std::vector<std::string> names;
                     std::vector<LegalAction> name_choices =
-                        build_name_card_choices(mEntities, opp, /*valid_filter=*/"", names);
+                        build_name_card_choices(mEntities, opp, /*valid_filter=*/FilterSpec(), names);
                     if (!name_choices.empty()) {
                         // Latched-answer site (tag SBE_LATCHED), same re-derivation
                         // contract as the choose-type site above: the resumed
@@ -1903,8 +1906,9 @@ static std::string strip_named_card_qualifier(const std::string &filter) {
 // per-source named-card state that match_named_card statics read). A source with no chosen
 // name yet (ETB name choice not made) grants nothing.
 static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const EntitySet &entities) {
-    bool named = as.sa()->affected.find("NamedCard") != std::string::npos;
-    std::string base_filter = named ? strip_named_card_qualifier(as.sa()->affected) : as.sa()->affected;
+    bool named = as.sa()->affected.text().find("NamedCard") != std::string::npos;
+    const FilterSpec base_filter =
+        named ? FilterSpec(strip_named_card_qualifier(as.sa()->affected)) : as.sa()->affected;
     std::string chosen;
     if (named) {
         if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return {};
@@ -2078,7 +2082,7 @@ void StateManager::apply_layer6_ability_grants() {
 // grammar all work. An unfiltered remover applies to all permanents.
 static bool removal_affects(const ActiveStatic &r, Entity entity) {
     if (!static_defined_covers(r, entity)) return false;
-    const std::string &aff = r.sa()->affected;
+    const FilterSpec &aff = r.sa()->affected;
     if (aff.empty()) return true;
     MatchCtx ctx;
     ctx.controller = r.controller;
