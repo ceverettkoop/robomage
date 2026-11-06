@@ -419,7 +419,7 @@ so none landed. The stage is when the card's own last need is met:
 | `ImmediateTrigger UnlessCost$ Sac<…>`, `Repeat` with no `MaxRepeat$` | Grist, the Hunger Tide | M8 | the cost through `unless_payment`; a bound for CR 732 if a loop can go on with no library to run out |
 | `ForgetImprinted$`, imprint on the source | Chrome Mox | M9 | a `FORGET` row on the imprinted slot; `forget_remembered` covers only the remembered set |
 | `Branch` (`BranchConditionSVar$`, `True` / `FalseSubAbility$`), `ImprintCards$` | Goblin Welder | M10 | the evaluated side persisted in `EffectRuntime`, since a resume that re-derives a different child is fatal |
-| `UnlessCost$` on Token, `UnlessPayer$ Player.IsRemembered` | Acererak the Archlich | M12 | through `unless_payment`, with a payer per RepeatEach iteration |
+| `UnlessCost$` on Token, `UnlessPayer$ Player.IsRemembered` | none: Acererak the Archlich left the plan | | through `unless_payment`, with a payer per RepeatEach iteration |
 | a suspension inside a `Repeat` iteration | none in `candidates/` | | the first card that prompts in one |
 | an `AtRandom` draw among several | none in `candidates/` | | the first card with more than one candidate |
 
@@ -687,7 +687,7 @@ No script has these, so each stays out of the scenarios:
 | `TapToPay` on an activation or a trigger | Waterbend (M10) |
 | A colored pip paid by a tap | Convoke (M7) |
 | A mana ability's Sac, Return, energy | Lazotep Quarry (M8) |
-| Sacrifice as an unless cost | Acererak, Grist (candidates, their own stages) |
+| Sacrifice as an unless cost | Grist (a candidate, its own stage) |
 
 Evidence. Migration: 3,300 explore games over `mech_tap_to_pay` and `mech_cost_kinds`, a third each of bo1, `explore:patient` bo3 and
 `--no-auto-mana`, under `--trace-decisions`: 2.4 GB byte-identical with 12,927 Improvise taps; `make registry` a no-op. Debug `bench`, engine alone,
@@ -1015,22 +1015,21 @@ turn-up as a special action; Morph (CR 702.37), Cloak (CR 701.58); the reveal wh
 the knowledge sidecar's exactness on a look that outlives a shuffle; a face-down object copied, bounced, and
 blinked; identity withheld in the opponent's frames through every transition.
 
-### M12. Designations and subsystems (L, with Dungeons XL)
+### M12. Designations and subsystems (L)
 
 **Today.** Each per-player or per-object field is hand-added across component, schema and encoder.
 
 **Build.** A designation store, per player and per permanent, with the schema columns declared once, so that
-state plumbing is one row. Then Speed (CR 702.178–179), Dungeons and venture (CR 309, 701.49: dungeon scripts
-provisioned, command-zone objects, a room-choice decision), Meld (CR 701.42, 712) and Empower.
+state plumbing is one row. Then Speed (CR 702.178–179), Meld (CR 701.42, 712) and Empower. Dungeons and venture are out of
+this plan (2026-11-06): `aluren` left the candidates, and Acererak was the only card using them.
 
 **Notes.** Perilous Snare's `AddAbility$` on itself needs `ability_grant_targets` to handle the
 single-target forms: it returns nothing for them today (the old `Affected$ Card.Self` script had the
-same gap, and no vocab card uses the form, so M0 left it). Dungeons exist for one card (Acererak) and are large; they are included because the goal is every
-mechanic, and scheduled last so nothing waits on them. "Empower Jace" is not in the checked-in CR (effective
+same gap, and no vocab card uses the form, so M0 left it). "Empower Jace" is not in the checked-in CR (effective
 2026-04-17): implement from the oracle text and record it in `docs/rules_deviations.md`, and add its token to
 `provision_decks.py`'s `keyword_tokens`.
 
-**Test.** Speed raised once per turn and on opponent life loss only; venture with an already-complete dungeon;
+**Test.** Speed raised once per turn and on opponent life loss only;
 Meld with one half missing; each new field across a snapshot.
 
 ### M13. The sweep (L)
@@ -1067,8 +1066,7 @@ Meld with one half missing; each new field across a snapshot.
 
 ## 7. Decisions needed
 
-None block M0 to M12. Before M13: the `league/` and `heldout/` split. Before M12's Dungeons: whether Acererak alone
-justifies the subsystem, or whether Aluren should swap the card out. This plan assumes it is built.
+None block M0 to M12. Before M13: the `league/` and `heldout/` split.
 
 Settled 2026-11-06: `learn/open_vocab_acceptance.py` runs on a test-only copy of the tables holding the rows S0 recorded (`tests/open_vocab/s0_rows.json`), so a card whose rows move on purpose is one more entry there and every decision stays in the check. `gate` passes; `full` is to run at M7's stage gate. `spell_reads_colors_spent` no longer gates the record: `spent_w` to `spent_g` fill for every cast, and `inputs --keep-decisions` kept the file's 8,735 decisions at today's digests (6,572 moved; S0's networks hold those columns at zero, so `gate` passes unchanged). It stays only for a hybrid pip's choice under auto-mana.
 
@@ -1089,7 +1087,7 @@ Generated from the status files at pin `f62f8048`: 174 findings, none unmapped. 
 | M9 | `ability_param:DelayedTrigger.Static`, `ability_param:DelayedTrigger.ValidActivatingPlayer`, `ability_param:Effect.Duration`, `ability_param:Effect.ForgetOnMoved`, `ability_param:Effect.RememberObjects`, `replacement:Draw`, `replacement:Effect:Counter`, `replacement:Effect:Moved`, `static_form:Effect.Continuous`, `trigger_form:ChangesZone.ValidCard`, `trigger_form:Effect.Phase`, `trigger_form:SpellCast.ValidCard`, `trigger_mode:Taps`, `trigger_param:ActivationLimit`, `trigger_param:Revolt`, `trigger_zone:ChangesZone:Exile` |
 | M10 | `ability_param:Animate.Exhaust`, `ability_param:ChangeZone.TargetsWithSameController`, `ability_param:ChangeZone.TgtZone`, `ability_param:DealDamage.Boast`, `ability_param:DealDamage.DividedAsYouChoose`, `ability_param:Pump.PumpZone`, `ability_param:Pump.TargetsWithDefinedController`, `category:ChangeTargets` |
 | M11 | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph`, `static_param:MayLookAt` |
-| M12 | `ability_param:Empower.Type`, `category:Empower`, `category:Venture`, `keyword:Start your engines`, `layout:Meld`, `static_param:Condition`, `svar_expr:DungeonsCompleted$Valid` |
+| M12 | `ability_param:Empower.Type`, `category:Empower`, `keyword:Start your engines`, `layout:Meld`, `static_param:Condition` |
 
 The 21 cards M0 repairs: the 15 vocab cards (Animate Dead, Cori-Steel Cutter, Dragon's Rage Channeler, Elvish Reclaimer, Kaito Bane of Nightmares, Keen-Eyed Curator, Knight of the Reliquary, Lavaspur Boots, Lion Sash, Meteor Sword, Pre-War Formalwear, Shadowspear, Sheltered by Ghosts, Skateboard, Wight of the Reliquary) and 6 candidates (Cryptic Coat, Dark Matter Manipulator, Fiend Artisan, Hawkeye's Bow, Perilous Snare, Springheart Nantuko).
 
@@ -1118,7 +1116,7 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 | M9 | Chrome Mox (M3 M4 M9); Gaea's Will (M7 M9); Hawkeye's Bow (M2 M3 M9); Hullbreacher; Pyrogoyf (M2 M3 M9); Renegade Rallier; Sand Scout (M3 M9); Sundering Eruption (M3 M9); Tezzeret, Cruel Captain (M2 M9); The Everflowing Well (M6 M8 M9) |
 | M10 | Broadside Bombardiers (M3 M10); Fury; Goblin Welder (M3 M4 M10); Invasion Submersible (M5 M10); Shatterskull Smashing (M3 M10); Sink into Stupor; Unlicensed Hearse (M3 M5 M10); Untimely Malfunction (M8 M10) |
 | M11 | Aphetto Alchemist; Cryptic Coat (M3 M8 M11); Mystic Forge (M3 M7 M11) |
-| M12 | Acererak the Archlich (M4 M12); Perilous Snare; Phyrexian Dragon Engine (M5 M12); Theorist's Proxy (M9 M12) |
+| M12 | Perilous Snare; Phyrexian Dragon Engine (M5 M12); Theorist's Proxy (M9 M12) |
 
 ## Appendix C. Deck readiness (an output, not a goal)
 
@@ -1131,7 +1129,7 @@ The stage after which each deck has every mechanic. Decks with no entry in the t
 | M9 | boros_aggro (6.0), maverick (1.0), storm (3.0) |
 | M10 | artifacts_blue (2.0), cloudpost_tron_ramp (5.0), dragon_stompy (1.0) |
 | M11 | stoneblade (1.0), welder_cam (2.0) |
-| M12 | aluren (4.0), artifacts_prison (2.0), doomsday (4.0), mystic_forge (2.0), painter (1.0) |
+| M12 | artifacts_prison (2.0), doomsday (4.0), mystic_forge (2.0), painter (1.0) |
 
 ## Appendix D. Script changes at the bump with no parse finding
 
