@@ -19,6 +19,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -72,7 +73,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice >= 0 && choice < static_cast<int>(cands.size())) {
             Entity chosen = cands[static_cast<size_t>(choice)];
-            if (ab.def->remember_chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
+            report_object(ab, EffectObjects::CHOSEN_IMPRINTED, chosen);
             game_log("%s chooses %s\n", player_name(you).c_str(),
                      global_coordinator.GetComponent<CardData>(chosen).name.c_str());
         }
@@ -129,7 +130,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             int choice = ctx.ask(std::move(picks), opp, ab.source.lki_entity());
             if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             Entity kept = cands[static_cast<size_t>(choice)];
-            cur_game.resolution.memory.chosen_cards.insert(kept);
+            report_object(ab, EffectObjects::KEPT, kept);
             game_log("%s keeps %s.\n", player_name(opp).c_str(),
                      global_coordinator.GetComponent<Permanent>(kept).name.c_str());
         }
@@ -146,7 +147,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     std::vector<Entity> cands = choose_card_candidates(ab, orderer);
     if (cands.empty()) {
         if (!ctx.resuming()) game_log("There is no card to choose.\n");
-        cur_game.resolution.memory.chosen_cards.clear();
+        report_effect(ab, EffectObjects::CHOSEN);
         return HandlerResult::DONE_RUN_SUBS;
     }
     std::vector<LegalAction> picks;
@@ -167,11 +168,10 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (!ctx.resuming()) game_log("%s chooses a card:\n", player_name(chooser).c_str());
     int choice = ctx.ask(std::move(picks), chooser, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-    cur_game.resolution.memory.chosen_cards.clear();
+    report_effect(ab, EffectObjects::CHOSEN);
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
         Entity chosen = cands[static_cast<size_t>(choice)];
-        cur_game.resolution.memory.chosen_cards.insert(chosen);
-        if (ab.def->remember_chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
+        report_object(ab, EffectObjects::CHOSEN, chosen);
         game_log("%s chooses %s.\n", player_name(chooser).c_str(), entity_name(chosen).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;

@@ -14,6 +14,9 @@ struct AbilityDef;
 // value; a value the row's form takes adds the row's op to `def`.
 bool read_memory_param(AbilityDef &def, const std::string &key, const std::string &value);
 
+// Adds the rows of `def`'s effect kind: what it writes with no param asking.
+void bind_memory_ops(AbilityDef &def);
+
 // An effect reporting to the step: `sources` happened, with no object yet (a REPLACE row then
 // empties its slot even if none follows). Does nothing unless a row of `ab` reads them.
 void report_effect(Ability &ab, uint32_t sources);

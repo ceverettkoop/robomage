@@ -71,6 +71,7 @@ bool refs_contain(const std::vector<ObjectRef> &refs, Entity e);
 class ObjectSet {
     public:
         void insert(Entity e) { members[e] = ObjectRef::of(e); }
+        void insert(const ObjectRef &ref) { members[ref.e] = ref; }
         void erase(Entity e) { members.erase(e); }
         void clear() { members.clear(); }
         size_t count(Entity e) const;

@@ -13,6 +13,7 @@
 #include "../input_logger.h"
 #include "../queries/battlefield.h"
 #include "../queries/filters.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -59,7 +60,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     // Clear any remembered entities so only the voted-for permanent is fed to the
     // Defined$ Remembered DBExile sub-ability.
-    cur_game.resolution.memory.remembered.clear();
+    report_effect(ab, EffectObjects::VOTED);
 
     if (candidates.empty()) {
         game_log("Will of the Council: no eligible permanent to vote for; nothing is exiled.\n");
@@ -85,7 +86,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
-    cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
+    report_object(ab, EffectObjects::VOTED, chosen);
     game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
              global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
     return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)

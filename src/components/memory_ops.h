@@ -24,11 +24,16 @@ struct EffectObjects {
         REVEALED_TOP = 1u << 6,   // the library cards a PeekAndReveal revealed to everyone
         PUMPED = 1u << 7,         // the object a Pump applies to
         FOUND = 1u << 8,          // the card a DigUntil found
+        TOKENS = 1u << 9,            // the tokens a Token or Investigate created
+        VOTED = 1u << 10,            // the object a Vote chose
+        CHOSEN = 1u << 11,           // the card a plain ChooseCard chose
+        CHOSEN_IMPRINTED = 1u << 12, // the card a ChooseCard chose from the imprinted cards
+        KEPT = 1u << 13,             // a permanent a ChooseEach$ ChooseCard kept
     };
 };
 
 // The part of the resolution's memory a row writes (ResolutionMemory).
-enum class MemorySlot { REMEMBERED, IMPRINTED };
+enum class MemorySlot { REMEMBERED, IMPRINTED, CHOSEN_CARDS };
 
 enum class MemoryAction {
     APPEND,   // add the reported objects

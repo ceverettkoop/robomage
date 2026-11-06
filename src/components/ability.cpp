@@ -9,13 +9,15 @@
 #include <vector>
 
 #include "../ecs/coordinator.h"
+#include "../resolution_memory.h"
 #include "player.h"
 
 extern Coordinator global_coordinator;
 
 // The process-wide definition store behind intern_ability_def (see ability.h).
 static std::deque<AbilityDef> &ability_def_store();
-// Bind `d`'s EffectKind from its category, and those of the definitions nested in it.
+// Bind `d`'s EffectKind from its category, with the memory rows that kind makes, and those of the
+// definitions nested in it.
 static void bind_effect_kinds(AbilityDef &d);
 
 // edge case of two identical abilities being applied from two sources not handled
@@ -70,6 +72,7 @@ static std::deque<AbilityDef> &ability_def_store() {
 // (normalize_category), and every engine-built category is one of effect_kinds.def's.
 static void bind_effect_kinds(AbilityDef &d) {
     effect_kind_from_category(d.category, d.kind);
+    bind_memory_ops(d);
     for (auto *nested : {&d.subabilities, &d.charm_choices, &d.effect_floating_triggers,
                          &d.animate_granted_abilities})
         for (AbilityDef &n : *nested) bind_effect_kinds(n);

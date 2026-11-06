@@ -2238,9 +2238,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // DB$ RepeatEach | RepeatTypesFrom$ ValidLibrary Card.IsImprinted (Atraxa, Grand Unifier):
         // loop the RepeatSubAbility once per distinct card type among the imprinted cards.
         ability.repeat_types_from = value;
-    } else if (key == "RememberChosen") {
-        // ChooseCard | RememberChosen$ True (Atraxa): append the chosen card to the remembered set.
-        ability.remember_chosen = (value == "True");
     } else if (key == "ClearImprinted") {
         // DB$ Cleanup | ClearImprinted$ True (Atraxa): clear cur_game.resolution.memory.imprinted. (For the
         // exile-and-return cards whose "imprint" is actually the remembered set, memory.imprinted

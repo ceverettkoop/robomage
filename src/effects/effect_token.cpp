@@ -15,6 +15,7 @@
 #include "../queries/battlefield.h"
 #include "../queries/delayed_triggers.h"
 #include "../queries/players.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 
@@ -89,7 +90,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
 
     std::vector<Entity> created;
-    cur_game.resolution.memory.remembered.clear();
+    report_effect(ab, EffectObjects::TOKENS);
     for (size_t n = 0; n < count; n++) {
         Entity tok_entity = global_coordinator.CreateEntity();
         global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
@@ -111,7 +112,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
             cr.attack_target = attack_target;
         }
         created.push_back(tok_entity);
-        cur_game.resolution.memory.remembered.push_back(ObjectRef::of(tok_entity));
+        report_object(ab, EffectObjects::TOKENS, tok_entity);
         game_log("Token created: %u/%u %s%s\n", tok.power, tok.toughness, tok.name.c_str(),
                  (tp && tp->attacking) ? " (tapped and attacking)" : "");
     }
