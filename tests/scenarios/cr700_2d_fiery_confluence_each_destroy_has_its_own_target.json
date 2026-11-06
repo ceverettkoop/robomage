@@ -1,0 +1,49 @@
+{
+  "name": "cr700_2d_fiery_confluence_each_destroy_has_its_own_target",
+  "why": "CR 700.2d, 601.2c: each Destroy mode chosen takes its own target, and each deals with its own; the 2 damage goes to the opponent alone",
+  "hand_a": [
+    "Fiery Confluence"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Tormod's Crypt",
+    "Lotus Petal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fiery Confluence",
+    "A:mode:2 damage",
+    "A:mode:Destroy",
+    "A:target:Tormod's Crypt",
+    "A:mode:Destroy",
+    "A:target:Lotus Petal"
+  ],
+  "max_decisions": 13,
+  "expect": [
+    "^Tormod's Crypt is destroyed",
+    "^Lotus Petal is destroyed",
+    "^Fiery Confluence deals 2 damage to Player B \\(now at 18 life\\)"
+  ],
+  "expect_not": [
+    "damage to Player A"
+  ]
+}

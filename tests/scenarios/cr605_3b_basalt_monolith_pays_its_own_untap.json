@@ -1,0 +1,34 @@
+{
+  "name": "cr605_3b_basalt_monolith_pays_its_own_untap",
+  "why": "CR 605.3b, 602.2b: {3}: Untap may be paid with the Monolith's own {C}{C}{C}: it taps for the cost and the ability untaps it",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Basalt Monolith"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Basalt Monolith"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Player A activated Basalt Monolith for 3\\(C\\)",
+    "^Player A's Basalt Monolith ability is on the stack",
+    "^Basalt Monolith untaps$"
+  ]
+}

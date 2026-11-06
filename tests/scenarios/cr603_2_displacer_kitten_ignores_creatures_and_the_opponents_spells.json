@@ -1,0 +1,42 @@
+{
+  "name": "cr603_2_displacer_kitten_ignores_creatures_and_the_opponents_spells",
+  "why": "CR 603.2: \"whenever you cast a noncreature spell\": a creature spell and an opponent's Lightning Bolt don't trigger it",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Grizzly Bears",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Lightning Bolt deals 3 damage to Player A"
+  ],
+  "expect_not": [
+    "Displacer Kitten triggered"
+  ]
+}

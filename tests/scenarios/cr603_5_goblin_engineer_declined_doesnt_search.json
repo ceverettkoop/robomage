@@ -1,0 +1,42 @@
+{
+  "name": "cr603_5_goblin_engineer_declined_doesnt_search",
+  "why": "CR 603.5: \"you may search\": declined, nothing is searched and nothing shuffles",
+  "hand_a": [
+    "Goblin Engineer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Chromatic Star"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Goblin Engineer",
+    "A:choice:Decline"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "declines the optional triggered ability"
+  ],
+  "expect_not": [
+    "Searching",
+    "shuffles"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "cr603_3d_legion_extruder_enters_deals_two_to_any_target",
+  "why": "CR 603.3d, 115.4: \"any target\" offers both players and creatures; two damage to the Bears kills them",
+  "hand_a": [
+    "Legion Extruder"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Legion Extruder",
+    "A:target:Grizzly Bears@opp"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Legion Extruder deals 2 damage to Grizzly Bears",
+    "^Grizzly Bears is destroyed"
+  ],
+  "expect_menu": [
+    "^Player B \\(20 life\\)$",
+    "^Player A \\(20 life\\)$"
+  ]
+}

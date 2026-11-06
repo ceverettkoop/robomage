@@ -1,0 +1,37 @@
+{
+  "name": "cr601_3c_aluren_flash_is_only_for_the_free_cast",
+  "why": "CR 601.3c: the timing comes with the free cast alone: on A's turn B may not cast Elvish Mystic for its mana cost, though it could pay",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Elvish Mystic"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Aluren"
+  ],
+  "battlefield_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Cast Elvish Mystic without paying its mana cost"
+  ],
+  "expect_menu_not": [
+    "^Cast Elvish Mystic$"
+  ]
+}

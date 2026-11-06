@@ -141,7 +141,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     }
     // CR 111.8: a token that has left the battlefield can't change zones; it stays where it is
     // until the state-based action removes it (CR 704.5d). An exile-then-return in one resolution
-    // (Eldrazi Confluence) returns nothing.
+    // (Displacer Kitten, Eldrazi Confluence) returns nothing.
     if (global_coordinator.entity_has_component<Token>(e) &&
         global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) {
         return global_coordinator.GetComponent<Zone>(e).location;

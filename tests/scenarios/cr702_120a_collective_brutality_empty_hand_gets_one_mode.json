@@ -1,0 +1,46 @@
+{
+  "name": "cr702_120a_collective_brutality_empty_hand_gets_one_mode",
+  "why": "CR 702.120a, 601.2b: with no other card in hand the escalate cost can't be paid, so a second mode can't be chosen: after one mode no more are offered",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Collective Brutality",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Lion's Eye Diamond",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Tap Lion's Eye Diamond for (B)",
+    "A:cast:Collective Brutality",
+    "A:mode:loses 2 life"
+  ],
+  "max_decisions": 35,
+  "expect": [
+    "^Player B loses 2 life \\(now at 18\\)"
+  ],
+  "expect_count": {
+    "chooses mode": 1
+  }
+}

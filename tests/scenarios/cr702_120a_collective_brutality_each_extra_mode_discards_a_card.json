@@ -1,0 +1,57 @@
+{
+  "name": "cr702_120a_collective_brutality_each_extra_mode_discards_a_card",
+  "why": "CR 702.120a, 700.2: all three modes cost two discards on top of {1}{B}, the spell itself not among them, and the modes resolve in printed order with their own targets",
+  "hand_a": [
+    "Collective Brutality",
+    "Ponder",
+    "Preordain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Ponder",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Birds of Paradise"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Collective Brutality",
+    "A:mode:reveals their hand",
+    "A:mode:gets -2/-2",
+    "A:target:Grizzly Bears",
+    "A:mode:loses 2 life",
+    "A:discard:Ponder",
+    "A:discard:Preordain",
+    "A:choice:Lightning Bolt"
+  ],
+  "max_decisions": 15,
+  "expect_order": [
+    "^Player A pays the escalate cost for Collective Brutality \\(2\\)",
+    "^Player A discards Ponder \\(escalate\\)",
+    "^Player A discards Preordain \\(escalate\\)",
+    "^Player B discards Lightning Bolt",
+    "^Grizzly Bears gets -2/-2",
+    "^Player B loses 2 life \\(now at 18\\)",
+    "^Player A gains 2 life \\(now at 22\\)"
+  ],
+  "expect_menu_not": [
+    "Discard Collective Brutality"
+  ]
+}

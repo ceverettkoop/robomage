@@ -1,0 +1,44 @@
+{
+  "name": "cr701_23_goblin_engineer_searches_an_artifact_into_the_graveyard",
+  "why": "CR 701.23a, 603.5: the optional enters trigger searches for an artifact card only and puts it into the graveyard, then shuffles",
+  "hand_a": [
+    "Goblin Engineer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Chromatic Star",
+    "Lightning Bolt"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Goblin Engineer",
+    "A:choice:Accept",
+    "A:search:Chromatic Star"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "^Player A shuffles their library",
+    "^Chromatic Star is moved to graveyard|Chromatic Star"
+  ],
+  "expect_menu_not": [
+    "^Lightning Bolt$"
+  ]
+}

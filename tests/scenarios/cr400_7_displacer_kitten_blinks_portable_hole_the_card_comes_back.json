@@ -1,0 +1,53 @@
+{
+  "name": "cr400_7_displacer_kitten_blinks_portable_hole_the_card_comes_back",
+  "why": "CR 400.7, 610.3: Displacer Kitten exiling Portable Hole is its leaving: the card it held returns, and the Hole returns a new object with a new enters trigger",
+  "hand_a": [
+    "Portable Hole",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Plains",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Lotus Petal",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Portable Hole",
+    "A:target:No target",
+    "A:target:Grizzly Bears@opp",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:target:Portable Hole",
+    "A:desc:Delayed trigger",
+    "A:target:Lotus Petal@opp"
+  ],
+  "max_decisions": 18,
+  "expect": [
+    "^Lotus Petal is moved to exile"
+  ],
+  "expect_order": [
+    "^Grizzly Bears is moved to exile",
+    "^Portable Hole is moved to exile",
+    "^Portable Hole is moved to the battlefield",
+    "^Grizzly Bears is moved to the battlefield"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "cr700_2a_archive_arbiter_with_no_target_gains_four",
+  "why": "CR 700.2a: a mode with no legal target can't be chosen, so with no noncreature, nonland permanent Archive Arbiter's only mode is the 4 life",
+  "hand_a": [
+    "Archive Arbiter"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Wastes",
+    "Wastes",
+    "Wastes",
+    "Wastes",
+    "Wastes",
+    "Wastes"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Grizzly Bears"
+  ],
+  "life_a": 10,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Archive Arbiter"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "^Player A gains 4 life \\(now at 14\\)"
+  ],
+  "expect_menu_not": [
+    "Destroy target"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "cr700_2a_fiery_confluence_no_artifact_no_destroy_mode",
+  "why": "CR 700.2a: with no artifact the Destroy mode can't be chosen at any of the three picks",
+  "hand_a": [
+    "Fiery Confluence"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fiery Confluence",
+    "A:mode:2 damage",
+    "A:mode:2 damage",
+    "A:mode:2 damage"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "^Fiery Confluence deals 2 damage to Player B \\(now at 14 life\\)"
+  ],
+  "expect_menu_not": [
+    "Destroy target artifact"
+  ]
+}

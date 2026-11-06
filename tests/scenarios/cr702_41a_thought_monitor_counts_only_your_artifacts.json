@@ -1,0 +1,40 @@
+{
+  "name": "cr702_41a_thought_monitor_counts_only_your_artifacts",
+  "why": "CR 702.41a: \"artifacts you control\": the opponent's artifacts reduce nothing, so two of your own and four lands' worth of mana don't cast it",
+  "hand_a": [
+    "Thought Monitor"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Mountain",
+    "Tormod's Crypt",
+    "Urza's Bauble"
+  ],
+  "battlefield_b": [
+    "Lotus Petal",
+    "Tormod's Crypt",
+    "Urza's Bauble",
+    "Mishra's Bauble"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Cast Thought Monitor"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "cr305_2_crucible_of_worlds_is_not_another_land_drop",
+  "why": "CR 305.2: with the turn's land played, a land reaching the graveyard that turn isn't offered: Crucible gives no extra land drop",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Crucible of Worlds",
+    "Wasteland"
+  ],
+  "battlefield_b": [
+    "Karakas"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Island",
+    "A:activate:Wasteland"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "^Player A sacrifices Wasteland",
+    "^Karakas is destroyed"
+  ],
+  "expect_menu_not": [
+    "Play Wasteland \\(from graveyard\\)"
+  ]
+}

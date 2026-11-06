@@ -320,6 +320,24 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Unmask", 397},
     {"Watery Grave", 398},
     {"Wirewood Symbiote", 399},
+    {"Aluren", 400},
+    {"Archive Arbiter", 401},
+    {"Basalt Monolith", 402},
+    {"Chromatic Star", 403},
+    {"Collective Brutality", 404},
+    {"Crucible of Worlds", 405},
+    {"Cursed Totem", 406},
+    {"Displacer Kitten", 407},
+    {"Fiery Confluence", 408},
+    {"Giant's Boulder", 409},
+    {"Goblin Engineer", 410},
+    {"Haywire Mite", 411},
+    {"Legion Extruder", 412},
+    {"Mishra's Research Desk", 413},
+    {"Portable Hole", 414},
+    {"Soul-Guide Lantern", 415},
+    {"Thought Monitor", 416},
+    {"Thundertrap Trainer", 417},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -362,6 +380,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"w_4_4_angel_flying", "Angel", 916},                            // Geist of Saint Traft
     {"c_1_1_eldrazi_scion_sac", "Eldrazi Scion", 917},               // Eldrazi Confluence
     {"r_1_1_goblin", "Goblin", 918},                                 // Empty the Warrens
+    {"c_3_3_a_golem", "Golem", 919},                                 // Legion Extruder
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

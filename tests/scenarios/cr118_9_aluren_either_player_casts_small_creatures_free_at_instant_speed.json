@@ -1,0 +1,44 @@
+{
+  "name": "cr118_9_aluren_either_player_casts_small_creatures_free_at_instant_speed",
+  "why": "CR 118.9, 601.3c: either player may cast a creature spell of mana value 3 or less for free at instant timing; B does so on A's turn with no mana; a land, a costlier creature and a noncreature spell get no such row",
+  "hand_a": [
+    "Grizzly Bears",
+    "Lightning Bolt",
+    "Displacer Kitten",
+    "Dryad Arbor"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Elvish Mystic"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Aluren"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Elvish Mystic"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "^Player B casts Elvish Mystic without paying its mana cost",
+    "^Elvish Mystic enters the battlefield"
+  ],
+  "expect_menu": [
+    "Cast Grizzly Bears without paying its mana cost"
+  ],
+  "expect_menu_not": [
+    "Cast Lightning Bolt without",
+    "Cast Displacer Kitten without",
+    "Dryad Arbor without"
+  ]
+}

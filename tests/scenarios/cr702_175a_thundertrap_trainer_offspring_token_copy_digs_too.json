@@ -1,0 +1,53 @@
+{
+  "name": "cr702_175a_thundertrap_trainer_offspring_token_copy_digs_too",
+  "why": "CR 702.175a, 707.2: paying Offspring {4} makes a 1/1 token copy, which has the enters trigger and looks at four more cards",
+  "hand_a": [
+    "Thundertrap Trainer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Lightning Bolt",
+    "Grizzly Bears",
+    "Mountain",
+    "Ponder",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Brainstorm"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Thundertrap Trainer (offspring)",
+    "A:desc:offspring: token copy"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "^Offspring token copy created: 1/1 Thundertrap Trainer"
+  ],
+  "expect_count": {
+    "^Player A looks at the top 4 card": 2,
+    "^Offspring token copy created": 1
+  }
+}

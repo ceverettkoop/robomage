@@ -1,0 +1,42 @@
+{
+  "name": "cr701_22_giants_boulder_enters_scries_two",
+  "why": "CR 701.22a: scry 2: each of the two top cards goes on top or to the bottom, nothing is taken into the hand",
+  "hand_a": [
+    "Giant's Boulder"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Lightning Bolt",
+    "Grizzly Bears",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Giant's Boulder",
+    "A:bottom:Lightning Bolt",
+    "A:top:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Player A scries 2",
+    "^Scry: looking at Lightning Bolt",
+    "^Scry: looking at Grizzly Bears"
+  ]
+}

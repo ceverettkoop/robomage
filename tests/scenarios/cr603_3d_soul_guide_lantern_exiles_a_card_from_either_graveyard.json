@@ -1,0 +1,48 @@
+{
+  "name": "cr603_3d_soul_guide_lantern_exiles_a_card_from_either_graveyard",
+  "why": "CR 603.3d, 115.1: the enters trigger targets a card in any graveyard, one card, and only that card is exiled",
+  "hand_a": [
+    "Soul-Guide Lantern"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Soul-Guide Lantern",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "^Grizzly Bears is moved to exile"
+  ],
+  "expect_not": [
+    "^Forest is moved",
+    "moves Forest"
+  ],
+  "expect_menu": [
+    "^Lightning Bolt$",
+    "^Forest$"
+  ]
+}

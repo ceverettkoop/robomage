@@ -1,0 +1,39 @@
+{
+  "name": "cr302_6_goblin_engineer_summoning_sick_cant_tap",
+  "why": "CR 302.6: {T} in the cost needs Goblin Engineer under control since the turn began, so the turn it is cast its ability isn't offered",
+  "hand_a": [
+    "Goblin Engineer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Tormod's Crypt"
+  ],
+  "graveyard_a": [
+    "Chromatic Star"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Goblin Engineer",
+    "A:choice:Decline"
+  ],
+  "max_decisions": 9,
+  "expect_menu_not": [
+    "Activate Goblin Engineer"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "cr602_2b_soul_guide_lantern_draws_for_one",
+  "why": "CR 602.2b: the second sacrifice ability costs {1} and draws a card, and leaves the graveyards alone",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Soul-Guide Lantern",
+    "Island"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Activate Soul-Guide Lantern (Draw)"
+  ],
+  "max_decisions": 4,
+  "expect_not": [
+    "to exile"
+  ],
+  "expect_order": [
+    "^Player A activated Island for 1\\(U\\)",
+    "^Player A sacrifices Soul-Guide Lantern",
+    "^Player A draws"
+  ]
+}

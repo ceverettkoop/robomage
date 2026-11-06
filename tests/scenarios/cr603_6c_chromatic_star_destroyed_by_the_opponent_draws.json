@@ -1,0 +1,38 @@
+{
+  "name": "cr603_6c_chromatic_star_destroyed_by_the_opponent_draws",
+  "why": "CR 603.6c, 603.10a: \"put into a graveyard from the battlefield\" covers destruction too: Abrade on the Star draws its controller a card",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Chromatic Star"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Abrade"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Chromatic Star is destroyed",
+    "^Chromatic Star triggered",
+    "^Player A draws"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "cr701_21a_legion_extruder_alone_cant_activate",
+  "why": "CR 701.21a: with no other artifact the Extruder's {2}, {T} ability has no fodder and isn't offered",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Legion Extruder",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Activate Legion Extruder"
+  ]
+}

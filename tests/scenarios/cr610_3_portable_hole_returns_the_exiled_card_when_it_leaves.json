@@ -1,0 +1,50 @@
+{
+  "name": "cr610_3_portable_hole_returns_the_exiled_card_when_it_leaves",
+  "why": "CR 610.3, 610.3c: the target is a nonland permanent an opponent controls of mana value 2 or less; when Portable Hole leaves, the exiled card returns under its owner's control",
+  "hand_a": [
+    "Portable Hole"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Grizzly Bears"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Portable Hole",
+    "A:target:Grizzly Bears@opp",
+    "A:pass",
+    "B:cast:Abrade",
+    "B:mode:Destroy",
+    "B:target:Portable Hole"
+  ],
+  "max_decisions": 13,
+  "expect_order": [
+    "^Grizzly Bears is moved to exile",
+    "^Portable Hole is destroyed",
+    "^Grizzly Bears is moved to the battlefield"
+  ],
+  "expect_menu_not": [
+    "^Air Elemental$",
+    "^Mountain$"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "cr603_6c_haywire_mite_killed_gains_two",
+  "why": "CR 603.6c: Haywire Mite dying to a Lightning Bolt gains its controller 2 life",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Haywire Mite"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "life_a": 10,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Lightning Bolt",
+    "B:target:Haywire Mite"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "^Player A gains 2 life \\(now at 12\\)"
+  ]
+}

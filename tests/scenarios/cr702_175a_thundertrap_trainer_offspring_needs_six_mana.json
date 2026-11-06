@@ -1,0 +1,38 @@
+{
+  "name": "cr702_175a_thundertrap_trainer_offspring_needs_six_mana",
+  "why": "CR 702.175a, 601.2f: Offspring's {4} adds to the spell's {1}{U}: five lands offer only the plain cast",
+  "hand_a": [
+    "Thundertrap Trainer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu": [
+    "^Cast Thundertrap Trainer$"
+  ],
+  "expect_menu_not": [
+    "offspring"
+  ]
+}

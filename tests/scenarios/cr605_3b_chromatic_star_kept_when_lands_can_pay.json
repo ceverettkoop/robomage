@@ -1,0 +1,38 @@
+{
+  "name": "cr605_3b_chromatic_star_kept_when_lands_can_pay",
+  "why": "CR 605.3a: mana abilities are optional: auto-mana pays Lightning Bolt from the Mountain and leaves the Star on the battlefield",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Chromatic Star",
+    "Mountain",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "^Lightning Bolt deals 3 damage"
+  ],
+  "expect_not": [
+    "sacrifices Chromatic Star"
+  ]
+}

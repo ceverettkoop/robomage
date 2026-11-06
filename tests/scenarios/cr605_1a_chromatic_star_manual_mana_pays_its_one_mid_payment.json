@@ -1,0 +1,41 @@
+{
+  "name": "cr605_1a_chromatic_star_manual_mana_pays_its_one_mid_payment",
+  "why": "CR 605.3a, 601.2g: under --no-auto-mana the Star activates during a payment once the pool covers its {1}, and its mana pays the spell",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Chromatic Star",
+    "Island"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:desc:Tap Island",
+    "A:desc:Tap Chromatic Star for (R)"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "^Player A sacrifices Chromatic Star",
+    "^Player A casts Lightning Bolt",
+    "^Lightning Bolt deals 3 damage"
+  ]
+}

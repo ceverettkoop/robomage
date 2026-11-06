@@ -1,0 +1,50 @@
+{
+  "name": "cr305_1_crucible_of_worlds_plays_lands_from_your_graveyard",
+  "why": "CR 305.1: Crucible offers each land in your graveyard as a land play, not a nonland card and not the opponent's land",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Crucible of Worlds"
+  ],
+  "graveyard_a": [
+    "Wasteland",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "graveyard_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Play Wasteland (from graveyard)"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "^Player A played Wasteland"
+  ],
+  "expect_menu": [
+    "Play Mountain \\(from graveyard\\)"
+  ],
+  "expect_menu_not": [
+    "Forest \\(from graveyard\\)",
+    "Grizzly Bears"
+  ]
+}
