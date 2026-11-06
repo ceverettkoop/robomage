@@ -529,10 +529,13 @@ struct AbilityDef {
     // resolving the RepeatSubAbility body each iteration. Empty = not a per-type repeat.
     std::string repeat_types_from = "";
     // Number of leading `subabilities` that are the RepeatSubAbility$ body (repeated each
-    // iteration of a per-type RepeatEach); the remaining subabilities are trailing SubAbility$
+    // iteration of a RepeatEach or Repeat); the remaining subabilities are trailing SubAbility$
     // links resolved ONCE after the whole loop (Atraxa: [ChooseCard]=body, [DBChangeZone]=trailing).
-    // 0 = every subability is the body (the per-player RepeatEach path, unaffected).
     size_t repeat_sub_count = 0;
+    // DB$ Repeat's check after each iteration (Grindstone): the runtime SVar expression, and the
+    // comparison it must pass for the process to go round again.
+    std::string repeat_check_svar = "";
+    std::string repeat_svar_compare = "";
 
     // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
     // card of the current cur_game.resolution.memory.chosen_type owned by the controller. A "you may" choice

@@ -205,5 +205,8 @@ EFFECT_KIND(TapOrUntap, "TapOrUntap", tap_or_untap)
 // "Then shuffle": a player shuffles their library as an instruction of its own.
 EFFECT_KIND(Shuffle, "Shuffle", shuffle)
 
+// "Repeat this process": resolve the RepeatSubAbility until its check fails.
+EFFECT_KIND(Repeat, "Repeat", repeat)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE

@@ -250,7 +250,7 @@ static void filter_findings(const std::string &script_text, std::vector<ParseFin
                 const size_t at = param.find(prefix);
                 if (at == std::string::npos) continue;
                 const std::string rest = param.substr(at + prefix.size());
-                check_filter(trim(rest.substr(0, rest.find_first_of("$/ "))), trim(prefix), line, findings);
+                check_filter(trim(rest.substr(0, rest.find_first_of("$/"))), trim(prefix), line, findings);
                 break;
             }
             for (const char *tok : kCostTokens)

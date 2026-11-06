@@ -1,0 +1,53 @@
+{
+  "name": "cr701_17_grindstone_odd_library_ends_on_one_card",
+  "why": "CR 701.17: every pair shares a color down an odd library, whose last mill is a single card, which has no other card to share a color with, so the process ends",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Grindstone",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Grindstone",
+    "A:target:Player B"
+  ],
+  "max_decisions": 5,
+  "expect_count": {
+    "^Player B mills ": 9
+  }
+}

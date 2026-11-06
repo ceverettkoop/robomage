@@ -2977,6 +2977,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // SVar references to their runtime Count$ expressions so the effect can evaluate them at
     // resolution.
     if (ability.category == "ChooseNumber") resolve_svar_ref(ability.dynamic_amount_expr, svars);
+    resolve_svar_ref(ability.repeat_check_svar, svars);
     resolve_svar_ref(ability.unless_energy_expr, svars);
     if (auto *cp = std::get_if<CounterParams>(&ability.params)) resolve_svar_ref(cp->count_expr, svars);
     // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →

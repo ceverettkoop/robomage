@@ -156,6 +156,8 @@ bool parse_animate_all(AbilityDef &ab, const std::string &key, const std::string
 bool parse_store_svar(AbilityDef &ab, const std::string &key, const std::string &value);
 // DB$ SetState Mode$ <mode> (The Creation of Avacyn). See effect_set_state.cpp.
 bool parse_set_state(AbilityDef &ab, const std::string &key, const std::string &value);
+// DB$ Repeat MaxRepeat$/RepeatCheckSVar$/RepeatSVarCompare$. See effect_repeat.cpp.
+bool parse_repeat(AbilityDef &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

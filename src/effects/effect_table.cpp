@@ -37,7 +37,8 @@ bool apply_parse_hook(AbilityDef &ab, const std::string &key, const std::string 
         || parse_play(ab, key, value)
         || parse_animate_all(ab, key, value)
         || parse_store_svar(ab, key, value)
-        || parse_set_state(ab, key, value);
+        || parse_set_state(ab, key, value)
+        || parse_repeat(ab, key, value);
 }
 
 }  // namespace effects

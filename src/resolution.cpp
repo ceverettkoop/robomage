@@ -93,6 +93,13 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
 }
 
+void bind_chained_sub(const Ability &parent, Ability &sub) {
+    sub.source = parent.source;
+    sub.source_transforms = parent.source_transforms;
+    bind_sub_target(parent, sub);  // CR 608.2c — Defined$-driven (see helper)
+    sub.controller = parent.controller;
+}
+
 // See forward declaration at top of file. The bind closure holds the exact
 // per-sub setup the old inline loop ran on its by-value copy (source stamp,
 // CR 608.2c target binding, controller stamp, in that order); resolve_child
@@ -104,21 +111,13 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
         const Ability &sub_template = parent.subabilities[static_cast<size_t>(next_sub)];
         if (ctx.can_suspend()) {
             Ability *pp = &parent;
-            auto bind = [pp](Ability &sub) {
-                sub.source = pp->source;
-                sub.source_transforms = pp->source_transforms;
-                bind_sub_target(*pp, sub);  // CR 608.2c — Defined$-driven (see helper)
-                sub.controller = pp->controller;
-            };
+            auto bind = [pp](Ability &sub) { bind_chained_sub(*pp, sub); };
             if (ctx.resolve_child(sub_template, FrameLevel::SUB, next_sub, -1, bind, orderer) ==
                 ResolveStatus::SUSPENDED)
                 return ResolveStatus::SUSPENDED;
         } else {
             Ability sub_ab = sub_template;
-            sub_ab.source = parent.source;
-            sub_ab.source_transforms = parent.source_transforms;
-            bind_sub_target(parent, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
-            sub_ab.controller = parent.controller;
+            bind_chained_sub(parent, sub_ab);
             resolve_ability(sub_ab, orderer);
         }
     }
@@ -503,7 +502,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // phase (7) so a suspension inside a chained sub resumes there —
             // never re-evaluating the condition gates above, which could read
             // state an earlier sub mutated and diverge.
-            next_sub = 0;
+            next_sub = static_cast<int>(ab.def->repeat_sub_count);
             phase = 7;
         } else {
             phase = 4;
@@ -523,7 +522,8 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // anything chained after it can read it.
         apply_memory_ops(ab);
         coverage_effect(ab.def->kind);
-        next_sub = 0;
+        // A repeating effect's body is its own to run; what is chained follows it.
+        next_sub = static_cast<int>(ab.def->repeat_sub_count);
         // Chain subabilities unless the handler opted out (Charm/WinsGame and the
         // non-peek PeekAndReveal path return DONE_NO_SUBS to handle their own resolution).
         phase = (hres == HandlerResult::DONE_RUN_SUBS) ? 5 : 6;

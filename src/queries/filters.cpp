@@ -192,6 +192,7 @@ static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &c
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_token(const CharView &v, const Qualifier &q);
@@ -291,6 +292,9 @@ static const QualifierRow kQualifierRows[] = {
     // TargetedPlayerCtrl never reaches these: it counts as that player's YouCtrl (svar_eval.cpp).
     set_row("TargetedPlayerCtrl", ev_controlled_by_set, ObjectSpec::TARGETED),
     set_row("TargetedPlayerOwn", ev_owned_by_set, ObjectSpec::TARGETED),
+    // SharesColorWithOther Remembered: another object of the set has a color of this one (Grindstone's
+    // milled pair; a colorless object has no color to share, CR 105.2c).
+    set_row("SharesColorWithOther Remembered", ev_shares_color_with_other, ObjectSpec::REMEMBERED),
     // Ownership (CR 108.3) — distinct from control; meaningful for cards in any zone
     // (e.g. Karn's -2 "an artifact card you own from outside the game or in exile").
     // Lenient when either side is unknown (bare CardData / no "you" supplied), mirroring
@@ -804,6 +808,16 @@ static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCt
     coverage_row("TargetedPlayerOwn");
     const std::vector<Zone::Ownership> players = resolve_filter_players(q.set, set_context(ctx));
     return std::find(players.begin(), players.end(), v.owner) != players.end();
+}
+
+static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    coverage_row("SharesColorWithOther");
+    for (Entity other : resolve_filter_objects(q.set, set_context(ctx))) {
+        if (other == v.entity) continue;
+        for (Colors color : effective_colors(other))
+            if (v.colors.count(color)) return true;
+    }
+    return false;
 }
 
 static bool ev_you_own(const CharView &v, const Qualifier &, const MatchCtx &ctx) {

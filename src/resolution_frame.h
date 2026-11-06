@@ -185,6 +185,14 @@ struct RepeatRt {
     int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
     std::vector<ObjectRef> saved_remembered;  // outer remembered set to restore at completion
 };
+// DB$ Repeat: the iteration under way, the body's next sub-ability, and the bound read as it
+// started, so a resume inside an iteration re-derives the same child.
+struct RepeatLoopRt {
+    bool init = false;            // max_iterations read
+    int max_iterations = 0;
+    int iteration = 0;
+    int sub_idx = 0;
+};
 struct ImmediateRt {
     bool init = false;            // fire condition + optional energy cost resolved
     bool fire = false;            // reflexive effect fires (condition met, cost paid)
@@ -253,7 +261,7 @@ using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, Di
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
                                    CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
-                                   ResolutionCastRt>;
+                                   ResolutionCastRt, RepeatLoopRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

@@ -19,4 +19,8 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 // immediate and off-stack triggers, mana-ability riders). A blocking context never suspends.
 void resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer);
 
+// Stamps sub-ability `sub` from `parent` before it resolves: their source and controller, and the
+// target it takes from its parent, by its own Defined$ (CR 608.2c).
+void bind_chained_sub(const Ability &parent, Ability &sub);
+
 #endif /* RESOLUTION_H */
