@@ -14,7 +14,7 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 and M1 done
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M2 done
    and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
@@ -202,8 +202,8 @@ worktrees if time matters. M7 and M8 must both land before M11.
 compare is gone, M0's fold is replaced by `StaticAbility::affected_defined`, and the SVar evaluator has
 its `ResolveCtx` overloads (signature only; the five `evaluate_amount` callers that pass exactly
 those values use them, the rest move with M3). `replay` stayed byte-identical at each commit.
-Still to do here: the "Lands here" items below. Effects that behave differently per form still
-compare `def->defined`; a new name only they read needs a branch as well as its row.
+Effects that behave differently per form still compare `def->defined`; a new name only they read
+needs a branch as well as its row.
 
 **Today.** `Defined$` becomes booleans at parse (`parse.cpp`), with some names compared raw in effect
 files, and at least 10 effect files read the flags directly beside `affected_objects` /
@@ -217,13 +217,28 @@ filters all use it. Anything kept past a zone change stays an `ObjectRef`.
 
 **Migrate.** Effect by effect, deleting each boolean once unread, then M0's fold.
 
-**Lands here.** `Reveal$ RevealDefined`; `DamageSource$`, where damage comes from another object
-(Pyrogoyf, Hawkeye's Bow, with `TriggeredCardLKICopy` reading `departed_lki_for`); the `*.Defined`
-findings, names no reader acts on (`Player` on Draw and Discard, `ChosenCard`, `Imprinted`,
-`Player.IsRemembered`, `Targeted.<filter>`).
+**Lands with its first card, not here.** No card is finished by M2 alone (Appendix B), and a card
+outside the vocab can't be tested, so nothing below is built until a stage can prove it. Each is a
+row in the `Defined$` table plus, where the effect needs it, a branch:
 
-**Test.** Scenarios for damage from a departed source: lifelink, deathtouch and protection follow the
-LKI source, CR 120.
+| item | first testable card | stage |
+|---|---|---|
+| `Destroy Defined$ ChosenCard` | Drop of Honey | M3 |
+| `DamageSource$ TriggeredCard`, with `TriggeredCard` bound to the triggering object | Pyrogoyf | M9 |
+| `Draw` / `Discard Defined$ Player` | Echo of Eons | M4 |
+| `Defined$ Player.IsRemembered`, `Reveal$ RevealDefined` | Stronghold Gambit | M4 |
+| `Defined$ Targeted.<filter>` | Tezzeret, Cruel Captain | M9 |
+| `CopyPermanent Defined$ Enchanted` | Springheart Nantuko | M7 |
+| `DamageSource$ TriggeredCardLKICopy` | Hawkeye's Bow | M9 |
+
+`TriggeredCard`, `TriggeredCardLKICopy` and `TriggeredNewCard` resolve to the trigger's source today.
+That is right for the two vocab scripts using them, which trigger on themselves; Pyrogoyf is the first
+that needs the real binding, so its unit fixes it. Damage from a departed source (CR 120: lifelink,
+deathtouch and protection follow the LKI source) is tested with Hawkeye's Bow.
+
+**Done** (2026-11-05). `make registry` a no-op, parse reports unchanged over all 430 scripts, 1,560
+explore games byte-identical, `bench` flat (139.7 to 140.6 us). Appendix A and B still count these
+findings under M2; the table above says when each lands.
 
 ### M3. Filter and SVar tables (L)
 
