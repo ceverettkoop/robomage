@@ -1,0 +1,52 @@
+{
+  "name": "cr608_2b_cabal_therapy_illegal_target_names_nothing",
+  "why": "CR 608.2b: Cabal Therapy's only target is its sub-ability's: once Veil of Summer makes the player an illegal target the spell doesn't resolve, so no card is named",
+  "hand_a": [
+    "Cabal Therapy",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "hand_b": [
+    "Veil of Summer"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cabal Therapy",
+    "A:target:Player B",
+    "B:cast:Veil of Summer"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "NameCard fizzles"
+  ],
+  "expect_not": [
+    "names ",
+    "reveals their hand"
+  ]
+}

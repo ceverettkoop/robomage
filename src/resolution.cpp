@@ -52,6 +52,9 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
 static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
 // CR 608.2b: every target of `ab` became illegal; it is removed from the stack without effect.
 static void fizzle(const Ability &ab);
+// CR 608.2b: `ab` declares no target of its own, its chained instructions chose some, and all of
+// them are illegal now.
+static bool chained_targets_all_illegal(const Ability &ab);
 
 static bool condition_svar_passes(const Ability &ab) {
     const Entity src = ab.source.lki_entity();
@@ -224,6 +227,16 @@ static void fizzle(const Ability &ab) {
     // so for now this is a stub
     game_log("%s fizzles\n", ab.def->category.c_str());
     return;
+}
+
+static bool chained_targets_all_illegal(const Ability &ab) {
+    bool chosen = false;
+    for (const Ability *sub : ab.chained_subs()) {
+        if (sub->def->valid_tgts == "N_A" || (sub->target.empty() && sub->targets.empty())) continue;
+        if (targets_still_legal(*sub)) return false;
+        chosen = true;
+    }
+    return chosen;
 }
 
 // Transitional blocking shim: every non-stack caller (sub-ability recursion, the
@@ -402,6 +415,13 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                     }
                     ab.target = ab.targets.empty() ? ObjectRef{} : ab.targets[0];
                 }
+            }
+            // The same check for a stack object whose targets its sub-abilities chose: they are
+            // the spell's targets (Cabal Therapy's player, Galvanic Discharge's creature), so with
+            // all of them illegal not even its untargeted first instruction happens.
+            if (ctx.is_stack_object() && ab.def->valid_tgts == "N_A" && chained_targets_all_illegal(ab)) {
+                fizzle(ab);
+                return ResolveStatus::DONE;
             }
             // The ability resolves: count it toward its ResolvedLimit$ and, as the stack object,
             // its source's Count$ResolvedThisTurn, before its effects read the count (a declined
