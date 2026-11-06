@@ -1,0 +1,17 @@
+# M5 (c1): the cost kinds of the candidates, each on the path that pays it.
+# A triggered ability's offered cost: its discard (Formidable Speaker, Melded Moxite) and its mana
+# (Nihil Spellbomb).
+cost:DISCARD.trigger
+cost:MANA.trigger
+category:OPTIONAL_YESNO
+# The source exiling itself: from the battlefield (The Echoverse Fulcrum, The Stone Brain), the
+# graveyard (Runehorn Hellkite) and the hand as a mana ability (Simian Spirit Guide).
+cost:EXILE.self
+cost:EXILE_FROM_GRAVEYARD.self
+cost:EXILE_FROM_HAND.self
+# Each form of an additional cost announced (Bitter Triumph).
+cost:LIFE.additional
+cost:DISCARD.additional
+# Hybrid pips of an activation (Fiend Artisan) and an alternative cost (Vibrance's evoke).
+cost:MANA.hybrid
+cast:alt_cost
