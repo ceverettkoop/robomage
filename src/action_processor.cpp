@@ -456,12 +456,6 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // floor. The non-mana parts of the cost below are unaffected.
     ManaValue alt_mana = floored_alt_mana_cost(card_data, mana, caster);
 
-    // Record the mana this alternative cost will pay (CR 106/601.2g). A pitch/life alt cost
-    // with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
-    // Spell.ManaSpent EQ0 trigger (Roiling Vortex) reads at cast time. The payment recomputes it
-    // from the deferred cost when there IS one, so the two agree.
-    game.pending.cast.chosen.mana_spent = static_cast<int>(alt_mana.size());
-
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.cost.is_free() && alt_mana.empty()) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());

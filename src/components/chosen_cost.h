@@ -56,9 +56,10 @@ struct ChosenCost {
         // give the opponent the gift, and (via current_gift_promised() at cast time) to switch
         // a Count$PromisedGift-driven effect (e.g. Into the Flood Maw widening its bounce target).
         bool gift_promised = false;
-        // Total mana actually spent to cast this spell (the pip count of the mana cost paid, CR
-        // 106/601.2g). 0 for a spell cast for free or via an alternative cost that pays no mana
-        // (Force of Will's pitch+life, a 0-cost spell). Read by a SpellCast trigger's ValidSA$
+        // Total mana actually spent to cast this spell, what left the pool to pay it (CR 106/601.2g).
+        // 0 for a spell cast for free or via an alternative cost that pays no mana (Force of Will's
+        // pitch+life, a 0-cost spell); a pip a delve exile or a tap paid (TapToPay) is no mana spent,
+        // so a spell can owe mana and spend none. Read by a SpellCast trigger's ValidSA$
         // Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent"). Shared, general —
         // Lavinia, Azorius Renegade reads the same field.
         int mana_spent = 0;

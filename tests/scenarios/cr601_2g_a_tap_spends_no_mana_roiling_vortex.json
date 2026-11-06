@@ -1,0 +1,13 @@
+{
+  "name": "cr601_2g_a_tap_spends_no_mana_roiling_vortex",
+  "why": "CR 106.1, 601.2g, 702.126a: an artifact tapped for Improvise pays for {1} and no mana is spent, so Metallic Rebuke cast without paying its mana cost, its {1} from Thalia paid by a tap, is a spell no mana was spent to cast: Roiling Vortex deals 5",
+  "hand_a": ["Metallic Rebuke"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Omniscience", "Thalia Guardian of Thraben", "Roiling Vortex", "Mishra's Bauble"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "B:cast:Lightning Bolt", "B:target:Player A", "A:desc:Cast Metallic Rebuke without paying its mana cost", "A:target:Lightning Bolt"],
+  "max_decisions": 24,
+  "expect_order": ["Player A taps Mishra's Bauble for Improvise", "Player A casts Metallic Rebuke", "Roiling Vortex deals 5 damage to Player A"]
+}

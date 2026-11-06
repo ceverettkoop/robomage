@@ -1,0 +1,13 @@
+{
+  "name": "cr601_2g_a_tap_spends_no_mana_lavinia",
+  "why": "CR 106.1, 601.2g, 702.126a: Kappa Cannoneer cast without paying its mana cost, Trinisphere's {3} paid by three artifacts, is a spell no mana was spent to cast: Lavinia counters it",
+  "hand_a": ["Kappa Cannoneer"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Omniscience", "Trinisphere", "Mishra's Bauble", "Urza's Bauble", "Aether Spellbomb"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Lavinia Azorius Renegade"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Kappa Cannoneer without paying its mana cost"],
+  "max_decisions": 14,
+  "expect_count": {"taps .* for Improvise": 3},
+  "expect_order": ["Player A casts Kappa Cannoneer", "Kappa Cannoneer is countered"]
+}

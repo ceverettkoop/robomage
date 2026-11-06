@@ -218,8 +218,8 @@ static const CostStep kCastSteps[] = {
     {CostStep::PICK, &kEscapeExileCount},
     {CostStep::SNAPSHOT},
     {CostStep::FLOAT_LEAVING},
-    {CostStep::RECORD_MANA_SPENT},
     {CostStep::PAY_MANA},
+    {CostStep::RECORD_MANA_SPENT},
     {CostStep::CHECK_RESOURCES},
     {CostStep::LIFE},
     {CostStep::LIFE_X},
@@ -426,10 +426,9 @@ static PayStatus pay_step(
                     float_mana_before_cost_removal(item.entity, who.payer, orderer, who.run->mana, who.payee);
             break;
         case CostStep::RECORD_MANA_SPENT:
-            // The cost's pip count is the total mana paid, after any delve/improvise reduction
-            // already removed pips from it, for a ValidSA$ Spell.ManaSpent trigger to read at cast
-            // time. A no-mana alternative cost leaves the 0 that defer_alternate_cost recorded.
-            if (who.run->mana_pending) who.chosen->mana_spent = static_cast<int>(who.run->mana.size());
+            // What left the pool (CR 106, 601.2g), for a ValidSA$ Spell.ManaSpent trigger to read at
+            // cast time: a pip paid by a delve exile or a tap spends no mana.
+            who.chosen->mana_spent = static_cast<int>(who.run->spent_colors.size());
             break;
         case CostStep::PAY_MANA:
             return pay_mana(who, ctx, orderer);
