@@ -8,7 +8,9 @@ must stop moving first, since a run's actors load them on every restart.
 
 - History is on: `FeatureOptions::history_events` (`docs/featurizer.md` §3.7), the events of this turn and the
   previous one, newest first, at most 32, each with up to 8 cards. "Previous" is one turn back, which is the
-  opponent's last turn from your own.
+  opponent's last turn from your own. That is the window wanted, so `EventHistory` doesn't change.
+- A short paired run comes first: 5k steps on the ten original decks from one seed, history on against off, judged by
+  `value_mse_gap`, held-out value MSE and a paired bench. It needs §2's items 1 to 3 and nothing from M13's decks.
 - Old episodes are gone (`runs/*/episodes`, `runs/bc1/corpus/episodes`, 280 GB). The run needs none: R-NaD
   learns from its current policy. Checkpoints, decision logs, ladders and benchmarks stay. Gone with them:
   `run.corpus_dir` reuse of the B0 corpus (a run re-records it), the DAgger labels, and
@@ -80,13 +82,11 @@ reviews.
 
 ## 5. Decisions needed
 
-1. Held-out decks, before M13: at least one fair and one combo (`bant_control` and `show_and_tell` are held out today).
-2. A control arm. One run can't say what history contributed: hist1's question stays open without a second run from the
-   same seed with history off. It doubles the compute. Recommended: a shorter paired pair of 5k steps on the ten
-   original decks first, or accept not knowing.
-3. Whether "past two turns" should reach further than the opponent's last turn: two full turns back means a small change
-   to `EventHistory`'s window, and more tokens.
-4. The defaults in §3 and §4.
+1. Held-out decks, before M13: at least one fair and one combo. `bant_control` and `show_and_tell` are held out today, but
+   the candidates overlap them: `uwx_control` shares 48 of 60 main-deck cards with `bant_control`, `stoneblade` 44, `aluren`
+   39 with `show_and_tell`. A held-out deck says little if a near copy trains. Low-overlap candidates: `storm` (combo, at most
+   14 shared with any deck) and `dragon_stompy` (fair, at most 11).
+2. The defaults in §3 and §4.
 
 After this run, by the same paired benchmarks: S6, the in-model deck summary, and `id_dropout` 0.25, as
 `docs/open_vocab_plan.md` S8 sets out. A recurrent core only if history shows a gain worth extending.
