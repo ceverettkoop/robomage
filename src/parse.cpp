@@ -1085,7 +1085,8 @@ static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
     const std::string arg = keyword_arg(kw_line);
     ctx.card.ward_cost = parse_ward_cost(arg);
     CostPart part;
-    if (!arg.empty() && !read_ward_cost(arg, part)) parse_finding("cost", "Ward", "Ward:" + arg + " is read as a {1} ward");
+    if (!arg.empty() && !read_ward_cost(arg, part))
+        parse_finding("cost", "Ward", "Ward:" + arg + " is read as a {1} ward");
     ctx.card.keywords.push_back("Ward");
 }
 
@@ -1335,7 +1336,8 @@ static void kw_flashback(const std::string &kw_line, KeywordContext &ctx) {
         else
             unpaid = true;
     }
-    if (unpaid) parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
+    if (unpaid)
+        parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
     ctx.card.keywords.push_back("Flashback");
 }
 
@@ -1912,7 +1914,7 @@ static bool unless_cost_read_by(const std::string &category) {
     return false;
 }
 
-// Reads UnlessCost$ onto `ability`. A cost it cannot express is a parse finding and costs nothing.
+// Reads UnlessCost$ onto `ability`. A token it cannot express is a parse finding and adds nothing.
 static void read_unless_cost(AbilityDef &ability, const std::string &value) {
     if (!unless_cost_read_by(ability.category)) {
         parse_finding("ability_param", ability.category + ".UnlessCost", "UnlessCost$ " + value + " is not offered");
@@ -4252,7 +4254,8 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                             // permanent enters to have it enter untapped (Witch-Blessed Meadow,
                             // shock lands).
                             CostPart part;
-                            if (read_cost_token(v, part) && part.kind == CostPart::LIFE) tapped_unless_life = part.count;
+                            if (read_cost_token(v, part) && part.kind == CostPart::LIFE)
+                                tapped_unless_life = part.count;
                         }
                     }
                 }
