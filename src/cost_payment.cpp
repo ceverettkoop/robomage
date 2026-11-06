@@ -722,8 +722,7 @@ static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const s
 // graveyard each pass minus the cards already picked. When the remaining candidates are all going to
 // be exiled anyway (candidates <= picks left, including the single-candidate case) there is no real
 // choice, so they are taken without a prompt. Each pick pays one GENERIC pip of the cost (CR 702.66a)
-// and is a chosen cost item: the card is exiled, and recorded in cur_game.delve_exiled, as the items
-// move.
+// and is a chosen cost item: the card is exiled, and recorded in ChosenCost::paid, as the items move.
 static PayStatus choose_delve_cards(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     CostRun &run = *who.run;
     if (!run.delve_seat_held) return PayStatus::PAID;
@@ -795,7 +794,7 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
     CostRun &run = *who.run;
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
-        /*has_delve=*/false, run.tap_to_pay, &run.spent_colors);
+        run.tap_to_pay, &run.spent_colors);
     if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA, path_form(who.path));
     return paid;
 }
@@ -833,15 +832,11 @@ static void pay_loyalty(const CostPayer &who) {
 // chosen target illegal; the spell then fizzles at resolution (CR 608.2b), matching paper rules.
 static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
     CostRun &run = *who.run;
-    // A delve cast's exiles replace any a previous delve spell recorded (delve_exiled persists until
-    // an etbCounter replacement consumes it).
-    if (who.spell_has_delve) cur_game.delve_exiled.clear();
     for (const CostItem &item : run.items) {
         coverage_cost(item.kind, item.delve ? "delve" : path_form(who.path));
         if (who.path == CostPath::CAST) game_log("%s\n", item.log.c_str());
         orderer->add_to_zone(false, item.entity, item.dest);
         if (who.path != CostPath::CAST) game_log("%s\n", item.log.c_str());
-        if (item.delve) cur_game.delve_exiled.push_back(ObjectRef::of(item.entity));
         if (who.chosen) who.chosen->paid.push_back({item.kind, ObjectRef::of(item.entity)});
     }
     run.items.clear();

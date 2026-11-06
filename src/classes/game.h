@@ -281,7 +281,6 @@ struct Game {
         // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
         // the monarch).
         Entity monarch_entity = MAX_ENTITIES;
-        std::vector<ObjectRef> delve_exiled;  // cards exiled during current delve cast; cleared after ETB
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play.

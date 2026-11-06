@@ -1172,7 +1172,7 @@ static void kw_etb_counter(const std::string &kw_line, KeywordContext &ctx) {
                         // Sorcery.ExiledWithSource") so the ETB counter count is
                         // restricted to the matching delve exiles — Delve itself may
                         // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
-                        // is implied by membership in cur_game.delve_exiled, so strip
+                        // is implied by the spell's cost having exiled it, so strip
                         // it; the remainder ("Instant,Sorcery") is a card_matches_filter
                         // spec.
                         const std::string ve_prefix = "Count$ValidExile ";

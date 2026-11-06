@@ -736,6 +736,7 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
         entry->cast = false;
         entry->x_paid = 0;
         entry->mana_by_color.clear();
+        entry->paid.clear();
         entry->cast_from_hand = false;
         entry->enters_transformed = false;
     }

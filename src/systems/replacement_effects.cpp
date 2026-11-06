@@ -162,10 +162,14 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     MatchCtx dctx;
                     dctx.controller = ev.affected_player;
                     dctx.source = ev.entity;
-                    for (Entity ex : live_entities(cur_game.delve_exiled))
-                        if (sa.counter_count_delve_filter.empty() ||
-                            card_matches_filter(ex, sa.counter_count_delve_filter, dctx))
-                            n++;
+                    if (const EntryInfo *entry = find_entry_info(ev.entity))
+                        for (const ChosenCost::Paid &paid : entry->paid) {
+                            const Entity ex = paid.object.get();
+                            if (paid.kind != CostPart::EXILE_FROM_GRAVEYARD || ex == 0) continue;
+                            if (sa.counter_count_delve_filter.empty() ||
+                                card_matches_filter(ex, sa.counter_count_delve_filter, dctx))
+                                n++;
+                        }
                 }
                 else if (sa.counter_count_from_xpaid) {
                     const EntryInfo *entry = find_entry_info(ev.entity);
@@ -440,7 +444,6 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
         case ETB_COUNTERS:
             ev.etb_p1p1 += c.amount;
             ev.etb_counter_type = c.counter_type;
-            cur_game.delve_exiled.clear();
             break;
         case EXILE_INSTEAD: {
             ev.destination = Zone::EXILE;

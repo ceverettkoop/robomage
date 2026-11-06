@@ -126,6 +126,7 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     // record is a column of every object's row, which no other card's should move.
     if (spell_reads_colors_spent(global_coordinator.GetComponent<CardData>(spell_entity)))
         entry.mana_by_color = spell.chosen.mana_by_color;
+    entry.paid = spell.chosen.paid;
     // Offspring: its token-copy ETB trigger fires.
     if (spell.chosen.offspring) entry.offspring = true;
     // Escape: Uro's "sacrifice it unless it escaped" reads it.

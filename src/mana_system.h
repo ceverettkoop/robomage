@@ -178,7 +178,6 @@ struct ManaPaymentSnapshot {
     int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
     std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
-    std::vector<ObjectRef> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind
 };
 
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);
@@ -294,28 +293,20 @@ struct ManaPaymentRT {
 // Pay `cost` for `paid_for`: from the pool, then the auto-payer, or under --no-auto-mana by asking
 // `ctx` for one source at a time, which may suspend (re-enter with the same `rt` and `cost`). On
 // FAILED the caller must restore from snapshot.
-// If has_delve is true, delve exile options are included alongside mana abilities for generic costs,
-// and with a `tap` the permanents it lets the player tap.
+// With a `tap`, the permanents it lets the player tap are offered alongside the mana abilities.
 // `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
 // pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90). It
 // must persist with `rt`.
 PayStatus pay_mana_cost(ManaPaymentRT& rt, Zone::Ownership controller, const ManaValue& cost,
                         ManaPayee paid_for, FrameCtx& ctx, std::shared_ptr<Orderer> orderer,
-                        bool has_delve = false, TapToPay tap = TapToPay::NONE,
-                        ManaValue* spent_out = nullptr);
+                        TapToPay tap = TapToPay::NONE, ManaValue* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
 // your graveyard rather than pay that mana"); riders that care about the exiled cards'
-// types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
+// types (Murktide Regent's etbCounter) filter what the cost paid themselves. Single
 // source for "what can Delve eat", consumed by the automatic payer and the cost payment's
 // delve steps (cost_payment.cpp).
 bool is_delve_eligible(Entity e, Zone::Ownership controller);
-
-// Pay one generic pip via Delve: exile `e`, record it in cur_game.delve_exiled (for
-// etbCounter counts, e.g. Murktide Regent), and drop one GENERIC from `remaining`.
-// Single source for the delve-exile action used by both payment paths.
-void delve_exile_one(Entity e, Zone::Ownership controller,
-                     std::shared_ptr<Orderer> orderer, ManaValue& remaining);
 
 #endif

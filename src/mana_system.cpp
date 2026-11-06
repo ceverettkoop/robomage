@@ -651,7 +651,6 @@ ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<
     snap.player_mana = pl.mana;
     snap.life_total = pl.life_total;
     snap.life_lost_this_turn = pl.life_lost_this_turn;
-    snap.delve_exiled = cur_game.delve_exiled;
 
     for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -684,12 +683,6 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
             permanent.abilities[idx].activations_this_turn = old_count;
         }
     }
-    // Undo delve exiles: move cards exiled since snapshot back to graveyard
-    for (size_t i = snap.delve_exiled.size(); i < cur_game.delve_exiled.size(); i++) {
-        Entity exiled = cur_game.delve_exiled[i].get();
-        if (exiled != 0) orderer->add_to_zone(false, exiled, Zone::GRAVEYARD);
-    }
-    cur_game.delve_exiled = snap.delve_exiled;
     cur_game.pending_cant_be_countered = false;
 }
 
@@ -730,27 +723,14 @@ ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue *spent
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
 // your graveyard rather than pay that mana"); riders that care about the exiled cards'
-// types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
-// source for "what can Delve eat", consumed by both the automatic payer and the cast
-// flow's DELVE steps (run_cast_flow, action_processor.cpp). Exported via mana_system.h.
+// types (Murktide Regent's etbCounter) filter what the cost paid themselves. Single
+// source for "what can Delve eat", consumed by both the automatic payer and the cost
+// payment's delve steps (cost_payment.cpp). Exported via mana_system.h.
 bool is_delve_eligible(Entity e, Zone::Ownership controller) {
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;
     auto &ez = global_coordinator.GetComponent<Zone>(e);
     if (ez.location != Zone::GRAVEYARD || ez.owner != controller) return false;
     return global_coordinator.entity_has_component<CardData>(e);
-}
-
-// Pay one generic pip via Delve: exile `e`, record it for the etbCounter count, and
-// drop one GENERIC from `remaining`. Single source for the delve-exile action used by
-// both payment paths. Exported via mana_system.h.
-void delve_exile_one(Entity e, Zone::Ownership controller,
-                     std::shared_ptr<Orderer> orderer, ManaValue &remaining) {
-    auto &ecd = global_coordinator.GetComponent<CardData>(e);
-    orderer->add_to_zone(false, e, Zone::EXILE);
-    cur_game.delve_exiled.push_back(ObjectRef::of(e));
-    auto git = remaining.find(GENERIC);
-    if (git != remaining.end()) remaining.erase(git);
-    game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
 }
 
 // The rule of each TapToPay kind. Built on first use: a FilterSpec interns its text.
@@ -1097,17 +1077,14 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // generic costs, never touches them) and instead relax the colored source-matching below.
     bool any_color = any_mana_as_any_color_active();
 
-    // Delve: exile graveyard instants/sorceries to reduce generic portion
+    // Delve, in a simulated payment: each card it could exile takes a generic pip off. A real one
+    // is paid by the cost's delve steps, before any mana (cost_payment.cpp).
     if (has_delve) {
         for (auto e : orderer->mEntities) {
             if (remaining.count(GENERIC) == 0) break;
             if (!is_delve_eligible(e, controller)) continue;
-            if (commit) {
-                delve_exile_one(e, controller, orderer, remaining);
-            } else {
-                auto git = remaining.find(GENERIC);
-                if (git != remaining.end()) remaining.erase(git);
-            }
+            auto git = remaining.find(GENERIC);
+            if (git != remaining.end()) remaining.erase(git);
         }
     }
 
@@ -1588,7 +1565,7 @@ bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
 
 PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const ManaValue &cost,
                         ManaPayee paid_for, FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                        bool has_delve, TapToPay tap, ManaValue *spent_out) {
+                        TapToPay tap, ManaValue *spent_out) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -1616,7 +1593,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
 
         // Auto-mana: the greedy payer selects the mana sources (no decisions)
         if (auto_mana) {
-            return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
+            return auto_pay_mana(controller, remaining, paid_for, orderer, /*has_delve=*/false, /*commit=*/true,
                                  tap)
                        ? PayStatus::PAID
                        : PayStatus::FAILED;
@@ -1631,9 +1608,9 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
     bool parked = false;
     CostPaymentScope payment_scope(payment, &parked);
 
-    // Payment loop: prompt player to tap sources or delve until cost is paid
+    // Payment loop: prompt player to tap sources until cost is paid
     while (!remaining.empty()) {
-        // Check if pool now covers remaining cost (from prior mana activations or delve)
+        // Check if pool now covers remaining cost (from prior mana activations)
         if (can_afford_pool(player.mana, remaining)) {
             spend_mana(controller, remaining, paid_for.entity);
             return PayStatus::PAID;
@@ -1651,18 +1628,6 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
             if (!can_afford_pool(player.mana, la.ability.def->cost.mana())) continue;
             la.category = ActionCategory::PAYING_COSTS;
             pay_actions.push_back(la);
-        }
-
-        // Delve: exile instants/sorceries from graveyard to pay generic costs
-        size_t delve_action_start = pay_actions.size();
-        if (has_delve && remaining.count(GENERIC) > 0) {
-            for (auto e : orderer->mEntities) {
-                if (!is_delve_eligible(e, controller)) continue;
-                auto &ecd = global_coordinator.GetComponent<CardData>(e);
-                LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
-                la.category = ActionCategory::PAYING_COSTS;
-                pay_actions.push_back(la);
-            }
         }
 
         // The permanents the payment's TapToPay lets the player tap for a pip still owed.
@@ -1727,10 +1692,6 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
             const TapToPayRule &rule = tap_to_pay_rule(tap);
             tap_to_pay_pip(rule, chosen.source_entity, controller, remaining,
                            pip_paid_by_tap(rule, chosen.source_entity, remaining));
-        } else if (has_delve && uchoice >= delve_action_start &&
-                   uchoice < tap_action_start) {
-            // Delve exile action.
-            delve_exile_one(chosen.source_entity, controller, orderer, remaining);
         } else {
             // Mana ability activation — same core sequence as the auto-payer. The interactive
             // payer always commits to real state, so pool == the player's real mana pool.

@@ -2393,7 +2393,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             who.escalate_times = pc.chosen.escalate_count;
             if (pc.chosen.flashback()) who.flashback = &card_data.flashback_cost;
             if (pc.chosen.escape()) who.escape = &card_data.escape_cost;
-            who.spell_has_delve = card_data.has_delve;
             who.chosen = &pc.chosen;
             const PayStatus paid = run_cost_parts(who, ctx, orderer);
             if (paid == PayStatus::SUSPENDED) return;

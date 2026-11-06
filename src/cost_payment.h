@@ -45,7 +45,7 @@ struct CostItem {
         Entity entity = 0;
         Zone::ZoneValue dest = Zone::GRAVEYARD;
         CostPart::Kind kind = CostPart::SACRIFICE;  // the part it pays
-        bool delve = false;                         // a delve exile (CR 702.66a): recorded in cur_game.delve_exiled
+        bool delve = false;                         // a delve exile (CR 702.66a)
         // The narrative line, formatted as it is chosen (while the card is still where it was) and
         // emitted as it moves.
         std::string log;
@@ -119,7 +119,6 @@ struct CostPayer {
         int escalate_times = 0;
         const CostParts *flashback = nullptr;
         const CostParts *escape = nullptr;
-        bool spell_has_delve = false;
         ChosenCost *chosen = nullptr;  // what the cast has committed to, recording what is paid
 
         // A mana ability paying through activate_mana_source: the pool and the player it pays from, the
