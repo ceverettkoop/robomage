@@ -284,7 +284,12 @@
 {"type":"hist_card","name":"to_pos:none","kind":"scalar","at":5},
 {"type":"hist_card","name":"to_span","kind":"scalar","at":6},
 {"type":"hist_card","name":"face_down","kind":"scalar","at":7},
-{"type":"hist_card","name":"token","kind":"scalar","at":8}
+{"type":"hist_card","name":"token","kind":"scalar","at":8},
+{"type":"object","name":"spent_w","kind":"scalar","at":81},
+{"type":"object","name":"spent_u","kind":"scalar","at":82},
+{"type":"object","name":"spent_b","kind":"scalar","at":83},
+{"type":"object","name":"spent_r","kind":"scalar","at":84},
+{"type":"object","name":"spent_g","kind":"scalar","at":85}
 ],
 "categorical":[
 {"type":"header","name":"knowledge","source":"enum:knowledge_level","col":0,"offset":1,"size":9},

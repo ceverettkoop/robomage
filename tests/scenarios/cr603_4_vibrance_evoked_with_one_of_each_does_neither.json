@@ -1,0 +1,33 @@
+{
+  "name": "cr603_4_vibrance_evoked_with_one_of_each_does_neither",
+  "why": "CR 603.4: Vibrance evoked with {R}{G}: neither {R}{R} nor {G}{G} was spent, so neither trigger fires",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Vibrance (alternate cost)"
+  ],
+  "max_decisions": 8,
+  "expect_not": [
+    "deals 3 damage",
+    "Searching Player A's library",
+    "gains 2 life"
+  ]
+}

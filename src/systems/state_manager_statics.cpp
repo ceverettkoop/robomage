@@ -720,6 +720,7 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
         if (entry->cast) perm.entered_by_cast = true;
         // The X its spell was cast with, for its ETB triggered abilities (CR 107.3m).
         if (entry->x_paid > 0) perm.entered_x = entry->x_paid;
+        perm.cast_mana_by_color = entry->mana_by_color;
         // Cast from its controller's own hand (Amped Raptor's Card.wasCastFromYourHandByYou
         // gate). Any other entry (reanimation, tokens, ChangeZone, impulse cast from exile)
         // leaves it false.
@@ -734,6 +735,7 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
         }
         entry->cast = false;
         entry->x_paid = 0;
+        entry->mana_by_color.clear();
         entry->cast_from_hand = false;
         entry->enters_transformed = false;
     }

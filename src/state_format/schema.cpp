@@ -324,6 +324,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_bool(o, "escaped");
     col_bool(o, "unearthed");
     col_bool(o, "cast_from_hand");
+    for (const char *c : {"spent_w", "spent_u", "spent_b", "spent_r", "spent_g"}) col_count(o, c, Storage::U8);
 
     add_table(out, TableId::OBJECT_SUBTYPE, "object_subtype", FrameKind::STATE);
     col_handle(out.back(), "obj");

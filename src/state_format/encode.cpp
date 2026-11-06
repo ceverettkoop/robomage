@@ -839,6 +839,8 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         .u8(perm && perm->evoked ? 1 : 0)
         .u8(perm && perm->cast_with_escape ? 1 : 0);
     r.u8(perm && perm->unearthed ? 1 : 0).u8(perm && perm->cast_from_hand_by_controller ? 1 : 0);
+    for (Colors col : {WHITE, BLUE, BLACK, RED, GREEN})
+        r.u8(perm ? u8_count(count_color(perm->cast_mana_by_color, col)) : 0);
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.

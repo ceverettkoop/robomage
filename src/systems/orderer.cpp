@@ -211,6 +211,7 @@ void Orderer::move_object(
             const auto &p = global_coordinator.GetComponent<Permanent>(target);
             lki.entered_by_cast = p.entered_by_cast;
             lki.evoked = p.evoked;
+            lki.cast_mana_by_color = p.cast_mana_by_color;
             lki.entered_with_offspring = p.entered_with_offspring;
             lki.transformed = p.transformed;
             // Layer-6 ability removal (Humility, CR 613.1f): a permanent whose abilities were

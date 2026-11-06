@@ -26,6 +26,7 @@
 #include "queries/filters.h"
 #include "resolution_memory.h"
 #include "str_util.h"
+#include "svar_eval.h"
 #include "type_constants.h"
 
 extern std::string RESOURCE_DIR;
@@ -665,7 +666,7 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
     // Hybrid pips are announced where announce_hybrid_pips is called; anywhere else they are a finding.
-    if (!part.hybrid.empty() && form != CostForm::ACTIVATED) return false;
+    if (!part.hybrid.empty() && form != CostForm::ACTIVATED && form != CostForm::ALTERNATIVE) return false;
     const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
     switch (form) {
         case CostForm::ACTIVATED:
@@ -3393,7 +3394,14 @@ static TriggerLine read_trigger_line(const std::string &line,
                 // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
                 // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
                 // it as the intervening-if condition so the whole trigger fizzles when false.
-                t.condition_present = (it != svars.end()) ? it->second : value;
+                // CastSA> names the spell that cast the source: the expression reads the source's
+                // record of it (Vibrance: CastSA>Count$Adamant_2.Red.2.0).
+                static const std::string kCastSa = "CastSA>";
+                const std::string expr = (it != svars.end()) ? it->second : value;
+                const bool of_cast = expr.rfind(kCastSa, 0) == 0;
+                t.condition_present = of_cast ? expr.substr(kCastSa.size()) : expr;
+                if (of_cast && !svar_expr_recognized(t.condition_present))
+                    parse_finding("svar_expr", key, value);
                 t.intervening_if = true;
             }
         } else if (key == "SVarCompare") {

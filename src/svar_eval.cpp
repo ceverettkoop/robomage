@@ -30,6 +30,7 @@
 #include "queries/spells.h"
 #include "queries/types.h"
 #include "queries/zones.h"
+#include "str_util.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -146,6 +147,7 @@ static const Player *player_of(Zone::Ownership seat);
 static bool read_no_dollar(const std::string &rest, SvarExpr &x);
 static bool read_devotion_color(const std::string &rest, SvarExpr &x);
 static bool read_high_low(const std::string &rest, SvarExpr &x);
+static bool read_adamant(const std::string &rest, SvarExpr &x);
 static bool read_valid_battlefield(const std::string &rest, SvarExpr &x);
 static bool read_card_types_clause(const std::string &rest, SvarExpr &x);
 static bool read_graveyard_card_types(const std::string &rest, SvarExpr &x);
@@ -159,6 +161,7 @@ static bool read_player_count(const std::string &rest, SvarExpr &x);
 static int ev_literal(const SvarExpr &x, const SvarArgs &a);
 static int ev_aggregate(const SvarExpr &x, const SvarArgs &a);
 static int ev_high_low(const SvarExpr &x, const SvarArgs &a);
+static int ev_adamant(const SvarExpr &x, const SvarArgs &a);
 static int ev_x_paid(const SvarExpr &x, const SvarArgs &a);
 static int ev_converge(const SvarExpr &x, const SvarArgs &a);
 static int ev_chosen_number(const SvarExpr &x, const SvarArgs &a);
@@ -236,6 +239,9 @@ static const SvarRow kSvarRows[] = {
     // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
     // currently resolving (Prismatic Ending: the cmcLEY exile threshold).
     value_row("Count$Converge", ev_converge),
+    // Count$Adamant_<N>.<Color>.<high>.<low> — <high> if N or more mana of the color was spent to
+    // cast the source, else <low> (Vibrance: "if {R}{R} was spent to cast it").
+    read_row("Count$Adamant_", read_adamant, ev_adamant),
     // Count$ChosenNumber — the integer chosen by the DB$ ChooseNumber effect earlier in this
     // resolution (Wrath of the Skies: the amount of energy to pay), read by a chained sub-ability
     // (the DestroyAll's cmc bound Y and its PayEnergy<Y> unless-cost).
@@ -560,6 +566,30 @@ static const Player *player_of(Zone::Ownership seat) {
     return global_coordinator.entity_has_component<Player>(pe)
                ? &global_coordinator.GetComponent<Player>(pe)
                : nullptr;
+}
+
+static bool read_adamant(const std::string &rest, SvarExpr &x) {
+    const std::vector<std::string> parts = split(rest, '.');
+    if (parts.size() != 4 || !parse_int(parts[0], x.literal) || !parse_int(parts[2], x.high) ||
+        !parse_int(parts[3], x.low))
+        return false;
+    x.color = parts[1] == "White"  ? WHITE
+              : parts[1] == "Blue"  ? BLUE
+              : parts[1] == "Black" ? BLACK
+              : parts[1] == "Red"   ? RED
+              : parts[1] == "Green" ? GREEN
+                                    : NO_COLOR;
+    return x.color != NO_COLOR;
+}
+
+// Read off the source, or as it last existed: an evoked creature's trigger resolves after it is gone.
+static int ev_adamant(const SvarExpr &x, const SvarArgs &a) {
+    const ManaValue *spent = nullptr;
+    if (is_battlefield_permanent(a.source))
+        spent = &global_coordinator.GetComponent<Permanent>(a.source).cast_mana_by_color;
+    else if (const LastKnownInfo *lki = departed_lki_for(a.source))
+        spent = &lki->cast_mana_by_color;
+    return spent && static_cast<int>(spent->count(x.color)) >= x.literal ? x.high : x.low;
 }
 
 static bool read_no_dollar(const std::string &rest, SvarExpr &x) {

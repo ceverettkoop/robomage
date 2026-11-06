@@ -122,6 +122,10 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     EntryInfo &entry = entry_info(spell_entity);
     // Evoke: its evoke self-sacrifice ETB trigger fires.
     if (spell.chosen.mode == ChosenCost::Mode::EVOKE) entry.evoked = true;
+    // Vibrance's "if {R}{R} was spent to cast it" reads it. Kept only for a card that does: the
+    // record is a column of every object's row, which no other card's should move.
+    if (spell_reads_colors_spent(global_coordinator.GetComponent<CardData>(spell_entity)))
+        entry.mana_by_color = spell.chosen.mana_by_color;
     // Offspring: its token-copy ETB trigger fires.
     if (spell.chosen.offspring) entry.offspring = true;
     // Escape: Uro's "sacrifice it unless it escaped" reads it.

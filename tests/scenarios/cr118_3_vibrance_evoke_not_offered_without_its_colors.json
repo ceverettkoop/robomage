@@ -1,0 +1,31 @@
+{
+  "name": "cr118_3_vibrance_evoke_not_offered_without_its_colors",
+  "why": "CR 107.4e / 118.3: {R/G}{R/G} can't be paid with Islands: no evoke cast",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Cast Vibrance"
+  ]
+}

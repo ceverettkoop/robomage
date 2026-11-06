@@ -67,6 +67,9 @@ struct ChosenCost {
         // resolution frame as it resolves and read by a Count$Converge amount/condition bound (Prismatic
         // Ending). Empty for a free / no-mana cast.
         std::set<Colors> colors_spent;
+        // Each mana spent to cast this spell, by color: what "if {R}{R} was spent to cast it" reads
+        // of the permanent it becomes (Vibrance).
+        ManaValue mana_by_color;
         // What the cost moved, as the objects they became where they went: sacrificed, returned,
         // discarded or exiled, in the order they moved.
         struct Paid {

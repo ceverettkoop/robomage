@@ -2442,6 +2442,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             for (Colors c : pc.pay.spent_colors)
                 if (c == WHITE || c == BLUE || c == BLACK || c == RED || c == GREEN)
                     pc.chosen.colors_spent.insert(c);
+            pc.chosen.mana_by_color = pc.pay.spent_colors;
             spell.chosen = pc.chosen;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
