@@ -191,6 +191,7 @@ static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx 
 static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_controlled_or_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -287,6 +288,9 @@ static const QualifierRow kQualifierRows[] = {
     // "ControlledBy ParentTarget" (Forge): the object is controlled by the player the parent
     // ability targeted (Cloak and Dagger, Entwined: "up to one target creature they control").
     set_row("ControlledBy ParentTarget", ev_controlled_by_set, ObjectSpec::PARENT_TARGET),
+    // "ControlledBy Remembered": the object's controller is a remembered player (Chaos Defiler's "a
+    // nonland permanent that player controls", a RepeatEach's current player).
+    set_row("ControlledBy Remembered", ev_controlled_or_owned_by_set, ObjectSpec::REMEMBERED_PLAYERS),
     // TargetedPlayerCtrl / TargetedPlayerOwn: controlled or owned by the player the ability targets
     // (Strategic Betrayal: "a creature they control and their graveyard"). Count$Valid's
     // TargetedPlayerCtrl never reaches these: it counts as that player's YouCtrl (svar_eval.cpp).
@@ -802,6 +806,13 @@ static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const Ma
     if (!v.on_battlefield) return true;
     const std::vector<Zone::Ownership> players = resolve_filter_players(q.set, set_context(ctx));
     return std::find(players.begin(), players.end(), v.controller) != players.end();
+}
+
+// Off the battlefield a card's controller is its owner (CR 108.4a).
+static bool ev_controlled_or_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    coverage_row("ControlledByRemembered");
+    const std::vector<Zone::Ownership> players = resolve_filter_players(q.set, set_context(ctx));
+    return std::find(players.begin(), players.end(), v.on_battlefield ? v.controller : v.owner) != players.end();
 }
 
 static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {

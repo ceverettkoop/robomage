@@ -541,6 +541,9 @@ struct AbilityDef {
     // (declinable). RememberChosen$ True appends the chosen card to the remembered set so a
     // trailing Defined$ Remembered ChangeZone moves it to hand.
     bool choose_imprinted = false;
+    // ChooseCard | AtRandom$ True (Chaos Defiler): no player chooses; the card is drawn at random
+    // from the candidates on the game's generator.
+    bool choose_at_random = false;
     // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
     // card an opponent owns with a void counter on it"): the controller chooses one card in that
     // zone matching the filter. The choice becomes the resolution's chosen card

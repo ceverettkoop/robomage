@@ -1,0 +1,59 @@
+{
+  "name": "cr603_6c_chaos_defiler_dies_destroys_too",
+  "why": "CR 603.6c / 603.10a: Chaos Defiler's second trigger looks back from the graveyard: dying to the opponent's Dismember, its controller still chooses among that opponent's nonland permanents and destroys the pick",
+  "hand_a": [
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Chaos Defiler"
+  ],
+  "hand_b": [
+    "Dismember"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Aether Vial",
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "B:cast:Dismember",
+    "B:desc:Pay {B}",
+    "B:desc:Pay {B}",
+    "B:target:Chaos Defiler",
+    "A:choice:Mox Opal"
+  ],
+  "max_decisions": 14,
+  "expect_order": [
+    "Chaos Defiler is|Chaos Defiler dies|Chaos Defiler gets",
+    "Player A chooses Mox Opal",
+    "Mox Opal is destroyed"
+  ],
+  "expect_not": [
+    "Aether Vial is destroyed"
+  ]
+}

@@ -6,6 +6,7 @@
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
 #include "../components/types.h"
@@ -20,6 +21,7 @@
 #include "../queries/players.h"
 #include "../queries/types.h"
 #include "../resolution_memory.h"
+#include "../stable_rng.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -148,6 +150,16 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (cands.empty()) {
         if (!ctx.resuming()) game_log("There is no card to choose.\n");
         report_effect(ab, EffectObjects::CHOSEN);
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+    // AtRandom$ True: a random pick, no player's choice, on the game's seeded generator so a replay
+    // draws the same card (stable_rng.h).
+    if (ab.def->choose_at_random) {
+        Entity chosen = cands[stable_rand_below(cur_game.rng.engine, cands.size())];
+        coverage_row("AtRandom");
+        report_effect(ab, EffectObjects::CHOSEN);
+        report_object(ab, EffectObjects::CHOSEN, chosen);
+        game_log("%s is chosen at random.\n", entity_name(chosen).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
     std::vector<LegalAction> picks;

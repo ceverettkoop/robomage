@@ -1,0 +1,69 @@
+{
+  "name": "cr608_2d_chaos_defiler_enters_destroys_your_choice",
+  "why": "CR 608.2d / 701.8: entering, Chaos Defiler has its controller choose a nonland permanent the opponent controls, with no option to choose nothing, and destroys the one random pick among those chosen; lands and its controller's own permanents aren't offered",
+  "hand_a": [
+    "Chaos Defiler"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Aether Vial",
+    "Birds of Paradise"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chaos Defiler",
+    "A:choice:Aether Vial"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Chaos Defiler enters the battlefield",
+    "Player A chooses Aether Vial",
+    "Aether Vial is destroyed"
+  ],
+  "expect_not": [
+    "Birds of Paradise is destroyed$"
+  ],
+  "expect_menu": [
+    "Choose Aether Vial",
+    "Choose Birds of Paradise"
+  ],
+  "expect_menu_not": [
+    "Choose Forest",
+    "Choose Swamp",
+    "Choose Chaos Defiler",
+    "Choose Grizzly Bears",
+    "Choose no card"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "cr702_12b_chaos_defiler_indestructible_pick_stays",
+  "why": "CR 702.12b: as Forge's script writes it, an indestructible pick is left out of the random choice, so nothing is chosen and nothing is destroyed; in two-player play the outcome is the rule's",
+  "hand_a": [
+    "Chaos Defiler"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "The One Ring"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chaos Defiler"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "There is no card to choose"
+  ],
+  "expect_not": [
+    "The One Ring is destroyed"
+  ],
+  "expect_menu": [
+    "Choose The One Ring"
+  ]
+}

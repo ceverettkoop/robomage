@@ -53,6 +53,7 @@ static void players_targeted_controller(const ResolveCtx &ctx, std::vector<Zone:
 static void players_triggered_activator(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_triggered_player(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_triggered_card_owner(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
+static void players_remembered(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static bool read_by_change_zone(const AbilityDef &ability);
 static bool read_by_change_zone_all(const AbilityDef &ability);
 static bool read_by_copy_permanent(const AbilityDef &ability);
@@ -70,8 +71,9 @@ static const DefinedRow kDefinedRows[] = {
     // Forge's default: an ability that names nothing acts on its source.
     {nullptr, ObjectSpec::DEFAULT, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     {nullptr, ObjectSpec::UNREAD, Refers::OBJECT},
-    // A set only a filter's qualifiers read (IsImprinted).
+    // Sets only a filter's qualifiers read (IsImprinted; ControlledBy Remembered).
     {nullptr, ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted},
+    {nullptr, ObjectSpec::REMEMBERED_PLAYERS, Refers::PLAYER, nullptr, players_remembered},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     // TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed zones and fired
@@ -273,6 +275,12 @@ static void players_triggered_card_owner(const ResolveCtx &ctx, std::vector<Zone
     const Entity card = ctx.source.lki_entity();
     if (card != 0 && global_coordinator.entity_has_component<Zone>(card))
         out.push_back(global_coordinator.GetComponent<Zone>(card).owner);
+}
+
+// The players among the remembered objects: a RepeatEach's current player.
+static void players_remembered(const ResolveCtx &, std::vector<Zone::Ownership> &out) {
+    for (Entity e : live_entities(cur_game.resolution.memory.remembered))
+        if (global_coordinator.entity_has_component<Player>(e)) out.push_back(seat_of_player(e));
 }
 
 static bool read_by_change_zone(const AbilityDef &ability) { return ability.category == "ChangeZone"; }

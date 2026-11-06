@@ -41,6 +41,7 @@ struct ObjectSpec {
         TRIGGERED_CARD_OWNER,        // the owner of the card that triggered it
         TRIGGERED_DEFENDING_PLAYER,  // bound as the target when it triggered
         YOU_AND_PERMANENTS,          // the controller and their permanents
+        REMEMBERED_PLAYERS,          // the players among the remembered objects
     };
 
     Kind kind = DEFAULT;

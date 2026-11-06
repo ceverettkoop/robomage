@@ -1,0 +1,61 @@
+{
+  "name": "cr111_1_chaos_defiler_can_choose_a_token",
+  "why": "CR 111.1: a token the opponent controls is a nonland permanent like any other: it is offered, and chosen it is destroyed",
+  "hand_a": [
+    "Chaos Defiler"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Orcish Bowmasters"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "B:cast:Orcish Bowmasters",
+    "B:target:Player A",
+    "A:cast:Chaos Defiler",
+    "A:desc:Choose Orc Army"
+  ],
+  "max_decisions": 11,
+  "expect": [
+    "Orc Army token is destroyed"
+  ],
+  "expect_menu": [
+    "Choose Orc Army",
+    "Choose Orcish Bowmasters"
+  ],
+  "expect_not": [
+    "Orcish Bowmasters is destroyed"
+  ]
+}

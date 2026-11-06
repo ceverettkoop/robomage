@@ -2241,6 +2241,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // umbrella Choices$ is superseded by its per-type ChooseEach$.)
         ability.choose_card_filter = value;
         ability.choose_imprinted = filter_names_token(value, "IsImprinted");
+    } else if (key == "AtRandom" && ability.category == "ChooseCard") {
+        ability.choose_at_random = (value == "True");
     } else if (key == "ChoiceZone" && ability.category == "ChooseCard") {
         // ChooseCard | ChoiceZone$ <zone>: the zone the Choices$ cards are chosen from. (Atraxa's
         // ChoiceZone$ Library is implied by its imprinted set, which stays in the library.)
