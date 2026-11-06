@@ -700,6 +700,8 @@ struct AbilityDef {
     // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
     // at resolution in resolve_ability(): on failure the body is skipped, subabilities chain.
     bool condition_on_remembered = false;
+    // ConditionDefined$ Imprinted: the same, over cur_game.resolution.memory.imprinted.
+    bool condition_on_imprinted = false;
     // ConditionDefined$ TriggeredCard — condition_present is a property check on the ability's
     // SOURCE object (the card that triggered this ability), not a board-presence count. Used by
     // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor: the dig only happens if the

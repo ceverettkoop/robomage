@@ -676,6 +676,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             Zone::ZoneValue landed = change_zone_move(orderer, remembered_ctx, ab, e, ab.def->destination,
                                                       ab.def->enters_transformed);
             if (decision_suspended()) return HandlerResult::SUSPENDED;
+            report_object(ab, EffectObjects::MOVED, e);
             if (landed == Zone::BATTLEFIELD) {
                 // Forge default for ChangeZone Destination$ Battlefield: the card enters
                 // under its OWNER's control unless GainControl$ True (CR 110.2a). The

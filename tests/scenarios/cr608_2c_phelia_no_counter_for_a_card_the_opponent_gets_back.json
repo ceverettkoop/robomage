@@ -1,0 +1,39 @@
+{
+  "name": "cr608_2c_phelia_no_counter_for_a_card_the_opponent_gets_back",
+  "why": "ConditionDefined$ Imprinted: returned under its owner's control, the opponent's creature gives Phelia no counter.",
+  "battlefield_a": [
+    "Phelia Exuberant Shepherd"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Phelia",
+    "A:attack:done",
+    "A:target:Grizzly Bears",
+    "A:attack:Phelia",
+    "A:attack:done"
+  ],
+  "max_decisions": 20,
+  "expect": [
+    "Grizzly Bears is moved to the battlefield",
+    "\\[attacking\\] Phelia, Exuberant Shepherd \\[2/2\\]"
+  ],
+  "expect_not": [
+    "\\[attacking\\] Phelia, Exuberant Shepherd \\[3/3\\]"
+  ]
+}

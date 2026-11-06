@@ -2214,16 +2214,14 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.condition_on_target = (value == "Targeted");
         // "Remembered" → condition_present is counted over the remembered cards at
         // resolution (Birthing Ritual: only dig if a creature was sacrificed).
-        // "Imprinted" → the same evaluation, over the imprinted card. For the exile-and-return
-        // cards (Phelia) the imprinted card IS the returned card already held in
-        // cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI / Defined$
-        // DelayTriggerRememberedLKI), so it reuses the remembered-set condition path; the
-        // redundant Imprint$ True on the preceding ChangeZone is ignored.
+        // "Imprinted" → the same evaluation, over the imprinted cards (Phelia's returned card,
+        // the card Beseech the Mirror cast).
         // "RememberedLKI" → the same remembered-set condition path, but the remembered card is
         // now off the battlefield (Boomerang Basics bounced it to hand); its controller qualifier
         // is resolved from last-known information at resolution. See evaluate_present_condition.
         ability.condition_on_remembered = (value == "Remembered" || value == "Imprinted" ||
                                            value == "RememberedLKI");
+        ability.condition_on_imprinted = (value == "Imprinted");
         // "TriggeredCard" → condition_present is a property check on the ability's source/
         // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
         // resolution against that card's permanent state.
