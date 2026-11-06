@@ -234,6 +234,7 @@ FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership
         if (sa.category != "Continuous" || !sa.may_play_without_mana_cost) continue;
         if (!may_play_player_covers(sa.may_play_player, as.controller, caster)) continue;
         if (!affected_zone_matches(sa.affected_zone, zone, /*has_zone=*/true)) continue;
+        if (!static_defined_covers(as, card)) continue;
         MatchCtx ctx;
         ctx.controller = as.controller;  // "you" of YouOwn: the static's controller
         ctx.source = as.entity;

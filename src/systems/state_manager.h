@@ -54,11 +54,16 @@ extern std::vector<ActiveStatic> g_active_statics;
 // evaluated through the shared permanent_matches_filter so the full qualifier grammar
 // (colors, Colorless, subtypes, P/T, …) is honoured; YouCtrl/OppCtrl are controller-scoped
 // to the static's controller and `+Other` excludes the source permanent itself. Returns an
-// empty list for the EquippedBy / Self forms (those resolve to a single creature in the
-// applier) or for an empty filter. This is the single, reusable "which permanents does this
+// empty list for a static naming an AffectedDefined$ object or Self (those resolve to a single
+// creature in the applier) or for an empty filter. This is the single, reusable "which permanents does this
 // static affect" step — the additive-P/T anthem path (It That Heralds the End) uses it, and
 // future Affected$-filter statics (AddAbility$, AddKeyword$ anthems) reuse it too.
 std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities);
+
+// Does static `as` reach `e` by its AffectedDefined$? True for a static naming none, whose
+// Affected$ alone decides; else only for the one object it names (Affected$ may restrict it
+// further). The readers that test one object against Affected$ ask this first.
+bool static_defined_covers(const ActiveStatic &as, Entity e);
 
 // CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
 // effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?

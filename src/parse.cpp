@@ -67,7 +67,6 @@ static void static_form_findings(const StaticAbility &sa, const std::string &lin
 static void granted_keyword_findings(const std::string &spec);
 static bool granted_keyword_modelled(const std::string &keyword);
 static bool static_effect_zone_modelled(const StaticAbility &sa);
-static bool fold_affected_defined(std::string &affected, const std::string &defined);
 struct TriggerLine;
 static bool trigger_param_assumed(const std::string &key, const std::string &value);
 static bool read_by_trigger_branch(const std::string &key);
@@ -3808,7 +3807,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
     bool may_play = false;              // MayPlay$ True (resolve_may_play_form)
     bool may_play_no_zone_grant = false;  // MayPlayDontGrantZonePermissions$ True
-    std::string affected_defined;       // AffectedDefined$ (fold_affected_defined)
+    std::string affected_defined;       // AffectedDefined$, read with the whole line parsed
     size_t param_pos = 0;
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
@@ -4076,8 +4075,17 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     param_pos = 0;
     while (next_param(line, param_pos, key, value))
         if (!static_mode_reads(sa.category, key) && unread_keys.insert(key).second) static_value_finding(sa, key, value);
-    if (!affected_defined.empty() && !fold_affected_defined(sa.affected, affected_defined))
-        parse_finding("static_param", "AffectedDefined", sa.category + " AffectedDefined$ " + affected_defined);
+    // AffectedDefined$ names the one object a static affects and Affected$, when present, restricts
+    // it further. An Affected$ list is a form no reader restricts by.
+    if (!affected_defined.empty()) {
+        const ObjectSpec spec = parse_affected_defined(affected_defined);
+        if (spec.is(ObjectSpec::UNREAD) || sa.affected.find(',') != std::string::npos) {
+            parse_finding("static_param", "AffectedDefined", sa.category + " AffectedDefined$ " + affected_defined);
+        } else {
+            sa.affected_defined = spec;
+            if (sa.affected.empty()) sa.affected = "Card";
+        }
+    }
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
     if (!static_effect_zone_modelled(sa))
         parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
@@ -4123,24 +4131,6 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
     }
     for (const std::string &z : zones)
         parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected + " from " + z);
-}
-
-// AffectedDefined$ names the one object a static affects (Self, or what its source is attached
-// to) and Affected$, when present, restricts it further. Writes that as the qualifier every reader
-// of StaticAbility::affected knows: Creature + Equipped is "Creature.EquippedBy", and
-// Permanent.counters_GE1_LOYALTY + Self is "Permanent.Self+counters_GE1_LOYALTY". False for a name
-// or an Affected$ list it cannot express.
-static bool fold_affected_defined(std::string &affected, const std::string &defined) {
-    const char *qualifier = defined == "Self"        ? "Self"
-                            : defined == "Equipped"  ? "EquippedBy"
-                            : defined == "Enchanted" ? "EnchantedBy"
-                                                     : nullptr;
-    if (!qualifier || affected.find(',') != std::string::npos) return false;
-    if (affected.empty()) affected = "Card";
-    const size_t dot = affected.find('.');
-    if (dot == std::string::npos) affected += std::string(".") + qualifier;
-    else affected.insert(dot + 1, std::string(qualifier) + "+");
-    return true;
 }
 
 static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
@@ -4690,7 +4680,8 @@ static void static_form_findings(const StaticAbility &sa, const std::string &lin
     if (!sa.condition.empty() && sa.condition != "Delirium" && sa.condition != "PlayerTurn")
         static_value_finding(sa, "Condition", sa.condition);
     // gather_active_statics reads a counters_ qualifier of Affected$ as a gate on the source itself.
-    if (!sa.self_counter_type.empty() && !filter_names_token(sa.affected, "Self"))
+    if (!sa.self_counter_type.empty() && !sa.affected_defined.is(ObjectSpec::SELF) &&
+        !filter_names_token(sa.affected, "Self"))
         parse_finding("static_form", "Affected.Counters", "read as a counter on the source: " + sa.affected);
     if (sa.category == "Continuous") {
         // The layer appliers act on the battlefield; only a play permission and a colour reach past

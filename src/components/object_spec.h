@@ -23,6 +23,7 @@ struct ObjectSpec {
         TRIGGERED_SOURCE_SA, // bound as the target when it triggered
         EXILED_WITH,         // the card the source exiled
         ENCHANTED,           // the object the source Aura enchants
+        EQUIPPED,            // the object the source Equipment is attached to
         REPLACED_CARD,       // the object a replacement effect's event acts on
         VALID,               // every permanent matching `filter`
 

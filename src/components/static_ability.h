@@ -2,6 +2,7 @@
 #define STATIC_ABILITY_H
 #include <cstdint>
 #include <string>
+#include "object_spec.h"
 
 struct StaticAbility {
     std::string category  = "";  // "Continuous", "MustAttack"
@@ -32,7 +33,11 @@ struct StaticAbility {
     std::string add_trigger = "";
     std::string add_trigger_svar_name = "";
     std::string add_trigger_svar = "";
-    std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
+    std::string affected = "";        // Affected$: the filter over what this static affects
+    // AffectedDefined$: the one object this static affects (Self, or what its source is attached
+    // to), which `affected` restricts further ("Card" when the script gives no Affected$).
+    // ObjectSpec::DEFAULT when the static names none: `affected` alone decides.
+    ObjectSpec affected_defined;
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
     int counter_count = 0;            // literal count (etbCounter:M1M1:6 → 6); 0 when dynamic

@@ -19,10 +19,10 @@ struct AbilityDef;
 // the parser, --parse-report and the resolvers below all read that table, so a new Defined$ name
 // is one row.
 
-// What a reference is resolved against: the "you" and the "this" of the reading ability, the
-// instance itself (its chosen and inherited targets) and what it bound when it triggered. Built
-// where it is read, never kept: the source stays an ObjectRef, so an object that became a new one
-// (CR 400.7) resolves to nothing.
+// What a reference is resolved against: the "you" and the "this" of the reading ability or
+// static, the ability instance itself (its chosen and inherited targets; null for a static) and
+// what it bound when it triggered. Built where it is read, never kept: the source stays an
+// ObjectRef, so an object that became a new one (CR 400.7) resolves to nothing.
 struct ResolveCtx {
     Zone::Ownership controller = Zone::UNKNOWN;
     ObjectRef source;
@@ -32,11 +32,16 @@ struct ResolveCtx {
     Zone::Ownership triggered_player = Zone::UNKNOWN;
 
     static ResolveCtx of(const Ability &ab);
+    // A static ability's context: its controller and source, with no instance.
+    static ResolveCtx of_static(Zone::Ownership controller, Entity source);
 };
 
 // The ObjectSpec a Defined$ / DefinedPlayer$ value names: its row's kind, UNREAD for a name with
 // no row, DEFAULT for an empty value.
 ObjectSpec parse_object_spec(const std::string &value);
+
+// The ObjectSpec a static's AffectedDefined$ `value` names, UNREAD for a name no static reads.
+ObjectSpec parse_affected_defined(const std::string &value);
 
 // Does `ability` act on Defined$ `value`? The table's answer for --parse-report: a name without a
 // row is not read, and a row limited to some abilities is read by those.

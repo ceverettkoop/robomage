@@ -48,14 +48,16 @@
 #include "replacement_effects.h"
 #include "continuous_effects.h"
 #include "../effects/effects.h"
+#include "../queries/affected.h"
 #include "orderer.h"
 #include "../state_format/events.h"
 
 // Forward declaration (defined below): is this Affected$ a general permanent filter
-// (anthem-style class) vs the single-target EquippedBy / Self / no-filter forms? Shared by
+// (anthem-style class) vs the single-target Self / no-filter forms? Shared by
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
+static bool static_is_general(const StaticAbility &sa);
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities);
 static std::vector<Entity> permanents_matching_static_filter(
     const ActiveStatic &as, const std::string &aff, const EntitySet &entities);
@@ -85,7 +87,7 @@ static void apply_type_effect(const TypeEffect &te, const EntitySet &entities);
 static void collect_animate_type_effects(Entity entity, const Permanent &perm,
                                          std::vector<TypeEffect> &out);
 static void sync_self_animate_creature(const ActiveStatic &a);
-static bool affected_is_attached_target(const std::string &aff);
+static bool affected_is_attached_target(const StaticAbility &sa);
 static void remerge_animate_granted_abilities(Entity entity);
 static const char *zone_display_name(Zone::ZoneValue loc);
 template <typename Fn>
@@ -370,8 +372,8 @@ StaticAbility *ActiveStatic::sa() const {
 }
 
 // Resolve the battlefield permanents a continuous static's Affected$ filter designates
-// (declared in state_manager.h). The EquippedBy / Self forms target a single creature that
-// the layer appliers resolve directly (equipped_to / the source), so this returns empty for
+// (declared in state_manager.h). A static naming an AffectedDefined$ object, and the Self form,
+// target a single creature that the layer appliers resolve directly, so this returns empty for
 // them and for an empty filter; every other Affected$ value (e.g. "Creature.Colorless+
 // Other+YouCtrl") is a permanent filter matched through permanent_matches_filter with the
 // static's controller as the YouCtrl reference and the source permanent as the .Other
@@ -388,10 +390,10 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const
 static std::vector<Entity> permanents_matching_static_filter(
     const ActiveStatic &as, const std::string &aff, const EntitySet &entities) {
     std::vector<Entity> out;
-    // EquippedBy / Self / no-filter forms are single-target (the layer appliers resolve them
-    // directly); only a general permanent filter fans out here. Shared predicate so this and
+    // AffectedDefined$ / Self / no-filter forms are single-target (the layer appliers resolve
+    // them directly); only a general permanent filter fans out here. Shared predicate so this and
     // the layer-6/7 appliers agree on which statics are general.
-    if (!affected_is_general_filter(aff)) return out;
+    if (!as.sa()->affected_defined.is(ObjectSpec::DEFAULT) || !affected_is_general_filter(aff)) return out;
     MatchCtx ctx;
     ctx.controller = as.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
     ctx.source = as.entity;           // .Other self-exclusion
@@ -517,6 +519,7 @@ bool setcolor_override_for(Entity e, std::set<Colors> &out) {
         if (as.suppressed || !as.condition_met) continue;
         if (as.sa()->category != "Continuous" || as.sa()->set_color.empty()) continue;
         if (!affected_zone_matches(as.sa()->affected_zone, zone, has_zone)) continue;
+        if (!static_defined_covers(as, e)) continue;
         if (has_card) {
             MatchCtx ctx;
             ctx.controller = as.controller;
@@ -606,41 +609,46 @@ static void regrant_later_keywords(
     Entity entity, const Permanent &perm, Creature &cr, size_t removal_ts, const EntitySet &entities);
 
 // Is this Affected$ filter a *general* permanent filter (an anthem-style class like
-// "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target EquippedBy / Self /
-// no-filter forms? The general forms are resolved through affected_permanents_for_static
+// "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target Self / no-filter
+// forms? The general forms are resolved through affected_permanents_for_static
 // (which buffs/grants to every matching permanent); the single-target forms keep the source/
 // equipped-creature path. Shared by the layer-6 keyword-grant pass and the layer-7 P/T pass so
 // both agree on which statics fan out across the affected set (CR 613 layers 6 / 7c).
-// An attached-permanent static buffs the single object it is attached to: equipment uses the
-// "EquippedBy" filter and Auras use "EnchantedBy" (CR 303). Both resolve to the source
-// permanent's equipped_to link (auras reuse the same attachment field), so the layer appliers
-// treat them identically — single-target, not a general fan-out filter.
-static bool affected_is_attached_target(const std::string &aff) {
-    return aff.find("EquippedBy") != std::string::npos ||
-           aff.find("EnchantedBy") != std::string::npos;
+static bool affected_is_general_filter(const std::string &aff) {
+    return !aff.empty() && aff.find("Self") == std::string::npos;
 }
 
-static bool affected_is_general_filter(const std::string &aff) {
-    return !aff.empty() &&
-           !affected_is_attached_target(aff) &&
-           aff.find("Self") == std::string::npos;
+// A static fans out over its filter only when it names no one object.
+static bool static_is_general(const StaticAbility &sa) {
+    return sa.affected_defined.is(ObjectSpec::DEFAULT) && affected_is_general_filter(sa.affected);
+}
+
+// An attached-permanent static buffs the single object it is attached to: AffectedDefined$
+// Equipped for equipment and Enchanted for Auras (CR 303), both over the source permanent's
+// equipped_to link (auras reuse the same attachment field), so the layer appliers treat them
+// identically — single-target, not a general fan-out filter.
+static bool affected_is_attached_target(const StaticAbility &sa) {
+    return sa.affected_defined.is(ObjectSpec::EQUIPPED) || sa.affected_defined.is(ObjectSpec::ENCHANTED);
+}
+
+// See declaration in state_manager.h.
+bool static_defined_covers(const ActiveStatic &as, Entity e) {
+    const ObjectSpec &spec = as.sa()->affected_defined;
+    if (spec.is(ObjectSpec::DEFAULT)) return true;
+    const std::vector<Entity> objects = resolve_objects(spec, ResolveCtx::of_static(as.controller, as.entity));
+    return std::find(objects.begin(), objects.end(), e) != objects.end();
 }
 
 // The objects a continuous static affects (CR 613.1 / 611.3a), for every layer that applies it:
 // a general Affected$ filter's matching permanents (affected_permanents_for_static), the
-// permanent an EquippedBy/EnchantedBy static's source is attached to, or else (Self / no
+// permanent its AffectedDefined$ names as what its source is attached to, or else (Self / no
 // Affected$) the source itself.
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities) {
-    const std::string &aff = a.sa()->affected;
-    if (affected_is_general_filter(aff)) return affected_permanents_for_static(a, entities);
-    Entity target = a.entity;
-    if (affected_is_attached_target(aff)) {
-        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) return {};
-        target = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to.get();
-        if (target == 0 || !is_battlefield_permanent(target)) return {};
-    }
-    if (target == 0) return {};
-    return {target};
+    const StaticAbility &sa = *a.sa();
+    if (static_is_general(sa)) return affected_permanents_for_static(a, entities);
+    std::vector<Entity> objects = resolve_objects(sa.affected_defined, ResolveCtx::of_static(a.controller, a.entity));
+    if (affected_is_attached_target(sa) && !objects.empty() && !is_battlefield_permanent(objects.front())) return {};
+    return objects;
 }
 
 // Lands whose subtype was set to a basic land type this SBE pass (Blood Moon / Magus of
@@ -758,7 +766,7 @@ static void attach_on_entry(Entity entity, EntryInfo &entry, Permanent &perm) {
     }
     // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it was cast
     // targeting (EntryInfo::aura_target). Reuse the equipped_to attachment link so the aura's
-    // static buffs (Affected$ Creature.EnchantedBy) and the aura state-based check find the
+    // static buffs (AffectedDefined$ Enchanted) and the aura state-based check find the
     // enchanted object.
     if (!entry.aura_target.empty()) {
         Entity enchanted = entry.aura_target.get();
@@ -1417,6 +1425,7 @@ static bool land_type_setter_affects(const ActiveStatic &a, Entity e) {
     if (!is_battlefield_permanent(e)) return false;
     const auto &perm = global_coordinator.GetComponent<Permanent>(e);
     if (!permanent_has_type(perm, "Land") || has_basic_supertype(perm.types)) return false;
+    if (!static_defined_covers(a, e)) return false;
     MatchCtx ctx;
     ctx.controller = a.controller;
     ctx.source = a.entity;
@@ -1506,8 +1515,8 @@ static void collect_animate_type_effects(Entity entity, const Permanent &perm,
 // P/T and keyword this same pass), and strip them when it is no longer a creature by any effect.
 static void sync_self_animate_creature(const ActiveStatic &a) {
     const StaticAbility &sa = *a.sa();
-    if (!is_type_changing_static(sa) || affected_is_general_filter(sa.affected)) return;
-    if (affected_is_attached_target(sa.affected) || sa.characteristic_defining) return;
+    if (!is_type_changing_static(sa) || static_is_general(sa)) return;
+    if (affected_is_attached_target(sa) || sa.characteristic_defining) return;
     bool adds_creature = false;
     for (const auto &t : parse_self_added_types(sa.add_type))
         if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
@@ -1797,7 +1806,7 @@ void StateManager::apply_layer6_ability_effects() {
         // to that same affected set (CR 613 layers 6 / 7c — "other creatures you control get
         // +1/+1 and have trample" must give BOTH to all matching creatures). A general-filter
         // static with no keyword has nothing to do in layer 6, so skip it (layer 7 buffs P/T).
-        if (affected_is_general_filter(a.sa()->affected)) {
+        if (static_is_general(*a.sa())) {
             if (a.sa()->add_keyword.empty()) continue;
             // Keywords are rebuilt from each creature's printed base every SBE pass
             // (gather_active_statics, rule 611.3a), so re-granting here each pass cannot stack.
@@ -2068,6 +2077,7 @@ void StateManager::apply_layer6_ability_grants() {
 // shared permanent matcher, so "Creature" (Humility), "Land" (Toxicrene), and any other filter
 // grammar all work. An unfiltered remover applies to all permanents.
 static bool removal_affects(const ActiveStatic &r, Entity entity) {
+    if (!static_defined_covers(r, entity)) return false;
     const std::string &aff = r.sa()->affected;
     if (aff.empty()) return true;
     MatchCtx ctx;
@@ -2094,6 +2104,7 @@ bool entering_object_loses_abilities(Entity entity) {
         const StaticAbility &sa = *a.sa();
         if (sa.category != "Continuous") continue;
         if (!sa.remove_all_abilities && !(sa.remove_land_types && nonbasic_land)) continue;
+        if (!static_defined_covers(a, entity)) continue;
         if (sa.affected.empty()) return true;
         MatchCtx ctx;
         ctx.controller = a.controller;
@@ -2381,8 +2392,8 @@ void StateManager::apply_layer7_pt_effects() {
         // Resolve the affected creature set. A general Affected$ filter (anthem:
         // "Creature.Colorless+Other+YouCtrl" on It That Heralds the End) buffs every matching
         // battlefield permanent — go through the shared resolver, which honours +Other (skip
-        // self) and YouCtrl (controller scope). The EquippedBy / Self / no-Affected$ forms keep
-        // the original single-target behaviour (source, or the equipped creature).
+        // self) and YouCtrl (controller scope). The AffectedDefined$ / Self / no-Affected$ forms keep
+        // the single-target behaviour (source, or the equipped creature).
         std::vector<Entity> targets = static_targets(a, mEntities);
 
         for (Entity target_entity : targets) {

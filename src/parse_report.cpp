@@ -313,8 +313,8 @@ static bool cmc_bound_supplied(const std::string &op, const std::string &bound, 
 }
 
 // Filter tokens the shared matcher has no reading for that the engine reads where the filter is
-// used, in the forms its cards use them: the attachment statics' Affected$ (EquippedBy, EnchantedBy,
-// state_manager_statics.cpp), targeting (Emblem, YouDontCtrl, targeting.cpp), the cards exiled with
+// used, in the forms its cards use them: the attachment qualifiers (EquippedBy, EnchantedBy), left to
+// the filter table (docs/mechanics_plan.md M3), targeting (Emblem, YouDontCtrl, targeting.cpp), the cards exiled with
 // a source (ExiledWithSource), the sameName / Remembered / TargetedCard / NotDefinedTargeted /
 // sharesNameWith movers (effect_change_zone*.cpp), chosen cards and types (effect_choose_card.cpp),
 // the player-relative counts (RememberedPlayerCtrl, TargetedPlayerCtrl, svar_eval.cpp), cast history
