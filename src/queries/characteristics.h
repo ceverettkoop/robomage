@@ -99,10 +99,11 @@ std::set<Colors> effective_colors(Entity e);
 // the override color set into `out` and return true; otherwise return false (no override).
 // "Colorless" yields an empty set (CR 105.2c); an explicit color list yields those colors.
 // Defined in state_manager_statics.cpp (where g_active_statics lives). Consulted by
-// effective_colors and the colorless queries so every color-dependent check (protection-from-
-// color targeting, is_colorless) sees the affected object's effective color. Matches against the
-// object's PRINTED characteristics (card_matches_filter) to avoid recursing back into
-// effective_colors; tokens (no CardData) are not matched here.
+// effective_colors, the colorless queries and the filter matcher's card view so every
+// color-dependent check (protection-from-color targeting, is_colorless, a color qualifier on a
+// card in any zone) sees the affected object's effective color. Matches against the object's
+// PRINTED characteristics (card_matches_printed) to avoid recursing back into effective_colors;
+// tokens (no CardData) are not matched here.
 bool setcolor_override_for(Entity e, std::set<Colors> &out);
 
 // True if the object is colorless (CR 105.2c): it has none of the five colors, read from its

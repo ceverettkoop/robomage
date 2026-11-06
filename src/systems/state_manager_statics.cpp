@@ -504,8 +504,8 @@ static bool setcolor_filter_matches_token(const std::string &aff, const Permanen
 // Layer-5 (CR 613.1e / 612) global color-changing override — see queries/characteristics.h. Scans the active-
 // statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
 // `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). For a real card
-// the match is done against the card's PRINTED characteristics (card_matches_filter) so this never
-// recurses back into effective_colors; a battlefield TOKEN permanent (no CardData) is matched by
+// the match is done against the card's PRINTED characteristics (card_matches_printed) so this never
+// recurses back into effective_colors or the filter's card view; a battlefield TOKEN permanent (no CardData) is matched by
 // setcolor_filter_matches_token, a deliberately color-free type/controller test, for the same
 // recursion-safety reason. A static whose zone/filter excludes `e` yields no override.
 bool setcolor_override_for(Entity e, std::set<Colors> &out) {
@@ -519,15 +519,15 @@ bool setcolor_override_for(Entity e, std::set<Colors> &out) {
     bool has_zone = global_coordinator.entity_has_component<Zone>(e);
     if (has_zone) zone = global_coordinator.GetComponent<Zone>(e).location;
     for (const auto &as : g_active_statics) {
-        if (as.suppressed || !as.condition_met) continue;
-        if (as.sa()->category != "Continuous" || as.sa()->set_color.empty()) continue;
+        if (as.sa()->set_color.empty() || as.suppressed || !as.condition_met) continue;
+        if (as.sa()->category != "Continuous") continue;
         if (!affected_zone_matches(as.sa()->affected_zone, zone, has_zone)) continue;
         if (!static_defined_covers(as, e)) continue;
         if (has_card) {
             MatchCtx ctx;
             ctx.controller = as.controller;
             ctx.source = as.entity;
-            if (!card_matches_filter(e, as.sa()->affected, ctx)) continue;
+            if (!card_matches_printed(e, as.sa()->affected, ctx)) continue;
         } else {
             // Battlefield token permanent: recursion-safe type/controller filter match.
             const auto &perm = global_coordinator.GetComponent<Permanent>(e);

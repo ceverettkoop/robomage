@@ -157,6 +157,9 @@ static void warn_unknown_qualifier(const std::string &q);
 static ResolveCtx set_context(const MatchCtx &ctx);
 static bool object_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 
+// `cd` as printed; `e`, when it names the card, gives its identity and owner.
+static CharView printed_view(Entity e, const CardData &cd);
+// The card as a filter reads it: printed, but for the color a layer-5 static sets in any zone.
 static CharView card_view(Entity e, const CardData &cd);
 static void set_permanent_mana_value(CharView &v, Entity e, bool transformed);
 static CharView permanent_view(Entity e, const Permanent &perm);
@@ -940,7 +943,7 @@ static bool ev_unknown(const CharView &, const Qualifier &q) {
     return false;
 }
 
-static CharView card_view(Entity e, const CardData &cd) {
+static CharView printed_view(Entity e, const CardData &cd) {
     CharView v;
     v.entity = e;
     v.types = &cd.types;
@@ -952,6 +955,12 @@ static CharView card_view(Entity e, const CardData &cd) {
     v.has_x_cost = cd.has_x_cost;
     if (e != 0 && global_coordinator.entity_has_component<Zone>(e))
         v.owner = global_coordinator.GetComponent<Zone>(e).owner;
+    return v;
+}
+
+static CharView card_view(Entity e, const CardData &cd) {
+    CharView v = printed_view(e, cd);
+    if (e != 0) setcolor_override_for(e, v.colors);
     return v;
 }
 
@@ -1040,6 +1049,11 @@ bool card_matches_filter(const CardData &cd, const FilterSpec &spec, const Match
 bool card_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx) {
     if (!global_coordinator.entity_has_component<CardData>(e)) return false;
     return matches_view(card_view(e, global_coordinator.GetComponent<CardData>(e)), spec.compiled(), ctx);
+}
+
+bool card_matches_printed(Entity e, const FilterSpec &spec, const MatchCtx &ctx) {
+    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
+    return matches_view(printed_view(e, global_coordinator.GetComponent<CardData>(e)), spec.compiled(), ctx);
 }
 
 bool permanent_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx) {

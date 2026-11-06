@@ -33,7 +33,9 @@ struct ResolveCtx;
 // reads the same rows, and nothing here re-reads a spec's text to match an object.
 //
 // `card_matches_filter` reads PRINTED characteristics (a card in hand/library/graveyard
-// or a spell on the stack). `permanent_matches_filter` reads a battlefield permanent's
+// or a spell on the stack), but for the color a layer-5 static sets in any zone (Mycosynth
+// Lattice: setcolor_override_for). `card_matches_printed` reads them with no such exception, for
+// that static's own Affected$ filter. `permanent_matches_filter` reads a battlefield permanent's
 // LIVE characteristics — types and P/T from its components, but color and mana value from
 // the card (CR 105/112.7: the engine has no live color/MV layer; effective_colors is the
 // single seam). Both share one evaluator, so qualifier coverage can never drift again.
@@ -58,6 +60,7 @@ struct MatchCtx {
 
 bool card_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
+bool card_matches_printed(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 // `e` in whatever zone it is in: a battlefield permanent by its live characteristics
 // (permanent_matches_filter), any other object by its card's (card_matches_filter).
