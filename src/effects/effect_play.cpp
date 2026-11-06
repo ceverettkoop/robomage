@@ -17,7 +17,7 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static int play_cost_amount(const Ability &ab, Entity card);
+static int play_cost_amount(const PlayParams &pp, Entity card);
 
 namespace effects {
 
@@ -31,12 +31,13 @@ namespace effects {
 // The card is Defined$ Remembered — the nonland card DigUntil just exiled. The alternative cost
 // replaces the mana cost with the PlayCost$ resource (CR 118.9): PayEnergy / PayLife of a literal
 // amount or of the card's mana value ("ConvertedManaCost"; X counts as 0 for a card in exile,
-// CR 202.3e). ValidSA$ Spell: only a card castable as a spell qualifies, so a land (CR 601.1)
-// gets no offer. Optional$ True: the controller may decline (every DB$ Play in the card pool is
+// CR 202.3e). ValidSA$: the spells it may be cast as, so a land (CR 601.1) gets no offer.
+// Optional$ True: the controller may decline (every DB$ Play in the card pool is
 // optional).
 HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     ResolutionCastRt local_rt;
     ResolutionCastRt &rt = ctx.can_suspend() ? ctx.rt<ResolutionCastRt>() : local_rt;
+    const PlayParams &pp = std::get<PlayParams>(ab.def->params);
     // Resolve the card to play (Defined$ Remembered). While the cast is in flight the card has
     // left exile, so the card is looked up only for the offer.
     Entity card = 0;
@@ -51,14 +52,14 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         const CardData &cd = global_coordinator.GetComponent<CardData>(card);
         if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE)
             return HandlerResult::DONE_RUN_SUBS;
-        if (ab.def->play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
+        if (is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
     }
 
     ResolutionCastTerms terms;
-    terms.grant.resource =
-        (ab.def->play_cost_resource == AbilityDef::PLAY_COST_LIFE) ? GrantResource::LIFE : GrantResource::ENERGY;
-    terms.amount_is_mana_value = ab.def->play_cost_expr == "ConvertedManaCost";
-    terms.grant.amount = play_cost_amount(ab, card);
+    terms.grant.resource = pp.cost_resource == PlayParams::LIFE ? GrantResource::LIFE : GrantResource::ENERGY;
+    terms.amount_is_mana_value = pp.cost_expr == "ConvertedManaCost";
+    terms.grant.amount = play_cost_amount(pp, card);
+    terms.valid_sa = &pp.valid_sa;
     if (rt.stage == ResolutionCastRt::OFFER && !ctx.resuming()) {
         const char *res = (terms.grant.resource == GrantResource::LIFE) ? "life" : "energy";
         game_log("%s may cast %s by paying %d %s rather than its mana cost.\n",
@@ -70,9 +71,10 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 }
 
 bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value) {
+    if (ab.category != "Play") return false;
+    PlayParams &pp = effect_params<PlayParams>(ab);
     if (key == "ValidSA") {
-        // ValidSA$ Spell — only a castable nonland spell may be played this way.
-        ab.play_valid_sa_spell = (value == "Spell");
+        pp.valid_sa = FilterSpec(value);
         return true;
     } else if (key == "PlayCost") {
         // PlayCost$ PayEnergy<amount> / PayLife<amount>. The amount inside the angle brackets is
@@ -84,11 +86,11 @@ bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value
         if (lt != std::string::npos && gt != std::string::npos && gt > lt)
             amount_expr = value.substr(lt + 1, gt - lt - 1);
         if (value.rfind("PayEnergy", 0) == 0) {
-            ab.play_cost_resource = AbilityDef::PLAY_COST_ENERGY;
-            ab.play_cost_expr = amount_expr;
+            pp.cost_resource = PlayParams::ENERGY;
+            pp.cost_expr = amount_expr;
         } else if (value.rfind("PayLife", 0) == 0) {
-            ab.play_cost_resource = AbilityDef::PLAY_COST_LIFE;
-            ab.play_cost_expr = amount_expr;
+            pp.cost_resource = PlayParams::LIFE;
+            pp.cost_expr = amount_expr;
         }
         return true;
     }
@@ -99,9 +101,8 @@ bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value
 
 // The PlayCost$ amount for `card`: its mana value for "ConvertedManaCost" (of the face cast, once
 // it is known), else the literal.
-static int play_cost_amount(const Ability &ab, Entity card) {
-    if (ab.def->play_cost_expr == "ConvertedManaCost")
-        return card_mana_value(global_coordinator.GetComponent<CardData>(card));
-    if (!ab.def->play_cost_expr.empty()) return std::atoi(ab.def->play_cost_expr.c_str());
+static int play_cost_amount(const PlayParams &pp, Entity card) {
+    if (pp.cost_expr == "ConvertedManaCost") return card_mana_value(global_coordinator.GetComponent<CardData>(card));
+    if (!pp.cost_expr.empty()) return std::atoi(pp.cost_expr.c_str());
     return 0;
 }

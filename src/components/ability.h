@@ -355,7 +355,7 @@ struct AbilityDef {
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
-                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams> params;
+                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams, PlayParams> params;
 
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers); the
     // origin also filters LAND_PLAYED (Mode$ LandPlayed's Origin$: the zone the land was played from)
@@ -661,17 +661,6 @@ struct AbilityDef {
     int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
     bool dig_until_attacking = false;            // Attacking$ True — the found card (FoundDestination$ Battlefield)
                                                  // enters tapped (enters_tapped) and attacking (Raph & Mikey; CR 508.4)
-
-    // DB$ Play (Amped Raptor): cast a Defined$ exiled card during the resolution (CR 608.2g),
-    // paying an alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource
-    // is the resource paid (energy or life); play_cost_expr is the amount — either a literal int
-    // (as a string) or "ConvertedManaCost" (the cast card's mana value). play_valid_sa
-    // restricts to nonland spells (ValidSA$ Spell). The optionality is carried by
-    // optional_choice (Optional$ True).
-    enum PlayCostResource { PLAY_COST_ENERGY, PLAY_COST_LIFE };
-    PlayCostResource play_cost_resource = PLAY_COST_ENERGY;
-    std::string play_cost_expr = "";  // amount: "ConvertedManaCost" or a literal int string
-    bool play_valid_sa_spell = false; // ValidSA$ Spell — only a castable nonland spell
 
     // Conditional amount (Flow State): the effective count is `cond_amount_if_true`
     // when the summed runtime counts in `cond_amount_exprs` satisfy

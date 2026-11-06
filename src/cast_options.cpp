@@ -14,6 +14,7 @@
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/costs.h"
+#include "queries/filters.h"
 #include "queries/permissions.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
@@ -98,6 +99,7 @@ static bool grant_cost_payable(Entity card, const CardData &ecd, const CastGrant
                                std::shared_ptr<Orderer> orderer);
 static const Game::ImpulseCastPermission &offer_grant(const CastOffer &offer);
 static bool grant_offered(CastOffer &offer);
+static bool resolution_allows(const CastOffer &offer);
 static CastGrant resolution_grant(const ResolutionCastTerms &terms, const CardData &face);
 static bool resolution_grant_offered(CastOffer &offer);
 static bool exile_mana_cost_offered(CastOffer &offer);
@@ -578,6 +580,16 @@ static bool grant_offered(CastOffer &offer) {
                               offer.window.orderer);
 }
 
+// Is the spell one the resolution offering it allows (CR 608.2g), read as the face it would be
+// (CR 709.3a, 715.3a)? Any spell at priority.
+static bool resolution_allows(const CastOffer &offer) {
+    const ResolutionCastTerms *terms = offer.window.resolution;
+    if (!terms || !terms->valid_sa) return true;
+    MatchCtx ctx;
+    ctx.controller = offer.window.caster;
+    return card_matches_filter(offer.face, *terms->valid_sa, ctx);
+}
+
 // What `terms` puts in place of the mana cost of `face`.
 static CastGrant resolution_grant(const ResolutionCastTerms &terms, const CardData &face) {
     CastGrant grant = terms.grant;
@@ -704,7 +716,7 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
             how.overlay = row.overlay;
             CastOffer overlaid{card, cast_face(printed, how), section.zone, window};
             CastOffer &asked = row.overlay == SpellOverlay::NONE ? offer : overlaid;
-            if (row.offered(asked)) {
+            if (resolution_allows(asked) && row.offered(asked)) {
                 actions.push_back(row_action(row, section, card, "Cast " + asked.face.name + row.label));
                 if (row.cost == CastCost::GRANT)
                     actions.back().option.grant =

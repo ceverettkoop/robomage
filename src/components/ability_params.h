@@ -157,6 +157,17 @@ struct AmassParams {
     std::string subtype = "";  // Type$ — amassed creature subtype, e.g. "Orc"
 };
 
+// DB$ Play: a card cast during the resolution (CR 608.2g). The optionality is carried by
+// optional_choice (Optional$ True).
+struct PlayParams {
+    // PlayCost$: what is paid rather than the card's mana cost, and how much: a literal int (as a
+    // string) or "ConvertedManaCost" (the spell's mana value). Amped Raptor pays energy.
+    enum CostResource { ENERGY, LIFE };
+    CostResource cost_resource = ENERGY;
+    std::string cost_expr = "";
+    FilterSpec valid_sa;  // ValidSA$: the spells it may be cast as, read as the face it would be
+};
+
 // Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the
 // beginning of your next upkeep").
 struct DelayedTriggerParams {
